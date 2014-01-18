@@ -172,6 +172,23 @@ namespace   Stroika {
                 return fSharedImpl_ != rhs.fSharedImpl_;
             }
             template    <typename TRAITS>
+            SharedByValue_State    SharedByValue<TRAITS>::GetSharingState () const
+            {
+                switch (fSharedImpl_.use_count ()) {
+                    case 0:
+                        Assert (fSharedImpl_.get () == nullptr);
+                        return SharedByValue_State::eNull;
+                    case 1:
+                        Assert (fSharedImpl_.get () != nullptr);
+                        Assert (fSharedImpl_.unique ());
+                        return SharedByValue_State::eSolo;
+                    default:
+                        Assert (fSharedImpl_.get () != nullptr);
+                        Assert (not fSharedImpl_.unique ());
+                        return SharedByValue_State::eShared;
+                }
+            }
+            template    <typename TRAITS>
             bool    SharedByValue<TRAITS>::unique () const
             {
                 return fSharedImpl_.unique ();

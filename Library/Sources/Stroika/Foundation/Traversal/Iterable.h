@@ -408,9 +408,12 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * Just used for debugging (&& ctor)
+                 *  @see Memory::SharedByValue_State
+                 *
+                 *  Don't call this lightly. This is just meant for low level or debugging, and for subclass optimizaitons
+                 *  based on the state of the shared common object.
                  */
-                nonvirtual  bool    _IsNull () const;
+                nonvirtual  Memory::SharedByValue_State    _GetSharingState () const;
 
             protected:
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();

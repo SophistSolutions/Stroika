@@ -74,7 +74,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::~Bijection ()
             {
-                if (not this->_IsNull ()) {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     _GetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }

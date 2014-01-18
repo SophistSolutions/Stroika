@@ -123,9 +123,9 @@ namespace   Stroika {
                 return rep.Clone ();
             }
             template    <typename T>
-            inline  bool         Iterable<T>::_IsNull () const
+            inline  Memory::SharedByValue_State     Iterable<T>::_GetSharingState () const
             {
-                return fRep_.get () == nullptr;
+                return fRep_.GetSharingState ();
             }
             template    <typename T>
             inline  typename Iterable<T>::_IRep&         Iterable<T>::_GetRep ()

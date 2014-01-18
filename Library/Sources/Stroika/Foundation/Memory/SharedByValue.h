@@ -81,6 +81,17 @@ namespace   Stroika {
 
 
             /**
+             *   This state is meant purely for code that may manage their internal behavior
+             *   based on details of reference counting - not for semantic reasons, but to enhance performance.
+             */
+            enum    class   SharedByValue_State {
+                eNull,
+                eSolo,
+                eShared,
+            };
+
+
+            /**
              *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW)
              *
              *  SharedByValue is a utility class to implement Copy-On-Write (aka Copy on Write, or COW).
@@ -141,7 +152,6 @@ namespace   Stroika {
                 nonvirtual  const element_type&    operator* () const;
                 nonvirtual  element_type&          operator* ();
 
-
             public:
                 /**
                  */
@@ -151,6 +161,12 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  bool operator!= (const SharedByValue<TRAITS>& rhs) const;
+
+            public:
+                /**
+                 *  @see SharedByValue_State
+                 */
+                nonvirtual  SharedByValue_State    GetSharingState () const;
 
             public:
                 /**
