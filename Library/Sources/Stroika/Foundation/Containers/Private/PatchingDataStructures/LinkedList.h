@@ -101,6 +101,12 @@ namespace   Stroika {
                         friend  class   ForwardIterator;
 
 #if     qDebug
+                    public:
+                        using   OwnerID     =   const void* ;
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+#endif
+
+#if     qDebug
                     protected:
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
@@ -129,6 +135,11 @@ namespace   Stroika {
                     public:
                         typedef typename DataStructures::LinkedList<T, TRAITS>::Link    Link;
                         typedef PatchingDataStructures::LinkedList<T, TRAITS>           ContainerType;
+
+                    public:
+                        using   OwnerID     =   const void* ;
+                        OwnerID fOwnerID;
+                        OwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         /*

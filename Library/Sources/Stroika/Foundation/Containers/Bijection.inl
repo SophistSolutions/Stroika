@@ -74,7 +74,9 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::~Bijection ()
             {
-                _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                if (not _IsNull ()) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
             }
 #endif
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>

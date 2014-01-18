@@ -213,6 +213,15 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
+                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    {
+                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
+                            Assert (v->fOwnerID != oBeingDeleted);
+                        }
+                    }
+#endif
+#if     qDebug
+                    template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::Invariant_ () const
                     {
                         inherited::Invariant_ ();
@@ -251,6 +260,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>* data)
                         : inherited (data)
+                        , fOwnerID ()   // for now uninit, but soon init
                         , _fNextActiveIterator (data->fActiveIteratorsListHead_)
                         //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
@@ -261,6 +271,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited (from)
+                        , fOwnerID (from.fOwnerID)
                         , _fNextActiveIterator (from.GetPatchingContainer_ ().fActiveIteratorsListHead_)
                         //, fPrev (from.fPrev)
                     {
@@ -323,6 +334,7 @@ namespace   Stroika {
 
                         //fPrev = rhs.fPrev;
 
+                        fOwnerID = rhs.fOwnerID;
                         inherited::operator= (rhs);
 
                         this->Invariant ();

@@ -271,7 +271,7 @@ namespace   Stroika {
                 void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        //fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -280,7 +280,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                *********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *******************
+                *********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> **************
                 ********************************************************************************
                 */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>

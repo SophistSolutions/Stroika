@@ -13,6 +13,11 @@ TODO (Foundation::Containers)
 
 	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
 
+	(o)		Containers must store linked list of OwnerIDs in each rep, DEBUG ONLY - just for the
+			purpose of assertion checking. Then add that assertion checking (that all contained
+			iterators - active iterators - belong to the given reps owners - at least one of
+			them).
+
 	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
 			and perhaps others.
 	

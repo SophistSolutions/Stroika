@@ -201,6 +201,15 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    {
+                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
+                            Assert (v->fOwnerID != oBeingDeleted);
+                        }
+                    }
+#endif
+#if     qDebug
+                    template      <typename  T, typename TRAITS>
                     void    DoublyLinkedList<T, TRAITS>::Invariant_ () const
                     {
                         inherited::Invariant_ ();
@@ -239,6 +248,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>* data)
                         : inherited (data)
+                        , fOwnerID ()       // to be initialized?
                         , fNextActiveIterator_ (data->fActiveIteratorsListHead_)
                     {
                         RequireNotNull (data);
@@ -248,6 +258,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited (from)
+                        , fOwnerID (from.fOwnerID)
                         , fNextActiveIterator_ (from.GetPatchingContainer_ ().fActiveIteratorsListHead_)
                     {
                         from.Invariant ();
@@ -308,6 +319,7 @@ namespace   Stroika {
                         }
 
                         inherited::operator= (rhs);
+                        fOwnerID  = rhs.fOwnerID;
 
                         this->Invariant ();
                         return *this;

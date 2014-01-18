@@ -90,6 +90,12 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const;
 
+#if     qDebug
+                    public:
+                        using   OwnerID     =   const void* ;
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+#endif
+
                     public:
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
@@ -132,6 +138,11 @@ namespace   Stroika {
                     public:
                         typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
                         typedef PatchingDataStructures::DoublyLinkedList<T, TRAITS>           ContainerType;
+
+                    public:
+                        using   OwnerID     =   const void* ;
+                        OwnerID fOwnerID;
+                        OwnerID GetOwner () const { return fOwnerID; }
 
 #if 0
                     public:

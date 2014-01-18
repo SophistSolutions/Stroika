@@ -105,6 +105,10 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  void    Invariant () const;
+#if     qDebug
+                        using   OwnerID     =   const void* ;
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+#endif
 
                     private:
                         _ArrayIteratorBase*     fIterators_;
@@ -137,6 +141,11 @@ namespace   Stroika {
                         nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
 
                         nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
+
+                    public:
+                        using   OwnerID     =   const void* ;
+                        OwnerID fOwnerID;
+                        OwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         nonvirtual  void    PatchAdd (size_t index);        //  call after add

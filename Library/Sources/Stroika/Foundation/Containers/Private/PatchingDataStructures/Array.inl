@@ -23,6 +23,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array_Patch<T, TRAITS>* data)
                         : inherited (data)
+                        , fOwnerID ()
                         , fData (data)
                         , fNext (data->fIterators_)
                     {
@@ -34,6 +35,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array_Patch<T, TRAITS>::_ArrayIteratorBase& from)
                         : inherited (from)
+                        , fOwnerID (from.fOwnerID)
                         , fData (from.fData)
                         , fNext (from.fData->fIterators_)
                     {
@@ -95,6 +97,7 @@ namespace   Stroika {
                              * Add to new.
                              */
                             fData = rhs.fData;
+                            fOwnerID = rhs.fOwnerID;
                             fNext = rhs.fData->fIterators_;
                             //(~const)
                             ((Array_Patch<T, TRAITS>*)fData)->fIterators_ = this;
@@ -421,6 +424,15 @@ namespace   Stroika {
                         PatchViewsRealloc ();
                         Invariant ();
                     }
+#if     qDebug
+                    template      <typename  T, typename TRAITS>
+                    void    Array_Patch<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    {
+                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
+                            Assert (v->fOwner != oBeingDeleted);
+                        }
+                    }
+#endif
 #if     qDebug
                     template      <typename  T, typename TRAITS>
                     void    Array_Patch<T, TRAITS>::Invariant_ () const

@@ -78,7 +78,6 @@ namespace   Stroika {
 
                 public:
                     ContainerRepLockDataSupport_&           fLockSupport;
-                    OwnerID                                 fOwner_;
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 

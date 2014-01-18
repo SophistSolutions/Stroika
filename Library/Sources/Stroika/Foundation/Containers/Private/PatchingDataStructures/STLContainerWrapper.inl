@@ -104,6 +104,15 @@ namespace   Stroika {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
+#if     qDebug
+                    template    <typename STL_CONTAINER_OF_T>
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    {
+                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                            Assert (v->fOwnerID != oBeingDeleted);
+                        }
+                    }
+#endif
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                     {
@@ -130,6 +139,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (CONTAINER_TYPE* data)
                         : inherited (data)
+                        , fOwnerID ()       // init NYI
                         , fData (data)
                         , fNextActiveIterator (data->fActiveIteratorsListHead_)
                         , fSuppressMore (true)
@@ -140,6 +150,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited (from)
+                        , fOwnerID (from.fOwnerID)
                         , fData (from.fData)
                         , fNextActiveIterator (from.fData->fActiveIteratorsListHead_)
                         , fSuppressMore (from.fSuppressMore)
@@ -196,6 +207,7 @@ namespace   Stroika {
                             /*
                              * Add to new.
                              */
+                            fOwnerID = from.fOwnerID;
                             fData = rhs.fData;
                             fNextActiveIterator = rhs.fData->fIterators;
                             fData->fIterators = this;

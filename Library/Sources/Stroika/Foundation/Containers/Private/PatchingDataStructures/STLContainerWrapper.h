@@ -91,6 +91,12 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
+#if     qDebug
+                    public:
+                        using   OwnerID     =   const void* ;
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+#endif
+
                     public:
                         nonvirtual  void    Invariant () const;
 #if     qDebug
@@ -148,6 +154,11 @@ namespace   Stroika {
                          */
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
+
+                    public:
+                        using   OwnerID     =   const void* ;
+                        OwnerID fOwnerID;
+                        OwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         nonvirtual  void    Invariant () const;
