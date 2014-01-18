@@ -30,8 +30,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::LinkedList (const LinkedList<T, TRAITS>& from)
                         : inherited (from)
-                        , fActiveIteratorsListHead_ (nullptr)    // Don't copy the list of iterators - would be trouble with backpointers!
+                        // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
+                        , fActiveIteratorsListHead_ (nullptr)
                     {
                         Invariant ();
                     }
