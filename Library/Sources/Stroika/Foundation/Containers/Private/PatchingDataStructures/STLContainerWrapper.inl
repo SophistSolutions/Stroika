@@ -109,7 +109,7 @@ namespace   Stroika {
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            Assert (v->fOwnerID != oBeingDeleted);
+                            Assert (ai->fOwnerID != oBeingDeleted);
                         }
                     }
 #endif
@@ -207,7 +207,7 @@ namespace   Stroika {
                             /*
                              * Add to new.
                              */
-                            fOwnerID = from.fOwnerID;
+                            fOwnerID = rhs.fOwnerID;
                             fData = rhs.fData;
                             fNextActiveIterator = rhs.fData->fIterators;
                             fData->fIterators = this;
