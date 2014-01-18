@@ -120,7 +120,12 @@ namespace   Stroika {
             template    <typename T>
             inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const typename Iterable<T>::_IRep& rep)
             {
-                return (rep.Clone ());
+                return rep.Clone ();
+            }
+            template    <typename T>
+            inline  bool         Iterable<T>::_IsNull () const
+            {
+                return fRep_.get () == nullptr;
             }
             template    <typename T>
             inline  typename Iterable<T>::_IRep&         Iterable<T>::_GetRep ()

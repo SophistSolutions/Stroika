@@ -161,9 +161,9 @@ namespace   Stroika {
 
             public:
                 /**
-                *  \brief  move CTOR - clears source
-                */
-                Iterable (Iterable<T>&& from);
+                 *  \brief  move CTOR - clears source
+                 */
+                explicit Iterable (Iterable<T>&& from);
 
             protected:
                 /**
@@ -173,8 +173,8 @@ namespace   Stroika {
 
             protected:
                 /**
-                *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
-                */
+                 *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
+                 */
                 explicit Iterable (_SharedPtrIRep&& rep);
 
             public:
@@ -405,6 +405,12 @@ namespace   Stroika {
                  * \brief STL-ish alias for GetLength()
                  */
                 nonvirtual  size_t  size () const;
+
+            protected:
+                /**
+                 * Just used for debugging (&& ctor)
+                 */
+                nonvirtual  bool    _IsNull () const;
 
             protected:
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
