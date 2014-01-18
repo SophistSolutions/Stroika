@@ -22,6 +22,9 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                using   Traversal::IteratorOwnerID;
+
+
                 /*
                  ********************************************************************************
                  ************ Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::*****************
@@ -36,7 +39,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep  =   typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -51,7 +53,7 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep                                      Clone () const override;
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override;
@@ -109,7 +111,7 @@ namespace   Stroika {
                     return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

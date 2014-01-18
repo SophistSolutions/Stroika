@@ -93,8 +93,7 @@ namespace   Stroika {
 
 #if     qDebug
                     public:
-                        using   OwnerID     =   const void* ;
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
 #endif
 
                     public:
@@ -156,9 +155,8 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
-                        using   OwnerID     =   const void* ;
-                        OwnerID fOwnerID;
-                        OwnerID GetOwner () const { return fOwnerID; }
+                        IteratorOwnerID fOwnerID;
+                        IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         nonvirtual  void    Invariant () const;

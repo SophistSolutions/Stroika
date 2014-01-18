@@ -106,7 +106,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
                             Assert (ai->fOwnerID != oBeingDeleted);

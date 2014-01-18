@@ -102,7 +102,7 @@ namespace   Stroika {
                 return fCurrent_.IsMissing ();
             }
             template    <typename T>
-            inline typename Iterator<T>::OwnerID    Iterator<T>::GetOwner () const
+            inline IteratorOwnerID    Iterator<T>::GetOwner () const
             {
                 // We could cache this value, but its only used breaking references and in assertions, so its
                 // not clearly worth while

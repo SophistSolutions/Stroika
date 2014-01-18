@@ -458,9 +458,6 @@ namespace   Stroika {
             protected:
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
-            protected:
-                using   _IteratorOwnerID    =   typename Iterator<T>::OwnerID;
-
             public:
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 typedef const std::function<void(const T& item)>&   _APPLY_ARGTYPE;
@@ -486,7 +483,7 @@ namespace   Stroika {
                  *      I think its good enough that particular subtypes - where tracking an owner makes sense and
                  *      is useful, we be done. And when not useful, it can be optimized away.
                  */
-                virtual Iterator<T>         MakeIterator (_IteratorOwnerID suggestedOwner) const        =   0;
+                virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const         =   0;
                 virtual size_t              GetLength () const                                          =   0;
                 virtual bool                IsEmpty () const                                            =   0;
                 virtual void                Apply (_APPLY_ARGTYPE doToElement) const                    =   0;

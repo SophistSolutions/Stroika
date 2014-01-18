@@ -22,6 +22,14 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Traversal::IteratorOwnerID;
+
+
+            /*
+             ********************************************************************************
+             ****** Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ *****************
+             ********************************************************************************
+             */
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
                 ElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
@@ -42,7 +50,6 @@ namespace   Stroika {
             struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     using   inherited   =   typename    Iterator<T>::IRep;
-                    using   OwnerID     =   typename Iterator<T>::IRep::OwnerID;
                     ElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const ElementsIteratorHelperContext_& context)
@@ -89,7 +96,7 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
-                    virtual OwnerID GetOwner () const override
+                    virtual IteratorOwnerID GetOwner () const override
                     {
                         return fContext.fTallyIterator.GetOwner ();
                     }
@@ -169,7 +176,6 @@ namespace   Stroika {
             struct  Tally<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     using   inherited   =   typename    Iterator<T>::IRep;
-                    using   OwnerID     =   typename Iterator<T>::IRep::OwnerID;
                     UniqueElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const UniqueElementsIteratorHelperContext_& context)
@@ -196,7 +202,7 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
-                    virtual OwnerID GetOwner () const override
+                    virtual IteratorOwnerID GetOwner () const override
                     {
                         return fContext.fTallyIterator.GetOwner ();
                     }

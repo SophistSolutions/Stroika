@@ -18,7 +18,6 @@ namespace   Stroika {
                 // @todo - I think we can lose fAtEnd and use the fCur.IsMissing/IsPresent()
                 template    <typename T>
                 struct   GenItWrapper_ : Iterator<T>::IRep  {
-                    using   OwnerID =   typename Iterator<T>::OwnerID;
                     function<Memory::Optional<T>()> fFun_;
                     Memory::Optional<T> fCur_;
                     bool                fAtEnd_;
@@ -63,7 +62,7 @@ namespace   Stroika {
                     {
                         return shared_ptr<typename Iterator<T>::IRep> (new GenItWrapper_ (*this));
                     }
-                    virtual OwnerID GetOwner () const override
+                    virtual IteratorOwnerID GetOwner () const override
                     {
                         /*
                          *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.

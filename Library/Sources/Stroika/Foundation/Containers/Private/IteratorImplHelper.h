@@ -39,6 +39,9 @@ namespace   Stroika {
             namespace Private {
 
 
+                using   Traversal::IteratorOwnerID;
+
+
                 /**
                  *  There is no requirement that Stroika contcrete containers use this class. However, it
                  *  so far has appeared a handy code sharing utility.
@@ -50,21 +53,20 @@ namespace   Stroika {
 
                 public:
                     using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
-                    using   OwnerID                     =   typename Iterator<T>::OwnerID;
                     using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
-                    explicit IteratorImplHelper_ (OwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
+                    explicit IteratorImplHelper_ (IteratorOwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual SharedIRepPtr Clone () const override;
-                    virtual OwnerID       GetOwner () const override;
-                    virtual void          More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool          Equals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual SharedIRepPtr       Clone () const override;
+                    virtual IteratorOwnerID     GetOwner () const override;
+                    virtual void                More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool                Equals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     /*

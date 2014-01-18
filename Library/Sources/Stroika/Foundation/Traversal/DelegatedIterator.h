@@ -38,14 +38,13 @@ namespace   Stroika {
                 struct   Rep : Iterator<T>::IRep {
                     using SharedIRepPtr     = typename Iterator<T>::SharedIRepPtr;
                     using IRep              = typename Iterator<T>::IRep;
-                    using OwnerID           = typename IRep::OwnerID;
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-                    virtual SharedIRepPtr   Clone () const override;
-                    virtual OwnerID         GetOwner () const override;
-                    virtual void            More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool            Equals (const IRep* rhs) const override;
+                    virtual SharedIRepPtr       Clone () const override;
+                    virtual IteratorOwnerID     GetOwner () const override;
+                    virtual void                More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool                Equals (const IRep* rhs) const override;
                 };
                 DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
             };
@@ -55,11 +54,10 @@ namespace   Stroika {
                 struct   Rep : Iterator<T>::IRep {
                     using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;
                     using IRep          = typename Iterator<T>::IRep;
-                    using OwnerID       = typename IRep::OwnerID;
                     Iterator<T> fDelegateTo;
                     Rep (const Iterator<T>& delegateTo);
                     virtual SharedIRepPtr   Clone () const override;
-                    virtual OwnerID         GetOwner () const override;
+                    virtual IteratorOwnerID GetOwner () const override;
                     virtual void            More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool            Equals (const IRep* rhs) const override;
                 };

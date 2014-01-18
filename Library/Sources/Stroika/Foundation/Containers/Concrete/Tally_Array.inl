@@ -22,6 +22,9 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                using   Traversal::IteratorOwnerID;
+
+
                 /*
                  ********************************************************************************
                  ************************** Tally_Array<T, TRAITS>::Rep_ ************************
@@ -35,7 +38,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Iterable<TallyEntry<T>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -52,7 +54,7 @@ namespace   Stroika {
                     virtual _SharedPtrIRep              Clone () const override;
                     virtual size_t                      GetLength () const override;
                     virtual bool                        IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<TallyEntry<T>>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<TallyEntry<T>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
@@ -131,7 +133,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<TallyEntry<T>> Tally_Array<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
+                Iterator<TallyEntry<T>> Tally_Array<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators

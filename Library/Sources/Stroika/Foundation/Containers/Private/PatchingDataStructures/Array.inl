@@ -426,7 +426,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    Array_Patch<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    void    Array_Patch<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
                         for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
                             Assert (v->fOwner != oBeingDeleted);

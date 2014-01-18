@@ -22,6 +22,9 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                using   Traversal::IteratorOwnerID;
+
+
                 /*
                  ********************************************************************************
                  ************************* Collection_LinkedList<T>::Rep_ ***********************
@@ -36,7 +39,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -51,7 +53,7 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep    Clone () const override;
-                    virtual Iterator<T>       MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>       MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t            GetLength () const override;
                     virtual bool              IsEmpty () const override;
                     virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
@@ -105,7 +107,7 @@ namespace   Stroika {
                     return _SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T>
-                Iterator<T>  Collection_LinkedList<T>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
+                Iterator<T>  Collection_LinkedList<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

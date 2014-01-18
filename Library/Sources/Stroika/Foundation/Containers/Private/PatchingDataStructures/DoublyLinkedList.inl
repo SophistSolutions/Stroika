@@ -201,7 +201,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    DoublyLinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    void    DoublyLinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
                             Assert (v->fOwnerID != oBeingDeleted);

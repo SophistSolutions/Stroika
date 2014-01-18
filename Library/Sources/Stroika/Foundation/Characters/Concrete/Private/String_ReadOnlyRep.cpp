@@ -16,6 +16,7 @@ using   namespace   Stroika::Foundation::Characters::Concrete::Private;
 
 
 using   Traversal::Iterator;
+using   Traversal::IteratorOwnerID;
 
 
 /*
@@ -23,7 +24,7 @@ using   Traversal::Iterator;
  **************************** ReadOnlyRep::_Rep *********************************
  ********************************************************************************
  */
-Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (_IteratorOwnerID suggestedOwner) const
+Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (IteratorOwnerID suggestedOwner) const
 {
     struct MyIterRep_ : Iterator<Character>::IRep {
         _SharedPtrIRep  fStr;           // effectively RO, since if anyone modifies, our copy will remain unchanged
@@ -38,7 +39,7 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (_IteratorOwnerI
         {
             return SharedIRepPtr (new MyIterRep_ (fStr, fCurIdx));
         }
-        virtual OwnerID GetOwner () const override
+        virtual IteratorOwnerID GetOwner () const override
         {
             // Simple to enforce Iterator<> compare semantics, but nothing else needed
             return fStr.get ();

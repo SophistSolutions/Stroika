@@ -36,7 +36,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -51,7 +50,7 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep                              Clone () const override;
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                      GetLength () const override;
                     virtual bool                                        IsEmpty () const override;
                     virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
@@ -70,7 +69,7 @@ namespace   Stroika {
                     virtual void                    RemoveRangeElement (RANGE_TYPE r) override;
                     virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
 #if     qDebug
-                    virtual void                    AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)    override;
+                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)    override;
 #endif
 
                 public:
@@ -116,7 +115,7 @@ namespace   Stroika {
                     return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
+                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -268,7 +267,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

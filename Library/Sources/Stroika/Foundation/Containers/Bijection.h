@@ -48,6 +48,7 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+            using   Traversal::IteratorOwnerID;
 
 
             /**
@@ -425,9 +426,6 @@ namespace   Stroika {
                 using   inherited   =   typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
             protected:
-                using   _IteratorOwnerID    =   typename inherited::_IteratorOwnerID;
-
-            protected:
                 _IRep ();
 
             public:
@@ -448,7 +446,7 @@ namespace   Stroika {
                 virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                          =   0;
 
 #if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)                            =   0;
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)                             =   0;
 #endif
 
                 /*

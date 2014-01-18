@@ -27,6 +27,9 @@ namespace   Stroika {
                 namespace   Private {
 
 
+                    using   Traversal::IteratorOwnerID;
+
+
                     /**
                      *  This is a PRIVATE utility class - designed to share code among the Stroika String implementations. Please don't
                      *  use it directly - as its details may change without notice, including subtle undocumented features of use of
@@ -61,7 +64,7 @@ namespace   Stroika {
 
                             // Overrides for Iterable<Character>
                         public:
-                            virtual Traversal::Iterator<Character>              MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                            virtual Traversal::Iterator<Character>              MakeIterator (IteratorOwnerID suggestedOwner) const override;
                             virtual size_t                                      GetLength () const override;
                             virtual bool                                        IsEmpty () const override;
                             virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;

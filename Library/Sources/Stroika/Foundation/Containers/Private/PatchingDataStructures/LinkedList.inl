@@ -214,7 +214,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted)
+                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
                             Assert (v->fOwnerID != oBeingDeleted);

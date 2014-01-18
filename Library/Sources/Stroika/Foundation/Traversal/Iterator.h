@@ -86,6 +86,18 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            /*
+            *  An IteratorOwnerID may be any pointer value, or nullptr, meaning that it has no logical owner.
+            *
+            *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
+            *  just compared (usually for equality, but also < maybe used for things like tree structure).
+            */
+            typedef const void* IteratorOwnerID;
+
+
+            constexpr   IteratorOwnerID kUnknownIteratorOwnerID =   nullptr;
+
+
             /**
              *  \brief
              *      An Iterator<T> is a copyable object which allows traversing the contents of some container.
@@ -305,21 +317,12 @@ namespace   Stroika {
                 }
 
             public:
-                /*
-                 *  An OwnerID may be any pointer value, or nullptr, meaning that it has no logical owner.
-                 *
-                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
-                 *  just compared (usually for equality, but also < maybe used for things like tree structure).
-                 */
-                typedef const void* OwnerID;
-
-            public:
                 /**
                  *  Iterators iterate over something (if not in reality, at least conceptually). This ID is
                  *  used for an iterator to report what its owner is (instance not class), if any.
                  *  Any iterator may report nullptr, meaning that it has no logical owner.
                  *
-                 *  @see OwnerID
+                 *  @see IteratorOwnerID
                  *
                  *  Once an iterator is created, its owner can never change. Mulitple iterators can share the same owner.
                  *  When an iterator is copied, the copy has the same owner as the source the iterator was copied from.
@@ -332,7 +335,7 @@ namespace   Stroika {
                  *  However, some classes (like Bag<T>, Sequence<T>, Collection<T> etc) may layer on additional
                  *  semantics for these Iterator owners.
                  */
-                nonvirtual  OwnerID GetOwner () const;
+                nonvirtual  IteratorOwnerID GetOwner () const;
 
             public:
                 /**
@@ -517,9 +520,6 @@ namespace   Stroika {
                 using  SharedIRepPtr    =   typename Iterator<T>::SharedIRepPtr;
 
             public:
-                using  OwnerID  =   typename Iterator<T>::OwnerID;
-
-            public:
                 /**
                  * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
                  * and/or More() to get values and move forward through the iteration.
@@ -528,7 +528,7 @@ namespace   Stroika {
                 /**
                  *  @see Iterator<T>::GetOwner
                  */
-                virtual OwnerID         GetOwner () const                   = 0;
+                virtual IteratorOwnerID GetOwner () const                   = 0;
                 /**
                  *  More () takes two required arguments - one an optional result, and the other a flag about whether or
                  *  not to advance.

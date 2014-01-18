@@ -83,7 +83,6 @@ namespace   Stroika {
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
                 protected:
                     DATA_BLOB   _fDataBlob;
 #if     qDebug
@@ -93,7 +92,7 @@ namespace   Stroika {
                 protected:
                     _Rep (const DATA_BLOB& dataBLOB);
                 public:
-                    virtual Iterator<T>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
@@ -109,13 +108,12 @@ namespace   Stroika {
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
 #if     qDebug
                 private:
                     mutable Private_::IteratorTracker<T>    fIteratorTracker_;
 #endif
                 public:
-                    virtual Iterator<T>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;

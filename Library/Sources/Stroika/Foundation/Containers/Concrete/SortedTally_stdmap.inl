@@ -40,7 +40,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Iterable<TallyEntry<T>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -57,7 +56,7 @@ namespace   Stroika {
                     virtual _SharedPtrIRep              Clone () const override;
                     virtual size_t                      GetLength () const override;
                     virtual bool                        IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<TallyEntry<T>>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<TallyEntry<T>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
@@ -124,7 +123,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<TallyEntry<T>> SortedTally_stdmap<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
+                Iterator<TallyEntry<T>> SortedTally_stdmap<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

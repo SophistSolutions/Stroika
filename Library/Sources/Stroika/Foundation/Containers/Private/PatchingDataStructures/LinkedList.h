@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Memory/SmallStackBuffer.h"
+#include    "../../../Traversal/Iterator.h"
 
 #include    "../DataStructures/LinkedList.h"
 
@@ -26,6 +27,9 @@ namespace   Stroika {
         namespace   Containers {
             namespace Private {
                 namespace   PatchingDataStructures {
+
+
+                    using   Traversal::IteratorOwnerID;
 
 
                     /*
@@ -102,8 +106,7 @@ namespace   Stroika {
 
 #if     qDebug
                     public:
-                        using   OwnerID     =   const void* ;
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (OwnerID oBeingDeleted);
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
 #endif
 
 #if     qDebug
@@ -126,9 +129,6 @@ namespace   Stroika {
                         using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
 
                     public:
-                        using   OwnerID     =   const void* ;
-
-                    public:
                         ForwardIterator (const LinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
@@ -140,8 +140,8 @@ namespace   Stroika {
                         typedef PatchingDataStructures::LinkedList<T, TRAITS>           ContainerType;
 
                     public:
-                        OwnerID fOwnerID;
-                        OwnerID GetOwner () const { return fOwnerID; }
+                        IteratorOwnerID fOwnerID;
+                        IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         /*

@@ -21,7 +21,6 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct   DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep  {
-                using   OwnerID =   typename    Iterator<T>::OwnerID;
                 DECLARE_USE_BLOCK_ALLOCATION(MyIteratorRep_);
                 T fCur;
                 T fEnd;
@@ -55,7 +54,7 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
-                virtual OwnerID GetOwner () const override
+                virtual IteratorOwnerID GetOwner () const override
                 {
                     /*
                      *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
@@ -86,7 +85,6 @@ namespace   Stroika {
             struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
                 using   inherited = typename Iterable<T>::_IRep;
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
-                using   _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
                 using   _APPLY_ARGTYPE = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
                 using   _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
                 DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
@@ -109,7 +107,7 @@ namespace   Stroika {
                 {
                     return _SharedPtrIRep (new MyIteratableRep_ (*this));
                 }
-                virtual Iterator<T>         MakeIterator (_IteratorOwnerID suggestedOwner) const
+                virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     if (fForcedEnd) {
                         return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));
