@@ -64,11 +64,14 @@ namespace   Stroika {
                     virtual Iterable<DOMAIN_TYPE>   Preimage () const override;
                     virtual Iterable<RANGE_TYPE>    Image () const override;
                     virtual bool                    Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
-                    virtual  bool                   InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
+                    virtual bool                    InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
                     virtual void                    Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
-                    virtual  void                   RemoveDomainElement (DOMAIN_TYPE d) override;
-                    virtual  void                   RemoveRangeElement (RANGE_TYPE r) override;
+                    virtual void                    RemoveDomainElement (DOMAIN_TYPE d) override;
+                    virtual void                    RemoveRangeElement (RANGE_TYPE r) override;
                     virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
+#if     qDebug
+                    virtual void                    AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)    override;
+#endif
 
                 public:
                     using   DomainEqualsCompareFunctionType =   typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::DomainEqualsCompareFunctionType;
@@ -263,6 +266,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
+#if     qDebug
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        //fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

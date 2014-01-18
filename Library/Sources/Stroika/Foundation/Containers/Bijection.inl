@@ -70,6 +70,13 @@ namespace   Stroika {
                 RequireNotNull (rep);
                 RequireMember (&inherited::_GetRep (), _IRep);
             }
+#if     qDebug
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::~Bijection ()
+            {
+                _GetRep ().AssertNoIteratorsReferenceOwner (this);
+            }
+#endif
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  const typename  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_GetRep () const
             {

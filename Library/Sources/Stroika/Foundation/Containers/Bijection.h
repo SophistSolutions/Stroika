@@ -114,7 +114,6 @@ namespace   Stroika {
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
-
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -167,6 +166,11 @@ namespace   Stroika {
 
             protected:
                 explicit Bijection (const _SharedPtrIRep& rep);
+
+#if     qDebug
+            public:
+                ~Bijection ();
+#endif
 
             public:
                 nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) =   default;
@@ -329,7 +333,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    RemoveAll ();
 
-
             public:
                 /*
                  *  Return a mapping - in the reverse direction (a Bijection is (restricted) form of mapping. The type of
@@ -418,6 +421,12 @@ namespace   Stroika {
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
+            private:
+                using   inherited   =   typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
+
+            protected:
+                using   _IteratorOwnerID    =   typename inherited::_IteratorOwnerID;
+
             protected:
                 _IRep ();
 
@@ -427,8 +436,8 @@ namespace   Stroika {
             public:
                 virtual bool                    Equals (const _IRep& rhs) const                                             =   0;
                 virtual void                    RemoveAll ()                                                                =   0;
-                virtual  Iterable<DomainType>   Preimage () const                                                     =   0;
-                virtual  Iterable<RangeType>    Image () const                                                      =   0;
+                virtual  Iterable<DomainType>   Preimage () const                                                           =   0;
+                virtual  Iterable<RangeType>    Image () const                                                              =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual  bool                   Lookup (DomainType key, Memory::Optional<RangeType>* item) const            =   0;
@@ -437,6 +446,10 @@ namespace   Stroika {
                 virtual  void                   RemoveDomainElement (DomainType d)                                          =   0;
                 virtual  void                   RemoveRangeElement (RangeType r)                                            =   0;
                 virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                          =   0;
+
+#if     qDebug
+                virtual void    AssertNoIteratorsReferenceOwner (_IteratorOwnerID oBeingDeleted)                            =   0;
+#endif
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

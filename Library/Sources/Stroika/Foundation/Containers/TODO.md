@@ -11,10 +11,6 @@ TODO (Foundation::Containers)
 
 			Implement with SFINAE
 
-	(o)		Add a 'pure debugging' feature (so only in debug builds). For each container (envelope),
-			track them in the associated REPS (as a linked list). THEN - when we destroy a container,
-			Assert that the 'owner' for each iterator - no longer references that container!
-
 	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
 
 	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
