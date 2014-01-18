@@ -130,6 +130,8 @@ namespace   Stroika {
                     public:
                         Array ();
                         Array (const Array<T, TRAITS>& from);
+
+					public:
                         ~Array ();
 
                     public:

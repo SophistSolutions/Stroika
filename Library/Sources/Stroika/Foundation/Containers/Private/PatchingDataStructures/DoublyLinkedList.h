@@ -50,6 +50,8 @@ namespace   Stroika {
                     public:
                         DoublyLinkedList ();
                         DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
+
+                    public:
                         ~DoublyLinkedList ();
 
                     public:
@@ -60,6 +62,9 @@ namespace   Stroika {
 
                     public:
                         class   ForwardIterator;
+
+                    public:
+                        using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
 
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
@@ -146,14 +151,6 @@ namespace   Stroika {
                         IteratorOwnerID fOwnerID;
                     public:
                         IteratorOwnerID GetOwner () const { return fOwnerID; }
-
-#if 0
-                    public:
-                        /*
-                         * Shadow more to keep track of prev.
-                         */
-                        nonvirtual  bool    More (T* current, bool advance);
-#endif
 
                     public:
                         nonvirtual  void    PatchAdd (const Link* link);        //  call after add

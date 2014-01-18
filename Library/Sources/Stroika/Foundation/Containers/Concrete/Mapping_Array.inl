@@ -70,7 +70,7 @@ namespace   Stroika {
 
                 private:
                     using   NonPatchingDataStructureImplType_   =   Private::DataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    using   DataStructureImplType_              =   Private::PatchingDataStructures::Array_Patch <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
                 private:
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;

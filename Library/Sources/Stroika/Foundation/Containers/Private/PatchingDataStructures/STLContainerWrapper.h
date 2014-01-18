@@ -65,6 +65,9 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
+                        using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
+
+                    public:
                         /**
                          * Are there any iterators to be patched?
                          */

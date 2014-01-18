@@ -19,7 +19,7 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
+                     ****** PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> *********
                      ********************************************************************************
                      */
                     template    <typename STL_CONTAINER_OF_T>
@@ -133,7 +133,7 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ************ STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator **********
+                     * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator *
                      ********************************************************************************
                      */
                     template    <typename STL_CONTAINER_OF_T>

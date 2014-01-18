@@ -63,7 +63,7 @@ namespace   Stroika {
                     virtual void                RemoveAll () override;
 
                 private:
-                    typedef Private::PatchingDataStructures::Array_Patch<T>             DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::Array<T>             DataStructureImplType_;
                     typedef Private::IteratorImplHelper_<T, DataStructureImplType_>     IteratorRep_;
 
                 private:

@@ -51,6 +51,8 @@ namespace   Stroika {
                     public:
                         LinkedList ();
                         LinkedList (const LinkedList<T, TRAITS>& from);
+
+                    public:
                         ~LinkedList ();
 
                     public:
@@ -61,6 +63,9 @@ namespace   Stroika {
 
                     public:
                         class   ForwardIterator;
+
+                    public:
+                        using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -76,7 +81,6 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const;
 
-                    public:
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
                          * patching, thats fine - use scope resolution operator to call this's base
@@ -131,8 +135,11 @@ namespace   Stroika {
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
+
+                    public:
                         ~ForwardIterator ();
 
+                    public:
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:

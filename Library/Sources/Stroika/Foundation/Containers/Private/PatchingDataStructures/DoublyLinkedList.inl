@@ -17,7 +17,7 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ********************* DoublyLinkedList<T, TRAITS> ******************************
+                    ************* PatchingDataStructures::DoublyLinkedList<T, TRAITS> **************
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
@@ -30,8 +30,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from)
                         : inherited (from)
-                        , fActiveIteratorsListHead_ (nullptr)    // Don't copy the list of iterators - would be trouble with backpointers!
+                        // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
+                        , fActiveIteratorsListHead_ (nullptr)
                     {
                         Invariant ();
                     }
@@ -242,7 +243,7 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ***************** DoublyLinkedList<T, TRAITS>::ForwardIterator *****************
+                    **** PatchingDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator ******
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
@@ -324,30 +325,6 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
-#if 0
-                    template      <typename  T, typename TRAITS>
-                    inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
-                    {
-                        this->Invariant ();
-
-                        if (advance) {
-                            /*
-                             * We could already be done since after the last Done() call, we could
-                             * have done a removeall.
-                             */
-                            if (not this->_fSuppressMore and this->_fCurrent != nullptr) {
-                                this->_fCurrent = this->_fCurrent->fNext;
-
-                            }
-                            this->_fSuppressMore = false;
-                        }
-                        this->Invariant ();
-                        if ((current != nullptr) and (not this->Done ())) {
-                            *current = this->_fCurrent->fItem;
-                        }
-                        return not this->Done ();
-                    }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {

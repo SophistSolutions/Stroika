@@ -146,7 +146,6 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::Remove (T item)
                     {
-                        using   Traversal::kUnknownIteratorOwnerID;
                         /*
                          *  Base class impl is fine, but doesn't do patching, and doesn't
                          *  provide the hooks so I can do the patching from here.
@@ -156,7 +155,8 @@ namespace   Stroika {
                          */
                         Invariant ();
                         Memory::Optional<T> current;
-                        for (ForwardIterator it (kUnknownIteratorOwnerID, this); it.More (&current, true), current.IsPresent (); ) {
+                        // NB: UnpatchedForwardIterator OK because we own lock and return after first mod
+                        for (UnpatchedForwardIterator it (this); it.More (&current, true), current.IsPresent (); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                 this->RemoveAt (it);
                                 break;

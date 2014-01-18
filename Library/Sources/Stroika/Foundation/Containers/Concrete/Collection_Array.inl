@@ -64,7 +64,7 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array_Patch <T, Private::DataStructures::Array_DefaultTraits<T, void>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array <T, Private::DataStructures::Array_DefaultTraits<T, void>>;
 
                 private:
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
