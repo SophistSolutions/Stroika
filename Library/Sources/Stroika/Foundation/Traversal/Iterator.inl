@@ -106,7 +106,7 @@ namespace   Stroika {
             {
                 // We could cache this value, but its only used breaking references and in assertions, so its
                 // not clearly worth while
-                return fIterator_ == nullptr ? nullptr : fIterator_->GetOwner ();
+                return fIterator_ == nullptr ? kUnknownIteratorOwnerID : fIterator_->GetOwner ();
             }
             template    <typename T>
             inline    T   Iterator<T>::operator* () const

@@ -96,7 +96,7 @@ namespace   Stroika {
 
 
             /**
-			 *	This is like the SQL-null - meaning no known owner - not that there is no owner.
+             *  This is like the SQL-null - meaning no known owner - not that there is no owner.
              */
             constexpr   IteratorOwnerID kUnknownIteratorOwnerID =   nullptr;
 
