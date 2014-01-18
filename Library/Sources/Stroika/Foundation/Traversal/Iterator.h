@@ -86,15 +86,18 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-            /*
-            *  An IteratorOwnerID may be any pointer value, or nullptr, meaning that it has no logical owner.
-            *
-            *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
-            *  just compared (usually for equality, but also < maybe used for things like tree structure).
-            */
+            /**
+             *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
+             *
+             *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
+             *  just compared (usually for equality, but also < maybe used for things like tree structure).
+             */
             typedef const void* IteratorOwnerID;
 
 
+            /**
+			 *	This is like the SQL-null - meaning no known owner - not that there is no owner.
+             */
             constexpr   IteratorOwnerID kUnknownIteratorOwnerID =   nullptr;
 
 

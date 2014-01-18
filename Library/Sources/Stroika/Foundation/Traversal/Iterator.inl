@@ -146,7 +146,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Iterator<T>::Equals (const Iterator& rhs) const
             {
-                Require (GetOwner () == rhs.GetOwner () or GetOwner () == nullptr or rhs.GetOwner () == nullptr);
+                Require (GetOwner () == rhs.GetOwner () or GetOwner () == kUnknownIteratorOwnerID or rhs.GetOwner () == kUnknownIteratorOwnerID);
                 /*
                  *  Equals is checked by first checking handling the case of special 'done' iterators. If two
                  *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special -
