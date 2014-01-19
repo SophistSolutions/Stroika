@@ -21,6 +21,7 @@
  *          COPY code.
  *
  *  @todo   Consider if BOTH overloads for get() should take COPY forward args - even if not needed?
+ *          Especially reasonable todo now that we have cget () - which always takes zero arguments.
  *
  *  @todo   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
  *          saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
@@ -155,14 +156,16 @@ namespace   Stroika {
                 nonvirtual  element_type*          get (COPY_ARGS&& ... copyArgs);
 
             public:
-                /*
+                /**
                  *  cget is equivilent to get () on a cosnt pointer. The reason to have/use this method
                  *  is just to avoid accidentally getting a reference to the non-const overload of get ().
+                 *
+                 *  \em Note: cget () will never invoke BreakReferences/Clone.
                  */
                 nonvirtual  const element_type*    cget () const;
 
             public:
-                /*
+                /**
                  * These operators require that the underlying ptr is non-nil.
                  *
                  *  \em note - the non-const overloads of operator-> and operator* only work if you use a COPY function
@@ -172,6 +175,16 @@ namespace   Stroika {
                  */
                 nonvirtual  const element_type*    operator-> () const;
                 nonvirtual  element_type*          operator-> ();
+
+            public:
+                /**
+                 * These operators require that the underlying ptr is non-nil.
+                 *
+                 *  \em note - the non-const overloads of operator-> and operator* only work if you use a COPY function
+                 *              that takes no arguments (otherwise there are no arguments to pass to the clone/copy function).
+                 *
+                 *              You can always safely use the copy overload.
+                 */
                 nonvirtual  const element_type&    operator* () const;
                 nonvirtual  element_type&          operator* ();
 
