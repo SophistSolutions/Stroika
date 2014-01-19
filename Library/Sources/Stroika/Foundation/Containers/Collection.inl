@@ -62,6 +62,15 @@ namespace   Stroika {
                 AddAll (src);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
+#if     qDebug
+            template    <typename T>
+            Collection<T>::~Collection ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename T>
             inline  const typename  Collection<T>::_IRep&    Collection<T>::_GetRep () const
             {

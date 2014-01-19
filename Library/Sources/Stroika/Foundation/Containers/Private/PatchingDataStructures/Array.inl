@@ -207,7 +207,7 @@ namespace   Stroika {
                     void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
                     {
                         for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            Assert (v->fOwner != oBeingDeleted);
+                            Assert (v->GetOwner () != oBeingDeleted);
                         }
                     }
                     template      <typename  T, typename TRAITS>

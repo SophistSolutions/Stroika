@@ -53,6 +53,7 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+            using   Traversal::IteratorOwnerID;
 
 
             /**
@@ -109,6 +110,10 @@ namespace   Stroika {
             protected:
                 explicit Collection (const _SharedPtrIRep& rep);
 
+#if     qDebug
+            public:
+                ~Collection ();
+#endif
             public:
                 nonvirtual  Collection<T>& operator= (const Collection<T>& rhs) = default;
 
@@ -225,10 +230,13 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void    Add (T item)                                =   0;
-                virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
-                virtual void    Remove (const Iterator<T>& i)               =   0;
-                virtual void    RemoveAll ()                                =   0;
+                virtual void    Add (T item)                                                        =   0;
+                virtual void    Update (const Iterator<T>& i, T newValue)                           =   0;
+                virtual void    Remove (const Iterator<T>& i)                                       =   0;
+                virtual void    RemoveAll ()                                                        =   0;
+#if     qDebug
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)     =   0;
+#endif
             };
 
 

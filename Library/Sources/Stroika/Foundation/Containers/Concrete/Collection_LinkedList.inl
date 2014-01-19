@@ -65,6 +65,9 @@ namespace   Stroika {
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    RemoveAll () override;
+#if     qDebug
+                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                 private:
                     using   UseLinkedListTraitsType_    =   Private::DataStructures::LinkedList_DefaultTraits<T, void>;
@@ -181,6 +184,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
+#if     qDebug
+                template    <typename T>
+                void    Collection_LinkedList<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*
