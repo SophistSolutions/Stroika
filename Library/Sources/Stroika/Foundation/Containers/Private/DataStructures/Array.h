@@ -191,7 +191,7 @@ namespace   Stroika {
 
 #if     qDebug
                     protected:
-                        virtual void    _Invariant () const;
+                        nonvirtual  void    _Invariant () const;
 #endif
 
                     protected:

@@ -196,17 +196,24 @@ namespace   Stroika {
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    inline  void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                     {
 #if     qDebug
                         AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
 #endif
                     }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::Invariant () const
+                    {
+#if     qDebug
+                        _Invariant ();
+#endif
+                    }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
+                    void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
                     {
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
+                        for (const _ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
                             Assert (v->GetOwner () != oBeingDeleted);
                         }
                     }

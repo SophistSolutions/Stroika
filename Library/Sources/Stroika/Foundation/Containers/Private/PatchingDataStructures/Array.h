@@ -106,12 +106,13 @@ namespace   Stroika {
                         _ArrayIteratorBase*     fIterators_;
 
                     public:
-                        nonvirtual  void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
+                        nonvirtual  void    Invariant () const;
+                        nonvirtual  void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
 
 #if     qDebug
                     protected:
-                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted);
-                        virtual     void    _Invariant () const override;
+                        nonvirtual  void    _Invariant () const;
+                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
                     };
 
