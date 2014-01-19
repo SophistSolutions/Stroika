@@ -143,6 +143,11 @@ namespace   Stroika {
             protected:
                 explicit Set (const _SharedPtrIRep& rep);
 
+#if     qDebug
+            public:
+                ~Set ();
+#endif
+
             public:
                 nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs);
 
@@ -153,8 +158,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Like Contains - but a Set<> can use a comparison that only examines a part of T, making it useful to be able to return
-                 *  the rest of T.
+                 *  Like Contains - but a Set<> can use a comparison that only examines a part of T,
+                 *  making it useful to be able to return the rest of T.
                  */
                 nonvirtual  Memory::Optional<T> Lookup (T item) const;
 
@@ -295,6 +300,9 @@ namespace   Stroika {
             };
 
 
+            using   Traversal::IteratorOwnerID;
+
+
             /**
              *  \brief  Implementation detail for Set<T, TRAITS> implementors.
              *
@@ -310,13 +318,16 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool                Equals (const _IRep& rhs) const    =   0;
-                virtual bool                Contains (T item) const            =   0;
-                virtual Memory::Optional<T> Lookup (T item) const              =   0;
-                virtual void                RemoveAll ()                       =   0;
-                virtual void                Add (T item)                       =   0;
-                virtual void                Remove (T item)                    =   0;
-                virtual void                Remove (const Iterator<T>& i)      =   0;
+                virtual bool                Equals (const _IRep& rhs) const                                 =   0;
+                virtual bool                Contains (T item) const                                         =   0;
+                virtual Memory::Optional<T> Lookup (T item) const                                           =   0;
+                virtual void                RemoveAll ()                                                    =   0;
+                virtual void                Add (T item)                                                    =   0;
+                virtual void                Remove (T item)                                                 =   0;
+                virtual void                Remove (const Iterator<T>& i)                                   =   0;
+#if     qDebug
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+#endif
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

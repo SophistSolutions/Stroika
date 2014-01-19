@@ -20,6 +20,14 @@ TODO (Foundation::Containers)
 
 			Implement with SFINAE
 
+	(o)		Should we have a SortedBijection<> template? If not - document why not. I think
+			yes.
+
+	(o)		Should Map<> have mehtods Domain() and Range () - like Bijection?
+
+	(o)		Mapping<> really is more like math function, and Association<> is really more
+			like math mapping.
+
 	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
 
 	(o)		Containers must store linked list of OwnerIDs in each rep, DEBUG ONLY - just for the

@@ -68,6 +68,15 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
             }
+#if     qDebug
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>::~Set ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>& Set<T, TRAITS>::operator= (const Set<T, TRAITS>& rhs)
             {

@@ -49,7 +49,6 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
-            using   Traversal::IteratorOwnerID;
 
             using   Common::KeyValuePair;
 
@@ -341,6 +340,9 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
+
+
+            using   Traversal::IteratorOwnerID;
 
 
             /**
