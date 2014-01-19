@@ -112,10 +112,10 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::get () const
             {
-                return (fSharedImpl_.get ());
+                return fSharedImpl_.get ();
             }
             template    <typename TRAITS>
-            typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get ()
+            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get ()
             {
                 element_type*  ptr =   fSharedImpl_.get ();
                 /*
@@ -124,18 +124,17 @@ namespace   Stroika {
                  * rereference it anyhow, so don't bother with the Assure1Reference()
                  * in that case.
                  */
-                if (ptr == nullptr) {
-                    return nullptr;
+                if (ptr != nullptr) {
+                    Assure1Reference ();
+                    ptr = fSharedImpl_.get ();
+                    EnsureNotNull (ptr);
                 }
-                Assure1Reference ();
-                ptr = fSharedImpl_.get ();
-                EnsureNotNull (ptr);
                 return ptr;
             }
             template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::operator-> () const
             {
-                return (fSharedImpl_.get ());
+                return fSharedImpl_.get ();
             }
             template    <typename TRAITS>
             inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::operator-> ()
@@ -150,7 +149,7 @@ namespace   Stroika {
                 return *ptr;
             }
             template    <typename TRAITS>
-            typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* ()
+            inline  typename SharedByValue<TRAITS>::element_type&   SharedByValue<TRAITS>::operator* ()
             {
                 /*
                  * For non-const dereferencing, we must clone ourselves (if there are
@@ -162,17 +161,17 @@ namespace   Stroika {
                 return *ptr;
             }
             template    <typename TRAITS>
-            bool SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const
+            inline  bool    SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ == rhs.fSharedImpl_;
             }
             template    <typename TRAITS>
-            bool SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
+            inline  bool    SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ != rhs.fSharedImpl_;
             }
             template    <typename TRAITS>
-            SharedByValue_State    SharedByValue<TRAITS>::GetSharingState () const
+            inline  SharedByValue_State    SharedByValue<TRAITS>::GetSharingState () const
             {
                 switch (fSharedImpl_.use_count ()) {
                     case 0:
@@ -189,7 +188,7 @@ namespace   Stroika {
                 }
             }
             template    <typename TRAITS>
-            bool    SharedByValue<TRAITS>::unique () const
+            inline  bool    SharedByValue<TRAITS>::unique () const
             {
                 return fSharedImpl_.unique ();
             }
