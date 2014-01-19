@@ -151,6 +151,13 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
+                /*
+                 *  For now, just use the std::shared_ptr<> - but we may want to go back to older Stroika
+                 *  SharedPtr<> code - which I believe is more performant (but lacks the weak_ptr feature).
+                 *
+                 *  To support that possability, be sure to refernece _SharedPtrIRep instead of using shared_ptr<>
+                 *  directly.
+                 */
                 using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             public:
