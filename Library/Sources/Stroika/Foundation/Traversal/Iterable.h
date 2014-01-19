@@ -428,14 +428,14 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t, IteratorOwnerID suggestedOwner)
+                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t, IteratorOwnerID iterableEnvelope)
                     {
-                        return Iterable<T>::Clone_ (t, suggestedOwner);
+                        return Iterable<T>::Clone_ (t, iterableEnvelope);
                     }
                 };
 
             private:
-                static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID suggestedOwner);
+                static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID iterableEnvelope);
 
             private:
                 /**

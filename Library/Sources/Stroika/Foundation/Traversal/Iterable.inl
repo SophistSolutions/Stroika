@@ -115,7 +115,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID suggestedOwner)
+            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID iterableEnvelope)
             {
                 // @todo - soon pass along suggested owner here too
                 return rep.Clone ();
