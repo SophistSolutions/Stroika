@@ -139,7 +139,7 @@ namespace   Stroika {
                         nonvirtual  IteratorOwnerID GetOwner () const;
 
                     private:
-                        IteratorOwnerID fOwnerID;
+                        IteratorOwnerID fOwnerID_;
 
                     public:
                         nonvirtual  void    PatchAdd (size_t index);        //  call after add

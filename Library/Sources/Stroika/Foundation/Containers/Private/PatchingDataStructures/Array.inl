@@ -238,7 +238,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
                         : inherited (data)
-                        , fOwnerID (ownerID)
+                        , fOwnerID_ (ownerID)
                         , fData (data)
                         , fNext (data->fIterators_)
                     {
@@ -250,18 +250,18 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array<T, TRAITS>::_ArrayIteratorBase& from)
                         : inherited (from)
-                        , fOwnerID (from.fOwnerID)
+                        , fOwnerID_ (from.fOwnerID_)
                         , fData (from.fData)
                         , fNext (from.fData->fIterators_)
                     {
                         RequireNotNull (fData);
                         const_cast <Array<T, TRAITS>*> (fData)->fIterators_ = this;
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
                     {
-                        Invariant ();
+                        this->Invariant ();
                         AssertNotNull (fData);
                         if (fData->fIterators_ == this) {
                             const_cast <Array<T, TRAITS>*> (fData)->fIterators_ = fNext;
@@ -280,7 +280,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  typename Array<T, TRAITS>::_ArrayIteratorBase& Array<T, TRAITS>::_ArrayIteratorBase::operator= (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs)
                     {
-                        Invariant ();
+                        this->Invariant ();
 
                         /*
                          *      If the fData field has not changed, then we can leave alone our iterator linkage.
@@ -312,7 +312,7 @@ namespace   Stroika {
                              * Add to new.
                              */
                             fData = rhs.fData;
-                            fOwnerID = rhs.fOwnerID;
+                            fOwnerID_ = rhs.fOwnerID;
                             fNext = rhs.fData->fIterators_;
                             //(~const)
                             ((Array<T, TRAITS>*)fData)->fIterators_ = this;
@@ -320,14 +320,14 @@ namespace   Stroika {
 
                         inherited::operator=(rhs);
 
-                        Invariant ();
+                        this->Invariant ();
 
-                        return (*this);
+                        return *this;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  IteratorOwnerID Array<T, TRAITS>::_ArrayIteratorBase::GetOwner () const
                     {
-                        return fOwnerID;
+                        return fOwnerID_;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchAdd (size_t index)
