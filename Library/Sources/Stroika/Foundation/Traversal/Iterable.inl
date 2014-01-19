@@ -83,25 +83,25 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep)
                 : fRep_ (rep)
             {
-                RequireNotNull (fRep_.get ());
+                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from)
                 : fRep_ (from.fRep_)
             {
-                RequireNotNull (fRep_.get ());
+                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (Iterable<T>&& from)
                 : fRep_ (std::move (from.fRep_))
             {
-                RequireNotNull (fRep_.get ());
+                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep)
                 : fRep_ (std::move (rep))
             {
-                RequireNotNull (fRep_.get ());
+                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::~Iterable ()
@@ -115,8 +115,9 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const typename Iterable<T>::_IRep& rep)
+            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID suggestedOwner)
             {
+                // @todo - soon pass along suggested owner here too
                 return rep.Clone ();
             }
             template    <typename T>
@@ -127,8 +128,12 @@ namespace   Stroika {
             template    <typename T>
             inline  typename Iterable<T>::_IRep&         Iterable<T>::_GetRep ()
             {
-                EnsureNotNull (fRep_.get ());
-                return *fRep_;
+                //EnsureNotNull (fRep_.get ());
+                // subtle - but we must use the get () overload that allows passing in our Copy forward parameters
+                // instead of using operator* (which doesnt allow passsing in the copy forward paramters).
+                //
+                // Note - our copy forward paramters are the container envelope pointer
+                return *(fRep_.get (this));
             }
             template    <typename T>
             inline  const typename Iterable<T>::_IRep&   Iterable<T>::_GetRep () const
