@@ -408,6 +408,15 @@ namespace   Stroika {
                 AddAll (start, end);
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
+#if     qDebug
+            template    <typename T, typename TRAITS>
+            Tally<T, TRAITS>::~Tally ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline  const typename Tally<T, TRAITS>::_IRep&  Tally<T, TRAITS>::_GetRep () const
             {

@@ -70,6 +70,9 @@ namespace   Stroika {
                     virtual size_t                                  TallyOf (T item) const override;
                     virtual Iterable<T>                             Elements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                             UniqueElements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
+#if     qDebug
+                    virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                     // Tally_Array<T, TRAITS>::_IRep overrides
                 public:
@@ -293,6 +296,16 @@ namespace   Stroika {
                     }
                     return kNotFound_;
                 }
+#if     qDebug
+                template    <typename T, typename TRAITS>
+                void    Tally_Array<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

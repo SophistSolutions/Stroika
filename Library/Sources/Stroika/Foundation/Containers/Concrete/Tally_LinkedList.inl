@@ -68,6 +68,9 @@ namespace   Stroika {
                     virtual size_t                              TallyOf (T item) const override;
                     virtual Iterable<T>                         Elements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                         UniqueElements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
+#if     qDebug
+                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                 private:
                     typedef Private::DataStructures::LinkedList<TallyEntry<T>>                              NonPatchingDataStructureImplType_;
@@ -274,6 +277,16 @@ namespace   Stroika {
                 {
                     return this->_UniqueElements_Reference_Implementation (rep);
                 }
+#if     qDebug
+                template    <typename T, typename TRAITS>
+                void    Tally_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

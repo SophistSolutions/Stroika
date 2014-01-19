@@ -148,6 +148,11 @@ namespace   Stroika {
             protected:
                 explicit Tally (const _SharedPtrIRep& rep);
 
+#if     qDebug
+            public:
+                ~Tally ();
+#endif
+
             public:
                 /**
                  *  Contains (item) is equivilent to TallyOf (item) != 0, but maybe faster (since it doesn't need to compute
@@ -270,6 +275,9 @@ namespace   Stroika {
             };
 
 
+            using   Traversal::IteratorOwnerID;
+
+
             /**
              */
             template    <typename T, typename TRAITS>
@@ -298,6 +306,9 @@ namespace   Stroika {
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T> UniqueElements (const _SharedPtrIRep& rep) const                =   0;
+#if     qDebug
+                virtual void        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+#endif
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
