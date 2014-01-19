@@ -92,7 +92,7 @@ namespace   Stroika {
              *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
              *  just compared (usually for equality, but also < maybe used for things like tree structure).
              */
-            typedef const void* IteratorOwnerID;
+            using   IteratorOwnerID =    const void* ;
 
 
             /**
@@ -206,11 +206,11 @@ namespace   Stroika {
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
                  *              Iterator<T> parameterizes access to.
                  */
-                typedef T   ElementType;
+                using   ElementType =   T;
 
             public:
                 class   IRep;
-                typedef shared_ptr<IRep>    SharedIRepPtr;
+                using   SharedIRepPtr   =   shared_ptr<IRep>;
 
             private:
                 struct  Rep_Cloner_ {
@@ -222,7 +222,7 @@ namespace   Stroika {
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
                  *          by users).
                  */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>   SharedByValueRepType;
+                using   SharedByValueRepType    =   Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>;
 
             private:
                 /*

@@ -145,13 +145,13 @@ namespace   Stroika {
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
                  *              Iterable<T> parameterizes access to.
                  */
-                typedef T   ElementType;
+                using   ElementType =    T;
 
             protected:
                 class  _IRep;
 
             protected:
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             public:
                 /**
@@ -434,7 +434,7 @@ namespace   Stroika {
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   SharedByValueRepType_;
+                using   SharedByValueRepType_   =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
 
             private:
                 SharedByValueRepType_    fRep_;
@@ -460,11 +460,11 @@ namespace   Stroika {
 
             public:
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
-                typedef const std::function<void(const T& item)>&   _APPLY_ARGTYPE;
-                typedef const std::function<bool(const T& item)>&   _APPLYUNTIL_ARGTYPE;
+                using   _APPLY_ARGTYPE      =   const std::function<void(const T& item)>& ;
+                using   _APPLYUNTIL_ARGTYPE =   const std::function<bool(const T& item)>& ;
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
-                typedef pair<const void*, void (*) (const void* cookie, const T& item)> _APPLY_ARGTYPE;
-                typedef pair<const void*, bool (*) (const void* cookie, const T& item)> _APPLYUNTIL_ARGTYPE;
+                using   _APPLY_ARGTYPE      =   pair<const void*, void (*) (const void* cookie, const T& item)>;
+                using   _APPLYUNTIL_ARGTYPE =   pair<const void*, bool (*) (const void* cookie, const T& item)>;
 #endif
 
             public:
