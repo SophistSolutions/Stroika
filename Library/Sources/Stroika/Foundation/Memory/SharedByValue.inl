@@ -135,6 +135,11 @@ namespace   Stroika {
                 return ptr;
             }
             template    <typename TRAITS>
+            inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::cget () const
+            {
+                return get ();
+            }
+            template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::operator-> () const
             {
                 return fSharedImpl_.get ();

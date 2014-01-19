@@ -17,7 +17,7 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
- *  @todo   DOCUMENT (and debug if needed) the new experiemental perfect-forwarding/varyatic template
+ *  @todo   DOCUMENT (and debug if needed) the new experiemental variadic template
  *          COPY code.
  *
  *  @todo   Consider if BOTH overloads for get() should take COPY forward args - even if not needed?
@@ -144,10 +144,22 @@ namespace   Stroika {
                  * get () returns the real underlying ptr we store. It can be nullptr. This should
                  * rarely be used - use operator-> in preference. This is only for dealing with cases where
                  * the ptr could legitimately be nil.
+                 *
+                 *  Note that the COPY_ARGS in the non-const overload of get () MUST match the parameters passed
+                 *  to the copier_type::Copy () function specified in the SharedByValue traits object.
+                 *
+                 *  This defaults to no parameters.
                  */
                 nonvirtual  const element_type*    get () const;
                 template    <typename... COPY_ARGS>
                 nonvirtual  element_type*          get (COPY_ARGS&& ... copyArgs);
+
+            public:
+                /*
+                 *  cget is equivilent to get () on a cosnt pointer. The reason to have/use this method
+                 *  is just to avoid accidentally getting a reference to the non-const overload of get ().
+                 */
+                nonvirtual  const element_type*    cget () const;
 
             public:
                 /*
