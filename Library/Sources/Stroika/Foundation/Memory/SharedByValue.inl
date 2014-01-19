@@ -117,7 +117,8 @@ namespace   Stroika {
                 return fSharedImpl_.get ();
             }
             template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get ()
+            template    <typename... COPY_ARGS>
+            inline  typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get (COPY_ARGS&& ... copyArgs)
             {
                 element_type*  ptr =   fSharedImpl_.get ();
                 /*
@@ -127,7 +128,7 @@ namespace   Stroika {
                  * in that case.
                  */
                 if (ptr != nullptr) {
-                    Assure1Reference ();
+                    Assure1Reference (forward<COPY_ARGS> (copyArgs)...);
                     ptr = fSharedImpl_.get ();
                     EnsureNotNull (ptr);
                 }
@@ -195,14 +196,16 @@ namespace   Stroika {
                 return fSharedImpl_.unique ();
             }
             template    <typename TRAITS>
-            inline  void    SharedByValue<TRAITS>::Assure1Reference ()
+            template    <typename... COPY_ARGS>
+            inline  void    SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&& ... copyArgs)
             {
                 if (not fSharedImpl_.unique ()) {
-                    BreakReferences_ ();
+                    BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
                 }
             }
             template    <typename TRAITS>
-            void    SharedByValue<TRAITS>::BreakReferences_ ()
+            template    <typename... COPY_ARGS>
+            void    SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&& ... copyArgs)
             {
                 element_type*  ptr =   fSharedImpl_.get ();
                 RequireNotNull (ptr);
@@ -220,7 +223,7 @@ namespace   Stroika {
                 //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
                 // value and it should go away.
-                *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr), fCopier_);
+                *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr, forward<COPY_ARGS>(copyArgs)...), fCopier_);
                 Ensure (fSharedImpl_.unique ());
             }
 

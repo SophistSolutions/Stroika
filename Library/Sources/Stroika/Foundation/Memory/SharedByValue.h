@@ -17,6 +17,11 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *  @todo   DOCUMENT (and debug if needed) the new experiemental perfect-forwarding/varyatic template
+ *          COPY code.
+ *
+ *  @todo   Consider if BOTH overloads for get() should take COPY forward args - even if not needed?
+ *
  *  @todo   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
  *          saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
  *          See if this is optimized away in release builds and if not, see if we can find some
@@ -141,11 +146,17 @@ namespace   Stroika {
                  * the ptr could legitimately be nil.
                  */
                 nonvirtual  const element_type*    get () const;
-                nonvirtual  element_type*          get ();
+                template    <typename... COPY_ARGS>
+                nonvirtual  element_type*          get (COPY_ARGS&& ... copyArgs);
 
             public:
                 /*
                  * These operators require that the underlying ptr is non-nil.
+                 *
+                 *  \em note - the non-const overloads of operator-> and operator* only work if you use a COPY function
+                 *              that takes no arguments (otherwise there are no arguments to pass to the clone/copy function).
+                 *
+                 *              You can always safely use the copy overload.
                  */
                 nonvirtual  const element_type*    operator-> () const;
                 nonvirtual  element_type*          operator-> ();
@@ -183,10 +194,12 @@ namespace   Stroika {
                  * Assure there is a single reference to this object, and if there are more, break references.
                  * This method should be applied before destructive operations are applied to the shared object.
                  */
-                nonvirtual  void    Assure1Reference ();
+                template    <typename... COPY_ARGS>
+                nonvirtual  void    Assure1Reference (COPY_ARGS&& ... copyArgs);
 
             private:
-                nonvirtual  void    BreakReferences_ ();
+                template    <typename... COPY_ARGS>
+                nonvirtual  void    BreakReferences_ (COPY_ARGS&& ... copyArgs);
             };
 
 
