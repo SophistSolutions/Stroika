@@ -33,10 +33,12 @@ namespace   Stroika {
             inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&))
                 : fCopier (copier)
             {
+                RequireNotNull (copier);
             }
             template    <typename   T, typename SHARED_IMLP>
             inline  SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
             {
+                AssertNotNull (fCopier);
                 return (*fCopier) (t);
             }
 
@@ -195,7 +197,7 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  void    SharedByValue<TRAITS>::Assure1Reference ()
             {
-                if (!fSharedImpl_.unique ()) {
+                if (not fSharedImpl_.unique ()) {
                     BreakReferences_ ();
                 }
             }

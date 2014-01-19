@@ -43,11 +43,11 @@ namespace   Stroika {
              */
             template    <typename   T, typename SHARED_IMLP = shared_ptr<T>>
             struct  SharedByValue_CopyByFunction {
-#if     !qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); });
-#else
+#if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
                 static  SHARED_IMLP  DefaultElementCopier_ (const T& t);
                 SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_);
+#else
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); });
 #endif
                 nonvirtual  SHARED_IMLP  Copy (const T& t) const;
                 SHARED_IMLP      (*fCopier) (const T&);
@@ -74,9 +74,9 @@ namespace   Stroika {
              */
             template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
             struct   SharedByValue_Traits {
-                typedef T               element_type;
-                typedef COPIER          copier_type;
-                typedef SHARED_IMLP     shared_ptr_type;
+                using   element_type    =   T;
+                using   copier_type     =   COPIER;
+                using   shared_ptr_type =   SHARED_IMLP;
             };
 
 
@@ -107,9 +107,9 @@ namespace   Stroika {
             template    <typename TRAITS>
             class   SharedByValue {
             public:
-                typedef typename TRAITS::element_type           element_type;
-                typedef typename TRAITS::copier_type            copier_type;
-                typedef typename TRAITS::shared_ptr_type        shared_ptr_type;
+                using   element_type    =   typename TRAITS::element_type;
+                using   copier_type     =   typename TRAITS::copier_type;
+                using   shared_ptr_type =   typename TRAITS::shared_ptr_type;
 
             public:
                 /**
