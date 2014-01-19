@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 
+#include    "../Debug/Trace.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -212,7 +213,9 @@ namespace   Stroika {
             template    <typename... COPY_ARGS>
             void    SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&& ... copyArgs)
             {
-                element_type*  ptr =   fSharedImpl_.get ();
+                shared_ptr_type     ptr2Clone   =   fSharedImpl_;       // other thread could change this (if other thread accesses same envelope)
+                // but this copy prevents the bare ptr from possibly becoming invalidated
+                element_type*  ptr =   ptr2Clone.get ();
                 RequireNotNull (ptr);
                 /*
                  *      For a valid pointer that is reference counted and multiply shared,
@@ -229,7 +232,15 @@ namespace   Stroika {
                 // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
                 // value and it should go away.
                 *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr, forward<COPY_ARGS>(copyArgs)...), fCopier_);
-                Ensure (fSharedImpl_.unique ());
+
+#if     qDebug
+                //Ensure (fSharedImpl_.unique ());
+                // technically not 100% gauranteed if two threads did this at the same time, but so rare interesting if ever triggered.
+                // may need to lose this assert - maybe replace with #if qDebug DbgTrace
+                if (not fSharedImpl_.unique ()) {
+                    DbgTrace ("probably a bug, but not necessarily...");
+                }
+#endif
             }
 
 

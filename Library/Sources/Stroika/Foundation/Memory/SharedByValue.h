@@ -109,7 +109,11 @@ namespace   Stroika {
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              *
              *  This class template was originally called CopyOnWrite.
-            */
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
+             *          This has the same thread safety as the 'shared ptr' (SharedByValue::TRAITS::shared_ptr_type - by default shared_ptr<T>).
+             */
             template    <typename TRAITS>
             class   SharedByValue {
             public:
