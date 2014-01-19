@@ -22,7 +22,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Sequence<T, TRAITS>::Sequence ()
-                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
             {
             }
             template    <typename T, typename TRAITS>
@@ -32,20 +32,20 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Sequence<T, TRAITS>::Sequence (const initializer_list<T>& s)
-                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
             {
                 AppendAll (s);
             }
             template    <typename T, typename TRAITS>
             inline  Sequence<T, TRAITS>::Sequence (const vector<T>& s)
-                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
             {
                 AppendAll (s);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T, TRAITS>::Sequence (const CONTAINER_OF_T& s)
-                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
             {
                 AppendAll (s);
             }
@@ -58,7 +58,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Sequence<T, TRAITS>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
             {
                 AppendAll (start, end);
             }

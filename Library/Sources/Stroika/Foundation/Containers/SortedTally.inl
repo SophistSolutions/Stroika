@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedTally<T, TRAITS>::SortedTally ()
-                : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -40,14 +40,14 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             SortedTally<T, TRAITS>::SortedTally (const std::initializer_list<T>& s)
-                : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);
             }
             template    <typename T, typename TRAITS>
             SortedTally<T, TRAITS>::SortedTally (const std::initializer_list<TallyEntry<T>>& s)
-                : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);

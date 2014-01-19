@@ -25,14 +25,14 @@ namespace   Stroika {
             */
 #if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
             template    <typename   T, typename SHARED_IMLP>
-            SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
-            {
+            SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t) noexcept {
                 return SHARED_IMLP (new T (t));
             }
 #endif
             template    <typename   T, typename SHARED_IMLP>
-            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&))
-                : fCopier (copier)
+            inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
+:
+            fCopier (copier)
             {
                 RequireNotNull (copier);
             }
@@ -62,39 +62,45 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue ()
-                : fCopier_ (copier_type ())
-                , fSharedImpl_ ()
+            inline  SharedByValue<TRAITS>::SharedByValue () noexcept
+:
+            fCopier_ (copier_type ())
+            , fSharedImpl_ ()
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (nullptr_t n)
-                : fCopier_ (copier_type ())
-                , fSharedImpl_ ()
+            inline  SharedByValue<TRAITS>::SharedByValue (nullptr_t n) noexcept
+:
+            fCopier_ (copier_type ())
+            , fSharedImpl_ ()
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from)
-                : fCopier_ (from.fCopier_)
-                , fSharedImpl_ (from.fSharedImpl_)
+            inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
+:
+            fCopier_ (from.fCopier_)
+            , fSharedImpl_ (from.fSharedImpl_)
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from)
-                : fCopier_ (from.fCopier_)
-                , fSharedImpl_ (std::move (from.fSharedImpl_))
+            inline  SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
+:
+            fCopier_ (from.fCopier_)
+            , fSharedImpl_ (std::move (from.fSharedImpl_))
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const copier_type& copier)
-                : fCopier_ (copier)
-                , fSharedImpl_ (from)
+            inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const copier_type& copier) noexcept
+:
+            fCopier_ (copier)
+            , fSharedImpl_ (from)
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const copier_type& copier)
-                : fCopier_ (copier)
-                , fSharedImpl_ (std::move (from))
+            inline  SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const copier_type&& copier) noexcept
+:
+            fCopier_ (move (copier))
+            , fSharedImpl_ (move (from))
             {
             }
             template    <typename TRAITS>

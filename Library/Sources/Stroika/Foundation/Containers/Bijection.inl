@@ -27,7 +27,7 @@ namespace   Stroika {
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
+                : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
+                : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
@@ -48,7 +48,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
+                : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
@@ -57,7 +57,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
+                : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);

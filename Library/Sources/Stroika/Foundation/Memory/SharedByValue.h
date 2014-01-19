@@ -51,9 +51,9 @@ namespace   Stroika {
             struct  SharedByValue_CopyByFunction {
 #if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
                 static  SHARED_IMLP  DefaultElementCopier_ (const T& t);
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_);
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_) noexcept;
 #else
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); });
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); }) noexcept;
 #endif
                 nonvirtual  SHARED_IMLP  Copy (const T& t) const;
                 SHARED_IMLP      (*fCopier) (const T&);
@@ -133,12 +133,12 @@ namespace   Stroika {
                  *  pointer will be wrapped in a shared_ptr (so it better not be already), and the SharedByValue()
                  *  will take ownership of the lifetime of that pointer.
                  */
-                SharedByValue ();
-                SharedByValue (nullptr_t n);
-                SharedByValue (const SharedByValue<TRAITS>& from);
-                SharedByValue (SharedByValue<TRAITS>&& from);
-                explicit SharedByValue (const shared_ptr_type& from, const copier_type& copier = copier_type ());
-                explicit SharedByValue (shared_ptr_type&&  from, const copier_type& copier = copier_type ());
+                SharedByValue () noexcept;
+                SharedByValue (nullptr_t n) noexcept;
+                SharedByValue (const SharedByValue<TRAITS>& from) noexcept;
+                SharedByValue (SharedByValue<TRAITS>&& from) noexcept;
+                explicit SharedByValue (const shared_ptr_type& from, const copier_type& copier = copier_type ()) noexcept;
+                explicit SharedByValue (shared_ptr_type&&  from, const copier_type&& copier = copier_type ()) noexcept;
                 explicit SharedByValue (element_type* from, const copier_type& copier = copier_type ());
 
             public:

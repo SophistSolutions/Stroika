@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set ()
-                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -33,14 +33,14 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const std::initializer_list<T>& src)
-                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const std::set<T>& src)
-                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
@@ -48,7 +48,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
@@ -63,7 +63,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);

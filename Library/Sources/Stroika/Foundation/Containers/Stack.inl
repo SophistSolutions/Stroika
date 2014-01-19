@@ -23,7 +23,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Stack<T, TRAITS>::Stack ()
-                : inherited (static_cast<const inherited&> (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -36,7 +36,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Stack<T, TRAITS>::Stack (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
@@ -52,7 +52,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Stack<T, TRAITS>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();

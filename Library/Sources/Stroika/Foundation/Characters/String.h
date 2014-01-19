@@ -327,8 +327,8 @@ namespace   Stroika {
                 String (const wchar_t* from, const wchar_t* to);
                 String (const Character* from, const Character* to);
                 String (const std::wstring& r);
-                String (const String& from);
-                String (String&& from);
+                String (const String& from) noexcept;
+                String (String&& from) noexcept;
                 ~String ();
 
             protected:

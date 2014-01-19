@@ -21,13 +21,13 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet ()
-                : inherited (static_cast<const inherited&> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet (const SortedSet<T, TRAITS>& ss)
-                : inherited (static_cast<const inherited&> (ss))
+            inline  SortedSet<T, TRAITS>::SortedSet (const SortedSet<T, TRAITS>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
             }
             template    <typename T, typename TRAITS>
@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const std::initializer_list<T>& s)
-                : inherited (static_cast<const inherited&> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);
@@ -47,7 +47,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);

@@ -164,25 +164,25 @@ namespace   Stroika {
                 /**
                  *  \brief  Iterable are safely copyable (by value).
                  */
-                Iterable (const Iterable<T>& from);
+                Iterable (const Iterable<T>& from) noexcept;
 
             public:
                 /**
                  *  \brief  move CTOR - clears source
                  */
-                explicit Iterable (Iterable<T>&& from);
+                explicit Iterable (Iterable<T>&& from) noexcept;
 
             protected:
                 /**
                  *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
                  */
-                explicit Iterable (const _SharedPtrIRep& rep);
+                explicit Iterable (const _SharedPtrIRep& rep) noexcept;
 
             protected:
                 /**
                  *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
                  */
-                explicit Iterable (_SharedPtrIRep&& rep);
+                explicit Iterable (_SharedPtrIRep&& rep) noexcept;
 
             public:
                 ~Iterable ();

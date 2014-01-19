@@ -50,12 +50,14 @@ namespace   Stroika {
             ************************************* String ***********************************
             ********************************************************************************
             */
-            inline  String::String (const String& from)
-                : inherited (from)
+            inline  String::String (const String& from) noexcept
+:
+            inherited (from)
             {
             }
-            inline  String::String (String&& from)
-                : inherited (std::move (from))
+            inline  String::String (String&& from) noexcept
+:
+            inherited (std::move (from))
             {
             }
             inline  String& String::operator= (const String& newString)

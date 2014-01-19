@@ -21,19 +21,19 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque ()
-                : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const Deque<T, TRAITS>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (static_cast < const inherited&& > (src))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const std::initializer_list<T>& d)
-                : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAllToTail (d);
@@ -41,7 +41,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAllToTail (src);
@@ -56,7 +56,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Deque<T, TRAITS>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAllToTail (start, end);

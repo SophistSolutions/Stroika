@@ -21,12 +21,12 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedCollection<T, TRAITS>::SortedCollection ()
-                : inherited (static_cast<const inherited&> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
+                : inherited (static_cast < const inherited&& > (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& sb)
-                : inherited (static_cast<const inherited&> (sb))
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src)
+                : inherited (static_cast < const inherited&& > (src))
             {
             }
             template    <typename T, typename TRAITS>
@@ -37,19 +37,19 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const std::initializer_list<T>& sb)
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const std::initializer_list<T>& src)
                 : inherited (static_cast<const inherited&> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                this->AddAll (sb);
+                this->AddAll (src);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_T& s)
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                this->AddAll (s);
+                this->AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  SortedCollection<T, TRAITS>&   SortedCollection<T, TRAITS>::operator= (const SortedCollection<T, TRAITS>& rhs)
