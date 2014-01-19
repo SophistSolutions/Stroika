@@ -133,7 +133,7 @@ namespace   Stroika {
             public:
 #endif
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             public:
                 Tally ();
