@@ -64,6 +64,15 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAllToTail (start, end);
             }
+#if     qDebug
+            template    <typename T, typename TRAITS>
+            Queue<T, TRAITS>::~Queue ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline  const typename  Queue<T, TRAITS>::_IRep&    Queue<T, TRAITS>::_GetRep () const
             {

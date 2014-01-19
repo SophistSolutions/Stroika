@@ -61,6 +61,9 @@ namespace   Stroika {
                     virtual T                   Head () const override;
                     virtual Memory::Optional<T> HeadIf () const override;
                     virtual void                RemoveAll () override;
+#if     qDebug
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                 private:
                     typedef Private::PatchingDataStructures::Array<T>             DataStructureImplType_;
@@ -199,6 +202,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
+#if     qDebug
+                template    <typename T, typename TRAITS>
+                void    Queue_Array<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

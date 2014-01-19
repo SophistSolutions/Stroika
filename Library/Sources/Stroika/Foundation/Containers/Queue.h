@@ -54,6 +54,7 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+            using   Traversal::IteratorOwnerID;
 
 
             /**
@@ -142,6 +143,11 @@ namespace   Stroika {
 
             protected:
                 explicit Queue (const _SharedPtrIRep& rep);
+
+#if     qDebug
+            public:
+                ~Queue ();
+#endif
 
             public:
                 nonvirtual  Queue<T, TRAITS>& operator= (const Queue<T, TRAITS>& rhs);
@@ -272,12 +278,15 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void                AddTail (T item)                        =   0;
-                virtual T                   RemoveHead ()                           =   0;
-                virtual Memory::Optional<T> RemoveHeadIf ()                         =   0;
-                virtual T                   Head () const                           =   0;
-                virtual Memory::Optional<T> HeadIf () const                         =   0;
-                virtual void                RemoveAll ()                            =   0;
+                virtual void                AddTail (T item)                                                =   0;
+                virtual T                   RemoveHead ()                                                   =   0;
+                virtual Memory::Optional<T> RemoveHeadIf ()                                                 =   0;
+                virtual T                   Head () const                                                   =   0;
+                virtual Memory::Optional<T> HeadIf () const                                                 =   0;
+                virtual void                RemoveAll ()                                                    =   0;
+#if     qDebug
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+#endif
             };
 
 
