@@ -62,6 +62,15 @@ namespace   Stroika {
             {
                 AppendAll (start, end);
             }
+#if     qDebug
+            template    <typename T, typename TRAITS>
+            Sequence<T, TRAITS>::~Sequence ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline  Sequence<T, TRAITS>& Sequence<T, TRAITS>::operator= (const Sequence<T, TRAITS>& rhs)
             {

@@ -63,6 +63,9 @@ namespace   Stroika {
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
                     virtual void    Insert (size_t at, const T* from, const T* to) override;
                     virtual void    Remove (size_t from, size_t to) override;
+#if     qDebug
+                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
@@ -224,6 +227,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
+#if     qDebug
+                template    <typename T, typename TRAITS>
+                void    Sequence_stdvector<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

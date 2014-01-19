@@ -92,6 +92,7 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+            using   Traversal::IteratorOwnerID;
 
 
             constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
@@ -241,6 +242,11 @@ namespace   Stroika {
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);
+
+#if     qDebug
+            public:
+                ~Sequence ();
+#endif
 
             public:
                 /**
@@ -486,14 +492,17 @@ namespace   Stroika {
 
             public:
                 // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
-                virtual T       GetAt (size_t i) const                              =   0;
-                virtual void    SetAt (size_t i, const T& item)                     =   0;
-                virtual size_t  IndexOf (const Iterator<T>& i) const                =   0;
-                virtual void    Remove (const Iterator<T>& i)                       =   0;
-                virtual void    Update (const Iterator<T>& i, T newValue)           =   0;
+                virtual T       GetAt (size_t i) const                                          =   0;
+                virtual void    SetAt (size_t i, const T& item)                                 =   0;
+                virtual size_t  IndexOf (const Iterator<T>& i) const                            =   0;
+                virtual void    Remove (const Iterator<T>& i)                                   =   0;
+                virtual void    Update (const Iterator<T>& i, T newValue)                       =   0;
                 // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
-                virtual void    Insert (size_t at, const T* from, const T* to)      =   0;
-                virtual void    Remove (size_t from, size_t to)                     =   0;
+                virtual void    Insert (size_t at, const T* from, const T* to)                  =   0;
+                virtual void    Remove (size_t from, size_t to)                                 =   0;
+#if     qDebug
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+#endif
             };
 
 
