@@ -25,7 +25,7 @@ namespace   Stroika {
                     inline  void    Array<T, TRAITS>::Invariant () const
                     {
 #if     qDebug
-                        Invariant_ ();
+                        _Invariant ();
 #endif
                     }
                     template      <typename  T, typename TRAITS>
@@ -285,7 +285,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    Array<T, TRAITS>::Invariant_ () const
+                    void    Array<T, TRAITS>::_Invariant () const
                     {
                         Assert ((_fSlotsAllocated == 0) == (_fItems == nullptr));     // always free iff slots alloced = 0
                         Assert (_fLength <= _fSlotsAllocated);
@@ -395,23 +395,6 @@ namespace   Stroika {
                     ***************** Array<T,TRAITS>::_ArrayIteratorBase **************************
                     ********************************************************************************
                     */
-#if     qDebug
-                    template      <typename  T, typename TRAITS>
-                    void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant_ () const
-                    {
-                        AssertNotNull (_fData);
-                        Assert (_fStart == _fData->_fItems);
-                        Assert (size_t (_fEnd - _fStart) == _fData->GetLength ());
-                        Assert ((_fCurrent >= _fStart) and (_fCurrent <= _fEnd));   // ANSI C requires this is always TRUE
-                    }
-#endif
-                    template      <typename  T, typename TRAITS>
-                    inline  void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant () const
-                    {
-#if     qDebug
-                        Invariant_ ();
-#endif
-                    }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>* data) :
 #if     qDebug
@@ -431,7 +414,7 @@ namespace   Stroika {
                          */
                     }
                     template      <typename  T, typename TRAITS>
-                    bool    Array<T, TRAITS>::_ArrayIteratorBase::More (T* current, bool advance)
+                    inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::More (T* current, bool advance)
                     {
                         if (advance) {
                             this->_fSuppressMore = false;
@@ -443,8 +426,7 @@ namespace   Stroika {
                             }
                             return true;
                         }
-
-                        return (false);
+                        return false;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::Done () const
@@ -468,6 +450,23 @@ namespace   Stroika {
                         EnsureNotNull (_fCurrent);
                         return *_fCurrent;
                     }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant () const
+                    {
+#if     qDebug
+                        _Invariant ();
+#endif
+                    }
+#if     qDebug
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
+                    {
+                        AssertNotNull (_fData);
+                        Assert (_fStart == _fData->_fItems);
+                        Assert (size_t (_fEnd - _fStart) == _fData->GetLength ());
+                        Assert ((_fCurrent >= _fStart) and (_fCurrent <= _fEnd));   // ANSI C requires this is always TRUE
+                    }
+#endif
 
 
                     /*
@@ -492,7 +491,7 @@ namespace   Stroika {
                                 this->_fCurrent++;
                             }
                         }
-                        return (inherited::More (current, advance));
+                        return inherited::More (current, advance);
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)

@@ -39,7 +39,18 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::~LinkedList ()
                     {
-                        Require (fActiveIteratorsListHead_ == nullptr);
+                        Require (not HasActiveIterators ()); // cannot destroy container with active iterators
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& rhs)
+                    {
+                        /*
+                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
+                         * If this is to be supported at some future date, well need to work on our patching.
+                         */
+                        Assert (not (HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
+                        inherited::operator= (rhs);
+                        return *this;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::Invariant () const
@@ -90,17 +101,6 @@ namespace   Stroika {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
-                    }
-                    template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& rhs)
-                    {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
-                        inherited::operator= (rhs);
-                        return *this;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::Prepend (T item)
@@ -155,8 +155,7 @@ namespace   Stroika {
                          */
                         Invariant ();
                         Memory::Optional<T> current;
-                        // NB: UnpatchedForwardIterator OK because we own lock and return after first mod
-                        for (UnpatchedForwardIterator it (this); it.More (&current, true), current.IsPresent (); ) {
+                        for (ForwardIterator it (Traversal::kUnknownIteratorOwnerID, this); it.More (&current, true), current.IsPresent (); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                 this->RemoveAt (it);
                                 break;
@@ -213,9 +212,16 @@ namespace   Stroika {
 
                         Invariant ();
                     }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    {
+#if     qDebug
+                        AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
+#endif
+                    }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
                     {
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
                             Assert (v->fOwnerID != oBeingDeleted);
@@ -341,6 +347,11 @@ namespace   Stroika {
 
                         this->Invariant ();
                         return *this;
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  IteratorOwnerID LinkedList<T, TRAITS>::ForwardIterator::GetOwner () const
+                    {
+                        return fOwnerID;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)

@@ -105,19 +105,18 @@ namespace   Stroika {
                     protected:
                         ForwardIterator*    fActiveIteratorsListHead_;
 
-                    private:
-                        friend  class   ForwardIterator;
-
-#if     qDebug
                     public:
                         nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-#endif
 
 #if     qDebug
                     protected:
+                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted);
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
 #endif
+
+                    private:
+                        friend  class   ForwardIterator;
                     };
 
 
@@ -143,13 +142,14 @@ namespace   Stroika {
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        typedef typename DataStructures::LinkedList<T, TRAITS>::Link    Link;
-                        typedef PatchingDataStructures::LinkedList<T, TRAITS>           ContainerType;
+                        using   ContainerType   =       PatchingDataStructures::LinkedList<T, TRAITS>;
+                        using   Link            =       typename ContainerType::Link;
 
                     private:
                         IteratorOwnerID fOwnerID;
+
                     public:
-                        IteratorOwnerID GetOwner () const { return fOwnerID; }
+                        nonvirtual  IteratorOwnerID GetOwner () const;
 
                     public:
                         /*
@@ -172,12 +172,13 @@ namespace   Stroika {
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 
-                    private:
-                        friend  class   LinkedList<T, TRAITS>;
 #if     qDebug
                     protected:
                         virtual void    Invariant_ () const override;
 #endif
+
+                    private:
+                        friend  class   LinkedList<T, TRAITS>;
                     };
 
 

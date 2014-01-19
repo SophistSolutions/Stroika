@@ -39,7 +39,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::~DoublyLinkedList ()
                     {
-                        Require (fActiveIteratorsListHead_ == nullptr);
+                        Require (not HasActiveIterators ()); // cannot destroy container with active iterators
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::Invariant () const
@@ -324,6 +324,11 @@ namespace   Stroika {
 
                         this->Invariant ();
                         return *this;
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  IteratorOwnerID DoublyLinkedList<T, TRAITS>::ForwardIterator::GetOwner () const
+                    {
+                        return fOwnerID;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)

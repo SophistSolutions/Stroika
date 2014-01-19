@@ -26,6 +26,9 @@
  *          some methods only called by array impls, and some only by returing iteratore on erase impls, etc,
  *          or perhaps with template specialization.
  *
+ *  @todo   Consider if this patching code - could be used to wrap/apply (most functionality) to
+ *          All the contianers? As a generic attempt at a patching layer?
+ *
  */
 
 
@@ -94,15 +97,15 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
-#if     qDebug
                     public:
                         nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-#endif
 
                     public:
                         nonvirtual  void    Invariant () const;
+
 #if     qDebug
                     protected:
+                        nonvirtual  void    _AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
                         nonvirtual  void    _Invariant () const;
 #endif
 
@@ -124,10 +127,10 @@ namespace   Stroika {
                         using   inherited   =   typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
 
                     public:
-                        typedef typename inherited::value_type value_type;
+                        using   value_type  =   typename inherited::value_type;
 
                     public:
-                        typedef Foundation::Containers::Private::PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>   CONTAINER_TYPE;
+                        using   CONTAINER_TYPE  =    Foundation::Containers::Private::PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data);
@@ -159,8 +162,9 @@ namespace   Stroika {
 
                     private:
                         IteratorOwnerID fOwnerID;
+
                     public:
-                        IteratorOwnerID GetOwner () const { return fOwnerID; }
+                        nonvirtual  IteratorOwnerID GetOwner () const;
 
                     public:
                         nonvirtual  void    Invariant () const;

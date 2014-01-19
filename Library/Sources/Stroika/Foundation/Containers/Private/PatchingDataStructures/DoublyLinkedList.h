@@ -13,7 +13,6 @@
 
 
 
-
 /*
  *
  * TODO:
@@ -138,19 +137,22 @@ namespace   Stroika {
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
+
+                    public:
                         ~ForwardIterator ();
 
                     public:
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
-                        typedef PatchingDataStructures::DoublyLinkedList<T, TRAITS>           ContainerType;
+                        using   ContainerType   =   PatchingDataStructures::DoublyLinkedList<T, TRAITS>;
+                        using   Link            =   typename ContainerType::Link;
 
                     private:
                         IteratorOwnerID fOwnerID;
+
                     public:
-                        IteratorOwnerID GetOwner () const { return fOwnerID; }
+                        nonvirtual  IteratorOwnerID GetOwner () const;
 
                     public:
                         nonvirtual  void    PatchAdd (const Link* link);        //  call after add

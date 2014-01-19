@@ -104,15 +104,13 @@ namespace   Stroika {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
-#if     qDebug
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            Assert (ai->fOwnerID != oBeingDeleted);
-                        }
-                    }
+#if     qDebug
+                        _AssertNoIteratorsReferenceOwner (oBeingDeleted);
 #endif
+                    }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                     {
@@ -121,6 +119,13 @@ namespace   Stroika {
 #endif
                     }
 #if     qDebug
+                    template    <typename STL_CONTAINER_OF_T>
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::_AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    {
+                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                            Assert (ai->fOwnerID != oBeingDeleted);
+                        }
+                    }
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
                     {
@@ -234,6 +239,11 @@ namespace   Stroika {
                             fSuppressMore = false;
                         }
                         inherited::More (result, advance);
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
+                    inline  IteratorOwnerID STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetOwner () const
+                    {
+                        return fOwnerID;
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()

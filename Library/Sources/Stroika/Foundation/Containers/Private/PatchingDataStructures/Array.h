@@ -106,19 +106,12 @@ namespace   Stroika {
                         _ArrayIteratorBase*     fIterators_;
 
                     public:
-                        /*
-                         *  Check Invariants for this class, and all the iterators we own.
-                         */
-                        nonvirtual  void    Invariant () const;
+                        nonvirtual  void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
 
 #if     qDebug
-                    public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-#endif
-
-#if     qDebug
-                        virtual void    Invariant_ () const override;
-                        nonvirtual  void    InvariantOnIterators_ () const;
+                    protected:
+                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted);
+                        virtual     void    _Invariant () const override;
 #endif
                     };
 
@@ -143,14 +136,10 @@ namespace   Stroika {
                         nonvirtual  _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs);
 
                     public:
-                        nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
+                        nonvirtual  IteratorOwnerID GetOwner () const;
 
                     private:
                         IteratorOwnerID fOwnerID;
-                    public:
-                        IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:
                         nonvirtual  void    PatchAdd (size_t index);        //  call after add
@@ -158,16 +147,18 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemoveAll ();              //  call after removeall
                         nonvirtual  void    PatchRealloc ();                //  call after realloc could have happened
 
-                    protected:
-                        const Array<T, TRAITS>*   fData;
-                        _ArrayIteratorBase*             fNext;
-
 #if     qDebug
-                        virtual void    Invariant_ () const override;
+                    protected:
+                        virtual void    _Invariant () const override;
 #endif
+
+                    protected:
+                        const Array<T, TRAITS>*     fData;
+                        _ArrayIteratorBase*         fNext;
 
                         virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
 
+                    private:
                         friend  class   Array<T, TRAITS>;
                     };
 
@@ -190,10 +181,7 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance)
-                        {
-                            return More (static_cast<T*> (nullptr), advance);
-                        }
+                        nonvirtual  bool    More (nullptr_t, bool advance);
 
                     protected:
                         virtual void    PatchRemoveCurrent () override;
@@ -218,10 +206,7 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance)
-                        {
-                            return More (static_cast<T*> (nullptr), advance);
-                        }
+                        nonvirtual  bool    More (nullptr_t, bool advance);
 
                     protected:
                         virtual void    PatchRemoveCurrent () override;

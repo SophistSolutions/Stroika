@@ -158,7 +158,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
-                    void    LinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
+                    inline  void    LinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         Invariant ();

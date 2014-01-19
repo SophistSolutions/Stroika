@@ -1,6 +1,15 @@
 TODO (Foundation::Containers)
 
 
+	(o)		In PatchingDataStructures - we do more or less the same thing on top of each basic
+			cotnainer. Especially code to track iterators.
+
+			Try writing  a GENERIC helper layer - that can be used to share code among these
+			various Patching implemenations.
+
+			Do that BEFORE trying to incorporate SkipLists and other sterl stuff, as it will make doing
+			so easier.
+
 	(o)		Performance issue - Sequence<T>::RemoveAll() and or any other container RemoveAll() has 
 			the effect of FIRST cloning (if refcount != 1) and THEN clearing all the copied data. This is a waste.
 			If the refcount is non-zero, its more efficeint to just make a new instance of the appropriate type without copying the data.

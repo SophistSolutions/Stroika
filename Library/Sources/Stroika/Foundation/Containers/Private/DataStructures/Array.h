@@ -191,13 +191,13 @@ namespace   Stroika {
 
 #if     qDebug
                     protected:
-                        virtual void    Invariant_ () const;
+                        virtual void    _Invariant () const;
 #endif
 
                     protected:
-                        size_t          _fLength;            // #items advertised/constructed
-                        size_t          _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
-                        T*              _fItems;
+                        size_t      _fLength;            // #items advertised/constructed
+                        size_t      _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
+                        T*          _fItems;
                     };
 
 
@@ -230,6 +230,11 @@ namespace   Stroika {
 
 #if     qDebug
                     protected:
+                        virtual void    _Invariant () const;
+#endif
+
+#if     qDebug
+                    protected:
                         const Array<T, TRAITS>*     _fData;
 #endif
                     protected:
@@ -238,10 +243,6 @@ namespace   Stroika {
                         const T*            _fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
                         bool                _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
-#if     qDebug
-                    protected:
-                        virtual void    Invariant_ () const;
-#endif
                     };
 
 
