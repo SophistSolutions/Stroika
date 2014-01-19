@@ -183,9 +183,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Set_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
-                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                        // safe to use UnpatchedForwardIterator cuz locked and no updates
+                        for (typename DataStructureImplType_::UnpatchedForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 return;
                             }

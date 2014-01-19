@@ -131,7 +131,7 @@ namespace   Stroika {
                         Array ();
                         Array (const Array<T, TRAITS>& from);
 
-					public:
+                    public:
                         ~Array ();
 
                     public:
