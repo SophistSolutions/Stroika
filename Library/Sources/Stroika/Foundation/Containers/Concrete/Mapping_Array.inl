@@ -64,6 +64,9 @@ namespace   Stroika {
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
                     virtual void                Remove (KEY_TYPE key) override;
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
+#if     qDebug
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+#endif
 
                 public:
                     using   KeyEqualsCompareFunctionType        =   typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType;
@@ -222,6 +225,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
+#if     qDebug
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+#endif
 
 
                 /*

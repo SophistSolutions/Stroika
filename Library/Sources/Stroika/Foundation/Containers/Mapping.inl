@@ -79,6 +79,15 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
+#if     qDebug
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::~Mapping ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  const typename  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep () const
             {

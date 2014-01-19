@@ -49,6 +49,7 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+            using   Traversal::IteratorOwnerID;
 
             using   Common::KeyValuePair;
 
@@ -167,6 +168,10 @@ namespace   Stroika {
             protected:
                 explicit Mapping (const _SharedPtrIRep& rep);
 
+#if     qDebug
+            public:
+                ~Mapping ();
+#endif
             public:
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
 
@@ -362,6 +367,9 @@ namespace   Stroika {
                 virtual  void               Add (KeyType key, ValueType newElt)                             =   0;
                 virtual  void               Remove (KeyType key)                                            =   0;
                 virtual  void               Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)         =   0;
+#if     qDebug
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+#endif
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
