@@ -20,6 +20,8 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a18">v2.0a18x</a><br/>2014-???</td>
 <td>
 <ul>
+  <li>Assorted (but still incomplete) code cleanups to Container DataStructure (esp patching) shared code.</li>
+  <li>Many refinements to SharedByValue code, including variadic template use to forward extra paraemters to Copy, and more sophisticated use of r-value references and noexcept.</li>
 <li>Started adding ...Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
 <li>Lots of cleanups of threads and signal handling code. Needs more mileage/testing before ready for wider use/release. 
 Improved supression of abort. Improved impl and docs on 'alertable' stuff for WinDoze. thread_local with std::atomic/volatile (testing).</li>
