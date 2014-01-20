@@ -117,10 +117,10 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template      <typename  T, typename TRAITS>
-                    class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator, public LinkedList<T, TRAITS>::PatchableIteratorMinIn {
+                    class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMinIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename LinkedList<T, TRAITS>::PatchableIteratorMinIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMinIn;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
