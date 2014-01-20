@@ -52,7 +52,7 @@ namespace   Stroika {
                     inline  void    LinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
                     {
                         RequireNotNull (link);
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             ai->PatchAdd (link);
                         }
                     }
@@ -60,21 +60,21 @@ namespace   Stroika {
                     inline  void    LinkedList<T, TRAITS>::PatchViewsRemove (const Link* link) const
                     {
                         RequireNotNull (link);
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             ai->PatchRemove (link);
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::PatchViewsRemoveAll () const
                     {
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             ai->PatchRemoveAll ();
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         }
                     }
