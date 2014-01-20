@@ -25,19 +25,12 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper ()
                         : inherited ()
-                        , fActiveIteratorsListHead_ (nullptr)
                     {
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from)
                         : inherited (from)
-                        , fActiveIteratorsListHead_ (nullptr)
                     {
-                    }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::~STLContainerWrapper ()
-                    {
-                        Require (not HasActiveIterators ()); // cannot destroy container with active iterators
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>&   STLContainerWrapper<STL_CONTAINER_OF_T>::operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs)
@@ -46,14 +39,9 @@ namespace   Stroika {
                          * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
-                        Require (not HasActiveIterators ()); // cannot overwrite container with active iterators
+                        Require (not this->HasActiveIterators ()); // cannot overwrite container with active iterators
                         inherited::operator= (rhs);
                         return *this;
-                    }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::HasActiveIterators () const
-                    {
-                        return fActiveIteratorsListHead_ != nullptr;
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename INSERT_VALUE_TYPE>
@@ -85,7 +73,8 @@ namespace   Stroika {
                     {
                         Invariant ();
                         this->clear ();
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                        auto foo = this->GetFirstActiveIterator<ForwardIterator> ();
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> ();  ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass2 (this->end ());
                         }
                         Invariant ();
@@ -93,7 +82,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         }
                     }
@@ -105,13 +94,6 @@ namespace   Stroika {
                         }
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
-                    {
-#if     qDebug
-                        _AssertNoIteratorsReferenceOwner (oBeingDeleted);
-#endif
-                    }
-                    template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
                     {
 #if     qDebug
@@ -120,16 +102,9 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::_AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
-                    {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            Assert (ai->fOwnerID != oBeingDeleted);
-                        }
-                    }
-                    template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
                     {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->Invariant ();
                         }
                     }
@@ -143,81 +118,38 @@ namespace   Stroika {
                      */
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
-                        : inherited (data)
-                        , fOwnerID (ownerID)
+                        : inherited_DataStructure (data)
+                        , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data), ownerID)
                         , fData (data)
-                        , fNextActiveIterator (data->fActiveIteratorsListHead_)
                         , fSuppressMore (true)
                     {
                         RequireNotNull (data);
-                        fData->fActiveIteratorsListHead_ = this;
+                        this->Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-                        : inherited (from)
-                        , fOwnerID (from.fOwnerID)
+                        : inherited_DataStructure (from)
+                        , inherited_PatchHelper (from)
                         , fData (from.fData)
-                        , fNextActiveIterator (from.fData->fActiveIteratorsListHead_)
                         , fSuppressMore (from.fSuppressMore)
                     {
                         RequireNotNull (fData);
-                        fData->fActiveIteratorsListHead_ = this;
+                        this->Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
                     {
                         AssertNotNull (fData);
-                        if (fData->fActiveIteratorsListHead_ == this) {
-                            fData->fActiveIteratorsListHead_ = fNextActiveIterator;
-                        }
-                        else {
-                            auto v = fData->fActiveIteratorsListHead_;
-                            for (; v->fNextActiveIterator != this; v = v->fNextActiveIterator) {
-                                AssertNotNull (v);
-                                AssertNotNull (v->fNextActiveIterator);
-                            }
-                            AssertNotNull (v);
-                            Assert (v->fNextActiveIterator == this);
-                            v->fNextActiveIterator = fNextActiveIterator;
-                        }
+                        this->Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     typename  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
-                        /*
-                         *      If the fData field has not changed, then we can leave alone our iterator linkage.
-                         *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
-                         */
-                        if (fData != rhs.fData) {
-                            AssertNotNull (fData);
-                            AssertNotNull (rhs.fData);
-
-                            /*
-                             * Remove from old.
-                             */
-                            if (fData->fIterators == this) {
-                                fData->fIterators = fNextActiveIterator;
-                            }
-                            else {
-                                auto v = fData->fIterators;
-                                for (; v->fNextActiveIterator != this; v = v->fNextActiveIterator) {
-                                    AssertNotNull (v);
-                                    AssertNotNull (v->fNextActiveIterator);
-                                }
-                                AssertNotNull (v);
-                                Assert (v->fNextActiveIterator == this);
-                                v->fNextActiveIterator = fNextActiveIterator;
-                            }
-
-                            /*
-                             * Add to new.
-                             */
-                            fOwnerID = rhs.fOwnerID;
-                            fData = rhs.fData;
-                            fNextActiveIterator = rhs.fData->fIterators;
-                            fData->fIterators = this;
-                            inherited::operator= (rhs);
-                        }
+                        this->Invariant ();
+                        inherited_DataStructure::operator= (rhs);
+                        inherited_PatchHelper::operator= (rhs);
+                        fData = rhs.fData;
+                        this->Invariant ();
                         return *this;
                     }
                     template    <typename STL_CONTAINER_OF_T>
@@ -228,7 +160,7 @@ namespace   Stroika {
                             advance = false;
                             fSuppressMore = false;
                         }
-                        return inherited::More (current, advance);
+                        return inherited_DataStructure::More (current, advance);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename VALUE_TYPE>
@@ -238,12 +170,7 @@ namespace   Stroika {
                             advance = false;
                             fSuppressMore = false;
                         }
-                        inherited::More (result, advance);
-                    }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  IteratorOwnerID STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetOwner () const
-                    {
-                        return fOwnerID;
+                        inherited_DataStructure::More (result, advance);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()

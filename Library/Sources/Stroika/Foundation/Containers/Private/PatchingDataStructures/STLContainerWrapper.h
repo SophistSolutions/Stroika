@@ -8,6 +8,8 @@
 
 #include    "../DataStructures/STLContainerWrapper.h"
 
+#include    "PatchableContainerHelper.h"
+
 
 
 /**
@@ -27,7 +29,7 @@
  *          or perhaps with template specialization.
  *
  *  @todo   Consider if this patching code - could be used to wrap/apply (most functionality) to
- *          All the contianers? As a generic attempt at a patching layer?
+ *          All the contianers? Migrate this 2 stage patch strategy to PatchableContainerHelper???
  *
  */
 
@@ -41,25 +43,28 @@ namespace   Stroika {
 
 
                     /**
-                     *  subclass of Foundation::Containers::STLContainerWrapper to support patching of owned iterators.
+                     *  Patching Support:
                      *
-                     *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
+                     *      This class wraps a basic container (in this case DataStructures::LinkedList)
+					 *	and adds in patching support (tracking a list of iterators - and managing thier
+					 *	patching when appropriately wrapped changes are made to the data structure container.
+					 *
+					 *		This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+					 *
+                     *		This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> {
+                    class   STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>> {
                     private:
-                        using   inherited   =   Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>;
 
                     public:
-                        typedef typename inherited::value_type value_type;
+                        using   value_type  =   typename inherited::value_type;
 
                     public:
                         STLContainerWrapper ();
                         STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from);
-
-                    public:
-                        ~STLContainerWrapper ();
 
                     public:
                         nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs);
@@ -69,12 +74,6 @@ namespace   Stroika {
 
                     public:
                         using   UnpatchedForwardIterator = typename inherited::ForwardIterator;
-
-                    public:
-                        /**
-                         * Are there any iterators to be patched?
-                         */
-                        nonvirtual  bool    HasActiveIterators () const;
 
                     public:
                         /*
@@ -98,19 +97,12 @@ namespace   Stroika {
                         static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-
-                    public:
                         nonvirtual  void    Invariant () const;
 
 #if     qDebug
                     protected:
-                        nonvirtual  void    _AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
                         nonvirtual  void    _Invariant () const;
 #endif
-
-                    private:
-                        ForwardIterator*   fActiveIteratorsListHead_;
 
                     private:
                         friend  class   ForwardIterator;
@@ -122,15 +114,18 @@ namespace   Stroika {
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
+                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
+                        : public DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
+                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMinIn {
                     private:
-                        using   inherited   =   typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
+                        using   inherited_DataStructure =   typename DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMinIn;
 
                     public:
                         using   value_type  =   typename inherited::value_type;
 
                     public:
-                        using   CONTAINER_TYPE  =    Foundation::Containers::Private::PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>;
+                        using   CONTAINER_TYPE  =    STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data);
@@ -160,12 +155,6 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
-                    private:
-                        IteratorOwnerID fOwnerID;
-
-                    public:
-                        nonvirtual  IteratorOwnerID GetOwner () const;
-
                     public:
                         nonvirtual  void    Invariant () const;
 #if     qDebug
@@ -175,7 +164,6 @@ namespace   Stroika {
 
                     public:
                         CONTAINER_TYPE*     fData;
-                        ForwardIterator*    fNextActiveIterator;
                         bool                fSuppressMore;  // for removealls
 
                     private:
