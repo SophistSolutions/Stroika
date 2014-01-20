@@ -69,8 +69,8 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (IteratorOwnerID
         }
         DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
-    // @todo - document why nullptr OK as arg to Clone() - has todo with owner tracking stratgy in String code
-    // -- LGP 2014-01-19
+    // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
+    // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
     return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone (nullptr)))));
 }
 

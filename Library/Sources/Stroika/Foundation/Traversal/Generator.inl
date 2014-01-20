@@ -99,8 +99,9 @@ namespace   Stroika {
                             : inherited (context)
                         {
                         }
-                        virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
+                            // For now - generators have no owner, so we ignore forIterableEnvelope
                             return _SharedPtrIRep (new MyIterableRep_ (*this));
                         }
                     };
