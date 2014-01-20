@@ -35,13 +35,11 @@ namespace   Stroika {
                     /*
                      *  Patching Support:
                      *
-                     *      Here we provide Patching Versions of each iterator, and for convienience
-                     *  versions of DoublyLinkedList that maintain a list of all Patching iterators.
+                     *      This class wraps a basic container (in this case DataStructures::DoublyLinkedList)
+                     *  and adds in patching support (tracking a list of iterators - and managing thier
+                     *  patching when appropriately wrapped changes are made to the data structure container.
                      *
-                     *      PatchingDataStructures::DoublyLinkedList<T, TRAITS> is a DoublyLinkedList<T, TRAITS> with the ability to keep track of
-                     *  owned patching iterators. These patching iterators will automatically be
-                     *  adjusted when the link list is adjusted. This is the class of DoublyLinkedList
-                     *  most likely to be used in implementing a concrete container class.
+                     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
                     class   DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>> {

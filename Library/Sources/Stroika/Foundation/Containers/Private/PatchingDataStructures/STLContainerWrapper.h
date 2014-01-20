@@ -46,12 +46,12 @@ namespace   Stroika {
                      *  Patching Support:
                      *
                      *      This class wraps a basic container (in this case DataStructures::LinkedList)
-					 *	and adds in patching support (tracking a list of iterators - and managing thier
-					 *	patching when appropriately wrapped changes are made to the data structure container.
-					 *
-					 *		This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
-					 *
-                     *		This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
+                     *  and adds in patching support (tracking a list of iterators - and managing thier
+                     *  patching when appropriately wrapped changes are made to the data structure container.
+                     *
+                     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+                     *
+                     *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
                      */
                     template    <typename STL_CONTAINER_OF_T>

@@ -36,6 +36,7 @@ namespace   Stroika {
                     inline  LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& rhs)
                     {
                         Invariant ();
+                        Assert (not (this->HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
                         inherited::operator= (rhs);
                         Invariant ();
                         return *this;

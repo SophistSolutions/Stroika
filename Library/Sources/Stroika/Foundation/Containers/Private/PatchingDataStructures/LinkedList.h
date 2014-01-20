@@ -36,13 +36,14 @@ namespace   Stroika {
                     /*
                      *  Patching Support:
                      *
-                     *      Here we provide Patching Versions of each iterator, and for convienience
-                     *  versions of LinkedList that maintain a list of all Patching iterators.
+                     *      This class wraps a basic container (in this case DataStructures::LinkedList)
+                     *  and adds in patching support (tracking a list of iterators - and managing thier
+                     *  patching when appropriately wrapped changes are made to the data structure container.
                      *
-                     *      LinkedList<T, TRAITS> is a LinkedList<T,TRAITS> with the ability to keep track of
-                     *  owned patching iterators. These patching iterators will automatically be
-                     *  adjusted when the link list is adjusted. This is the class of LinkedList
-                     *  most likely to be used in implementing a concrete container class.
+                     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+                     *
+                     *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
+                     *  DOES provide 'deletion'/update safety.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
                     class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>> {
@@ -117,7 +118,9 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template      <typename  T, typename TRAITS>
-                    class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMinIn {
+                    class   LinkedList<T, TRAITS>::ForwardIterator
+                        : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator
+                        , public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMinIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
                         using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMinIn;
