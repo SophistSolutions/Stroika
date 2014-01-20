@@ -73,7 +73,6 @@ namespace   Stroika {
                     {
                         Invariant ();
                         this->clear ();
-                        auto foo = this->GetFirstActiveIterator<ForwardIterator> ();
                         for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> ();  ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass2 (this->end ());
                         }
