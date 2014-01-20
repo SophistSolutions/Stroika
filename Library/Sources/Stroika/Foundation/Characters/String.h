@@ -112,14 +112,6 @@
  *
  *                  CLOSELY RELATED - MAYBE DO part of above (no check CTOR except assert).
  *
- *      @todo   We want String : public Iterable<Character>. Verify easy and has no overhead!
- *              Document we chose NOT to have String : Sequence<Character> - because of issue of assignemtn to
- *              members? Maybe not good enough reason? But would muck up API more. Maybe revisit that?
- *
- *              OBSOLETE RELATED TODO
- *                  Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
- *                  Should be able to do for (Character c : s) {...}.
- *
  *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
  *              functions returning a new string. Has performance implications, but also usability.
  *              Not sure what way to go (probably do it), but clearly document!!! And docment reasons.
