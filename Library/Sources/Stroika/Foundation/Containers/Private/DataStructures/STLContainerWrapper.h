@@ -23,6 +23,7 @@
  *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
+ *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *
  *      @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy

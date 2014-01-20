@@ -19,6 +19,10 @@
  *
  * TODO:
  *
+ *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
+ *              datastrcutre code and we have it here in the patching code. Note SURE what is better
+ *              probably patching code) - but make them consistent!
+ *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *
  *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
@@ -90,7 +94,7 @@ namespace   Stroika {
 
                     public:
                         /**
-                         *  Efficient.
+                         *  Efficient:      ?? depedns on if I store last link?
                          *
                          *  \req not IsEmpty ()
                          */

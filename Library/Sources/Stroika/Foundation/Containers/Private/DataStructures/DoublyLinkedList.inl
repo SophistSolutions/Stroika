@@ -103,21 +103,21 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  T   DoublyLinkedList<T, TRAITS>::GetFirst () const
                     {
-                        AssertNotNull (_fHead);
+                        RequireNotNull (_fHead);
                         return _fHead->fItem;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  T   DoublyLinkedList<T, TRAITS>::GetLast () const
                     {
+                        RequireNotNull (_fHead);        // cannot call Getlast on empty list
                         // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
                         // maybe irrelevant if we swtich to usting STL list class
-                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
+                        for (const Link* i = _fHead; true; i = i->fNext) {
+                            AssertNotNull (i);
                             if (i->fNext == nullptr) {
                                 return i->fItem;
                             }
                         }
-                        RequireNotReached ();
-                        return *(T*)nullptr;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::Prepend (T item)
@@ -134,7 +134,7 @@ namespace   Stroika {
 
                         Link* victim = _fHead;
                         _fHead = victim->fNext;
-                        delete (victim);
+                        delete victim;
 
                         Invariant ();
                     }
@@ -287,7 +287,7 @@ namespace   Stroika {
                             Assert (prev->fNext == victim);
                             prev->fNext = victim->fNext;
                         }
-                        delete (victim);
+                        delete victim;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
