@@ -23,29 +23,19 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::Array ()
                         : inherited ()
-                        , fIterators_ (nullptr)
                     {
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::Array (const Array<T, TRAITS>& from)
                         : inherited (from)
-                        // Don't copy the list of iterators - would be trouble with backpointers!
-                        // Could clone but that would do no good, since nobody else would have pointers to them
-                        , fIterators_ (nullptr)
                     {
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::~Array ()
                     {
-                        Require (not HasActiveIterators ()); // cannot destroy container with active iterators
                         this->Invariant ();
-                    }
-                    template      <typename  T, typename TRAITS>
-                    inline  bool    Array<T, TRAITS>::HasActiveIterators () const
-                    {
-                        return bool (fIterators_ != nullptr);
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsAdd (size_t index) const
@@ -54,30 +44,30 @@ namespace   Stroika {
                          *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
                          *  depends on things being properly adjusted.
                          */
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            v->PatchRealloc ();
-                            v->PatchAdd (index);
+                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                            ai->PatchRealloc ();
+                            ai->PatchAdd (index);
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRemove (size_t index) const
                     {
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            v->PatchRemove (index);
+                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                            ai->PatchRemove (index);
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRemoveAll () const
                     {
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            v->PatchRemoveAll ();
+                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                            ai->PatchRemoveAll ();
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsRealloc () const
                     {
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            v->PatchRealloc ();
+                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                            ai->PatchRealloc ();
                         }
                     }
                     template      <typename  T, typename TRAITS>
@@ -91,7 +81,7 @@ namespace   Stroika {
                         this->Invariant ();
                         inherited::operator= (rhs);
                         this->Invariant ();
-                        return (*this);
+                        return *this;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
@@ -196,13 +186,6 @@ namespace   Stroika {
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
-                    {
-#if     qDebug
-                        AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
-#endif
-                    }
-                    template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::Invariant () const
                     {
 #if     qDebug
@@ -210,13 +193,6 @@ namespace   Stroika {
 #endif
                     }
 #if     qDebug
-                    template      <typename  T, typename TRAITS>
-                    void    Array<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
-                    {
-                        for (const _ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            Assert (v->GetOwner () != oBeingDeleted);
-                        }
-                    }
                     template      <typename  T, typename TRAITS>
                     void    Array<T, TRAITS>::_Invariant () const
                     {
@@ -229,9 +205,9 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in Array<T,TRAITS>
                          *  so only called when WE call Invariant().
                          */
-                        for (_ArrayIteratorBase* v = fIterators_; v != nullptr; v = v->fNext) {
-                            Assert (v->fData == this);
-                            v->Invariant ();
+                        for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
+                            Assert (ai->fData == this);
+                            ai->Invariant ();
                         }
                     }
 #endif  /*qDebug*/
@@ -244,97 +220,37 @@ namespace   Stroika {
                     */
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
-                        : inherited (data)
-                        , fOwnerID_ (ownerID)
+                        : inherited_DataStructure (data)
+                        , inherited_PatchHelper (const_cast<Array<T, TRAITS>*> (data), ownerID)
                         , fData (data)
-                        , fNext (data->fIterators_)
                     {
-                        const_cast <Array<T, TRAITS>*> (fData)->fIterators_ = this;
                         /*
                          * Cannot call invariant () here since _fCurrent not yet setup.
                          */
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array<T, TRAITS>::_ArrayIteratorBase& from)
-                        : inherited (from)
-                        , fOwnerID_ (from.fOwnerID_)
+                        : inherited_DataStructure (from)
+                        , inherited_PatchHelper (from)
                         , fData (from.fData)
-                        , fNext (from.fData->fIterators_)
                     {
                         RequireNotNull (fData);
-                        const_cast <Array<T, TRAITS>*> (fData)->fIterators_ = this;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
                     {
                         this->Invariant ();
-                        AssertNotNull (fData);
-                        if (fData->fIterators_ == this) {
-                            const_cast <Array<T, TRAITS>*> (fData)->fIterators_ = fNext;
-                        }
-                        else {
-                            _ArrayIteratorBase* v = fData->fIterators_;
-                            for (; v->fNext != this; v = v->fNext) {
-                                AssertNotNull (v);
-                                AssertNotNull (v->fNext);
-                            }
-                            AssertNotNull (v);
-                            Assert (v->fNext == this);
-                            v->fNext = fNext;
-                        }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  typename Array<T, TRAITS>::_ArrayIteratorBase& Array<T, TRAITS>::_ArrayIteratorBase::operator= (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs)
                     {
                         this->Invariant ();
-
-                        /*
-                         *      If the fData field has not changed, then we can leave alone our iterator linkage.
-                         *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
-                         */
-                        if (fData != rhs.fData) {
-                            AssertNotNull (fData);
-                            AssertNotNull (rhs.fData);
-
-                            /*
-                             * Remove from old.
-                             */
-                            if (fData->fIterators_ == this) {
-                                //(~const)
-                                ((Array<T, TRAITS>*)fData)->fIterators_ = fNext;
-                            }
-                            else {
-                                _ArrayIteratorBase* v = fData->fIterators_;
-                                for (; v->fNext != this; v = v->fNext) {
-                                    AssertNotNull (v);
-                                    AssertNotNull (v->fNext);
-                                }
-                                AssertNotNull (v);
-                                Assert (v->fNext == this);
-                                v->fNext = fNext;
-                            }
-
-                            /*
-                             * Add to new.
-                             */
-                            fData = rhs.fData;
-                            fOwnerID_ = rhs.fOwnerID;
-                            fNext = rhs.fData->fIterators_;
-                            //(~const)
-                            ((Array<T, TRAITS>*)fData)->fIterators_ = this;
-                        }
-
-                        inherited::operator=(rhs);
-
+                        inherited_DataStructure::operator= (rhs);
+                        inherited_PatchHelper::operator= (rhs);
+                        fData = rhs.fData;
                         this->Invariant ();
-
                         return *this;
-                    }
-                    template      <typename  T, typename TRAITS>
-                    inline  IteratorOwnerID Array<T, TRAITS>::_ArrayIteratorBase::GetOwner () const
-                    {
-                        return fOwnerID_;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchAdd (size_t index)
@@ -448,8 +364,8 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
                     {
-                        inherited::_Invariant ();
-                        Assert (fData == inherited::_fData);
+                        inherited_DataStructure::_Invariant ();
+                        Assert (fData == inherited_DataStructure::_fData);
                     }
 #endif  /*qDebug*/
 

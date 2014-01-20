@@ -8,6 +8,8 @@
 
 #include    "../DataStructures/Array.h"
 
+#include    "PatchableContainerHelper.h"
+
 
 
 /**
@@ -22,10 +24,8 @@
  *
  *              KEY IS LESS COPY-PASE OF IMPL FROM BASE
  *
- *
  *      @todo   Update this patching code to use the same new UpdateAt/RemoveAt paradigm used in base class Array
  *              And update code that uses these iterators - patching arrays - to replace that for RemoveCurrnet()
- *
  */
 
 
@@ -37,15 +37,19 @@ namespace   Stroika {
                 namespace   PatchingDataStructures {
 
 
-                    /**
-                     *      Array<T,TRAITS> is an array implemantion that keeps a list of patchable
-                     *  iterators, and handles the patching automatically for you. Use this if
-                     *  you ever plan to use patchable iterators.
+                    /*
+                     *  Patching Support:
+                     *
+                     *      This class wraps a basic container (in this case DataStructures::Array)
+                     *  and adds in patching support (tracking a list of iterators - and managing thier
+                     *  patching when appropriately wrapped changes are made to the data structure container.
+                     *
+                     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
-                    class   Array : public DataStructures::Array<T, TRAITS> {
+                    class   Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>> {
                     private:
-                        using   inherited   =   typename DataStructures::Array<T, TRAITS>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::Array<T, TRAITS>>;
 
                     public:
                         Array ();
@@ -62,7 +66,6 @@ namespace   Stroika {
                          * perform patching.
                          */
                     public:
-                        nonvirtual  bool    HasActiveIterators () const;            //  are there any iterators to be patched?
                         nonvirtual  void    PatchViewsAdd (size_t index) const;     //  call after add
                         nonvirtual  void    PatchViewsRemove (size_t index) const;  //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;           //  call after removeall
@@ -102,17 +105,12 @@ namespace   Stroika {
                         nonvirtual  void    SetCapacity (size_t slotsAlloced);
                         nonvirtual  void    Compact ();
 
-                    private:
-                        _ArrayIteratorBase*     fIterators_;
-
                     public:
                         nonvirtual  void    Invariant () const;
-                        nonvirtual  void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
 
 #if     qDebug
                     protected:
                         nonvirtual  void    _Invariant () const;
-                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
                     };
 
@@ -122,9 +120,12 @@ namespace   Stroika {
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template      <typename  T, typename TRAITS>
-                    class   Array<T, TRAITS>::_ArrayIteratorBase : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase {
+                    class   Array<T, TRAITS>::_ArrayIteratorBase
+                        : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
+                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMinIn {
                     private:
-                        using   inherited   =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
+                        using   inherited_DataStructure =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMinIn;
 
                     public:
                         _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
@@ -135,12 +136,6 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  _ArrayIteratorBase& operator= (const _ArrayIteratorBase& rhs);
-
-                    public:
-                        nonvirtual  IteratorOwnerID GetOwner () const;
-
-                    private:
-                        IteratorOwnerID fOwnerID_;
 
                     public:
                         nonvirtual  void    PatchAdd (size_t index);        //  call after add
