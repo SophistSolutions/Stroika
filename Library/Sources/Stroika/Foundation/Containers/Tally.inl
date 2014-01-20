@@ -144,7 +144,7 @@ namespace   Stroika {
                     {
                         return this->_fDataBlob.fTally->IsEmpty ();
                     }
-                    virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                    virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
                         return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
@@ -245,7 +245,7 @@ namespace   Stroika {
                     {
                         return this->_fDataBlob.fTally->IsEmpty ();
                     }
-                    virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                    virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
                         return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
@@ -330,7 +330,9 @@ namespace   Stroika {
                 // copying a new object - if it has any active iterators. But think that through!
                 // -- LGP 2014-01-01
                 if (kHackBWA_) {
-                    return _ElementsIterableHelper (rep->Clone ());
+                    //@TMPHACK - OK CUZ WE WILL GET RID OF THIS SOON
+                    // @todo - LGP 2014-01-19
+                    return _ElementsIterableHelper (rep->Clone (nullptr));
                 }
                 return _ElementsIterableHelper (rep);
             }
@@ -343,7 +345,9 @@ namespace   Stroika {
                 // copying a new object - if it has any active iterators. But think that through!
                 // -- LGP 2014-01-01
                 if (kHackBWA_) {
-                    return _UniqueElementsHelper (rep->Clone ());
+                    //@TMPHACK - OK CUZ WE WILL GET RID OF THIS SOON
+                    // @todo - LGP 2014-01-19
+                    return _UniqueElementsHelper (rep->Clone (nullptr));
                 }
                 return _UniqueElementsHelper (rep);
             }

@@ -53,7 +53,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep              Clone () const override;
+                    virtual _SharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual size_t                      GetLength () const override;
                     virtual bool                        IsEmpty () const override;
                     virtual Iterator<TallyEntry<T>>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
@@ -161,7 +161,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                typename SortedTally_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone () const
+                typename SortedTally_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
                 }

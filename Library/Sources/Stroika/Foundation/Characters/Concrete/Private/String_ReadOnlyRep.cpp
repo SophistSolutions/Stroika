@@ -69,7 +69,9 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (IteratorOwnerID
         }
         DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone ()))));
+    // @todo - document why nullptr OK as arg to Clone() - has todo with owner tracking stratgy in String code
+    // -- LGP 2014-01-19
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone (nullptr)))));
 }
 
 size_t  ReadOnlyRep::_Rep::GetLength () const

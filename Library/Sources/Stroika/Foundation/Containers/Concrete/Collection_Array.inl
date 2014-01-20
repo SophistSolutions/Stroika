@@ -49,7 +49,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep    Clone () const override;
+                    virtual _SharedPtrIRep    Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual Iterator<T>       MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t            GetLength () const override;
                     virtual bool              IsEmpty () const override;
@@ -101,7 +101,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                typename Collection_Array<T>::Rep_::_SharedPtrIRep  Collection_Array<T>::Rep_::Clone () const
+                typename Collection_Array<T>::Rep_::_SharedPtrIRep  Collection_Array<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return _SharedPtrIRep (new Rep_ (*this));

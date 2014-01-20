@@ -428,14 +428,14 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t, IteratorOwnerID iterableEnvelope)
+                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
                     {
-                        return Iterable<T>::Clone_ (t, iterableEnvelope);
+                        return Iterable<T>::Clone_ (t, forIterableEnvelope);
                     }
                 };
 
             private:
-                static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID iterableEnvelope);
+                static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
             private:
                 /**
@@ -475,7 +475,7 @@ namespace   Stroika {
 #endif
 
             public:
-                virtual _SharedPtrIRep      Clone () const                                              =   0;
+                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const              =   0;
                 /*
                  *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
                  *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the

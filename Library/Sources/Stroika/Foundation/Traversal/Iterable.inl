@@ -119,10 +119,9 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID iterableEnvelope)
+            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
             {
-                // @todo - soon pass along suggested owner here too
-                return rep.Clone ();
+                return rep.Clone (forIterableEnvelope);
             }
             template    <typename T>
             inline  Memory::SharedByValue_State     Iterable<T>::_GetSharingState () const

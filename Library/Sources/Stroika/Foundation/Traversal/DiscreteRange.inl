@@ -103,7 +103,7 @@ namespace   Stroika {
                     , fForcedEnd (false)
                 {
                 }
-                virtual _SharedPtrIRep      Clone () const
+                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     return _SharedPtrIRep (new MyIteratableRep_ (*this));
                 }

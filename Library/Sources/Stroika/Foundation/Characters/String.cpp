@@ -32,7 +32,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
 
-
+using   Traversal::IteratorOwnerID;
 
 
 
@@ -53,7 +53,7 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual  _IterableSharedPtrIRep   Clone () const override
+        virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }

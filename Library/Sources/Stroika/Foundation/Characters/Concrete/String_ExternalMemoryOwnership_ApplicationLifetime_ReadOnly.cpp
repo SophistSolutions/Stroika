@@ -31,6 +31,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Concrete;
 
 
+using   Traversal::IteratorOwnerID;
 
 
 
@@ -48,7 +49,7 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual _IterableSharedPtrIRep   Clone () const override
+        virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
@@ -70,7 +71,7 @@ public:
     {
         Require (start + ::wcslen (start) == end);
     }
-    virtual _IterableSharedPtrIRep   Clone () const override
+    virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
     {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so

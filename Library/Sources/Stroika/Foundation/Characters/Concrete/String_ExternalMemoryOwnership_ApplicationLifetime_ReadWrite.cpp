@@ -30,6 +30,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Concrete;
 
 
+using   Traversal::IteratorOwnerID;
 
 
 namespace   {
@@ -45,7 +46,7 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual _IterableSharedPtrIRep   Clone () const override
+        virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
@@ -79,7 +80,7 @@ public:
         : inherited (start, end)
     {
     }
-    virtual _IterableSharedPtrIRep   Clone () const override
+    virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
     {
         /*
          * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
