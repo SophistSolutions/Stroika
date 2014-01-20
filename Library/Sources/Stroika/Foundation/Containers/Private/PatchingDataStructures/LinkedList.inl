@@ -206,7 +206,7 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in LinkedList<T, TRAITS>
                          *  so only called when WE call Invariant().
                          */
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             Assert (ai->_fData == this);
                         }
                     }
@@ -217,7 +217,7 @@ namespace   Stroika {
                          *      Only here can we iterate over each iterator and calls its Invariant()
                          *  since now we've completed any needed patching.
                          */
-                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                        for (auto ai = this->GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             Assert (ai->_fData == this);
                             ai->Invariant ();
                         }
