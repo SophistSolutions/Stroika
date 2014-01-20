@@ -77,7 +77,7 @@ namespace   Stroika {
                          * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
-                        Assert (not (HasActiveIterators ()));   // cuz copy of array does not copy iterators...
+                        Assert (not (this->HasActiveIterators ()));   // cuz copy of array does not copy iterators...
                         this->Invariant ();
                         inherited::operator= (rhs);
                         this->Invariant ();
