@@ -87,7 +87,7 @@ namespace   Stroika {
                     inline  void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
                     {
                         // For now, not sure how to patch the iterators, so just Assert out - fix later ...
-                        AssertNotReached ();
+                        AssertNotImplemented ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::InsertAt (size_t index, T item)
