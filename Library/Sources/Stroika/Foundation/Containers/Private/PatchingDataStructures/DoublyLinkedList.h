@@ -11,6 +11,8 @@
 
 #include    "../DataStructures/DoublyLinkedList.h"
 
+#include    "PatchableContainerHelper.h"
+
 
 
 /*
@@ -42,22 +44,19 @@ namespace   Stroika {
                      *  most likely to be used in implementing a concrete container class.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
-                    class   DoublyLinkedList : public DataStructures::DoublyLinkedList<T, TRAITS> {
+                    class   DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>> {
                     private:
-                        using   inherited   =   typename DataStructures::DoublyLinkedList<T, TRAITS>;
+                        using   inherited   =   PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>;
 
                     public:
                         DoublyLinkedList ();
                         DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
 
                     public:
-                        ~DoublyLinkedList ();
-
-                    public:
                         nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs);
 
                     public:
-                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
+                        using   Link    =   typename DataStructures::DoublyLinkedList<T, TRAITS>::Link;
 
                     public:
                         class   ForwardIterator;
@@ -89,7 +88,6 @@ namespace   Stroika {
                          * perfrom patching.
                          */
                     public:
-                        nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
                         nonvirtual  void    PatchViewsAdd (const Link* link) const;         //  call after add
                         nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
@@ -98,28 +96,20 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const;
 
-#if     qDebug
-                    public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-#endif
-
                     public:
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
                          */
                         nonvirtual  void    Invariant () const;
 
-                    protected:
-                        ForwardIterator*    fActiveIteratorsListHead_;
-
-                    protected:
-                        friend  class   ForwardIterator;
-
 #if     qDebug
                     protected:
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
 #endif
+
+                    protected:
+                        friend  class   ForwardIterator;
                     };
 
 
@@ -130,9 +120,10 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template      <typename  T, typename TRAITS>
-                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator {
+                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMinIn {
                     private:
-                        using   inherited   =   typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_DataStructure =   typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMinIn;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data);
@@ -148,12 +139,6 @@ namespace   Stroika {
                         using   ContainerType   =   PatchingDataStructures::DoublyLinkedList<T, TRAITS>;
                         using   Link            =   typename ContainerType::Link;
 
-                    private:
-                        IteratorOwnerID fOwnerID;
-
-                    public:
-                        nonvirtual  IteratorOwnerID GetOwner () const;
-
                     public:
                         nonvirtual  void    PatchAdd (const Link* link);        //  call after add
                         nonvirtual  void    PatchRemove (const Link* link);     //  call before remove
@@ -162,20 +147,13 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
-                    private:
-                        nonvirtual  const ContainerType&    GetPatchingContainer_ () const;
-                        nonvirtual  ContainerType&          GetPatchingContainer_ ();
-
-                    private:
-                        ForwardIterator*    fNextActiveIterator_;
-
-                    private:
-                        friend  class   DoublyLinkedList<T, TRAITS>;
-
 #if     qDebug
                     protected:
                         virtual void    Invariant_ () const override;
 #endif
+
+                    private:
+                        friend  class   DoublyLinkedList<T, TRAITS>;
                     };
 
 
