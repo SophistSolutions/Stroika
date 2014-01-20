@@ -23,33 +23,21 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::LinkedList ()
                         : inherited ()
-                        , fActiveIteratorsListHead_ (nullptr)
                     {
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::LinkedList (const LinkedList<T, TRAITS>& from)
                         : inherited (from)
-                        // Don't copy the list of iterators - would be trouble with backpointers!
-                        // Could clone but that would do no good, since nobody else would have pointers to them
-                        , fActiveIteratorsListHead_ (nullptr)
                     {
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>::~LinkedList ()
-                    {
-                        Require (not HasActiveIterators ()); // cannot destroy container with active iterators
-                    }
-                    template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& rhs)
                     {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
+                        Invariant ();
                         inherited::operator= (rhs);
+                        Invariant ();
                         return *this;
                     }
                     template      <typename  T, typename TRAITS>
@@ -61,37 +49,32 @@ namespace   Stroika {
 #endif
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  bool    LinkedList<T, TRAITS>::HasActiveIterators () const
-                    {
-                        return bool (fActiveIteratorsListHead_ != nullptr);
-                    }
-                    template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
                     {
                         RequireNotNull (link);
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            v->PatchAdd (link);
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                            ai->PatchAdd (link);
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::PatchViewsRemove (const Link* link) const
                     {
                         RequireNotNull (link);
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            v->PatchRemove (link);
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                            ai->PatchRemove (link);
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::PatchViewsRemoveAll () const
                     {
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            v->PatchRemoveAll ();
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                            ai->PatchRemoveAll ();
                         }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->_fNextActiveIterator) {
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         }
                     }
@@ -206,28 +189,10 @@ namespace   Stroika {
                     void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
-
                         inherited::AddAfter (i, newValue);
                         this->PatchViewsAdd (i._fCurrent->fNext);
-
                         Invariant ();
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
-                    {
-#if     qDebug
-                        AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
-#endif
-                    }
-#if     qDebug
-                    template      <typename  T, typename TRAITS>
-                    void    LinkedList<T, TRAITS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
-                    {
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            Assert (v->fOwnerID != oBeingDeleted);
-                        }
-                    }
-#endif
 #if     qDebug
                     template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::Invariant_ () const
@@ -241,8 +206,8 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in LinkedList<T, TRAITS>
                          *  so only called when WE call Invariant().
                          */
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            Assert (v->_fData == this);
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                            Assert (ai->_fData == this);
                         }
                     }
                     template      <typename  T, typename TRAITS>
@@ -252,9 +217,9 @@ namespace   Stroika {
                          *      Only here can we iterate over each iterator and calls its Invariant()
                          *  since now we've completed any needed patching.
                          */
-                        for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            Assert (v->_fData == this);
-                            v->Invariant ();
+                        for (auto ai = GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->GetNextActiveIterator<ForwardIterator> ()) {
+                            Assert (ai->_fData == this);
+                            ai->Invariant ();
                         }
                     }
 #endif
@@ -267,91 +232,35 @@ namespace   Stroika {
                     */
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data)
-                        : inherited (data)
-                        , fOwnerID (ownerID)
-                        , _fNextActiveIterator (data->fActiveIteratorsListHead_)
+                        : inherited_DataStructure (data)
+                        , inherited_PatchHelper (const_cast<LinkedList<T, TRAITS>*> (data), ownerID)
                         //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
                         RequireNotNull (data);
-                        const_cast<LinkedList<T, TRAITS>*> (data)->fActiveIteratorsListHead_ = this;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-                        : inherited (from)
-                        , fOwnerID (from.fOwnerID)
-                        , _fNextActiveIterator (from.GetPatchingContainer_ ().fActiveIteratorsListHead_)
+                        : inherited_DataStructure (from)
+                        , inherited_PatchHelper (from)
                         //, fPrev (from.fPrev)
                     {
                         from.Invariant ();
-                        GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
-                        if (GetPatchingContainer_ ().fActiveIteratorsListHead_ == this) {
-                            GetPatchingContainer_ ().fActiveIteratorsListHead_ = _fNextActiveIterator;
-                        }
-                        else {
-                            auto    v = GetPatchingContainer_ ().fActiveIteratorsListHead_;
-                            for (; v->_fNextActiveIterator != this; v = v->_fNextActiveIterator) {
-                                AssertNotNull (v);
-                                AssertNotNull (v->_fNextActiveIterator);
-                            }
-                            AssertNotNull (v);
-                            Assert (v->_fNextActiveIterator == this);
-                            v->_fNextActiveIterator = _fNextActiveIterator;
-                        }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  typename LinkedList<T, TRAITS>::ForwardIterator&    LinkedList<T, TRAITS>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
                         this->Invariant ();
-
-                        /*
-                         *      If the fData field has not changed, then we can leave alone our iterator linkage.
-                         *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
-                         */
-                        if (&GetPatchingContainer_ () != &rhs.GetPatchingContainer_ ()) {
-
-                            /*
-                             * Remove from old.
-                             */
-                            if (GetPatchingContainer_ ().fActiveIteratorsListHead_ == this) {
-                                GetPatchingContainer_ ().fActiveIteratorsListHead_ = _fNextActiveIterator;
-                            }
-                            else {
-                                auto v = GetPatchingContainer_ ().fActiveIteratorsListHead_;
-                                for (; v->_fNextActiveIterator != this; v = v->_fNextActiveIterator) {
-                                    AssertNotNull (v);
-                                    AssertNotNull (v->_fNextActiveIterator);
-                                }
-                                AssertNotNull (v);
-                                Assert (v->_fNextActiveIterator == this);
-                                v->_fNextActiveIterator = _fNextActiveIterator;
-                            }
-
-                            /*
-                             * Add to new.
-                             */
-                            _fNextActiveIterator = rhs.GetPatchingContainer_ ().fActiveIteratorsListHead_;
-                            GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
-                        }
-
-                        //fPrev = rhs.fPrev;
-
-                        fOwnerID = rhs.fOwnerID;
-                        inherited::operator= (rhs);
-
+                        inherited_DataStructure::operator= (rhs);
+                        inherited_PatchHelper::operator= (rhs);
                         this->Invariant ();
                         return *this;
-                    }
-                    template      <typename  T, typename TRAITS>
-                    inline  IteratorOwnerID LinkedList<T, TRAITS>::ForwardIterator::GetOwner () const
-                    {
-                        return fOwnerID;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
@@ -417,23 +326,12 @@ namespace   Stroika {
                         this->_fSuppressMore = true;
                         this->_fCurrent = newI;
                     }
-                    template      <typename  T, typename TRAITS>
-                    inline  const typename LinkedList<T, TRAITS>::ForwardIterator::ContainerType&  LinkedList<T, TRAITS>::ForwardIterator::GetPatchingContainer_ () const
-                    {
-                        AssertMember (this->_fData, ContainerType);
-                        return *static_cast<const ContainerType*> (this->_fData);
-                    }
-                    template      <typename  T, typename TRAITS>
-                    inline  typename LinkedList<T, TRAITS>::ForwardIterator::ContainerType&    LinkedList<T, TRAITS>::ForwardIterator::GetPatchingContainer_ ()
-                    {
-                        AssertMember (this->_fData, ContainerType);
-                        return *static_cast<ContainerType*> (const_cast<DataStructures::LinkedList<T, TRAITS>*> (this->_fData));
-                    }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const
                     {
-                        inherited::Invariant_ ();
+                        inherited_DataStructure::Invariant_ ();
+                        //inherited_PatchHelper::Invariant_ ();
 
                         /*
                          *  fPrev could be nullptr, but if it isn't then its next must be _fCurrent.

@@ -11,6 +11,7 @@
 
 #include    "../DataStructures/LinkedList.h"
 
+#include    "PatchableContainerHelper.h"
 
 
 /**
@@ -44,16 +45,13 @@ namespace   Stroika {
                      *  most likely to be used in implementing a concrete container class.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
-                    class   LinkedList : public DataStructures::LinkedList<T, TRAITS> {
+                    class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>> {
                     private:
-                        using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>;
+                        using   inherited   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>;
 
                     public:
                         LinkedList ();
                         LinkedList (const LinkedList<T, TRAITS>& from);
-
-                    public:
-                        ~LinkedList ();
 
                     public:
                         nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list);
@@ -72,7 +70,6 @@ namespace   Stroika {
                          * perfrom patching.
                          */
                     public:
-                        nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
                         nonvirtual  void    PatchViewsAdd (const Link* link) const;         //  call after add
                         nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
@@ -102,15 +99,8 @@ namespace   Stroika {
                          */
                         nonvirtual  void    Invariant () const;
 
-                    protected:
-                        ForwardIterator*    fActiveIteratorsListHead_;
-
-                    public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
-
 #if     qDebug
                     protected:
-                        nonvirtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted);
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
 #endif
@@ -127,9 +117,10 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template      <typename  T, typename TRAITS>
-                    class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator {
+                    class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator, public PatchableIteratorMinIn {
                     private:
-                        using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_DataStructure  =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_PatchHelper   =   PatchableIteratorMinIn;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
@@ -145,12 +136,6 @@ namespace   Stroika {
                         using   ContainerType   =       PatchingDataStructures::LinkedList<T, TRAITS>;
                         using   Link            =       typename ContainerType::Link;
 
-                    private:
-                        IteratorOwnerID fOwnerID;
-
-                    public:
-                        nonvirtual  IteratorOwnerID GetOwner () const;
-
                     public:
                         /*
                          * Shadow more to keep track of prev.
@@ -162,12 +147,7 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
-                    private:
-                        nonvirtual  const ContainerType&  GetPatchingContainer_ () const;
-                        nonvirtual  ContainerType&    GetPatchingContainer_ ();
-
                     protected:
-                        ForwardIterator*            _fNextActiveIterator;
                         //const Link*              fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...

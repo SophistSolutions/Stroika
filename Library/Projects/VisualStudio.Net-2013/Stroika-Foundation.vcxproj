@@ -767,6 +767,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
@@ -1081,6 +1082,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
