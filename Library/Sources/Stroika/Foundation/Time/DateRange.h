@@ -39,7 +39,7 @@ namespace   Stroika {
 
             /**
             */
-            typedef Traversal::Range<Date, Time::Private_::DateRangeTraitsType_> DateRange;
+            using       DateRange       =   Traversal::Range<Date, Time::Private_::DateRangeTraitsType_>;
         }
     }
 }

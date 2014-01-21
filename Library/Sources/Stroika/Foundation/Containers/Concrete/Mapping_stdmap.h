@@ -33,7 +33,7 @@ namespace   Stroika {
                 struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
                     /**
                      */
-                    typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
+                    using   KeyWellOrderCompareFunctionType =   KEY_WELL_ORDER_COMPARER;
 
                     RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
                 };
@@ -59,12 +59,12 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    typedef TRAITS      TraitsType;
+                    using   TraitsType                      =   TRAITS;
 
                 public:
                     /**
                      */
-                    typedef typename    TraitsType::KeyWellOrderCompareFunctionType KeyWellOrderCompareFunctionType;
+                    using   KeyWellOrderCompareFunctionType =   typename TraitsType::KeyWellOrderCompareFunctionType;
 
                 public:
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);

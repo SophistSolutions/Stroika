@@ -39,7 +39,7 @@ namespace   Stroika {
                  */
                 class   SocketAddress {
                 public:
-                    typedef u_short FamilyType;
+                    using   FamilyType  =   u_short;
 
                 public:
                     SocketAddress ();

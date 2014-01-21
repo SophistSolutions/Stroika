@@ -33,7 +33,7 @@ namespace   Stroika {
                 struct   Set_stdset_DefaultTraits : Set_DefaultTraits <T, EQUALS_COMPARER> {
                     /**
                      */
-                    typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+                    using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
 
                     /**
                      */
@@ -57,12 +57,12 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    typedef TRAITS      TraitsType;
+                    using   TraitsType                      =   TRAITS;
 
                 public:
                     /**
                      */
-                    typedef typename    TraitsType::WellOrderCompareFunctionType WellOrderCompareFunctionType;
+                    using   WellOrderCompareFunctionType    =   typename TraitsType::WellOrderCompareFunctionType;
 
                 public:
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);

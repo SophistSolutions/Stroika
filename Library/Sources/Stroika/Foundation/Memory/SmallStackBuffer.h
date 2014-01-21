@@ -72,8 +72,8 @@ namespace   Stroika {
                 nonvirtual  operator T* ();
 
             public:
-                typedef T*          iterator;
-                typedef const T*    const_iterator;
+                using   iterator        =   T* ;
+                using   const_iterator  =   const T* ;
 
             public:
                 /**

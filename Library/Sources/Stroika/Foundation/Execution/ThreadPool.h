@@ -69,7 +69,7 @@ namespace   Stroika {
                 nonvirtual  const ThreadPool& operator= (const ThreadPool&) = delete;
 
             public:
-                typedef shared_ptr<IRunnable>    TaskType;
+                using   TaskType    =   shared_ptr<IRunnable>;
 
             public:
                 nonvirtual  unsigned int    GetPoolSize () const;

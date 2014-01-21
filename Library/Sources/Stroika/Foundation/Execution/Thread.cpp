@@ -67,18 +67,18 @@ using   namespace   Execution;
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    typedef volatile bool   AbortFlagType_;
+    using   AbortFlagType_  =   volatile bool;
 #else
-    typedef atomic<bool>    AbortFlagType_;
+    using   AbortFlagType_  =   atomic<bool>;
 #endif
 }
 
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    typedef volatile unsigned int   AbortSuppressCountType_;
+    using   AbortSuppressCountType_ =   volatile unsigned int;
 #else
-    typedef atomic<unsigned int>    AbortSuppressCountType_;
+    using   AbortSuppressCountType_ =   atomic<unsigned int>;
 #endif
 }
 
@@ -103,9 +103,9 @@ namespace   {
             DWORD UniqueProcess;
             DWORD UniqueThread;
         };
-        typedef LONG NTSTATUS;
+        using   NTSTATUS    =   LONG;
 #define STATUS_SUCCESS ((NTSTATUS) 0x00000000)
-        typedef LONG KPRIORITY;
+        using   KPRIORITY   =   LONG;
         struct  THREAD_BASIC_INFORMATION {
             NTSTATUS   ExitStatus;
             PVOID      TebBaseAddress;
@@ -117,7 +117,7 @@ namespace   {
         enum THREAD_INFORMATION_CLASS {
             ThreadBasicInformation = 0,
         };
-        typedef NTSTATUS (__stdcall* pfnNtQueryInformationThread) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
+        using   pfnNtQueryInformationThread     =   NTSTATUS (__stdcall*) (HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
     }
 #endif
     DWORD   MyGetThreadId_ (HANDLE thread)

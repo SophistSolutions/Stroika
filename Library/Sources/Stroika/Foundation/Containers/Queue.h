@@ -73,7 +73,7 @@ namespace   Stroika {
             struct   Queue_DefaultTraits {
                 /**
                  */
-                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
             };
 
 
@@ -122,11 +122,11 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef Queue<T, TRAITS>    ArchetypeContainerType;
+                using   ArchetypeContainerType      =   Queue<T, TRAITS>;
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep              =   shared_ptr<_IRep>;
 
             public:
                 /**
@@ -244,7 +244,7 @@ namespace   Stroika {
                  *  Just a short-hand for the 'TRAITS' part of Queue<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                typedef TRAITS  TraitsType;
+                using   TraitsType  =   TRAITS;
 
             public:
                 /**
@@ -254,7 +254,7 @@ namespace   Stroika {
                  *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
                  *  if you avoid the documented methods (see EqualsCompareFunctionType above).
                  */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;

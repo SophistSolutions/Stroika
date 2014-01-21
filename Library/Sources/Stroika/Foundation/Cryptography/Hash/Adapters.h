@@ -48,7 +48,7 @@ namespace   Stroika {
                 // VAGUELY loke this - but also need has ptr arg somehow ...
                 template <typename HASHER_TYPE>
                 struct Adapapter {
-                    typedef typename    HASHER_TYPE::ReturnType ReturnType;
+                    using   ReturnType      =   typename    HASHER_TYPE::ReturnType;
 
                     template    <typename   TYPE_TO_COMPUTE_HASH_OF>
                     static  ReturnType  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash);

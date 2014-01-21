@@ -208,8 +208,8 @@ namespace   Stroika {
                  *
                  *  EXAMPLE TRAITS:
                  *      struct  ReaderTraits {
-                 *              typedef String                  ElementType;
-                 *              typedef BuiltinReader<String>   ReaderType;
+                 *              using   ElementType     =   String;
+                 *              using   ReaderType      =   BuiltinReader<String>;
                  *              static  const wchar_t           ElementName[] =  L"Name";
                  *      };
                  */

@@ -69,8 +69,8 @@ namespace   Stroika {
 #endif
 
                 private:
-                    typedef Private::PatchingDataStructures::DoublyLinkedList<T>        DataStructureImplType_;
-                    typedef Private::IteratorImplHelper_<T, DataStructureImplType_>     IteratorRep_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::DoublyLinkedList<T>;
+                    using   IteratorRep_            =   Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;

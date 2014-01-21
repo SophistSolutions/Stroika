@@ -39,7 +39,7 @@ namespace   Stroika {
 
             /**
             */
-            typedef Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_> DurationRange;
+            using   DurationRange   =   Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
         }
     }
 }

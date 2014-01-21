@@ -201,14 +201,14 @@ namespace   Stroika {
                 /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
                  */
-                typedef thread::id  IDType;
+                using   IDType              =   thread::id;
 
             public:
                 /**
                  *  Thread::native_handle is the type of the underlying handle to a native thread
                  *  which can allow for using platform APIs.
                  */
-                typedef thread::native_handle_type  NativeHandleType;
+                using   NativeHandleType    =   thread::native_handle_type;
 
             public:
                 /**

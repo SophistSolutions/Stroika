@@ -107,19 +107,19 @@ namespace   Stroika {
                 /**
                  *  Internal format for storing floating point data in a VariantValue.
                  */
-                typedef long double  FloatType_;
+                using   FloatType_              =   long double;
 
             private:
                 /**
                  *  Internal format for storing int data in a VariantValue.
                  */
-                typedef long long int  IntegerType_;
+                using   IntegerType_            =   long long int;
 
             private:
                 /**
                  *  Internal format for storing unsigned int data in a VariantValue.
                  */
-                typedef unsigned long long int  UnsignedIntegerType_;
+                using   UnsignedIntegerType_    =   unsigned long long int;
 
             public:
                 /**

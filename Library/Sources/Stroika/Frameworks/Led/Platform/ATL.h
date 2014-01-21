@@ -45,7 +45,7 @@ namespace   Stroika {
                 template    <typename BASE, typename CTOR_ARGS>
                 class CComObjectWithARGS : public BASE {
                 private:
-                    typedef BASE inherited;
+                    using       inherited   =   BASE;
 
                 public:
                     CComObjectWithARGS (const CTOR_ARGS& args);

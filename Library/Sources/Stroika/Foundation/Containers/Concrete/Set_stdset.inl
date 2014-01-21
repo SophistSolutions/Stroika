@@ -73,12 +73,8 @@ namespace   Stroika {
 #endif
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    set<T, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>
-                            >   DataStructureImplType_;
-
-                private:
-                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <set <T, STL::less <T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;

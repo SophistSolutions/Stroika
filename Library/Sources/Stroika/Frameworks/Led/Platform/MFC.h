@@ -245,11 +245,11 @@ namespace   Stroika {
 #endif
                 {
                 private:
-                    typedef void*   inherited;  // avoid using this keyword since this is mixin of two classes
+                    using   inherited           =   void* ; // avoid using this keyword since this is mixin of two classes
                 private:
-                    typedef Led_Win32_Helper<BASE_INTERACTOR>   LED_WIN32_HELPER;
+                    using   LED_WIN32_HELPER    =   Led_Win32_Helper<BASE_INTERACTOR>;
                 public:
-                    typedef MarkerOwner::UpdateInfo UpdateInfo;
+                    using   UpdateInfo          =   MarkerOwner::UpdateInfo;
 
                 protected:
                     Led_MFC_Helper ();
@@ -385,7 +385,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS = Led_MFC_Helper<> >
                 class   Led_MFC_OptionalWin32SDKMessageMimicHelper : public Led_Win32_Win32SDKMessageMimicHelper <BASECLASS> {
                 private:
-                    typedef Led_Win32_Win32SDKMessageMimicHelper <BASECLASS>    inherited;
+                    using       inherited       =   Led_Win32_Win32SDKMessageMimicHelper <BASECLASS>;
 
                 protected:
                     Led_MFC_OptionalWin32SDKMessageMimicHelper ();
@@ -420,7 +420,7 @@ namespace   Stroika {
                 class   Led_MFC_DragAndDropWindow :
                     public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using   inherited   =   BASECLASS;
 
                 protected:
                     Led_MFC_DragAndDropWindow ();
@@ -545,7 +545,7 @@ namespace   Stroika {
                 class   Led_MFC_CViewHelper :
                     public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using   inherited   =   BASECLASS;
 
                 protected:
                     Led_MFC_CViewHelper ();
@@ -639,7 +639,7 @@ namespace   Stroika {
                     for Led 2.2. In Led 2.2, Led_MFC was the SOLE class provided to integrated Led with MFC. Now there is a whole suite of
                     individually selectable templates to provide that interfacing.</p>
                 */
-                typedef Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView, TextInteractor>>>>>   Led_MFC;
+                using       Led_MFC     =   Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView, TextInteractor>>>>>;
 
 
 
@@ -655,9 +655,9 @@ namespace   Stroika {
                 class   Led_MFC_COleControlHelper :
                     public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using       inherited   =   BASECLASS;
                 public:
-                    typedef TextInteractor::UpdateMode  UpdateMode;
+                    using       UpdateMode  =   TextInteractor::UpdateMode;
 
                 protected:
                     Led_MFC_COleControlHelper () {}
@@ -705,7 +705,7 @@ namespace   Stroika {
                 class   Led_MFC_ExceptionHandlerHelper :
                     public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using   inherited   =   BASECLASS;
 
                 protected:
                     virtual void    HandleException () const;

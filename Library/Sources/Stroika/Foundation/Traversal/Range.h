@@ -73,9 +73,9 @@ namespace   Stroika {
                  */
                 template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitRangeTraitsWithoutMinMax {
-                    typedef T                   ElementType;
-                    typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
-                    typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+                    using   ElementType             =   T;
+                    using   SignedDifferenceType    =   SIGNED_DIFF_TYPE;
+                    using   UnsignedDifferenceType  =   UNSIGNED_DIFF_TYPE;
 
                     static  constexpr   Openness    kLowerBoundOpenness     =   LOWER_BOUND_OPEN;
                     static  constexpr   Openness    kUpperBoundOpenness     =   UPPER_BOUND_OPEN;
@@ -160,12 +160,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                typedef T   ElementType;
+                using   ElementType     =   T;
 
             public:
                 /**
                  */
-                typedef TRAITS   TraitsType;
+                using   TraitsType      =   TRAITS;
 
             public:
                 /**

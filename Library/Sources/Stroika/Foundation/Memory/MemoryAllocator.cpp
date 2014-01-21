@@ -205,7 +205,7 @@ size_t  SimpleSizeCountingGeneralPurposeAllocator::GetNetAllocatedByteCount () c
  ********************************************************************************
  */
 namespace   {
-    typedef LeakTrackingGeneralPurposeAllocator::PTRMAP PTRMAP;
+    using   PTRMAP      =   LeakTrackingGeneralPurposeAllocator::PTRMAP;
     void    ExtractInfo_ (const PTRMAP& m, set<size_t>* sizeSet, size_t* totalAllocated)
     {
         RequireNotNull (sizeSet);

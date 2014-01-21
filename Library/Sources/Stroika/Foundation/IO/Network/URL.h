@@ -110,13 +110,13 @@ namespace   Stroika {
                      *  interpreting URLs should treat upper case letters as equivalent to
                      *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
                      */
-                    typedef String  SchemeType; // AKA PROTOCOL
+                    using   SchemeType  =   String; // AKA PROTOCOL
 
 
                 public:
                     /**
                      */
-                    typedef uint16_t    PortType;
+                    using   PortType    =   uint16_t;
 
                 public:
                     /**

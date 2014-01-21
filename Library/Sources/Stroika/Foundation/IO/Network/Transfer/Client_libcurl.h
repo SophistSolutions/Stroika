@@ -39,7 +39,7 @@ namespace   Stroika {
 #if     qHasFeature_libcurl
                     class   LibCurlException : public Execution::StringException {
                     public:
-                        typedef int CURLcode;       // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
+                        using   CURLcode    =   int;       // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
                     public:
                         LibCurlException (CURLcode ccode);
 

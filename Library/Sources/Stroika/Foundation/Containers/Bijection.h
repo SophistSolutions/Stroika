@@ -64,20 +64,20 @@ namespace   Stroika {
             struct   Bijection_DefaultTraits {
                 /**
                  */
-                typedef DOMAIN_EQUALS_COMPARER DomainEqualsCompareFunctionType;
+                using   DomainEqualsCompareFunctionType     =   DOMAIN_EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, DomainEqualsCompareFunctionType);
 
                 /**
                  * only defined optionally...(see what can call this - gen list here @todo)
                  */
-                typedef RANGE_EQUALS_COMPARER RangeEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType      =   RANGE_EQUALS_COMPARER;
 
                 /**
                  *  Define typedef for this Bijection traits object (so other traits can generically allow recovery of the
                  *  underlying Bijection's TRAITS objects.
                  */
-                typedef Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>  BijectionTraitsType;
+                using   BijectionTraitsType                 =   Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>;
 
                 /**
                  */
@@ -112,42 +112,42 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep      =   shared_ptr<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  ArchetypeContainerType;
+                using   ArchetypeContainerType  =   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
 
             public:
                 /**
                  */
-                typedef TRAITS      TraitsType;
+                using   TraitsType      =   TRAITS;
 
             public:
                 /**
                  */
-                typedef DOMAIN_TYPE    DomainType;
+                using   DomainType      =   DOMAIN_TYPE;
 
             public:
                 /**
                  */
-                typedef RANGE_TYPE  RangeType;
+                using   RangeType       =   RANGE_TYPE;
 
             public:
                 /**
                  *  Just a short-hand for the DomainEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::DomainEqualsCompareFunctionType  DomainEqualsCompareFunctionType;
+                using   DomainEqualsCompareFunctionType     =   typename TraitsType::DomainEqualsCompareFunctionType;
 
             public:
                 /**
                  *  Just a short-hand for the RangeEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::RangeEqualsCompareFunctionType  RangeEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType      =   typename TraitsType::RangeEqualsCompareFunctionType;
 
             public:
                 /**

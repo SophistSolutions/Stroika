@@ -59,20 +59,20 @@ namespace   Stroika {
             struct   Mapping_DefaultTraits {
                 /**
                  */
-                typedef KEY_EQUALS_COMPARER KeyEqualsCompareFunctionType;
+                using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
 
                 /**
                  * only defined optionally...(see what can call this - gen list here @todo)
                  */
-                typedef VALUE_EQUALS_COMPARER ValueEqualsCompareFunctionType;
+                using   ValueEqualsCompareFunctionType  =   VALUE_EQUALS_COMPARER;
 
                 /**
                  *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
                  *  underlying Mapping's TRAITS objects.
                  */
-                typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
+                using   MappingTraitsType               =    Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>;
             };
 
 
@@ -106,46 +106,46 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                using   inherited   =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   ArchetypeContainerType;
+                using   ArchetypeContainerType  =   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
 
             public:
                 /**
                  */
-                typedef TRAITS      TraitsType;
+                using   TraitsType  =   TRAITS;
 
             public:
                 /**
                  */
-                typedef KEY_TYPE    KeyType;
+                using   KeyType     =   KEY_TYPE;
 
             public:
                 /**
                  */
-                typedef VALUE_TYPE  ValueType;
+                using   ValueType   =   VALUE_TYPE;
 
             public:
                 /**
                  *  Just a short-hand for the KeyEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::KeyEqualsCompareFunctionType  KeyEqualsCompareFunctionType;
+                using   KeyEqualsCompareFunctionType    =   typename TraitsType::KeyEqualsCompareFunctionType;
 
             public:
                 /**
                  *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::ValueEqualsCompareFunctionType  ValueEqualsCompareFunctionType;
+                using   ValueEqualsCompareFunctionType  =   typename TraitsType::ValueEqualsCompareFunctionType;
 
             public:
                 /**

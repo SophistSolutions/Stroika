@@ -25,9 +25,9 @@ namespace   Stroika {
                  */
 #if     qPlatform_Windows
                 // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
-                typedef LPCTSTR ResourceType;
+                using   ResourceType        =   LPCTSTR;
 #else
-                typedef int     ResourceType;
+                using   ResourceType        =   int;
 #endif
 
 

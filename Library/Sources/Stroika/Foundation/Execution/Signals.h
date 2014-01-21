@@ -34,7 +34,7 @@ namespace   Stroika {
 
             /**
              */
-            typedef int     SignalID;
+            using   SignalID        =   int;
 
 
 

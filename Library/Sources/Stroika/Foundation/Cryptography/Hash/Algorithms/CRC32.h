@@ -40,7 +40,7 @@ namespace   Stroika {
 
                 template    <>
                 struct Hasher<uint32_t, Algorithms::CRC32> {
-                    typedef uint32_t   ReturnType;
+                    using   ReturnType      =   uint32_t;
 
                     static  ReturnType    Hash (const Streams::BinaryInputStream& from);
                     static  ReturnType    Hash (const Byte* from, const Byte* to);

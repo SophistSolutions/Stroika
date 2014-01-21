@@ -66,7 +66,7 @@ namespace   {
      */
 
     /* typedef a 32 bit type */
-    typedef uint32_t UINT4;
+    using   UINT4   =   uint32_t;
 
     /* Data structure for MD5 (Message Digest) computation */
     struct MD5_CTX {

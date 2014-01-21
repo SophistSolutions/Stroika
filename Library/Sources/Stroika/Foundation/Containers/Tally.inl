@@ -120,10 +120,10 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
-                typedef typename ElementsIteratorHelper_::Rep   MyIteratorRep_;
-                typedef ElementsIteratorHelperContext_          MyDataBLOB_;
+                using   MyIteratorRep_  =   typename ElementsIteratorHelper_::Rep;
+                using   MyDataBLOB_     =   ElementsIteratorHelperContext_;
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
-                typedef typename Iterable<T>::_SharedPtrIRep          IterableOfTSharedPtrIRep;
+                using   IterableOfTSharedPtrIRep        =   typename Iterable<T>::_SharedPtrIRep;
 #endif
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
                     using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
@@ -226,10 +226,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
-                typedef typename Iterable<T>::_SharedPtrIRep          IterableOfTSharedPtrIRep;
+                using   IterableOfTSharedPtrIRep    =   typename Iterable<T>::_SharedPtrIRep;
 #endif
-                typedef typename UniqueElementsIteratorHelper_::Rep   MyIteratorRep_;
-                typedef UniqueElementsIteratorHelperContext_          MyDataBLOB_;
+                using   MyIteratorRep_              =   typename UniqueElementsIteratorHelper_::Rep;
+                using   MyDataBLOB_                 =   UniqueElementsIteratorHelperContext_;
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
                     using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);

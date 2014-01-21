@@ -1334,9 +1334,9 @@ void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, 
             sourceExhausted,    /* partial character in source, but hit end */
             targetExhausted     /* insuff. room in target for conversion */
         };
-        typedef unsigned long   UCS4;
-        typedef unsigned short  UTF16;
-        typedef unsigned char   UTF8;
+        using   UCS4    =   uint32_t;
+        using   UTF16   =   uint16_t;
+        using   UTF8    =   uint8_t;
         const UCS4 kReplacementCharacter =  0x0000FFFDUL;
         const UCS4 kMaximumUCS2 =           0x0000FFFFUL;
         const UCS4 kMaximumUTF16 =          0x0010FFFFUL;
@@ -1454,9 +1454,9 @@ void    UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt
             sourceExhausted,    /* partial character in source, but hit end */
             targetExhausted     /* insuff. room in target for conversion */
         };
-        typedef unsigned long   UCS4;
-        typedef unsigned short  UTF16;
-        typedef unsigned char   UTF8;
+        using   UCS4    =   uint32_t;
+        using   UTF16   =   uint16_t;
+        using   UTF8    =   uint8_t;
         const UCS4 kReplacementCharacter =  0x0000FFFDUL;
         const UCS4 kMaximumUCS2 =           0x0000FFFFUL;
         const UCS4 kMaximumUTF16 =          0x0010FFFFUL;

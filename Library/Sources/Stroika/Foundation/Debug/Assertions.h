@@ -29,7 +29,7 @@ namespace   Stroika {
             /**
              *  Note: Some any paramater could be null, if no suitable value is available
              */
-            typedef void    (*AssertionHandlerType) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
+            using       AssertionHandlerType    =   void    (*) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName);
 
             /**
              *  Stroika makes very heavy use of assertions (to some extent inspired and

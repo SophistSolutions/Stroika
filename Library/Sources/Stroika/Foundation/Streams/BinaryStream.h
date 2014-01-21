@@ -59,7 +59,7 @@ namespace   Stroika {
                 BinaryStream (nullptr_t);
 
             protected:
-                typedef shared_ptr<_IRep>   _SharedIRep;
+                using       _SharedIRep     =   shared_ptr<_IRep>;
 
             protected:
                 /**

@@ -34,7 +34,7 @@ namespace   Stroika {
                         virtual ~_IRep ();
                         virtual Accessor    ReadResource (const Name& name) const   =   0;
                     };
-                    typedef shared_ptr<_IRep>   _SharedRep;
+                    using   _SharedRep      =   shared_ptr<_IRep>;
 
                 protected:
                     static Accessor _mkAccessor (const Byte* start, const Byte* end);

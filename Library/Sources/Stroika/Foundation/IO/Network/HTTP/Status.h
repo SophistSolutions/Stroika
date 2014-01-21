@@ -27,7 +27,9 @@ namespace   Stroika {
                 namespace   HTTP {
 
 
-                    typedef unsigned int    Status;
+                    using       Status  =   unsigned int;
+
+
                     /*
                      * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for details on these status codes.
                      */

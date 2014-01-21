@@ -109,8 +109,8 @@ namespace   Stroika {
                  */
                 template    <typename   ELEMENT, typename KEY = ELEMENT>
                 struct  DefaultTraits {
-                    typedef ELEMENT     ElementType;
-                    typedef KEY         KeyType;
+                    using   ElementType =   ELEMENT;
+                    using   KeyType     =   KEY;
 
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, 1);
@@ -127,9 +127,9 @@ namespace   Stroika {
                     static  bool    Equal (const KeyType& lhs, const KeyType& rhs);
 
 #if     qDebug
-                    typedef Stats_Basic     StatsType;
+                    using   StatsType   =   Stats_Basic;
 #else
-                    typedef Stats_Null      StatsType;
+                    using   StatsType   =   Stats_Null;
 #endif
                 };
 
@@ -171,8 +171,8 @@ namespace   Stroika {
             template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT>>
             class   LRUCache {
             public:
-                typedef typename TRAITS::ElementType    ElementType;
-                typedef typename TRAITS::KeyType        KeyType;
+                using   ElementType     =   typename TRAITS::ElementType;
+                using   KeyType         =   typename TRAITS::KeyType;
 
             public:
                 LRUCache (size_t maxCacheSize);

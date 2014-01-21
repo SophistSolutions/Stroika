@@ -54,7 +54,7 @@ namespace   Stroika {
              *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
              *  @see SignedSeekOffsetType.
              */
-            typedef uint64_t SeekOffsetType;
+            using       SeekOffsetType          =   uint64_t;
 
 
             /**
@@ -63,7 +63,7 @@ namespace   Stroika {
              *
              *  @see SignedSeekOffsetType.
              */
-            typedef int64_t SignedSeekOffsetType;
+            using       SignedSeekOffsetType    =   int64_t;
 
 
             /**

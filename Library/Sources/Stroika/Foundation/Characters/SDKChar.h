@@ -42,9 +42,9 @@ namespace   Stroika {
              *  SDKChar is the kind of character passed to most/default platform SDK APIs.
              */
 #if     qTargetPlatformSDKUseswchar_t
-            typedef wchar_t SDKChar;
+            using       SDKChar     =   wchar_t;
 #else
-            typedef char    SDKChar;
+            using       SDKChar     =   char;
 #endif
 
 

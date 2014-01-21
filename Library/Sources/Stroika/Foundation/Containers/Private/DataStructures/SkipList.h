@@ -46,9 +46,9 @@ namespace   Stroika {
                                typename TRAITS >
                     class   SkipList {
                     public:
-                        typedef KEY KeyType;
-                        typedef VALUE  ValueType;
-                        typedef typename TRAITS::KeyValue    KeyValue;
+                        using   KeyType     =   KEY;
+                        using   ValueType   =   VALUE;
+                        using   KeyValue    =   typename TRAITS::KeyValue;
 
                     public:
                         using   value_type  =   pair<KEY, VALUE>;       /// gonna have to work on this to get working...

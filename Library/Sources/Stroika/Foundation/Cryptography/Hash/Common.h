@@ -36,7 +36,7 @@ namespace   Stroika {
 
                 template    <typename RETURN_TYPE, typename ALGORITHM>
                 struct Hasher {
-                    typedef RETURN_TYPE ReturnType;
+                    using   ReturnType      =   RETURN_TYPE;
 
                     static  ReturnType  Hash (const Streams::BinaryInputStream& from);
                     static  ReturnType  Hash (const Byte* from, const Byte* to);

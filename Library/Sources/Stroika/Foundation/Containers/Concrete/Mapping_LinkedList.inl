@@ -73,11 +73,11 @@ namespace   Stroika {
 #endif
 
                 public:
-                    typedef typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
+                    using   KeyEqualsCompareFunctionType    =   typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType;
 
                 private:
-                    typedef Private::PatchingDataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>             DataStructureImplType_;
-                    typedef Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>    IteratorRep_;
+                    using   DataStructureImplType_          =   Private::PatchingDataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   IteratorRep_                    =   Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;

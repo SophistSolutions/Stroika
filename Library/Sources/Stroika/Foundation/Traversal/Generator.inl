@@ -89,8 +89,8 @@ namespace   Stroika {
             Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext)
             {
                 struct  MyIterable_ : Iterable<T> {
-                    typedef function<Memory::Optional<T>()>         MyContextData_;
-                    typedef typename Private_::GenItWrapper_<T>     MyIteratorRep_;
+                    using   MyContextData_      =   function<Memory::Optional<T>()>;
+                    using   MyIteratorRep_      =   typename Private_::GenItWrapper_<T>;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
                         using   inherited       = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
                         using   _SharedPtrIRep  = typename Iterable<T>::_SharedPtrIRep;

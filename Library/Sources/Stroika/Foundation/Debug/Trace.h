@@ -79,7 +79,7 @@ namespace   Stroika {
                 // The 'TraceLastBufferedWriteTokenType' overload of EmitTraceMessage allows you to specify a set of (trailing) characters to
                 // be temporarily buffered. These characters are not immediately emitted, and can be cleared via UnputBufferedCharactersForMatchingToken ().
                 // They will eventually be flushed out on the next call to EmitTraceMessage ().
-                typedef int TraceLastBufferedWriteTokenType;
+                using	TraceLastBufferedWriteTokenType		=	int;
                 nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...);
                 nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...);
 

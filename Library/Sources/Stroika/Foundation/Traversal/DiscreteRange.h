@@ -57,7 +57,7 @@ namespace   Stroika {
                     {
                         return static_cast<T> (static_cast<int> (n) + 1);
                     }
-                    typedef ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
+                    using       RangeTraitsType     =   ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
                 };
 
 
@@ -140,12 +140,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
             class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, public Iterable<T> {
             private:
-                typedef Range<T, typename TRAITS::RangeTraitsType>  inherited_RangeType;
+                using       inherited_RangeType     =   Range<T, typename TRAITS::RangeTraitsType>;
 
             public:
                 /**
                  */
-                typedef typename inherited_RangeType::ElementType   ElementType;
+                using   ElementType =   typename inherited_RangeType::ElementType;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

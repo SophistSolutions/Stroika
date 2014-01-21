@@ -79,7 +79,7 @@ namespace   Stroika {
                  *      sure arguments have application lifetime.
                  *
                  */
-                typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
+                using       String_Constant     =    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
 
 
             }

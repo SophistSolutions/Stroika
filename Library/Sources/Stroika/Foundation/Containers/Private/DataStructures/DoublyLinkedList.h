@@ -49,7 +49,7 @@ namespace   Stroika {
                      */
                     template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals <T>>
                     struct   DoublyLinkedList_DefaultTraits {
-                        typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                        using   EqualsCompareFunctionType       =   EQUALS_COMPARER;
                     };
 
 
@@ -244,7 +244,7 @@ namespace   Stroika {
                         ForwardIterator (const DoublyLinkedList<T, TRAITS>* data);
 
                     public:
-                        typedef typename DoublyLinkedList<T, TRAITS>::Link    Link;
+                        using   Link    =   typename DoublyLinkedList<T, TRAITS>::Link;
 
                     public:
                         nonvirtual  ForwardIterator& operator= (const ForwardIterator& list);

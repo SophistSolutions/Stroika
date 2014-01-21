@@ -181,7 +181,7 @@ namespace   Stroika {
             */
             class   TextLayoutBlock_Basic : public TextLayoutBlock {
             private:
-                typedef TextLayoutBlock inherited;
+                using   inherited   =   TextLayoutBlock;
 
             public:
                 TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd);
@@ -229,7 +229,7 @@ namespace   Stroika {
             */
             class   TextLayoutBlock_Copy : public TextLayoutBlock {
             private:
-                typedef TextLayoutBlock inherited;
+                using   inherited   =   TextLayoutBlock;
 
             public:
                 TextLayoutBlock_Copy (const TextLayoutBlock& from);
@@ -275,7 +275,7 @@ namespace   Stroika {
             */
             class   TextLayoutBlock_VirtualSubset : public TextLayoutBlock {
             private:
-                typedef TextLayoutBlock inherited;
+                using   inherited   =   TextLayoutBlock;
 
             public:
                 TextLayoutBlock_VirtualSubset (const TextLayoutBlock& subsetOf, size_t vStart, size_t vEnd);

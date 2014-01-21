@@ -67,7 +67,7 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithEqualsOptionally {
-                typedef T   ElementType;
+                using       ElementType     =   T;
 
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
@@ -94,7 +94,7 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
-                typedef T   ElementType;
+                using   ElementType     =   T;
 
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
 

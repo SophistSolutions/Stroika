@@ -120,7 +120,7 @@ namespace   Stroika {
                 }
                 virtual size_t              GetLength () const
                 {
-                    typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
+                    using   SignedDifferenceType        =   typename TRAITS::SignedDifferenceType;
                     if (fForcedEnd) {
                         return static_cast<SignedDifferenceType> (0);
                     }

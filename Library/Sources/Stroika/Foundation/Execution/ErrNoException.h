@@ -36,7 +36,7 @@ namespace   Stroika {
 
 
 #if     !qCompilerAndStdLib_Supports_errno_t
-            typedef int errno_t;
+            using   errno_t     =   int;
 #endif
 
 

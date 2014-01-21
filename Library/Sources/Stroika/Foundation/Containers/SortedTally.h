@@ -34,7 +34,7 @@ namespace   Stroika {
             struct   SortedTally_DefaultTraits : Tally_DefaultTraits <T, WELL_ORDER_COMPARER> {
                 /**
                  */
-                typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+                using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
@@ -64,11 +64,11 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef SortedTally<T, TRAITS>  ArchetypeContainerType;
+                using   ArchetypeContainerType      =   SortedTally<T, TRAITS>;
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep              =   shared_ptr<_IRep>;
 
             public:
                 SortedTally ();
@@ -91,14 +91,14 @@ namespace   Stroika {
                  *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                typedef TRAITS  TraitsType;
+                using   TraitsType  =   TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
+                using   WellOrderCompareFunctionType    =   typename TraitsType::WellOrderCompareFunctionType;
 
             public:
                 RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);

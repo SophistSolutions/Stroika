@@ -28,7 +28,7 @@ namespace   Stroika {
              *
              *  @see SDKChar
              */
-            typedef basic_string<SDKChar>   SDKString;
+            using       SDKString   =   basic_string<SDKChar>;
 
 
             /**

@@ -31,8 +31,11 @@ namespace   Stroika {
                 using   Memory::Byte;
                 using   Time::DateTime;
 
-                // @todo MAYBNE MAKE UNSINGED???
-                typedef int64_t FileOffset_t;
+
+                /**
+                 *  @todo MAYBNE MAKE UNSINGED???
+                 */
+                using   FileOffset_t    =   int64_t;
 
 
             }

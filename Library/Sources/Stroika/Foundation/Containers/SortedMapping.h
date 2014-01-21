@@ -36,7 +36,7 @@ namespace   Stroika {
             struct   SortedMapping_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
                 /**
                  */
-                typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
+                using   KeyWellOrderCompareFunctionType     =   KEY_WELL_ORDER_COMPARER;
 
                 /**
                  */
@@ -68,13 +68,13 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep      =   shared_ptr<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> ArchetypeContainerType;
+                using   ArchetypeContainerType  =   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
 
             public:
                 /**
@@ -101,12 +101,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                typedef TRAITS      TraitsType;
+                using   TraitsType  =   TRAITS;
 
             public:
                 /**
                  */
-                typedef typename    TraitsType::KeyWellOrderCompareFunctionType KeyWellOrderCompareFunctionType;
+                using   KeyWellOrderCompareFunctionType     =   typename TraitsType::KeyWellOrderCompareFunctionType;
             };
 
 

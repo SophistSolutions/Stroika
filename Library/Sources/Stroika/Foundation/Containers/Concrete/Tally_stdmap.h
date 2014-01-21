@@ -35,7 +35,7 @@ namespace   Stroika {
                 struct   Tally_stdmap_DefaultTraits : Tally_DefaultTraits <T, WELL_ORDER_COMPARER> {
                     /**
                      */
-                    typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+                    using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
 
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
                 };
@@ -51,12 +51,12 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    typedef TRAITS      TraitsType;
+                    using   TraitsType                      =   TRAITS;
 
                 public:
                     /**
                      */
-                    typedef typename    TraitsType::WellOrderCompareFunctionType WellOrderCompareFunctionType;
+                    using   WellOrderCompareFunctionType    =   typename TraitsType::WellOrderCompareFunctionType;
 
                 public:
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);

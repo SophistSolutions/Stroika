@@ -72,7 +72,7 @@ namespace   Stroika {
 
             /**
              */
-            typedef shared_ptr<IRunnable>   IRunnablePtr;
+            using   IRunnablePtr    =   shared_ptr<IRunnable>;
 
 
             /**

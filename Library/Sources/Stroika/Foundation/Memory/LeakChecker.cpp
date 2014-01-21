@@ -88,9 +88,9 @@ namespace   {
     bool    sInitialized    =   false;
 
 #if     qOverrideOpNew_EXTRA_LEAK_DETECTION
-    typedef Memory::LeakTrackingGeneralPurposeAllocator     _USE_ALLOCATOR_;
+    using       _USE_ALLOCATOR_     =       Memory::LeakTrackingGeneralPurposeAllocator;
 #else
-    typedef Memory::SimpleSizeCountingGeneralPurposeAllocator   _USE_ALLOCATOR_;
+    using       _USE_ALLOCATOR_     =       Memory::SimpleSizeCountingGeneralPurposeAllocator;
 #endif
 
     Byte    sAllocatorBuf_[sizeof (_USE_ALLOCATOR_)];       // BSS until intiailized in Memory::Private::INIT::INIT ()

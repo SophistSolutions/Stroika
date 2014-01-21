@@ -85,14 +85,14 @@ namespace   Stroika {
                 /**
                  *
                  */
-                typedef float   ProgressRangeType;
+                using   ProgressRangeType   =   float;
 
             public:
                 /**
                  *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
                  *  or may register a callback to be notified of progress.
                  */
-                typedef std::function<void (const ProgressMonitor& progressMonitor)>    ChangedCallbackType;
+                using   ChangedCallbackType =   std::function<void (const ProgressMonitor& progressMonitor)>;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

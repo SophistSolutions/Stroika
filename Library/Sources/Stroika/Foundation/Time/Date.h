@@ -216,7 +216,7 @@ namespace   Stroika {
              */
             class   Date {
             public:
-                typedef unsigned int    JulianRepType;
+                using   JulianRepType       =   unsigned int;
                 DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
                 DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
 

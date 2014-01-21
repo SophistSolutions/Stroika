@@ -35,12 +35,12 @@ namespace   Stroika {
 /// TODO - maybe move this to configuraiotn module???
 
 #if     qHas_pid_t
-            typedef     ::pid_t pid_t;
+            using   pid_t   =   ::pid_t ;
 #else
 #if     qPlatform_Windows
-            typedef DWORD   pid_t;
+            using   pid_t   =   DWORD;
 #else
-            typedef int pid_t;
+            using   pid_t   =   int;
 #endif
 #endif
 

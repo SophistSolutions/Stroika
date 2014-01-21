@@ -35,8 +35,8 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             struct  KeyValuePair {
             public:
-                typedef KEY_TYPE    KeyType;
-                typedef VALUE_TYPE  ValueType;
+                using   KeyType     =   KEY_TYPE;
+                using   ValueType   =   VALUE_TYPE;
 
             public:
                 KeyValuePair ();

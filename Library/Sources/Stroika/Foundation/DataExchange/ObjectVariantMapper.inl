@@ -293,7 +293,7 @@ namespace   Stroika {
                  *  the data, and this is simple and efficient.
                  */
                 Require (std::is_enum<ENUM_TYPE>::value);
-                typedef typename std::underlying_type<ENUM_TYPE>::type SerializeAsType;
+                using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
@@ -328,7 +328,7 @@ namespace   Stroika {
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    using   ElementType     =   typename RANGE_TYPE::ElementType;
                     Mapping<String, VariantValue> m;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
                     if (actualMember->empty ())
@@ -343,7 +343,7 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    using   ElementType     =   typename RANGE_TYPE::ElementType;
                     Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
                     if (m.empty ())

@@ -38,7 +38,7 @@ namespace   Stroika {
 
             /**
             */
-            typedef Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_> DateTimeRange;
+            using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
         }
     }
 }

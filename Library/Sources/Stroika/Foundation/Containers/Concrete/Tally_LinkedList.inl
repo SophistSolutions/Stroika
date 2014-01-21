@@ -73,9 +73,9 @@ namespace   Stroika {
 #endif
 
                 private:
-                    typedef Private::DataStructures::LinkedList<TallyEntry<T>>                              NonPatchingDataStructureImplType_;
-                    typedef Private::PatchingDataStructures::LinkedList<TallyEntry<T>>                      DataStructureImplType_;
-                    typedef typename Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>    IteratorRep_;
+                    using   NonPatchingDataStructureImplType_   =   Private::DataStructures::LinkedList<TallyEntry<T>>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<TallyEntry<T>>;
+                    using   IteratorRep_                        =   typename Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;

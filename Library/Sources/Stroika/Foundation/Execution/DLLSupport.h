@@ -27,11 +27,11 @@ namespace   Stroika {
 
 
 #if     qPlatform_Windows
-            typedef HMODULE DLLHandle;
-            typedef FARPROC ProcAddress;
+            using   DLLHandle   =   HMODULE;
+            using   ProcAddress =   FARPROC;
 #else
-            typedef void*   DLLHandle;
-            typedef void*   ProcAddress;
+            using   DLLHandle   =   void* ;
+            using   ProcAddress =   void* ;
 #endif
 
 

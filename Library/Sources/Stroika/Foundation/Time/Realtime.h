@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Time {
 
 
-            typedef double  DurationSecondsType;
+            using       DurationSecondsType     =   double;
 
 
             /**

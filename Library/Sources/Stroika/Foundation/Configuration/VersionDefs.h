@@ -33,7 +33,7 @@ namespace   Stroika {
 #if     defined (__cplusplus)
             /**
              */
-            typedef uint32_t    FullVersionType;
+            using   FullVersionType     =   uint32_t;
 #endif
 
 

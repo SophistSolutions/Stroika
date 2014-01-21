@@ -63,7 +63,7 @@ namespace   Stroika {
             struct   Set_DefaultTraits {
                 /**
                  */
-                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
 
@@ -71,7 +71,7 @@ namespace   Stroika {
                  *  Define typedef for this Set traits object (so other traits can generically allow recovery of the
                  *  underlying Set's TRAITS objects.
                  */
-                typedef Set_DefaultTraits<T, EQUALS_COMPARER>  SetTraitsType;
+                using   SetTraitsType               =   Set_DefaultTraits<T, EQUALS_COMPARER>;
             };
 
 
@@ -106,27 +106,27 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep      =   shared_ptr<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef Set<T, TRAITS>  ArchetypeContainerType;
+                using   ArchetypeContainerType  =   Set<T, TRAITS>;
 
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of Set<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                typedef TRAITS  TraitsType;
+                using   TraitsType              =   TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
 
             public:
                 /**

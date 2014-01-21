@@ -50,7 +50,7 @@ namespace   Stroika {
              *  Typically - programmers just use 'char' or 'unsigned char' for this, but this makes that
              *  intent more clear.
              */
-            typedef uint8_t   Byte;
+            using       Byte    =   uint8_t;
 
 
             /**

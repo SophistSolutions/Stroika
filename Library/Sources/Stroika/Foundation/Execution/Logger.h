@@ -72,7 +72,7 @@ namespace   Stroika {
             public:
                 class   IAppenderRep;
             public:
-                typedef shared_ptr<IAppenderRep>    IAppenderRepPtr;
+                using   IAppenderRepPtr     =   shared_ptr<IAppenderRep>;
 
             public:
 #if     qHas_Syslog

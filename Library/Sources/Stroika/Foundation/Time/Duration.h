@@ -202,7 +202,7 @@ namespace   Stroika {
                 nonvirtual  bool operator!= (const Duration& rhs) const;
 
             private:
-                typedef double  InternalNumericFormatType_;
+                using   InternalNumericFormatType_  =   double;
                 static  InternalNumericFormatType_  ParseTime_ (const string& s);
                 static  string                      UnParseTime_ (InternalNumericFormatType_ t);
 

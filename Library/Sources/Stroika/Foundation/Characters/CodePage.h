@@ -106,7 +106,7 @@ namespace   Stroika {
                 a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
                     <p>Use this with @'CodePageConverter'.</p>
             */
-            typedef int CodePage;
+            using	CodePage	=	int;
 
 
             /*

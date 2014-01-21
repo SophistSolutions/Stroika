@@ -58,9 +58,9 @@ namespace   Stroika {
                      *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
                      */
 #if     qPlatform_Windows
-                    typedef SOCKET  PlatformNativeHandle;
+                    using   PlatformNativeHandle    =   SOCKET;
 #else
-                    typedef int     PlatformNativeHandle;
+                    using   PlatformNativeHandle    =   int;
 #endif
                 protected:
                     class   _Rep;

@@ -49,7 +49,7 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            typedef uint16_t    Priority;
+            using   Priority    =   uint16_t;
             const   Priority    kMinPriority    =   kMinUInt16;
             const   Priority    kMaxPriority    =   kMaxUInt16;
 
@@ -88,13 +88,13 @@ namespace   Stroika {
             class   PriorityQueue : public Iterable<pair<T, Priority>> {
             protected:
                 class   _IRep;
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep      =   shared_ptr<_IRep>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef PriorityQueue<T>    ArchetypeContainerType;
+                using   ArchetypeContainerType  =   PriorityQueue<T>;
 
             public:
                 /*

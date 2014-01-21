@@ -94,13 +94,13 @@ namespace   Stroika {
                  */
                 template    <typename   KEY, typename RESULT>
                 struct  DefaultTraits {
-                    typedef KEY         KeyType;
-                    typedef RESULT      ResultType;
+                    using   KeyType     =   KEY;
+                    using   ResultType  =   RESULT;
 
 #if     qDebug
-                    typedef Stats_Basic     StatsType;
+                    using   StatsType   =   Stats_Basic;
 #else
-                    typedef Stats_Null      StatsType;
+                    using   StatsType   =   Stats_Null;
 #endif
                 };
 

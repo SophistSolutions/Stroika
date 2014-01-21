@@ -63,13 +63,13 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
 
             protected:
-                typedef     shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep      =   shared_ptr<_IRep>;
 
             private:
                 struct  _Rep_Cloner {
                     inline  static  _SharedPtrIRep   Copy (const _IRep& t);
                 };
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>  SharedRepByValuePtr_;
+                using   SharedRepByValuePtr_        =   Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
 
             private:
                 SharedRepByValuePtr_   fRep_;

@@ -39,7 +39,7 @@ namespace   Stroika {
                     */
                     class   BasicServer {
                     public:
-                        typedef PeriodicNotifier::FrequencyInfo FrequencyInfo;
+                        using   FrequencyInfo   =   PeriodicNotifier::FrequencyInfo;
 
                     public:
                         BasicServer (const BasicServer&) = delete;

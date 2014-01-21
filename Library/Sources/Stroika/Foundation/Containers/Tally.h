@@ -61,7 +61,7 @@ namespace   Stroika {
             struct   Tally_DefaultTraits {
                 /**
                  */
-                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
             };
@@ -105,28 +105,28 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                typedef Tally<T, TRAITS>    ArchetypeContainerType;
+                using       ArchetypeContainerType      =   Tally<T, TRAITS>;
 
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
-                typedef TRAITS  TraitsType;
+                using       TraitsType                  =   TRAITS;
 
             public:
                 /**
                  *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+                using       EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
 
             public:
                 /**
                  *      \brief  TallyOfElementType is just a handly copy of the *T* template type which this
                  *              Tally<T, TRAITS> parameterizes counting.
                  */
-                typedef T   TallyOfElementType;
+                using   TallyOfElementType  =   T;
 
             protected:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -286,7 +286,7 @@ namespace   Stroika {
                 using   inherited   =   typename Iterable<TallyEntry<T>>::_IRep;
 
             protected:
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             protected:
                 _IRep ();

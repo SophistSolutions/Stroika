@@ -120,7 +120,7 @@ namespace   Stroika {
             }
             inline  int Character::Compare (Character rhs) const
             {
-                typedef make_signed<wchar_t>::type  SIGNED_WCHART_;
+                using   SIGNED_WCHART_      =       make_signed<wchar_t>::type;
                 return static_cast<SIGNED_WCHART_> (GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
             }
             inline  bool    Character::operator< (Character rhs) const

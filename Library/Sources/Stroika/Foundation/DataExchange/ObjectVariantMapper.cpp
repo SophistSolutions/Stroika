@@ -261,7 +261,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ()
 {
-    typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
+    using   ACTUAL_ELEMENT_TYPE =   Mapping<String, String>;
     auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
         const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
@@ -290,7 +290,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ()
 {
-    typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
+    using   ACTUAL_ELEMENT_TYPE     =   Mapping<String, VariantValue>;
     auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
         return VariantValue (*actualMember);

@@ -60,7 +60,7 @@ namespace   Stroika {
                         using   inherited   =   STL_CONTAINER_OF_T;
 
                     public:
-                        typedef typename STL_CONTAINER_OF_T::value_type value_type;
+                        using   value_type  =   typename STL_CONTAINER_OF_T::value_type;
 
                     public:
                         class   ForwardIterator;
@@ -81,10 +81,10 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
                     public:
-                        typedef STLContainerWrapper<STL_CONTAINER_OF_T>  CONTAINER_TYPE;
+                        using   CONTAINER_TYPE  =   STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
-                        typedef typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type value_type;
+                        using   value_type      =   typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
 
                     public:
                         explicit ForwardIterator (CONTAINER_TYPE* data);

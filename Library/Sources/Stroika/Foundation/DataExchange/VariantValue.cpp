@@ -18,9 +18,9 @@ using   namespace   Stroika::Foundation::DataExchange;
 
 namespace {
     // Mimic private class values - but cannot reference directly cuz private and this isn't part of the class
-    typedef long long int           IntegerType_;
-    typedef unsigned long long int  UnsignedIntegerType_;
-    typedef long double             FloatType_;
+    using       IntegerType_            =   long long int;
+    using       UnsignedIntegerType_    =   unsigned long long int;
+    using       FloatType_              =   long double;
 
     // simple mappings to make use of TIRep_<> private template
     template    <typename T>
