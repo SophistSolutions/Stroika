@@ -42,14 +42,16 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    Array<T, TRAITS>::AssignFrom (const Array<T, TRAITS>& rhs, IteratorOwnerID newOwnerID)
                     {
+                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
                         /*
                          * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
-                        Assert (not (this->HasActiveIterators ()));   // cuz copy of array does not copy iterators...
-                        this->Invariant ();
+                        rhs.Invariant ();
+                        Invariant ();
                         inherited::operator= (rhs);
-                        this->Invariant ();
+                        rhs.Invariant ();
+                        Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsAdd (size_t index) const

@@ -37,13 +37,15 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::AssignFrom (const LinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID)
                     {
+                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
                         /*
                          * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
+                        rhs.Invariant ();
                         Invariant ();
-                        Assert (not (this->HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
                         inherited::operator= (rhs);
+                        rhs.Invariant ();
                         Invariant ();
                     }
 #if 0

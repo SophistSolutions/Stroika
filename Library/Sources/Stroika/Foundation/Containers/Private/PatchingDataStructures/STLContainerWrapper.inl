@@ -50,12 +50,16 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssignFrom (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs, IteratorOwnerID newOwnerID)
                     {
+                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
+                        rhs.Invariant ();
+                        Invariant ();
                         /*
                          * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
-                        Require (not this->HasActiveIterators ()); // cannot overwrite container with active iterators
                         inherited::operator= (rhs);
+                        rhs.Invariant ();
+                        Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename INSERT_VALUE_TYPE>

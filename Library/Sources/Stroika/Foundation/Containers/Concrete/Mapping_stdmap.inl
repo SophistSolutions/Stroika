@@ -103,11 +103,7 @@ namespace   Stroika {
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_.Invariant ();
-                        from.fData_.Invariant ();
                         fData_.AssignFrom (from.fData_, forIterableEnvelope);
-                        from.fData_.Invariant ();
-                        fData_.Invariant ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
