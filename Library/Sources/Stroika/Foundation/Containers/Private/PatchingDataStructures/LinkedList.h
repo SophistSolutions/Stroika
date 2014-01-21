@@ -52,10 +52,19 @@ namespace   Stroika {
 
                     public:
                         LinkedList ();
-                        LinkedList (const LinkedList<T, TRAITS>& from);
+                        LinkedList (const LinkedList<T, TRAITS>& from) = delete;
 
                     public:
+                        nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list) = delete;
+
+#if 0
+                    public:
                         nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list);
+#endif
+
+                    public:
+                        // TMPACK - once converted lose X(X&) and  op= and doc why
+                        nonvirtual  void    AssignFrom (const LinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         using   Link    =    typename DataStructures::LinkedList<T, TRAITS>::Link;

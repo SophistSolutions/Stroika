@@ -36,7 +36,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
-                    Rep_ (const Rep_& from);
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
@@ -91,21 +92,20 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
-                inline  Queue_Array<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                inline  Queue_Array<T, TRAITS>::Rep_::Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_ = from.fData_;
+                        fData_.AssignFrom (from.fData_, forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 typename Queue_Array<T, TRAITS>::Rep_::_SharedPtrIRep  Queue_Array<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    // no lock needed cuz src locked in Rep_ CTOR
-                    return _SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this, forIterableEnvelope));      // no lock needed cuz src locked in Rep_ CTOR
                 }
                 template    <typename T, typename TRAITS>
                 Iterator<T>  Queue_Array<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const

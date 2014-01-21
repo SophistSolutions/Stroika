@@ -41,7 +41,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
-                    Rep_ (const Rep_& from);
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
@@ -109,13 +110,13 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
-                inline  Tally_Array<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                inline  Tally_Array<T, TRAITS>::Rep_::Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_ = from.fData_;
+                        fData_.AssignFrom (from.fData_, forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -123,7 +124,7 @@ namespace   Stroika {
                 size_t  Tally_Array<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -183,7 +184,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 typename Tally_Array<T, TRAITS>::Rep_::_SharedPtrIRep    Tally_Array<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    return _SharedPtrIRep (new Rep_ (*this));        // no lock needed cuz src locked in Rep_ CTOR
+                    return _SharedPtrIRep (new Rep_ (*this, forIterableEnvelope));        // no lock needed cuz src locked in Rep_ CTOR
                 }
                 template    <typename T, typename TRAITS>
                 void    Tally_Array<T, TRAITS>::Rep_::Add (T item, size_t count)

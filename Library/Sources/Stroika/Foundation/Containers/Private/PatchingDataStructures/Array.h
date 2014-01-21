@@ -53,13 +53,21 @@ namespace   Stroika {
 
                     public:
                         Array ();
-                        Array (const Array<T, TRAITS>& from);
+                        Array (const Array<T, TRAITS>& from) = delete;
 
                     public:
                         ~Array ();
 
                     public:
+                        nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs)   =   delete;
+#if 0
+                    public:
                         nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs);
+#endif
+
+                    public:
+                        // TMPACK - once converted lose X(X&) and  op= and doc why
+                        nonvirtual  void    AssignFrom (const Array<T, TRAITS>& rhs, IteratorOwnerID newOwnerID);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and

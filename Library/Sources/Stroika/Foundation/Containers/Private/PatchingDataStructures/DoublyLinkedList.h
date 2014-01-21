@@ -48,10 +48,18 @@ namespace   Stroika {
 
                     public:
                         DoublyLinkedList ();
-                        DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
+                        DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from) = delete;
 
                     public:
+                        nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs) =   delete;
+#if 0
+                    public:
                         nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs);
+#endif
+
+                    public:
+                        // TMPACK - once converted lose X(X&) and  op= and doc why
+                        nonvirtual  void    AssignFrom (const DoublyLinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         using   Link    =   typename DataStructures::DoublyLinkedList<T, TRAITS>::Link;

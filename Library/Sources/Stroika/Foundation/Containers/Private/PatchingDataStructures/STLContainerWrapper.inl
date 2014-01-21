@@ -27,11 +27,14 @@ namespace   Stroika {
                         : inherited ()
                     {
                     }
+#if 0
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from)
                         : inherited (from)
                     {
                     }
+#endif
+#if 0
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>&   STLContainerWrapper<STL_CONTAINER_OF_T>::operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs)
                     {
@@ -42,6 +45,17 @@ namespace   Stroika {
                         Require (not this->HasActiveIterators ()); // cannot overwrite container with active iterators
                         inherited::operator= (rhs);
                         return *this;
+                    }
+#endif
+                    template    <typename STL_CONTAINER_OF_T>
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::AssignFrom (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs, IteratorOwnerID newOwnerID)
+                    {
+                        /*
+                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
+                         * If this is to be supported at some future date, well need to work on our patching.
+                         */
+                        Require (not this->HasActiveIterators ()); // cannot overwrite container with active iterators
+                        inherited::operator= (rhs);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename INSERT_VALUE_TYPE>

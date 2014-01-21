@@ -42,7 +42,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
-                    Rep_ (const Rep_& from);
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
@@ -93,13 +94,13 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                inline  Collection_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                inline  Collection_LinkedList<T>::Rep_::Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_ = from.fData_;
+                        fData_.AssignFrom (from.fData_, forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -107,7 +108,7 @@ namespace   Stroika {
                 typename Collection_LinkedList<T>::Rep_::_SharedPtrIRep  Collection_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return _SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this, forIterableEnvelope));
                 }
                 template    <typename T>
                 Iterator<T>  Collection_LinkedList<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const

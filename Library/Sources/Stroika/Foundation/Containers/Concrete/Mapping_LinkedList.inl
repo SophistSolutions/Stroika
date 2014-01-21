@@ -42,7 +42,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
-                    Rep_ (const Rep_& from);
+                    Rep_ (const Rep_& from) = delete;
+                    Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
@@ -98,20 +99,20 @@ namespace   Stroika {
                 {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_ = from.fData_;
+                        fData_.AssignFrom (from.fData_, forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
+                    return _SharedPtrIRep (new Rep_ (*this, forIterableEnvelope));       // no lock needed cuz src locked in Rep_ CTOR
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const

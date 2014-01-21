@@ -64,10 +64,20 @@ namespace   Stroika {
 
                     public:
                         STLContainerWrapper ();
+#if 0
                         STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from);
+#endif
 
                     public:
+                        nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;
+#if 0
+                    public:
                         nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs);
+#endif
+
+                    public:
+                        // TMPACK - once converted lose X(X&) and  op= and doc why
+                        nonvirtual  void    AssignFrom (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         class   ForwardIterator;
