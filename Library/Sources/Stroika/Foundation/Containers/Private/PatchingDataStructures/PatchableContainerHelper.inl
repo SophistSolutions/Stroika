@@ -26,6 +26,8 @@ namespace   Stroika {
                         , fActiveIteratorsListHead (nullptr)
                     {
                         Require (not HasActiveIterators ());
+#if 0
+                        // See if this is buggy...
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             if (v->fOwnerID == newOwnerID) {
@@ -35,6 +37,7 @@ Again:
                                 goto Again;
                             }
                         }
+#endif
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::~PatchableContainerHelper ()
@@ -137,6 +140,8 @@ Again:
                     {
                         AssertNotNull (fPatchableContainer);
                         fPatchableContainer->RemoveIterator (this);
+                        Assert (fNextActiveIterator == nullptr);
+                        // could assert owner  - fPatchableContainer - doenst contian us in list
                     }
 
 
