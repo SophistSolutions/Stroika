@@ -76,8 +76,8 @@ namespace   Stroika {
                             Require (pi->fData = movedFrom);
                             auto newI = this->begin ();
                             auto newE = this->end ();
-                            auto oldI = moved->begin ();
-                            auto oldE = moved->end ();
+                            auto oldI = movedFrom->begin ();
+                            auto oldE = movedFrom->end ();
                             while (oldI != pi->fStdIterator) {
                                 Assert (newI != newE);
                                 Assert (oldI != oldE);
