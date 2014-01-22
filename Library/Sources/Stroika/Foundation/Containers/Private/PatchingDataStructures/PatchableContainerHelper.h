@@ -92,9 +92,6 @@ namespace   Stroika {
                         PatchableIteratorMinIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
                         PatchableIteratorMinIn (const PatchableIteratorMinIn& from);
                         nonvirtual  ~PatchableIteratorMinIn ();
-#if 0
-                        nonvirtual  PatchableIteratorMinIn&    operator= (const PatchableIteratorMinIn& rhs);
-#endif
 
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
