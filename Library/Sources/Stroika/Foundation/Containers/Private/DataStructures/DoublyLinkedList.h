@@ -181,7 +181,7 @@ namespace   Stroika {
                             Require (pi->_fData == movedFrom);
                             auto newI = this->_fHead;
                             auto newE = nullptr;
-                            auto oldI = _fHead;
+                            auto oldI = movedFrom->_fHead;
                             auto oldE = nullptr;
                             while (oldI != pi->_fCurrent) {
                                 Assert (newI != newE);
