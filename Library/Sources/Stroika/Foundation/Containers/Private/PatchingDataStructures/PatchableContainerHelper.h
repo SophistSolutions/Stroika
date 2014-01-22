@@ -60,6 +60,12 @@ namespace   Stroika {
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
                     public:
+                        nonvirtual  void    AddIterator (PatchableIteratorMinIn* pi);
+
+                    public:
+                        nonvirtual  void    RemoveIterator (PatchableIteratorMinIn* pi);
+
+                    public:
                         template <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator () const;
 
@@ -86,7 +92,9 @@ namespace   Stroika {
                         PatchableIteratorMinIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
                         PatchableIteratorMinIn (const PatchableIteratorMinIn& from);
                         nonvirtual  ~PatchableIteratorMinIn ();
+#if 0
                         nonvirtual  PatchableIteratorMinIn&    operator= (const PatchableIteratorMinIn& rhs);
+#endif
 
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;

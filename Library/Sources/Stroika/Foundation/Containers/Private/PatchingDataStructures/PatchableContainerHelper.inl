@@ -23,8 +23,8 @@ namespace   Stroika {
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (*rhs)
+                        , fActiveIteratorsListHead (nullptr)
                     {
-                        //tmpahck - for now dont split iteators
                         Require (not HasActiveIterators ()); //....
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
@@ -59,6 +59,33 @@ namespace   Stroika {
                         }
                     }
 #endif
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator (PatchableIteratorMinIn* pi)
+                    {
+                        RequireNotNull (pi);
+                        Assert (pi->fNextActiveIterator == nullptr);
+                        pi->fNextActiveIterator = fActiveIteratorsListHead;
+                        fActiveIteratorsListHead = pi;
+                    }
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator (PatchableIteratorMinIn* pi)
+                    {
+                        RequireNotNull (pi);
+                        if (fActiveIteratorsListHead == pi) {
+                            fActiveIteratorsListHead = pi->fNextActiveIterator;
+                        }
+                        else {
+                            PatchableIteratorMinIn*    v = fActiveIteratorsListHead;
+                            for (; v->fNextActiveIterator != pi; v = v->fNextActiveIterator) {
+                                AssertNotNull (v);
+                                AssertNotNull (v->fNextActiveIterator);
+                            }
+                            AssertNotNull (v);
+                            Assert (v->fNextActiveIterator == pi);
+                            v->fNextActiveIterator = pi->fNextActiveIterator;
+                        }
+                    }
+
 
 
                     /*
@@ -99,6 +126,9 @@ namespace   Stroika {
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::~PatchableIteratorMinIn ()
                     {
                         AssertNotNull (fPatchableContainer);
+#if 1
+                        fPatchableContainer->RemoveIterator (this);
+#else
                         if (fPatchableContainer->fActiveIteratorsListHead == this) {
                             fPatchableContainer->fActiveIteratorsListHead = fNextActiveIterator;
                         }
@@ -112,7 +142,10 @@ namespace   Stroika {
                             Assert (v->fNextActiveIterator == this);
                             v->fNextActiveIterator = fNextActiveIterator;
                         }
+#endif
                     }
+
+#if 0
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     typename PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn&    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::operator= (const PatchableIteratorMinIn& rhs)
                     {
@@ -150,6 +183,7 @@ namespace   Stroika {
                         EnsureNotNull (fPatchableContainer);
                         return *this;
                     }
+#endif
 
 
                 }
