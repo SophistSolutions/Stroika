@@ -195,6 +195,7 @@ namespace   Stroika {
 #endif
 
                     protected:
+                    public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
                         size_t      _fLength;            // #items advertised/constructed
                         size_t      _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
                         T*          _fItems;
@@ -233,10 +234,9 @@ namespace   Stroika {
                         virtual void    _Invariant () const;
 #endif
 
-#if     qDebug
                     protected:
                         const Array<T, TRAITS>*     _fData;
-#endif
+
                     protected:
                         const T*            _fStart;         // points to FIRST elt
                         const T*            _fEnd;           // points 1 PAST last elt

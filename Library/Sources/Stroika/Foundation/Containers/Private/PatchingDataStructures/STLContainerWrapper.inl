@@ -111,7 +111,6 @@ namespace   Stroika {
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data), ownerID)
-                        , fData (data)
                         , fSuppressMore (true)
                     {
                         RequireNotNull (data);
@@ -121,16 +120,13 @@ namespace   Stroika {
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
-                        , fData (from.fData)
                         , fSuppressMore (from.fSuppressMore)
                     {
-                        RequireNotNull (fData);
                         this->Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
                     {
-                        AssertNotNull (fData);
                         this->Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
@@ -139,7 +135,6 @@ namespace   Stroika {
                         this->Invariant ();
                         inherited_DataStructure::operator= (rhs);
                         inherited_PatchHelper::operator= (rhs);
-                        fData = rhs.fData;
                         this->Invariant ();
                         return *this;
                     }
@@ -166,8 +161,8 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {
-                        AssertNotNull (fData);
-                        fData->erase_WithPatching (this->fStdIterator);
+                        AssertNotNull (this->fData);
+                        static_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (this->fData)->erase_WithPatching (this->fStdIterator);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
@@ -193,9 +188,9 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::_Invariant () const
                     {
-                        AssertNotNull (fData);
+                        AssertNotNull (this->fData);
                         // apparently pointless test is just to force triggering any check code in iterator classes for valid iterators
-                        Assert (this->fStdIterator == fData->end () or this->fStdIterator != fData->end ());
+                        Assert (this->fStdIterator == this->fData->end () or this->fStdIterator != this->fData->end ());
                         // Find some way to check iterator traits to see if random access and do this test if possible
                         //Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));   // ANSI C requires this is always TRUE
                     }

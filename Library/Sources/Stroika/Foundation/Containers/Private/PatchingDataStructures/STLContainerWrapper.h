@@ -168,8 +168,7 @@ namespace   Stroika {
 #endif
 
                     public:
-                        CONTAINER_TYPE*     fData;
-                        bool                fSuppressMore;  // for removealls
+                        bool        fSuppressMore;  // for removealls
 
                     private:
                         friend  CONTAINER_TYPE;

@@ -195,7 +195,7 @@ namespace   Stroika {
                          *  so only called when WE call Invariant().
                          */
                         for (auto ai = this->template GetFirstActiveIterator<_ArrayIteratorBase> (); ai != nullptr; ai = ai->template GetNextActiveIterator<_ArrayIteratorBase> ()) {
-                            Assert (ai->fData == this);
+                            Assert (ai->_fData == this);
                             ai->Invariant ();
                         }
                     }
@@ -211,7 +211,6 @@ namespace   Stroika {
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<Array<T, TRAITS>*> (data), ownerID)
-                        , fData (data)
                     {
                         /*
                          * Cannot call invariant () here since _fCurrent not yet setup.
@@ -221,9 +220,7 @@ namespace   Stroika {
                     inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array<T, TRAITS>::_ArrayIteratorBase& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
-                        , fData (from.fData)
                     {
-                        RequireNotNull (fData);
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
@@ -237,7 +234,6 @@ namespace   Stroika {
                         this->Invariant ();
                         inherited_DataStructure::operator= (rhs);
                         inherited_PatchHelper::operator= (rhs);
-                        fData = rhs.fData;
                         this->Invariant ();
                         return *this;
                     }
@@ -252,7 +248,7 @@ namespace   Stroika {
 
                         this->_fEnd++;
 
-                        AssertNotNull (fData);
+                        AssertNotNull (this->_fData);
 
                         /*
                          *      If we added an item to the right of our cursor, it has no effect
@@ -285,7 +281,7 @@ namespace   Stroika {
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchRemove (size_t index)
                     {
                         Require (index >= 0);
-                        Require (index < fData->GetLength ());
+                        Require (index < this->_fData->GetLength ());
 
                         /*
                          *      If we are removing an item from the right of our cursor, it has no effect
@@ -313,8 +309,8 @@ namespace   Stroika {
                         else if (&this->_fStart[index] == this->_fCurrent) {
                             PatchRemoveCurrent ();
                         }
-                        // Decrement at the end since this->CurrentIndex () calls stuff that asserts (_fEnd-fStart) == fData->GetLength ()
-                        Assert (size_t (this->_fEnd - this->_fStart) == fData->GetLength ());     //  since called before remove
+                        // Decrement at the end since this->CurrentIndex () calls stuff that asserts (_fEnd-fStart) == this->fData->GetLength ()
+                        Assert (size_t (this->_fEnd - this->_fStart) == this->_fData->GetLength ());     //  since called before remove
 
                         /*
                          * At this point, _fCurrent could be == _fEnd - must not lest _fCurrent point past!
@@ -328,11 +324,11 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::PatchRemoveAll ()
                     {
-                        Require (fData->GetLength () == 0);     //  since called after removeall
+                        Require (this->_fData->GetLength () == 0);     //  since called after removeall
 
-                        this->_fCurrent = fData->_fItems;
-                        this->_fStart = fData->_fItems;
-                        this->_fEnd = fData->_fItems;
+                        this->_fCurrent = this->_fData->_fItems;
+                        this->_fStart = this->_fData->_fItems;
+                        this->_fEnd = this->_fData->_fItems;
                         this->_fSuppressMore = true;
                     }
                     template      <typename  T, typename TRAITS>
@@ -342,11 +338,11 @@ namespace   Stroika {
                          *      NB: We can only call invariant after we've fixed things up, since realloc
                          * has happened by now, but things don't point to the right places yet.
                          */
-                        if (this->_fStart != fData->_fItems) {
+                        if (this->_fStart != this->_fData->_fItems) {
                             const   T*   oldStart    =   this->_fStart;
-                            this->_fStart = fData->_fItems;
-                            this->_fCurrent = fData->_fItems + (this->_fCurrent - oldStart);
-                            this->_fEnd = fData->_fItems + (this->_fEnd - oldStart);
+                            this->_fStart = this->_fData->_fItems;
+                            this->_fCurrent = this->_fData->_fItems + (this->_fCurrent - oldStart);
+                            this->_fEnd = this->_fData->_fItems + (this->_fEnd - oldStart);
                         }
                     }
 #if     qDebug
@@ -354,7 +350,6 @@ namespace   Stroika {
                     void    Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
                     {
                         inherited_DataStructure::_Invariant ();
-                        Assert (fData == inherited_DataStructure::_fData);
                     }
 #endif  /*qDebug*/
 

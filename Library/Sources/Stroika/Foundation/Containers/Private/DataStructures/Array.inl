@@ -396,14 +396,12 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>* data) :
-#if     qDebug
-                        _fData (data),
-#endif
-                        _fStart (&data->_fItems[0]),
-                        _fEnd (&data->_fItems[data->GetLength ()]),
-                        //_fCurrent ()                           dont initialize - done in subclasses...
-                        _fSuppressMore (true)                // first time thru - cuz of how used in for loops...
+                    inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>* data)
+                        : _fData (data)
+                        , _fStart (&data->_fItems[0])
+                        , _fEnd (&data->_fItems[data->GetLength ()])
+                        //, _fCurrent ()                           dont initialize - done in subclasses...
+                        , _fSuppressMore (true)                // first time thru - cuz of how used in for loops...
                     {
                         RequireNotNull (data);
 #if     qDebug
