@@ -25,7 +25,17 @@ namespace   Stroika {
                         : inherited (*rhs)
                         , fActiveIteratorsListHead (nullptr)
                     {
-                        Require (not HasActiveIterators ()); //....
+                        Require (not HasActiveIterators ());
+Again:
+                        for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
+                            if (v->fOwner == newOwnerID) {
+
+                                // must move it
+                                rhs->RemoveIterator (v);
+                                this->AddIterator (v);
+                                goto Again;
+                            }
+                        }
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::~PatchableContainerHelper ()
@@ -126,64 +136,8 @@ namespace   Stroika {
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::~PatchableIteratorMinIn ()
                     {
                         AssertNotNull (fPatchableContainer);
-#if 1
                         fPatchableContainer->RemoveIterator (this);
-#else
-                        if (fPatchableContainer->fActiveIteratorsListHead == this) {
-                            fPatchableContainer->fActiveIteratorsListHead = fNextActiveIterator;
-                        }
-                        else {
-                            auto    v = fPatchableContainer->fActiveIteratorsListHead;
-                            for (; v->fNextActiveIterator != this; v = v->fNextActiveIterator) {
-                                AssertNotNull (v);
-                                AssertNotNull (v->fNextActiveIterator);
-                            }
-                            AssertNotNull (v);
-                            Assert (v->fNextActiveIterator == this);
-                            v->fNextActiveIterator = fNextActiveIterator;
-                        }
-#endif
                     }
-
-#if 0
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    typename PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn&    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::operator= (const PatchableIteratorMinIn& rhs)
-                    {
-                        AssertNotNull (fPatchableContainer);
-                        /*
-                         *      If the fData field has not changed, then we can leave alone our iterator linkage.
-                         *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
-                         */
-                        if (fPatchableContainer != &rhs->fPatchableContainer) {
-                            /*
-                             * Remove from old.
-                             */
-                            if (fPatchableContainer->fActiveIteratorsListHead == this) {
-                                fPatchableContainer->fActiveIteratorsListHead = fNextActiveIterator;
-                            }
-                            else {
-                                auto v = fPatchableContainer->fActiveIteratorsListHead;
-                                for (; v->fNextActiveIterator != this; v = v->fNextActiveIterator) {
-                                    AssertNotNull (v);
-                                    AssertNotNull (v->fNextActiveIterator);
-                                }
-                                AssertNotNull (v);
-                                Assert (v->fNextActiveIterator == this);
-                                v->fNextActiveIterator = fNextActiveIterator;
-                            }
-
-                            /*
-                             * Add to new.
-                             */
-                            fNextActiveIterator = rhs.fPatchableContainer->fActiveIteratorsListHead;
-                            fPatchableContainer->fActiveIteratorsListHead = this;
-                        }
-
-                        fOwnerID = rhs.fOwnerID;
-                        EnsureNotNull (fPatchableContainer);
-                        return *this;
-                    }
-#endif
 
 
                 }
