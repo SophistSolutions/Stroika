@@ -121,10 +121,10 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
                         : public DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator
-                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMinIn {
+                        , public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMinIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>>::PatchableIteratorMixIn;
 
                     public:
                         using   value_type  =   typename inherited::value_type;

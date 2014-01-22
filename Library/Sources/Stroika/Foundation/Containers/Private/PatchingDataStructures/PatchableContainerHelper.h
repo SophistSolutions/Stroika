@@ -30,7 +30,7 @@ namespace   Stroika {
 
                     /*
                     // Note
-                    //  fPatchableContainer back point is a bit of a waste, in that PatchableIteratorMinIn is mixed in with
+                    //  fPatchableContainer back point is a bit of a waste, in that PatchableIteratorMixIn is mixed in with
                     //  something else that has this. But the only other way to get the pointer when we need it is some
                     //  extra level of indirection someplace (virtuals) - whihc owuld have more overhead.
                     //  At least this seems OK for now.
@@ -43,10 +43,10 @@ namespace   Stroika {
                         using inherited = NON_PATCHED_DATA_STRUCTURE_CLASS;
 
                     public:
-                        struct  PatchableIteratorMinIn;
+                        struct  PatchableIteratorMixIn;
 
                     public:
-                        PatchableIteratorMinIn*    fActiveIteratorsListHead = nullptr;
+                        PatchableIteratorMixIn*    fActiveIteratorsListHead = nullptr;
 
                     public:
                         PatchableContainerHelper () = default;
@@ -60,10 +60,10 @@ namespace   Stroika {
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
                     public:
-                        nonvirtual  void    AddIterator (PatchableIteratorMinIn* pi);
+                        nonvirtual  void    AddIterator (PatchableIteratorMixIn* pi);
 
                     public:
-                        nonvirtual  void    RemoveIterator (PatchableIteratorMinIn* pi);
+                        nonvirtual  void    RemoveIterator (PatchableIteratorMixIn* pi);
 
                     public:
                         template <typename ACTUAL_ITERATOR_TYPE>
@@ -84,14 +84,14 @@ namespace   Stroika {
 
 
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn {
+                    struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
                         PatchableContainerHelper*   fPatchableContainer;
                         IteratorOwnerID             fOwnerID;
-                        PatchableIteratorMinIn*     fNextActiveIterator;
+                        PatchableIteratorMixIn*     fNextActiveIterator;
 
-                        PatchableIteratorMinIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
-                        PatchableIteratorMinIn (const PatchableIteratorMinIn& from);
-                        nonvirtual  ~PatchableIteratorMinIn ();
+                        PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID);
+                        PatchableIteratorMixIn (const PatchableIteratorMixIn& from);
+                        ~PatchableIteratorMixIn ();
 
                         template    <typename ACTUAL_ITERATOR_TYPE>
                         ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;

@@ -72,7 +72,7 @@ Again:
                     }
 #endif
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator (PatchableIteratorMinIn* pi)
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
                         Assert (pi->fNextActiveIterator == nullptr);
@@ -81,14 +81,14 @@ Again:
                         pi->fPatchableContainer = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator (PatchableIteratorMinIn* pi)
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
                         if (fActiveIteratorsListHead == pi) {
                             fActiveIteratorsListHead = pi->fNextActiveIterator;
                         }
                         else {
-                            PatchableIteratorMinIn*    v = fActiveIteratorsListHead;
+                            PatchableIteratorMixIn*    v = fActiveIteratorsListHead;
                             for (; v->fNextActiveIterator != pi; v = v->fNextActiveIterator) {
                                 AssertNotNull (v);
                                 AssertNotNull (v->fNextActiveIterator);
@@ -105,22 +105,22 @@ Again:
 
                     /*
                     ********************************************************************************
-                    * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn *
+                    * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn *
                     ********************************************************************************
                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template    <typename ACTUAL_ITERATOR_TYPE>
-                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::GetNextActiveIterator () const
+                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator);
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::GetOwner () const
+                    inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetOwner () const
                     {
                         return fOwnerID;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::PatchableIteratorMinIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID)
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID)
                         : fPatchableContainer (containerHelper)
                         , fOwnerID (ownerID)
                         , fNextActiveIterator (containerHelper->fActiveIteratorsListHead)
@@ -129,7 +129,7 @@ Again:
                         containerHelper->fActiveIteratorsListHead = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::PatchableIteratorMinIn (const PatchableIteratorMinIn& from)
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (const PatchableIteratorMixIn& from)
                         : fPatchableContainer (from.fPatchableContainer)
                         , fOwnerID (from.fOwnerID)
                         , fNextActiveIterator (from.fPatchableContainer->fActiveIteratorsListHead)
@@ -138,7 +138,7 @@ Again:
                         fPatchableContainer->fActiveIteratorsListHead = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMinIn::~PatchableIteratorMinIn ()
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
                         AssertNotNull (fPatchableContainer);
                         fPatchableContainer->RemoveIterator (this);

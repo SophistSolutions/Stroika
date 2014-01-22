@@ -127,10 +127,10 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   Array<T, TRAITS>::_ArrayIteratorBase
                         : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
-                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMinIn {
+                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn {
                     private:
                         using   inherited_DataStructure =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMinIn;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>>::PatchableIteratorMixIn;
 
                     public:
                         _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data);
