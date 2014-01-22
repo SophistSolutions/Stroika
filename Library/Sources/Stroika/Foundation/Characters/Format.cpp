@@ -59,6 +59,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
                     case    's': {
                             newFormat[newFormatIdx] = 'l';
                             newFormatIdx++;
+                            lookingAtFmtCvt = false;    // DONE
                         }
                         break;
                     case    '.': {
