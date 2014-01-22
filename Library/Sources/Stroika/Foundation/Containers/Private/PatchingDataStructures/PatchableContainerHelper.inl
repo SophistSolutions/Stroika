@@ -28,8 +28,7 @@ namespace   Stroika {
                         Require (not HasActiveIterators ());
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
-                            if (v->fOwner == newOwnerID) {
-
+                            if (v->fOwnerID == newOwnerID) {
                                 // must move it
                                 rhs->RemoveIterator (v);
                                 this->AddIterator (v);
