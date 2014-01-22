@@ -170,6 +170,22 @@ namespace   Stroika {
                         class   BackwardIterator;
 
                     public:
+                        // assumes pi was already initialized and part of another Array<> object
+                        // which is exacyly same order/size (after clone)
+                        nonvirtual  void    MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array<T, TRAITS>* movedFrom)
+                        {
+                            RequireNotNull (pi);
+                            RequireNotNull (movedFrom);
+                            size_t  currentIdx  =   pi->_fCurrent - pi->_fStart;
+                            Require (currentIdx <= this->GetLength ());
+                            Require (pi->_fData == movedFrom);
+                            pi->_fData = this;
+                            pi->_fStart = &_fItems[0];
+                            pi->_fEnd = &this->_fItems[this->GetLength ()];
+                            pi->_fCurrent = pi->_fStart + currentIdx;
+                        }
+
+                    public:
                         nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
                         nonvirtual  void    RemoveAt (const BackwardIterator& i, T newValue);
 

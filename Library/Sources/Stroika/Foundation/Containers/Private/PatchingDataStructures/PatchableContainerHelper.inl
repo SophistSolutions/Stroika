@@ -31,9 +31,7 @@ namespace   Stroika {
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             if (v->fOwnerID == newOwnerID) {
-                                // must move it
-                                rhs->RemoveIterator (v);
-                                this->AddIterator (v);
+                                this->MoveIteratorAfterClone (v, rhs);
                                 goto Again;
                             }
                         }
@@ -71,6 +69,14 @@ Again:
                         }
                     }
 #endif
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
+                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer)
+                    {
+                        fromContainer->RemoveIterator (pi);
+                        this->AddIterator (pi);
+                        this->MoveIteratorHereAfterClone (pi, fromContainer);
+                    }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator (PatchableIteratorMixIn* pi)
                     {

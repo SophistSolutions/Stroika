@@ -66,6 +66,32 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
+                        nonvirtual  void    MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
+                        {
+                            // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
+                            // only way
+                            //
+                            // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
+                            // old for old, and when I match, stop on new
+                            Require (pi->fData = movedFrom);
+                            auto newI = this->begin ();
+                            auto newE = this->end ();
+                            auto oldI = moved->begin ();
+                            auto oldE = moved->end ();
+                            while (oldI != pi->fStdIterator) {
+                                Assert (newI != newE);
+                                Assert (oldI != oldE);
+                                newI++;
+                                oldI++;
+                                Assert (newI != newE);
+                                Assert (oldI != oldE);
+                            }
+                            Assert (oldI == pi->fStdIterator);
+                            pi->fStdIterator = newI;
+                            pi->fData = this;
+                        }
+
+                    public:
                         nonvirtual  bool    Contains (value_type item) const;
 
                     public:
