@@ -27,6 +27,10 @@
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
  *              But DOCUMENT in all cases!!! And maybe implement variants...
+ *
+ *      @todo   See if I can come up with a more flexibe and/or typesafe variant of Format using
+ *              variadic templates? Maybe using a nicer syntax widely done in ruby/C# etc, like
+ *              Format ("{1}{3}", "x", 3);??? VERY INCHOATE THOUGHTS HERE...
  */
 
 
