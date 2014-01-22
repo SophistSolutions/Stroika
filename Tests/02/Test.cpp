@@ -659,6 +659,7 @@ namespace   {
             String  format  =   Format (L"%%%ds", i);
             VerifyTestResult (Format (format.c_str (), L"x").length () == i);
         }
+        VerifyTestResult (Characters::Format (L"%d.%d%s%s", 1, 0, L"a", L"1x") == L"1.0a1x");   // 2 conseq %s%s POSIX bug fixed 2014-01-22
     }
 }
 
