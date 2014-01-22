@@ -21,15 +21,11 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>& PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::operator= (const PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>& rhs)
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID)
+                        : inherited (*rhs)
                     {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
-                        inherited::operator= (rhs);
-                        return *this;
+                        //tmpahck - for now dont split iteators
+                        Require (not HasActiveIterators ()); //....
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::~PatchableContainerHelper ()

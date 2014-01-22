@@ -28,7 +28,7 @@ namespace   Stroika {
                     }
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
-                        : inherited (*rhs)
+                        : inherited (rhs, newOwnerID)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();

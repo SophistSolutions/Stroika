@@ -49,8 +49,15 @@ namespace   Stroika {
                         PatchableIteratorMinIn*    fActiveIteratorsListHead = nullptr;
 
                     public:
+                        PatchableContainerHelper () = default;
+                        PatchableContainerHelper (const PatchableContainerHelper&) = delete;
+
+                    protected:
+                        PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID);
+                    public:
                         ~PatchableContainerHelper ();
-                        nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs);
+                    public:
+                        nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
                     public:
                         template <typename ACTUAL_ITERATOR_TYPE>
