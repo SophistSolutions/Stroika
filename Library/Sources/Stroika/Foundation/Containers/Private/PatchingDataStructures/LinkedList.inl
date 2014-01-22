@@ -26,39 +26,14 @@ namespace   Stroika {
                     {
                         Invariant ();
                     }
-#if 0
                     template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>::LinkedList (const LinkedList<T, TRAITS>& from)
-                        : inherited (from)
+                    inline  LinkedList<T, TRAITS>::LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                        : inherited (*rhs)
                     {
+                        RequireNotNull (rhs);
+                        rhs->Invariant ();
                         Invariant ();
                     }
-#endif
-                    template      <typename  T, typename TRAITS>
-                    void    LinkedList<T, TRAITS>::AssignFrom (const LinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID)
-                    {
-                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        rhs.Invariant ();
-                        Invariant ();
-                        inherited::operator= (rhs);
-                        rhs.Invariant ();
-                        Invariant ();
-                    }
-#if 0
-                    template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& rhs)
-                    {
-                        Invariant ();
-                        Assert (not (this->HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
-                        inherited::operator= (rhs);
-                        Invariant ();
-                        return *this;
-                    }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::Invariant () const
                     {

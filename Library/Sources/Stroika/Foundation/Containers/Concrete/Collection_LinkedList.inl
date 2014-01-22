@@ -43,7 +43,7 @@ namespace   Stroika {
                 public:
                     Rep_ ();
                     Rep_ (const Rep_& from) = delete;
-                    Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope);
+                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
@@ -94,21 +94,21 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                inline  Collection_LinkedList<T>::Rep_::Rep_ (const Rep_& from, IteratorOwnerID forIterableEnvelope)
+                inline  Collection_LinkedList<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fLockSupport_ ()
-                    , fData_ ()
+                    , fData_ (&from->fData_, forIterableEnvelope)
                 {
-                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
-                        fData_.AssignFrom (from.fData_, forIterableEnvelope);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    RequireNotNull (from);
                 }
                 template    <typename T>
                 typename Collection_LinkedList<T>::Rep_::_SharedPtrIRep  Collection_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    // no lock needed cuz src locked in Rep_ CTOR
-                    return _SharedPtrIRep (new Rep_ (*this, forIterableEnvelope));
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<T>  Collection_LinkedList<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const

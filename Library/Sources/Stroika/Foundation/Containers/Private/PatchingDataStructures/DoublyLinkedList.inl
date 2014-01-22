@@ -26,26 +26,11 @@ namespace   Stroika {
                     {
                         Invariant ();
                     }
-#if 0
                     template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from)
-                        : inherited (from)
+                    inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                        : inherited (*rhs)
                     {
-                        Invariant ();
-                    }
-#endif
-                    template      <typename  T, typename TRAITS>
-                    void    DoublyLinkedList<T, TRAITS>::AssignFrom (const DoublyLinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID)
-                    {
-                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        rhs.Invariant ();
-                        Invariant ();
-                        inherited::operator= (rhs);
-                        rhs.Invariant ();
+                        rhs->Invariant ();
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
@@ -56,19 +41,6 @@ namespace   Stroika {
                         InvariantOnIterators_ ();
 #endif
                     }
-#if 0
-                    template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>& DoublyLinkedList<T, TRAITS>::operator= (const DoublyLinkedList<T, TRAITS>& rhs)
-                    {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (this->HasActiveIterators ()));   // cuz copy of DoublyLinkedList does not copy iterators...
-                        inherited::operator= (rhs);
-                        return *this;
-                    }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
                     {

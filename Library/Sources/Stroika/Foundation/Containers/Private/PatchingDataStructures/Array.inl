@@ -26,32 +26,18 @@ namespace   Stroika {
                     {
                         this->Invariant ();
                     }
-#if 0
                     template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>::Array (const Array<T, TRAITS>& from)
-                        : inherited (from)
+                    inline  Array<T, TRAITS>::Array (Array<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                        : inherited (*rhs)
                     {
+                        RequireNotNull (rhs);
+                        rhs->Invariant ();
                         this->Invariant ();
                     }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::~Array ()
                     {
                         this->Invariant ();
-                    }
-                    template      <typename  T, typename TRAITS>
-                    void    Array<T, TRAITS>::AssignFrom (const Array<T, TRAITS>& rhs, IteratorOwnerID newOwnerID)
-                    {
-                        Require (not (this->HasActiveIterators ()));   // for initializing new container reps
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        rhs.Invariant ();
-                        Invariant ();
-                        inherited::operator= (rhs);
-                        rhs.Invariant ();
-                        Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::PatchViewsAdd (size_t index) const
@@ -86,21 +72,6 @@ namespace   Stroika {
                             ai->PatchRealloc ();
                         }
                     }
-#if 0
-                    template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>& Array<T, TRAITS>::operator= (const Array<T, TRAITS>& rhs)
-                    {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (this->HasActiveIterators ()));   // cuz copy of array does not copy iterators...
-                        this->Invariant ();
-                        inherited::operator= (rhs);
-                        this->Invariant ();
-                        return *this;
-                    }
-#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
                     {

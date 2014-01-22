@@ -44,6 +44,10 @@ namespace   Stroika {
                      *
                      *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
+                     *
+                     *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
+                     *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
+                     *  the source to copy from and the newOwnerID to copy INTO.
                      */
                     template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
                     class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>> {
@@ -52,19 +56,11 @@ namespace   Stroika {
 
                     public:
                         LinkedList ();
+                        LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
                         LinkedList (const LinkedList<T, TRAITS>& from) = delete;
 
                     public:
                         nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list) = delete;
-
-#if 0
-                    public:
-                        nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list);
-#endif
-
-                    public:
-                        // TMPACK - once converted lose X(X&) and  op= and doc why
-                        nonvirtual  void    AssignFrom (const LinkedList<T, TRAITS>& rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         using   Link    =    typename DataStructures::LinkedList<T, TRAITS>::Link;

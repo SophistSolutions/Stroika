@@ -53,6 +53,10 @@ namespace   Stroika {
                      *
                      *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
+                     *
+                     *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
+                     *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
+                     *  the source to copy from and the newOwnerID to copy INTO.
                      */
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper : public PatchableContainerHelper<DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>> {
@@ -64,20 +68,11 @@ namespace   Stroika {
 
                     public:
                         STLContainerWrapper ();
-#if 0
-                        STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from);
-#endif
+                        STLContainerWrapper (const STLContainerWrapper&) = delete;
+                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;
-#if 0
-                    public:
-                        nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs);
-#endif
-
-                    public:
-                        // TMPACK - once converted lose X(X&) and  op= and doc why
-                        nonvirtual  void    AssignFrom (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         class   ForwardIterator;
