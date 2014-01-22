@@ -29,7 +29,7 @@ namespace   Stroika {
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
-                        : inherited (rhs, newOwnerID)
+                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();

@@ -170,9 +170,10 @@ namespace   Stroika {
                         class   BackwardIterator;
 
                     public:
+                        typedef _ArrayIteratorBase      IteratorBaseType;
                         // assumes pi was already initialized and part of another Array<> object
                         // which is exacyly same order/size (after clone)
-                        nonvirtual  void    MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array<T, TRAITS>* movedFrom)
+                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
                         {
                             RequireNotNull (pi);
                             RequireNotNull (movedFrom);
@@ -259,6 +260,8 @@ namespace   Stroika {
                         const T*            _fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
                         bool                _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
+                    private:
+                        friend  class   Array<T, TRAITS>;
                     };
 
 

@@ -80,14 +80,15 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
-                        nonvirtual  void    MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T, TRAITS>* movedFrom)
+                        typedef ForwardIterator     IteratorBaseType;
+                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom)
                         {
                             // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
                             // only way
                             //
                             // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
                             // old for old, and when I match, stop on new
-                            Require (pi->fData = movedFrom);
+                            Require (pi->_fData == movedFrom);
                             auto newI = this->_fHead;
                             auto newE = nullptr;
                             auto oldI = _fHead;
@@ -102,7 +103,7 @@ namespace   Stroika {
                             }
                             Assert (oldI == pi->_fCurrent);
                             pi->_fCurrent = newI;
-                            pi->fData = this;
+                            pi->_fData = this;
                         }
 
                     public:
@@ -293,6 +294,9 @@ namespace   Stroika {
 #if     qDebug
                         virtual void    Invariant_ () const;
 #endif
+
+                    private:
+                        friend  class   LinkedList<T, TRAITS>;
                     };
 
 

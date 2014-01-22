@@ -21,17 +21,18 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID)
+                    template    <typename COMBINED_ITERATOR>
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
                         : inherited (*rhs)
                         , fActiveIteratorsListHead (nullptr)
                     {
                         Require (not HasActiveIterators ());
-#if 0
-                        // See if this is buggy...
+#if 1
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             if (v->fOwnerID == newOwnerID) {
-                                this->MoveIteratorAfterClone (v, rhs);
+                                COMBINED_ITERATOR*  x = static_cast<COMBINED_ITERATOR*> (v);
+                                this->MoveIteratorAfterClone (x, rhs);
                                 goto Again;
                             }
                         }

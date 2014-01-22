@@ -28,7 +28,7 @@ namespace   Stroika {
                     }
                     template      <typename  T, typename TRAITS>
                     inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
-                        : inherited (rhs, newOwnerID)
+                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();

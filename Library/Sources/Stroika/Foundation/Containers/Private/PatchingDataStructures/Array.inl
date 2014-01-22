@@ -28,7 +28,7 @@ namespace   Stroika {
                     }
                     template      <typename  T, typename TRAITS>
                     inline  Array<T, TRAITS>::Array (Array<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
-                        : inherited (rhs, newOwnerID)
+                        : inherited (rhs, newOwnerID, (_ArrayIteratorBase*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
