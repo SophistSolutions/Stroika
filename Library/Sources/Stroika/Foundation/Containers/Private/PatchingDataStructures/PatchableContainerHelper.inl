@@ -93,6 +93,7 @@ Again:
                             Assert (v->fNextActiveIterator == pi);
                             v->fNextActiveIterator = pi->fNextActiveIterator;
                         }
+                        pi->fNextActiveIterator = nullptr;      // unlink
                     }
 
 
