@@ -78,6 +78,7 @@ Again:
                         Assert (pi->fNextActiveIterator == nullptr);
                         pi->fNextActiveIterator = fActiveIteratorsListHead;
                         fActiveIteratorsListHead = pi;
+                        pi->fPatchableContainer = this;
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator (PatchableIteratorMinIn* pi)
@@ -96,6 +97,7 @@ Again:
                             Assert (v->fNextActiveIterator == pi);
                             v->fNextActiveIterator = pi->fNextActiveIterator;
                         }
+                        pi->fPatchableContainer = nullptr;
                         pi->fNextActiveIterator = nullptr;      // unlink
                     }
 
