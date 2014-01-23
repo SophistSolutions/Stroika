@@ -61,6 +61,9 @@ namespace   Stroika {
              *
              *  However, see @ref Value()
              *
+             *  \note   To use Optional with un-copyable things, use:
+             *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+             *
              *  \note   C++14 will be introucing std::optional<> which may possibly make this obsolete.
              *          We'll see.
              *
