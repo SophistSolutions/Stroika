@@ -194,6 +194,7 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  This is the value created by clear or the no-arg CTOR.
                      */
                     nonvirtual  bool    empty () const;
 

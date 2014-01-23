@@ -112,6 +112,7 @@ URL::URL ()
     , fQuery_ ()
     , fFragment_ ()
 {
+    Ensure (empty ());
 }
 
 #if     qPlatform_Windows
