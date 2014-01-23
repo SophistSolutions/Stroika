@@ -22,6 +22,9 @@
 *  \version    <a href="code_status.html#Beta">Beta</a>
 *
 * TODO:
+ *      @todo   Should probably add Network::NetlinkListener - to check for net up/down messages, and
+ *              redo multicast (as we do for server).
+ *
  *      @todo   Consider adding OnError callback?
  *
  *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.

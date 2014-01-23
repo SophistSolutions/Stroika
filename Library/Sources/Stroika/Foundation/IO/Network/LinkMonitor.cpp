@@ -292,7 +292,8 @@ struct  LinkMonitor::Rep_ {
                       Address->Address.Ipv4.sin_addr.s_host,
                       Address->Address.Ipv4.sin_addr.s_lh,
                       Address->Address.Ipv4.sin_addr.s_impno);
-            rep->SendNotifies (LinkChange::eAdded, String (), String::FromAscii (ipAddrBuf));
+            LinkChange  lc  =   (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
+            rep->SendNotifies (lc, String (), String::FromAscii (ipAddrBuf));
         }
     }
 #endif
@@ -300,8 +301,12 @@ struct  LinkMonitor::Rep_ {
     void    StartMonitorIfNeeded_()
     {
 #if     qPlatform_Windows
+        /*
+         * @todo    Minor - but we maybe should be using NotifyIpInterfaceChange... - not sure we get stragiht up/down issues this
+         *          way...
+         */
         if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, NULL, FALSE, &fMonitorHandler_));
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
         }
 #elif   qPlatform_POSIX
         /// WRONG - not really if posix - if LINUX - must have sep define for LINUX or at least for NETLINK!!!
@@ -354,6 +359,8 @@ struct  LinkMonitor::Rep_ {
                     }
                 }
             });
+            fMonitorThread_.SetThreadName (L"Network LinkMonitor thread");
+            fMonitorThread_.Start ();
         }
 #else
         AssertNotImplemented ();
@@ -388,6 +395,11 @@ struct  LinkMonitor::Rep_ {
  */
 LinkMonitor::LinkMonitor ()
     : fRep_ (new Rep_ ())
+{
+}
+
+LinkMonitor::LinkMonitor (const LinkMonitor&& rhs)
+    : fRep_ (move (rhs.fRep_))
 {
 }
 

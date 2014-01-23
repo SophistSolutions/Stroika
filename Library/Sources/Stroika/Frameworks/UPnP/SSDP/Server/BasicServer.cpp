@@ -7,6 +7,7 @@
 #include    "../../../../Foundation/Containers/Sequence.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
 #include    "../../../../Foundation/Execution/Thread.h"
+#include    "../../../../Foundation/IO/Network/LinkMonitor.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "../../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
@@ -41,9 +42,10 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 class   BasicServer::Rep_ {
 public:
     Sequence<Advertisement> fAdvertisements;
-
+    FrequencyInfo           fFrequencyInfo;
     Rep_ (const Device& d, const FrequencyInfo& fi)
         : fAdvertisements ()
+        , fFrequencyInfo (fi)
     {
         {
             SSDP::Advertisement  dan;
@@ -61,25 +63,52 @@ public:
             }
         }
 
-        fNotifierThread_ = Thread ([this, fi]() {
+        StartNotifier_ ();
+        StartResponder_ ();
+
+        fLinkMonitor_ = Optional<IO::Network::LinkMonitor> (move (IO::Network::LinkMonitor ()));
+        fLinkMonitor_->AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
+            if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
+                this->Restart_ ();
+            }
+        });
+    }
+    ~Rep_ ()
+    {
+        fLinkMonitor_.clear ();
+        Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+        fNotifierThread_.AbortAndWaitForDone ();
+        fSearchResponderThread_.AbortAndWaitForDone ();
+    }
+    void    StartNotifier_ ()
+    {
+        fNotifierThread_ = Thread ([this]() {
             PeriodicNotifier l;
             l.Run (fAdvertisements, PeriodicNotifier::FrequencyInfo ());
         });
         fNotifierThread_.Start ();
-        fSearchResponderThread_ = Thread ([this, fi]() {
+    }
+    void    StartResponder_ ()
+    {
+        fSearchResponderThread_ = Thread ([this]() {
             SearchResponder sr;
             sr.Run (fAdvertisements);
         });
         fSearchResponderThread_.Start ();
     }
-    ~Rep_ ()
+    void    Restart_ ()
     {
-        Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
-        fNotifierThread_.AbortAndWaitForDone ();
-        fSearchResponderThread_.AbortAndWaitForDone ();
+        {
+            Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+            fNotifierThread_.AbortAndWaitForDone ();
+            fSearchResponderThread_.AbortAndWaitForDone ();
+        }
+        StartNotifier_ ();
+        StartResponder_ ();
     }
-    Execution::Thread     fNotifierThread_;
-    Execution::Thread     fSearchResponderThread_;
+    Execution::Thread                   fNotifierThread_;
+    Execution::Thread                   fSearchResponderThread_;
+    Optional<IO::Network::LinkMonitor>  fLinkMonitor_;          // optional so we can delete it first on shutdown (so no restart while stopping stuff)
 };
 
 

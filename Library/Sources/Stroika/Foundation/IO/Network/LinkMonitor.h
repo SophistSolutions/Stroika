@@ -26,6 +26,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Optimize of listener is STATIC - and so we only register one (and esp on linux with threads)
+ *              only one thread - and fan out to all subscribers. SB pretty easy - just make data static,
+ *              but I guess one trick is then you need to be able to remove callbacks (ours - need Function).
  */
 
 
@@ -76,8 +79,9 @@ namespace   Stroika {
                  *  @todo   Decide if this should always auto-call the callback when first loaded? Might be an easier to use
                  *          API (with added - for any existing interfaces)? Windoze makes that easy, but not sure about rnetlink?
                  */
-                struct LinkMonitor {
+                struct  LinkMonitor {
                     LinkMonitor ();
+                    LinkMonitor (const LinkMonitor&& rhs);
                     LinkMonitor (const LinkMonitor&) = delete;
                     const LinkMonitor& operator= (const LinkMonitor&) = delete;
 
