@@ -13,7 +13,12 @@
 
 /**
  * TODO:
+ *      @todo   DOCUMENT THIS CLASS/LAYER MUCH BETTER
  *
+ *              THIS CONTAINS PRIVATE IMPL DETAILS of Stroika container stuff. It is VERY much subject to change.
+ *              It is just machinery for code sharing among my early concrete container implementations - so they
+ *              are threadsafe, and can track running iterators to patch them as the underlying things they
+ *              are iterating over change.
  */
 
 

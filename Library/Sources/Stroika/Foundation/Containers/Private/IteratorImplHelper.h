@@ -56,7 +56,7 @@ namespace   Stroika {
                     using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
-                    explicit IteratorImplHelper_ (IteratorOwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
+                    explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
@@ -79,7 +79,6 @@ namespace   Stroika {
                     nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
 
                 public:
-                    ContainerRepLockDataSupport_&           fLockSupport;
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 

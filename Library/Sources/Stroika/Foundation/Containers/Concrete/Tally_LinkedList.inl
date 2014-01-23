@@ -123,7 +123,7 @@ namespace   Stroika {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<TallyEntry<T>> (tmpRep);

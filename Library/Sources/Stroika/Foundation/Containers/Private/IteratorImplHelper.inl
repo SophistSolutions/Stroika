@@ -18,19 +18,18 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
-                inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data)
+                inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
                     : inherited ()
-                    , fLockSupport (*sharedLock)
                     , fIterator (owner, data)
                 {
-                    RequireNotNull (sharedLock);
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                    AssertNotNull (fIterator.fPatchableContainer);
+                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
                         return typename Iterator<T>::SharedIRepPtr (new IteratorImplHelper_ (*this));
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -51,7 +50,8 @@ namespace   Stroika {
                 inline  void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                    AssertNotNull (fIterator.fPatchableContainer);
+                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
                         fIterator.More (result, advance);
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -61,7 +61,8 @@ namespace   Stroika {
                 inline  void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
                 {
                     RequireNotNull (result);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                    AssertNotNull (fIterator.fPatchableContainer);
+                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
                         Memory::Optional<DataStructureImplValueType_> tmp;
                         fIterator.More (&tmp, advance);
                         if (tmp.IsPresent ()) {
@@ -81,8 +82,9 @@ namespace   Stroika {
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
+                    AssertNotNull (fIterator.fPatchableContainer);
                     // @todo - FIX to use lock-2-at-a-time lock stuff on LHS and RHS
-                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
                         return fIterator.Equals (rrhs->fIterator);
                     }
                     CONTAINER_LOCK_HELPER_END ();
