@@ -28,6 +28,12 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 
 
 
+// Comment this in to turn on tracing in this module
+#define   USE_TRACE_IN_THIS_MODULE_       1
+
+
+
+
 /*
 ********************************************************************************
 ******************************** PeriodicNotifier ******************************
@@ -64,6 +70,19 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
                     DbgTrace (L"(alive,loc=%s,usn=%s,...)", a.fLocation.c_str (), a.fUSN.c_str ());
                 }
                 firstTimeThru = false;
+            }
+#endif
+#if     USE_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx (SDKSTR ("SSDP PeriodicNotifier - notifications"));
+            for (auto a : advertisements) {
+#if     USE_TRACE_IN_THIS_MODULE_
+                String msg;
+                msg += L"alive,";
+                msg += String (L"location=") + a.fLocation + L",";
+                msg += String (L"ST=") + a.fST + L",";
+                msg += String (L"fUSN=") + a.fUSN + L",";
+                DbgTrace (L"(%s)", msg.c_str ());
+#endif
             }
 #endif
             for (auto a : advertisements) {

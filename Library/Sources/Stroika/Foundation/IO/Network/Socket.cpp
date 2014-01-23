@@ -17,6 +17,7 @@
 #include    <sys/ioctl.h>
 #endif
 
+#include    "../../Debug/Trace.h"
 #include    "../../Execution/Sleep.h"
 #include    "../../Execution/Thread.h"
 #include    "../../Execution/ErrNoException.h"
@@ -210,6 +211,7 @@ AGAIN:
             }
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
+                DbgTrace (L"Joining multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
                 ip_mreq m;
                 memset (&m, 0, sizeof (m));
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
@@ -219,6 +221,7 @@ AGAIN:
             }
             virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
+                DbgTrace (L"Leaving multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
                 ip_mreq m;
                 memset (&m, 0, sizeof (m));
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI

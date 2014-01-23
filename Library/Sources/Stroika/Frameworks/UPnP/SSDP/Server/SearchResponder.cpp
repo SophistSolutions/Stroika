@@ -31,6 +31,10 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 
 
 
+// Comment this in to turn on tracing in this module
+#define   USE_TRACE_IN_THIS_MODULE_       1
+
+
 
 /*
 ********************************************************************************
@@ -106,10 +110,20 @@ namespace {
             }
             if (matches) {
                 // if any match, I think we are supposed to send all
+#if     USE_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"sending advertisements...");
+#endif
                 for (auto a : advertisements) {
                     a.fAlive.clear (); // in responder we dont set alive flag
                     Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", a);
                     useSocket.SendTo (data.begin (), data.end (), sendTo);
+#if     USE_TRACE_IN_THIS_MODULE_
+                    String msg;
+                    msg += String (L"location=") + a.fLocation + L",";
+                    msg += String (L"ST=") + a.fST + L",";
+                    msg += String (L"fUSN=") + a.fUSN + L",";
+                    DbgTrace (L"(%s)", msg.c_str ());
+#endif
                 }
             }
         }
@@ -120,11 +134,15 @@ namespace {
 void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
     fListenThread_ = Execution::Thread ([advertisements]() {
+        Debug::TraceContextBumper ctx (SDKSTR ("SSDP SearchResponder thread loop"));
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
+        DbgTrace ("XXXX-HACK_DBG_1");
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+        DbgTrace ("XXXX-HACK_DBG_2");
         s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+        DbgTrace ("XXXX-HACK_DBG_3");
 
         // only stopped by thread abort
         while (1) {
