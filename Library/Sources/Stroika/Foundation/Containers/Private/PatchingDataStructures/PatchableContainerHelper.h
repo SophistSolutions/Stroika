@@ -51,7 +51,10 @@ namespace   Stroika {
                         struct  PatchableIteratorMixIn;
 
                     public:
-                        PatchableIteratorMixIn*    fActiveIteratorsListHead = nullptr;
+                        LOCKER   fLockSupport;
+
+                    public:
+                        PatchableIteratorMixIn*    fActiveIteratorsListHead;
 
                     public:
                         PatchableContainerHelper () = default;
@@ -64,9 +67,6 @@ namespace   Stroika {
                         ~PatchableContainerHelper ();
                     public:
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
-
-                    public:
-                        LOCKER   fLockSupport;
 
                     public:
                         template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
