@@ -26,11 +26,11 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *		@todo	Windoze implementation - probably using ISensNetwork ... Or some such? Unless that requires coinitialize/message pumping
- *				etc...
+ *      @todo   Windoze implementation - probably using ISensNetwork ... Or some such? Unless that requires coinitialize/message pumping
+ *              etc...
  *
- *				NO - BETTER - NotifyIpInterfaceChange () - 
- *				http://msdn.microsoft.com/en-us/library/windows/desktop/aa814450%28v=vs.85%29.aspx
+ *              NO - BETTER - NotifyIpInterfaceChange () -
+ *              http://msdn.microsoft.com/en-us/library/windows/desktop/aa814450%28v=vs.85%29.aspx
  *
  */
 

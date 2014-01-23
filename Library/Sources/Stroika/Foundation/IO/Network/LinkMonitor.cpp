@@ -266,12 +266,17 @@ struct  LinkMonitor::Rep_ {
         StartMonitorIfNeeded_();
     }
     Containers::Collection<function<void(LinkChange, String linkName, String ipAddr)>>  fCallbacks_;
+#if     qPlatform_POSIX
     Execution::Thread   fMonitorThread_;
+#endif
 
     void    StartMonitorIfNeeded_()
     {
+#if     qPlatform_Windows
+
+
+#elif   qPlatform_POSIX
         /// WRONG - not really if posix - if LINUX - must have sep define for LINUX or at least for NETLINK!!!
-#if     qPlatform_POSIX
         if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread ([this] () {
@@ -285,7 +290,7 @@ struct  LinkMonitor::Rep_ {
                     memset(&addr, 0, sizeof(addr));
                     addr.nl_family = AF_NETLINK;
                     addr.nl_groups = RTMGRP_IPV4_IFADDR;
-                    Execution::ThrowErrNoIfNegative (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr));
+                    Execution::ThrowErrNoIfNegative (bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr)));
                 }
 
                 //
@@ -311,8 +316,8 @@ struct  LinkMonitor::Rep_ {
 
                                     for (auto cb : this->fCallbacks_) {
                                         char    ipAddrBuf[1024];
-                                        snprintf (ipAddrBuf, NEltsOf(buf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,  (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
-                                        cb (LinkChange::eAdded, name, String::FromAscii (ipAddrBuf));
+                                        snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,  (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        cb (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
                                     }
                                 }
                                 rth = RTA_NEXT(rth, rtl);
@@ -328,22 +333,29 @@ struct  LinkMonitor::Rep_ {
 #endif
     }
 
-
     ~Rep_ ()
     {
+#if     qPlatform_POSIX
         Execution::Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
         fMonitorThread_.AbortAndWaitForDone ();
+#endif
     }
 };
 
 
 
 
+
+
+/*
+ ********************************************************************************
+ ************************* IO::Network::LinkMonitor *****************************
+ ********************************************************************************
+ */
 LinkMonitor::LinkMonitor ()
     : fRep_ (new Rep_ ())
 {
 }
-
 
 void    LinkMonitor::AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback)
 {
