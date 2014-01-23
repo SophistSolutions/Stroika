@@ -381,8 +381,26 @@ namespace CommonTests {
 
 
         namespace Test5_Elements_Crasher_ {
+            template <typename CONCRETE_CONTAINER>
+            void    T1_ ()
+            {
+                CONCRETE_CONTAINER s;
+                size_t  three = 3;
+                const   size_t  K = 500;
+                for (size_t i = 1; i <= K / 50; i++) {
+                    s.Add (i);
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    for (auto it1 : s.Elements ()) {
+                        if (s.TotalTally () < 25) {
+                            s.Add (1);
+                        }
+                        break;
+                    }
+                }
+            }
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    T1_ (TEST_FUNCTION applyToContainer)
+            void    T2_ (TEST_FUNCTION applyToContainer)
             {
                 CONCRETE_CONTAINER s;
                 size_t  three = 3;
@@ -393,7 +411,6 @@ namespace CommonTests {
                     s.Add (i);
                 }
                 applyToContainer (s);
-
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
                         if (s.TotalTally () < 25) {
@@ -407,7 +424,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                T1_<CONCRETE_CONTAINER> (applyToContainer);
+                T1_<CONCRETE_CONTAINER> ();
+                T2_<CONCRETE_CONTAINER> (applyToContainer);
             }
         }
 
