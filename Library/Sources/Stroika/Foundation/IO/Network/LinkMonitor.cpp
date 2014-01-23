@@ -341,11 +341,10 @@ struct  LinkMonitor::Rep_ {
                                     uint32_t ipaddr = htonl(*((uint32_t*)RTA_DATA(rth)));
                                     char name[IFNAMSIZ];
                                     if_indextoname(ifa->ifa_index, name);
-
-                                    for (auto cb : this->fCallbacks_) {
+                                    {
                                         char    ipAddrBuf[1024];
                                         snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,  (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
-                                        cb (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
+                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
                                     }
                                 }
                                 rth = RTA_NEXT(rth, rtl);
