@@ -43,13 +43,15 @@ class   BasicServer::Rep_ {
 public:
     Sequence<Advertisement> fAdvertisements;
     FrequencyInfo           fFrequencyInfo;
+    URL                     fLocation;
     Rep_ (const Device& d, const FrequencyInfo& fi)
         : fAdvertisements ()
         , fFrequencyInfo (fi)
+        , fLocation (d.fLocation)
     {
         {
             SSDP::Advertisement  dan;
-            dan.fLocation = d.fLocation;
+            dan.fLocation = d.fLocation.GetFullURL ();
             dan.fServer = d.fServer;
             {
                 dan.fST = L"upnp:rootdevice";
@@ -80,11 +82,26 @@ public:
         fNotifierThread_.AbortAndWaitForDone ();
         fSearchResponderThread_.AbortAndWaitForDone ();
     }
+    Sequence<Advertisement> GetAdjustedAdvertisements_ () const
+    {
+        if (fLocation.GetHost ().empty ()) {
+            auto ad = fAdvertisements;
+            URL useURL = fLocation;
+            useURL.SetHost (IO::Network::GetPrimaryInternetAddress ().As<String> ());
+            for (auto ai  = ad.begin (); ai != ad.end (); ++ai) {
+                ai->fLocation = useURL.GetFullURL ();
+            }
+            return ad;
+        }
+        else {
+            return fAdvertisements;
+        }
+    }
     void    StartNotifier_ ()
     {
         fNotifierThread_ = Thread ([this]() {
             PeriodicNotifier l;
-            l.Run (fAdvertisements, PeriodicNotifier::FrequencyInfo ());
+            l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
         });
         fNotifierThread_.Start ();
     }
@@ -92,7 +109,7 @@ public:
     {
         fSearchResponderThread_ = Thread ([this]() {
             SearchResponder sr;
-            sr.Run (fAdvertisements);
+            sr.Run (GetAdjustedAdvertisements_ ());
         });
         fSearchResponderThread_.Start ();
     }

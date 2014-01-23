@@ -76,7 +76,7 @@ int main (int argc, const char* argv[])
         uint16_t    portForOurWS = 8080;
 
         Device  d;
-        d.fLocation = Characters::Format (L"http://%s:%d", IO::Network::GetPrimaryInternetAddress ().As<String> ().c_str (), portForOurWS);
+        d.fLocation.SetPortNumber (portForOurWS);
         d.fServer = L"unix/5.1 UPnP/1.0 MyProduct/1.0";     // @todo wrong - to be fixed
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627");
 

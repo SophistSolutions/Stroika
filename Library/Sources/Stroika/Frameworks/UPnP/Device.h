@@ -8,7 +8,9 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/IO/Network/URL.h"
 #include    "../../Foundation/Memory/Optional.h"
+
 
 
 
@@ -24,6 +26,7 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
+            using   Foundation::IO::Network::URL;
 
 
             /**
@@ -34,7 +37,7 @@ namespace   Stroika {
             class   Device {
             public:
                 String  fDeviceID;      // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
-                String  fLocation;
+                URL     fLocation;
                 String  fServer;
             };
 

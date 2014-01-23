@@ -44,6 +44,10 @@ namespace   Stroika {
                         using   FrequencyInfo   =   PeriodicNotifier::FrequencyInfo;
 
                     public:
+                        /*
+                         *  if the HOST part of d.fLocation is empty, it will dynamically be populated with the hosts primary IP address
+                         *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
+                         */
                         BasicServer (const BasicServer&) = delete;
                         BasicServer (const Device& d, const FrequencyInfo& fi);
                         const BasicServer& operator= (const BasicServer&) = delete;
