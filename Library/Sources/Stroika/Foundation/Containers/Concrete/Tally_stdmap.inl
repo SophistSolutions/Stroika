@@ -82,8 +82,7 @@ namespace   Stroika {
                     using   IteratorRep_            =   Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, size_t>>;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+                    DataStructureImplType_      fData_;
                 };
 
 
@@ -95,14 +94,12 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  Tally_stdmap<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Tally_stdmap<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
@@ -110,7 +107,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 size_t  Tally_stdmap<T, TRAITS>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.size ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -118,7 +115,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 bool  Tally_stdmap<T, TRAITS>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -127,9 +124,9 @@ namespace   Stroika {
                 Iterator<TallyEntry<T>> Tally_stdmap<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS = const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<TallyEntry<T>> (tmpRep);
@@ -153,7 +150,7 @@ namespace   Stroika {
                 bool    Tally_stdmap<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.find (item) != fData_.end ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -161,7 +158,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 typename Tally_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    Tally_stdmap<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
@@ -173,7 +170,7 @@ namespace   Stroika {
                     if (count == 0) {
                         return;
                     }
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
                             fData_.insert (typename map<T, size_t>::value_type (item, count));
@@ -191,7 +188,7 @@ namespace   Stroika {
                     if (count == 0) {
                         return;
                     }
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (item);
                         Require (i != fData_.end ());
                         if (i != fData_.end ()) {
@@ -210,7 +207,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir = i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir = dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         mir.fIterator.RemoveCurrent ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -218,7 +215,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Tally_stdmap<T, TRAITS>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -229,7 +226,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir = i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir = dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (newCount == 0) {
                             mir.fIterator.RemoveCurrent ();
                         }
@@ -244,7 +241,7 @@ namespace   Stroika {
                 size_t  Tally_stdmap<T, TRAITS>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
                             return 0;
@@ -267,7 +264,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Tally_stdmap<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
                     CONTAINER_LOCK_HELPER_END ();

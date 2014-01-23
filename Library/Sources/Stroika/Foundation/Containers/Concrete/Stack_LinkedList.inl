@@ -72,8 +72,7 @@ namespace   Stroika {
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+                    DataStructureImplType_  fData_;
                 };
 
 
@@ -85,14 +84,12 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
@@ -100,7 +97,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 typename Stack_LinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  Stack_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
@@ -110,9 +107,9 @@ namespace   Stroika {
                 Iterator<T>  Stack_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
@@ -120,7 +117,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 size_t  Stack_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -128,7 +125,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 bool  Stack_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -146,7 +143,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Stack_LinkedList<T, TRAITS>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -154,7 +151,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Stack_LinkedList<T, TRAITS>::Rep_::Push (T item)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Append (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -162,7 +159,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 T    Stack_LinkedList<T, TRAITS>::Rep_::Pop ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         T   result  =   fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         // FIX/PATCH
@@ -173,7 +170,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 T    Stack_LinkedList<T, TRAITS>::Rep_::Top () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetFirst ();
                     }
                     CONTAINER_LOCK_HELPER_END ();

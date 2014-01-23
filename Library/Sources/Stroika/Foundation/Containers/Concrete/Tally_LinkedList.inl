@@ -79,8 +79,7 @@ namespace   Stroika {
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+                    DataStructureImplType_      fData_;
                 };
 
 
@@ -92,14 +91,12 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  Tally_LinkedList<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Tally_LinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
@@ -107,7 +104,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 size_t  Tally_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -115,7 +112,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 bool  Tally_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -124,9 +121,9 @@ namespace   Stroika {
                 Iterator<TallyEntry<T>> Tally_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<TallyEntry<T>> (tmpRep);
@@ -149,7 +146,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 bool   Tally_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         TallyEntry<T>   c = item;
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
@@ -164,7 +161,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 typename Tally_LinkedList<T, TRAITS>::Rep_::_SharedPtrIRep   Tally_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
@@ -176,7 +173,7 @@ namespace   Stroika {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     current.fCount += count;
@@ -195,7 +192,7 @@ namespace   Stroika {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     if (current.fCount > count) {
@@ -223,7 +220,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAt (mir.fIterator);
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -231,7 +228,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void   Tally_LinkedList<T, TRAITS>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -242,7 +239,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (newCount == 0) {
                             fData_.RemoveAt (mir.fIterator);
                         }
@@ -258,7 +255,7 @@ namespace   Stroika {
                 size_t Tally_LinkedList<T, TRAITS>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T>   c = item;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
@@ -283,7 +280,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Tally_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
                     CONTAINER_LOCK_HELPER_END ();

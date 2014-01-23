@@ -81,8 +81,7 @@ namespace   Stroika {
                     using   IteratorRep_                    =   Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
-                    Private::ContainerRepLockDataSupport_       fLockSupport_;
-                    DataStructureImplType_                      fData_;
+                    DataStructureImplType_      fData_;
                 };
 
 
@@ -94,14 +93,12 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
@@ -109,7 +106,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
@@ -119,9 +116,9 @@ namespace   Stroika {
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
@@ -129,7 +126,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 size_t  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -137,7 +134,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -160,7 +157,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -174,7 +171,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename Private::DataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
@@ -194,7 +191,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.SetAt (it, KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
@@ -209,7 +206,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it);
@@ -225,7 +222,7 @@ namespace   Stroika {
                     const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAt (mir.fIterator);
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -234,7 +231,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
                     CONTAINER_LOCK_HELPER_END ();

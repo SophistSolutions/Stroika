@@ -61,6 +61,9 @@ namespace   Stroika {
                         nonvirtual  PatchableContainerHelper& operator= (const PatchableContainerHelper& rhs) = delete;
 
                     public:
+                        LOCKER   fLockSupport;
+
+                    public:
                         template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
                         nonvirtual  void    MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* fromContainer);
 

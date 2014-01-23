@@ -24,6 +24,7 @@ namespace   Stroika {
                     template    <typename COMBINED_ITERATOR>
                     PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
                         : inherited (*rhs)
+                        , fLockSupport ()
                         , fActiveIteratorsListHead (nullptr)
                     {
                         Require (not HasActiveIterators ());

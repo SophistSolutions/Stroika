@@ -74,8 +74,7 @@ namespace   Stroika {
                     using   IteratorRep_            =   Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+                    DataStructureImplType_      fData_;
                 };
 
 
@@ -87,14 +86,12 @@ namespace   Stroika {
                 template    <typename T>
                 inline  Collection_stdforward_list<T>::Rep_::Rep_ ()
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename T>
                 inline  Collection_stdforward_list<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fLockSupport_ ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
@@ -103,7 +100,7 @@ namespace   Stroika {
                 typename Collection_stdforward_list<T>::Rep_::_SharedPtrIRep  Collection_stdforward_list<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -112,9 +109,9 @@ namespace   Stroika {
                 Iterator<T>  Collection_stdforward_list<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_.fLockSupport, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
@@ -122,7 +119,7 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Collection_stdforward_list<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         size_t  cnt = 0;
                         for (auto i = fData_.begin (); i != fData_.end (); ++i, cnt++)
                             ;
@@ -133,7 +130,7 @@ namespace   Stroika {
                 template    <typename T>
                 bool  Collection_stdforward_list<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.empty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -151,7 +148,7 @@ namespace   Stroika {
                 template    <typename T>
                 void    Collection_stdforward_list<T>::Rep_::Add (T item)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.push_front (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -162,7 +159,7 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Assert (not i.Done ());
                         *mir.fIterator.fStdIterator = newValue;
                     }
@@ -174,7 +171,7 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto      mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         //mir.fIterator_.RemoveCurrent ();
 
                         // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
@@ -197,7 +194,7 @@ namespace   Stroika {
                 template    <typename T>
                 void    Collection_stdforward_list<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -206,7 +203,7 @@ namespace   Stroika {
                 template    <typename T>
                 void    Collection_stdforward_list<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
                     CONTAINER_LOCK_HELPER_END ();
