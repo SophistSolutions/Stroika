@@ -20,7 +20,12 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a18">v2.0a18x</a><br/>2014-???</td>
 <td>
 <ul>
-  <li>Assorted (but still incomplete) code cleanups to Container DataStructure (esp patching) shared code.</li>
+	<li>Leveraging new IteratorOwner code, major backend-refactoring of how we manage patching of iterators
+		associated with a container to fix a long standing bug (that iterators must be associated with originating owner
+		to preseve proper semantics). That allowed fixing / cleaning up code in Tally<> - that had workarounds for this.
+		(note - there was nothing special about Tally<> excpet that it was the first place I implemented sub-iterators,
+		where you have an Elements and UniqueElements() iterable that were trivial wrappers on the original base iterator).
+	</li>
   <li>Many refinements to SharedByValue code, including variadic template use to forward extra paraemters to Copy, and more sophisticated use of r-value references and noexcept.</li>
 <li>Started adding ...Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
 <li>Lots of cleanups of threads and signal handling code. Needs more mileage/testing before ready for wider use/release. 

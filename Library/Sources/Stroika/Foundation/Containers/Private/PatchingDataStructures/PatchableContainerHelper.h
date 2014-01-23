@@ -54,7 +54,7 @@ namespace   Stroika {
                         LOCKER   fLockSupport;
 
                     public:
-                        PatchableIteratorMixIn*    fActiveIteratorsListHead	=	nullptr;
+                        PatchableIteratorMixIn*    fActiveIteratorsListHead =   nullptr;
 
                     public:
                         PatchableContainerHelper () = default;

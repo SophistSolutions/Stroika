@@ -325,30 +325,12 @@ namespace   Stroika {
             Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
-                const bool kHackBWA_ = false;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
-                // Sent email to Sterl - I think the bug is that we must BreakReferences when
-                // copying a new object - if it has any active iterators. But think that through!
-                // -- LGP 2014-01-01
-                if (kHackBWA_) {
-                    //@TMPHACK - OK CUZ WE WILL GET RID OF THIS SOON
-                    // @todo - LGP 2014-01-19
-                    return _ElementsIterableHelper (rep->Clone (nullptr));
-                }
                 return _ElementsIterableHelper (rep);
             }
             template    <typename T, typename TRAITS>
             Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
-                const bool kHackBWA_ = false;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
-                // Sent email to Sterl - I think the bug is that we must BreakReferences when
-                // copying a new object - if it has any active iterators. But think that through!
-                // -- LGP 2014-01-01
-                if (kHackBWA_) {
-                    //@TMPHACK - OK CUZ WE WILL GET RID OF THIS SOON
-                    // @todo - LGP 2014-01-19
-                    return _UniqueElementsHelper (rep->Clone (nullptr));
-                }
                 return _UniqueElementsHelper (rep);
             }
 

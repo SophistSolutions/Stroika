@@ -221,24 +221,24 @@ namespace CommonTests {
                     s = saved;
                 }
 
-#if 0
-                // DISABLE THIS TEST CODE CUZ IT FAILS FOR SAME ITERATOR BREAKREFERENCES BUG with s.Elements () below
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    auto tmp = s;
-                    s.Add (1);
-                }
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    auto tmp = s;
-                    for (auto it1 : tmp) {
+                {
+                    for (auto it = s.begin (); it != s.end (); ++it) {
+                        auto tmp = s;
+                        s.Add (1);
                     }
-                    s.Add (1);
-                }
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    auto tmp = s.Elements();
-                    for (auto it1 : tmp) {
+                    for (auto it = s.begin (); it != s.end (); ++it) {
+                        auto tmp = s;
+                        for (auto it1 : tmp) {
+                        }
+                        s.Add (1);
+                    }
+                    for (auto it = s.begin (); it != s.end (); ++it) {
+                        auto tmp = s.Elements();
+                        for (auto it1 : tmp) {
+                        }
                     }
                 }
-#endif
+
                 // This next case fails - 2014-01-01
                 // Sent email to Sterl - I think the bug is that we must BreakReferences when
                 // copying a new object - if it has any active iterators. But think that through!
