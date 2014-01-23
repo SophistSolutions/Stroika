@@ -26,12 +26,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Windoze implementation - probably using ISensNetwork ... Or some such? Unless that requires coinitialize/message pumping
- *              etc...
- *
- *              NO - BETTER - NotifyIpInterfaceChange () -
- *              http://msdn.microsoft.com/en-us/library/windows/desktop/aa814450%28v=vs.85%29.aspx
- *
  */
 
 
@@ -76,9 +70,11 @@ namespace   Stroika {
                  *  @todo - IF we add a new stroika Function() class (like std::function but that you can compare)
                  *          we can then add a RemoveCallback () funciton!!! HANDY IDEA
                  *
-                 *  @todo   For now, only implemented for LINUX (not even really POSIX). But my current test
-                 *          code just assumes linux==posix =- relaly need separate define to check for netlink
-                 **         and a windoze impl.
+                 *  @todo  POSIX code is not really posix but assumes linux==posix =- relaly need separate define to check for netlink
+                 *         and a windoze impl.
+                 *
+                 *  @todo   Decide if this should always auto-call the callback when first loaded? Might be an easier to use
+                 *          API (with added - for any existing interfaces)? Windoze makes that easy, but not sure about rnetlink?
                  */
                 struct LinkMonitor {
                     LinkMonitor ();
@@ -89,7 +85,7 @@ namespace   Stroika {
                         eAdded,
                         eRemoved,
                     };
-                    nonvirtual  void    AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback);
+                    nonvirtual  void    AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback);
 
                 private:
                     struct      Rep_;

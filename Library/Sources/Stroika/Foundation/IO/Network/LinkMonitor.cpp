@@ -21,6 +21,7 @@
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
 #include    <Iphlpapi.h>
+#include    <netioapi.h>
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
@@ -260,21 +261,48 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
 
 
 struct  LinkMonitor::Rep_ {
-    void    AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback)
+    void    AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback)
     {
         fCallbacks_.Add (callback);
         StartMonitorIfNeeded_();
     }
-    Containers::Collection<function<void(LinkChange, String linkName, String ipAddr)>>  fCallbacks_;
+    Containers::Collection<function<void(LinkChange, const String& linkName, const String& ipAddr)>>  fCallbacks_;
 #if     qPlatform_POSIX
     Execution::Thread   fMonitorThread_;
+#endif
+#if     qPlatform_Windows
+    HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
+#endif
+
+    void    SendNotifies (LinkChange lc, const String& linkName, const String& ipAddr)
+    {
+        for (auto cb : fCallbacks_) {
+            cb (lc, linkName, ipAddr);
+        }
+    }
+
+#if     qPlatform_Windows
+    // cannot use LAMBDA cuz we need WINAPI call convention
+    static     void    WINAPI  CB_ (void* callerContext, PMIB_UNICASTIPADDRESS_ROW Address, MIB_NOTIFICATION_TYPE NotificationType)
+    {
+        Rep_*   rep =   reinterpret_cast<Rep_*> (callerContext);
+        if (Address != NULL) {
+            char    ipAddrBuf[1024];
+            snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+                      Address->Address.Ipv4.sin_addr.s_host,
+                      Address->Address.Ipv4.sin_addr.s_lh,
+                      Address->Address.Ipv4.sin_addr.s_impno);
+            rep->SendNotifies (LinkChange::eAdded, String (), String::FromAscii (ipAddrBuf));
+        }
+    }
 #endif
 
     void    StartMonitorIfNeeded_()
     {
 #if     qPlatform_Windows
-
-
+        if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
+            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, NULL, FALSE, &fMonitorHandler_));
+        }
 #elif   qPlatform_POSIX
         /// WRONG - not really if posix - if LINUX - must have sep define for LINUX or at least for NETLINK!!!
         if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
@@ -335,7 +363,14 @@ struct  LinkMonitor::Rep_ {
 
     ~Rep_ ()
     {
-#if     qPlatform_POSIX
+#if     qPlatform_Windows
+        if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
+            // @todo should check error result, but then do what?
+            // also - does this blcok until pending notifies done?
+            // assuming so!!!
+            ::CancelMibChangeNotify2 (fMonitorHandler_);
+        }
+#elif   qPlatform_POSIX
         Execution::Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
         fMonitorThread_.AbortAndWaitForDone ();
 #endif
@@ -357,7 +392,7 @@ LinkMonitor::LinkMonitor ()
 {
 }
 
-void    LinkMonitor::AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback)
+void    LinkMonitor::AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback)
 {
     fRep_->AddCallback (callback);
 }
