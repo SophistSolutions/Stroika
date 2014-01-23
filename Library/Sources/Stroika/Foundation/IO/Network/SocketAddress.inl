@@ -48,7 +48,9 @@ namespace   Stroika {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
                                 sockaddr_in& as = reinterpret_cast<sockaddr_in&> (fSocketAddress_);
                                 as.sin_family = AF_INET;
+                                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 as.sin_port = htons (portNumber);
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");
                                 as.sin_addr = iaddr.As<in_addr> ();
                             }
                             break;
@@ -56,7 +58,9 @@ namespace   Stroika {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
                                 sockaddr_in6& as = reinterpret_cast<sockaddr_in6&> (fSocketAddress_);
                                 as.sin6_family = AF_INET6;
+                                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 as.sin6_port = htons (portNumber);
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");
                                 as.sin6_addr = iaddr.As<in6_addr> ();
                             }
                             break;
