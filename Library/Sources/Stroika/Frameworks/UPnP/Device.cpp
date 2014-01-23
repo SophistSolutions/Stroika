@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../../Foundation/IO/Network/NetworkInterfaces.h"
+#include    "../../Foundation/IO/Network/LinkMonitor.h"
 
 #include    "Device.h"
 

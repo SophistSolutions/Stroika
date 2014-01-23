@@ -26,7 +26,11 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *		@todo	Windoze implementation - probably using ISensNetwork ... Or some such? Unless that requires coinitialize/message pumping
+ *				etc...
  *
+ *				NO - BETTER - NotifyIpInterfaceChange () - 
+ *				http://msdn.microsoft.com/en-us/library/windows/desktop/aa814450%28v=vs.85%29.aspx
  *
  */
 
@@ -65,6 +69,34 @@ namespace   Stroika {
                 String GetPrimaryNetworkDeviceMacAddress ();
 
 
+                /**
+                 *  Create an instance of this class, and add callbacks to it, and they will be notified
+                 *  when a network connection comes up or down.
+                 *
+                 *  @todo - IF we add a new stroika Function() class (like std::function but that you can compare)
+                 *          we can then add a RemoveCallback () funciton!!! HANDY IDEA
+                 *
+                 *  @todo   For now, only implemented for LINUX (not even really POSIX). But my current test
+                 *          code just assumes linux==posix =- relaly need separate define to check for netlink
+                 **         and a windoze impl.
+                 */
+                struct LinkMonitor {
+                    LinkMonitor ();
+                    LinkMonitor (const LinkMonitor&) = delete;
+                    const LinkMonitor& operator= (const LinkMonitor&) = delete;
+
+                    enum class LinkChange {
+                        eAdded,
+                        eRemoved,
+                    };
+                    nonvirtual  void    AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback);
+
+                private:
+                    struct      Rep_;
+                    shared_ptr<Rep_>    fRep_;
+                };
+
+
             }
         }
     }
@@ -77,6 +109,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "NetworkInterfaces.inl"
+#include    "LinkMonitor.inl"
 
 #endif  /*_Stroika_Foundation_IO_Network_NetworkInterfaces_h_*/

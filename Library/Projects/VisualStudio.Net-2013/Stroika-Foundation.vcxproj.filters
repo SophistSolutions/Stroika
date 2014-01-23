@@ -639,9 +639,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -656,6 +653,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.cpp">
+      <Filter>Sources\IO\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1452,9 +1452,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Logging_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.h">
-      <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
@@ -1514,6 +1511,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2220,9 +2220,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.inl">
-      <Filter>Sources\IO\Network</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
@@ -2285,6 +2282,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.inl">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
 </Project>

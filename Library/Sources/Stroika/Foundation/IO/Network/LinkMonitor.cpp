@@ -6,14 +6,17 @@
 #include    <cstdio>
 
 #if     qPlatform_POSIX
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
+#include    <unistd.h>
+#include    <sys/types.h>
+#include    <sys/socket.h>
+#include    <sys/ioctl.h>
+#include    <net/if.h>
+#include    <netinet/in.h>
+#include    <netdb.h>
+#include    <arpa/inet.h>
+#include    <netinet/in.h>
+#include    <linux/netlink.h>
+#include    <linux/rtnetlink.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
@@ -21,14 +24,16 @@
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Containers/Collection.h"
 #include    "../../Execution/ErrNoException.h"
+#include    "../../Execution/Thread.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
 #include    "Socket.h"
 
-#include    "NetworkInterfaces.h"
+#include    "LinkMonitor.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -252,3 +257,95 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
 }
 
 
+
+
+struct  LinkMonitor::Rep_ {
+    void    AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback)
+    {
+        fCallbacks_.Add (callback);
+        StartMonitorIfNeeded_();
+    }
+    Containers::Collection<function<void(LinkChange, String linkName, String ipAddr)>>  fCallbacks_;
+    Execution::Thread   fMonitorThread_;
+
+    void    StartMonitorIfNeeded_()
+    {
+        /// WRONG - not really if posix - if LINUX - must have sep define for LINUX or at least for NETLINK!!!
+#if     qPlatform_POSIX
+        if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
+            // very slight race starting this but not worth worrying about
+            fMonitorThread_ = Execution::Thread ([this] () {
+
+                // for now - only handle adds, but removes SB easy too...
+
+                Socket  sock    =   Socket::Attach (Execution::ThrowErrNoIfNegative (::socket (PF_NETLINK, SOCK_RAW, NETLINK_ROUTE)));
+
+                {
+                    sockaddr_nl addr;
+                    memset(&addr, 0, sizeof(addr));
+                    addr.nl_family = AF_NETLINK;
+                    addr.nl_groups = RTMGRP_IPV4_IFADDR;
+                    Execution::ThrowErrNoIfNegative (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof(addr));
+                }
+
+                //
+                /// @todo - PROBABLY REDO USING Socket::Recv () - but we have none right now!!!
+                //          -- LGP 2014-01-23
+                //
+
+                int len;
+                char buffer[4096];
+                struct nlmsghdr* nlh;
+                nlh = (struct nlmsghdr*)buffer;
+                while ((len = recv(sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
+                    while ((NLMSG_OK(nlh, len)) && (nlh->nlmsg_type != NLMSG_DONE)) {
+                        if (nlh->nlmsg_type == RTM_NEWADDR) {
+                            struct ifaddrmsg* ifa = (struct ifaddrmsg*) NLMSG_DATA(nlh);
+                            struct rtattr* rth = IFA_RTA(ifa);
+                            int rtl = IFA_PAYLOAD(nlh);
+                            while (rtl && RTA_OK(rth, rtl)) {
+                                if (rth->rta_type == IFA_LOCAL) {
+                                    uint32_t ipaddr = htonl(*((uint32_t*)RTA_DATA(rth)));
+                                    char name[IFNAMSIZ];
+                                    if_indextoname(ifa->ifa_index, name);
+
+                                    for (auto cb : this->fCallbacks_) {
+                                        char    ipAddrBuf[1024];
+                                        snprintf (ipAddrBuf, NEltsOf(buf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,  (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        cb (LinkChange::eAdded, name, String::FromAscii (ipAddrBuf));
+                                    }
+                                }
+                                rth = RTA_NEXT(rth, rtl);
+                            }
+                        }
+                        nlh = NLMSG_NEXT(nlh, len);
+                    }
+                }
+            });
+        }
+#else
+        AssertNotImplemented ();
+#endif
+    }
+
+
+    ~Rep_ ()
+    {
+        Execution::Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+        fMonitorThread_.AbortAndWaitForDone ();
+    }
+};
+
+
+
+
+LinkMonitor::LinkMonitor ()
+    : fRep_ (new Rep_ ())
+{
+}
+
+
+void    LinkMonitor::AddCallback (const function<void(LinkChange, String linkName, String ipAddr)>& callback)
+{
+    fRep_->AddCallback (callback);
+}
