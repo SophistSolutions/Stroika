@@ -80,7 +80,7 @@ namespace   Stroika {
                     nonvirtual void                                 Compact ();
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array<TallyEntry<T>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array<TallyEntry<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
 
                 private:

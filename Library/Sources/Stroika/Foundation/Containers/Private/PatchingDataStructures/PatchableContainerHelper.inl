@@ -17,17 +17,16 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ********* PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS> ***********
+                    ***** PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER> *******
                     ********************************************************************************
                     */
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     template    <typename COMBINED_ITERATOR>
-                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
                         : inherited (*rhs)
                         , fActiveIteratorsListHead (nullptr)
                     {
                         Require (not HasActiveIterators ());
-#if 1
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             if (v->fOwnerID == newOwnerID) {
@@ -36,50 +35,49 @@ Again:
                                 goto Again;
                             }
                         }
-#endif
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::~PatchableContainerHelper ()
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::~PatchableContainerHelper ()
                     {
                         Require (not HasActiveIterators ()); // cannot destroy container with active iterators
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     template <typename ACTUAL_ITERATOR_TYPE>
-                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::GetFirstActiveIterator () const
+                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::GetFirstActiveIterator () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fActiveIteratorsListHead);
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                     {
 #if     qDebug
                         AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
 #endif
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  bool    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::HasActiveIterators () const
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  bool    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::HasActiveIterators () const
                     {
                         return bool (fActiveIteratorsListHead != nullptr);
                     }
 #if     qDebug
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
                     {
                         for (auto v = fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             Assert (v->fOwnerID != oBeingDeleted);
                         }
                     }
 #endif
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     template    <typename PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
-                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer)
+                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* fromContainer)
                     {
                         fromContainer->RemoveIterator (pi);
                         this->AddIterator (pi);
                         this->MoveIteratorHereAfterClone (pi, fromContainer);
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AddIterator (PatchableIteratorMixIn* pi)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AddIterator (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
                         Assert (pi->fNextActiveIterator == nullptr);
@@ -87,8 +85,8 @@ Again:
                         fActiveIteratorsListHead = pi;
                         pi->fPatchableContainer = this;
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::RemoveIterator (PatchableIteratorMixIn* pi)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::RemoveIterator (PatchableIteratorMixIn* pi)
                     {
                         RequireNotNull (pi);
                         if (fActiveIteratorsListHead == pi) {
@@ -112,22 +110,22 @@ Again:
 
                     /*
                     ********************************************************************************
-                    * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn *
+                    * PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn *
                     ********************************************************************************
                     */
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     template    <typename ACTUAL_ITERATOR_TYPE>
-                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetNextActiveIterator () const
+                    inline  ACTUAL_ITERATOR_TYPE*   PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::GetNextActiveIterator () const
                     {
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fNextActiveIterator);
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::GetOwner () const
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  IteratorOwnerID PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::GetOwner () const
                     {
                         return fOwnerID;
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::PatchableIteratorMixIn (PatchableContainerHelper* containerHelper, IteratorOwnerID ownerID)
                         : fPatchableContainer (containerHelper)
                         , fOwnerID (ownerID)
                         , fNextActiveIterator (containerHelper->fActiveIteratorsListHead)
@@ -135,8 +133,8 @@ Again:
                         RequireNotNull (containerHelper);
                         containerHelper->fActiveIteratorsListHead = this;
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::PatchableIteratorMixIn (const PatchableIteratorMixIn& from)
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::PatchableIteratorMixIn (const PatchableIteratorMixIn& from)
                         : fPatchableContainer (from.fPatchableContainer)
                         , fOwnerID (from.fOwnerID)
                         , fNextActiveIterator (from.fPatchableContainer->fActiveIteratorsListHead)
@@ -144,8 +142,8 @@ Again:
                         RequireNotNull (fPatchableContainer);
                         fPatchableContainer->fActiveIteratorsListHead = this;
                     }
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
                         AssertNotNull (fPatchableContainer);
                         fPatchableContainer->RemoveIterator (this);

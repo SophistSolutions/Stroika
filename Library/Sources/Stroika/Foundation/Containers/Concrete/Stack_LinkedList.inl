@@ -68,7 +68,7 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList<T>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList<T, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:

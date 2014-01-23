@@ -9,6 +9,7 @@
 
 #include    "Stroika/Foundation/Containers/Private/DataStructures/LinkedList.h"
 #include    "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
+#include    "Stroika/Foundation/Containers/Private/SynchronizationUtils.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -33,7 +34,7 @@ using   Traversal::kUnknownIteratorOwnerID;
 namespace   {
     static  void    Test1()
     {
-        PatchingDataStructures::LinkedList<size_t>    someLL;
+        PatchingDataStructures::LinkedList<size_t, Private::ContainerRepLockDataSupport_>    someLL;
         const   size_t  kBigSize    =   1001;
 
 
@@ -52,7 +53,7 @@ namespace   {
         someLL.SetAt (55, 55);                                                                                                      //  someLL [55] = 55;
         VerifyTestResult (someLL.GetAt (55) == 55);                                                                                 //  VerifyTestResult(someArray [55] == 55);
         VerifyTestResult (someLL.GetAt (55) != 56);                                                                                 //  VerifyTestResult(someArray [55] != 56);
-        { size_t i = 1; size_t cur; for (PatchingDataStructures::LinkedList<size_t>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More(&cur, true); i++) { if (i == 100) {someLL.AddAfter (it, 1); break;} } } //   someLL.InsertAt(1, 100);
+        { size_t i = 1; size_t cur; for (PatchingDataStructures::LinkedList<size_t, Private::ContainerRepLockDataSupport_>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More(&cur, true); i++) { if (i == 100) {someLL.AddAfter (it, 1); break;} } } //   someLL.InsertAt(1, 100);
 
         VerifyTestResult(someLL.GetLength() == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1);                                                                                 //  VerifyTestResult(someArray [100] == 1);
@@ -66,7 +67,7 @@ namespace   {
 
     static  void    Test2()
     {
-        PatchingDataStructures::LinkedList<SimpleClass>   someLL;
+        PatchingDataStructures::LinkedList<SimpleClass, Private::ContainerRepLockDataSupport_>   someLL;
         const   size_t  kBigSize    =   1000;
 
         VerifyTestResult(someLL.GetLength() == 0);

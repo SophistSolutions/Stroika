@@ -19,25 +19,25 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ****** PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> *********
+                     ** PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER> *****
                      ********************************************************************************
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper ()
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::STLContainerWrapper ()
                         : inherited ()
                     {
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     template    <typename INSERT_VALUE_TYPE>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
                     {
                         Invariant ();
                         this->insert (i, v);
@@ -50,8 +50,8 @@ namespace   Stroika {
 #endif
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
                     {
                         Invariant ();
                         Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
@@ -60,8 +60,8 @@ namespace   Stroika {
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::clear_WithPatching ()
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::clear_WithPatching ()
                     {
                         Invariant ();
                         this->clear ();
@@ -70,30 +70,30 @@ namespace   Stroika {
                         }
                         Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
                         for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         }
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::Invariant () const
                     {
 #if     qDebug
                         _Invariant ();
 #endif
                     }
 #if     qDebug
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::_Invariant () const
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::_Invariant () const
                     {
                         for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
                             ai->Invariant ();
@@ -104,33 +104,33 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator *
+                     * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator *
                      ********************************************************************************
                      */
-                    template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
                         : inherited_DataStructure (data)
-                        , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data), ownerID)
+                        , inherited_PatchHelper (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>*> (data), ownerID)
                         , fSuppressMore (true)
                     {
                         RequireNotNull (data);
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
                         , fSuppressMore (from.fSuppressMore)
                     {
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    typename  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator= (const ForwardIterator& rhs)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  typename  STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
                         this->Invariant ();
                         inherited_DataStructure::operator= (rhs);
@@ -138,9 +138,9 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
-                    template    <typename STL_CONTAINER_OF_T>
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     template    <typename VALUE_TYPE>
-                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
+                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
                     {
                         if (advance and fSuppressMore) {
                             advance = false;
@@ -148,9 +148,9 @@ namespace   Stroika {
                         }
                         return inherited_DataStructure::More (current, advance);
                     }
-                    template    <typename STL_CONTAINER_OF_T>
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
                     template    <typename VALUE_TYPE>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
                     {
                         if (advance and fSuppressMore) {
                             advance = false;
@@ -158,35 +158,35 @@ namespace   Stroika {
                         }
                         inherited_DataStructure::More (result, advance);
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::RemoveCurrent ()
                     {
                         AssertNotNull (this->fData);
-                        static_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (this->fData)->erase_WithPatching (this->fStdIterator);
+                        static_cast<STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>*> (this->fData)->erase_WithPatching (this->fStdIterator);
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
                         if (this->fStdIterator == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         fSuppressMore = true;
                         this->fStdIterator = newI;
                     }
-                    template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Invariant () const
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::Invariant () const
                     {
 #if     qDebug
                         _Invariant ();
 #endif
                     }
 #if     qDebug
-                    template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::_Invariant () const
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::ForwardIterator::_Invariant () const
                     {
                         AssertNotNull (this->fData);
                         // apparently pointless test is just to force triggering any check code in iterator classes for valid iterators

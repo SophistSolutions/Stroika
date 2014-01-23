@@ -69,7 +69,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<vector<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:

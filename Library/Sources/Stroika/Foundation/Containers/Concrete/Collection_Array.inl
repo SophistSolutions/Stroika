@@ -68,7 +68,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array <T, Private::DataStructures::Array_DefaultTraits<T, void>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::Array <T, Private::DataStructures::Array_DefaultTraits<T, void>, Private::ContainerRepLockDataSupport_>;
 
                 private:
                     using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;

@@ -38,7 +38,7 @@ namespace   Stroika {
                     // ROUGH FIRST DRAFT
                     //  @todo - GetNextActiveIterator - ....docs why template (couldt see ebtter way to mix this feature class in)
                     */
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     struct  PatchableContainerHelper : public NON_PATCHED_DATA_STRUCTURE_CLASS {
                         using inherited = NON_PATCHED_DATA_STRUCTURE_CLASS;
 
@@ -54,7 +54,7 @@ namespace   Stroika {
 
                     protected:
                         template    <typename COMBINED_ITERATOR>
-                        PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload);
+                        PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload);
                     public:
                         ~PatchableContainerHelper ();
                     public:
@@ -62,7 +62,7 @@ namespace   Stroika {
 
                     public:
                         template    <typename   PATCHABLE_ITERATOR_MIXIN_SUBTYPE>
-                        nonvirtual  void    MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* fromContainer);
+                        nonvirtual  void    MoveIteratorAfterClone (PATCHABLE_ITERATOR_MIXIN_SUBTYPE* pi, PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>* fromContainer);
 
                     public:
                         nonvirtual  void    AddIterator (PatchableIteratorMixIn* pi);
@@ -88,8 +88,8 @@ namespace   Stroika {
                     };
 
 
-                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableIteratorMixIn {
+                    template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
+                    struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn {
                         PatchableContainerHelper*   fPatchableContainer;
                         IteratorOwnerID             fOwnerID;
                         PatchableIteratorMixIn*     fNextActiveIterator;

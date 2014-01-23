@@ -70,7 +70,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::DoublyLinkedList<T>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::DoublyLinkedList<T, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_            =   Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:

@@ -75,7 +75,7 @@ namespace   Stroika {
 
                 private:
                     using   NonPatchingDataStructureImplType_   =   Private::DataStructures::LinkedList<TallyEntry<T>>;
-                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<TallyEntry<T>>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<TallyEntry<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
 
                 private:

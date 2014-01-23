@@ -70,7 +70,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_            =   Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
