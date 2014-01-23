@@ -53,7 +53,19 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+#if     qDefaultTracingOn
+        bool    firstTimeThru   =   true;
+#endif
         while (true) {
+#if     qDefaultTracingOn
+            if (firstTimeThru) {
+                Debug::TraceContextBumper ctx (SDKSTR ("SSDP PeriodicNotifier - first time notifications"));
+                for (auto a : advertisements) {
+                    DbgTrace (L"(alive,loc=%s,usn=%s,...)", a.fLocation.c_str (), a.fUSN.c_str ());
+                }
+                firstTimeThru = false;
+            }
+#endif
             for (auto a : advertisements) {
                 a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
                 Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);
