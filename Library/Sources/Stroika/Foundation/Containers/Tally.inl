@@ -325,7 +325,7 @@ namespace   Stroika {
             Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
-                const bool kHackBWA_ = true;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
+                const bool kHackBWA_ = false;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
                 // Sent email to Sterl - I think the bug is that we must BreakReferences when
                 // copying a new object - if it has any active iterators. But think that through!
                 // -- LGP 2014-01-01
@@ -340,7 +340,7 @@ namespace   Stroika {
             Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
-                const bool kHackBWA_ = true;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
+                const bool kHackBWA_ = false;        // ILL-UNDERSTOOD BUG!!! - SOMETHING TODO WITH REFCOUNTS? ETC
                 // Sent email to Sterl - I think the bug is that we must BreakReferences when
                 // copying a new object - if it has any active iterators. But think that through!
                 // -- LGP 2014-01-01
