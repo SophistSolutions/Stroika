@@ -44,16 +44,21 @@ namespace   Stroika {
             }
             inline  bool SignalHandler::operator== (const SignalHandler& rhs) const
             {
-                return fCall_.get () == rhs.fCall_.get ();
+                return fType_ == rhs.fType_ and fCall_.get () == rhs.fCall_.get ();
             }
             inline  bool SignalHandler::operator!= (const SignalHandler& rhs) const
             {
-                return fCall_.get () != rhs.fCall_.get ();
+                return fType_ != rhs.fType_ or fCall_.get () != rhs.fCall_.get ();
             }
             inline  bool SignalHandler::operator< (const SignalHandler& rhs) const
             {
-                // technically not quite real... - compute address of ptr...
-                return fCall_.get () < rhs.fCall_.get ();
+                if (fType_ == rhs.fType_) {
+                    // technically not quite real... - compute address of ptr...
+                    return fCall_.get () < rhs.fCall_.get ();
+                }
+                else {
+                    return fType_ < fType_;
+                }
             }
 
 
