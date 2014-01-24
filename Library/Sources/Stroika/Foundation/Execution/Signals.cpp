@@ -99,7 +99,6 @@ errno_t    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
 #else
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-
 #if     qPlatform_POSIX
     errno_t e = pthread_kill (h, signal);
     Verify (e == 0 or e == ESRCH);
