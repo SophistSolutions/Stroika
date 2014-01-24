@@ -116,12 +116,16 @@ namespace   Stroika {
                         case AF_INET: {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
                                 const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
+                                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 return ntohs (as.sin_port);
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                             }
                         case AF_INET6: {
                                 Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
                                 const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
+                                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 return ntohs (as.sin6_port);
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                             }
                         default: {
                                 AssertNotReached ();
