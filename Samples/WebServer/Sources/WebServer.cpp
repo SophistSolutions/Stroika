@@ -11,7 +11,7 @@
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
-#include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
+#include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
