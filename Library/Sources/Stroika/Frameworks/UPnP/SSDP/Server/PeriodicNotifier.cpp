@@ -29,7 +29,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 
 
 // Comment this in to turn on tracing in this module
-#define   USE_TRACE_IN_THIS_MODULE_       1
+//#define   USE_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -54,16 +54,11 @@ PeriodicNotifier::~PeriodicNotifier ()
 
 void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
-    DbgTrace ("XXXX-AAA-HACK_DBG_1");
     fListenThread_ = Execution::Thread ([advertisements, fi]() {
-        DbgTrace ("XXXX-AAA-HACK_DBG_2");
         Socket s (Socket::SocketKind::DGRAM);
-        DbgTrace ("XXXX-AAA-HACK_DBG_3");
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
-        DbgTrace ("XXXX-AAA-HACK_DBG_4");
         bindFlags.fReUseAddr = true;
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-        DbgTrace ("XXXX-AAA-HACK_DBG_5");
 #if     qDefaultTracingOn
         bool    firstTimeThru   =   true;
 #endif
@@ -90,7 +85,6 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
 #endif
             }
 #endif
-            DbgTrace ("XXXX-AAA-HACK_DBG_6");
             try {
                 for (auto a : advertisements) {
                     a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
@@ -102,6 +96,9 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
                 // Error ENETUNREACH is common when you have network connection issues, for example on boot before
                 // full connection
                 DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", String::FromSDKString (e.LookupMessage ()).c_str ());
+            }
+            catch (const Execution::ThreadAbortException&) {
+                Execution::DoReThrow ();
             }
             catch (...) {
                 DbgTrace (L"Ignoring inability to send SSDP notify packets (try again later)");

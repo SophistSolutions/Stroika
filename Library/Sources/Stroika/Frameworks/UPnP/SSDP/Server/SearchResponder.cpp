@@ -32,7 +32,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 
 
 // Comment this in to turn on tracing in this module
-#define   USE_TRACE_IN_THIS_MODULE_       1
+//#define   USE_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -138,19 +138,16 @@ void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
-        DbgTrace ("XXXX-HACK_DBG_1");
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         {
 Again:
             try {
-                DbgTrace ("XXXX-HACK_DBG_2");
                 s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
-                DbgTrace ("XXXX-HACK_DBG_3");
             }
             catch (const Execution::errno_ErrorException& e) {
                 if (e == ENODEV) {
                     // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
-                    DbgTrace ("Got exception - ENODEV - joining multicast group, so try again");
+                    DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
                     Execution::Sleep (1);
                     goto Again;
                 }
@@ -163,7 +160,7 @@ Again:
         // only stopped by thread abort
         while (1) {
             try {
-                Byte    buf[3 * 1024];  // not sure of max packet size
+                Byte    buf[4 * 1024];  // not sure of max packet size
                 SocketAddress   from;
                 size_t nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));

@@ -39,11 +39,14 @@ using   Server::BasicServer;
 namespace {
     struct WebServerForDeviceDescription_ {
 
-        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, Memory::BLOB deviceDescription)
+        WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const Device& d, const DeviceDescription& dd)
             : fListener ()
         {
-            auto onConnect = [deviceDescription](Socket s) {
-                Execution::Thread runConnectionOnAnotherThread ([s, deviceDescription]() {
+            auto onConnect = [d, dd](Socket s) {
+                Execution::Thread runConnectionOnAnotherThread ([s, d, dd]() {
+                    // If the URLs are served locally, you may want to update the URL based on
+                    // IO::Network::GetPrimaryInternetAddress ()
+                    Memory::BLOB deviceDescription  =   Stroika::Frameworks::UPnP::Serialize (d, dd);
                     // now read
                     Connection conn (s);
                     conn.ReadHeaders ();    // bad API. Must rethink...
@@ -56,13 +59,10 @@ namespace {
                 runConnectionOnAnotherThread.Start ();
                 //runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
             };
-            //fListener = std::move (Listener (SocketAddress (Network::V4::kAddrAny, webServerPortNumber), onConnect));
-            fListener = shared_ptr<Listener> (new Listener (SocketAddress (Network::V4::kAddrAny, webServerPortNumber), onConnect));
+            fListener = Optional<Listener> (Listener (SocketAddress (Network::V4::kAddrAny, webServerPortNumber), onConnect));
         }
 
-        // @todo - FIX OPTIONAL (and related code) -so Optional<> works here - rvalue -references
-        //Memory::Optional<Listener>    fListener;
-        shared_ptr<Listener>    fListener;
+        Optional<Listener>    fListener;
     };
 }
 
@@ -81,18 +81,18 @@ int main (int argc, const char* argv[])
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627");
 
         DeviceDescription   deviceInfo;
-        deviceInfo.fPresentationURL = L"http://www.sophists.com/";
+        deviceInfo.fPresentationURL = URL (L"http://www.sophists.com/");
         deviceInfo.fDeviceType = L"urn:sophists.com:device:deviceType:1.0";
         deviceInfo.fManufactureName = L"Sophist Solutions, Inc.";
         deviceInfo.fFriendlyName = L"Sophist Solutions fake device";
-        deviceInfo.fManufacturingURL = L"http://www.sophists.com/";
+        deviceInfo.fManufacturingURL = URL (L"http://www.sophists.com/");
         deviceInfo.fModelDescription = L"long user-friendly title";
         deviceInfo.fModelName = L"model name";
         deviceInfo.fModelNumber = L"model number";
-        deviceInfo.fModelURL = L"http://www.sophists.com/";
+        deviceInfo.fModelURL = URL (L"http://www.sophists.com/");
         deviceInfo.fSerialNumber = L"manufacturer's serial number";
 
-        WebServerForDeviceDescription_  deviceWS (portForOurWS, Stroika::Frameworks::UPnP::Serialize (d, deviceInfo));
+        WebServerForDeviceDescription_  deviceWS (portForOurWS, d, deviceInfo);
         BasicServer b (d, BasicServer::FrequencyInfo ());
         Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
     }

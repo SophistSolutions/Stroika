@@ -109,13 +109,15 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     tmp << "		<deviceType>" << QuoteForXML (dd.fDeviceType) << "</deviceType>" << endl;
     tmp << "		<friendlyName>" << QuoteForXML (dd.fFriendlyName) << "</friendlyName>" << endl;
     tmp << "		<manufacturer>" << QuoteForXML (dd.fManufactureName) << "</manufacturer>" << endl;
-    if (not dd.fManufacturingURL.empty ()) {
-        tmp << "		<manufacturerURL>" << QuoteForXML (dd.fManufacturingURL) << "</manufacturerURL>" << endl;
+    if (dd.fManufacturingURL.IsPresent ()) {
+        tmp << "		<manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->GetFullURL ()) << "</manufacturerURL>" << endl;
     }
     tmp << "		<modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
     tmp << "		<modelName>" << QuoteForXML (dd.fModelName) << "</modelName>" << endl;
     tmp << "		<modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
-    tmp << "		<modelURL>" << QuoteForXML (dd.fModelURL) << "</modelURL>" << endl;
+    if (dd.fModelURL.IsPresent ()) {
+        tmp << "		<modelURL>" << QuoteForXML (dd.fModelURL->GetFullURL ()) << "</modelURL>" << endl;
+    }
     tmp << "		<serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
     tmp << "		<UDN>uuid:" << QuoteForXML (d.fDeviceID) << "</UDN>" << endl;
     if (not dd.fUPC.empty ()) {
@@ -156,8 +158,8 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     tmp << "	</deviceList>" << endl;
 #endif
 
-    if (not dd.fPresentationURL.empty ()) {
-        tmp << "		<presentationURL>" << QuoteForXML (dd.fPresentationURL) << "</presentationURL>" << endl;
+    if (dd.fPresentationURL.IsPresent ()) {
+        tmp << "		<presentationURL>" << QuoteForXML (dd.fPresentationURL->GetFullURL ()) << "</presentationURL>" << endl;
     }
     tmp << "	</device>" << endl;
     tmp << "</root>" << endl;
