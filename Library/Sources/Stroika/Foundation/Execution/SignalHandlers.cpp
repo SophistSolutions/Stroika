@@ -59,7 +59,7 @@ namespace {
     Queue<SignalID> mkQ_ ()
     {
         Containers::Concrete::Queue_Array<SignalID> signalQ;
-        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
+        signalQ.SetCapacity (25);  // quite arbitrary - @todo make configurable somehow...
         return signalQ;
     }
 }
@@ -74,7 +74,7 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
             // This is a safe context
             Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
             while (true) {
-                Debug::TraceContextBumper trcCtx1 (SDKSTR ("waiting for next signal"));
+                Debug::TraceContextBumper trcCtx1 (SDKSTR ("Waiting for next safe signal"));
                 SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
                 Debug::TraceContextBumper trcCtx2 (SDKSTR ("Invoking SAFE signal handlers"));
                 DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());

@@ -438,7 +438,7 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 #if     qPlatform_POSIX
 void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
-    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));        // unsafe to call trace code - because called as unsafe handler
     //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
     s_Aborting_ = true;
     /*
