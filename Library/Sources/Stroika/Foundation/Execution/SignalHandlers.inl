@@ -57,7 +57,7 @@ namespace   Stroika {
                     return fCall_.get () < rhs.fCall_.get ();
                 }
                 else {
-                    return fType_ < fType_;
+                    return fType_ < rhs.fType_;
                 }
             }
 
