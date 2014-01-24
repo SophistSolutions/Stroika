@@ -91,10 +91,20 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
             }
 #endif
             DbgTrace ("XXXX-AAA-HACK_DBG_6");
-            for (auto a : advertisements) {
-                a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
-                Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);
-                s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
+            try {
+                for (auto a : advertisements) {
+                    a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
+                    Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);
+                    s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
+                }
+            }
+            catch (const Execution::errno_ErrorException& e) {
+                // Error ENETUNREACH is common when you have network connection issues, for example on boot before
+                // full connection
+                DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", String::FromSDKString (e.LookupMessage ()).c_str ());
+            }
+            catch (...) {
+                DbgTrace (L"Ignoring inability to send SSDP notify packets (try again later)");
             }
             Execution::Sleep (30.0);
         }
