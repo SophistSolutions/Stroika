@@ -54,11 +54,16 @@ PeriodicNotifier::~PeriodicNotifier ()
 
 void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
+    DbgTrace ("XXXX-AAA-HACK_DBG_1");
     fListenThread_ = Execution::Thread ([advertisements, fi]() {
+        DbgTrace ("XXXX-AAA-HACK_DBG_2");
         Socket s (Socket::SocketKind::DGRAM);
+        DbgTrace ("XXXX-AAA-HACK_DBG_3");
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
+        DbgTrace ("XXXX-AAA-HACK_DBG_4");
         bindFlags.fReUseAddr = true;
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+        DbgTrace ("XXXX-AAA-HACK_DBG_5");
 #if     qDefaultTracingOn
         bool    firstTimeThru   =   true;
 #endif
@@ -85,6 +90,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
 #endif
             }
 #endif
+            DbgTrace ("XXXX-AAA-HACK_DBG_6");
             for (auto a : advertisements) {
                 a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
                 Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);

@@ -140,9 +140,25 @@ void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
         bindFlags.fReUseAddr = true;
         DbgTrace ("XXXX-HACK_DBG_1");
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-        DbgTrace ("XXXX-HACK_DBG_2");
-        s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
-        DbgTrace ("XXXX-HACK_DBG_3");
+        {
+Again:
+            try {
+                DbgTrace ("XXXX-HACK_DBG_2");
+                s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+                DbgTrace ("XXXX-HACK_DBG_3");
+            }
+            catch (const Execution::errno_ErrorException& e) {
+                if (e == ENODEV) {
+                    // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
+                    DbgTrace ("Got exception - ENODEV - joining multicast group, so try again");
+                    Execution::Sleep (1);
+                    goto Again;
+                }
+                else {
+                    Execution::DoReThrow ();
+                }
+            }
+        }
 
         // only stopped by thread abort
         while (1) {

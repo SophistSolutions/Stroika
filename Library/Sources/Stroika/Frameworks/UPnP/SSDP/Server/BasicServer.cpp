@@ -87,10 +87,15 @@ public:
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
+        DbgTrace (L"****TMPHACK_ IN GetAdjustedAdvertisements_");
         if (fLocation.GetHost ().empty ()) {
             auto ad = fAdvertisements;
             URL useURL = fLocation;
+
+            DbgTrace (L"****TMPHACK_ IN GetAdjustedAdvertisements_ IO::Network::GetPrimaryInternetAddress ().As<String> ()=%s", IO::Network::GetPrimaryInternetAddress ().As<String> ().c_str ());
+
             useURL.SetHost (IO::Network::GetPrimaryInternetAddress ().As<String> ());
+            DbgTrace (L"****TMPHACK_ IN GetAdjustedAdvertisements_ adjusted url to %s", useURL.GetFullURL ().c_str ());
             for (auto ai  = ad.begin (); ai != ad.end (); ++ai) {
                 ai->fLocation = useURL.GetFullURL ();
             }
