@@ -68,3 +68,8 @@ Listener::Listener (const SocketAddress& addr, const function<void (Socket newCo
     : fRep_ (new Rep_ (addr, newConnectionAcceptor))
 {
 }
+
+Listener::Listener (const Listener&& rhs)
+    : fRep_ (move (rhs.fRep_))
+{
+}
