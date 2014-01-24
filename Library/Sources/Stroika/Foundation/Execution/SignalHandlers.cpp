@@ -252,7 +252,12 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
             Require (SafeSignalsManager::sTheRep_ != nullptr);
         }
         if (tmp != nullptr) {
-            tmp->fHandlers_.Add (signal, safeHandlers);
+            if (safeHandlers.empty ()) {
+                tmp->fHandlers_.Remove (signal);
+            }
+            else {
+                tmp->fHandlers_.Add (signal, safeHandlers);
+            }
         }
         (void)::signal (signal, FirstPassSignalHandler_);
     }
