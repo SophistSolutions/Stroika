@@ -78,9 +78,9 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
 #if     USE_TRACE_IN_THIS_MODULE_
                 String msg;
                 msg += L"alive,";
-                msg += String (L"location=") + a.fLocation + L",";
-                msg += String (L"ST=") + a.fST + L",";
-                msg += String (L"fUSN=") + a.fUSN + L",";
+                msg += String (L"location=") + a.fLocation + L", ";
+                msg += String (L"ST=") + a.fST + L", ";
+                msg += String (L"USN=") + a.fUSN;
                 DbgTrace (L"(%s)", msg.c_str ());
 #endif
             }
