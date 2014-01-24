@@ -343,7 +343,9 @@ struct  LinkMonitor::Rep_ {
                             int rtl = IFA_PAYLOAD(nlh);
                             while (rtl && RTA_OK(rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
+                                    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                     uint32_t ipaddr = htonl(*((uint32_t*)RTA_DATA(rth)));
+                                    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                     char name[IFNAMSIZ];
                                     if_indextoname(ifa->ifa_index, name);
                                     {
