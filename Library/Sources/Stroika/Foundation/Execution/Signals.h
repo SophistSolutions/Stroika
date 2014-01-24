@@ -32,6 +32,11 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if     !qCompilerAndStdLib_Supports_errno_t
+            using   errno_t     =   int;
+#endif
+
+
             /**
              */
             using   SignalID        =   int;
