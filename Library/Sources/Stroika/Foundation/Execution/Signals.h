@@ -47,8 +47,16 @@ namespace   Stroika {
              * Send the given signal to a specific thread (within this process)
              *
              *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
+             *
+             *  This function returns an errno error number.
+             *      o   if the error number is ESRCH, this just menans the target thread doesnt
+             *          exist anymore, whcih can easily happen (race) - like if you are sending an abort
+             *          to a thread but it exits first.
+             *
+             *      o   other error numbres - for now - generate an assertion error. The function returns
+             *          zero if no error
              */
-            void    SendSignal (thread::native_handle_type h, SignalID signal);
+            errno_t    SendSignal (thread::native_handle_type h, SignalID signal);
 
 
         }

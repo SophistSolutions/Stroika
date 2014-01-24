@@ -91,7 +91,7 @@ Characters::String Execution::SignalToName (SignalID signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-void    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
+errno_t    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
 #if     qPlatform_POSIX
@@ -101,10 +101,11 @@ void    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
 #endif
 
 #if     qPlatform_POSIX
-    Verify (pthread_kill (h, signal) == 0);
+    errno_t e = pthread_kill (h, signal);
+    Verify (e == 0 or e == ESRCH);
+    return e;
 #else
     AssertNotImplemented ();
 #endif
 }
-
 

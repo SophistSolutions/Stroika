@@ -418,7 +418,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
                 sHandlerInstalled_ = true;
             }
         }
-        Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
+        (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 #elif   qPlatform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
