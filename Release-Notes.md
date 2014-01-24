@@ -17,12 +17,13 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a18">v2.0a18x</a><br/>2014-???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a18">v2.0a18</a><br/>2014-01-24</td>
 <td>
 <ul>
 	<li>renamed Stroika/Foundation/IO/Network/NetworkInterfaces.h to  Stroika/Foundation/IO/Network/LinkMonitor.h, and added new feature to monitor
 		network connections, and used this to improve the stability / robustness of SSDP server support.
 	</li>
+
 	<li>Leveraging new IteratorOwner code, major backend-refactoring of how we manage patching of iterators
 		associated with a container to fix a long standing bug (that iterators must be associated with originating owner
 		to preseve proper semantics). That allowed fixing / cleaning up code in Tally<> - that had workarounds for this.
