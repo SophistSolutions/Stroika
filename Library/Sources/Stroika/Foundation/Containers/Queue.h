@@ -21,6 +21,10 @@
  *  TODO:
  *
  *
+ *      @todo   Consider adding 'max-size' feature to Q. With this set, attempt to add item past
+ *              max size would throw. This can be handy with stuff like blocking q? and probably
+ *              other cases as well (when you dont want q to grow indefinitely).
+ *
  *      @todo   REVIEW BlockingQueue<> code - and add variants returning Optional - so that BlockingQueue.
  *              can be done without a critical section.
  *
