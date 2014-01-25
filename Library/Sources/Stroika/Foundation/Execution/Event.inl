@@ -32,15 +32,6 @@ namespace   Stroika {
                 , fConditionVariable_ ()
                 , fTriggered_ (false)
             {
-#if     qTrack_Execution_HandleCounts
-                Execution::AtomicIncrement (&sCurAllocatedHandleCount);
-#endif
-            }
-            inline  Event::~Event ()
-            {
-#if     qTrack_Execution_HandleCounts
-                AtomicDecrement (&sCurAllocatedHandleCount);
-#endif
             }
             inline  void    Event::Reset ()
             {

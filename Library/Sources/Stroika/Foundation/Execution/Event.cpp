@@ -52,9 +52,6 @@ using   Stroika::Foundation::Time::Duration;
  ************************************** Event ***********************************
  ********************************************************************************
  */
-#if     qTrack_ThreadUtils_HandleCounts
-uint32_t    Event::sCurAllocatedHandleCount     =   0;
-#endif
 void    Event::Wait (Time::DurationSecondsType timeout)
 {
     //Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));

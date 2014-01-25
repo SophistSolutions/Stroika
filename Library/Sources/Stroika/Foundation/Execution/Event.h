@@ -37,13 +37,8 @@ namespace   Stroika {
         namespace   Execution {
 
 
-#ifndef qTrack_ThreadUtils_HandleCounts
-#define qTrack_ThreadUtils_HandleCounts     qDebug
-#endif
-
-
             /**
-             *  AutoReset Event (like Windwow CreateEvent (false, false)).
+             *  AutoReset Event (like Windows' CreateEvent (false, false)).
              *
              *  Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm,
              *  and simpler to assume always in unset state by default.
@@ -52,14 +47,9 @@ namespace   Stroika {
              *
              */
             class   Event {
-#if     qTrack_ThreadUtils_HandleCounts
-            public:
-                static  uint32_t    sCurAllocatedHandleCount;
-#endif
             public:
                 Event ();
                 Event (const Event&) = delete;
-                ~Event ();
 
             public:
                 nonvirtual  const Event& operator= (const Event&) = delete;
