@@ -10,6 +10,7 @@ For starters however, and probably for Stroika v2, we will ONLY support SSDP.
 SEE
 	http://www.upnp-hacks.org/upnp.html
 	http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
+	https://wiki.gnome.org/action/show/Projects/GUPnP?action=show&redirect=GUPnP
 
 	
 
