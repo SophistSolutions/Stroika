@@ -29,6 +29,11 @@
  *      @todo   Optimize of listener is STATIC - and so we only register one (and esp on linux with threads)
  *              only one thread - and fan out to all subscribers. SB pretty easy - just make data static,
  *              but I guess one trick is then you need to be able to remove callbacks (ours - need Function).
+ *
+ *      @todo   LinkMonitor rnetlink support DELETE
+ *
+ *      @todo   Support remove callback (once we have new FUNCTION helper - copyable stdfunction) - and usethat
+ *              for SignalHandlers as well.
  */
 
 
