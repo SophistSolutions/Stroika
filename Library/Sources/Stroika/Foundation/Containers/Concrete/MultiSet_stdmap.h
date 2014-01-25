@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Tally_stdmap_h_
-#define _Stroika_Foundation_Containers_Concrete_Tally_stdmap_h_
+#ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_stdmap_h_
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_stdmap_h_
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../Tally.h"
+#include    "../MultiSet.h"
 
 
 
@@ -16,7 +16,7 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo   MUST re-implement (clone SortedTally_stdmap<>) code to avoid deadly include empbrace so we
+ *      @todo   MUST re-implement (clone SortedMultiSet_stdmap<>) code to avoid deadly include empbrace so we
  *              have the option to use this in the factory.
  */
 
@@ -29,10 +29,10 @@ namespace   Stroika {
 
 
                 /**
-                 *  Tally_stdmap requires its own traits (besides Tally_DefaultTraits) because of the neeed for a compare function for std::map<>
+                 *  MultiSet_stdmap requires its own traits (besides MultiSet_DefaultTraits) because of the neeed for a compare function for std::map<>
                  */
                 template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-                struct   Tally_stdmap_DefaultTraits : Tally_DefaultTraits <T, WELL_ORDER_COMPARER> {
+                struct   MultiSet_stdmap_DefaultTraits : MultiSet_DefaultTraits <T, WELL_ORDER_COMPARER> {
                     /**
                      */
                     using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
@@ -43,10 +43,10 @@ namespace   Stroika {
 
                 /**
                  */
-                template    <typename T, typename TRAITS = Tally_stdmap_DefaultTraits<T>>
-                class  Tally_stdmap : public Tally<T, TRAITS> {
+                template    <typename T, typename TRAITS = MultiSet_stdmap_DefaultTraits<T>>
+                class  MultiSet_stdmap : public MultiSet<T, TRAITS> {
                 private:
-                    using   inherited   =   Tally<T, TRAITS>;
+                    using   inherited   =   MultiSet<T, TRAITS>;
 
                 public:
                     /**
@@ -62,16 +62,16 @@ namespace   Stroika {
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
 
                 public:
-                    Tally_stdmap ();
+                    MultiSet_stdmap ();
                     template    <typename CONTAINER_OF_T>
-                    Tally_stdmap (const CONTAINER_OF_T& src);
-                    Tally_stdmap (const Tally_stdmap<T, TRAITS>& src);
-                    Tally_stdmap (const std::initializer_list<T>& s);
-                    Tally_stdmap (const std::initializer_list<TallyEntry<T>>& s);
-                    Tally_stdmap (const T* start, const T* end);
+                    MultiSet_stdmap (const CONTAINER_OF_T& src);
+                    MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src);
+                    MultiSet_stdmap (const std::initializer_list<T>& s);
+                    MultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s);
+                    MultiSet_stdmap (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Tally_stdmap<T, TRAITS>& operator= (const Tally_stdmap<T, TRAITS>& rhs);
+                    nonvirtual  MultiSet_stdmap<T, TRAITS>& operator= (const MultiSet_stdmap<T, TRAITS>& rhs);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -96,6 +96,6 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Tally_stdmap.inl"
+#include    "MultiSet_stdmap.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_stdmap_h_ */
+#endif  /*_Stroika_Foundation_Containers_Concrete_MultiSet_stdmap_h_ */

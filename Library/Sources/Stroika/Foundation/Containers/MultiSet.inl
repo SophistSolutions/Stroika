@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Tally_inl_
-#define _Stroika_Foundation_Containers_Tally_inl_
+#ifndef _Stroika_Foundation_Containers_MultiSet_inl_
+#define _Stroika_Foundation_Containers_MultiSet_inl_
 
 /*
  ********************************************************************************
@@ -12,9 +12,9 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Traversal/IterableFromIterator.h"
-#include    "Tally.h"
+#include    "MultiSet.h"
 
-#include    "Concrete/Tally_Factory.h"
+#include    "Concrete/MultiSet_Factory.h"
 
 
 namespace   Stroika {
@@ -27,27 +27,27 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****** Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ *****************
+             ****** MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ *****************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-                ElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
-                    : fTally (tally)
-                    , fTallyIterator (delegateTo)
+            struct  MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
+                ElementsIteratorHelperContext_ (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally, const Iterator<MultiSetEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
+                    : fMultiSet (tally)
+                    , fMultiSetIterator (delegateTo)
                     , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
                     , fSaved2Return (saved2Return)
                 {
                 }
-                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    fTally;
-                Iterator<TallyEntry<T>>                             fTallyIterator;
+                typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep    fMultiSet;
+                Iterator<MultiSetEntry<T>>                             fMultiSetIterator;
                 size_t                                              fCountMoreTimesToGoBeforeAdvance;
                 Memory::Optional<T>                                 fSaved2Return;
             };
 
 
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
+            struct  MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     using   inherited   =   typename    Iterator<T>::IRep;
                     ElementsIteratorHelperContext_      fContext;
@@ -56,10 +56,10 @@ namespace   Stroika {
                         : inherited ()
                         , fContext (context)
                     {
-                        if (not fContext.fTallyIterator.Done ()) {
-                            fContext.fSaved2Return = fContext.fTallyIterator->fItem;
+                        if (not fContext.fMultiSetIterator.Done ()) {
+                            fContext.fSaved2Return = fContext.fMultiSetIterator->fItem;
                             if (fContext.fSaved2Return.IsPresent ()) {
-                                fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fTallyIterator->fCount - 1;
+                                fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
                             }
                         }
                     }
@@ -73,21 +73,21 @@ namespace   Stroika {
                             }
                         }
                         else {
-                            bool done = fContext.fTallyIterator.Done ();
+                            bool done = fContext.fMultiSetIterator.Done ();
                             if (not done and advance) {
-                                fContext.fTallyIterator++;
-                                done = fContext.fTallyIterator.Done ();
+                                fContext.fMultiSetIterator++;
+                                done = fContext.fMultiSetIterator.Done ();
                             }
                             if (done) {
                                 result->clear ();
                             }
                             else {
-                                *result = fContext.fTallyIterator->fItem;
+                                *result = fContext.fMultiSetIterator->fItem;
                             }
                             if (advance) {
                                 fContext.fSaved2Return = *result;
                                 if (fContext.fSaved2Return.IsPresent ()) {
-                                    fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fTallyIterator->fCount - 1;
+                                    fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
                                 }
                             }
                         }
@@ -98,7 +98,7 @@ namespace   Stroika {
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
-                        return fContext.fTallyIterator.GetOwner ();
+                        return fContext.fMultiSetIterator.GetOwner ();
                     }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
@@ -114,12 +114,12 @@ namespace   Stroika {
 
 
             /**
-             *  Protected helper class to convert from an iterator of TallyEntries
+             *  Protected helper class to convert from an iterator of MultiSetEntries
              *  to an iterator over individual items - repeating items the appropriate number of times
              *  depending on its count.
              */
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
+            struct  MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
                 using   MyIteratorRep_  =   typename ElementsIteratorHelper_::Rep;
                 using   MyDataBLOB_     =   ElementsIteratorHelperContext_;
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
@@ -135,14 +135,14 @@ namespace   Stroika {
                     virtual size_t  GetLength () const override
                     {
                         size_t  n = 0;
-                        for (Iterator<TallyEntry<T>> i = this->_fDataBlob.fTally->MakeIterator (this); not i.Done (); ++i) {
+                        for (Iterator<MultiSetEntry<T>> i = this->_fDataBlob.fMultiSet->MakeIterator (this); not i.Done (); ++i) {
                             n += i->fCount;
                         }
                         return n;
                     }
                     virtual bool    IsEmpty () const override
                     {
-                        return this->_fDataBlob.fTally->IsEmpty ();
+                        return this->_fDataBlob.fMultiSet->IsEmpty ();
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -153,27 +153,27 @@ namespace   Stroika {
 #endif
                     }
                 };
-                _ElementsIterableHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator (iterateOverTally.get ())))))
+                _ElementsIterableHelper (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& iterateOverMultiSet)
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ())))))
                 {
                 }
             };
 
 
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
-                UniqueElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally, const Iterator<TallyEntry<T>>& delegateTo)
-                    : fTally (tally)
-                    , fTallyIterator (delegateTo)
+            struct  MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
+                UniqueElementsIteratorHelperContext_ (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally, const Iterator<MultiSetEntry<T>>& delegateTo)
+                    : fMultiSet (tally)
+                    , fMultiSetIterator (delegateTo)
                 {
                 }
-                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    fTally;
-                Iterator<TallyEntry<T>>                             fTallyIterator;
+                typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep    fMultiSet;
+                Iterator<MultiSetEntry<T>>                             fMultiSetIterator;
             };
 
 
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
+            struct  MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     using   inherited   =   typename    Iterator<T>::IRep;
                     UniqueElementsIteratorHelperContext_      fContext;
@@ -186,16 +186,16 @@ namespace   Stroika {
                     virtual void    More (Memory::Optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
-                        bool done = fContext.fTallyIterator.Done ();
+                        bool done = fContext.fMultiSetIterator.Done ();
                         if (not done and advance) {
-                            fContext.fTallyIterator++;
-                            done = fContext.fTallyIterator.Done ();
+                            fContext.fMultiSetIterator++;
+                            done = fContext.fMultiSetIterator.Done ();
                         }
                         if (done) {
                             result->clear ();
                         }
                         else {
-                            *result = fContext.fTallyIterator->fItem;
+                            *result = fContext.fMultiSetIterator->fItem;
                         }
                     }
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override
@@ -204,7 +204,7 @@ namespace   Stroika {
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
-                        return fContext.fTallyIterator.GetOwner ();
+                        return fContext.fMultiSetIterator.GetOwner ();
                     }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
@@ -212,7 +212,7 @@ namespace   Stroika {
                         return false;
                     }
                 };
-                UniqueElementsIteratorHelper_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)
+                UniqueElementsIteratorHelper_ (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally)
                     : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
                 {
                 }
@@ -220,11 +220,11 @@ namespace   Stroika {
 
 
             /**
-             *  Protected helper class to convert from an iterator of TallyEntries
+             *  Protected helper class to convert from an iterator of MultiSetEntries
              *  to an iterator over unique individual items.
              */
             template    <typename T, typename TRAITS>
-            struct  Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
+            struct  MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
 #if     qTemplateAccessCheckConfusionProtectedNeststingBug
                 using   IterableOfTSharedPtrIRep    =   typename Iterable<T>::_SharedPtrIRep;
 #endif
@@ -239,11 +239,11 @@ namespace   Stroika {
                     }
                     virtual size_t  GetLength () const override
                     {
-                        return this->_fDataBlob.fTally->GetLength ();
+                        return this->_fDataBlob.fMultiSet->GetLength ();
                     }
                     virtual bool    IsEmpty () const override
                     {
-                        return this->_fDataBlob.fTally->IsEmpty ();
+                        return this->_fDataBlob.fMultiSet->IsEmpty ();
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -254,7 +254,7 @@ namespace   Stroika {
 #endif
                     }
                 };
-                _UniqueElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)
+                _UniqueElementsHelper (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally)
                     : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
                 {
                 }
@@ -263,34 +263,34 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****************************** TallyEntry<T> ***********************************
+             ****************************** MultiSetEntry<T> ***********************************
              ********************************************************************************
              */
             template    <typename T>
-            inline  TallyEntry<T>::TallyEntry (T item)
+            inline  MultiSetEntry<T>::MultiSetEntry (T item)
                 : fItem (item)
                 , fCount (1)
             {
             }
             template    <typename T>
-            inline  TallyEntry<T>::TallyEntry (T item, size_t count)
+            inline  MultiSetEntry<T>::MultiSetEntry (T item, size_t count)
                 : fItem (item)
                 , fCount (count)
             {
             }
             template    <typename T>
-            inline  TallyEntry<T>::TallyEntry (pair<T, size_t> item)
+            inline  MultiSetEntry<T>::MultiSetEntry (pair<T, size_t> item)
                 : fItem (item.first)
                 , fCount (item.second)
             {
             }
             template    <typename T>
-            inline bool   TallyEntry<T>::operator== (const TallyEntry<T>& rhs)  const
+            inline bool   MultiSetEntry<T>::operator== (const MultiSetEntry<T>& rhs)  const
             {
                 return (fCount == rhs.fCount and fItem == rhs.fItem);
             }
             template    <typename T>
-            inline bool   TallyEntry<T>::operator!= (const TallyEntry<T>& rhs)  const
+            inline bool   MultiSetEntry<T>::operator!= (const MultiSetEntry<T>& rhs)  const
             {
                 return not (operator== (rhs));
             }
@@ -298,15 +298,15 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* Tally<T, TRAITS>::_IRep ******************************
+             ************************* MultiSet<T, TRAITS>::_IRep ******************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  Tally<T, TRAITS>::_IRep::_IRep ()
+            inline  MultiSet<T, TRAITS>::_IRep::_IRep ()
             {
             }
             template    <typename T, typename TRAITS>
-            bool  Tally<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            bool  MultiSet<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;
@@ -315,20 +315,20 @@ namespace   Stroika {
                     return false;
                 }
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    if (i->fCount != rhs.TallyOf (i->fItem)) {
+                    if (i->fCount != rhs.MultiSetOf (i->fItem)) {
                         return false;
                     }
                 }
                 return true;
             }
             template    <typename T, typename TRAITS>
-            Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
+            Iterable<T>  MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
                 return _ElementsIterableHelper (rep);
             }
             template    <typename T, typename TRAITS>
-            Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
+            Iterable<T>  MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
                 Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
                 return _UniqueElementsHelper (rep);
@@ -337,66 +337,66 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** Tally<T, TRAITS> ******************************
+             ******************************** MultiSet<T, TRAITS> ******************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::Tally ()
-                : inherited (move (Concrete::Tally_Factory<T, TRAITS>::mk ()))
+            MultiSet<T, TRAITS>::MultiSet ()
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  Tally<T, TRAITS>::Tally (const Tally<T, TRAITS>& src)
+            inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Tally<T, TRAITS>::Tally (const CONTAINER_OF_T& src)
-                : inherited (move (Concrete::Tally_Factory<T, TRAITS>::mk ()))
+            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
-            inline  Tally<T, TRAITS>::Tally (const _SharedPtrIRep& rep)
+            inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::Tally (const std::initializer_list<T>& s)
-                : inherited (move (Concrete::Tally_Factory<T, TRAITS>::mk ()))
+            MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<T>& s)
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (s);
             }
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::Tally (const std::initializer_list<TallyEntry<T>>& s)
-                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
+            MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
+                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (s);
             }
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::Tally (const T* start, const T* end)
-                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
+            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
+                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
                 AddAll (start, end);
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
-                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
+            MultiSet<T, TRAITS>::MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
+                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
                 AddAll (start, end);
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
 #if     qDebug
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>::~Tally ()
+            MultiSet<T, TRAITS>::~MultiSet ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     _GetRep ().AssertNoIteratorsReferenceOwner (this);
@@ -404,84 +404,84 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
-            inline  const typename Tally<T, TRAITS>::_IRep&  Tally<T, TRAITS>::_GetRep () const
+            inline  const typename MultiSet<T, TRAITS>::_IRep&  MultiSet<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  typename Tally<T, TRAITS>::_IRep&        Tally<T, TRAITS>::_GetRep ()
+            inline  typename MultiSet<T, TRAITS>::_IRep&        MultiSet<T, TRAITS>::_GetRep ()
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T, typename TRAITS>
-            void   Tally<T, TRAITS>::RemoveAll (T item)
+            void   MultiSet<T, TRAITS>::RemoveAll (T item)
             {
-                Remove (item, TallyOf (item));
+                Remove (item, MultiSetOf (item));
             }
             template    <typename T, typename TRAITS>
-            size_t  Tally<T, TRAITS>::TotalTally () const
+            size_t  MultiSet<T, TRAITS>::TotalMultiSet () const
             {
                 size_t sum = 0;
-                for (TallyEntry<T> i : *this) {
+                for (MultiSetEntry<T> i : *this) {
                     sum += i.fCount;
                 }
                 return sum;
             }
             template    <typename T, typename TRAITS>
-            inline  Iterable<T>   Tally<T, TRAITS>::Elements () const
+            inline  Iterable<T>   MultiSet<T, TRAITS>::Elements () const
             {
-                _SharedPtrIRep  ss = const_cast<Tally<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+                _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
                 AssertNotNull (ss.get ());
                 return ss->Elements (ss);
             }
             template    <typename T, typename TRAITS>
-            inline  Iterable<T>   Tally<T, TRAITS>::UniqueElements () const
+            inline  Iterable<T>   MultiSet<T, TRAITS>::UniqueElements () const
             {
-                _SharedPtrIRep  ss = const_cast<Tally<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+                _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);
             }
             template    <typename T, typename TRAITS>
-            inline  bool  Tally<T, TRAITS>::Equals (const Tally<T, TRAITS>& rhs) const
+            inline  bool  MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const
             {
                 return _GetRep ().Equals (rhs._GetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Tally<T, TRAITS>::Contains (T item) const
+            inline  bool    MultiSet<T, TRAITS>::Contains (T item) const
             {
                 return _GetRep ().Contains (item);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::RemoveAll ()
+            inline  void    MultiSet<T, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Add (T item)
+            inline  void    MultiSet<T, TRAITS>::Add (T item)
             {
                 _GetRep ().Add (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Add (T item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Add (T item, size_t count)
             {
                 _GetRep ().Add (item, count);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Add (const TallyEntry<T>& item)
+            inline  void    MultiSet<T, TRAITS>::Add (const MultiSetEntry<T>& item)
             {
                 _GetRep ().Add (item.fItem, item.fCount);
             }
             template    <typename T, typename TRAITS>
-            void   Tally<T, TRAITS>::AddAll (const T* start, const T* end)
+            void   MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
             {
                 for (const T* i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end)
+            inline  void    MultiSet<T, TRAITS>::AddAll (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
             {
                 for (auto i = start; i != end; ++i) {
                     _GetRep ().Add (i->fItem, i->fEnd);
@@ -489,55 +489,55 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            void    Tally<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
+            void    MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
             {
                 for (auto i : src) {
                     Add (i);
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Remove (T item)
+            inline  void    MultiSet<T, TRAITS>::Remove (T item)
             {
                 _GetRep ().Remove (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Remove (T item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Remove (T item, size_t count)
             {
                 _GetRep ().Remove (item, count);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::Remove (const Iterator<TallyEntry<T>>& i)
+            inline  void    MultiSet<T, TRAITS>::Remove (const Iterator<MultiSetEntry<T>>& i)
             {
                 _GetRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Tally<T, TRAITS>::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+            inline  void    MultiSet<T, TRAITS>::UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)
             {
                 _GetRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
-            inline  size_t  Tally<T, TRAITS>::TallyOf (T item) const
+            inline  size_t  MultiSet<T, TRAITS>::MultiSetOf (T item) const
             {
-                return _GetRep ().TallyOf (item);
+                return _GetRep ().MultiSetOf (item);
             }
             template    <typename T, typename TRAITS>
-            inline  Tally<T, TRAITS>&   Tally<T, TRAITS>::operator+= (T item)
+            inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (T item)
             {
                 _GetRep ().Add (item, 1);
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  bool   Tally<T, TRAITS>::operator== (const Tally<T, TRAITS>& rhs) const
+            inline  bool   MultiSet<T, TRAITS>::operator== (const MultiSet<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Tally<T, TRAITS>::operator!= (const Tally<T, TRAITS>& rhs) const
+            inline  bool    MultiSet<T, TRAITS>::operator!= (const MultiSet<T, TRAITS>& rhs) const
             {
                 return not (Equals (rhs));
             }
             template    <typename T, typename TRAITS>
-            Tally<T, TRAITS>&  Tally<T, TRAITS>::operator+= (const Tally<T, TRAITS>& t)
+            MultiSet<T, TRAITS>&  MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
             {
                 for (auto i = t.begin (); i != t.end (); ++i) {
                     Add (i->fItem, i->fCount);
@@ -549,4 +549,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Tally_inl_ */
+#endif /* _Stroika_Foundation_Containers_MultiSet_inl_ */

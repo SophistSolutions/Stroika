@@ -16,9 +16,9 @@
 [16]	Foundation::Containers::SortedCollection
 [17]	Foundation::Containers::SortedMapping
 [18]	Foundation::Containers::SortedSet
-[19]	Foundation::Containers::SortedTally
+[19]	Foundation::Containers::SortedMultiMap
 [20]	Foundation::Containers::Stack
-[21]	Foundation::Containers::Tally
+[21]	Foundation::Containers::MultiMap
 [22]	Foundation::Cryptography
 [23]	Foundation::DataExchange::Reader/Writers(JSON/XML)
 [24]	Foundation::DataExchange::ObjectVariantMapper

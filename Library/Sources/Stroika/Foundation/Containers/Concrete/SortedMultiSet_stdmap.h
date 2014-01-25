@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_
-#define _Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_   1
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_
+#define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_   1
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../SortedTally.h"
+#include    "../SortedMultiSet.h"
 
 
 
@@ -36,27 +36,27 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
-                class   SortedTally_stdmap : public SortedTally<T, TRAITS> {
+                template    <typename T, typename TRAITS = SortedMultiSet_DefaultTraits<T>>
+                class   SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
                 private:
-                    using   inherited   =   SortedTally<T, TRAITS>;
+                    using   inherited   =   SortedMultiSet<T, TRAITS>;
 
                 public:
                     /**
                      */
-                    SortedTally_stdmap ();
-                    SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src);
-                    SortedTally_stdmap (const std::initializer_list<T>& src);
-                    SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& src);
+                    SortedMultiSet_stdmap ();
+                    SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src);
+                    SortedMultiSet_stdmap (const std::initializer_list<T>& src);
+                    SortedMultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& src);
                     template <typename CONTAINER_OF_T>
-                    explicit SortedTally_stdmap (const CONTAINER_OF_T& src);
-                    SortedTally_stdmap (const T* start, const T* end);
-                    SortedTally_stdmap (const TallyEntry<T>* start, const TallyEntry<T>* end);
+                    explicit SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
+                    SortedMultiSet_stdmap (const T* start, const T* end);
+                    SortedMultiSet_stdmap (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
 
                 public:
                     /**
                     */
-                    nonvirtual  SortedTally_stdmap<T, TRAITS>& operator= (const SortedTally_stdmap<T, TRAITS>& src);
+                    nonvirtual  SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& src);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -82,7 +82,7 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "SortedTally_stdmap.inl"
+#include    "SortedMultiSet_stdmap.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_*/
+#endif  /*_Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_*/
 

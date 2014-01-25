@@ -275,7 +275,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  TallyEquals () - very inefficiently - but with constant small memory overhead - returns true if
+                 *  MultiSetEquals () - very inefficiently - but with constant small memory overhead - returns true if
                  *  each element in the each iterable is contained in the other. They lengths CAN be differnt
                  *  and the two Iterables<> be SetEquals().
                  *
@@ -284,7 +284,7 @@ namespace   Stroika {
                  *
                  */
                 template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    TallyEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                nonvirtual  bool    MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**

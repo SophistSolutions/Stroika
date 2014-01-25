@@ -23,8 +23,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
 <td>
 <ul>
-	<li>
-	</li>
+	<li>Renamed Tally<> to MultiSet<></li>
 </ul>
 </td>
 </tr>

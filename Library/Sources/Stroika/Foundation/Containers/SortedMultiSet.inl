@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedTally_inl_
-#define _Stroika_Foundation_Containers_SortedTally_inl_
+#ifndef _Stroika_Foundation_Containers_SortedMultiSet_inl_
+#define _Stroika_Foundation_Containers_SortedMultiSet_inl_
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/SortedTally_Factory.h"
+#include    "Concrete/SortedMultiSet_Factory.h"
 
 
 namespace   Stroika {
@@ -16,52 +16,52 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *************************** SortedTally<T, TRAITS> *****************************
+             *************************** SortedMultiSet<T, TRAITS> *****************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  SortedTally<T, TRAITS>::SortedTally ()
-                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet ()
+                : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  SortedTally<T, TRAITS>::SortedTally (const SortedTally<T, TRAITS>& src)
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const SortedMultiSet<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  SortedTally<T, TRAITS>::SortedTally (const _SharedPtrIRep& rep)
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            SortedTally<T, TRAITS>::SortedTally (const std::initializer_list<T>& s)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const std::initializer_list<T>& s)
+                : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);
             }
             template    <typename T, typename TRAITS>
-            SortedTally<T, TRAITS>::SortedTally (const std::initializer_list<TallyEntry<T>>& s)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
+                : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  SortedTally<T, TRAITS>::SortedTally (const CONTAINER_OF_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src)
+                : inherited (static_cast<const inherited&> (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (src);
             }
             template    <typename T, typename TRAITS>
-            inline  SortedTally<T, TRAITS>&   SortedTally<T, TRAITS>::operator= (const SortedTally<T, TRAITS>& src)
+            inline  SortedMultiSet<T, TRAITS>&   SortedMultiSet<T, TRAITS>::operator= (const SortedMultiSet<T, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
                 EnsureMember (&inherited::_GetRep (), _IRep);
@@ -72,4 +72,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_SortedTally_inl_ */
+#endif /* _Stroika_Foundation_Containers_SortedMultiSet_inl_ */

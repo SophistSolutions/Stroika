@@ -206,7 +206,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-            bool    Iterable<T>::TallyEquals (const RHS_CONTAINER_TYPE& rhs) const
+            bool    Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const
             {
                 auto    tallyOf = [] (const Iterable<T>& c, T item) -> size_t {
                     size_t  total = 0;

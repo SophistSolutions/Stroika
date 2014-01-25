@@ -45,7 +45,7 @@ using   Concrete::Sequence_stdvector;
  *
  *  @todo   Fix COMPARE (test case 3) support (test cases) once we better support the feautre with traits!
  *
- *  @todo   Look at Container tests for Bag/Tally, and see if any of them can be lifted and applied here.
+ *  @todo   Look at Container tests for Bag/MultiSet, and see if any of them can be lifted and applied here.
  *
  *  @todo   Look at Iterable<T> stuff and write test cases for those APIs. Write in a way so that
  *          they can be re-applied for other classes that are  Iterable - such as Bag/etc.

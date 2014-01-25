@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Tally_h_
-#define _Stroika_Foundation_Containers_Tally_h_ 1
+#ifndef _Stroika_Foundation_Containers_MultiSet_h_
+#define _Stroika_Foundation_Containers_MultiSet_h_ 1
 
 #include    "../StroikaPreComp.h"
 
@@ -23,24 +23,24 @@
  *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
  *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
  *
- *              Key is adding TallyTraitsType to the traits and making generic base class
- *              for Tally<T> - its traits - same as wtih SortedTraits.
+ *              Key is adding MultiSetTraitsType to the traits and making generic base class
+ *              for MultiSet<T> - its traits - same as wtih SortedTraits.
  *
- *              Also likewise key for Tally_stdmap<> - cuz now you cannot assign Tally_stdmap<> to
- *              Tally<T>!!!!
+ *              Also likewise key for MultiSet_stdmap<> - cuz now you cannot assign MultiSet_stdmap<> to
+ *              MultiSet<T>!!!!
  *
- *      @todo   Consider rewriting all Tally<> concrete types using Mapping<T,counttype> concrete impl?
+ *      @todo   Consider rewriting all MultiSet<> concrete types using Mapping<T,counttype> concrete impl?
  *              Might not work easily but document why... (Add () semantics - but maybe).
  *
- *      @todo   AddAll() and CTOR for Tally (and SortedTally and concrete types) is confused by having
- *              overload taking T* and TallyEntry<T>*. Issue is that we cannot do templated iterator
+ *      @todo   AddAll() and CTOR for MultiSet (and SortedMultiSet and concrete types) is confused by having
+ *              overload taking T* and MultiSetEntry<T>*. Issue is that we cannot do templated iterator
  *              and templated objhect CTOR while these are iteratored (without mcuh better partial
  *              template specializaiton - I THINK????). Maybe use different method for one or the other
  *              to distinguish?
  *
  *              USE SFINAE stuff we used in Mapping<> etc. Simplify AddAll and do the magic in Add.
  *
- *      @todo   Current DOCS for Tally::Remove() say that for variant T, count, the value MUST be present.
+ *      @todo   Current DOCS for MultiSet::Remove() say that for variant T, count, the value MUST be present.
  *              But I think this is not in the spirit we've used elsewhere, due to multithreading.
  *              Better to allow them to not be present, else hard to synchonize (check and remove)
  *
@@ -58,7 +58,7 @@ namespace   Stroika {
 
 
             template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-            struct   Tally_DefaultTraits {
+            struct   MultiSet_DefaultTraits {
                 /**
                  */
                 using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
@@ -68,15 +68,15 @@ namespace   Stroika {
 
 
             template    <typename T>
-            class   TallyEntry {
+            class   MultiSetEntry {
             public:
-                TallyEntry (T item);
-                TallyEntry (T item, size_t count);
-                TallyEntry (pair<T, size_t> item);
+                MultiSetEntry (T item);
+                MultiSetEntry (T item, size_t count);
+                MultiSetEntry (pair<T, size_t> item);
 
             public:
-                nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
-                nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
+                nonvirtual  bool    operator== (const MultiSetEntry<T>& rhs) const;
+                nonvirtual  bool    operator!= (const MultiSetEntry<T>& rhs) const;
 
             public:
                 T       fItem;
@@ -85,32 +85,34 @@ namespace   Stroika {
 
 
             /**
-             *  A Tally<T, TRAITS> a collection of T elements, but where each time you add something, the tally
+             *  A MultiSet<T, TRAITS> a collection of T elements, but where each time you add something, the tally
              *  tracks the number of times that thing has been entered. This is not a commonly used class,
              *  but handy when you want to count things.
              *
-             *  Tally<T, TRAITS> inherits from Iterable<TallyEntry<T>> instead of Iterable<T> because if you are
-             *  using a Tally, you probably want access to the counts as you iterate - not just the
+             *  MultiSet<T, TRAITS> inherits from Iterable<MultiSetEntry<T>> instead of Iterable<T> because if you are
+             *  using a MultiSet, you probably want access to the counts as you iterate - not just the
              *  unique elements (though we make it easy to get that iterator too with Elements () or
              *  UniqueElements ()).
              *
-             *  A Tally<T, TRAITS> makes no promises about ordering of elements in iteration.
+             *  A MultiSet<T, TRAITS> makes no promises about ordering of elements in iteration.
              *
              *  See also http://en.wikipedia.org/wiki/Multiset_(abstract_data_type)#Multiset
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
+             *
              */
-            template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
-            class   Tally : public Iterable<TallyEntry<T>> {
+            template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
+            class   MultiSet : public Iterable<MultiSetEntry<T>> {
             private:
-                using   inherited   =   Iterable<TallyEntry<T>>;
+                using   inherited   =   Iterable<MultiSetEntry<T>>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using       ArchetypeContainerType      =   Tally<T, TRAITS>;
+                using       ArchetypeContainerType      =   MultiSet<T, TRAITS>;
 
             public:
                 /**
@@ -128,10 +130,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      \brief  TallyOfElementType is just a handly copy of the *T* template type which this
-                 *              Tally<T, TRAITS> parameterizes counting.
+                 *      \brief  MultiSetOfElementType is just a handly copy of the *T* template type which this
+                 *              MultiSet<T, TRAITS> parameterizes counting.
                  */
-                using   TallyOfElementType  =   T;
+                using   MultiSetOfElementType  =   T;
 
             protected:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -141,26 +143,26 @@ namespace   Stroika {
                 using   _SharedPtrIRep  =   shared_ptr<_IRep>;
 
             public:
-                Tally ();
-                Tally (const Tally<T, TRAITS>& src);
-                Tally (const std::initializer_list<T>& s);
-                Tally (const std::initializer_list<TallyEntry<T>>& s);
+                MultiSet ();
+                MultiSet (const MultiSet<T, TRAITS>& src);
+                MultiSet (const std::initializer_list<T>& s);
+                MultiSet (const std::initializer_list<MultiSetEntry<T>>& s);
                 template    <typename CONTAINER_OF_T>
-                explicit Tally (const CONTAINER_OF_T& src);
-                Tally (const T* start, const T* end);
-                Tally (const TallyEntry<T>* start, const TallyEntry<T>* end);
+                explicit MultiSet (const CONTAINER_OF_T& src);
+                MultiSet (const T* start, const T* end);
+                MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
 
             protected:
-                explicit Tally (const _SharedPtrIRep& rep);
+                explicit MultiSet (const _SharedPtrIRep& rep);
 
 #if     qDebug
             public:
-                ~Tally ();
+                ~MultiSet ();
 #endif
 
             public:
                 /**
-                 *  Contains (item) is equivilent to TallyOf (item) != 0, but maybe faster (since it doesn't need to compute
+                 *  Contains (item) is equivilent to MultiSetOf (item) != 0, but maybe faster (since it doesn't need to compute
                  *  the fully tally).
                  */
                 nonvirtual  bool    Contains (T item) const;
@@ -170,13 +172,13 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
-                nonvirtual  void    Add (const TallyEntry<T>& item);
+                nonvirtual  void    Add (const MultiSetEntry<T>& item);
 
             public:
                 /**
                  */
                 nonvirtual  void    AddAll (const T* start, const T* end);
-                nonvirtual  void    AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end);
+                nonvirtual  void    AddAll (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
                 template <typename CONTAINER_OF_T>
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& src);
 
@@ -186,11 +188,11 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  *
-                 *  If using the item/count or just item overloads, then Tally<> requires that the removed items are present.
+                 *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
                  */
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (T item, size_t count);
-                nonvirtual  void    Remove (const Iterator<TallyEntry<T>>& i);
+                nonvirtual  void    Remove (const Iterator<MultiSetEntry<T>>& i);
 
             public:
                 /**
@@ -202,34 +204,34 @@ namespace   Stroika {
                 /**
                  * if newCount == 0, equivilent to Remove(i). Require not i.Done () - so it must point to a given item.
                  */
-                nonvirtual  void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount);
+                nonvirtual  void    UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount);
 
             public:
                 /**
-                 *  TallyOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
+                 *  MultiSetOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
                  *
-                 *  If there are no copies of item in the Tally, 0 is returned.
+                 *  If there are no copies of item in the MultiSet, 0 is returned.
                  */
-                nonvirtual  size_t  TallyOf (T item) const;
+                nonvirtual  size_t  MultiSetOf (T item) const;
 
             public:
                 /**
                  *  Returns the sum of all tallys of all contained elements. This is equivilent
                  *  to Elements ().size ().
                  */
-                nonvirtual  size_t  TotalTally () const;
+                nonvirtual  size_t  TotalMultiSet () const;
 
             public:
                 /**
-                 * This is like the Tally was a Bag<T>. If something is in there N times,
+                 * This is like the MultiSet was a Bag<T>. If something is in there N times,
                  *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
                  *
                  *  Use Example:
-                 *      Tally<T> t;
+                 *      MultiSet<T> t;
                  *      for (T i : t.Elements ()) {
                  *      }
                  *
-                 *  Elements () makes no guarantess about whether or not modifications to the underlying Tally<> will
+                 *  Elements () makes no guarantess about whether or not modifications to the underlying MultiSet<> will
                  *  appear in the Elements() Iterable<T>.
                  *
                  *  @see UniqueElements
@@ -239,40 +241,40 @@ namespace   Stroika {
             public:
                 /**
                  *  Use Example:
-                 *      Tally<T> t;
+                 *      MultiSet<T> t;
                  *      for (T i : t.UniqueElements ()) {
                  *      }
                  *
-                 *  UniqueElements () makes no guarantess about whether or not modifications to the underlying Tally<>
+                 *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
                  *  will appear in the UniqueElements() Iterable<T>.
                  */
                 nonvirtual  Iterable<T>   UniqueElements () const;
 
             public:
                 /*
-                 *  Two Tally are considered equal if they contain the same elements (by comparing them with operator==)
-                 *  with the same count. In short, they are equal if TallyOf() each item in the LHS equals the TallyOf()
+                 *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  with the same count. In short, they are equal if MultiSetOf() each item in the LHS equals the MultiSetOf()
                  *  the same item in the RHS.
                  *
                  *  Equals is commutative.
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual  bool    Equals (const Tally<T, TRAITS>& rhs) const;
+                nonvirtual  bool    Equals (const MultiSet<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Synonym for Equals() (or !Equals());
                  */
-                nonvirtual  bool    operator== (const Tally<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const Tally<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const MultiSet<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const MultiSet<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Synonym for Add (), or AddAll() (depending on argument);
                  */
-                nonvirtual  Tally<T, TRAITS>&   operator+= (T item);
-                nonvirtual  Tally<T, TRAITS>&   operator+= (const Tally<T, TRAITS>& t);
+                nonvirtual  MultiSet<T, TRAITS>&   operator+= (T item);
+                nonvirtual  MultiSet<T, TRAITS>&   operator+= (const MultiSet<T, TRAITS>& t);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -286,9 +288,9 @@ namespace   Stroika {
             /**
              */
             template    <typename T, typename TRAITS>
-            class   Tally<T, TRAITS>::_IRep : public Iterable<TallyEntry<T>>::_IRep, public enable_shared_from_this<typename Tally<T, TRAITS>::_IRep> {
+            class   MultiSet<T, TRAITS>::_IRep : public Iterable<MultiSetEntry<T>>::_IRep, public enable_shared_from_this<typename MultiSet<T, TRAITS>::_IRep> {
             private:
-                using   inherited   =   typename Iterable<TallyEntry<T>>::_IRep;
+                using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
 
             protected:
                 using   _SharedPtrIRep  =   shared_ptr<_IRep>;
@@ -302,9 +304,9 @@ namespace   Stroika {
                 virtual void        RemoveAll ()                                                    =   0;
                 virtual void        Add (T item, size_t count)                                      =   0;
                 virtual void        Remove (T item, size_t count)                                   =   0;
-                virtual void        Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
-                virtual void        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
-                virtual size_t      TallyOf (T item) const                                          =   0;
+                virtual void        Remove (const Iterator<MultiSetEntry<T>>& i)                       =   0;
+                virtual void        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) =   0;
+                virtual size_t      MultiSetOf (T item) const                                          =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T> Elements (const _SharedPtrIRep& rep) const                      =   0;
@@ -367,6 +369,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Tally.inl"
+#include    "MultiSet.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Tally_h_ */
+#endif  /*_Stroika_Foundation_Containers_MultiSet_h_ */

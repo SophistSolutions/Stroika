@@ -47,7 +47,7 @@ TODO (Foundation::Containers)
 			But reconsider possibly...
 					-- LGP 2013-05-19
 
-	(o)		Maybe enhance API for stuff like PriorityQueue<> and Tally<T> to have method
+	(o)		Maybe enhance API for stuff like PriorityQueue<> and MultiSet<T> to have method
 			AsIterable<T> () - that returns an Iterable<T> (the undlering thing stuff is ta tallyof or
 			priorityq of, so you can write for (i : priqiryQ.AsIterable<T> ()) {}
 			AsIterable<T> would return a logical COPY of the container (but using smart pointers not cfost

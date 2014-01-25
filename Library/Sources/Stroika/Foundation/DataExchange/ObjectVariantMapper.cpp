@@ -4,7 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
-#include    "../Containers/Tally.h"
+#include    "../Containers/MultiSet.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Date.h"
 #include    "../Time/DateRange.h"
@@ -53,7 +53,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
     }
     {
         // assure each field unique
-        Containers::Tally<size_t> t;
+        Containers::MultiSet<size_t> t;
         for (auto i : fields) {
             t.Add (i.fOffset);
         }

@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedTally_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedTally_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
 
-#include    "SortedTally_stdmap.h"
+#include    "SortedMultiSet_stdmap.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -23,18 +23,18 @@ namespace   Stroika {
                 // no biggie for now...
                 // -- LGP 2013-07-23
                 template    <typename T, typename TRAITS>
-                class   SortedTally_stdmap;
+                class   SortedMultiSet_stdmap;
 
 
                 /*
                  ********************************************************************************
-                 ************************ SortedTally_Factory<T, TRAITS> ************************
+                 ************************ SortedMultiSet_Factory<T, TRAITS> ************************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedTally<T, TRAITS> (*) ()>   SortedTally_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedMultiSet<T, TRAITS> (*) ()>   SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedTally<T, TRAITS>  SortedTally_Factory<T, TRAITS>::mk ()
+                inline  SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -50,14 +50,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedTally_Factory<T, TRAITS>::Register (SortedTally<T, TRAITS> (*factory) ())
+                void    SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedTally<T, TRAITS>  SortedTally_Factory<T, TRAITS>::Default_ ()
+                SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::Default_ ()
                 {
-                    return SortedTally_stdmap<T, TRAITS> ();
+                    return SortedMultiSet_stdmap<T, TRAITS> ();
                 }
 
 
@@ -65,4 +65,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_SortedTally_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_ */

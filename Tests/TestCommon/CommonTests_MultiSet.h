@@ -1,19 +1,19 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Tests_TestCommon_CommonTests_Tally_h_
-#define _Stroika_Foundation_Tests_TestCommon_CommonTests_Tally_h_    1
+#ifndef _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_
+#define _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_    1
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/Tally.h"
+#include    "Stroika/Foundation/Containers/MultiSet.h"
 
 #include    "../TestHarness/TestHarness.h"
 #include    "CommonTests_Iterable.h"
 
 
 namespace CommonTests {
-    namespace TallyTests {
+    namespace MultiSetTests {
 
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
@@ -21,15 +21,15 @@ namespace CommonTests {
 
         namespace Test1_MiscStarterTests_ {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    TallyIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            void    MultiSetIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename CONCRETE_CONTAINER::TallyOfElementType   T;
+                typedef typename CONCRETE_CONTAINER::MultiSetOfElementType   T;
                 const   size_t  kTestSize = 6;
 
                 VerifyTestResult (s.GetLength () == 0);
                 applyToContainer (s);
 
-                for (TallyEntry<T> i : s) {
+                for (MultiSetEntry<T> i : s) {
                     VerifyTestResult (false);
                 }
                 IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
@@ -52,7 +52,7 @@ namespace CommonTests {
                     VerifyTestResult (s.GetLength () == kTestSize);
 
                     {
-                        for (TallyEntry<T> it : s) {
+                        for (MultiSetEntry<T> it : s) {
                             for (size_t i = 1; i <= kTestSize; i++) {
                                 VerifyTestResult (s.Contains (i));
                                 VerifyTestResult (s.GetLength () == kTestSize - i + 1);
@@ -128,7 +128,7 @@ namespace CommonTests {
 
 
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void    SimpleTallyTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            void    SimpleMultiSetTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
                 typedef typename CONCRETE_CONTAINER::EqualsCompareFunctionType   EqualsCompareFunctionType;
                 typedef typename CONCRETE_CONTAINER::ArchetypeContainerType         TALLY_ARCHTYPE;
@@ -149,7 +149,7 @@ namespace CommonTests {
                 VerifyTestResult (s1 == s);
                 VerifyTestResult (s2 != s1);
 
-                TallyIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
+                MultiSetIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
 
                 const   size_t  K = 500;
 
@@ -159,12 +159,12 @@ namespace CommonTests {
                 s += three;
                 VerifyTestResult (s.GetLength () == 1);
                 VerifyTestResult (s.Contains (three));
-                VerifyTestResult (s.TallyOf (three) == 2);
+                VerifyTestResult (s.MultiSetOf (three) == 2);
                 s.Remove (three);
                 applyToContainer (s);
                 VerifyTestResult (s.GetLength () == 1);
                 VerifyTestResult (s.Contains (three));
-                VerifyTestResult (s.TallyOf (three) == 1);
+                VerifyTestResult (s.MultiSetOf (three) == 1);
                 s.Remove (three);
                 VerifyTestResult (s.IsEmpty ());
                 s.RemoveAll ();
@@ -250,7 +250,7 @@ namespace CommonTests {
 
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements()) {
-                        if (s.TotalTally () < 25) {
+                        if (s.TotalMultiSet () < 25) {
                             s.Add (1);
                         }
                         applyToContainer (s);
@@ -284,7 +284,7 @@ namespace CommonTests {
                 for (size_t i = 1; i <= K; i++) {
                     s.Add (i);
                     VerifyTestResult (s.Contains (i));
-                    VerifyTestResult (s.TallyOf (i) == 1);
+                    VerifyTestResult (s.MultiSetOf (i) == 1);
                     VerifyTestResult (s.GetLength () == i);
                 }
                 for (size_t i = K; i > 0; i--) {
@@ -296,15 +296,15 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= K / 2; i++) {
                     s += 1;
-                    VerifyTestResult (s.TallyOf (1) == i);
+                    VerifyTestResult (s.MultiSetOf (1) == i);
                 }
                 size_t oldLength = s.GetLength ();
-                size_t oldTotal = s.TotalTally ();
+                size_t oldTotal = s.TotalMultiSet ();
                 applyToContainer (s);
                 s += s;
                 applyToContainer (s);
                 VerifyTestResult (s.GetLength () == oldLength);
-                VerifyTestResult (s.TotalTally () == oldTotal * 2);
+                VerifyTestResult (s.TotalMultiSet () == oldTotal * 2);
             }
 
 
@@ -313,7 +313,7 @@ namespace CommonTests {
             {
                 {
                     CONCRETE_CONTAINER s;
-                    SimpleTallyTests (s, applyToContainer);
+                    SimpleMultiSetTests (s, applyToContainer);
                 }
             }
         }
@@ -354,9 +354,9 @@ namespace CommonTests {
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.Elements ().size () == 7);
                     TALLY_ARCHTYPE tmp = TALLY_ARCHTYPE (s.Elements ());
-                    VerifyTestResult (tmp.TallyOf (1) == 1);
-                    VerifyTestResult (tmp.TallyOf (0) == 0);
-                    VerifyTestResult (tmp.TallyOf (4) == 4);
+                    VerifyTestResult (tmp.MultiSetOf (1) == 1);
+                    VerifyTestResult (tmp.MultiSetOf (0) == 0);
+                    VerifyTestResult (tmp.MultiSetOf (4) == 4);
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace CommonTests {
                 }
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
-                        if (s.TotalTally () < 25) {
+                        if (s.TotalMultiSet () < 25) {
                             s.Add (1);
                         }
                         break;
@@ -413,7 +413,7 @@ namespace CommonTests {
                 applyToContainer (s);
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
-                        if (s.TotalTally () < 25) {
+                        if (s.TotalMultiSet () < 25) {
                             s.Add (1);
                         }
                         applyToContainer (s);
@@ -450,4 +450,4 @@ namespace CommonTests {
 
 
 
-#endif  /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Tally_h_ */
+#endif  /* _Stroika_Foundation_Tests_TestCommon_CommonTests_MultiSet_h_ */

@@ -156,7 +156,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Collection<T> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Collection<T> after the remove. Thus function just reduces the MultiSet() by one (or zero if item wasn't found).
                  *
                  * SECOND OVERLOAD:
                  * This function requires that the iterator 'i' came from this container.
@@ -171,7 +171,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Collection<T> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Collection<T> after the remove. Thus function just reduces the MultiSet() by one (or zero if item wasn't found).
                  *
                  *  The no-argument verison Produces an empty bag.
                  */

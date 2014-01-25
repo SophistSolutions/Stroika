@@ -55,10 +55,10 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Mapping.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Set.h">
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_MultiSet.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Tally.h">
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Set.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
   </ItemGroup>

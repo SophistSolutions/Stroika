@@ -1,20 +1,20 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//      TEST    Foundation::Containers::Tally
+//      TEST    Foundation::Containers::MultiSet
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_stdmap.h"
+#include    "Stroika/Foundation/Containers/MultiSet.h"
+#include    "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/MultiSet_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/MultiSet_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
-#include    "../TestCommon/CommonTests_Tally.h"
+#include    "../TestCommon/CommonTests_MultiSet.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
@@ -24,9 +24,9 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-using   Concrete::Tally_Array;
-using   Concrete::Tally_LinkedList;
-using   Concrete::Tally_stdmap;
+using   Concrete::MultiSet_Array;
+using   Concrete::MultiSet_LinkedList;
+using   Concrete::MultiSet_stdmap;
 
 
 
@@ -37,7 +37,7 @@ namespace {
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & t) {
             // only work todo on sorted mappings
         };
-        CommonTests::TallyTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
     }
 }
 
@@ -53,25 +53,25 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Tally_DefaultTraits <
+        typedef MultiSet_DefaultTraits <
         SimpleClassWithoutComparisonOperators,
         MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-        >   SimpleClassWithoutComparisonOperators_TallyTRAITS;
+        >   SimpleClassWithoutComparisonOperators_MultiSetTRAITS;
 
-        DoTestForConcreteContainer_<Tally<size_t>> ();
-        DoTestForConcreteContainer_<Tally<SimpleClass>> ();
-        DoTestForConcreteContainer_<Tally<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
+        DoTestForConcreteContainer_<MultiSet<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
+        DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
 
-        DoTestForConcreteContainer_<Tally_Array<size_t>> ();
-        DoTestForConcreteContainer_<Tally_Array<SimpleClass>> ();
-        DoTestForConcreteContainer_<Tally_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
+        DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
+        DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
 
-        DoTestForConcreteContainer_<Tally_LinkedList<size_t>> ();
-        DoTestForConcreteContainer_<Tally_LinkedList<SimpleClass>> ();
-        DoTestForConcreteContainer_<Tally_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
+        DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
+        DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
 
-        DoTestForConcreteContainer_<Tally_stdmap<size_t>> ();
-        DoTestForConcreteContainer_<Tally_stdmap<SimpleClass>> ();
+        DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
         {
             struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
                 typedef SimpleClassWithoutComparisonOperators ElementType;
@@ -80,11 +80,11 @@ namespace   {
                     return v1.GetValue () - v2.GetValue ();
                 }
             };
-            typedef Concrete::Tally_stdmap_DefaultTraits <
+            typedef Concrete::MultiSet_stdmap_DefaultTraits <
             SimpleClassWithoutComparisonOperators,
             MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
             >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
-            DoTestForConcreteContainer_<Tally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
+            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
     }
 

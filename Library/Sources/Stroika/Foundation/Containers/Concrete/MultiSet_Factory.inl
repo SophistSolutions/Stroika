@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Tally_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Tally_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_inl_
 
-#include    "Tally_Array.h"
+#include    "MultiSet_Array.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ Tally_Factory<T, TRAITS> ******************************
+                 ************************ MultiSet_Factory<T, TRAITS> ******************************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Tally<T, TRAITS> (*) ()>     Tally_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<MultiSet<T, TRAITS> (*) ()>     MultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  Tally<T, TRAITS>  Tally_Factory<T, TRAITS>::mk ()
+                inline  MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +43,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T, typename TRAITS>
-                void    Tally_Factory<T, TRAITS>::Register (Tally<T, TRAITS> (*factory) ())
+                void    MultiSet_Factory<T, TRAITS>::Register (MultiSet<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                Tally<T, TRAITS>  Tally_Factory<T, TRAITS>::Default_ ()
+                MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::Default_ ()
                 {
-                    return Tally_Array<T, TRAITS> ();
+                    return MultiSet_Array<T, TRAITS> ();
                 }
 
 
@@ -58,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Tally_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_inl_ */

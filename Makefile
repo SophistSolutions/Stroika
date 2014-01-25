@@ -61,7 +61,8 @@ third-party-libs:
 
 
 project-files:
-	echo NYI
+	@echo "Building VisualStudio.Net-2013 project files..."
+	@(cd Tests/Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
 
 
 tools:	libraries

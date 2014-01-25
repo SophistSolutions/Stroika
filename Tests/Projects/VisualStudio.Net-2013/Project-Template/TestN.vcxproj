@@ -534,8 +534,8 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Mapping.h" />
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_MultiSet.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Set.h" />
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Tally.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

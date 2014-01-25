@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedTally_h_
-#define _Stroika_Foundation_Containers_SortedTally_h_  1
+#ifndef _Stroika_Foundation_Containers_SortedMultiSet_h_
+#define _Stroika_Foundation_Containers_SortedMultiSet_h_  1
 
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Concepts.h"
 
-#include    "Tally.h"
+#include    "MultiSet.h"
 
 
 
@@ -31,7 +31,7 @@ namespace   Stroika {
             /**
              */
             template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedTally_DefaultTraits : Tally_DefaultTraits <T, WELL_ORDER_COMPARER> {
+            struct   SortedMultiSet_DefaultTraits : MultiSet_DefaultTraits <T, WELL_ORDER_COMPARER> {
                 /**
                  */
                 using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
@@ -41,7 +41,7 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedTally is a Tally<T, TRAITS> which remains sorted (iterator).
+             *      A SortedMultiSet is a MultiSet<T, TRAITS> which remains sorted (iterator).
              *
              *  \note   \em Iterators
              *      Note that iterators always run in sorted order, from least
@@ -55,36 +55,36 @@ namespace   Stroika {
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
              */
-            template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
-            class   SortedTally : public Tally<T, TRAITS> {
+            template    <typename T, typename TRAITS = SortedMultiSet_DefaultTraits<T>>
+            class   SortedMultiSet : public MultiSet<T, TRAITS> {
             private:
-                using   inherited   =   Tally<T, TRAITS>;
+                using   inherited   =   MultiSet<T, TRAITS>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   SortedTally<T, TRAITS>;
+                using   ArchetypeContainerType      =   SortedMultiSet<T, TRAITS>;
 
             protected:
                 class   _IRep;
                 using   _SharedPtrIRep              =   shared_ptr<_IRep>;
 
             public:
-                SortedTally ();
-                SortedTally (const SortedTally<T, TRAITS>& src);
-                SortedTally (const std::initializer_list<T>& s);
-                SortedTally (const std::initializer_list<TallyEntry<T>>& s);
+                SortedMultiSet ();
+                SortedMultiSet (const SortedMultiSet<T, TRAITS>& src);
+                SortedMultiSet (const std::initializer_list<T>& s);
+                SortedMultiSet (const std::initializer_list<MultiSetEntry<T>>& s);
                 template <typename CONTAINER_OF_T>
-                explicit SortedTally (const CONTAINER_OF_T& src);
+                explicit SortedMultiSet (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit SortedTally (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                explicit SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
-                nonvirtual  SortedTally<T, TRAITS>& operator= (const SortedTally<T, TRAITS>& rhs);
+                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs);
 
             protected:
-                explicit SortedTally (const _SharedPtrIRep& rep);
+                explicit SortedMultiSet (const _SharedPtrIRep& rep);
 
             public:
                 /**
@@ -106,16 +106,16 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for SortedTally<T, TRAITS> implementors.
+             *  \brief  Implementation detail for SortedMultiSet<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedTally<T, TRAITS> container API.
+             *  the SortedMultiSet<T, TRAITS> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T, typename TRAITS>
-            class   SortedTally<T, TRAITS>::_IRep : public Tally<T, TRAITS>::_IRep {
+            class   SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
             };
 
 
@@ -129,6 +129,6 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "SortedTally.inl"
+#include    "SortedMultiSet.inl"
 
-#endif  /*_Stroika_Foundation_Containers_SortedTally_h_ */
+#endif  /*_Stroika_Foundation_Containers_SortedMultiSet_h_ */

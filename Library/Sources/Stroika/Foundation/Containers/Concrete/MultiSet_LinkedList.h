@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_
-#define _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_  1
+#ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_  1
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../Tally.h"
+#include    "../MultiSet.h"
 
 
 
@@ -35,21 +35,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
-                class  Tally_LinkedList : public Tally<T, TRAITS> {
+                template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
+                class  MultiSet_LinkedList : public MultiSet<T, TRAITS> {
                 private:
-                    using   inherited   =   Tally<T, TRAITS>;
+                    using   inherited   =   MultiSet<T, TRAITS>;
 
                 public:
-                    Tally_LinkedList ();
-                    Tally_LinkedList (const Tally<T, TRAITS>& src);
-                    Tally_LinkedList (const Tally_LinkedList<T, TRAITS>& src);
-                    Tally_LinkedList (const std::initializer_list<T>& s);
-                    Tally_LinkedList (const std::initializer_list<TallyEntry<T>>& s);
-                    Tally_LinkedList (const T* start, const T* end);
+                    MultiSet_LinkedList ();
+                    MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
+                    MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
+                    MultiSet_LinkedList (const std::initializer_list<T>& s);
+                    MultiSet_LinkedList (const std::initializer_list<MultiSetEntry<T>>& s);
+                    MultiSet_LinkedList (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Tally_LinkedList<T, TRAITS>& operator= (const Tally_LinkedList<T, TRAITS>& rhs);
+                    nonvirtual  MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -66,7 +66,7 @@ namespace   Stroika {
 
 
 
-#include    "Tally_LinkedList.inl"
+#include    "MultiSet_LinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_ */
+#endif  /*_Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_h_ */
 

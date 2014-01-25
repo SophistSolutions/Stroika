@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Tally_Array_h_
-#define _Stroika_Foundation_Containers_Concrete_Tally_Array_h_   1
+#ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_Array_h_
+#define _Stroika_Foundation_Containers_Concrete_MultiSet_Array_h_   1
 
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../Tally.h"
+#include    "../MultiSet.h"
 
 
 
@@ -37,22 +37,22 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
-                class   Tally_Array : public Tally<T, TRAITS> {
+                template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
+                class   MultiSet_Array : public MultiSet<T, TRAITS> {
                 private:
-                    using   inherited   =   Tally<T, TRAITS>;
+                    using   inherited   =   MultiSet<T, TRAITS>;
 
                 public:
-                    Tally_Array ();
-                    Tally_Array (const Tally<T, TRAITS>& src);
-                    Tally_Array (const std::initializer_list<T>& s);
-                    Tally_Array (const std::initializer_list<TallyEntry<T>>& s);
-                    Tally_Array (const Tally_Array<T, TRAITS>& src);
-                    Tally_Array (const T* start, const T* end);
-                    Tally_Array (const TallyEntry<T>* start, const TallyEntry<T>* end);
+                    MultiSet_Array ();
+                    MultiSet_Array (const MultiSet<T, TRAITS>& src);
+                    MultiSet_Array (const std::initializer_list<T>& s);
+                    MultiSet_Array (const std::initializer_list<MultiSetEntry<T>>& s);
+                    MultiSet_Array (const MultiSet_Array<T, TRAITS>& src);
+                    MultiSet_Array (const T* start, const T* end);
+                    MultiSet_Array (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
 
                 public:
-                    nonvirtual  Tally_Array<T, TRAITS>& operator= (const Tally_Array<T, TRAITS>& rhs);
+                    nonvirtual  MultiSet_Array<T, TRAITS>& operator= (const MultiSet_Array<T, TRAITS>& rhs);
 
                 public:
                     nonvirtual  size_t  GetCapacity () const;
@@ -85,7 +85,7 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include    "Tally_Array.inl"
+#include    "MultiSet_Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
+#endif  /*_Stroika_Foundation_Containers_Concrete_MultiSet_Array_h_*/
 

@@ -32,7 +32,7 @@
  *              min/max comes from numeric_limits<T>::min/max, and memmbers of the traits - not global
  *
  *      @todo   Rename PQEntry to PriorityQueueEntry
- *              (document why not nested type, and why not using pair<> - and then put docs into Tally code,
+ *              (document why not nested type, and why not using pair<> - and then put docs into MultiSet code,
  *              and then redo Mapping to use KeyValuePair<> instead of pair<> - and have .fKey first elt!
  *
  *      @todo   redo operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs); as member function
