@@ -74,9 +74,11 @@ namespace   Stroika {
                 TallyEntry (T item, size_t count);
                 TallyEntry (pair<T, size_t> item);
 
+            public:
                 nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
                 nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;
 
+            public:
                 T       fItem;
                 size_t  fCount;
             };
@@ -89,9 +91,12 @@ namespace   Stroika {
              *
              *  Tally<T, TRAITS> inherits from Iterable<TallyEntry<T>> instead of Iterable<T> because if you are
              *  using a Tally, you probably want access to the counts as you iterate - not just the
-             *  unique elements (though we make it easy to get that iterator too with MakeBagIterator()).
+             *  unique elements (though we make it easy to get that iterator too with Elements () or
+             *  UniqueElements ()).
              *
              *  A Tally<T, TRAITS> makes no promises about ordering of elements in iteration.
+             *
+             *  See also http://en.wikipedia.org/wiki/Multiset_(abstract_data_type)#Multiset
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
