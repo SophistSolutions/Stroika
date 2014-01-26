@@ -154,9 +154,6 @@ namespace   Stroika {
 #endif
 
                     protected:
-                        _ArrayIteratorBase*         fNext;
-
-                    protected:
                         virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
 
                     private:
