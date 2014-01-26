@@ -152,6 +152,11 @@ namespace   Stroika {
 
                         nonvirtual  bool    Contains (T item) const;
 
+                        template    <typename FUNCTION>
+                        nonvirtual  void    Apply (FUNCTION doToElement) const;
+                        template    <typename FUNCTION>
+                        nonvirtual  size_t    ApplyUntilTrue (FUNCTION doToElement) const;
+
                     public:
                         /*
                          * Memory savings/optimization methods.  Use this to tune useage
@@ -230,6 +235,9 @@ namespace   Stroika {
                         nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  bool    Done () const;
+
+                    public:
+                        nonvirtual  void    SetIndex (size_t i);
 
                     public:
                         nonvirtual  bool    Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const;

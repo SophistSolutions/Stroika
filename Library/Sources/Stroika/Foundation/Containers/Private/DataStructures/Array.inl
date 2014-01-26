@@ -129,16 +129,38 @@ namespace   Stroika {
                     bool    Array<T, TRAITS>::Contains (T item) const
                     {
                         Invariant ();
-                        if (_fLength > 0) {
-                            const   T*   current =   &_fItems [0];
-                            const   T*   last    =   &_fItems [_fLength - 1];  // safe to -1 since _fLength>0
-                            for (; current <= last; current++) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
-                                    return true;
-                                }
+                        const   T*   current =   &_fItems [0];
+                        const   T*   last    =   &_fItems [_fLength];
+                        for (; current < last; current++) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
+                                return true;
                             }
                         }
                         return false;
+                    }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  void    Array<T, TRAITS>::Apply (FUNCTION doToElement) const
+                    {
+                        const   T*   i      =   &_fItems [0];
+                        const   T*   last   =   &_fItems [_fLength];
+                        for (; i < last; i++) {
+                            (doToElement) (*i);
+                        }
+                    }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  size_t    Array<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    {
+                        const   T*   start  =   &_fItems [0];
+                        const   T*   i      =   start;
+                        const   T*   last   =   &_fItems [_fLength];
+                        for (; i < last; i++) {
+                            if ((doToElement) (*i)) {
+                                return i - start;
+                            }
+                        }
+                        return last - start;
                     }
                     template      <typename  T, typename TRAITS>
                     void    Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
@@ -476,6 +498,13 @@ namespace   Stroika {
                         Invariant ();
                         EnsureNotNull (_fCurrent);
                         return *_fCurrent;
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline   void Array<T, TRAITS>::_ArrayIteratorBase::SetIndex (size_t i)
+                    {
+                        Require (i <= size_t (_fEnd - _fStart));
+                        _fCurrent = _fStart + i;
+                        _fSuppressMore = false;
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant () const
