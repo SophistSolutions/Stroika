@@ -148,7 +148,7 @@ namespace   Stroika {
                             //
 #if     qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 #if 1
-                            fStdIterator = ._M_const_cast ();
+                            fStdIterator = l._M_const_cast ();
 #else
                             fStdIterator = *(typename CONTAINER_TYPE::iterator*)l;
 #endif
