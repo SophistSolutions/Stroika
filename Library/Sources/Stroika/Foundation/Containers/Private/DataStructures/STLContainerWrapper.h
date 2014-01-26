@@ -141,16 +141,18 @@ namespace   Stroika {
                         nonvirtual  size_t  CurrentIndex () const;
 
                     public:
-                        nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator  l)
+                        nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator l)
                         {
                             // MUUST COME FROM THIS stl container
                             // CAN be end ()
                             //
 #if     qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
-#if 1
+#if 0
                             fStdIterator = l._M_const_cast ();
 #else
-                            fStdIterator = *(typename CONTAINER_TYPE::iterator*)l;
+                            // hope this works til we get fixed version of libstd++
+                            // -- LGP 2014-01-26
+                            fStdIterator = *(typename CONTAINER_TYPE::iterator*)&l;
 #endif
 #else
                             // bit of a queer kludge to covnert from const iterator to iterator in STL
