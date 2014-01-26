@@ -31,6 +31,12 @@ namespace   Stroika {
 
 
                 template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+                bool    Contains_ByDirectIteration_ (const Iterable<T>& c, T item);
+
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+                bool    Contains_ByApply_ (const Iterable<T>& c, T item);
+
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 bool    Contains_ (const Iterable<T>& c, T item);
 
 
