@@ -146,8 +146,16 @@ namespace   Stroika {
                             // MUUST COME FROM THIS stl container
                             // CAN be end ()
                             //
+#if     qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
+#if 1
+                            fStdIterator = ._M_const_cast ();
+#else
+                            fStdIterator = *(typename CONTAINER_TYPE::iterator*)l;
+#endif
+#else
                             // bit of a queer kludge to covnert from const iterator to iterator in STL
                             fStdIterator = fData->erase (l, l);
+#endif
                         }
 
                     public:
