@@ -225,6 +225,25 @@ namespace   Stroika {
                         }
                         return false;
                     }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  void    DoublyLinkedList<T, TRAITS>::Apply (FUNCTION doToElement) const
+                    {
+                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            (doToElement) (i->fItem);
+                        }
+                    }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  typename DoublyLinkedList<T, TRAITS>::Link*    DoublyLinkedList<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    {
+                        for (Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            if ((doToElement) (i->fItem)) {
+                                return i;
+                            }
+                        }
+                        return nullptr;
+                    }
                     template      <typename  T, typename TRAITS>
                     void    DoublyLinkedList<T, TRAITS>::RemoveAll ()
                     {

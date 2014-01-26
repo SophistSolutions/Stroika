@@ -133,6 +133,12 @@ namespace   Stroika {
                         nonvirtual  bool    Contains (T item) const;
 
                     public:
+                        template    <typename FUNCTION>
+                        nonvirtual  void    Apply (FUNCTION doToElement) const;
+                        template    <typename FUNCTION>
+                        nonvirtual  Link*   ApplyUntilTrue (FUNCTION doToElement) const;
+
+                    public:
                         /**
                          *  Performance:
                          *      Worst Case: O(N)
@@ -289,6 +295,16 @@ namespace   Stroika {
                     public:
                         // Warning - intrinsically slow
                         nonvirtual  size_t  CurrentIndex () const;
+
+
+                    public:
+                        nonvirtual  void    SetCurrentLink (Link* l)
+                        {
+                            // MUUST COME FROM THIS LIST
+                            // CAN be nullptr
+                            _fCurrent = l;
+                            _fSuppressMore = false;
+                        }
 
                     public:
                         nonvirtual  bool    Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const
