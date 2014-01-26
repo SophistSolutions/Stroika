@@ -44,7 +44,7 @@ namespace   Stroika {
                                 return i;
                             }
                         }
-                        return end ();
+                        return this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template <typename PREDICATE>
