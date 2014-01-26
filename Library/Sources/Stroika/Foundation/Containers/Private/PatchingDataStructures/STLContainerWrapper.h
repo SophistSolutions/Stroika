@@ -153,6 +153,13 @@ namespace   Stroika {
                          */
                         nonvirtual  void    RemoveCurrent ();
 
+                    public:
+                        nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator  l)
+                        {
+                            inherited_DataStructure::SetCurrentLink (l);
+                            fSuppressMore = false;
+                        }
+
                     private:
                         /*
                          * OK to be private cuz CONTAINER_TYPE is a friend.

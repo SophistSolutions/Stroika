@@ -96,6 +96,14 @@ namespace   Stroika {
                         nonvirtual  bool    Contains (value_type item) const;
 
                     public:
+                        /*
+                         */
+                        template    <typename FUNCTION>
+                        nonvirtual  void    Apply (FUNCTION doToElement) const;
+                        template    <typename FUNCTION>
+                        nonvirtual  typename STL_CONTAINER_OF_T::const_iterator   ApplyUntilTrue (FUNCTION doToElement) const;
+
+                    public:
                         template <typename PREDICATE>
                         nonvirtual  bool    FindIf (PREDICATE pred) const;
                     };
@@ -131,6 +139,16 @@ namespace   Stroika {
                          * Only legal to call if underlying iterator is random_access
                          */
                         nonvirtual  size_t  CurrentIndex () const;
+
+                    public:
+                        nonvirtual  void    SetCurrentLink (typename CONTAINER_TYPE::const_iterator  l)
+                        {
+                            // MUUST COME FROM THIS stl container
+                            // CAN be end ()
+                            //
+                            // bit of a queer kludge to covnert from const iterator to iterator in STL
+                            fStdIterator = fData->erase (l, l);
+                        }
 
                     public:
                         nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const

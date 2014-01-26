@@ -28,6 +28,25 @@ namespace   Stroika {
                         return this->find (item) != this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
+                    template    <typename FUNCTION>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
+                    {
+                        for (auto i = this->begin (); i != this->end (); ++i) {
+                            (doToElement) (*i);
+                        }
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
+                    template    <typename FUNCTION>
+                    inline  typename STL_CONTAINER_OF_T::const_iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::ApplyUntilTrue (FUNCTION doToElement) const
+                    {
+                        for (auto i = this->begin (); i != this->end (); ++i) {
+                            if ((doToElement) (*i)) {
+                                return i;
+                            }
+                        }
+                        return end ();
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
                     template <typename PREDICATE>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                     {

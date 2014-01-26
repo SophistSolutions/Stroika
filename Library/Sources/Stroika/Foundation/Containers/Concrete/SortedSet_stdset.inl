@@ -141,7 +141,12 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void      SortedSet_stdset<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
-                    this->_Apply (doToElement);
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 Iterator<T>     SortedSet_stdset<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
