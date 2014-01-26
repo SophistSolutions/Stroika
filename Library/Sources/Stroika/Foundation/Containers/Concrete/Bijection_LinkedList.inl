@@ -55,7 +55,7 @@ namespace   Stroika {
                     virtual size_t                                      GetLength () const override;
                     virtual bool                                        IsEmpty () const override;
                     virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
                 public:
@@ -146,9 +146,9 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const

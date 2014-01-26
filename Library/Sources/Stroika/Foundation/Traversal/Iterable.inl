@@ -50,14 +50,14 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
             {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 RequireNotNull (doToElement.second);
 #endif
-                for (Iterator<T> i = MakeIterator (this); i != Iterable<T>::end (); ++i) {
+                for (Iterator<T> i = MakeIterator (suggestedOwner); i != Iterable<T>::end (); ++i) {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     if ((doToElement) (*i)) {
                         return i;
@@ -323,7 +323,7 @@ namespace   Stroika {
             {
                 RequireNotNull (doToElement);
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
-                return _GetRep ().ApplyUntilTrue (doToElement);
+                return _GetRep ().ApplyUntilTrue (doToElement, this);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))
@@ -344,7 +344,7 @@ namespace   Stroika {
             {
                 RequireNotNull (doToElement);
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
-                return _GetRep ().ApplyUntilTrue (doToElement);
+                return _GetRep ().ApplyUntilTrue (doToElement, this);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))

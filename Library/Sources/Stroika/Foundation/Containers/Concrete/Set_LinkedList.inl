@@ -53,12 +53,12 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep    Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>       MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t            GetLength () const override;
-                    virtual bool              IsEmpty () const override;
-                    virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t              GetLength () const override;
+                    virtual bool                IsEmpty () const override;
+                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Set<T, TRAITS>::_IRep overrides
                 public:
@@ -142,9 +142,9 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     Set_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Set_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
                 bool    Set_LinkedList<T, TRAITS>::Rep_::Equals (const typename Set<T, TRAITS>::_IRep& rhs) const

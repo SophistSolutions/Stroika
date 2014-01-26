@@ -57,9 +57,9 @@ namespace   Stroika {
                     virtual _SharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual size_t                      GetLength () const override;
                     virtual bool                        IsEmpty () const override;
-                    virtual Iterator<MultiSetEntry<T>>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<MultiSetEntry<T>>  MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<MultiSetEntry<T>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<MultiSetEntry<T>>  ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
@@ -137,9 +137,9 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<MultiSetEntry<T>>     SortedMultiSet_stdmap<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<MultiSetEntry<T>>     SortedMultiSet_stdmap<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
                 bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const

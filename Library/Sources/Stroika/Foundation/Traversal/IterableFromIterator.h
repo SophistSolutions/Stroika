@@ -96,7 +96,7 @@ namespace   Stroika {
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
             template    <typename T, typename NEW_ITERATOR_REP_TYPE>
@@ -117,7 +117,7 @@ namespace   Stroika {
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
             template    <typename T>
@@ -133,7 +133,7 @@ namespace   Stroika {
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
 

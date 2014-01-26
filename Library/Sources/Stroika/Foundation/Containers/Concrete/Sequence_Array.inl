@@ -55,7 +55,7 @@ namespace   Stroika {
                     virtual size_t            GetLength () const override;
                     virtual bool              IsEmpty () const override;
                     virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Sequence<T, TRAITS>::_IRep overrides
                 public:
@@ -139,9 +139,9 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     Sequence_Array<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Sequence_Array<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
                 T    Sequence_Array<T, TRAITS>::Rep_::GetAt (size_t i) const

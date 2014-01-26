@@ -56,7 +56,7 @@ namespace   Stroika {
                     virtual size_t              GetLength () const override;
                     virtual bool                IsEmpty () const override;
                     virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Collection<T>::_IRep overrides
                 public:
@@ -146,9 +146,9 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     SortedCollection_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     SortedCollection_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
                 bool    SortedCollection_LinkedList<T, TRAITS>::Rep_::Equals (const typename Collection<T>::_IRep& rhs) const
