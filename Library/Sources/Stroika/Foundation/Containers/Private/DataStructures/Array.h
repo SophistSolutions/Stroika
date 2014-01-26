@@ -173,18 +173,7 @@ namespace   Stroika {
                         typedef _ArrayIteratorBase      IteratorBaseType;
                         // assumes pi was already initialized and part of another Array<> object
                         // which is exacyly same order/size (after clone)
-                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
-                        {
-                            RequireNotNull (pi);
-                            RequireNotNull (movedFrom);
-                            size_t  currentIdx  =   pi->_fCurrent - pi->_fStart;
-                            Require (currentIdx <= this->GetLength ());
-                            Require (pi->_fData == movedFrom);
-                            pi->_fData = this;
-                            pi->_fStart = &_fItems[0];
-                            pi->_fEnd = &this->_fItems[this->GetLength ()];
-                            pi->_fCurrent = pi->_fStart + currentIdx;
-                        }
+                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom);
 
                     public:
                         nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
@@ -232,16 +221,18 @@ namespace   Stroika {
                     public:
                         _ArrayIteratorBase (const Array<T, TRAITS>* data);
 
+#if     qDebug
+                        ~_ArrayIteratorBase ();
+#endif
+
+                    public:
                         nonvirtual  T       Current () const;           //  Error to call if Done (), otherwise OK
                         nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  bool    Done () const;
 
                     public:
-                        nonvirtual  bool    Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const
-                        {
-                            return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
-                        }
+                        nonvirtual  bool    Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const;
 
                     public:
                         nonvirtual  void    Invariant () const;
@@ -281,10 +272,7 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance)
-                        {
-                            return More (static_cast<T*> (nullptr), advance);
-                        }
+                        nonvirtual  bool    More (nullptr_t, bool advance);
                     };
 
 
@@ -304,10 +292,7 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance)
-                        {
-                            return More (static_cast<T*> (nullptr), advance);
-                        }
+                        nonvirtual  bool    More (nullptr_t, bool advance);
                     };
 
 

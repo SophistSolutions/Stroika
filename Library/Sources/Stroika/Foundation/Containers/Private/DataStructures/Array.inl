@@ -298,6 +298,19 @@ namespace   Stroika {
                         delete (char*)_fItems;
                     }
                     template      <typename  T, typename TRAITS>
+                    inoine  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
+                    {
+                        RequireNotNull (pi);
+                        RequireNotNull (movedFrom);
+                        size_t  currentIdx  =   pi->_fCurrent - pi->_fStart;
+                        Require (currentIdx <= this->GetLength ());
+                        Require (pi->_fData == movedFrom);
+                        pi->_fData = this;
+                        pi->_fStart = &_fItems[0];
+                        pi->_fEnd = &this->_fItems[this->GetLength ()];
+                        pi->_fCurrent = pi->_fStart + currentIdx;
+                    }
+                    template      <typename  T, typename TRAITS>
                     inline  T   Array<T, TRAITS>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
@@ -411,6 +424,22 @@ namespace   Stroika {
                          * Cannot call invariant () here since _fCurrent not yet setup.
                          */
                     }
+#if     qDebug
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
+                    {
+                        // hack so crash and debug easier
+                        _fData = reinterpert_cast < Array<T, TRAITS>*) (-1);
+                        _fStart = reinterpert_cast<T*> (-1);
+                        _fEnd = reinterpert_cast<T*> (-1);
+                        _fCurrent = reinterpert_cast<T*> (-1);
+                    }
+#endif
+                    template      <typename  T, typename TRAITS>
+                    nonvirtual  bool    Array<T, TRAITS>::_ArrayIteratorBase::Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const
+                    {
+                        return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+                    }
                     template      <typename  T, typename TRAITS>
                     inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::More (T* current, bool advance)
                     {
@@ -514,6 +543,11 @@ namespace   Stroika {
                             *result = *this->_fCurrent;
                         }
                     }
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::ForwardIterator::More (nullptr_t, bool advance)
+                    {
+                        return More (static_cast<T*> (nullptr), advance);
+                    }
 
 
                     /*
@@ -579,6 +613,11 @@ namespace   Stroika {
                         else {
                             *result = *this->_fCurrent;
                         }
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::BackwardIterator::More (nullptr_t, bool advance)
+                    {
+                        return More (static_cast<T*> (nullptr), advance);
                     }
 
 
