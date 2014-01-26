@@ -93,7 +93,7 @@ namespace   Stroika {
             inline  bool    Sequence<T, TRAITS>::Contains (T item) const
             {
                 RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                return Private::Contains_<T, EqualsCompareFunctionType> (*this, item);
+                return Private::Contains_<EqualsCompareFunctionType> (*this, item);
             }
             template    <typename T, typename TRAITS>
             template    <typename ELEMENT_COMPARER>

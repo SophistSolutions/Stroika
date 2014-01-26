@@ -12,7 +12,7 @@ namespace   Stroika {
             namespace   Private {
 
 
-                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+                template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 bool    Contains_ByDirectIteration_ (const Iterable<T>& c, T item)
                 {
                     for (T i : c) {
@@ -23,26 +23,27 @@ namespace   Stroika {
                     return false;
                 }
 
-                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+                template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 bool    Contains_ByApply_ (const Iterable<T>& c, T item)
                 {
                     bool    result  =   false;
                     c.ApplyUntilTrue ([&result, item] (T i) -> bool {
+                        Assert (not result);
                         if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item))
                         {
-                            result = true;
+                            result = true;    // just breaks out loop
                             return true;
                         }
                         Assert (result == false);
-                        return false;   // just breaks out loop
+                        return false;
                     });
                     return result;
                 }
 
-                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+                template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 inline  bool    Contains_ (const Iterable<T>& c, T item)
                 {
-                    return Contains_ByDirectIteration_ (c, item);
+                    return Contains_ByDirectIteration_<ELEMENT_COMPARE_EQUALS_TYPE> (c, item);
                 }
 
                 template    <typename T, typename ELEMENT_COMPARER_TYPE>
