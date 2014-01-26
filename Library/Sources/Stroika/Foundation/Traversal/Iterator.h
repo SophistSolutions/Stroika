@@ -512,7 +512,7 @@ namespace   Stroika {
              *           actually passes fCurrent_ into More when implenenting ++it
              */
             template    <typename T>
-            class	Iterator<T>::IRep {
+            class   Iterator<T>::IRep {
             protected:
                 IRep ();
 

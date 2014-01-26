@@ -501,6 +501,25 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
+
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#else
+#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            0
+#endif
+
+#endif
+
+
+
+
+
 // @todo - investigate this better
 #ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
 
