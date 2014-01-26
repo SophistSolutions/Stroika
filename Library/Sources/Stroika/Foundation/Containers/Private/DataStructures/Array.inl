@@ -448,13 +448,13 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template      <typename  T, typename TRAITS>
-                    inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
+                    inline  Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
                     {
                         // hack so crash and debug easier
-                        _fData = reinterpert_cast < Array<T, TRAITS>*) (-1);
-                        _fStart = reinterpert_cast<T*> (-1);
-                        _fEnd = reinterpert_cast<T*> (-1);
-                        _fCurrent = reinterpert_cast<T*> (-1);
+                        _fData = reinterpret_cast < Array<T, TRAITS>*> (-1);
+                        _fStart = reinterpret_cast<T*> (-1);
+                        _fEnd = reinterpret_cast<T*> (-1);
+                        _fCurrent = reinterpret_cast<T*> (-1);
                     }
 #endif
                     template      <typename  T, typename TRAITS>
