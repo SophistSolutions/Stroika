@@ -264,9 +264,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     T*    LinkedList<T, TRAITS>::Lookup (T item)
                     {
-                        for (Link* current = _fHead; current != nullptr; current = current->fNext) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (current->fItem , item)) {
-                                return &current->fItem;
+                        for (Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem , item)) {
+                                return &i->fItem;
                             }
                         }
                         return nullptr;
@@ -274,9 +274,28 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     const T*    LinkedList<T, TRAITS>::Lookup (T item) const
                     {
-                        for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (current->fItem,  item)) {
-                                return &current->fItem;
+                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem,  item)) {
+                                return &i->fItem;
+                            }
+                        }
+                        return nullptr;
+                    }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  void    LinkedList<T, TRAITS>::Apply (FUNCTION doToElement) const
+                    {
+                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            (doToElement) (i->fItem);
+                        }
+                    }
+                    template    <typename  T, typename TRAITS>
+                    template    <typename FUNCTION>
+                    inline  typename LinkedList<T, TRAITS>::Link*    LinkedList<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    {
+                        for (Link* i = _fHead; i != nullptr; i = i->fNext) {
+                            if ((doToElement) (i->fItem)) {
+                                return i;
                             }
                         }
                         return nullptr;

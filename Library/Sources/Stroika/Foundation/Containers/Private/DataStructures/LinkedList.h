@@ -80,6 +80,9 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
+                        class   Link;
+
+                    public:
                         typedef ForwardIterator     IteratorBaseType;
                         nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom)
                         {
@@ -150,6 +153,14 @@ namespace   Stroika {
                         nonvirtual  T*          Lookup (T item);
 
                     public:
+                        /*
+                         */
+                        template    <typename FUNCTION>
+                        nonvirtual  void    Apply (FUNCTION doToElement) const;
+                        template    <typename FUNCTION>
+                        nonvirtual  Link*   ApplyUntilTrue (FUNCTION doToElement) const;
+
+                    public:
                         /**
                          *  Performance:
                          *      Worst Case: O(1)
@@ -214,9 +225,6 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    Invariant () const;
 
-                    public:
-                        class   Link;
-
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
                         //protected:
@@ -271,6 +279,17 @@ namespace   Stroika {
                         nonvirtual  T       Current () const;
 
                         nonvirtual size_t CurrentIndex () const;
+
+                    public:
+                        nonvirtual  void    SetCurrentLink (Link* l)
+                        {
+                            // MUUST COME FROM THIS LIST
+                            // CAN be nullptr
+                            _fCurrent = l;
+                            _fSuppressMore = false;
+                        }
+
+                    public:
                         nonvirtual  bool    Equals (const typename LinkedList<T, TRAITS>::ForwardIterator& rhs) const
                         {
                             return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;

@@ -133,6 +133,8 @@ namespace   Stroika {
                         nonvirtual  bool    Contains (T item) const;
 
                     public:
+                        /*
+                         */
                         template    <typename FUNCTION>
                         nonvirtual  void    Apply (FUNCTION doToElement) const;
                         template    <typename FUNCTION>

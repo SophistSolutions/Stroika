@@ -137,12 +137,34 @@ namespace   Stroika {
                 template    <typename T>
                 void      Collection_LinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
-                    this->_Apply (doToElement);
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<T>     Collection_LinkedList<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                    using   RESULT_TYPE =   Iterator<T>;
+                    shared_ptr<IteratorRep_> resultRep;
+                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        auto iLink = fData_.ApplyUntilTrue (doToElement);
+                        if (iLink == nullptr) {
+                            return RESULT_TYPE::GetEmptyIterator ();
+                        }
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
+                        resultRep->fIterator.SetCurrentLink (iLink);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
+#if         qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
+                    return RESULT_TYPE (typename Iterator<T>::SharedIRepPtr (resultRep));
+#else
+                    return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+#endif
                 }
                 template    <typename T>
                 void    Collection_LinkedList<T>::Rep_::Add (T item)

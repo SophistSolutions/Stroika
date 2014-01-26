@@ -142,7 +142,7 @@ namespace   Stroika {
                 void      Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // empirically faster (vs2k13) to lock once and apply (evne calling stdfunc) than to
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
