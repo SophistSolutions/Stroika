@@ -298,7 +298,7 @@ namespace   Stroika {
                         delete (char*)_fItems;
                     }
                     template      <typename  T, typename TRAITS>
-                    inoine  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
+                    inline  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
                     {
                         RequireNotNull (pi);
                         RequireNotNull (movedFrom);
