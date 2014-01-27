@@ -242,7 +242,7 @@ namespace   Stroika {
                  *      potential confusion/conflicts (esp if we expand arg to ContainsWith() to be templated FUNCTOR instead
                  *      of std::function<>).
                  */
-                nonvirtual  bool    ContainsWith (const std::function<bool(const T& item)>& doToElement) const;
+                nonvirtual  _Deprecated_ (bool ContainsWith (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
 
             public:
                 /**
@@ -357,11 +357,14 @@ namespace   Stroika {
                  *  end (for example the element you were searching for?). It returns the special iterator
                  *  end() to indicate no doToElement() functions returned true.
                  *
-                 *   Also, note that this function does NOT change any elements of the Iterable.
+                 *  Also, note that this function does NOT change any elements of the Iterable.
+                 *
+                 *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
+                 *  operator bool () method of Iterator<T>).
                  */
+                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
                 nonvirtual  _Deprecated_ (Iterator<T>   ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
                 nonvirtual  _Deprecated_ (Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
-                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
 
             public:
                 /**

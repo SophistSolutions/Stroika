@@ -144,6 +144,11 @@ namespace   Stroika {
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
+            inline  Iterator<T>::operator bool () const
+            {
+                return not Done ();
+            }
+            template    <typename T>
             inline  bool    Iterator<T>::Equals (const Iterator& rhs) const
             {
                 Require (GetOwner () == rhs.GetOwner () or GetOwner () == kUnknownIteratorOwnerID or rhs.GetOwner () == kUnknownIteratorOwnerID);

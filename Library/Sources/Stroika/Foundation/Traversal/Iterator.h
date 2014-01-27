@@ -315,12 +315,20 @@ namespace   Stroika {
                 nonvirtual  void    operator++ (int);
 
             public:
-                //tmphack to test - LGP 2013-06-06 - so can say "Iterator i = x; if (i) {...
-                // - handy for stuff like FindFirstThat ()...
-                nonvirtual  operator bool () const
-                {
-                    return not Done ();
-                }
+                /*
+                 *  \em Design Note:
+                 *      I HATE type punning - which this is. And I may want to lose this.
+                 *
+                 *      However, this API works beatifully with Iterable<>::FindFirstThat - and perhaps other things that
+                 *      return iterators.
+                 *
+                 *      also, it allows
+                 *          Iterator<T> n = ...;
+                 *          while (n) {
+                 *          }
+                 *          not sure thats better than while (not n.Done ())???
+                 */
+                nonvirtual  operator bool () const;
 
             public:
                 /**
