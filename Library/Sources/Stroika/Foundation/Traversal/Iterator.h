@@ -92,8 +92,10 @@ namespace   Stroika {
             /**
              *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
              *
-             *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
+             *  Though the type is a pointer, its not mean to ever be cast or dereferenced -
              *  just compared (usually for equality, but also < maybe used for things like tree structure).
+             *
+             *  @see kUnknownIteratorOwnerID
              */
             using   IteratorOwnerID =    const void* ;
 
@@ -177,7 +179,6 @@ namespace   Stroika {
              *
              *      4.      A consequence of the above, is that items added after you are done,
              *              are not encountered.
-             *
              *
              *  Interesting Design Notes:
              *
