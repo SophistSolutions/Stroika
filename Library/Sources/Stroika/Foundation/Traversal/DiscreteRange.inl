@@ -142,9 +142,9 @@ namespace   Stroika {
                 {
                     this->_Apply (doToElement);
                 }
-                virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                    return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
             };
 

@@ -37,7 +37,7 @@ namespace   Stroika {
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename FUNCTION>
-                    inline  typename STL_CONTAINER_OF_T::const_iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::ApplyUntilTrue (FUNCTION doToElement) const
+                    inline  typename STL_CONTAINER_OF_T::const_iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
                     {
                         for (auto i = this->begin (); i != this->end (); ++i) {
                             if ((doToElement) (*i)) {

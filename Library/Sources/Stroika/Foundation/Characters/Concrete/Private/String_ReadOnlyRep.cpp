@@ -91,9 +91,9 @@ void  ReadOnlyRep::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
     _Apply (doToElement);
 }
 
-Traversal::Iterator<Character>  ReadOnlyRep::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+Traversal::Iterator<Character>  ReadOnlyRep::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
 {
-    return _ApplyUntilTrue (doToElement, suggestedOwner);
+    return _FindFirstThat (doToElement, suggestedOwner);
 }
 
 Character   ReadOnlyRep::_Rep::GetAt (size_t index) const

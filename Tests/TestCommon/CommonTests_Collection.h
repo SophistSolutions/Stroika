@@ -326,7 +326,7 @@ namespace CommonTests {
                     static size_t   count;
                     static T        sum =   0;
                     count = 0;
-                    b.ApplyStatic ([] (const T & i) {
+                    b.Apply ([] (const T & i) {
                         count++;
                         sum = sum + i;
                     });

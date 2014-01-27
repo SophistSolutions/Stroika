@@ -24,23 +24,20 @@ namespace   Stroika {
                 }
 
                 template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                inline  bool    Contains_ByApply_ (const Iterable<T>& c, T item)
+                inline  bool    Contains_ByFunctional_ (const Iterable<T>& c, T item)
                 {
                     // grab ptr to first matching item, and contains if not at end
-                    return not c.ApplyUntilTrue ([item] (T i) -> bool {
-                        if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item))
-                        {
-                            return true;    // break out before end
-                        }
-                        return false;
-                    }).Done ();
+                    return c.FindFirstThat ([item] (T i) -> bool {
+                        return ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item);
+                    });
                 }
 
                 template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 inline  bool    Contains_ (const Iterable<T>& c, T item)
                 {
-                    return Contains_ByApply_<ELEMENT_COMPARE_EQUALS_TYPE> (c, item);
+                    return Contains_ByFunctional_<ELEMENT_COMPARE_EQUALS_TYPE> (c, item);
                 }
+
 
                 template    <typename T, typename ELEMENT_COMPARER_TYPE>
                 int    Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs)

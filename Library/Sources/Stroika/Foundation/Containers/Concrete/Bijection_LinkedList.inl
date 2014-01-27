@@ -55,7 +55,7 @@ namespace   Stroika {
                     virtual size_t                                      GetLength () const override;
                     virtual bool                                        IsEmpty () const override;
                     virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
                 public:
@@ -151,12 +151,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
                     shared_ptr<IteratorRep_> resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        auto iLink = fData_.ApplyUntilTrue (doToElement);
+                        auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }

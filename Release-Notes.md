@@ -24,6 +24,9 @@ History
 <td>
 <ul>
 	<li>Renamed Tally<> to MultiSet<></li>
+	<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
+	 ApplyUntilTrue, and ApplyUntilTrueStatic (use FindFirstThat).
+	 </li>
 </ul>
 </td>
 </tr>

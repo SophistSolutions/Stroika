@@ -52,7 +52,7 @@ namespace   Stroika {
                     virtual size_t              GetLength () const override;
                     virtual bool                IsEmpty () const override;
                     virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Queue<T, TRAITS>::_IRep overrides
                 public:
@@ -143,12 +143,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     Queue_Array<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<T>     Queue_Array<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<T>;
                     shared_ptr<IteratorRep_> resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        size_t i = fData_.ApplyUntilTrue (doToElement);
+                        size_t i = fData_.FindFirstThat (doToElement);
                         if (i == fData_.GetLength ()) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }

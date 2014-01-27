@@ -235,7 +235,7 @@ namespace   Stroika {
                     }
                     template    <typename  T, typename TRAITS>
                     template    <typename FUNCTION>
-                    inline  typename DoublyLinkedList<T, TRAITS>::Link*    DoublyLinkedList<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    inline  typename DoublyLinkedList<T, TRAITS>::Link*    DoublyLinkedList<T, TRAITS>::FindFirstThat (FUNCTION doToElement) const
                     {
                         for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                             if ((doToElement) (i->fItem)) {

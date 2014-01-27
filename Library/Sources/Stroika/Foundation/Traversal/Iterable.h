@@ -24,21 +24,12 @@
  *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
  *              default parameter?
  *
- *      @todo   Add find_first_that method? Or something similar. Something that returns iterator.
- *
- *      @todo   Probably add overload of ApplyUntilTrue() that takes Iterator<T> as arugument instead of T
- *              so you can delete the item pointed to by T.
- *
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
  *              GENERATOR (though dont)
  *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
  *
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
- *
- *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
- *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
- *              this API works fully with lambdas - even bound...
  */
 
 
@@ -134,6 +125,14 @@ namespace   Stroika {
              *      We could avoid this by adding a shared_ptr<> reference count into each iterator, but that
              *      would make iterator objects significantly more expensive, and with little apparent value added.
              *      Similarly for weak_ptr<> references.
+             *
+             *  *Design Note*:
+             *      Rejected idea:
+             *          Add overload of FindFirstThat() that takes Iterator<T> as arugument instead of T
+             *          so you can delete the item pointed to by T.
+             *
+             *          This was rejected because it can easily be done directly with iterators, and seems
+             *          a queeryly specific problem. I cannot see any patterns where one would want to do this.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -348,7 +347,7 @@ namespace   Stroika {
                  *  \pre    doToElement != nullptr
                  */
                 nonvirtual  void    Apply (const std::function<void(const T& item)>& doToElement) const;
-                nonvirtual  void    ApplyStatic (void (*doToElement) (const T& item)) const;
+                nonvirtual  void  _Deprecated_ (ApplyStatic (void(*doToElement)(const T& item)) const, "Obsolete as of Stroika v2.0a19 - use Apply");
 
             public:
                 /**
@@ -375,8 +374,9 @@ namespace   Stroika {
                  *
                  *   Also, note that this function does NOT change any elements of the Iterable.
                  */
-                nonvirtual  Iterator<T>    ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const;
-                nonvirtual  Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const;
+                nonvirtual  _Deprecated_ (Iterator<T>   ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
+                nonvirtual  _Deprecated_ (Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
+                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
 
             public:
                 /**
@@ -494,7 +494,7 @@ namespace   Stroika {
                 virtual size_t              GetLength () const                                                          =   0;
                 virtual bool                IsEmpty () const                                                            =   0;
                 virtual void                Apply (_APPLY_ARGTYPE doToElement) const                                    =   0;
-                virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const  =   0;
+                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const  =   0;
 
             protected:
                 /*
@@ -503,7 +503,7 @@ namespace   Stroika {
                  */
                 nonvirtual  bool        _IsEmpty () const;
                 nonvirtual  void        _Apply (_APPLY_ARGTYPE doToElement) const;
-                nonvirtual  Iterator<T> _ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
+                nonvirtual  Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
             };
 
 

@@ -58,7 +58,7 @@ namespace   Stroika {
                     virtual size_t            GetLength () const override;
                     virtual bool              IsEmpty () const override;
                     virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>       FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Set<T, TRAITS>::_IRep overrides
                 public:
@@ -149,9 +149,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     SortedSet_stdset<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<T>     SortedSet_stdset<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                    return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
                 bool    SortedSet_stdset<T, TRAITS>::Rep_::Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const

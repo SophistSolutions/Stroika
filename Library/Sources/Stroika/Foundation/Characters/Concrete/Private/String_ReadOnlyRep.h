@@ -68,7 +68,7 @@ namespace   Stroika {
                             virtual size_t                                      GetLength () const override;
                             virtual bool                                        IsEmpty () const override;
                             virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                            virtual Traversal::Iterator<Character>              ApplyUntilTrue (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const override;
+                            virtual Traversal::Iterator<Character>              FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const override;
 
                             // Overrides for String::_IRep
                         public:

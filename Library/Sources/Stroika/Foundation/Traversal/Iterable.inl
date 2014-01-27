@@ -50,7 +50,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::_IRep::_ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+            inline  Iterator<T>    Iterable<T>::_IRep::_FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
             {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 RequireNotNull (doToElement);
@@ -323,7 +323,7 @@ namespace   Stroika {
             {
                 RequireNotNull (doToElement);
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
-                return _GetRep ().ApplyUntilTrue (doToElement, this);
+                return _GetRep ().FindFirstThat (doToElement, this);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))
@@ -344,7 +344,28 @@ namespace   Stroika {
             {
                 RequireNotNull (doToElement);
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
-                return _GetRep ().ApplyUntilTrue (doToElement, this);
+                return _GetRep ().FindFirstThat (doToElement, this);
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                struct CheapLambda_ {
+                    CheapLambda_ (bool (*doToElement) (const T& item))
+                        : fToDoItem (doToElement)
+                    {
+                    }
+                    bool (*fToDoItem) (const T& item);
+                    static bool DoToItem (const void* cookie, const T& item)
+                    {
+                        return (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
+                    }
+                };
+                return _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
+#endif
+            }
+            template    <typename T>
+            inline  Iterator<T>    Iterable<T>::FindFirstThat (const function<bool(const T& item)>& doToElement) const
+            {
+                RequireNotNull (doToElement);
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
+                return _GetRep ().FindFirstThat (doToElement, this);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))

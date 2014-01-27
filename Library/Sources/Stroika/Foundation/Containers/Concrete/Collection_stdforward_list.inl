@@ -57,7 +57,7 @@ namespace   Stroika {
                     virtual size_t            GetLength () const override;
                     virtual bool              IsEmpty () const override;
                     virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<T>       FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Collection<T>::_IRep overrides
                 public:
@@ -146,9 +146,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                Iterator<T>     Collection_stdforward_list<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<T>     Collection_stdforward_list<T>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                    return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
                 template    <typename T>
                 void    Collection_stdforward_list<T>::Rep_::Add (T item)

@@ -967,6 +967,8 @@
 
 
 /*
+ *  Wrap this macro around entire declaration, as in:
+ *      nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
  */
 #if     !defined (_Deprecated_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)

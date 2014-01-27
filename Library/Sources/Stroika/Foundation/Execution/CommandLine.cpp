@@ -118,11 +118,11 @@ bool    Execution::MatchesCommandLineArgument (const String& actualArg, const St
 
 bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    return argList.ApplyUntilTrue ([matchesArgPattern] (String i) ->bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    return argList.FindFirstThat ([matchesArgPattern] (String i) ->bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
 }
 
 bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult)
 {
-    return argList.ApplyUntilTrue ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    return argList.FindFirstThat ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
 }
 

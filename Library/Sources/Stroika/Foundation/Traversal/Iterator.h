@@ -23,6 +23,8 @@
  *          about iterating two originally equal iterators. The trouble is - this doesn
  *          work with generators!!! -- REVIEW-- LGP 2013-12-30
  *
+ *          THIS IS BAD AND MUST BE REWRITEN - NOT WAHT WE WANT - TOO STRONG A PROMISE.
+ *
  *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
  *          to recheck the current item, and recheck the done state of the container.
  *
@@ -55,7 +57,8 @@
  *          at each iteration).
  *
  *          Two tricks:
- *              (1)     Read a bunch at a time. This is tricky to implement and doesn't affect overall computational
+ *              (1)     Paging.
+ *                      Read a bunch at a time. This is tricky to implement and doesn't affect overall computational
  *                      complexity (because it reduces number of virtual calls by a constant factor). But if that
  *                      constant factor is big enough - 10-100-1000? - that still could be relevant pragmatically.
  *
@@ -313,7 +316,7 @@ namespace   Stroika {
 
             public:
                 //tmphack to test - LGP 2013-06-06 - so can say "Iterator i = x; if (i) {...
-                // - handy for stuff like ApplyUntilTrue ()...
+                // - handy for stuff like FindFirstThat ()...
                 nonvirtual  operator bool () const
                 {
                     return not Done ();
@@ -353,7 +356,7 @@ namespace   Stroika {
                  *  are considered Equals (). This is mainly because we use a different representation for 'done'
                  *  iterators.
                  *
-                 *  @TODO - NOTE - SEE TODO ABOUT ABOUT THIS GUARANTEE???
+                 *  @TODO - NOTE - SEE TODO ABOUT ABOUT THIS GUARANTEE??? - NO - TOO STRONG - REVISE!!!
                  *
                  *  Note - for Equals. The following assertion will succeed:
                  *

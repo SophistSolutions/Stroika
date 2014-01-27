@@ -101,7 +101,7 @@ namespace   Stroika {
                         template    <typename FUNCTION>
                         nonvirtual  void    Apply (FUNCTION doToElement) const;
                         template    <typename FUNCTION>
-                        nonvirtual  typename STL_CONTAINER_OF_T::const_iterator   ApplyUntilTrue (FUNCTION doToElement) const;
+                        nonvirtual  typename STL_CONTAINER_OF_T::const_iterator   FindFirstThat (FUNCTION doToElement) const;
 
                     public:
                         template <typename PREDICATE>

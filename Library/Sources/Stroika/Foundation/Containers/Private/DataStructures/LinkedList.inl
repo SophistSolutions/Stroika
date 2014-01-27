@@ -291,7 +291,7 @@ namespace   Stroika {
                     }
                     template    <typename  T, typename TRAITS>
                     template    <typename FUNCTION>
-                    inline  typename LinkedList<T, TRAITS>::Link*    LinkedList<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    inline  typename LinkedList<T, TRAITS>::Link*    LinkedList<T, TRAITS>::FindFirstThat (FUNCTION doToElement) const
                     {
                         for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                             if ((doToElement) (i->fItem)) {

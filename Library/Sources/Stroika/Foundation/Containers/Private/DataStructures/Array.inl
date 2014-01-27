@@ -150,7 +150,7 @@ namespace   Stroika {
                     }
                     template    <typename  T, typename TRAITS>
                     template    <typename FUNCTION>
-                    inline  size_t    Array<T, TRAITS>::ApplyUntilTrue (FUNCTION doToElement) const
+                    inline  size_t    Array<T, TRAITS>::FindFirstThat (FUNCTION doToElement) const
                     {
                         const   T*   start  =   &_fItems [0];
                         const   T*   i      =   start;

@@ -158,7 +158,7 @@ namespace   Stroika {
                         template    <typename FUNCTION>
                         nonvirtual  void    Apply (FUNCTION doToElement) const;
                         template    <typename FUNCTION>
-                        nonvirtual  Link*   ApplyUntilTrue (FUNCTION doToElement) const;
+                        nonvirtual  Link*   FindFirstThat (FUNCTION doToElement) const;
 
                     public:
                         /**

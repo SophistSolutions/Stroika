@@ -38,7 +38,7 @@ namespace   Stroika {
                 // This contains has the advantage that the contains operation is atomic (not quite guarnateed), but
                 // also avoids re-locking the iterator for each more
                 template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool    Contains_ByApply_ (const Iterable<T>& c, T item);
+                bool    Contains_ByFunctional_ (const Iterable<T>& c, T item);
 
                 template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 bool    Contains_ (const Iterable<T>& c, T item);

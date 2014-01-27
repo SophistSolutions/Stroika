@@ -74,9 +74,9 @@ namespace   Stroika {
                 this->_Apply (doToElement);
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
             {
-                return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                return this->_FindFirstThat (doToElement, suggestedOwner);
             }
 #define qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding   1
 #if     qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding
@@ -103,9 +103,9 @@ namespace   Stroika {
                 this->_Apply (doToElement);
             }
             template    <typename T>
-            Iterator<T>   IterableFromIterator<T, void, void>::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+            Iterator<T>   IterableFromIterator<T, void, void>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
             {
-                return this->_ApplyUntilTrue (doToElement, suggestedOwner);
+                return this->_FindFirstThat (doToElement, suggestedOwner);
             }
 #endif
 

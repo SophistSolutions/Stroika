@@ -24,7 +24,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* MultiSet_LinkedList<T, TRAITS>::Rep_ ************************
+                 ********************* MultiSet_LinkedList<T, TRAITS>::Rep_ *********************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
@@ -55,7 +55,7 @@ namespace   Stroika {
                     virtual bool                                IsEmpty () const override;
                     virtual Iterator<MultiSetEntry<T>>          MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<MultiSetEntry<T>>          ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<MultiSetEntry<T>>          FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
@@ -139,12 +139,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<MultiSetEntry<T>>     MultiSet_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<MultiSetEntry<T>>     MultiSet_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<MultiSetEntry<T>>;
                     shared_ptr<IteratorRep_> resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        auto iLink = fData_.ApplyUntilTrue (doToElement);
+                        auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
