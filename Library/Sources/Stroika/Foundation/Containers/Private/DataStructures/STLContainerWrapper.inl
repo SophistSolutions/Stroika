@@ -28,6 +28,32 @@ namespace   Stroika {
                         return this->find (item) != this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
+                    {
+                        // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
+                        // only way
+                        //
+                        // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
+                        // old for old, and when I match, stop on new
+                        Require (pi->fData == movedFrom);
+                        auto newI = this->begin ();
+                        auto newE = this->end ();
+                        auto oldI = movedFrom->begin ();
+                        auto oldE = movedFrom->end ();
+                        while (oldI != pi->fStdIterator) {
+                            Assert (newI != newE);
+                            Assert (oldI != oldE);
+                            newI++;
+                            oldI++;
+                            Assert (newI != newE);
+                            Assert (oldI != oldE);
+                        }
+                        Assert (oldI == pi->fStdIterator);
+                        pi->fStdIterator = newI;
+                        pi->fData = this;
+                    }
+
+                    template    <typename STL_CONTAINER_OF_T>
                     template    <typename FUNCTION>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
                     {
@@ -117,6 +143,31 @@ namespace   Stroika {
                     {
                         AssertNotNull (fData);
                         return fStdIterator - fData->begin ();
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::const_iterator l)
+                    {
+                        // MUUST COME FROM THIS stl container
+                        // CAN be end ()
+                        //
+#if     qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
+#if 0
+                        fStdIterator = l._M_const_cast ();
+#else
+                        // hope this works til we get fixed version of libstd++
+                        // -- LGP 2014-01-26
+                        fStdIterator = *(typename CONTAINER_TYPE::iterator*)&l;
+#endif
+#else
+                        // bit of a queer kludge to covnert from const iterator to iterator in STL
+                        fStdIterator = fData->erase (l, l);
+#endif
+                    }
+
+                    template    <typename STL_CONTAINER_OF_T>
+                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
+                    {
+                        return fStdIterator == rhs.fStdIterator;
                     }
 
 

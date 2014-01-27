@@ -279,6 +279,31 @@ namespace   Stroika {
                         cur->fItem = item;
                     }
                     template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const DoublyLinkedList<T, TRAITS>* movedFrom)
+                    {
+                        // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
+                        // only way
+                        //
+                        // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
+                        // old for old, and when I match, stop on new
+                        Require (pi->_fData == movedFrom);
+                        auto newI = this->_fHead;
+                        auto newE = nullptr;
+                        auto oldI = movedFrom->_fHead;
+                        auto oldE = nullptr;
+                        while (oldI != pi->_fCurrent) {
+                            Assert (newI != newE);
+                            Assert (oldI != oldE);
+                            newI = newI->fNext;
+                            oldI = oldI->fNext;
+                            Assert (newI != newE);
+                            Assert (oldI != oldE);
+                        }
+                        Assert (oldI == pi->_fCurrent);
+                        pi->_fCurrent = newI;
+                        pi->_fData = this;
+                    }
+                    template      <typename  T, typename TRAITS>
                     void    DoublyLinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
@@ -455,6 +480,11 @@ namespace   Stroika {
                         }
                     }
                     template      <typename  T, typename TRAITS>
+                    inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::More (nullptr_t, bool advance)
+                    {
+                        return More (static_cast<T*> (nullptr), advance);
+                    }
+                    template      <typename  T, typename TRAITS>
                     inline  T   DoublyLinkedList<T, TRAITS>::ForwardIterator::Current () const
                     {
                         Require (not (Done ()));
@@ -463,7 +493,7 @@ namespace   Stroika {
                         return _fCurrent->fItem;
                     }
                     template      <typename  T, typename TRAITS>
-                    size_t DoublyLinkedList<T, TRAITS>::ForwardIterator::CurrentIndex () const
+                    size_t  DoublyLinkedList<T, TRAITS>::ForwardIterator::CurrentIndex () const
                     {
                         Require (not (Done ()));
                         Invariant ();
@@ -472,6 +502,19 @@ namespace   Stroika {
                             AssertNotNull (l);
                         }
                         return n;
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::SetCurrentLink (Link* l)
+                    {
+                        // MUUST COME FROM THIS LIST
+                        // CAN be nullptr
+                        _fCurrent = l;
+                        _fSuppressMore = false;
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const
+                    {
+                        return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
                     }
                     template      <typename  T, typename TRAITS>
                     inline    typename DoublyLinkedList<T, TRAITS>::Link*   DoublyLinkedList<T, TRAITS>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T, TRAITS>* data)

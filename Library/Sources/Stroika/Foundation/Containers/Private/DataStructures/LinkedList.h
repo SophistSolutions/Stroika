@@ -18,7 +18,6 @@
  *
  * TODO:
  *
- *
  *      @todo   In ForwardIterator object - maintain cached prev - so as we navigate - we can often
  *              avoid the back nav. Maybe make this a configurable class option? Anyhow - mostly include
  *              and use as cahce. ALready there mostly - but commented out (fPrev)
@@ -84,30 +83,7 @@ namespace   Stroika {
 
                     public:
                         typedef ForwardIterator     IteratorBaseType;
-                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom)
-                        {
-                            // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
-                            // only way
-                            //
-                            // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
-                            // old for old, and when I match, stop on new
-                            Require (pi->_fData == movedFrom);
-                            auto newI = this->_fHead;
-                            auto newE = nullptr;
-                            auto oldI = movedFrom->_fHead;
-                            auto oldE = nullptr;
-                            while (oldI != pi->_fCurrent) {
-                                Assert (newI != newE);
-                                Assert (oldI != oldE);
-                                newI = newI->fNext;
-                                oldI = oldI->fNext;
-                                Assert (newI != newE);
-                                Assert (oldI != oldE);
-                            }
-                            Assert (oldI == pi->_fCurrent);
-                            pi->_fCurrent = newI;
-                            pi->_fData = this;
-                        }
+                        nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom);
 
                     public:
                         nonvirtual  bool    IsEmpty () const;
@@ -272,28 +248,16 @@ namespace   Stroika {
                         nonvirtual  bool    Done () const;
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance)
-                        {
-                            return More (static_cast<T*> (nullptr), advance);
-                        }
+                        nonvirtual  bool    More (nullptr_t, bool advance);
                         nonvirtual  T       Current () const;
 
                         nonvirtual size_t CurrentIndex () const;
 
                     public:
-                        nonvirtual  void    SetCurrentLink (Link* l)
-                        {
-                            // MUUST COME FROM THIS LIST
-                            // CAN be nullptr
-                            _fCurrent = l;
-                            _fSuppressMore = false;
-                        }
+                        nonvirtual  void    SetCurrentLink (Link* l);
 
                     public:
-                        nonvirtual  bool    Equals (const typename LinkedList<T, TRAITS>::ForwardIterator& rhs) const
-                        {
-                            return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
-                        }
+                        nonvirtual  bool    Equals (const typename LinkedList<T, TRAITS>::ForwardIterator& rhs) const;
 
                     public:
                         nonvirtual  void    Invariant () const;
