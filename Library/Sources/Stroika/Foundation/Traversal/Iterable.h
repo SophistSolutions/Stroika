@@ -27,23 +27,8 @@
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
  *              GENERATOR (though dont)
  *
- *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
- *
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  */
-
-
-
-/**
- *  Empirically, std::function seems to use way more code space (and must evaluate rest)
- *  than the qAPPLY_IMPL_STRATEGY_COOKIE strategy, which is functionally equivilent from
- *  the point of view of the public use API.
- */
-#define qAPPLY_IMPL_STRATEGY_STDFUNCTION    1
-#define qAPPLY_IMPL_STRATEGY_COOKIE         2
-#ifndef qAPPLY_IMPL_STRATEGY
-#define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_STDFUNCTION
-#endif // !qAPPLY_IMPL_STRATEGY
 
 
 
@@ -466,13 +451,8 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             public:
-#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 using   _APPLY_ARGTYPE      =   const std::function<void(const T& item)>& ;
                 using   _APPLYUNTIL_ARGTYPE =   const std::function<bool(const T& item)>& ;
-#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
-                using   _APPLY_ARGTYPE      =   pair<const void*, void (*) (const void* cookie, const T& item)>;
-                using   _APPLYUNTIL_ARGTYPE =   pair<const void*, bool (*) (const void* cookie, const T& item)>;
-#endif
 
             public:
                 virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const              =   0;
