@@ -139,6 +139,9 @@ void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+        s.SetMulticastLoopMode (true);       // probably should make this configurable
+        const   unsigned int kMaxHops_   =   3;
+        s.SetMulticastTTL (kMaxHops_);
         {
 Again:
             try {
