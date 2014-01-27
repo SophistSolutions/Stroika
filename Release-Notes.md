@@ -27,6 +27,7 @@ History
 	<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
 	 ApplyUntilTrue, and ApplyUntilTrueStatic (use FindFirstThat).
 	 </li>
+	 <li>CopyableMutex is deprecated</li>
 </ul>
 </td>
 </tr>
