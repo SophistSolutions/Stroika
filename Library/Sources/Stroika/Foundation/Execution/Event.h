@@ -45,6 +45,8 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and other similar classes are not.
+                            and you can easily use shared_ptr<> on an Event to make it copyable.
              */
             class   Event {
             public:
