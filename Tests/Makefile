@@ -23,10 +23,10 @@ check:
 	@perl checkall.pl
 
 clean:
-	@buildall.pl clean
+	@perl buildall.pl clean
 
 clobber:
-	@buildall.pl clobber
+	@perl buildall.pl clobber
 
 project-files:
 	@echo "Building VisualStudio.Net-2013 project files..."
