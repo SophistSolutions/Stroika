@@ -20,16 +20,16 @@ History
 
 
   <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
-<td>
-<ul>
-	<li>Renamed Tally<> to MultiSet<></li>
-	<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
-	 ApplyUntilTrue, and ApplyUntilTrueStatic (use FindFirstThat).
-	 </li>
-	 <li>CopyableMutex is deprecated</li>
-</ul>
-</td>
+	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
+	<td>
+		<ul>
+			<li>Renamed Tally<> to MultiSet<></li>
+			<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
+			ApplyUntilTrue, and ApplyUntilTrueStatic (use FindFirstThat).</li>
+			<li>Major speed tweeks (Iterable::Apply/FindFirstThat, and things that use it).</li>
+			<li>CopyableMutex is deprecated</li>
+		</ul>
+	</td>
 </tr>
 
 
