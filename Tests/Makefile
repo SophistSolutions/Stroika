@@ -35,7 +35,7 @@ project-files:
 tests:
 	@perl buildall.pl build
 
-run-tests:	tests
+run-tests:
 	@for i in $(TESTS);\
 	do\
 	    EXE=../Builds/DefaultConfiguration/Test$$i;\
