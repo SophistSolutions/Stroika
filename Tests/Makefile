@@ -62,7 +62,7 @@ run-tests:
 		    EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
 	        DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
 			if [ "$$DIFFTIME" -lt "10" ]; then\
-	            DIFFTIME="0"$$DIFFTIME;\
+	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
 	        echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($$EXE)";\
 		done;\
