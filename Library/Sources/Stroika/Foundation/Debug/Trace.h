@@ -46,7 +46,7 @@ namespace   Stroika {
 
                         Note ALSO - many Stroika modules (CPP files) contain a private
                             // Comment this in to turn on tracing in this module
-                            //#define   USE_TRACE_IN_THIS_MODULE_       1
+                            //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
                         define.
 
                         This is often not enabled by default because it could produce lots of unintersting noise in logfiles

@@ -15,6 +15,11 @@ using   namespace   Stroika::Foundation::Execution;
 using   Stroika::Foundation::Time::Duration;
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 /*
  * Design notes:
  *
@@ -54,11 +59,18 @@ using   Stroika::Foundation::Time::Duration;
  */
 void    Event::Wait (Time::DurationSecondsType timeout)
 {
-    //Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));
-    //DbgTrace ("(timeout = %.2f)", timeout);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));
+    DbgTrace ("(timeout = %.2f)", timeout);
+#endif
     CheckForThreadAborting ();
     if (timeout < 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
         DoThrow (WaitTimedOutException ());
+#else
+        throw (WaitTimedOutException ());
+#endif
     }
     std::unique_lock<mutex>     lock (fMutex_);
     Time::DurationSecondsType   until   =   Time::GetTickCount () + timeout;
@@ -71,7 +83,12 @@ void    Event::Wait (Time::DurationSecondsType timeout)
         CheckForThreadAborting ();
         Time::DurationSecondsType   remaining   =   until - Time::GetTickCount ();
         if (remaining < 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
             DoThrow (WaitTimedOutException ());
+#else
+            throw (WaitTimedOutException ());
+#endif
         }
         // avoid roundoff issues - and not  a big deal to wakeup and wait again once a day ;-)
         const Time::DurationSecondsType k1Day   =   Time::DurationSecondsType (60 * 60 * 24);

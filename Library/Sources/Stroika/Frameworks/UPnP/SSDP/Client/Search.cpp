@@ -28,7 +28,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
 // Comment this in to turn on tracing in this module
-#define   USE_TRACE_IN_THIS_MODULE_       0
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -71,7 +71,7 @@ public:
 
 
         {
-#if     USE_TRACE_IN_THIS_MODULE_
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (SDKSTR ("Sending M-SEARCH"));
 #endif
             string  request;
@@ -87,7 +87,7 @@ public:
                 request = requestBuf.str ();
                 fSocket_.SetMulticastTTL (kMaxHops_);
             }
-#if     USE_TRACE_IN_THIS_MODULE_
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: %s", request.c_str ());
 #endif
             fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), SSDP::V4::kSocketAddress);
@@ -117,7 +117,7 @@ public:
     {
         String firstLine    =   in.ReadLine ().Trim ();
 
-#if     USE_TRACE_IN_THIS_MODULE_
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Read Reply"));
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
