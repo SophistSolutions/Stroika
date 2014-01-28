@@ -1,16 +1,35 @@
-#### SUPER PRELIM - REALLY just a hack to be able to run remote tests.
-
-###barely a legit start...
+.PHONY:	tests all check clobber
 
 
-TESTS=	Test01 Test02 Test03 Test04 Test05 Test06 Test07 Test08 Test09 Test10 Test11 Test12 Test13 Test14 Test15 Test16 Test17 Test18 Test19 Test20 Test21 Test22 Test23 Test24 Test25 Test26 Test27 Test28 Test29 Test30 Test31 Test32 Test33 Test34 Test35 Test36
+help:
+	@echo "Help for making Stroika"
+	@echo "Targets"
+	@echo "    all:                    -    builds everything"
+	@echo "    check:                  -    checks everything built properly"
+	@echo "    clean:"
+	@echo "    clobber:"
+	@echo "    project-files:          -    builds project files for things like visual studio.net etc (NYI)"
+	@echo "    tests:"
+	@echo "    run-tests:"
 
-REMOTE_MACHINE_AND_USERNAME	=	root@192.168.244.110
 
+all:		tests 
 
-run-tests-remotely:
-	for ti in $(TESTS); do \
-		echo Running $$ti on $(REMOTE_MACHINE_AND_USERNAME)...; \
-		scp ../Builds/DefaultConfiguration/$$ti $(REMOTE_MACHINE_AND_USERNAME):/tmp/$$ti; \
-		ssh $(REMOTE_MACHINE_AND_USERNAME) /tmp/$$ti; \
-	done
+check:
+	@perl checkall.pl
+
+clean:
+	@buildall.pl clean
+
+clobber:
+	@buildall.pl clobber
+
+project-files:
+	@echo "Building VisualStudio.Net-2013 project files..."
+	@(cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
+
+tests:
+	@perl buildall.pl build
+
+run-tests:	tests
+	@perl Run.pl

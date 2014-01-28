@@ -32,7 +32,7 @@ check:
 	@(cd Library && perl checkall.pl)
 	@(cd Tools && perl checkall.pl)
 	@(cd Samples && perl checkall.pl)
-	@(cd Tests && perl checkall.pl)
+	@make --directory Tests --no-print-directory MAKEFLAGS= check
 
 
 clean:
@@ -40,12 +40,13 @@ clean:
 	@(cd Library; perl buildall.pl clean)
 	@(cd Tools; perl buildall.pl clean)
 	@(cd Samples; perl buildall.pl clean)
-	@(cd Tests; perl buildall.pl clean)
+	@make --directory Tests --no-print-directory MAKEFLAGS= clean
 
 
 clobber:
 	@make --directory ThirdPartyLibs --no-print-directory clobber
 	@rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
+	@make --directory Tests --no-print-directory MAKEFLAGS= clobber
 
 
 documentation:
@@ -61,8 +62,7 @@ third-party-libs:
 
 
 project-files:
-	@echo "Building VisualStudio.Net-2013 project files..."
-	@(cd Tests/Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
+	@make --directory Tests --no-print-directory MAKEFLAGS= project-files
 
 
 tools:	libraries
@@ -70,14 +70,14 @@ tools:	libraries
 
 
 tests:	tools libraries
-	@cd Tests; perl buildall.pl build
+	@make --directory Tests --no-print-directory MAKEFLAGS= tests
 
 
 samples:	tools libraries
 	@cd Samples; perl buildall.pl build
 
 run-tests:	tests
-	@cd Tests; perl Run.pl
+	@make --directory Tests --no-print-directory MAKEFLAGS= run-tests
 
 format-code:
 	@echo Running Astyle...
