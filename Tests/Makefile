@@ -36,6 +36,14 @@ tests:
 	@perl buildall.pl build
 
 run-tests:	tests
-	#echo TESTBUIDLR = $(TEST_BUILD_DIR)
-	#echo TESTS = $(TESTS)
-	@perl Run.pl
+	@for i in $(TESTS);\
+	do\
+	    EXE=../Builds/DefaultConfiguration/Test$$i;\
+	    TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
+	    TIMESTAMP=`date +%s`;\
+	    EXERESULT=`$$EXE`;\
+	    TIMESTAMP2=`date +%s`;\
+	    DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
+	    echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($$EXE)";\
+	done
+
