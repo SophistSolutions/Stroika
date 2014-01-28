@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1898E448-0FDC-48D2-84BA-D2D797E35BEF}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\Makefile = ..\..\Makefile
 		..\..\Tests-Description.txt = ..\..\Tests-Description.txt
 	EndProjectSection
 EndProject
@@ -1567,8 +1568,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
