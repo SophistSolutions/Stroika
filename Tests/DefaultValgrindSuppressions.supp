@@ -1,9 +1,28 @@
 {
-   <insert_a_suppression_name_here>
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation
    Memcheck:Leak
    fun:malloc
    fun:_Znwm
    fun:_Znam
    fun:_ZN7Stroika10Foundation6Memory7Private12GetMem_Util_Em
+}
+{
+   Apparently_Bogus_Warning_About_StrToD_Code_calling_Looks_OK
+   Memcheck:Cond
+   fun:____strtod_l_internal
+}
+{
+   Apparently_bugs_Warning_About_std_string_memleak_called_from_duration_code
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_ZN9__gnu_cxx13new_allocatorIcE8allocateEmPKv
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs4_Rep8_M_cloneERKSaIcEm
+   fun:_ZNSs7reserveEm
+   fun:_ZNSs6appendEPKcm
+   fun:_ZNSs6appendEPKc
+   fun:_ZNSspLEPKc
+   fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_Ed
 }
 
