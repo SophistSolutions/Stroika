@@ -28,7 +28,8 @@ History
 			<li>Renamed Tally<> to MultiSet<></li>
 			<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
 			ApplyUntilTrue, and ApplyUntilTrueStatic (use FindFirstThat).</li>
-			<li>Major speed tweeks (Iterable::Apply/FindFirstThat, and things that use it).</li>
+			<li>Major speed tweeks (Iterable::Apply/FindFirstThat, and things that use it, 
+			and fix to String memory optimization qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings).</li>
 			<li>CopyableMutex is deprecated</li>
 		</ul>
 	</td>
