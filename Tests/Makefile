@@ -33,20 +33,20 @@ help:
 all:		tests 
 
 check:
-	@perl checkall.pl
+	@perl ScriptsLib/_checkall.pl
 
 clean:
-	@perl buildall.pl clean
+	@perl ScriptsLib/_buildall.pl clean
 
 clobber:
-	@perl buildall.pl clobber
+	@perl ScriptsLib/_buildall.pl clobber
 
 project-files:
 	@echo "Building VisualStudio.Net-2013 project files..."
 	@(cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
 
 tests:
-	@perl buildall.pl build
+	@perl ScriptsLib/_buildall.pl build
 
 run-tests:
 	@echo "Running Tests..."
