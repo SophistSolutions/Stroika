@@ -90,7 +90,13 @@ namespace   Stroika {
                     }
                     inline  void    BufferedStringRep::_Rep::ReserveAtLeast_ (size_t newCapacity)
                     {
-                        const   size_t  kChunkSize  =   32;
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                        // ANY size for kChunkSize would be legal/reasonable, but if we use a size < BufferedStringRepBlock_::kNElts,
+                        // then we can never allocate BufferedStringRepBlock_ blocks! Or at least not when we call reserveatleast
+                        const   size_t  kChunkSize_  =   (newCapacity < BufferedStringRepBlock_::kNElts) ? BufferedStringRepBlock_::kNElts : 32;
+#else
+                        const   size_t  kChunkSize_  =   32;
+#endif
                         size_t          len         =   _GetLength ();
                         if (newCapacity == 0 and len == 0) {
                             reserve (0);
@@ -99,7 +105,7 @@ namespace   Stroika {
                             ptrdiff_t   n2Add   =   static_cast<ptrdiff_t> (newCapacity) - static_cast<ptrdiff_t> (len);
                             if (n2Add > 0) {
                                 // Could be more efficent inlining the reserve code here - cuz we can avoid the call to length()
-                                Containers::ReserveSpeedTweekAddN (*this, static_cast<size_t> (n2Add), kChunkSize);
+                                Containers::ReserveSpeedTweekAddN (*this, static_cast<size_t> (n2Add), kChunkSize_);
                             }
                         }
                     }
