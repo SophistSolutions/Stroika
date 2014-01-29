@@ -17,7 +17,7 @@ help:
 	@echo "    samples:"
 	@echo "    documentation:"
 	@echo "    third-party-libs:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuratoons folder (forces a rebuild of configs)"
 	@echo "    default-configuration:  -    creates the default configuration in Configurations folder (target takes DEFAULT_CONFIGURATION_ARGS)"
 	@echo "    check-tools:            -    check the tools needed to build stroika are installed."

@@ -1,0 +1,9 @@
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation6Memory7Private12GetMem_Util_Em
+}
+

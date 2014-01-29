@@ -15,14 +15,20 @@ EXEPATTERN=../Builds/$$ci/Test$$i
 endif
 
 
-ifeq (,$(REMOTE))
-RUNTEST_REMOTECOPYSETUP=touch /dev/null
-RUNTEST_EXE_RUN=$(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
-else
+ifneq (,$(REMOTE))
 RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
 RUNTEST_EXE_RUN=ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
+else ifneq (,$(VALGRIND))
+EXTRA_VALGRIND_OPTIONS=
+VALGRIND_OPTIONS=--track-origins=yes --tool=memcheck --leak-check=yes --suppressions=DefaultValgrindSuppressions.supp $(EXTRA_VALGRIND_OPTIONS)
+RUNTEST_REMOTECOPYSETUP=touch /dev/null
+RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
+else
+RUNTEST_REMOTECOPYSETUP=touch /dev/null
+RUNTEST_EXE_RUN=$(EXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
 endif
 
 
@@ -42,7 +48,7 @@ help:
 	@echo "    clobber:"
 	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    tests:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 
 
 all:		tests 
