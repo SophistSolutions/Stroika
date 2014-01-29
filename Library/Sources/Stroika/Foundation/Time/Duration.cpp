@@ -243,6 +243,7 @@ namespace   {
         while (i != end and (isdigit (*i) or * i == '.')) {
             ++i;
         }
+        Ensure (i <= end);
         return i;
     }
 
@@ -425,7 +426,7 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
          *      half a year. This decimal fraction may be specified with either a comma or a full stop,
          *      as in "P0,5Y" or "P0.5Y"."
          *
-         *  @todo   See todo in header: the first/lasrt digit ragne could use '.' or ',' and I'm not sure atof is as flexible
+         *  @todo   See todo in header: the first/lasrt digit range could use '.' or ',' and I'm not sure atof is as flexible
          *  test/verify!!!
          */
         InternalNumericFormatType_  n   =   atof (string (firstDigitI, lastDigitI).c_str ());
