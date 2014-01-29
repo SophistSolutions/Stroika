@@ -23,6 +23,7 @@ History
 	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
 	<td>
 		<ul>
+			<li>make run-tests VALGRIND=1 (and default suppression file - not perfect results, but good)</li>
 			<li>make run-tests (makefile cleanups +) REMOTE= (so can run via ssh on remote host)</li>
 			<li>Renamed Tally<> to MultiSet<></li>
 			<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
