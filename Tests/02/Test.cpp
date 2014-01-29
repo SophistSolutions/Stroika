@@ -757,6 +757,10 @@ namespace   {
     void    Test19_ConstCharStar_ ()
     {
         VerifyTestResult (wcscmp (String (L"fred").c_str (), L"fred") == 0);
+        VerifyTestResult (wcscmp (String (L"0123456789abcde").c_str (), L"0123456789abcde") == 0);                                      // 15 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcdef").c_str (), L"0123456789abcdef") == 0);                                    // 16 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcde").c_str (), L"0123456789abcdef0123456789abcde") == 0);      // 31 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcdef").c_str (), L"0123456789abcdef0123456789abcdef") == 0);    // 32 chars
         {
             String  tmp =   L"333";
             VerifyTestResult (wcscmp (tmp.c_str (), L"333") == 0);
