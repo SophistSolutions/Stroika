@@ -72,7 +72,7 @@ namespace   Stroika {
             bool    NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
 
 
-            /*
+            /**
              *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEqual() to it (but better)
              *
              *  Sometimes with floating point arithmatic you get points to move slightly. For example, if you
