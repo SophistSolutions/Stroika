@@ -18,9 +18,11 @@ endif
 ifeq (,$(REMOTE))
 RUNTEST_REMOTECOPYSETUP=touch /dev/null
 RUNTEST_EXE_RUN=$(EXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
 else
 RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
 RUNTEST_EXE_RUN=ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 endif
 
 
@@ -38,9 +40,9 @@ help:
 	@echo "    check:                  -    checks everything built properly"
 	@echo "    clean:"
 	@echo "    clobber:"
-	@echo "    project-files:          -    builds project files for things like visual studio.net etc (NYI)"
+	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    tests:"
-	@echo "    run-tests:"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost"
 
 
 all:		tests 
@@ -77,7 +79,7 @@ run-tests:
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-	        echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN))";\
+	        echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 	done
 

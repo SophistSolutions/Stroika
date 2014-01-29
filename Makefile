@@ -11,13 +11,13 @@ help:
 	@echo "    clean:"
 	@echo "    clobber:"
 	@echo "    libraries:              -    builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
-	@echo "    project-files:          -    builds project files for things like visual studio.net etc (NYI)"
+	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    tests:"
 	@echo "    format-code:            -    run astyle on source code, and update it to conform to Stroika code formatting standards"
 	@echo "    samples:"
 	@echo "    documentation:"
 	@echo "    third-party-libs:"
-	@echo "    run-tests:"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost"
 	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuratoons folder (forces a rebuild of configs)"
 	@echo "    default-configuration:  -    creates the default configuration in Configurations folder (target takes DEFAULT_CONFIGURATION_ARGS)"
 	@echo "    check-tools:            -    check the tools needed to build stroika are installed."
@@ -70,14 +70,14 @@ tools:	libraries
 
 
 tests:	tools libraries
-	@make --directory Tests --no-print-directory MAKEFLAGS= tests
+	@make --directory Tests --no-print-directory tests
 
 
 samples:	tools libraries
 	@cd Samples; perl buildall.pl build
 
 run-tests:	tests
-	@make --directory Tests --no-print-directory MAKEFLAGS= run-tests
+	@make --directory Tests --no-print-directory run-tests
 
 format-code:
 	@echo Running Astyle...
