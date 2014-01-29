@@ -5,11 +5,24 @@ UNAME := $(shell uname)
 TEST_BUILD_DIR=	$(shell perl ScriptsLib/PrintTestBuildDir.pl)
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
+
 ifneq (,$(findstring CYGWIN,$(UNAME)))
+BASEEXEPATTERN=Test$$i.exe
 EXEPATTERN=../Builds/Windows/$$ci/Test$$i/Test$$i.exe
 else
+BASEEXEPATTERN=Test$$i
 EXEPATTERN=../Builds/$$ci/Test$$i
 endif
+
+
+ifeq (,$(REMOTE))
+RUNTEST_REMOTECOPYSETUP=touch /dev/null
+RUNTEST_EXE_RUN=$(EXEPATTERN)
+else
+RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
+RUNTEST_EXE_RUN=ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
+endif
+
 
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
 ifneq (,$(findstring CYGWIN,$(UNAME)))
@@ -55,16 +68,16 @@ run-tests:
 	    TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 		for ci in $(CONFIGRUATIONS);\
 		do\
-	        EXE=$(EXEPATTERN);\
+		$(RUNTEST_REMOTECOPYSETUP);\
 	        TIMESTAMP=`date +%s`;\
-	        EXERESULT=`$$EXE`;\
+	        EXERESULT=`$(RUNTEST_EXE_RUN)`;\
 	        TIMESTAMP2=`date +%s`;\
 		    EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
 	        DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-	        echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($$EXE)";\
+	        echo "  [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN))";\
 		done;\
 	done
 
