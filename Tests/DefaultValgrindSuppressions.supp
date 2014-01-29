@@ -25,4 +25,25 @@
    fun:_ZNSspLEPKc
    fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_Ed
 }
+{
+   Apparent_BugInLocaleCodeButProbablyQuirkOfValgrind
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:_ZNSt10moneypunctIwLb1EED1Ev
+   fun:_ZNSt10moneypunctIwLb1EED0Ev
+   fun:_ZNSt6locale5_ImplD1Ev
+   fun:_ZNSt6localeD1Ev
+   fun:_ZN7Stroika10Foundation13Configuration14FindLocaleNameERKNS0_10Characters6StringES5_
+}
+{
+   Apparent_BugInLocaleCodeButProbablyQuirkOfValgrind
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:_ZNSt10moneypunctIwLb0EED1Ev
+   fun:_ZNSt10moneypunctIwLb0EED0Ev
+   fun:_ZNSt6locale5_ImplD1Ev
+   fun:_ZNSt6localeD1Ev
+   fun:_ZN7Stroika10Foundation13Configuration14FindLocaleNameERKNS0_10Characters6StringES5_
+   fun:_ZN7Stroika10Foundation13Configuration15FindNamedLocaleERKNS0_10Characters6StringES5_
+}
 
