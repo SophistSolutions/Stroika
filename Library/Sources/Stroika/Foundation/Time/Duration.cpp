@@ -236,6 +236,7 @@ namespace   {
         while (i != end and isspace (*i)) {
             ++i;
         }
+        Ensure (i <= end);
         return i;
     }
     string::const_iterator  FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
