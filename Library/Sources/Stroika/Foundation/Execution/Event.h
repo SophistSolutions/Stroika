@@ -77,10 +77,24 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
+
+            public:
+                /**
+                 *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
+                 *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
+                 *
+                 *  The Event class internally uses condition_variable::wait_for () - and this doesnt advertise support for
+                 *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
+                 *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
+                 *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
+                 */
+                nonvirtual  void    SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
+
             private:
-                mutex               fMutex_;
-                condition_variable  fConditionVariable_;
-                bool                fTriggered_;
+                mutex                       fMutex_;
+                condition_variable          fConditionVariable_;
+                bool                        fTriggered_;
+                Time::DurationSecondsType   fThreadAbortCheckFrequency_;
             };
 
 

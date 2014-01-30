@@ -31,6 +31,7 @@ namespace   Stroika {
                 : fMutex_ ()
                 , fConditionVariable_ ()
                 , fTriggered_ (false)
+                , fThreadAbortCheckFrequency_ (0.5)
             {
             }
             inline  void    Event::Reset ()

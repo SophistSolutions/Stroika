@@ -442,7 +442,7 @@
 
 
 
-
+#if 0
 //
 // Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
 // -- LGP 2012-05-27
@@ -454,6 +454,7 @@
 //
 #ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#endif
 #endif
 
 

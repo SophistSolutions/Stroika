@@ -72,9 +72,15 @@ void    Event::Wait (Time::DurationSecondsType timeout)
         throw (WaitTimedOutException ());
 #endif
     }
-    std::unique_lock<mutex>     lock (fMutex_);
+
     Time::DurationSecondsType   until   =   Time::GetTickCount () + timeout;
     Assert (until >= timeout);  // so no funny overflow issues...
+
+    /*
+     *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
+     *  unlock.
+     */
+    std::unique_lock<mutex>     lock (fMutex_);
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurrious.
@@ -90,14 +96,11 @@ void    Event::Wait (Time::DurationSecondsType timeout)
             throw (WaitTimedOutException ());
 #endif
         }
-        // avoid roundoff issues - and not  a big deal to wakeup and wait again once a day ;-)
-        const Time::DurationSecondsType k1Day   =   Time::DurationSecondsType (60 * 60 * 24);
-        if (remaining >= k1Day) {
-            remaining = k1Day;
-        }
-#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
-        remaining = min (remaining, 5.0);       // hack to force quick wakeup shutting down threadpool (and other threads waiting on a semaphore)
-#endif
+
+        /*
+         *  See Event::SetThreadAbortCheckFrequency ();
+         */
+        remaining = min (remaining, fThreadAbortCheckFrequency_);
 
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
             // No need for this, since could be caught next time through the loop...
