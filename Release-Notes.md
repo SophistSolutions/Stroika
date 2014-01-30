@@ -23,6 +23,7 @@ History
 	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
 	<td>
 		<ul>
+			<li>Renamed Execution::Event -> Execution::WaitableEvent (old name around but deprecated)</li>
 			<li>Draft of AbortableMutex (and list things todo); 
 			Lose lose qEVENT_GCCTHREADS_LINUX_WAITBUG, and fixed Event (WaitableEvent) class.
 			Net effect is making Thread::AbortAndWaitTilDone() much faster. Lots of related docs/things todo</li>

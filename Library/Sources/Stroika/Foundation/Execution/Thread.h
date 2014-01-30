@@ -27,7 +27,7 @@
  *      @todo   SuppressAbortInContext DTOR should CheckFor...Abort...
  *
  *      @todo   DOCUMENT:
- *              With POSIX, interuption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of specail
+ *              With POSIX, interuption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
  *              'alertable' apis. One of these - is SleepEx.
  *
  *              Turning this flag on (by default on for windoze) - means that we throw if user code calls a windows alertable API
@@ -43,45 +43,11 @@
  *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
  *              DID - 2014-01-14 - with idefs.
  *
- *      @todo   Windows thread interuption with CRITICALSECTION/lock_gaurd<>
- *              Currently we use EnterCriticalSeciton alot, But thats not 'alertable' -
- *              which potentially causes problems with thread interuption.
- *
- *              Perhaps should use something like TryEnterCriticalSection, and loop,
- *              with SleepEx(0) or equiv, sprinkled.
- *
- *              MAYBE FIXED NOW THAT WE DIRECLTY USE STL lock_guard! - or maybe worse!
- *
- *                  run test case where one thread is blocked in a critical section, and
- *                  another thread owns that critical section,
- *                  and a third thread tries to call AbortThread(). If this doesn't work, I may need
- *                  to add my OWN 'auto-critical-section' class BACK, and have it support cancelability.
- *
- *      @todo   Consider ONLY supporting std::thread based threads. And then - provide API
- *              where we can return a reference to the underlying thread object (but probably NOT
- *              one to ADOPT an existing thread because then we couldnt hook the run-proc,
+ *      @todo   Provide API where we can return a reference to the underlying thread object
+ *              (but probably one to ADOPT an existing thread because then we couldnt hook the run-proc,
  *              which is needed for our exception stuff - I think.
  *
  *              (mostly did this - but keep todo around to update docs)
- *
- *      @todo   must define C++ static signal handler
- *
- *      @todo   must install handler when about to call Abort() - no need -
- *              I think - to install sooner - bnut maybe a good idea to???
- *
- *      @todo   in signal handler - set threadlocalstorage value (asssert in context of
- *              right thread id) - set sAborted.
- *
- *      @todo   use pthread_kill (use native_handle() from threadobj) - to send the signal.
- *              (REVIEW - but I think this is bascailly done - and obsoelte - LGP 2014-01-14)
- *
- *      @todo   MAJOR REWRITE OF THREAD DOCUMENTAITON ON INTERUPTION:
- *              >>  I THINK these are all - both posix and windows - really cooperative.
- *              >>  VEIRYF thats the case on Windows - under the debugger.
- *              >>  Changes or really clarifications on the ad interruption design. Test mt theory
- *              >>  with long loop being interopted with and without debugger on windiws
- *              >>  I THINK we can just document all cooperative interuption and clearly document
- *              >>      that deisgn choice
  *
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
@@ -91,7 +57,6 @@
  *              for implementing thread pools.
  *              << turns out NOT necessary for thread pools (already draft impl not using it).
  *              Not sure if good idea - so leave this here. MAYBE>>
- *
  */
 
 
@@ -117,12 +82,6 @@ namespace   Stroika {
              *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
              *  as useless, and maintain overall running system integrity.
              *
-             *  \em Nomenclature Note:
-             *      Thread Abort == Thread Interuption == Thread Cancelation
-             *      Differnt libraries use differnt names (java uses interuption, boost uses
-             *      cancelation, and .net uses Abort, as examples).
-             *
-             *
              *  DETAILS:
              *      Using the smartpointer wrapper Thread around a thread guarantees its reference counting
              *  will work safely - so that even when all external references go away, the fact that the thread
@@ -130,8 +89,14 @@ namespace   Stroika {
              *
              *
              *  Thread Aborting/Interuption:
-             *      The Stroika Thread class supports the idea of 'aborting' a thread. In some libraries
-             *  (e.g. boost) this is called 'interuption'. In others, its called 'cancellation'.
+             *      The Stroika Thread class supports the idea of 'aborting' a thread.
+             *
+             *  \em Nomenclature Note:
+             *       In some libraries, the term interuption, cancelation is used for thread aborting.
+             *
+             *              >   java uses interuption
+             *              >   boost uses cancelation,
+             *              >   and .net uses Abort
              *
              *      The basic idea is that a thread goes off on its own, doing stuff, and an external force
              *  decides to tell it to stop.
@@ -171,7 +136,7 @@ namespace   Stroika {
              *          o   ANY WAIT CALLS
              *          o   anything that calls Handle_ErrNoResultInteruption ()
              *
-             *
+             *  @todo   DOCUMENT IMPACT ON WaitableEvents, std::mutex, (etc), std::condition_variable, and AbortableEvent, etc.
              *
              * HANDLE_EINTR_CALLER()
              *      The short of it is that you need to catch EINTR and restart the call for these system calls:

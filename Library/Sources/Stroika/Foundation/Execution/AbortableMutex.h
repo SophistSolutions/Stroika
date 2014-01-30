@@ -19,6 +19,10 @@
  *
  *
  * TODO:
+ *      @todo   TOTALLY UNTESTED
+ *
+ *      @todo   May need (want) to add try_lock etc (Lockable versus BasicLockable)
+ *
  *      @todo   Initial implementation is inefficent (using timed_mutex). COULD do #ifdef based
  *              more efficient impls, directly using pthread_mutext (since it returns on EINTR) I think.
  *
@@ -30,6 +34,9 @@
  *
  *      @todo   Need AbortableRecursiveMutex, and possibly AbortableTimedMutex, and AbortableTimedRecursiveMutext.
  *
+ *      @todo   Add regtests for this
+ *
+ *      @todo   make NOT copyable - /moveable etc - just like std::mutex (for docs - autodone by priovate fM_).
  *
  * Notes:
  *
@@ -50,10 +57,6 @@ namespace   Stroika {
              *  This is not generally necessary for quick mutexes, but for any mutex use where you could
              *  block/lock for an extended time, it makes sense to use this instead. THis is compeltely
              *  compatible with std::mutex otherwise, and can be used with std::lock_guard<> etc.
-             *
-             *  @todo NYI
-             *  todo add regtests for this
-             *  todo make NOT copyable - /moveable etc - just like std::mutex (for docs - autodone by priovate fM_).
              */
             class   AbortableMutex {
             public:
