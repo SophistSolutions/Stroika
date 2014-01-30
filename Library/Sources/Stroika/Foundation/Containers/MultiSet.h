@@ -29,6 +29,9 @@
  *              Also likewise key for MultiSet_stdmap<> - cuz now you cannot assign MultiSet_stdmap<> to
  *              MultiSet<T>!!!!
  *
+ *      @todo   Fix MultiSet<> CTOR overload taking pointers (sb iterators) - overload so both cases -
+ *              Iterator<T> and Iterator<MultisetEntry<T>>.
+ *
  *      @todo   Consider rewriting all MultiSet<> concrete types using Mapping<T,counttype> concrete impl?
  *              Might not work easily but document why... (Add () semantics - but maybe).
  *
