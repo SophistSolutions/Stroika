@@ -9,12 +9,12 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Execution/BlockingQueue.h"
-#include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/ThreadPool.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Execution/WaitTimedOutException.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -97,8 +97,8 @@ namespace   {
 
 
 namespace   {
-    Execution::Event    sRegTest3Event_T1_;
-    Execution::Event    sRegTest3Event_T2_;
+    Execution::WaitableEvent    sRegTest3Event_T1_;
+    Execution::WaitableEvent    sRegTest3Event_T2_;
     namespace   WAITABLE_EVENTS_ {
         void    NOTIMEOUTS_ ()
         {

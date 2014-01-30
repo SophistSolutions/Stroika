@@ -60,6 +60,9 @@ namespace   Stroika {
                 shared_ptr<REAL_MUTUX>  fCritSec_;
             };
 
+            namespace {
+                CopyableMutex<recursive_mutex>   file_IsDeprecated_CopyableMutex;
+            }
 
         }
     }

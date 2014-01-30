@@ -12,13 +12,14 @@
  */
 #include    <atomic>
 #include    <list>
+#include    "WaitableEvent.h"
 #include    "Lockable.h"
 #include    "ThreadAbortException.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-// experiment with this -- LGP 2014-01-14
+// experiment with this - turned off -- LGP 2014-01-14
 #define qUSE_MUTEX_FOR_STATUS_FIELD_    0
 
 
@@ -81,9 +82,9 @@ namespace   Stroika {
                 mutable recursive_mutex fStatusCriticalSection_;
 #endif
                 std::atomic<Status>     fStatus_;
-                Event                   fRefCountBumpedEvent_;
-                Event                   fOK2StartEvent_;
-                Event                   fThreadDone_;
+                WaitableEvent           fRefCountBumpedEvent_;
+                WaitableEvent           fOK2StartEvent_;
+                WaitableEvent           fThreadDone_;
                 wstring                 fThreadName_;
 
             private:

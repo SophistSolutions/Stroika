@@ -7,7 +7,7 @@
 
 #include    "WaitTimedOutException.h"
 
-#include    "Event.h"
+#include    "WaitableEvent.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -56,13 +56,13 @@ using   Stroika::Foundation::Time::Duration;
 
 /*
  ********************************************************************************
- ************************************** Event ***********************************
+ ******************************** WaitableEvent *********************************
  ********************************************************************************
  */
-void    Event::Wait (Time::DurationSecondsType timeout)
+void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));
+    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Wait"));
     DbgTrace ("(timeout = %.2f)", timeout);
 #endif
     CheckForThreadAborting ();
@@ -100,7 +100,7 @@ void    Event::Wait (Time::DurationSecondsType timeout)
         }
 
         /*
-         *  See Event::SetThreadAbortCheckFrequency ();
+         *  See WaitableEvent::SetThreadAbortCheckFrequency ();
          */
         remaining = min (remaining, fThreadAbortCheckFrequency_);
 

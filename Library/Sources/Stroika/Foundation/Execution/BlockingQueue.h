@@ -12,7 +12,7 @@
 #include    "../Containers/Queue.h"
 #include    "../Memory/Optional.h"
 
-#include    "Event.h"
+#include    "WaitableEvent.h"
 #include    "Exceptions.h"
 
 
@@ -137,7 +137,7 @@ namespace   Stroika {
                 nonvirtual  Memory::Optional<T> PeekHead () const;
 
             private:
-                Event                       fDataAvailable_;
+                WaitableEvent               fDataAvailable_;
                 Containers::Queue<T>        fQueue_;
             };
 

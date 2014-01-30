@@ -8,7 +8,7 @@
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
@@ -94,7 +94,7 @@ int main (int argc, const char* argv[])
 
         WebServerForDeviceDescription_  deviceWS (portForOurWS, d, deviceInfo);
         BasicServer b (d, BasicServer::FrequencyInfo ());
-        Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;

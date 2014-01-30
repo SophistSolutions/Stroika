@@ -20,7 +20,6 @@ Objs	=	\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)ErrNoException.o\
 	$(ObjDir)ExceptionPropagate.o\
-	$(ObjDir)Event.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
 	$(ObjDir)Finally.o\
 	$(ObjDir)IRunnable.o\
@@ -42,6 +41,7 @@ Objs	=	\
 	$(ObjDir)UserCanceledException.o\
 	$(ObjDir)Users.o\
 	$(ObjDir)WaitAbandonedException.o\
+	$(ObjDir)WaitableEvent.o\
 	$(ObjDir)WaitTimedOutException.o\
 
 all:	$(Objs)  $(SubDirs)

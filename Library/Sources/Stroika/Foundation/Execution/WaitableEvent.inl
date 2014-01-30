@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Event_inl_
-#define _Stroika_Foundation_Execution_Event_inl_    1
+#ifndef _Stroika_Foundation_Execution_WaitableEvent_inl_
+#define _Stroika_Foundation_Execution_WaitableEvent_inl_    1
 
 
 /*
@@ -23,27 +23,27 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** Execution::Event ******************************
+             *************************** Execution::WaitableEvent ***************************
              ********************************************************************************
              */
-            inline  Event::Event ()
+            inline  WaitableEvent::WaitableEvent ()
                 : fMutex_ ()
                 , fConditionVariable_ ()
                 , fTriggered_ (false)
                 , fThreadAbortCheckFrequency_ (0.5)
             {
             }
-            inline  void    Event::Reset ()
+            inline  void    WaitableEvent::Reset ()
             {
-                //Debug::TraceContextBumper ctx (SDKSTR ("Event::Reset"));
+                //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
                 {
                     std::lock_guard<mutex> lockGaurd (fMutex_);
                     fTriggered_ = false;
                 }
             }
-            inline  void    Event::Set ()
+            inline  void    WaitableEvent::Set ()
             {
-                //Debug::TraceContextBumper ctx (SDKSTR ("Event::Set"));
+                //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
                 {
                     std::lock_guard<mutex> lockGaurd (fMutex_);
                     fTriggered_ = true;
@@ -55,4 +55,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Event_inl_*/
+#endif  /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/

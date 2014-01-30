@@ -6,11 +6,11 @@
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Frameworks/Service/Main.h"
 
 
@@ -148,7 +148,7 @@ namespace {
             Logger::Log (Logger::Priority::eInfo, L"User-service code is started");
 #endif
             if (false) {
-                Execution::Event forever;
+                Execution::WaitableEvent forever;
                 forever.Wait ();            // until told to stop by abort exception
             }
             else {

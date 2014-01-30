@@ -7,8 +7,8 @@
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
@@ -51,7 +51,7 @@ int main (int argc, const char* argv[])
             runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
         };
         Listener l (SocketAddress (Network::V4::kAddrAny, 8080), onConnect);
-        Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;

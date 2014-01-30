@@ -10,8 +10,8 @@
 #include    <mutex>
 #include    <vector>
 
-#include    "Event.h"
 #include    "Thread.h"
+#include    "WaitableEvent.h"
 
 
 
@@ -156,7 +156,7 @@ namespace   Stroika {
                 bool                    fAborted_;
                 vector<Thread>          fThreads_;
                 list<TaskType>          fTasks_;            // Use Stroika Queue
-                Event                   fTasksAdded_;
+                WaitableEvent           fTasksAdded_;
             private:
                 friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };

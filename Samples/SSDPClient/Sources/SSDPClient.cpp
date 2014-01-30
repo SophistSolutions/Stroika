@@ -7,7 +7,7 @@
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
@@ -110,7 +110,7 @@ int main (int argc, const char* argv[])
         }
 
         if (listen or searchFor.IsPresent ()) {
-            Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+            Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
         }
         else {
             cerr << "Specify -l to listen or -s STRING to search" << endl;

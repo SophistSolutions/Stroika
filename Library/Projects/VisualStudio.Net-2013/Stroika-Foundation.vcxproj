@@ -368,7 +368,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp" />
@@ -498,6 +497,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
@@ -904,6 +904,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
@@ -1137,7 +1138,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Event.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
@@ -1188,6 +1188,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />

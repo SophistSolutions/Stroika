@@ -6,12 +6,11 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
+#include    <functional>
 
 #include    "../Configuration/Common.h"
 
 #include    "Exceptions.h"
-#include    "Event.h"
 
 
 
