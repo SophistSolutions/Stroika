@@ -362,6 +362,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.cpp" />
@@ -818,6 +819,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.h" />
@@ -1129,6 +1131,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.inl" />

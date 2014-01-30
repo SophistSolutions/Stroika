@@ -13,6 +13,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)AbortableMutex.o\
 	$(ObjDir)BlockingQueue.o\
 	$(ObjDir)CommandLine.o\
 	$(ObjDir)CopyableMutex.o\
