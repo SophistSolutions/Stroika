@@ -7,6 +7,7 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Memory/BlockAllocated.h"
 #include    "Sleep.h"
+#include    "WaitTimedOutException.h"
 
 #include    "ThreadPool.h"
 

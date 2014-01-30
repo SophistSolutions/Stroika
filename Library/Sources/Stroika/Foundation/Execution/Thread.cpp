@@ -11,7 +11,6 @@
 #include    <windows.h>
 #endif
 
-#include    "DLLSupport.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Containers/STL/VectorUtils.h"
@@ -19,6 +18,8 @@
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
+#include    "DLLSupport.h"
+#include    "WaitTimedOutException.h"
 
 #if     qPlatform_POSIX
 #include    "SignalHandlers.h"
