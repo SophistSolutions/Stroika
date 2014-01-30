@@ -11,6 +11,13 @@
 #include    "StringException.h"
 
 
+/**
+ *  \file
+ *
+ * TODO:
+ *      DEPRECATD
+ */
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -18,7 +25,7 @@ namespace   Stroika {
 
             class   WaitAbandonedException : public StringException {
             public:
-                WaitAbandonedException ();
+                _Deprecated_ (WaitAbandonedException (), "Not sure what this was for - but its not used");
             };
 
 
