@@ -77,7 +77,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
-
             public:
                 /**
                  *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away

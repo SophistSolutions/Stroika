@@ -10,15 +10,14 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WaitAbandonedException.h"
-#include    "WaitTimedOutException.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
 
-            //redeclare to avoid having to include Thread code
+            //redeclare to avoid having to #include Thread.h
             void    CheckForThreadAborting ();
 
 

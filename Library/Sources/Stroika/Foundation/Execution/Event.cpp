@@ -5,6 +5,8 @@
 
 #include    "../Time/Duration.h"
 
+#include    "WaitTimedOutException.h"
+
 #include    "Event.h"
 
 
@@ -103,9 +105,12 @@ void    Event::Wait (Time::DurationSecondsType timeout)
         remaining = min (remaining, fThreadAbortCheckFrequency_);
 
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
-            // No need for this, since could be caught next time through the loop...
-            // And it interferes with the bounding of the 'remaining' count used to avoid overflows
-            // DoThrow (WaitTimedOutException ());
+            /*
+             *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
+             *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
+             *
+             *      DoThrow (WaitTimedOutException ());
+             */
         }
     }
     fTriggered_ = false ;   // autoreset
