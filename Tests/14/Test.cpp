@@ -627,6 +627,69 @@ namespace {
 }
 
 
+
+
+namespace {
+    template <typename CONCRETE_SEQUENCE_T>
+    void    SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_ ()
+    {
+        // TESTS NEW IteratorOwner functionality - so when we make changes to shared container,
+        // rep, iteration sticks to the envelope (owner)
+        //
+        // Pretty sure this test would have failed for the last 25 years, and was just fixed around
+        // Stroika v2.0a18
+        //
+        //  @todo   consider putting a variation on this test in Collection<T> and other
+        //          container-type regtests?
+        //
+        using SEQ = typename CONCRETE_SEQUENCE_T::ArchetypeContainerType;
+        using   ELTTYPE = typename CONCRETE_SEQUENCE_T::ElementType;
+
+        auto counter = [] (SEQ s) -> size_t {
+            size_t  cnt = 0;
+            for (auto i : s)
+            {
+                ++cnt;
+            }
+            return cnt;
+        };
+        auto counterI = [] (Iterator<ELTTYPE> i) -> size_t {
+            size_t  cnt = 0;
+            while (i)
+            {
+                ++cnt;
+                ++i;
+            }
+            return cnt;
+        };
+
+        CONCRETE_SEQUENCE_T tmp;
+        tmp.Append (1);
+        tmp.Append (2);
+        tmp.Append (3);
+        VerifyTestResult (counter (tmp) == 3);
+        VerifyTestResult (counterI (tmp.begin ()) == 3);
+
+        CONCRETE_SEQUENCE_T tmp2 = tmp;
+        VerifyTestResult (counter (tmp) == 3);
+        VerifyTestResult (counterI (tmp.begin ()) == 3);
+        VerifyTestResult (counter (tmp2) == 3);
+        VerifyTestResult (counterI (tmp2.begin ()) == 3);
+
+        {
+            Iterator<ELTTYPE> i =   tmp.begin ();
+            tmp2.RemoveAll ();
+            VerifyTestResult (counter (tmp) == 3);
+            VerifyTestResult (counterI (tmp.begin ()) == 3);
+            VerifyTestResult (counterI (i) == 3);
+            VerifyTestResult (counter (tmp2) == 0);
+            VerifyTestResult (counterI (tmp2.begin ()) == 0);
+        }
+    }
+}
+
+
+
 namespace   {
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
@@ -637,6 +700,7 @@ namespace   {
         SimpleSequenceTest_9_Update_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_10_Remove_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_13_Initializers_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_<CONCRETE_SEQUENCE_TYPE> ();
     }
 
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>

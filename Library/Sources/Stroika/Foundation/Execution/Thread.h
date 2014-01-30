@@ -111,10 +111,16 @@ namespace   Stroika {
              *          o   Better lifetime management (the thread envelope - object you create - can go away, but
              *              the underlying thread can continue running, with its memory/resources being cleaned
              *              up autoamtically.
+             *              (todo docs correction - thats true for C++ thread class too...)
              *
              *  Note - this cancelation feature is very handy for building large scale applications which use
              *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
              *  as useless, and maintain overall running system integrity.
+             *
+             *  \em Nomenclature Note:
+             *      Thread Abort == Thread Interuption == Thread Cancelation
+             *      Differnt libraries use differnt names (java uses interuption, boost uses
+             *      cancelation, and .net uses Abort, as examples).
              *
              *
              *  DETAILS:
