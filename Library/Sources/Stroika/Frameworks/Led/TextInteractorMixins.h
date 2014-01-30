@@ -42,7 +42,7 @@ namespace   Stroika {
             */
             template    <typename   IMAGER> class   InteractorImagerMixinHelper : public virtual TextInteractor, public IMAGER {
             private:
-                typedef void*   inherited;  // prevent accidental references to this name in subclasses to base class name
+                using   inherited   =   void* ; // prevent accidental references to this name in subclasses to base class name
 
             protected:
                 InteractorImagerMixinHelper ();
@@ -97,7 +97,7 @@ namespace   Stroika {
             */
             template    <typename   INTERACTOR1, typename INTERACTOR2>  class   InteractorInteractorMixinHelper : public INTERACTOR1, public INTERACTOR2 {
             private:
-                typedef void*   inherited;  // prevent accidental references to this name in subclasses to base class name
+                using   inherited   =   void* ; // prevent accidental references to this name in subclasses to base class name
 
             protected:
                 InteractorInteractorMixinHelper ();

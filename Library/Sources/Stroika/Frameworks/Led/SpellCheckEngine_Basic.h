@@ -53,7 +53,7 @@ namespace   Stroika {
             */
             class   SpellCheckEngine_Basic : public SpellCheckEngine {
             private:
-                typedef SpellCheckEngine    inherited;
+                using   inherited   =   SpellCheckEngine;
 
             public:
                 class   Dictionary;
@@ -145,7 +145,7 @@ namespace   Stroika {
 
             class   SpellCheckEngine_Basic::Dictionary {
             public:
-                typedef SpellCheckEngine_Basic::InfoBlock   InfoBlock;
+                using   InfoBlock   =   SpellCheckEngine_Basic::InfoBlock;
 
             protected:
                 Dictionary ();
@@ -160,7 +160,7 @@ namespace   Stroika {
 
             class   SpellCheckEngine_Basic::EditableDictionary : public SpellCheckEngine_Basic::Dictionary {
             private:
-                typedef SpellCheckEngine_Basic::Dictionary  inherited;
+                using   inherited   =   SpellCheckEngine_Basic::Dictionary;
 
             public:
                 EditableDictionary ();
@@ -191,7 +191,7 @@ namespace   Stroika {
 
             class   SpellCheckEngine_Basic::CompiledDictionary : public SpellCheckEngine_Basic::Dictionary {
             private:
-                typedef SpellCheckEngine_Basic::Dictionary  inherited;
+                using       inherited   =   SpellCheckEngine_Basic::Dictionary;
 
             public:
                 struct  CompiledDictionaryData {
@@ -224,7 +224,7 @@ namespace   Stroika {
             */
             class   TextBreaks_SpellChecker : public TextBreaks_Basic {
             private:
-                typedef TextBreaks_Basic    inherited;
+                using   inherited   =    TextBreaks_Basic;
             public:
                 TextBreaks_SpellChecker ();
 
@@ -249,16 +249,13 @@ namespace   Stroika {
             */
             class   SpellCheckEngine_Basic_Simple : public SpellCheckEngine_Basic, private SpellCheckEngine::UDInterface {
             private:
-                typedef SpellCheckEngine_Basic  inherited;
+                using   inherited   =   SpellCheckEngine_Basic;
 
             public:
                 SpellCheckEngine_Basic_Simple ();
                 ~SpellCheckEngine_Basic_Simple ();
 
             public:
-#if     qMixinDisambiguatingNameInBothBug
-                typedef inherited::UDInterface  UDInterface;
-#endif
                 virtual    UDInterface*    GetUDInterface () override;
 
                 // From SpellCheckEngine::UDInterface
@@ -274,9 +271,9 @@ namespace   Stroika {
 
             public:
 #if     qPlatform_MacOS
-                typedef FSSpec  UDDictionaryName;
+                using       UDDictionaryName    =   FSSpec;
 #else
-                typedef Led_SDK_String  UDDictionaryName;
+                using       UDDictionaryName    =   Led_SDK_String;
 #endif
                 nonvirtual  UDDictionaryName    GetUserDictionary () const;
                 nonvirtual  void                SetUserDictionary (const UDDictionaryName& userDictionary);

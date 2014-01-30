@@ -74,7 +74,7 @@ namespace   Stroika {
             */
             class   StyledTextImager : public virtual TextImager {
             private:
-                typedef TextImager  inherited;
+                using   inherited   =   TextImager;
 
             protected:
                 StyledTextImager ();
@@ -131,7 +131,7 @@ namespace   Stroika {
                 virtual int GetPriority () const;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using   RunElement  =   StyledTextImager::RunElement;
 
             public:
                 /*
@@ -199,8 +199,6 @@ namespace   Stroika {
                 StyleMarker*            fMarker;
                 size_t                  fLength;
                 vector<StyleMarker*>    fSupercededMarkers;
-
-                STLDefCTORDeclare_BWA(RunElement)
             };
 
 
@@ -216,7 +214,7 @@ namespace   Stroika {
             */
             class   StyledTextImager::StyleMarkerSummarySink : public TextStore::MarkerSink {
             private:
-                typedef TextStore::MarkerSink   inherited;
+                using   inherited   =   TextStore::MarkerSink;
 
             public:
                 StyleMarkerSummarySink (size_t from, size_t to);
@@ -252,7 +250,7 @@ namespace   Stroika {
             */
             class   StyledTextImager::StyleMarkerSummarySinkForSingleOwner : public StyledTextImager::StyleMarkerSummarySink {
             private:
-                typedef StyleMarkerSummarySink  inherited;
+                using   inherited   =   StyleMarkerSummarySink;
             public:
                 StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to);
                 StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to, const TextLayoutBlock& text);
@@ -291,10 +289,10 @@ namespace   Stroika {
             template    <class  BASECLASS = StyledTextImager::StyleMarker>
             class   SimpleStyleMarkerByFontSpec : public BASECLASS {
             private:
-                typedef BASECLASS   inherited;
+                using       inherited   =   BASECLASS;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement  =   StyledTextImager::RunElement;
 
             protected:
                 SimpleStyleMarkerByFontSpec ();
@@ -341,10 +339,10 @@ namespace   Stroika {
             template    <class  BASECLASS>
             class   SimpleStyleMarkerByIncrementalFontSpec : public BASECLASS {
             private:
-                typedef BASECLASS   inherited;
+                using       inherited   =   BASECLASS;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement      =   StyledTextImager::RunElement;
 
             public:
                 SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo = Led_IncrementalFontSpecification ());
@@ -370,7 +368,7 @@ namespace   Stroika {
             */
             class   TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<> > {
             private:
-                typedef SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<> >  inherited;
+                using   inherited   =   SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>;
             public:
                 TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo);
 
@@ -399,10 +397,10 @@ namespace   Stroika {
             template    <typename   BASECLASS = StyledTextImager::StyleMarker>
             class   SimpleStyleMarkerWithExtraDraw : public SimpleStyleMarkerByFontSpec <BASECLASS> {
             private:
-                typedef SimpleStyleMarkerByFontSpec<BASECLASS>  inherited;
+                using       inherited   =   SimpleStyleMarkerByFontSpec<BASECLASS>;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement  =   StyledTextImager::RunElement;
 
             protected:
                 SimpleStyleMarkerWithExtraDraw ();
@@ -457,10 +455,10 @@ namespace   Stroika {
             template    <class  BASECLASS = SimpleStyleMarkerWithExtraDraw <StyledTextImager::StyleMarker> >
             class   SimpleStyleMarkerWithLightUnderline : public BASECLASS {
             private:
-                typedef BASECLASS   inherited;
+                using       inherited   =   BASECLASS;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement  =   StyledTextImager::RunElement;
 
             public:
                 SimpleStyleMarkerWithLightUnderline ();
@@ -597,9 +595,7 @@ namespace   Stroika {
             template    <class  BASECLASS>
             typename    SimpleStyleMarkerWithExtraDraw<BASECLASS>::RunElement   SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
             {
-#if     !qTypedefInTemplateToSpecScopeOfNestedTypeCompilerBug
-                typedef StyledTextImager::StyleMarker   StyleMarker;
-#endif
+                using   StyleMarker =   StyledTextImager::StyleMarker;
                 RunElement  newRunElement   =   inRunElt;
                 Require (inRunElt.fMarker == (StyleMarker*)this);
                 newRunElement.fMarker = nullptr;

@@ -73,7 +73,7 @@ static  bool    ShuffleToFront (vector<CodePage>* codePages, CodePage cp)
 
 class   FileDialogWithCodePage : public CFileDialog {
 private:
-    typedef CFileDialog inherited;
+    using   inherited   =   CFileDialog;
 public:
     FileDialogWithCodePage (bool asOpenDialog, const vector<CodePage>& codePages, CodePage initialCodePage) :
         CFileDialog (asOpenDialog),
@@ -351,7 +351,7 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
     class   MyFlavorPackageInternalizer : public FlavorPackageInternalizer {
     private:
-        typedef FlavorPackageInternalizer   inherited;
+        using   inherited   =   FlavorPackageInternalizer;
     public:
         enum    {kMaxLineSize   =   1024};
     public:

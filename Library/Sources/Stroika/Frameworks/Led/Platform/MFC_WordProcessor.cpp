@@ -514,7 +514,7 @@ struct  MyOLEStream_output : OLESTREAM {
     static  DWORD   __stdcall   MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb)
     {
         MyOLEStream_output* myStream    =   (MyOLEStream_output*)lpoleStr;
-        typedef const char* ci;
+        using   ci  =   const char* ;
         myStream->fData.insert (myStream->fData.end (), ci (data), ci (data) + nb);
         return nb;
     }

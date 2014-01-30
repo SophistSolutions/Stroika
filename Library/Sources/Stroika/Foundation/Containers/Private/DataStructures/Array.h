@@ -175,7 +175,7 @@ namespace   Stroika {
                         class   BackwardIterator;
 
                     public:
-                        typedef _ArrayIteratorBase      IteratorBaseType;
+                        using   IteratorBaseType    =   _ArrayIteratorBase;
                         // assumes pi was already initialized and part of another Array<> object
                         // which is exacyly same order/size (after clone)
                         nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom);

@@ -34,8 +34,8 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        using   ElementType     =   typename CONCRETE_CONTAINER::ElementType;
+        using   TraitsType      =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
             Optional<ElementType> last;
@@ -51,8 +51,8 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        using   ElementType =   typename CONCRETE_CONTAINER::ElementType;
+        using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
             Optional<ElementType> last;
@@ -73,7 +73,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
@@ -84,19 +84,19 @@ namespace   {
             }
         };
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  int    Compare (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
-        typedef SortedMapping_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-        MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
-        >   SimpleClassWithoutComparisonOperators_MappingTRAITS;
+        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   SortedMapping_DefaultTraits <
+                SimpleClassWithoutComparisonOperators,
+                SimpleClassWithoutComparisonOperators,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
+                >;
 
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();

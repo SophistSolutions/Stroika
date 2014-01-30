@@ -55,7 +55,7 @@ namespace   Stroika {
                 nonvirtual  void    operator= (const MultiRowTextImager&);  // don't call. not implemented
 
             private:
-                typedef PartitioningTextImager  inherited;
+                using   inherited   =   PartitioningTextImager;
 
             protected:
                 virtual     void    HookLosingTextStore () override;
@@ -313,14 +313,14 @@ namespace   Stroika {
 
             private:
 #if     qAllowRowsThatAreLongerThan255
-                typedef unsigned    short   RowHeight_;
+                using   RowHeight_  =   unsigned    short;
 #else
-                typedef unsigned    char    RowHeight_;
+                using   RowHeight_  =   unsigned    char;
 #endif
                 // Don't yet support packed RowStart_ ONLY because we keep array of starts, not nChars in row.
                 // If we switch to that - then we can use unsigned char for this as with the rowHeight guy!!!
                 // LGP 950519
-                typedef size_t              RowStart_;
+                using   RowStart_   =   size_t;
                 enum    {   kPackRowStartCount  =   sizeof (RowStart_*) / sizeof (RowStart_)      };
                 enum    {   kPackRowHeightCount =   sizeof (RowHeight_*) / sizeof (RowHeight_)    };
 
@@ -368,7 +368,7 @@ namespace   Stroika {
             */
             class   MultiRowTextImager::PMInfoCacheMgr : public Partition::PartitionWatcher {
             private:
-                typedef Partition::PartitionWatcher inherited;
+                using   inherited   =   Partition::PartitionWatcher;
 
             public:
                 PMInfoCacheMgr (MultiRowTextImager& imager);
@@ -412,7 +412,7 @@ namespace   Stroika {
             */
             class   MultiRowTextImager::PMInfoCacheMgr::MyMarker : public Marker {
             private:
-                typedef Marker  inherited;
+                using   inherited   =   Marker;
 
             public:
                 MyMarker (PMInfoCacheMgr& pmInfoCacheMgr);

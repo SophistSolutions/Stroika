@@ -187,7 +187,7 @@ inline  Led_SDK_String  GetLongPathName (const Led_SDK_String& pathName)
 
 class   LedLineItDocManager : public CDocManager {
 private:
-    typedef CDocManager inherited;
+    using   inherited   =   CDocManager;
 public:
     LedLineItDocManager ():
         inherited ()
@@ -408,7 +408,7 @@ BOOL LedLineItApplication::InitInstance ()
     {
         class   MyRegistrationHelper : public Win32UIFileAssociationRegistrationHelper {
         private:
-            typedef Win32UIFileAssociationRegistrationHelper    inherited;
+            using       inherited   =   Win32UIFileAssociationRegistrationHelper;
         public:
             MyRegistrationHelper ():
                 inherited (::AfxGetResourceHandle ())
@@ -571,7 +571,7 @@ void    LedLineItApplication::OnAppAbout ()
 {
     class   MyAboutBox : public Led_StdDialogHelper_AboutBox {
     private:
-        typedef Led_StdDialogHelper_AboutBox    inherited;
+        using   inherited   =   Led_StdDialogHelper_AboutBox;
     public:
         MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
             inherited (hInstance, parentWnd)

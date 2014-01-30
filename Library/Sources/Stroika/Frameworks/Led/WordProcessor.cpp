@@ -52,11 +52,11 @@ using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 class   ParagraphInfoChangeTextRep : public InteractiveReplaceCommand::SavedTextRep {
 private:
-    typedef InteractiveReplaceCommand::SavedTextRep inherited;
+    using   inherited   =   InteractiveReplaceCommand::SavedTextRep;
 public:
-    typedef WordProcessor::ParagraphDatabasePtr ParagraphDatabasePtr;
-    typedef WordProcessor::ParagraphInfo        ParagraphInfo;
-    typedef pair<ParagraphInfo, size_t>          ParaInfoNSize;
+    using   ParagraphDatabasePtr    =   WordProcessor::ParagraphDatabasePtr;
+    using   ParagraphInfo           =   WordProcessor::ParagraphInfo;
+    using   ParaInfoNSize           =   pair<ParagraphInfo, size_t>;
 public:
     ParagraphInfoChangeTextRep (WordProcessor* interactor, size_t from, size_t to):
         inherited (from, to),
@@ -96,7 +96,7 @@ template    <typename   SPECIALIZER, typename T1>
 void    InteractiveWPHelper1 (WordProcessor* wp, T1 arg1)
 {
     TextInteractor::InteractiveModeUpdater  iuMode (*wp);
-    typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
+    using   SavedTextRep    =   InteractiveReplaceCommand::SavedTextRep;
     wp->BreakInGroupedCommands ();
     size_t          selStart                =   wp->GetSelectionStart ();
     size_t          selEnd                  =   wp->GetSelectionEnd ();
@@ -217,7 +217,7 @@ struct  DoIt_IndentUnIndentList {
  ********************************* ParagraphInfo ********************************
  ********************************************************************************
  */
-typedef WordProcessor::ParagraphInfo    ParagraphInfo;
+using   ParagraphInfo   =   WordProcessor::ParagraphInfo;
 ParagraphInfo::ParagraphInfo ():
     fJustification (eLeftJustify),
     fTabStops (),
@@ -240,7 +240,7 @@ ParagraphInfo::ParagraphInfo ():
  ****************************** IncrementalParagraphInfo ************************
  ********************************************************************************
  */
-typedef WordProcessor::IncrementalParagraphInfo IncrementalParagraphInfo;
+using       IncrementalParagraphInfo    =   WordProcessor::IncrementalParagraphInfo;
 
 
 
@@ -251,7 +251,7 @@ typedef WordProcessor::IncrementalParagraphInfo IncrementalParagraphInfo;
  **************************** ParagraphDatabaseRep ******************************
  ********************************************************************************
  */
-typedef WordProcessor::ParagraphDatabaseRep ParagraphDatabaseRep;
+using       ParagraphDatabaseRep    =   WordProcessor::ParagraphDatabaseRep;
 ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore):
     inheritedMC (textStore, GetStaticDefaultParagraphInfo ()),
     fPartition ()
@@ -531,7 +531,7 @@ void    WordProcessor::WPIdler::SpendIdleTime ()
         Foundation::Time::DurationSecondsType   startTime   =   Time::GetTickCount ();
         Foundation::Time::DurationSecondsType   endTime     =   startTime + kMaxTime;
         AssertNotNull (fWP);
-        typedef WordProcessor::Table    Table;
+        using   Table   =   WordProcessor::Table;
         vector<Table*>  tables = fWP->GetTablesInRange (0, fWP->GetEnd ());
         bool            maybeMoreTables =   false;
         for (auto i = tables.begin (); i != tables.end (); ++i) {
@@ -2911,7 +2911,7 @@ void    WordProcessor::OnUpdateSelectedEmbeddingExtendedCommand (CommandUpdater*
         enabler->SetText (t == nullptr ? GetCommandNames ().fGenericEmbeddingPropertiesCommandName.c_str () : GetCommandNames ().fTablePropertiesCommandName.c_str ());
     }
     else {
-        typedef SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber   PrivateCmdNumber;
+        using   PrivateCmdNumber    =   SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber;
         PrivateCmdNumber    cmdNum      =   static_cast<PrivateCmdNumber> (enabler->GetCmdID () - kFirstPrivateEmbedding_CmdID + SimpleEmbeddedObjectStyleMarker::eMinPrivateCmdNum);
         enabler->SetEnabled (embedding != nullptr and embedding->IsCmdEnabled (cmdNum));
         if (embedding != nullptr) {
@@ -2949,7 +2949,7 @@ bool    WordProcessor::OnSelectedEmbeddingExtendedCommand (CommandNumber cmdNum)
         }
     }
     else {
-        typedef SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber   PrivateCmdNumber;
+        using   PrivateCmdNumber    =   SimpleEmbeddedObjectStyleMarker::PrivateCmdNumber;
         PrivateCmdNumber    pCmdNum     =   static_cast<PrivateCmdNumber> (cmdNum - kFirstPrivateEmbedding_CmdID + SimpleEmbeddedObjectStyleMarker::eMinPrivateCmdNum);
         embedding->DoCommand (pCmdNum);
     }
@@ -3266,9 +3266,6 @@ void    WordProcessor::OnShowHideGlyphCommand (CommandNumber cmdNum)
 
 Led_SDK_String  WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
 {
-#if     qGCC_MiscNestedClassNameLookupInTemplateBug
-    typedef WordProcessor::Table    Table;
-#endif
     if (dynamic_cast<StandardDIBStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_ImageDIB;
     }
@@ -3378,7 +3375,7 @@ Led_Distance    WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) c
 
 InteractiveReplaceCommand::SavedTextRep*    WordProcessor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
 {
-    typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
+    using   SavedTextRep    =   InteractiveReplaceCommand::SavedTextRep;
     if (regionStart == regionEnd) {
         return new EmptySelectionParagraphSavedTextRep (this, selStart, selEnd, regionStart);
     }
@@ -4369,7 +4366,7 @@ inline  Led_TWIPS   CalcDefaultRHSMargin ()
     return Led_TWIPS (rhsTWIPS);
 }
 
-typedef WordProcessor::WordProcessorTextIOSinkStream    WordProcessorTextIOSinkStream;
+using       WordProcessorTextIOSinkStream   =   WordProcessor::WordProcessorTextIOSinkStream;
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore,
         const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
         const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
@@ -4995,7 +4992,7 @@ void    WordProcessorTextIOSinkStream::Flush ()
  *************************** WordProcessorTextIOSrcStream ***********************
  ********************************************************************************
  */
-typedef WordProcessor::WordProcessorTextIOSrcStream WordProcessorTextIOSrcStream;
+using       WordProcessorTextIOSrcStream    =   WordProcessor::WordProcessorTextIOSrcStream;
 WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore,
         const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
         const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
@@ -5178,7 +5175,7 @@ void    WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_St
     inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
 
     {
-        typedef WordProcessor::Table    Table;
+        using   Table   =   WordProcessor::Table;
         TextStore&                              ts          =   fParagraphDatabase->GetTextStore ();
         MarkersOfATypeMarkerSink2Vector<Table>  tables;
         ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
@@ -5194,7 +5191,7 @@ void    WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_St
                     }
                 }
                 if (colorsUsed != nullptr) {
-                    typedef StyledTextIOWriter::SrcStream::Table::CellInfo  CellInfo;
+                    using   CellInfo    =   StyledTextIOWriter::SrcStream::Table::CellInfo;
                     vector<CellInfo>    cellInfos;
                     tiom.GetRowInfo (r, &cellInfos);
                     for (auto i = cellInfos.begin (); i != cellInfos.end (); ++i) {
@@ -5338,7 +5335,7 @@ Led_TWIPS_Rect  WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpaci
  ********************* WordProcessorFlavorPackageInternalizer *******************
  ********************************************************************************
  */
-typedef WordProcessor::WordProcessorFlavorPackageInternalizer   WordProcessorFlavorPackageInternalizer;
+using       WordProcessorFlavorPackageInternalizer  =   WordProcessor::WordProcessorFlavorPackageInternalizer;
 
 WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
         const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
@@ -5614,7 +5611,7 @@ void    WordProcessor::WPPartition::Invariant_ () const
  ********************* WordProcessorFlavorPackageExternalizer *******************
  ********************************************************************************
  */
-typedef WordProcessor::WordProcessorFlavorPackageExternalizer   WordProcessorFlavorPackageExternalizer;
+using       WordProcessorFlavorPackageExternalizer  =   WordProcessor::WordProcessorFlavorPackageExternalizer;
 
 WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
         const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
@@ -5647,11 +5644,11 @@ WordProcessor::StandardStyledTextIOSrcStream*   WordProcessorFlavorPackageExtern
  ************************************* Table ************************************
  ********************************************************************************
  */
-typedef WordProcessor::Table    Table;
+using       Table   =   WordProcessor::Table;
 
 class   WordProcessor::Table::TableCMD  : public InteractiveReplaceCommand {
 private:
-    typedef InteractiveReplaceCommand   inherited;
+    using   inherited   =   InteractiveReplaceCommand;
 
 public:
     DECLARE_USE_BLOCK_ALLOCATION(TableCMD);
@@ -5779,7 +5776,7 @@ void    Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*
     Led_Arg_Unused (to);
     Led_Arg_Unused (text);
 
-    typedef EmbeddedTableWordProcessor::TemporarilyUseTablet    TemporarilyUseTablet;
+    using   TemporarilyUseTablet    =   EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
     WordProcessor&  owningWP    =   *dynamic_cast<WordProcessor*> (const_cast<StyledTextImager*> (imager));
 
@@ -7178,7 +7175,7 @@ Table::EmbeddedTableWordProcessor*  Table::ConstructEmbeddedTableWordProcessor (
         }
 
         if (activeFocusedCell) {
-            typedef EmbeddedTableWordProcessor::TemporarilyUseTablet    TemporarilyUseTablet;
+            using   TemporarilyUseTablet    =   EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
             AssertNotNull (fCurrentOwningWP);
             Tablet_Acquirer             tablet (fCurrentOwningWP);
@@ -7302,7 +7299,7 @@ void        Table::PerformLayout ()
             Led_Distance    rowHeight   =   0;
             for (size_t c = 0; c < cols; ++c) {
                 if (GetCellFlags (r, c) == ePlainCell) {
-                    typedef EmbeddedTableWordProcessor::TemporarilyUseTablet    TemporarilyUseTablet;
+                    using   TemporarilyUseTablet    =   EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
                     Led_Distance                totalCellMargin =   defaultCellMargin.left + defaultCellMargin.right;
                     Led_Distance                wpWidth         =   (totalCellMargin < realCellWidths[c]) ? realCellWidths[c] - totalCellMargin : 1;
@@ -8089,7 +8086,7 @@ void    WordProcessor::Table::SavedTextRepWSel::ApplySelection (TextInteractor* 
  ************************ EmptySelectionParagraphSavedTextRep *******************
  ********************************************************************************
  */
-typedef WordProcessor::EmptySelectionParagraphSavedTextRep  EmptySelectionParagraphSavedTextRep;
+using       EmptySelectionParagraphSavedTextRep =   WordProcessor::EmptySelectionParagraphSavedTextRep;
 
 EmptySelectionParagraphSavedTextRep::EmptySelectionParagraphSavedTextRep (WordProcessor* interactor, size_t selStart, size_t selEnd, size_t at):
     inherited (interactor, selStart, selEnd),

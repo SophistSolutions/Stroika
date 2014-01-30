@@ -40,7 +40,7 @@ class   COMBased_SpellCheckEngine : public SpellCheckEngine,
     private SpellCheckEngine::UDInterface,
     private TextBreaks {
 private:
-    typedef SpellCheckEngine    inherited;
+    using   inherited   =   SpellCheckEngine;
 public:
     COMBased_SpellCheckEngine (IDispatch* engine);
 
@@ -71,9 +71,6 @@ public:
                                       ) const override;
 
 public:
-#if     qMixinDisambiguatingNameInBothBug
-    typedef inherited::UDInterface  UDInterface;
-#endif
     virtual    UDInterface*    GetUDInterface () override;
 
     // From SpellCheckEngine::UDInterface

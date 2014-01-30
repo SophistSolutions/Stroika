@@ -1632,7 +1632,7 @@ HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
         }
         else if (0 == strncmp (pTraverse, "BL", 2)) {
             //  If compiling in 32 bit mode, BOOLs change size.
-            typedef short TwoByteBool;
+            using       TwoByteBool =   short;
             //  A boolean
             TwoByteBool* pBool = va_arg(VarList, TwoByteBool*);
             if (pBool != nullptr)   {
@@ -1729,7 +1729,7 @@ char*   Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
 
     int iLength = 1;
     char* pCounter = pTraverse;
-    typedef short TwoByteBool;
+    using   TwoByteBool =   short;
     TwoByteBool bQuoted = FALSE;
 
     //  specially handle quoted strings
@@ -1804,7 +1804,7 @@ void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...
             return;
         }
         else if(strcmp(pFormat, "BL") == 0) {
-            typedef short TwoByteBool;
+            using   TwoByteBool =   short;
             TwoByteBool* pBool;
             pBool = va_arg(VarList, TwoByteBool*);
             *pBool = *(TwoByteBool*)pDataArgs;
@@ -1878,7 +1878,7 @@ void    Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...
             }
         }
         else if(0 == strncmp(pScan, "BL", 2))   {
-            typedef short TwoByteBool;
+            using   TwoByteBool =   short;
             //  A boolean
             TwoByteBool* pBool = va_arg(VarList, TwoByteBool*);
 

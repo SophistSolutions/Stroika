@@ -386,8 +386,8 @@ namespace   Stroika {
                 template    <typename   MFC_BASE_CLASS, typename BASE_INTERACTOR>
                 const AFX_MSGMAP* PASCAL Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR >::GetThisMessageMap()
                 {
-                    typedef Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR > ThisClass;
-                    typedef MFC_BASE_CLASS TheBaseClass;
+                    using   ThisClass       =   Led_MFC_Helper< MFC_BASE_CLASS, BASE_INTERACTOR >;
+                    using   TheBaseClass    =   MFC_BASE_CLASS;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
@@ -711,8 +711,8 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* PASCAL Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS >::GetThisMessageMap()
                 {
-                    typedef Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS > ThisClass;
-                    typedef BASECLASS TheBaseClass;
+                    using   ThisClass       =   Led_MFC_OptionalWin32SDKMessageMimicHelper< BASECLASS >;
+                    using   TheBaseClass    =   BASECLASS;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
@@ -1210,8 +1210,8 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* PASCAL Led_MFC_DragAndDropWindow<BASECLASS>::GetThisMessageMap()
                 {
-                    typedef Led_MFC_DragAndDropWindow<BASECLASS> ThisClass;
-                    typedef BASECLASS TheBaseClass;
+                    using   ThisClass       =   Led_MFC_DragAndDropWindow<BASECLASS>;
+                    using   TheBaseClass    =   BASECLASS;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
@@ -1236,11 +1236,7 @@ namespace   Stroika {
                 Led_MFC_CViewHelper<BASECLASS>::Led_MFC_CViewHelper ():
                     inherited (),
                     // NB: CTOR for Led_TWIPS_Rect is TOP/LEFT/HEIGHT/WIDTH, so we set height/width to zero to get same TLBR.
-#if     qTypedefOfTemplatedTypeCannotBeUsedAsCTORBug
-                    fPrintMargins (Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point> (Led_TWIPS (1440), Led_TWIPS (1440), Led_TWIPS (0), Led_TWIPS (0))),
-#else
                     fPrintMargins (Led_TWIPS_Rect (Led_TWIPS (1440), Led_TWIPS (1440), Led_TWIPS (0), Led_TWIPS (0))),
-#endif
                     fPrintInfo (NULL)
                 {
                 }
@@ -1621,8 +1617,8 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* PASCAL Led_MFC_CViewHelper< BASECLASS >::GetThisMessageMap()
                 {
-                    typedef Led_MFC_CViewHelper< BASECLASS > ThisClass;
-                    typedef BASECLASS TheBaseClass;
+                    using   ThisClass       =   Led_MFC_CViewHelper< BASECLASS >;
+                    using   TheBaseClass    =   BASECLASS;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
@@ -1749,8 +1745,8 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* PASCAL Led_MFC_ExceptionHandlerHelper< BASECLASS >::GetThisMessageMap()
                 {
-                    typedef Led_MFC_ExceptionHandlerHelper< BASECLASS > ThisClass;
-                    typedef BASECLASS TheBaseClass;
+                    using   ThisClass       =   Led_MFC_ExceptionHandlerHelper< BASECLASS >;
+                    using   TheBaseClass    =   BASECLASS;
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
 #pragma warning (disable : 4407)        // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass

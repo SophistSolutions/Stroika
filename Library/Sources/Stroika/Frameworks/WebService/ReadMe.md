@@ -28,7 +28,7 @@ TODO/DESIGN NOTES:
 			public:
 			virtual Memory::Variant	Call (String methodName, Memory::Variant args) = 0;
 			};
-			typedef	shared_ptr<MethodCallHandler> MethodCallHandlerPtr;
+			using		MethodCallHandlerPtr	=		shared_ptr<MethodCallHandler>;
 			SOAPStub (WSDL, SocketStream, MethodCallHandlerPtr);
 			SOAPProxy (SocketStream, MethodCallHandlerPtr);
 

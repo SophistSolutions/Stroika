@@ -29,7 +29,7 @@ namespace {
 #if     qPlatform_Windows
     class   MyPrefs : public OptionsFileHelper {
     private:
-        typedef OptionsFileHelper   inherited;
+        using   inherited   =   OptionsFileHelper;
     public:
         MyPrefs ():
             inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\LedIt!\\Settings")))
@@ -44,7 +44,7 @@ namespace {
 
 
 
-typedef TextInteractor::SearchParameters    SearchParameters;
+using       SearchParameters    =   TextInteractor::SearchParameters;
 
 
 #if     qPlatform_Windows

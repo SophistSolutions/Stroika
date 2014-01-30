@@ -1136,7 +1136,7 @@ Led_Rect    TextImager::GetTextWindowBoundingRect (size_t fromMarkerPos, size_t 
          */
         TextLayoutBlock_Copy    text = GetTextLayoutBlock (startOfRow, endOfRow);
 
-        typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+        using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
         vector<ScriptRunElt> runs   =   text.GetScriptRuns ();
         if (runs.size () > 1) {
             // Only needed if there are nested runs...
@@ -1269,7 +1269,7 @@ vector<Led_Rect>    TextImager::GetRowHilightRects (const TextLayoutBlock& text,
 
         hilightStart = max (hilightStart, rowStart);
 
-        typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+        using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
         vector<ScriptRunElt> runs   =   text.GetScriptRuns ();
         //NB: it doesn't matter what order we iterate over the blocks and draw their hilight
         for (auto i = runs.begin (); i != runs.end (); ++i) {
@@ -1900,7 +1900,7 @@ void    TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification
         drawCharTop += fCachedFontInfo.GetDescent ();
     }
 
-    typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt> runs   =   text.GetScriptRuns ();
     Assert (not runs.empty () or (length == 0));
     if (runs.size () > 1) {

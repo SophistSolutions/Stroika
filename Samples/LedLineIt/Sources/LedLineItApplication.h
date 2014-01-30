@@ -23,7 +23,7 @@ extern  bool    gSupportAutoIdent;
 
 class   LedLineItApplication : public CWinApp {
 private:
-    typedef CWinApp inherited;
+    using   inherited   =   CWinApp;
 
 public:
     LedLineItApplication ();

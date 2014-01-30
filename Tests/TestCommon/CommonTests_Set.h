@@ -24,8 +24,8 @@ namespace CommonTests {
             template    <typename USING_SET_CONTAINER>
             void    DoAllTests_ ()
             {
-                typedef typename USING_SET_CONTAINER::ElementType ElementType;
-                typedef typename USING_SET_CONTAINER::EqualsCompareFunctionType EqualsCompareFunctionType;
+                using   ElementType                 =   typename USING_SET_CONTAINER::ElementType;
+                using   EqualsCompareFunctionType   =   typename USING_SET_CONTAINER::EqualsCompareFunctionType;
                 USING_SET_CONTAINER   s;
                 s.Add (3);
                 s.Add (9);
@@ -40,7 +40,7 @@ namespace CommonTests {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_SET_CONTAINER::ElementType ELEMENT_TYPE;
+                using   ELEMENT_TYPE    =   typename USING_SET_CONTAINER::ElementType;
                 USING_SET_CONTAINER   s;
                 applyToContainer (s);
                 USING_SET_CONTAINER   s1 = s;

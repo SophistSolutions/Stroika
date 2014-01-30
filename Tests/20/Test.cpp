@@ -151,17 +151,17 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
-        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
+        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
         struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
 
-        typedef Stack_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Stack_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+        using   Stack_SimpleClassWithoutComparisonOperators_Comparer_Traits =   Stack_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators>;
 
         Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();
         Tests_All_For_Type_<Stack<SimpleClass>, COMPARE_SimpleClass> ();

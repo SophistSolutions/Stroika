@@ -33,8 +33,8 @@ namespace {
     template    <typename CONCRETE_CONTAINER>
     void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    T;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        using   T           =   typename CONCRETE_CONTAINER::ElementType;
+        using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto testFunc = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
             // verify in sorted order
             Optional<T> last;
@@ -55,7 +55,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
@@ -65,7 +65,7 @@ namespace   {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
-        typedef SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_CollectionTRAITS;
+        using   SimpleClassWithoutComparisonOperators_CollectionTRAITS  =   SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>;
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<SimpleClass>> ();

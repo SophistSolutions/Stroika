@@ -256,10 +256,10 @@ namespace   Stroika {
                             return ::strcmp (_Left, _Right) < 0;
                         }
                     };
-                    typedef map<ControlWordAtomName, ControlWordAtom, ControlWordAtomName_less> ControlWordNameMap;
+                    using   ControlWordNameMap      =   map<ControlWordAtomName, ControlWordAtom, ControlWordAtomName_less>;
 #else
                 private:
-                    typedef pair<string, ControlWordAtom>   StringNControlWordAtom;
+                    using       StringNControlWordAtom  =   pair<string, ControlWordAtom>;
                 public:
 #if     qFriendDeclarationsDontWorkWithNestedClassesBug
                     friend  bool    operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
@@ -273,7 +273,7 @@ namespace   Stroika {
                     struct StringNControlWordAtom_Comparator;
                     friend  struct StringNControlWordAtom_Comparator;
                 private:
-                    typedef vector<StringNControlWordAtom>  ControlWordNameMap;
+                    using       ControlWordNameMap  =   vector<StringNControlWordAtom>;
 #endif
                 private:
                     static  ControlWordNameMap  sControlWordNameMap;
@@ -403,7 +403,7 @@ namespace   Stroika {
                     static  const   Led_ClipFormat          kRTFBodyGroupFragmentClipFormat;
 
                     // Just use UnknownObject as a tmp hack for these RTF embeddings
-                    typedef StandardUnknownTypeStyleMarker  UnknownRTFEmbedding;
+                    using   UnknownRTFEmbedding     =   StandardUnknownTypeStyleMarker;
 
                     class   RTFOLEEmbedding {
                     public:
@@ -475,7 +475,7 @@ namespace   Stroika {
                     ~StyledTextIOReader_RTF ();
 
                 private:
-                    typedef StyledTextIOReader  inherited;
+                    using   inherited   =   StyledTextIOReader;
 
                 public:
                     virtual     void    Read () override;
@@ -818,7 +818,7 @@ namespace   Stroika {
                 */
                 class   StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination : public StyledTextIOReader_RTF::ReaderContext::Destination_ {
                 public:
-                    typedef StyledTextIOReader::SinkStream  SinkStream;
+                    using   SinkStream  =   StyledTextIOReader::SinkStream;
 
                 public:
                     SinkStreamDestination (StyledTextIOReader_RTF& reader);
@@ -1017,7 +1017,7 @@ namespace   Stroika {
                     class   WriterContext;
 
                 public:
-                    typedef StyledTextIOWriter::SrcStream::Table    Table;
+                    using   Table   =   StyledTextIOWriter::SrcStream::Table;
                 protected:
                     virtual     void    WriteHeader (WriterContext& writerContext);
                     virtual     void    WriteBody (WriterContext& writerContext);
@@ -1092,7 +1092,8 @@ namespace   Stroika {
                     nonvirtual  SinkStream& GetSinkStream () const;
 
                 public:
-                    typedef StyledTextIOWriter::SrcStream::Table    Table;
+                    using   Table   =   StyledTextIOWriter::SrcStream::Table;
+
                 public:
                     virtual size_t                              GetCurSrcOffset () const;
                     virtual SimpleEmbeddedObjectStyleMarker*    GetCurSimpleEmbeddedObjectStyleMarker () const;

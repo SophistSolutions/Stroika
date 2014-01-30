@@ -35,8 +35,8 @@ namespace   Stroika {
                      *  This trick is based on code from
                      *      http://stackoverflow.com/questions/5768511/using-sfinae-to-check-for-global-operator
                      */
-                    typedef char    no;
-                    typedef char    yes[2];
+                    using       no  =   char;
+                    using       yes =   char[2];
                     struct any_t {
                         template<typename T> any_t (T const&);
                     };

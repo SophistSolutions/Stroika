@@ -42,7 +42,7 @@ namespace   Stroika {
             */
             class   WordWrappedTextInteractor : public InteractorImagerMixinHelper<WordWrappedTextImager> {
             private:
-                typedef InteractorImagerMixinHelper<WordWrappedTextImager>  inherited;
+                using   inherited       =   InteractorImagerMixinHelper<WordWrappedTextImager>;
             protected:
                 WordWrappedTextInteractor ();
 

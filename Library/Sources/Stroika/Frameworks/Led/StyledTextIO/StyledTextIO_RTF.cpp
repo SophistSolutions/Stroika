@@ -259,8 +259,8 @@ RTFIO::FontTableEntry::FontTableEntry ():
  ********************************** RTFIO::FontTable ****************************
  ********************************************************************************
  */
-typedef RTFIO::FontTableEntry   FontTableEntry;
-typedef RTFIO::FontTable        FontTable;
+using       FontTableEntry  =   RTFIO::FontTableEntry;
+using       FontTable       =   RTFIO::FontTable;
 FontTable::FontTable ():
     fEntries ()
 {
@@ -691,7 +691,7 @@ RTFIO::ControlWordNameMap   RTFIO::sControlWordNameMap  =   RTFIO::mkDefaultCont
 
 string  RTFIO::GetAtomName (ControlWordAtom atom)
 {
-    typedef RTFIO::ControlWordNameMap::const_iterator   ITER;
+    using   ITER    =   RTFIO::ControlWordNameMap::const_iterator;
     ITER    start   =   sControlWordNameMap.begin ();
     ITER    end     =   sControlWordNameMap.end ();
     for (ITER it = start; it != end; ++it) {
@@ -723,7 +723,7 @@ RTFIO::ControlWordAtom  RTFIO::EnterControlWord (
     RequireNotNull (controlWord);
 #endif
 
-    typedef ControlWordNameMap::iterator    ITER;
+    using   ITER    =   ControlWordNameMap::iterator;
 #if     qUseMapForControlWordMap
     ITER    i   =   sControlWordNameMap.find (controlWord);
     if (i == sControlWordNameMap.end ()) {
@@ -764,7 +764,7 @@ const   Led_PrivateEmbeddingTag RTFIO::RTFOLEEmbedding::kEmbeddingTag       =   
  **************** StyledTextIOReader_RTF::ReaderContext *************************
  ********************************************************************************
  */
-typedef StyledTextIOReader_RTF::ReaderContext   ReaderContext;
+using   ReaderContext   =   StyledTextIOReader_RTF::ReaderContext;
 
 
 
@@ -798,7 +798,7 @@ typedef StyledTextIOReader_RTF::ReaderContext   ReaderContext;
  *  SetContext call. This should happen rarely - and I'm not sure what is best. For now - I think I'll just ignore the prev call and allow
  *  multiple SetContext () calls to happen and just ignore earlier ones - LGP 2001-08-23.
  */
-typedef ReaderContext::SinkStreamDestination    SinkStreamDestination;
+using       SinkStreamDestination   =   ReaderContext::SinkStreamDestination;
 StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination::SinkStreamDestination (StyledTextIOReader_RTF& reader):
     Destination_ (),
     fSinkStream (reader.GetSinkStream ()),
@@ -2652,8 +2652,8 @@ bool    StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*reade
 bool    StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
     CheckIfAboutToStartBody (readerContext);
-    typedef RTFIO::UnknownRTFEmbedding  UnknownRTFEmbedding;
-    typedef RTFIO::ControlWord          ControlWord;
+    using   UnknownRTFEmbedding =   RTFIO::UnknownRTFEmbedding;
+    using   ControlWord         =   RTFIO::ControlWord;
     /*
      *  Now try to really read on object in. Could be a Led-private-format object. Could be an OLE object. Or one of many
      *  types we don't support.
@@ -3618,7 +3618,7 @@ void    StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 void    StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data)
 {
 #if     qPlatform_Windows
-    typedef RTFIO::RTFOLEEmbedding  RTFOLEEmbedding;
+    using   RTFOLEEmbedding =   RTFIO::RTFOLEEmbedding;
     const   Led_ClipFormat                              kOLEEmbedClipFormat     =   (Led_ClipFormat)::RegisterClipboardFormat (_T ("Object Descriptor"));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types                   =   EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
     for (size_t i = 0; i < types.size (); i++) {
@@ -3700,8 +3700,8 @@ void    StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
 */
 void    StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData)
 {
-    typedef RTFIO::UnknownRTFEmbedding  UnknownRTFEmbedding;
-    typedef RTFIO::ControlWord          ControlWord;
+    using   UnknownRTFEmbedding =   RTFIO::UnknownRTFEmbedding;
+    using   ControlWord         =   RTFIO::ControlWord;
 
     *imageFormat            =   eDefaultImageFormat;
     *shownSize              =   Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
@@ -4727,7 +4727,7 @@ void    StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContex
 
 void    StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* table)
 {
-    typedef StyledTextIOWriter_RTF::Table::CellInfo CellInfo;
+    using   CellInfo    =   StyledTextIOWriter_RTF::Table::CellInfo;
     RequireNotNull (table);
     write ("\r\n"); // should write a newline every once in a while...
     // according to RTF spec
@@ -5005,7 +5005,7 @@ struct  VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
 public:
     virtual     void    write (const void* buffer, size_t bytes) override
     {
-        typedef const char* ci;
+        using       ci  =   const char* ;
         fData.insert (fData.end (), ci (buffer), ci (buffer) + bytes);
     }
     vector<char>    fData;
@@ -5021,7 +5021,7 @@ void    StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writer
     public:
         virtual     void    write (const void* buffer, size_t bytes) override
         {
-            typedef const char* ci;
+            using   ci  =   const char* ;
             fData.insert (fData.end (), ci (buffer), ci (buffer) + bytes);
         }
         vector<char>    fData;

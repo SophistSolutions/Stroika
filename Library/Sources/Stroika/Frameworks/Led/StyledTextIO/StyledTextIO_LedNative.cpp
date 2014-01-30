@@ -87,7 +87,7 @@ static  inline  unsigned long InputStandardFromSrcStream_ULONG (StyledTextIORead
  *      Actual Style run elements, stored as PortableStyleRunData
  *      MAGIC COOKIE - AGAIN - JUST FOR GOOD LUCK!!!
  */
-typedef char    LedFormatMagicCookie[16];
+using   LedFormatMagicCookie    =   char[16];
 const   LedFormatMagicCookie    kLedPartFormatVersion_4_MagicNumber =   "\01Version4";  // always keep this magic cookie the same size
 const   LedFormatMagicCookie    kLedPartFormatVersion_5_MagicNumber =   "\01Version5";  // always keep this magic cookie the same size
 const   LedFormatMagicCookie    kLedPartFormatVersion_6_MagicNumber =   "\01Version6";  // always keep this magic cookie the same size

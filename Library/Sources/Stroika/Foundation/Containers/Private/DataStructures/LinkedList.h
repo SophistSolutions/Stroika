@@ -82,7 +82,7 @@ namespace   Stroika {
                         class   Link;
 
                     public:
-                        typedef ForwardIterator     IteratorBaseType;
+                        using   IteratorBaseType    =   ForwardIterator;
                         nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom);
 
                     public:

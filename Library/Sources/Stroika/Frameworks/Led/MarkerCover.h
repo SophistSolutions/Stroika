@@ -55,9 +55,9 @@ namespace   Stroika {
             template    <typename   MARKER, typename    MARKERINFO, typename    INCREMENTALMARKERINFO>
             class   MarkerCover : public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
             public:
-                typedef vector<MARKER*> MarkerVector;
+                using   MarkerVector    =   vector<MARKER*>;
             public:
                 MarkerCover (TextStore& useTextStore, MARKERINFO defaultInfo = MARKERINFO ());
                 ~MarkerCover ();
@@ -127,7 +127,7 @@ namespace   Stroika {
             protected:
                 class   NonEmptyOnes : public MarkersOfATypeMarkerSink2Vector<MARKER> {
                 private:
-                    typedef MarkersOfATypeMarkerSink2Vector<MARKER> inherited;
+                    using       inherited   =   MarkersOfATypeMarkerSink2Vector<MARKER>;
                 public:
                     NonEmptyOnes ():    inherited () {}
                 public:

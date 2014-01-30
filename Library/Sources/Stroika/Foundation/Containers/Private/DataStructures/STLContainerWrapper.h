@@ -66,7 +66,7 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
-                        typedef ForwardIterator     IteratorBaseType;
+                        using       IteratorBaseType    =   ForwardIterator;
                         nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom);
 
                     public:

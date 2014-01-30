@@ -26,7 +26,7 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-typedef Partition::PartitionMarker  PartitionMarker;
+using       PartitionMarker =   Partition::PartitionMarker;
 
 
 
@@ -606,7 +606,7 @@ void    PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Dista
     size_t  rowLen      =   rowEnd - rowStart;
     TextLayoutBlock_Copy    rowText = GetTextLayoutBlock (rowStart, rowEnd);
 
-    typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt> runs   =   rowText.GetScriptRuns ();
 
     /*
@@ -684,7 +684,7 @@ size_t  PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset,
     size_t  rowLen      =   rowEnd - rowStart;
     TextLayoutBlock_Copy    rowText = GetTextLayoutBlock (rowStart, rowEnd);
 
-    typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt> runs   =   rowText.GetScriptRuns ();
 
     /*

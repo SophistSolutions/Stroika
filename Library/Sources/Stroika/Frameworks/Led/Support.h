@@ -84,19 +84,6 @@ public:\
 
 
 
-#if     qSTLTemplatesErroniouslyRequireDefCTORCuzOfOverExpanding
-#define STLDefCTORDeclare_BWA(T)\
-public:\
-    T() {Assert (false);/*notreached*/}
-#else
-#define STLDefCTORDeclare_BWA(T)
-#endif
-
-
-
-#if     qSTLwstringBugNeedsTypedef
-            typedef basic_string<wchar_t>   wstring;
-#endif
 
 
 
@@ -154,11 +141,11 @@ public:\
             */
 #if     defined (__cplusplus)
 #if     qSingleByteCharacters
-            typedef char    Led_tChar;
+            using   Led_tChar   =   char;
 #elif   qMultiByteCharacters
-            typedef char    Led_tChar;
+            using   Led_tChar   =   char;
 #elif   qWideCharacters
-            typedef wchar_t Led_tChar;
+            using   Led_tChar   =   wchar_t;
 #else
 #error  "One of these must be defined"
 #endif
@@ -199,7 +186,7 @@ public:\
                 or <code>wstring</code> - depending on whether we are using UNICODE or not. It is a <code>basic_string</code>
                 templated on @'Led_tChar'.</p>
             */
-            typedef     std::basic_string<Led_tChar>    Led_tString;
+            using       Led_tString =   std::basic_string<Led_tChar>;
 
 
 
@@ -264,9 +251,9 @@ public:\
             @DESCRIPTION:   <p>See @'Led_SDK_String'</p>
             */
 #if     qSDK_UNICODE
-            typedef     wchar_t Led_SDK_Char;
+            using       Led_SDK_Char    =   wchar_t;
 #else
-            typedef     char    Led_SDK_Char;
+            using       Led_SDK_Char    =   char;
 #endif
 
 
@@ -279,9 +266,9 @@ public:\
                 that may need to be in one format or another.</p>
             */
 #if     qSDK_UNICODE
-            typedef     wstring Led_SDK_String;
+            using   Led_SDK_String  =   wstring;
 #else
-            typedef     string  Led_SDK_String;
+            using   Led_SDK_String  =   string;
 #endif
 
 
@@ -625,9 +612,9 @@ public:\
             class   Led_StackBasedHandleLocker {
             public:
 #if     qPlatform_MacOS
-                typedef Handle  GenericHandle;
+                using       GenericHandle   =   Handle;
 #elif   qPlatform_Windows
-                typedef HANDLE  GenericHandle;
+                using       GenericHandle   =   HANDLE;
 #endif
                 Led_StackBasedHandleLocker (GenericHandle h);
                 ~Led_StackBasedHandleLocker ();
@@ -765,11 +752,11 @@ public:\
              *
              */
 #if     qPlatform_MacOS
-            typedef OSType  Led_ClipFormat;
+            using       Led_ClipFormat  =   OSType;
 #elif   qPlatform_Windows
-            typedef UINT    Led_ClipFormat;
+            using       Led_ClipFormat  =   UINT;
 #elif   qXWindows
-            typedef long    Led_ClipFormat;
+            using       Led_ClipFormat  =   long;
 #endif
 #if     qPlatform_MacOS
             const Led_ClipFormat    kTEXTClipFormat =   'TEXT';

@@ -241,7 +241,7 @@ namespace   Stroika {
                 @CLASS:         TextImager::TabStopList
                 @DESCRIPTION:   <p>See @'Led_TabStopList'</p>
                 */
-                typedef Led_TabStopList TabStopList;
+                using       TabStopList =   Led_TabStopList;
                 class   SimpleTabStopList;
                 class   StandardTabStopList;
             public:
@@ -1008,7 +1008,7 @@ namespace   Stroika {
             template    <typename TEXTSTORE, typename   IMAGER>
             class   TrivialImager : public IMAGER {
             private:
-                typedef IMAGER  inherited;
+                using   inherited   =   IMAGER;
             protected:
                 TrivialImager (Led_Tablet t);
             public:

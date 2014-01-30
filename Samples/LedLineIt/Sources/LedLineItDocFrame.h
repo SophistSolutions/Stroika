@@ -16,7 +16,7 @@
 
 class   LedLineItDocFrame : public CMDIChildWnd {
 private:
-    typedef CMDIChildWnd    inherited;
+    using   inherited   =   CMDIChildWnd;
 
 public:
     LedLineItDocFrame ();

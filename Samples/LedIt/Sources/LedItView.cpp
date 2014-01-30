@@ -210,7 +210,7 @@ My_CMDNUM_MAPPING   sMy_CMDNUM_MAPPING;
 
 struct  LedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::DialogSupport {
 public:
-    typedef TextInteractor::DialogSupport::CommandNumber    CommandNumber;
+    using   CommandNumber   =   TextInteractor::DialogSupport::CommandNumber;
 
 public:
     LedIt_DialogSupport ()
@@ -533,7 +533,7 @@ public:
     {
         RequireNotNull (tableProperties);
 
-        typedef Led_StdDialogHelper_EditTablePropertiesDialog   DLGTYPE;
+        using   DLGTYPE =   Led_StdDialogHelper_EditTablePropertiesDialog;
 #if     qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif   qPlatform_Windows

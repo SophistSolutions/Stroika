@@ -16,9 +16,9 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-typedef StyledTextImager::StyleMarker               StyleMarker;
-typedef StyledTextImager::RunElement                RunElement;
-typedef StyledTextImager::StyleMarkerSummarySink    StyleMarkerSummarySink;
+using   StyleMarker             =   StyledTextImager::StyleMarker;
+using   RunElement              =   StyledTextImager::RunElement;
+using   StyleMarkerSummarySink  =   StyledTextImager::StyleMarkerSummarySink;
 
 
 
@@ -82,7 +82,7 @@ StyleMarkerSummarySink::StyleMarkerSummarySink (size_t from, size_t to, const Te
     if (from != to) {
         fBuckets.push_back (RunElement (nullptr, to - from));
     }
-    typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt>    scriptRuns  =   text.GetScriptRuns ();
     for (auto i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
         Assert ((*i).fRealEnd <= (to - from));
@@ -199,7 +199,7 @@ void    StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* r
 */
 vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
 {
-    typedef TextLayoutBlock::ScriptRunElt   ScriptRunElt;
+    using   ScriptRunElt    =   TextLayoutBlock::ScriptRunElt;
 // Soon fix to use fText as a REFERENCE. Then we probably should have this code assure its re-ordering is done only once and then cached,
 // LGP 2002-12-16
     if (fText != nullptr) {
@@ -245,7 +245,7 @@ vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink
  ******************** StyleMarkerSummarySinkForSingleOwner **********************
  ********************************************************************************
  */
-typedef StyledTextImager::StyleMarkerSummarySinkForSingleOwner  StyleMarkerSummarySinkForSingleOwner;
+using       StyleMarkerSummarySinkForSingleOwner    =   StyledTextImager::StyleMarkerSummarySinkForSingleOwner;
 
 StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to):
     inherited (from, to),

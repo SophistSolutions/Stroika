@@ -49,11 +49,11 @@ class   LedItView;
 
 
 #if     qPlatform_MacOS
-typedef Platform::Led_PP_TmpCmdUpdater  CMD_ENABLER;
+using   CMD_ENABLER =   Platform::Led_PP_TmpCmdUpdater;
 #elif   qPlatform_Windows
-typedef Platform::Led_MFC_TmpCmdUpdater CMD_ENABLER;
+using   CMD_ENABLER =   Platform::Led_MFC_TmpCmdUpdater;
 #elif   qXWindows
-typedef Platform::Led_Gtk_TmpCmdUpdater CMD_ENABLER;
+using   CMD_ENABLER =   Platform::Led_Gtk_TmpCmdUpdater;
 #endif
 
 
@@ -68,9 +68,9 @@ class   LedItApplication
 {
 private:
 #if     qPlatform_MacOS
-    typedef LDocApplication inherited;
+    using       inherited   =   LDocApplication;
 #elif   qPlatform_Windows
-    typedef CWinApp         inherited;
+    using       inherited   =   CWinApp;
 #endif
 
 public:

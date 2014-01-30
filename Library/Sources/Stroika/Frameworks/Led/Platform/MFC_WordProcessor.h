@@ -94,7 +94,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 class   WordProcessorCommonCommandHelper_MFC : public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using       inherited   =   BASECLASS;
 
                 public:
                     WordProcessorCommonCommandHelper_MFC ();
@@ -115,7 +115,7 @@ namespace   Stroika {
                     */
                     class   ControlItemContextInternalizer : public WordProcessor::WordProcessorFlavorPackageInternalizer {
                     private:
-                        typedef WordProcessor::WordProcessorFlavorPackageInternalizer   inherited;
+                        using       inherited       =   WordProcessor::WordProcessorFlavorPackageInternalizer;
                     public:
                         ControlItemContextInternalizer (COleDocument* doc,
                                                         TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
@@ -323,8 +323,8 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 const AFX_MSGMAP* PASCAL WordProcessorCommonCommandHelper_MFC<BASECLASS>::GetThisMessageMap()
                 {
-                    typedef WordProcessorCommonCommandHelper_MFC<BASECLASS> ThisClass;
-                    typedef BASECLASS TheBaseClass;
+                    using       ThisClass       =   WordProcessorCommonCommandHelper_MFC<BASECLASS>;
+                    using       TheBaseClass    =   BASECLASS;
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)

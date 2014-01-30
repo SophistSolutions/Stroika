@@ -25,8 +25,8 @@ using   Memory::SmallStackBuffer;
 
 
 
-typedef SyntaxColoringMarkerOwner::FontChangeStyleMarker    FontChangeStyleMarker;
-typedef SyntaxColoringMarkerOwner::ColoredStyleMarker       ColoredStyleMarker;
+using       FontChangeStyleMarker   =   SyntaxColoringMarkerOwner::FontChangeStyleMarker;
+using       ColoredStyleMarker      =   SyntaxColoringMarkerOwner::ColoredStyleMarker;
 
 
 

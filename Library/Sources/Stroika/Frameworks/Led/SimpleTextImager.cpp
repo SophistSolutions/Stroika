@@ -23,8 +23,8 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-typedef Partition::PartitionMarker              PartitionMarker;
-typedef PartitioningTextImager::PartitionPtr    PartitionPtr;
+using   PartitionMarker =   Partition::PartitionMarker;
+using   PartitionPtr    =   PartitioningTextImager::PartitionPtr;
 
 
 

@@ -130,7 +130,7 @@ namespace   Stroika {
 
 
             public:
-                typedef int CommandNumber;
+                using   CommandNumber   =   int;
 
             public:
 #if     qCannotStaticlyInitializeConstantsDataMembersInClassDeclaration
@@ -807,7 +807,7 @@ namespace   Stroika {
             */
             class    TextInteractor::CommandUpdater {
             public:
-                typedef TextInteractor::CommandNumber   CommandNumber;
+                using   CommandNumber   =   TextInteractor::CommandNumber;
 
             public:
                 virtual    CommandNumber GetCmdID () const                      =   0;
@@ -831,7 +831,7 @@ namespace   Stroika {
             */
             class   TextInteractor::DialogSupport {
             public:
-                typedef TextInteractor::CommandNumber   CommandNumber;
+                using   CommandNumber   =   TextInteractor::CommandNumber;
 
             public:
                 virtual void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK);
@@ -881,7 +881,7 @@ namespace   Stroika {
             */
             class   TextInteractor::SearchParameters : public TextStore::SearchParameters {
             private:
-                typedef TextStore::SearchParameters inherited;
+                using   inherited   =   TextStore::SearchParameters;
 
             public:
                 SearchParameters ();
@@ -930,7 +930,7 @@ namespace   Stroika {
             */
             class   TextInteractor::UndoableContextHelper {
             public:
-                typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
+                using   SavedTextRep    =   InteractiveReplaceCommand::SavedTextRep;
             public:
                 UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, bool allowSmartCNPExpansion);
                 UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion);
@@ -1052,7 +1052,7 @@ namespace   Stroika {
             template    <typename   TARGET_COMMAND_NUMBER>
             class   CommandNumberMapping {
             public:
-                typedef TextInteractor::CommandNumber   CommandNumber;
+                using   CommandNumber   =   TextInteractor::CommandNumber;
             public:
                 CommandNumberMapping ();
                 ~CommandNumberMapping ();
@@ -1067,13 +1067,13 @@ namespace   Stroika {
                 virtual TARGET_COMMAND_NUMBER       ReverseLookup (CommandNumber cmdNum) const;
 
             private:
-                typedef map<TARGET_COMMAND_NUMBER, CommandNumber>   MAP_TYPE;
+                using   MAP_TYPE    =   map<TARGET_COMMAND_NUMBER, CommandNumber>;
                 MAP_TYPE        fMap;
                 struct  RangeElt {
                     pair<TARGET_COMMAND_NUMBER, TARGET_COMMAND_NUMBER>   fExternalCmds;
                     pair<CommandNumber, CommandNumber>                   fInternalCmds;
                 };
-                typedef vector<RangeElt>    RANGE_VEC_TYPE;
+                using   RANGE_VEC_TYPE  =   vector<RangeElt>;
                 RANGE_VEC_TYPE  fRanges;
 
             private:
@@ -1140,7 +1140,7 @@ namespace   Stroika {
             template    <typename TEXTSTORE, typename   IMAGER>
             class   TrivialImager_Interactor : public TrivialImager<TEXTSTORE, IMAGER> {
             private:
-                typedef TrivialImager<TEXTSTORE, IMAGER> inherited;
+                using       inherited   =   TrivialImager<TEXTSTORE, IMAGER>;
             public:
                 TrivialImager_Interactor (Led_Tablet t): inherited (t) {}
                 TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF("")): inherited (t)
@@ -1155,7 +1155,7 @@ namespace   Stroika {
 
                 // In case the imager is a TextInteractor - provide dummy implemenations...
             public:
-                typedef typename    IMAGER::UpdateMode  UpdateMode;
+                using   UpdateMode  =   typename    IMAGER::UpdateMode;
                 virtual         bool    QueryInputKeyStrokesPending () const override   {   return false; };
                 virtual         void    RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const  override {}
                 virtual         void    UpdateWindowRect_ (const Led_Rect& windowRectArea) const override {}

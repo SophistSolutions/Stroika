@@ -25,7 +25,7 @@ public:
     static  SimpleEmbeddedObjectStyleMarker*    mkLedItControlItemStyleMarker (ReaderFlavorPackage& flavorPackage);
 
 protected:
-    typedef Led_MFC_ControlItem inherited;
+    using   inherited   =   Led_MFC_ControlItem;
 
 public:
     virtual    BOOL    CanActivate () override;

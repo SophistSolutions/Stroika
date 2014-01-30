@@ -54,7 +54,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextImager : public virtual StyledTextImager {
             private:
-                typedef StyledTextImager    inherited;
+                using   inherited   =   StyledTextImager;
             protected:
                 StandardStyledTextImager ();
                 virtual ~StandardStyledTextImager ();
@@ -82,7 +82,6 @@ namespace   Stroika {
 
                 public:
                     size_t  fLength;
-                    STLDefCTORDeclare_BWA(InfoSummaryRecord)
                 };
 
                 nonvirtual  Led_FontSpecification   GetStyleInfo (size_t charAfterPos) const;
@@ -132,7 +131,7 @@ namespace   Stroika {
                 @BASES:         @'shared_ptr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
                 @DESCRIPTION:
                 */
-                typedef shared_ptr<AbstractStyleDatabaseRep> StyleDatabasePtr;
+                using   StyleDatabasePtr    =   shared_ptr<AbstractStyleDatabaseRep>;
             public:
                 nonvirtual  StyleDatabasePtr            GetStyleDatabase () const;
                 nonvirtual  void                        SetStyleDatabase (const StyleDatabasePtr& styleDatabase);
@@ -165,7 +164,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextImager::StandardStyleMarker : public  StyledTextImager::StyleMarker {
             private:
-                typedef StyledTextImager::StyleMarker   inherited;
+                using   inherited   =   StyledTextImager::StyleMarker;
             public:
                 StandardStyleMarker (const Led_FontSpecification& styleInfo = TextImager::GetStaticDefaultFont ());
 
@@ -200,7 +199,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextImager::AbstractStyleDatabaseRep : public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 virtual     vector<InfoSummaryRecord>   GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                                                       =   0;
@@ -237,7 +236,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextImager::StyleDatabaseRep : public StandardStyledTextImager::AbstractStyleDatabaseRep, private MarkerCover<StandardStyledTextImager::StandardStyleMarker, Led_FontSpecification, Led_IncrementalFontSpecification> {
             private:
-                typedef MarkerCover<StandardStyledTextImager::StandardStyleMarker, Led_FontSpecification, Led_IncrementalFontSpecification>   inheritedMC;
+                using   inheritedMC =   MarkerCover<StandardStyledTextImager::StandardStyleMarker, Led_FontSpecification, Led_IncrementalFontSpecification>;
 
             public:
                 StyleDatabaseRep (TextStore& textStore);
@@ -275,10 +274,10 @@ namespace   Stroika {
             template    <class  BASECLASS>
             class   SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper : public BASECLASS {
             private:
-                typedef BASECLASS   inherited;
+                using       inherited   =   BASECLASS;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement  =   StyledTextImager::RunElement;
 
             protected:
                 virtual     RunElement  MungeRunElement (const RunElement& inRunElt) const override;
@@ -383,10 +382,8 @@ namespace   Stroika {
             template    <class  BASECLASS>
             typename    SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::RunElement  SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
             {
-#if     !qTypedefInTemplateToSpecScopeOfNestedTypeCompilerBug
-                typedef StyledTextImager::StyleMarker   StyleMarker;
-#endif
-                typedef StandardStyledTextImager::StandardStyleMarker   SSM;
+                using       StyleMarker =   StyledTextImager::StyleMarker;
+                using       SSM         =   StandardStyledTextImager::StandardStyleMarker;
 
                 fFSP = Led_FontSpecification ();
                 RunElement  result  =   inherited::MungeRunElement (inRunElt);

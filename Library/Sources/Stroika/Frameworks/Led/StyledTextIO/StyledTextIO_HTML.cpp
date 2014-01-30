@@ -685,7 +685,7 @@ Again:
 */
 const vector<StyledTextIOReader_HTML::EntityRefMapEntry>&   StyledTextIOReader_HTML::GetEntityRefMapTable () const
 {
-    typedef vector<StyledTextIOReader_HTML::EntityRefMapEntry>  ELTV;
+    using   ELTV    =   vector<StyledTextIOReader_HTML::EntityRefMapEntry>;
     static  bool    sFirstTime  =   true;
     static  ELTV    sResult;
     if (sFirstTime) {
@@ -2326,7 +2326,7 @@ void    StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table
     RequireNotNull (table);
     write ("\r\n");
 
-    typedef Table::CellInfo CellInfo;
+    using   CellInfo    =   Table::CellInfo;
 
     WriteOpenTag (writerContext, "table");
     write ("\r\n");

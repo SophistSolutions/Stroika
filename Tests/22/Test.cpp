@@ -233,7 +233,7 @@ namespace  {
         }
         void    DoRegressionTests_ ()
         {
-            typedef Hasher<uint32_t, Algorithms::Jenkins>   USE_HASHER_;
+            using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
             {
                 VerifyTestResult (Adapapter<USE_HASHER_>::Hash (1) == 3028713910);
                 VerifyTestResult (Adapapter<USE_HASHER_>::Hash (93993) == 2249810398);

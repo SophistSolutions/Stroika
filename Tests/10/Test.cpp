@@ -64,17 +64,17 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
-        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
+        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
         struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
 
-        typedef Deque_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+        using   Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits =   Deque_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators>;
 
         SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
         SimpleQueueTest_All_For_Type<Deque<SimpleClass>, COMPARE_SimpleClass> ();

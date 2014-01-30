@@ -173,11 +173,12 @@ namespace   Stroika {
                 */
                 template    <typename   BASE_INTERACTOR = TextInteractor>
                 class   Led_Win32_Helper : public virtual BASE_INTERACTOR {
-                public:
-                    typedef TextInteractor::UpdateMode  UpdateMode;
-                    typedef MarkerOwner::UpdateInfo     UpdateInfo;
                 private:
-                    typedef BASE_INTERACTOR inherited;
+                    using   inherited   =   BASE_INTERACTOR;
+
+                public:
+                    using   UpdateMode  =   TextInteractor::UpdateMode;
+                    using   UpdateInfo  =   MarkerOwner::UpdateInfo;
 
                 protected:
                     Led_Win32_Helper ();
@@ -344,8 +345,8 @@ namespace   Stroika {
 
                     // Scrolling Support
                 public:
-                    typedef TextInteractor::ScrollBarType   ScrollBarType;  // redundant typedef to keep compiler happy...LGP 2000-10-05-MSVC60
-                    typedef TextInteractor::VHSelect        VHSelect;       // redundant typedef to keep compiler happy...LGP 2000-10-05-MSVC60
+                    using       ScrollBarType   =   TextInteractor::ScrollBarType;  // redundant typedef to keep compiler happy...LGP 2000-10-05-MSVC60
+                    using       VHSelect        =   TextInteractor::VHSelect;       // redundant typedef to keep compiler happy...LGP 2000-10-05-MSVC60
 
                 public:
                     virtual    void            SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType) override;
@@ -407,7 +408,7 @@ namespace   Stroika {
                 class   Led_Win32_Win32SDKMessageMimicHelper :
                     public BASECLASS {
                 private:
-                    typedef BASECLASS   inherited;
+                    using   inherited   =   BASECLASS;
 
                 protected:
                     Led_Win32_Win32SDKMessageMimicHelper ();
@@ -513,7 +514,7 @@ namespace   Stroika {
                 class   Led_Win32_SimpleWndProc_Helper :
                     public BASE_WIN32_HELPER {
                 private:
-                    typedef BASE_WIN32_HELPER   inherited;
+                    using       inherited   =   BASE_WIN32_HELPER;
 
                 public:
                     Led_Win32_SimpleWndProc_Helper ();
@@ -572,7 +573,7 @@ namespace   Stroika {
                 template    <typename   BASE_CLASS >    class   Led_Win32_SimpleWndProc_HelperWithSDKMessages :
                     public Led_Win32_SimpleWndProc_Helper <Led_Win32_Win32SDKMessageMimicHelper < BASE_CLASS > > {
                 private:
-                    typedef Led_Win32_SimpleWndProc_Helper <Led_Win32_Win32SDKMessageMimicHelper < BASE_CLASS > >   inherited;
+                    using       inherited   =   Led_Win32_SimpleWndProc_Helper <Led_Win32_Win32SDKMessageMimicHelper < BASE_CLASS > >;
 
                 public:
                     Led_Win32_SimpleWndProc_HelperWithSDKMessages ();

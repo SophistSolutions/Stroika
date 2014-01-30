@@ -3423,7 +3423,7 @@ void    Led::Led_CenterWindowInParent (HWND w)
                             )
 
 
-typedef struct _CMap4 { // From the TrueType Spec. revision 1.66
+struct  CMAP4 { // From the TrueType Spec. revision 1.66
     USHORT format;          // Format number is set to 4.
     USHORT length;          // Length in bytes.
     USHORT version;         // Version number (starts at 0).
@@ -3433,8 +3433,8 @@ typedef struct _CMap4 { // From the TrueType Spec. revision 1.66
     USHORT rangeShift;      // 2 x segCount - searchRange
 
     USHORT Arrays[1];       // Placeholder symbol for address of arrays following
-} CMAP4, *LPCMAP4;
-
+};
+using   LPCMAP4 = CMAP4* ;
 
 /*  CMAP table Data
     From the TrueType Spec revision 1.66
@@ -3454,11 +3454,11 @@ typedef struct _CMap4 { // From the TrueType Spec. revision 1.66
 */
 #define     ENCODINGSIZE    (sizeof(USHORT)*2 + sizeof(ULONG))
 
-typedef struct _CMapEncoding {
+struct CMAPENCODING {
     USHORT  PlatformId;
     USHORT  EncodingId;
     ULONG   Offset;
-} CMAPENCODING;
+};
 
 
 // Macro to pack a TrueType table name into a DWORD

@@ -50,7 +50,7 @@ namespace   {
 #endif
         }
         {
-            typedef RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int > RT;
+            using   RT  =   RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int >;
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);

@@ -65,7 +65,7 @@ public:
 
 
 
-typedef Led_MFC_ExceptionHandlerHelper< Led_MFC_X <WordProcessor> > LedItViewAlmostBASE;
+using       LedItViewAlmostBASE =   Led_MFC_ExceptionHandlerHelper< Led_MFC_X <WordProcessor>>;
 
 
 
@@ -78,7 +78,7 @@ typedef Led_MFC_ExceptionHandlerHelper< Led_MFC_X <WordProcessor> > LedItViewAlm
 
 class   LedItView : public WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE> {
 private:
-    typedef WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>  inherited;
+    using   inherited   =   WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>;
 
 public:
     LedItView ();

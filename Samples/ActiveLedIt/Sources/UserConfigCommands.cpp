@@ -479,7 +479,7 @@ STDMETHODIMP AL_CommandListHelper::IndexOf (VARIANT internalNameOrObject, UINT* 
 
 STDMETHODIMP    AL_CommandListHelper::get__NewEnum (IUnknown** ppUnk)
 {
-    typedef CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch> > > VarVarEnum;
+    using   VarVarEnum  =   CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch>>>;
     if (ppUnk == NULL) {
         return E_INVALIDARG;
     }
@@ -785,7 +785,7 @@ void    ActiveLedIt_AcceleratorTable::AppendACCEL (const char* internalCmdName, 
 
 STDMETHODIMP    ActiveLedIt_AcceleratorTable::get__NewEnum (IUnknown** ppUnk)
 {
-    typedef CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch> > > VarVarEnum;
+    using   VarVarEnum  =   CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch>>>;
     if (ppUnk == NULL) {
         return E_INVALIDARG;
     }

@@ -309,7 +309,7 @@ BOOL    ActiveLedItControl::ActiveLedItControlFactory::UpdateRegistry (BOOL bReg
  ******************************** ActiveLedItControl ****************************
  ********************************************************************************
  */
-typedef ActiveLedItControl  ALIC;
+using   ALIC    =   ActiveLedItControl;
 IMPLEMENT_DYNCREATE(ActiveLedItControl, COleControl)
 
 BEGIN_MESSAGE_MAP(ActiveLedItControl, COleControl)
@@ -1490,7 +1490,7 @@ void    ActiveLedItControl::OLE_PrintOnce ()
 
 long    ActiveLedItControl::OLE_GetHeight (long from, long to)
 {
-    typedef MultiRowTextImager::RowReference    RowReference;
+    using   RowReference    =   MultiRowTextImager::RowReference;
     if (from < 0) {
         from = 0;
     }
@@ -1533,7 +1533,7 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
 {
     class   MyAboutBox : public Led_StdDialogHelper_AboutBox {
     private:
-        typedef Led_StdDialogHelper_AboutBox    inherited;
+        using inherited     =   Led_StdDialogHelper_AboutBox;
     public:
         MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
             inherited (hInstance, parentWnd)

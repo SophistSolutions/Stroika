@@ -56,7 +56,7 @@ namespace   Stroika {
                 @'Led_Point' is a tuple of <code>Led_Coordinates</code>s
                 (vertical and horizontal).</p>
             */
-            typedef long            Led_Coordinate;
+            using       Led_Coordinate  =   long;
 
             /*
             @CLASS:         Led_Distance
@@ -64,7 +64,7 @@ namespace   Stroika {
                 between two graphics locations. @'Led_Size' is a tuple of <code>Led_Distance</code>s
                 (vertical and horizontal).</p>
             */
-            typedef unsigned long   Led_Distance;
+            using       Led_Distance    =   unsigned long;
 
 
 
@@ -280,7 +280,7 @@ namespace   Stroika {
             template    <typename   COORD_TYPE>
             struct  Point_Base {
             public:
-                typedef COORD_TYPE  CoordinateType;
+                using       CoordinateType  =   COORD_TYPE;
 
             public:
                 Point_Base ();
@@ -326,9 +326,9 @@ namespace   Stroika {
             template    <typename POINT_TYPE, typename SIZE_TYPE>
             struct  Rect_Base  {
             public:
-                typedef typename    POINT_TYPE::CoordinateType      CoordinateType;
-                typedef typename    SIZE_TYPE::CoordinateType       DistanceType;
-                typedef             Rect_Base<POINT_TYPE, SIZE_TYPE> THIS_TYPE;
+                using   CoordinateType  =   typename    POINT_TYPE::CoordinateType;
+                using   DistanceType    =   typename    SIZE_TYPE::CoordinateType;
+                using   THIS_TYPE       =   Rect_Base<POINT_TYPE, SIZE_TYPE>;
 
             public:
                 Rect_Base ();
@@ -382,7 +382,7 @@ namespace   Stroika {
 #if     qNestedTemplateCTORInTemplateBug
             struct  Led_Point;
             struct Led_Size : public Point_Base<Led_Distance> {
-                typedef Point_Base<Led_Distance> inherited;
+                using       inherited   =   Point_Base<Led_Distance>;
                 inline Led_Size  (): inherited () {}
                 inline Led_Size  (inherited i): inherited (i) {}
                 inline Led_Size  (Led_Distance newV, Led_Distance newH): inherited (newV, newH) {}
@@ -393,7 +393,7 @@ namespace   Stroika {
             @CLASS:         Led_Size
             @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Distance'.</p>
             */
-            typedef Point_Base<Led_Distance>    Led_Size;
+            using       Led_Size    =   Point_Base<Led_Distance>;
 #endif
 
 
@@ -403,7 +403,7 @@ namespace   Stroika {
             */
 #if     qNestedTemplateCTORInTemplateBug
             struct Led_Point : public Point_Base<Led_Coordinate> {
-                typedef Point_Base<Led_Coordinate> inherited;
+                using   inherited   =   Point_Base<Led_Coordinate>;
                 inline Led_Point  (): inherited () {}
                 inline Led_Point  (inherited i): inherited (i) {}
                 inline Led_Point  (Led_Coordinate newV, Led_Coordinate newH): inherited (newV, newH) {}
@@ -412,7 +412,7 @@ namespace   Stroika {
             inline Led_Size::Led_Size (Led_Point p): inherited (p.v, p.h) {}
             inline Led_Point::Led_Point (Led_Size p): inherited (p.v, p.h) {}
 #else
-            typedef Point_Base<Led_Coordinate>  Led_Point;
+            using   Led_Point   =   Point_Base<Led_Coordinate>;
 #endif
             Led_Point   operator-  (const Led_Point& lhs, const Led_Point& rhs);
 
@@ -421,7 +421,7 @@ namespace   Stroika {
             @CLASS:         Led_TWIPS_Point
             @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_TWIPS'.</p>
             */
-            typedef Point_Base<Led_TWIPS>   Led_TWIPS_Point;
+            using       Led_TWIPS_Point =   Point_Base<Led_TWIPS>;
 
 
 
@@ -431,14 +431,14 @@ namespace   Stroika {
             @CLASS:         Led_Rect
             @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'Led_Point' and @'Led_Size'.</p>
             */
-            typedef Rect_Base<Led_Point, Led_Size>   Led_Rect;
+            using       Led_Rect    =   Rect_Base<Led_Point, Led_Size>;
 
 
             /*
             @CLASS:         Led_TWIPS_Rect
             @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'Led_TWIPS_Point'.</p>
             */
-            typedef Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point>  Led_TWIPS_Rect;
+            using       Led_TWIPS_Rect  =   Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point>;
 
 
 
@@ -555,7 +555,7 @@ namespace   Stroika {
             public:
                 // regardless of Mac or Windows, we use the same size ColorValue so we can write
                 // portable code more easily...
-                typedef unsigned short  ColorValue;
+                using   ColorValue  =   unsigned short;
                 enum { kColorValueMin = 0, kColorValueMax = USHRT_MAX };
             public:
                 explicit    Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
@@ -605,8 +605,6 @@ namespace   Stroika {
                 ColorValue  fRed;
                 ColorValue  fGreen;
                 ColorValue  fBlue;
-
-                STLDefCTORDeclare_BWA(Led_Color)
             };
             bool    operator== (Led_Color lhs, Led_Color rhs);
             bool    operator!= (Led_Color lhs, Led_Color rhs);
@@ -864,7 +862,7 @@ namespace   Stroika {
 
             public:
 #if     qPlatform_MacOS
-                typedef short   FontNameSpecifier;
+                using   FontNameSpecifier   =   short;
 #elif   qPlatform_Windows
                 struct  FontNameSpecifier {     // So struct copies etc will work and so we can define op==
                     FontNameSpecifier ();
@@ -872,7 +870,7 @@ namespace   Stroika {
                     Led_SDK_Char    fName [LF_FACESIZE];
                 };
 #elif   qXWindows
-                typedef Led_SDK_String  FontNameSpecifier;
+                using       FontNameSpecifier   =   Led_SDK_String;
 #endif
 
             public:
@@ -988,7 +986,7 @@ namespace   Stroika {
             */
             class   Led_IncrementalFontSpecification : public Led_FontSpecification {
             private:
-                typedef Led_FontSpecification   inherited;
+                using       inherited   =   Led_FontSpecification;
             public:
                 Led_IncrementalFontSpecification ();
 
@@ -1569,7 +1567,7 @@ namespace   Stroika {
                 <p>In versions of Led prior to Led 3.0 - this typedef refered directly to a Mac GrafPort or MFC CDC.</p>
                 <p>Now it refers to a structure which wraps those lower level concepts (and doesnt depend on MFC anymore).</p>
             */
-            typedef Led_Tablet_*    Led_Tablet;
+            using       Led_Tablet  =   Led_Tablet_* ;
 
 
 
@@ -1671,7 +1669,7 @@ namespace   Stroika {
             private:
                 class   OT : public Led_Tablet_ {
                 private:
-                    typedef Led_Tablet_ inherited;
+                    using   inherited   =   Led_Tablet_;
                 public:
 #if     qPlatform_MacOS
                     OT (GrafPtr gp);
@@ -1741,7 +1739,7 @@ namespace   Stroika {
             @CLASS:         Led_Win_Obj_Selector
             @DESCRIPTION:   <p>Alias for newer @'Led_GDI_Obj_Selector'.</p>
             */
-            typedef Led_GDI_Obj_Selector    Led_Win_Obj_Selector;
+            using       Led_Win_Obj_Selector    =   Led_GDI_Obj_Selector;
 #endif
 
 
@@ -1786,7 +1784,7 @@ namespace   Stroika {
                 portable routines to draw the picture (again, with the windows QT caveat).</p>
             */
 #if     qHaveMacPictureDefined
-            typedef Picture Led_Picture;
+            using       Led_Picture =   Picture;
 #else
             struct  Led_Picture {
                 short   picSize;
@@ -1871,7 +1869,7 @@ namespace   Stroika {
                 of DIBs, but I appear to have most that windows currently generates. And it wouldn't be
                 too hard to extend the code to support a few more types, if I knew what they were.</p>
             */
-            typedef BITMAPINFO  Led_DIB;
+            using   Led_DIB =   BITMAPINFO;
 
             Led_Size    Led_GetDIBImageSize (const Led_DIB* dib);
             size_t      Led_GetDIBPalletByteCount (const Led_DIB* dib);
@@ -3443,7 +3441,7 @@ namespace   Stroika {
             }
             inline  Led_Color   operator* (Led_Color lhs, float factor)
             {
-                typedef Led_Color::ColorValue   CV;
+                using   CV  =   Led_Color::ColorValue;
                 return Led_Color (
                            static_cast<CV> (lhs.GetRed () * factor),
                            static_cast<CV> (lhs.GetGreen () * factor),

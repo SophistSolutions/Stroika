@@ -79,24 +79,24 @@ namespace   Stroika {
             template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
             class   STLAllocator  {
             public:
-                typedef STLAllocator<T, BASE_ALLOCATOR> other;
-                typedef T                               value_type;
-                typedef value_type*                     pointer;
-                typedef const value_type*               const_pointer;
-                typedef void*                           void_pointer;
-                typedef const void*                     const_void_pointer;
-                typedef value_type&                     reference;
-                typedef const value_type&               const_reference;
-                typedef size_t                          size_type;
-                typedef ptrdiff_t                       difference_type;
-                typedef false_type                      propagate_on_container_copy_assignment;
-                typedef false_type                      propagate_on_container_move_assignment;
-                typedef false_type                      propagate_on_container_swap;
+                using   other                                   =   STLAllocator<T, BASE_ALLOCATOR>;
+                using   value_type                              =   T;
+                using   pointer                                 =   value_type* ;
+                using   const_pointer                           =   const value_type* ;
+                using   void_pointer                            =   void* ;
+                using   const_void_pointer                      =   const void* ;
+                using   reference                               =   value_type& ;
+                using   const_reference                         =   const value_type& ;
+                using   size_type                               =   size_t;
+                using   difference_type                         =   ptrdiff_t;
+                using   propagate_on_container_copy_assignment  =   false_type;
+                using   propagate_on_container_move_assignment  =   false_type;
+                using   propagate_on_container_swap             =   false_type;
 
             public:
                 template <typename OTHER>
                 struct rebind {
-                    typedef STLAllocator<OTHER, BASE_ALLOCATOR> other;
+                    using   other   =   STLAllocator<OTHER, BASE_ALLOCATOR>;
                 };
 
             public:
@@ -174,7 +174,7 @@ namespace   Stroika {
              */
             class   LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
             public:
-                typedef map<void*, size_t, less<void*>, STLAllocator<pair<const void*, size_t>>>    PTRMAP;
+                using   PTRMAP      =   map<void*, size_t, less<void*>, STLAllocator<pair<const void*, size_t>>>;
 
             public:
                 LeakTrackingGeneralPurposeAllocator ();

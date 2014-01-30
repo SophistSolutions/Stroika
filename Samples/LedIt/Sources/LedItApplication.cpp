@@ -359,7 +359,7 @@ static  BOOL    AFXAPI  SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR l
 
 class   MyAboutBox : public Led_StdDialogHelper_AboutBox {
 private:
-    typedef Led_StdDialogHelper_AboutBox    inherited;
+    using   inherited   =   Led_StdDialogHelper_AboutBox;
 #if     qPlatform_Windows
 public:
     MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
@@ -506,7 +506,7 @@ public:
 #if     qXWindows
 class   LedItFilePickBox : public StdFilePickBox {
 private:
-    typedef StdFilePickBox  inherited;
+    using       inherited       =   StdFilePickBox;
 
 public:
     LedItFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName, FileFormat fileFormat):
@@ -1379,7 +1379,7 @@ BOOL    LedItApplication::InitInstance ()
     {
         class   MyRegistrationHelper : public Win32UIFileAssociationRegistrationHelper {
         private:
-            typedef Win32UIFileAssociationRegistrationHelper    inherited;
+            using   inherited   =   Win32UIFileAssociationRegistrationHelper;
         public:
             MyRegistrationHelper ():
                 inherited (::AfxGetResourceHandle ())

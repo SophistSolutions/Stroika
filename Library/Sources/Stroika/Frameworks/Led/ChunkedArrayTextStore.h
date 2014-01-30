@@ -109,7 +109,7 @@ namespace   Stroika {
             */
             class   ChunkedArrayTextStore : public TextStore {
             private:
-                typedef TextStore   inherited;
+                using       inherited       =   TextStore;
 
             public:
                 ChunkedArrayTextStore ();

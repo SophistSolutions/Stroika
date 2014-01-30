@@ -46,14 +46,14 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
+using       SavedTextRep    =   InteractiveReplaceCommand::SavedTextRep;
 
 
 
 namespace {
     class   FlavorSavorTextRep : public SavedTextRep {
     private:
-        typedef SavedTextRep    inherited;
+        using   inherited   =   SavedTextRep;
     public:
         FlavorSavorTextRep (TextInteractor* interactor, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd):
             inherited (selStart, selEnd),
@@ -111,7 +111,7 @@ namespace {
 namespace {
     class   MyCallback : public TextInteractor::DialogSupport::SpellCheckDialogCallback {
     private:
-        typedef TextInteractor::DialogSupport::SpellCheckDialogCallback inherited;
+        using   inherited   =   TextInteractor::DialogSupport::SpellCheckDialogCallback;
 
     public:
         MyCallback (TextInteractor& ti):

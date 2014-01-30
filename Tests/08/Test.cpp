@@ -41,13 +41,13 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
+        using   SimpleClassWithoutComparisonOperators_BAGTRAITS =   Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();

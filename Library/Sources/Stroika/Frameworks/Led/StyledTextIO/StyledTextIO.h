@@ -152,7 +152,7 @@ namespace   Stroika {
 
                     private:
                         SrcStream&  fRealSrcStream;
-                        typedef char    Byte;
+                        using   Byte    =   char;
                         Byte        fWindowTop_Data[4 * 1024];  // buffer for how much we buffer at a time...
                         size_t      fWindowTop_Offset;
                         const Byte* fWindowBottom_Data;
@@ -386,7 +386,7 @@ namespace   Stroika {
                 */
                 class   StyledTextIOWriter::SrcStream {
                 public:
-                    typedef TextImager::StandardTabStopList StandardTabStopList;
+                    using   StandardTabStopList =   TextImager::StandardTabStopList;
                 public:
                     virtual ~SrcStream () {}
 

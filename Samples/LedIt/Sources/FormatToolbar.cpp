@@ -30,7 +30,7 @@ using   namespace   Stroika::Foundation;
 
 #if     qPlatform_Windows
 
-typedef FormatToolbar::LocalComboBox    LocalComboBox;
+using   LocalComboBox   =   FormatToolbar::LocalComboBox;
 
 
 
@@ -303,7 +303,7 @@ void    FormatToolbar::NotifyOwner(UINT nCode)
  ******************************** FontComboBox **********************************
  ********************************************************************************
  */
-typedef FormatToolbar::FontComboBox FontComboBox;
+using   FontComboBox    =   FormatToolbar::FontComboBox;
 
 const   int BMW =   16;
 const   int BMH =   15;
@@ -447,7 +447,8 @@ void    FontComboBox::MatchFont (LPCTSTR lpszName)
  ******************************** SizeComboBox **********************************
  ********************************************************************************
  */
-typedef FormatToolbar::SizeComboBox SizeComboBox;
+using   SizeComboBox    =   FormatToolbar::SizeComboBox;
+
 SizeComboBox::SizeComboBox ()
 {
     m_nTwipsLast = 0;
@@ -579,7 +580,7 @@ void    SizeComboBox::InsertSize (int nSize)
  ******************************** LocalComboBox *********************************
  ********************************************************************************
  */
-typedef FormatToolbar::LocalComboBox    LocalComboBox;
+using   LocalComboBox   =   FormatToolbar::LocalComboBox;
 
 int     LocalComboBox::m_nFontHeight = 0;
 

@@ -38,7 +38,7 @@ namespace   Stroika {
             */
             class   SimpleTextInteractor : public InteractorImagerMixinHelper<SimpleTextImager> {
             private:
-                typedef InteractorImagerMixinHelper<SimpleTextImager>   inherited;
+                using   inherited   =   InteractorImagerMixinHelper<SimpleTextImager>;
 
             protected:
                 SimpleTextInteractor ();

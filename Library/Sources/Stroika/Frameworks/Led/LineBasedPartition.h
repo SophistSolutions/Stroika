@@ -31,7 +31,7 @@ namespace   Stroika {
             */
             class   LineBasedPartition : public Partition {
             private:
-                typedef Partition   inherited;
+                using   inherited   =   Partition;
             public:
                 LineBasedPartition (TextStore& textStore);
             protected:

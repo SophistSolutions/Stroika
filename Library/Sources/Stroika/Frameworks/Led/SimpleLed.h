@@ -73,11 +73,11 @@ namespace   Stroika {
             {
             private:
 #if     defined (__PowerPlant__)
-                typedef Led_PPView_X<WordProcessor, Led_PPView_Traits_Default>              inherited;
+                using   inherited   =   Led_PPView_X<WordProcessor, Led_PPView_Traits_Default>;
 #elif   defined (_MFC_VER)
-                typedef Led_MFC_X<WordProcessor>                                            inherited;
+                using   inherited   =   Led_MFC_X<WordProcessor>;
 #elif   defined (_WIN32)
-                typedef Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <WordProcessor> >  inherited;
+                using   inherited   =   Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <WordProcessor> >;
 #endif
             public:
                 SimpleLedWordProcessor ();
@@ -147,11 +147,11 @@ namespace   Stroika {
             {
             private:
 #if     defined (__PowerPlant__)
-                typedef Led_PPView_X<SimpleTextInteractor, Led_PPView_Traits_Default>                   inherited;
+                using   inherited   =   Led_PPView_X<SimpleTextInteractor, Led_PPView_Traits_Default>;
 #elif   defined (_MFC_VER)
-                typedef Led_MFC_X<SimpleTextInteractor>                                                 inherited;
+                using   inherited   =   Led_MFC_X<SimpleTextInteractor>;
 #elif   defined (_WIN32)
-                typedef Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <SimpleTextInteractor> >       inherited;
+                using   inherited   =   Platform::Led_Win32_SimpleWndProc_Helper <Platform::Led_Win32_Helper <SimpleTextInteractor> >;
 #endif
             public:
                 SimpleLedLineEditor ();
@@ -208,7 +208,7 @@ namespace   Stroika {
              */
             class   LedDialogText : public SimpleLedWordProcessor {
             private:
-                typedef SimpleLedWordProcessor  inherited;
+                using   inherited   =   SimpleLedWordProcessor;
             public:
                 LedDialogText ();
 

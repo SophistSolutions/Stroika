@@ -207,14 +207,14 @@ namespace   {
             }
         }
     };
-    typedef vector<Appointment_>    CalendarType_;
+    using       CalendarType_       =   vector<Appointment_>;
     struct  CalendarReaderTraits_ {
-        typedef Appointment_        ElementType;
-        typedef AppointmentReader_  ReaderType;
+        using   ElementType =   Appointment_;
+        using   ReaderType  =   AppointmentReader_;
         static  const wchar_t       ElementName[];
     };
     const wchar_t   CalendarReaderTraits_::ElementName[]        =   L"Appointment";
-    typedef ListOfObjectReader<CalendarReaderTraits_>       CalendarReader_;
+    using       CalendarReader_ =   ListOfObjectReader<CalendarReaderTraits_>;
 
     void    Test_2_SAXObjectReader_ ()
     {

@@ -25,10 +25,10 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeType    RangeType;
-                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                using   DomainType                      =   typename    USING_BIJECTION_CONTAINER::DomainType;
+                using   RangeType                       =   typename    USING_BIJECTION_CONTAINER::RangeType;
+                using   DomainEqualsCompareFunctionType =   typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType  =   typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType;
                 USING_BIJECTION_CONTAINER s;
                 s.Add (3, 5);
                 VerifyTestResult (s.length () == 1);
@@ -47,10 +47,10 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeType    RangeType;
-                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                using   DomainType                      =   typename    USING_BIJECTION_CONTAINER::DomainType;
+                using   RangeType                       =   typename    USING_BIJECTION_CONTAINER::RangeType;
+                using   DomainEqualsCompareFunctionType =   typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType  =   typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType;
                 USING_BIJECTION_CONTAINER s;
                 for (int i = 0; i < 100; ++i) {
                     s.Add (3 + i, 5 + i);
@@ -70,8 +70,8 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                using   DomainEqualsCompareFunctionType =   typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType  =   typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType ;
                 {
                     map<int, int>   t;
                     t.insert (map<int, int>::value_type (2, 4));
@@ -115,10 +115,10 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::DomainType DomainType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeType RangeType;
+                using   DomainEqualsCompareFunctionType =   typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType  =   typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType;
+                using   DomainType                      =   typename    USING_BIJECTION_CONTAINER::DomainType;
+                using   RangeType                       =   typename    USING_BIJECTION_CONTAINER::RangeType;
                 {
                     USING_BIJECTION_CONTAINER   b;
                     b.Add (3, 5);
@@ -132,7 +132,7 @@ namespace CommonTests {
                     }
 #endif
                     {
-                        typedef Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>  MAPPING_TRAITS;
+                        using   MAPPING_TRAITS  =   Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>;
                         Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.template As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         VerifyTestResult (m.ContainsKey (3));
@@ -159,10 +159,10 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
-                typedef typename    USING_BIJECTION_CONTAINER::DomainType DomainType;
-                typedef typename    USING_BIJECTION_CONTAINER::RangeType RangeType;
+                using   DomainEqualsCompareFunctionType =   typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType;
+                using   RangeEqualsCompareFunctionType  =   typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType;
+                using   DomainType                      =   typename    USING_BIJECTION_CONTAINER::DomainType;
+                using   RangeType                       =   typename    USING_BIJECTION_CONTAINER::RangeType ;
                 {
                     USING_BIJECTION_CONTAINER   b;
                     b.Add (3, 5);
@@ -177,7 +177,7 @@ namespace CommonTests {
 #endif
 #if 0
                     {
-                        typedef typename Mapping_DefaultTraits<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>  MAPPING_TRAITS;
+                        using   MAPPING_TRAITS      =   typename Mapping_DefaultTraits<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>;
                         Mapping<RangeType, DomainType, MAPPING_TRAITS>  m = b.Inverse<Mapping<RangeType, DomainType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         //VerifyTestResult (m.ContainsKey (5));

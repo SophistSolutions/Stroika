@@ -23,7 +23,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    MultiSetIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename CONCRETE_CONTAINER::MultiSetOfElementType   T;
+                using   T   =   typename CONCRETE_CONTAINER::MultiSetOfElementType;
                 const   size_t  kTestSize = 6;
 
                 VerifyTestResult (s.GetLength () == 0);
@@ -130,8 +130,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    SimpleMultiSetTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename CONCRETE_CONTAINER::EqualsCompareFunctionType   EqualsCompareFunctionType;
-                typedef typename CONCRETE_CONTAINER::ArchetypeContainerType         TALLY_ARCHTYPE;
+                using   EqualsCompareFunctionType   =   typename CONCRETE_CONTAINER::EqualsCompareFunctionType;
+                using   TALLY_ARCHTYPE              =   typename CONCRETE_CONTAINER::ArchetypeContainerType;
 
                 size_t  three = 3;
 
@@ -349,7 +349,7 @@ namespace CommonTests {
             void    DoAllTests_ ()
             {
                 {
-                    typedef typename CONCRETE_CONTAINER::ArchetypeContainerType TALLY_ARCHTYPE;
+                    using   TALLY_ARCHTYPE  =   typename CONCRETE_CONTAINER::ArchetypeContainerType;
                     CONCRETE_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.Elements ().size () == 7);

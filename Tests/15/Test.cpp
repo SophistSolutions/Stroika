@@ -34,8 +34,8 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        using   ElementType =   typename CONCRETE_CONTAINER::ElementType;
+        using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const Set<ElementType, typename TraitsType::SetTraitsType>& s) {
             // only work todo on sorted sets
         };
@@ -51,13 +51,13 @@ namespace   {
         using namespace CommonTests::SetTests;
 
         struct  MySimpleClassWithoutComparisonOperators_CompareEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Set_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_>   SimpleClassWithoutComparisonOperators_SETRAITS;
+        using   SimpleClassWithoutComparisonOperators_SETRAITS  =   Set_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_>;
 
         DoTestForConcreteContainer_<Set<size_t>> ();
         DoTestForConcreteContainer_<Set<SimpleClass>> ();
@@ -71,17 +71,17 @@ namespace   {
         DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
         {
             struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_CompareEquals_ {
-                typedef SimpleClassWithoutComparisonOperators ElementType;
+                using   ElementType =   SimpleClassWithoutComparisonOperators;
                 static  int    Compare (ElementType v1, ElementType v2)
                 {
                     return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
                 }
             };
-            typedef Concrete::Set_stdset_DefaultTraits <
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_CompareEquals_,
-            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
-            >   SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS;
+            using   SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS  =   Concrete::Set_stdset_DefaultTraits <
+                    SimpleClassWithoutComparisonOperators,
+                    MySimpleClassWithoutComparisonOperators_CompareEquals_,
+                    MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
+                    >;
             DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS>> ();
         }
 

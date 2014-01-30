@@ -55,7 +55,7 @@ namespace   Stroika {
                 virtual ~WordWrappedTextImager ();
 
             private:
-                typedef MultiRowTextImager  inherited;
+                using       inherited   =   MultiRowTextImager;
 
 
             public:

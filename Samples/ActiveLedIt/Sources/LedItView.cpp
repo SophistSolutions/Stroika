@@ -35,7 +35,7 @@ namespace {
 
     class   MyPrefs : public OptionsFileHelper {
     private:
-        typedef OptionsFileHelper   inherited;
+        using   inherited   =   OptionsFileHelper;
     public:
         MyPrefs ():
             inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\ActiveLedIt!\\Settings")))
@@ -174,7 +174,7 @@ My_CMDNUM_MAPPING   sMy_CMDNUM_MAPPING;
 
 struct  ActiveLedIt_DialogSupport : TextInteractor::DialogSupport, WordProcessor::DialogSupport {
 public:
-    typedef TextInteractor::DialogSupport::CommandNumber    CommandNumber;
+    using   CommandNumber   =   TextInteractor::DialogSupport::CommandNumber;
 
 public:
     ActiveLedIt_DialogSupport ()
@@ -413,7 +413,7 @@ public:
     {
         RequireNotNull (tableProperties);
 
-        typedef Led_StdDialogHelper_EditTablePropertiesDialog   DLGTYPE;
+        using   DLGTYPE =   Led_StdDialogHelper_EditTablePropertiesDialog;
 #if     qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif   qPlatform_Windows
@@ -473,7 +473,7 @@ void    DemoModeAlerter::ShowAlert (HWND parentWnd)
 {
     class   DemoExpiresDLG : public Led_StdDialogHelper {
     private:
-        typedef Led_StdDialogHelper inherited;
+        using   inherited   =   Led_StdDialogHelper;
     public:
         DemoExpiresDLG (HINSTANCE hInstance, HWND parentWnd):
             inherited (hInstance, MAKEINTRESOURCE (kDemoExpired_DialogID), parentWnd)

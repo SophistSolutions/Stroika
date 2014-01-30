@@ -91,7 +91,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor : public virtual TextInteractor, public StandardStyledTextImager {
             private:
-                typedef void*   inherited;  // prevent accidental references to this name in subclasses to base class name
+                using   inherited   =   void* ; // prevent accidental references to this name in subclasses to base class name
             protected:
                 StandardStyledTextInteractor ();
             public:
@@ -226,7 +226,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
             private:
-                typedef StyledTextIO::StyledTextIOReader::SinkStream  inherited;
+                using   inherited   =   StyledTextIO::StyledTextIOReader::SinkStream;
             public:
                 StandardStyledTextIOSinkStream (TextStore* textStore,
                                                 const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -298,7 +298,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
             private:
-                typedef StyledTextIO::StyledTextIOWriter::SrcStream   inherited;
+                using       inherited   =   StyledTextIO::StyledTextIOWriter::SrcStream;
             public:
                 StandardStyledTextIOSrcStream (TextStore* textStore,
                                                const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -351,7 +351,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer : public virtual FlavorPackageInternalizer {
             private:
-                typedef FlavorPackageInternalizer   inherited;
+                using   inherited   =   FlavorPackageInternalizer;
 
             public:
                 StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase);
@@ -404,7 +404,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer : public virtual FlavorPackageExternalizer {
             private:
-                typedef FlavorPackageExternalizer   inherited;
+                using   inherited   =   FlavorPackageExternalizer;
 
             public:
                 StyledTextFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase);
@@ -444,7 +444,7 @@ namespace   Stroika {
             */
             class   StandardStyledTextInteractor::EmptySelStyleTextRep : public InteractiveReplaceCommand::SavedTextRep {
             private:
-                typedef InteractiveReplaceCommand::SavedTextRep inherited;
+                using   inherited   =   InteractiveReplaceCommand::SavedTextRep;
             public:
                 EmptySelStyleTextRep (StandardStyledTextInteractor* interactor, size_t selStart, size_t selEnd);
 

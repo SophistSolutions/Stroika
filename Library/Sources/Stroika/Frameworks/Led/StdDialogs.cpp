@@ -1084,7 +1084,7 @@ bool    Led_StdDialogHelper::DoModal ()
 #elif       qPlatform_Windows
     HWND    oldFocusWnd =   ::GetFocus ();
 #if     qNO_INT_PTR_DefinedCompilerBug
-    typedef int INT_PTR;
+    using   INT_PTR =   int;
 #endif
     INT_PTR x   =   ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
     if (oldFocusWnd != NULL) {
@@ -2353,7 +2353,7 @@ void    StdColorPickBox::OnOK ()
     inherited::OnOK ();
     gdouble colors[4];
     gtk_color_selection_get_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
-    typedef Led_Color::ColorValue   CV;
+    using       CV  =   Led_Color::ColorValue;
     fColor = Led_Color (static_cast<CV> (colors[0] * Led_Color::kColorValueMax),
                         static_cast<CV> (colors[1] * Led_Color::kColorValueMax),
                         static_cast<CV> (colors[2] * Led_Color::kColorValueMax)

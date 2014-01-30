@@ -47,16 +47,13 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType     =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef MultiSet_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-        >   SimpleClassWithoutComparisonOperators_MultiSetTRAITS;
+        using   SimpleClassWithoutComparisonOperators_MultiSetTRAITS    =   MultiSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
 
         DoTestForConcreteContainer_<MultiSet<size_t>> ();
         DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
@@ -74,16 +71,16 @@ namespace   {
         DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
         {
             struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-                typedef SimpleClassWithoutComparisonOperators ElementType;
+                using   ElementType =   SimpleClassWithoutComparisonOperators;
                 static  int    Compare (ElementType v1, ElementType v2)
                 {
                     return v1.GetValue () - v2.GetValue ();
                 }
             };
-            typedef Concrete::MultiSet_stdmap_DefaultTraits <
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
-            >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
+            using   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS =   Concrete::MultiSet_stdmap_DefaultTraits <
+                    SimpleClassWithoutComparisonOperators,
+                    MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
+                    >;
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
     }

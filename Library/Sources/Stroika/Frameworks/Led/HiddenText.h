@@ -59,7 +59,7 @@ namespace   Stroika {
             */
             class   HidableTextMarkerOwner : public MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 HidableTextMarkerOwner (TextStore& textStore);
@@ -119,7 +119,7 @@ namespace   Stroika {
                 TextStore&                                  fTextStore;
                 mutable MarkerMortuary<HidableTextMarker>   fMarkersToBeDeleted;
             protected:
-                typedef vector<HidableTextMarker*>  MarkerList;
+                using   MarkerList  =   vector<HidableTextMarker*>;
             protected:
                 nonvirtual  MarkerList  CollectAllInRange (size_t from, size_t to) const;
                 nonvirtual  MarkerList  CollectAllInRange_OrSurroundings (size_t from, size_t to) const;
@@ -162,7 +162,7 @@ namespace   Stroika {
             */
             class   UniformHidableTextMarkerOwner : public HidableTextMarkerOwner {
             private:
-                typedef HidableTextMarkerOwner  inherited;
+                using   inherited   =   HidableTextMarkerOwner;
 
             public:
                 UniformHidableTextMarkerOwner (TextStore& textStore);
@@ -193,7 +193,7 @@ namespace   Stroika {
             */
             class   HidableTextMarkerOwner::HidableTextMarker : public StyledTextImager::StyleMarker {
             private:
-                typedef StyledTextImager::StyleMarker   inherited;
+                using   inherited   =   StyledTextImager::StyleMarker;
             public:
                 HidableTextMarker ();
 
@@ -228,10 +228,10 @@ namespace   Stroika {
             template    <typename   BASECLASS>
             class   HidableTextMarkerHelper : public BASECLASS {
             private:
-                typedef BASECLASS   inherited;
+                using   inherited   =   BASECLASS;
 
             public:
-                typedef StyledTextImager::RunElement    RunElement;
+                using       RunElement  =   StyledTextImager::RunElement;
 
             public:
                 HidableTextMarkerHelper ();
@@ -273,18 +273,10 @@ namespace   Stroika {
                 some other helper file, and just USE the functionality here.</p>
                     <p>See also @'HidableTextMarkerOwner::LightUnderlineHidableTextMarker'.</p>
             */
-#if     qNestedClassesWithoutTypeDefArgToTemplateCompilerBug
-            typedef SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>  SimpleStyleMarkerByFontSpec_HidableTextMarkerOwner_HidableTextMarker;
-#endif
             class   HidableTextMarkerOwner::FontSpecHidableTextMarker :
-#if     qNestedClassesWithoutTypeDefArgToTemplateCompilerBug
-                public HidableTextMarkerHelper <SimpleStyleMarkerByFontSpec_HidableTextMarkerOwner_HidableTextMarker >
-#else
-                public HidableTextMarkerHelper <SimpleStyleMarkerByFontSpec <HidableTextMarkerOwner::HidableTextMarker> >
-#endif
-            {
+                public HidableTextMarkerHelper <SimpleStyleMarkerByFontSpec <HidableTextMarkerOwner::HidableTextMarker> > {
             private:
-                typedef HidableTextMarkerHelper < SimpleStyleMarkerByFontSpec <HidableTextMarkerOwner::HidableTextMarker>   > inherited;
+                using   inherited   =   HidableTextMarkerHelper < SimpleStyleMarkerByFontSpec <HidableTextMarkerOwner::HidableTextMarker>>;
             public:
                 FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo);
 
@@ -311,18 +303,10 @@ namespace   Stroika {
                         it works well with other embeddings and display markers, cuz it lets them
                         do their drawing, and simply adds the underline.</p>
             */
-#if     qNestedClassesWithoutTypeDefArgToTemplateCompilerBug
-            typedef SimpleStyleMarkerWithLightUnderline <SimpleStyleMarkerByIncrementalFontSpec <SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper <SimpleStyleMarkerWithExtraDraw <HidableTextMarkerOwner::HidableTextMarker> > > >  SimpleStyleMarkerWithLightUnderline_SimpleStyleMarkerByIncrementalFontSpec_SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper_SimpleStyleMarkerWithExtraDraw_HidableTextMarkerOwner_HidableTextMarker;
-#endif
             class   HidableTextMarkerOwner::LightUnderlineHidableTextMarker :
-#if     qNestedClassesWithoutTypeDefArgToTemplateCompilerBug
-                public HidableTextMarkerHelper <SimpleStyleMarkerWithLightUnderline_SimpleStyleMarkerByIncrementalFontSpec_SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper_SimpleStyleMarkerWithExtraDraw_HidableTextMarkerOwner_HidableTextMarker>
-#else
-                public HidableTextMarkerHelper <SimpleStyleMarkerWithLightUnderline <SimpleStyleMarkerByIncrementalFontSpec <SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper <SimpleStyleMarkerWithExtraDraw <HidableTextMarkerOwner::HidableTextMarker> > > > >
-#endif
-            {
+                public HidableTextMarkerHelper <SimpleStyleMarkerWithLightUnderline <SimpleStyleMarkerByIncrementalFontSpec <SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper <SimpleStyleMarkerWithExtraDraw <HidableTextMarkerOwner::HidableTextMarker> > > > > {
             private:
-                typedef HidableTextMarkerHelper <SimpleStyleMarkerWithLightUnderline <SimpleStyleMarkerByIncrementalFontSpec <SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper <SimpleStyleMarkerWithExtraDraw <HidableTextMarkerOwner::HidableTextMarker> > > > >   inherited;
+                using   inherited   =   HidableTextMarkerHelper <SimpleStyleMarkerWithLightUnderline <SimpleStyleMarkerByIncrementalFontSpec <SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper <SimpleStyleMarkerWithExtraDraw <HidableTextMarkerOwner::HidableTextMarker> > > > >;
             public:
                 LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp = Led_IncrementalFontSpecification ());
 
@@ -345,7 +329,7 @@ namespace   Stroika {
             */
             class   ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwner {
             private:
-                typedef UniformHidableTextMarkerOwner   inherited;
+                using   inherited   =   UniformHidableTextMarkerOwner;
 
             public:
                 ColoredUniformHidableTextMarkerOwner (TextStore& textStore);

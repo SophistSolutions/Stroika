@@ -473,7 +473,7 @@ namespace   {
     void    Test8_ReadOnlyStrings_ ()
     {
         // NOTE - THIS TESTS String_Constant
-        //  typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
+        //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
         String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.SetLength (3);

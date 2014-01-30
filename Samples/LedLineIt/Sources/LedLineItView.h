@@ -57,7 +57,7 @@ class   LedLineItDocument;
 
 class   LedLineItView : public LedLineItMFCBaseClass {
 private:
-    typedef LedLineItMFCBaseClass   inherited;
+    using   inherited   =   LedLineItMFCBaseClass;
 
 protected: // create from serialization only
     LedLineItView ();

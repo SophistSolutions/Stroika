@@ -291,7 +291,7 @@ namespace   Stroika {
             class   TextInteractor;
             class   InteractiveReplaceCommand : public Command {
             private:
-                typedef Command inherited;
+                using   inherited   =   Command;
 
             public:
                 class   SavedTextRep;
@@ -372,7 +372,7 @@ namespace   Stroika {
             */
             class   InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep {
             private:
-                typedef SavedTextRep    inherited;
+                using   inherited   =   SavedTextRep;
 
             public:
                 PlainTextRep (size_t selStart, size_t selEnd, const Led_tChar* text, size_t textLen);

@@ -35,7 +35,7 @@ class   LedItDocument;
 
 
 #if     qPlatform_Windows
-typedef Platform::Led_MFC_X <WordProcessor> LedItViewAlmostBASE;
+using       LedItViewAlmostBASE =   Platform::Led_MFC_X <WordProcessor>;
 #endif
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -53,11 +53,11 @@ class   LedItView :
 {
 private:
 #if     qPlatform_MacOS
-    typedef Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor> >     inherited;
+    using       inherited   =   Platform::WordProcessorCommonCommandHelper_PP<Led_PPView_X<WordProcessor>>;
 #elif   qPlatform_Windows
-    typedef Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>            inherited;
+    using       inherited   =   Platform::WordProcessorCommonCommandHelper_MFC <LedItViewAlmostBASE>;
 #elif   qXWindows
-    typedef Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor> >  inherited;
+    using       inherited   =   Platform::WordProcessorCommonCommandHelper_Gtk<Led_Gtk_Helper<WordProcessor>>;
 #endif
 
 #if     qPlatform_MacOS

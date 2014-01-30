@@ -265,7 +265,7 @@ namespace   Stroika {
                  *  whether we still have a valid word marker.
                  */
             public:
-                typedef MarkerOwner::UpdateInfo UpdateInfo;
+                using   UpdateInfo  =   MarkerOwner::UpdateInfo;
                 virtual void    AboutToUpdateText (const UpdateInfo& updateInfo);   // throw to avoid actual update
                 virtual void    DidUpdateText (const UpdateInfo& updateInfo) noexcept;
 
@@ -385,7 +385,7 @@ namespace   Stroika {
             */
             class   TempMarker : public MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
             public:
                 TempMarker (TextStore& ts, size_t start, size_t end);
                 ~TempMarker ();

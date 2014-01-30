@@ -58,7 +58,7 @@ namespace   Stroika {
             */
             class   StandardStyledWordWrappedTextInteractor : public InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor> {
             private:
-                typedef InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>    inherited;
+                using   inherited   =   InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>;
 
             protected:
                 StandardStyledWordWrappedTextInteractor ();
@@ -78,7 +78,7 @@ namespace   Stroika {
             */
             class   WordProcessor : public StandardStyledWordWrappedTextInteractor {
             private:
-                typedef StandardStyledWordWrappedTextInteractor inherited;
+                using   inherited   =   StandardStyledWordWrappedTextInteractor;
             protected:
                 WordProcessor ();
             public:
@@ -134,7 +134,7 @@ namespace   Stroika {
                 @BASES:         @'shared_ptr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
                 @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
                 */
-                typedef shared_ptr<AbstractParagraphDatabaseRep> ParagraphDatabasePtr;
+                using   ParagraphDatabasePtr    =   shared_ptr<AbstractParagraphDatabaseRep>;
                 nonvirtual  ParagraphDatabasePtr            GetParagraphDatabase () const;
                 nonvirtual  void                            SetParagraphDatabase (const ParagraphDatabasePtr& paragraphDatabase);
             private:
@@ -152,7 +152,7 @@ namespace   Stroika {
                 @BASES:         @'shared_ptr<T>', (T=@'HidableTextMarkerOwner')
                 @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
                 */
-                typedef shared_ptr<HidableTextMarkerOwner>   HidableTextDatabasePtr;
+                using   HidableTextDatabasePtr  =   shared_ptr<HidableTextMarkerOwner>;
                 nonvirtual  HidableTextDatabasePtr  GetHidableTextDatabase () const;
                 nonvirtual  void                    SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase);
             private:
@@ -638,7 +638,7 @@ namespace   Stroika {
             */
             class   WordProcessor::ParagraphInfo {
             public:
-                typedef TextImager::StandardTabStopList StandardTabStopList;
+                using   StandardTabStopList =   TextImager::StandardTabStopList;
             public:
                 ParagraphInfo ();
 
@@ -716,7 +716,7 @@ namespace   Stroika {
             */
             class   WordProcessor::IncrementalParagraphInfo : public WordProcessor::ParagraphInfo {
             private:
-                typedef ParagraphInfo   inherited;
+                using       inherited   =   ParagraphInfo;
 
             public:
                 IncrementalParagraphInfo ();
@@ -819,22 +819,22 @@ namespace   Stroika {
             */
             class   WordProcessor::AbstractParagraphDatabaseRep :   public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 AbstractParagraphDatabaseRep ();
 
             public:
-                typedef shared_ptr<Partition>    PartitionPtr;
+                using   PartitionPtr    =   shared_ptr<Partition>;
                 virtual PartitionPtr    GetPartition () const                               = 0;
                 virtual void            SetPartition (const PartitionPtr& partitionPtr)     = 0;
 
             public:
-                virtual const ParagraphInfo&    GetParagraphInfo (size_t charAfterPos) const                                                                = 0;
-                virtual vector<pair<WordProcessor::ParagraphInfo, size_t> >  GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const           = 0;
+                virtual const ParagraphInfo&                                    GetParagraphInfo (size_t charAfterPos) const                                    = 0;
+                virtual vector<pair<WordProcessor::ParagraphInfo, size_t> >     GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const           = 0;
 
-                virtual void    SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)             =   0;
-                virtual void    SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t> >& infoForMarkers) =   0;
+                virtual void    SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)                 =   0;
+                virtual void    SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t> >& infoForMarkers)    =   0;
                 virtual void    SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t> >& infoForMarkers) = 0;
 
             private:
@@ -859,12 +859,12 @@ namespace   Stroika {
             */
             class   WordProcessor::ParagraphDatabaseRep :   public WordProcessor::AbstractParagraphDatabaseRep, private MarkerCover<WordProcessor::ParagraphInfoMarker, WordProcessor::ParagraphInfo, WordProcessor::IncrementalParagraphInfo> {
             private:
-                typedef MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo> inheritedMC;
+                using   inheritedMC =   MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo>;
             public:
                 ParagraphDatabaseRep (TextStore& textStore);
 
             public:
-                typedef shared_ptr<Partition>    PartitionPtr;
+                using   PartitionPtr    =   shared_ptr<Partition>;
                 virtual     PartitionPtr    GetPartition () const override;
                 virtual     void            SetPartition (const PartitionPtr& partitionPtr) override;
             private:
@@ -909,7 +909,7 @@ namespace   Stroika {
             */
             class   WordProcessor::WordProcessorTextIOSinkStream : public StandardStyledTextInteractor::StandardStyledTextIOSinkStream {
             private:
-                typedef StandardStyledTextInteractor::StandardStyledTextIOSinkStream    inherited;
+                using   inherited   =   StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
             public:
                 WordProcessorTextIOSinkStream (TextStore* textStore,
                                                const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -986,7 +986,7 @@ namespace   Stroika {
                 vector<Context>     fSavedContexts;
 
             private:
-                typedef pair<IncrementalParagraphInfo, size_t>   ParaInfoNSize;
+                using   ParaInfoNSize   =   pair<IncrementalParagraphInfo, size_t>;
                 WordProcessor::ParagraphDatabasePtr             fParagraphDatabase;
                 WordProcessor::HidableTextDatabasePtr           fHidableTextDatabase;
                 vector<ParaInfoNSize>                           fSavedParaInfo;
@@ -1024,7 +1024,7 @@ namespace   Stroika {
             */
             class   WordProcessor::WordProcessorTextIOSrcStream : public StandardStyledTextInteractor::StandardStyledTextIOSrcStream {
             private:
-                typedef StandardStyledTextInteractor::StandardStyledTextIOSrcStream inherited;
+                using   inherited   =   StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
             public:
                 WordProcessorTextIOSrcStream (TextStore* textStore,
                                               const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -1075,7 +1075,7 @@ namespace   Stroika {
             */
             class   WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIO::StyledTextIOWriter::SrcStream::Table {
             private:
-                typedef StyledTextIO::StyledTextIOWriter::SrcStream::Table    inherited;
+                using   inherited   =   StyledTextIO::StyledTextIOWriter::SrcStream::Table;
             public:
                 TableIOMapper (WordProcessor::Table& realTable,
                                size_t startRow = 0, size_t endRow = static_cast<size_t> (-1),
@@ -1112,7 +1112,7 @@ namespace   Stroika {
             */
             class   WordProcessor::WordProcessorFlavorPackageInternalizer : public StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer {
             private:
-                typedef StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer   inherited;
+                using       inherited   =   StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer;
 
             public:
                 WordProcessorFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
@@ -1156,11 +1156,11 @@ namespace   Stroika {
             */
             class   WordProcessor::WPPartition : public LineBasedPartition {
             public:
-                typedef PartitioningTextImager::PartitionMarker PartitionMarker;
-                typedef MarkerOwner::UpdateInfo                 UpdateInfo;
-                typedef WordProcessor::Table                    Table;
+                using   PartitionMarker =   PartitioningTextImager::PartitionMarker;
+                using   UpdateInfo      =   MarkerOwner::UpdateInfo;
+                using   Table           =   WordProcessor::Table;
             private:
-                typedef LineBasedPartition  inherited;
+                using   inherited       =   LineBasedPartition;
             public:
                 WPPartition (TextStore& textStore, MarkerOwner& tableMarkerOwner);
             protected:
@@ -1202,7 +1202,7 @@ namespace   Stroika {
             */
             class   WordProcessor::WordProcessorFlavorPackageExternalizer : public StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer {
             private:
-                typedef StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer   inherited;
+                using   inherited   =   StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer;
 
             public:
                 WordProcessorFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
@@ -1259,7 +1259,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using       inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 Table (AbstractParagraphDatabaseRep* tableOwner, size_t addAt);
@@ -1621,7 +1621,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::CellRep : public MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
             public:
                 CellRep (Table& forTable);
                 ~CellRep ();
@@ -1693,7 +1693,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::EmbeddedTableWordProcessor : public WordProcessor {
             private:
-                typedef WordProcessor   inherited;
+                using   inherited   =   WordProcessor;
 
             public:
                 EmbeddedTableWordProcessor (WordProcessor& owningWordProcessor, Table& owningTable, size_t tRow, size_t tCol, bool activeEditCell);
@@ -1786,12 +1786,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep {
             private:
-                typedef InteractiveReplaceCommand::SavedTextRep inherited;
-
-#if     qNameLookupInBaseClassWhenItIsNestedSometimesFailsBug
-            public:
-                typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
-#endif
+                using   inherited   =   InteractiveReplaceCommand::SavedTextRep;
 
             public:
                 DECLARE_USE_BLOCK_ALLOCATION (SavedTextRepWSel);
@@ -1831,7 +1826,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet {
             public:
-                typedef WordProcessor::Table::EmbeddedTableWordProcessor    EmbeddedTableWordProcessor;
+                using   EmbeddedTableWordProcessor  =   WordProcessor::Table::EmbeddedTableWordProcessor;
             public:
                 enum DoTextMetricsChangedCall { eDoTextMetricsChangedCall, eDontDoTextMetricsChangedCall };
                 TemporarilyUseTablet (EmbeddedTableWordProcessor& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
@@ -1896,7 +1891,7 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::TemporarilyAllocateCellWP {
             public:
-                typedef WordProcessor::Table::EmbeddedTableWordProcessor    EmbeddedTableWordProcessor;
+                using   EmbeddedTableWordProcessor  =   WordProcessor::Table::EmbeddedTableWordProcessor;
             public:
                 TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn, const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
                 ~TemporarilyAllocateCellWP ();
@@ -1921,13 +1916,13 @@ namespace   Stroika {
             */
             class   WordProcessor::Table::TemporarilyAllocateCellWithTablet {
             public:
-                typedef TextInteractor::Tablet_Acquirer Tablet_Acquirer;    // needed for GCC 2.96 - seems like the requirement maybe a compiler bug... LGP 2003-04-18
+                using   Tablet_Acquirer =   TextInteractor::Tablet_Acquirer;    // needed for GCC 2.96 - seems like the requirement maybe a compiler bug... LGP 2003-04-18
 
             public:
                 TemporarilyAllocateCellWithTablet (Table& forTable, size_t row, size_t column, bool captureChangesForUndo = true);
 
             public:
-                typedef EmbeddedTableWordProcessor::TemporarilyUseTablet    TemporarilyUseTablet;
+                using   TemporarilyUseTablet    =   EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
             public:
                 nonvirtual  operator    EmbeddedTableWordProcessor* ();
@@ -1997,8 +1992,8 @@ namespace   Stroika {
             */
             class   WordProcessor::DialogSupport {
             public:
-                typedef TextInteractor::CommandNumber               CommandNumber;
-                typedef Led_FontSpecification::FontNameSpecifier    FontNameSpecifier;
+                using   CommandNumber       =   TextInteractor::CommandNumber;
+                using   FontNameSpecifier   =   Led_FontSpecification::FontNameSpecifier;
 
             public:
                 virtual     FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum);
@@ -2057,7 +2052,7 @@ namespace   Stroika {
             */
             class   WordProcessor::EmptySelectionParagraphSavedTextRep : public StandardStyledTextInteractor::EmptySelStyleTextRep {
             private:
-                typedef StandardStyledTextInteractor::EmptySelStyleTextRep  inherited;
+                using   inherited   =   StandardStyledTextInteractor::EmptySelStyleTextRep;
             public:
                 EmptySelectionParagraphSavedTextRep (WordProcessor* interactor, size_t selStart, size_t selEnd, size_t at);
 

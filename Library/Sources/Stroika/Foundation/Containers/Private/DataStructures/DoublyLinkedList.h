@@ -178,7 +178,7 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
-                        typedef ForwardIterator     IteratorBaseType;
+                        using   IteratorBaseType    =   ForwardIterator;
                         nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const DoublyLinkedList<T, TRAITS>* movedFrom);
 
                     public:

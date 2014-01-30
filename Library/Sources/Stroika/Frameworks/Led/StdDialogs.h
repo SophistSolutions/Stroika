@@ -167,7 +167,7 @@ namespace   Stroika {
 #if     qSupportLedDialogWidgets && defined (__cplusplus)
 
             namespace LedDialogWidget_Private {
-                typedef Platform::Led_Win32_SimpleWndProc_HelperWithSDKMessages <Platform::Led_Win32_Helper <SimpleTextInteractor> >    LedDialogWidget_BASE;
+                using       LedDialogWidget_BASE    =   Platform::Led_Win32_SimpleWndProc_HelperWithSDKMessages<Platform::Led_Win32_Helper <SimpleTextInteractor>>;
             }
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -176,7 +176,7 @@ namespace   Stroika {
 #endif
             class   LedDialogWidget : public LedDialogWidget_Private::LedDialogWidget_BASE {
             private:
-                typedef LedDialogWidget_Private::LedDialogWidget_BASE   inherited;
+                using   inherited   =   LedDialogWidget_Private::LedDialogWidget_BASE;
 
             public:
                 LedDialogWidget ();
@@ -226,7 +226,7 @@ namespace   Stroika {
             {
 #if     qPlatform_Windows
             private:
-                typedef Platform::SimpleWin32WndProcHelper    inherited;
+                using       inherited   =   Platform::SimpleWin32WndProcHelper;
 #endif
 
             public:
@@ -260,7 +260,7 @@ namespace   Stroika {
 #if     qPlatform_Windows
             protected:
                 struct  MyButton : public SimpleWin32WndProcHelper {
-                    typedef SimpleWin32WndProcHelper    inherited;
+                    using   inherited   =   SimpleWin32WndProcHelper;
 
                     MyButton ();
                     virtual    LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -274,7 +274,7 @@ namespace   Stroika {
 #if     qPlatform_Windows
             protected:
                 struct  MyComboListBoxPopup : public SimpleWin32WndProcHelper {
-                    typedef SimpleWin32WndProcHelper    inherited;
+                    using   inherited   =   SimpleWin32WndProcHelper;
 
                     MyComboListBoxPopup ();
                     virtual    LRESULT     WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -294,7 +294,7 @@ namespace   Stroika {
 #pragma warning (disable : 4250)
 #endif
                 struct  MyTextWidget : public LedDialogWidget {
-                    typedef LedDialogWidget inherited;
+                    using   inherited       =   LedDialogWidget;
 
                     MyTextWidget ();
                     ~MyTextWidget ();
@@ -394,9 +394,9 @@ namespace   Stroika {
                  */
             public:
 #if     qPlatform_MacOS || qPlatform_Windows
-                typedef int         DialogItemID;
+                using   DialogItemID    =   int;
 #elif   qXWindows && qUseGTKForLedStandardDialogs
-                typedef GtkWidget*  DialogItemID;
+                using   DialogItemID    =   GtkWidget* ;
 #endif
             public:
 #if     qPlatform_MacOS || qPlatform_Windows || (qXWindows && qUseGTKForLedStandardDialogs)
@@ -491,7 +491,7 @@ namespace   Stroika {
             */
             class   Led_StdAlertHelper : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using       inherited   =   Led_StdDialogHelper;
             public:
                 Led_StdAlertHelper (int resID);
 
@@ -544,7 +544,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_AboutBox : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_AboutBox (int resID = kLedStdDlg_AboutBoxID);
@@ -610,7 +610,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_FindDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_FindDialog (int resID = kLedStdDlg_FindBoxID);
@@ -687,7 +687,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_ReplaceDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_ReplaceDialog (int resID = kLedStdDlg_ReplaceBoxID);
@@ -760,7 +760,7 @@ namespace   Stroika {
             */
             class   StdFontPickBox : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using       inherited   =   Led_StdDialogHelper;
 
             public:
                 StdFontPickBox (GtkWindow* modalParentWindow, const Led_FontSpecification& initialFont);
@@ -800,7 +800,7 @@ namespace   Stroika {
             {
 #if     qUseGTKForLedStandardDialogs && qXWindows
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
 #endif
 
             public:
@@ -858,7 +858,7 @@ namespace   Stroika {
             */
             class   StdFilePickBox : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
 
             public:
                 StdFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName);
@@ -898,7 +898,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_UpdateWin32FileAssocsDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
                 Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID = MAKEINTRESOURCE (kLedStdDlg_UpdateWin32FileAssocsDialogID));
 
@@ -940,7 +940,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_ParagraphIndentsDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using       inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_ParagraphIndentsDialog (int resID = kLedStdDlg_ParagraphIndentsID);
@@ -999,7 +999,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_ParagraphSpacingDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_ParagraphSpacingDialog (int resID = kLedStdDlg_ParagraphSpacingID);
@@ -1049,7 +1049,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_OtherFontSizeDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_OtherFontSizeDialog (int resID = kLedStdDlg_OtherFontSizeID);
@@ -1094,7 +1094,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_UnknownEmbeddingInfoDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_UnknownEmbeddingInfoDialog (int resID = kLedStdDlg_UnknownEmbeddingInfoBoxID);
@@ -1139,7 +1139,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_URLXEmbeddingInfoDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_URLXEmbeddingInfoDialog (int resID = kLedStdDlg_URLXEmbeddingInfoBoxID);
@@ -1182,7 +1182,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_AddURLXEmbeddingInfoDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (int resID = kLedStdDlg_AddURLXEmbeddingInfoBoxID);
@@ -1234,7 +1234,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_AddNewTableDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_AddNewTableDialog (int resID = kLedStdDlg_AddNewTableBoxID);
@@ -1300,7 +1300,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_EditTablePropertiesDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
 #if     qPlatform_MacOS
                 Led_StdDialogHelper_EditTablePropertiesDialog (int resID = kLedStdDlg_EditTablePropertiesBoxID);
@@ -1428,7 +1428,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_SpellCheckDialog : public Led_StdDialogHelper {
             private:
-                typedef Led_StdDialogHelper inherited;
+                using   inherited   =   Led_StdDialogHelper;
             public:
                 class   SpellCheckDialogCallback;
                 struct  MisspellingInfo;
@@ -1513,7 +1513,7 @@ namespace   Stroika {
             */
             class   Led_StdDialogHelper_SpellCheckDialog::SpellCheckDialogCallback {
             public:
-                typedef Led_StdDialogHelper_SpellCheckDialog::MisspellingInfo   MisspellingInfo;
+                using   MisspellingInfo =   Led_StdDialogHelper_SpellCheckDialog::MisspellingInfo;
 
             public:
                 virtual MisspellingInfo*    GetNextMisspelling ()               =   0;
@@ -1533,7 +1533,7 @@ namespace   Stroika {
             template    <typename DEL>
             class   Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator : public Led_StdDialogHelper_SpellCheckDialog::SpellCheckDialogCallback {
             private:
-                typedef SpellCheckDialogCallback    inherited;
+                using   inherited   =   SpellCheckDialogCallback;
             public:
                 CallbackDelegator (DEL& del):
                     inherited (),

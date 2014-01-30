@@ -16,7 +16,7 @@
 
 class   LedLineItMainFrame : public CMDIFrameWnd {
 private:
-    typedef CMDIFrameWnd    inherited;
+    using   inherited   =   CMDIFrameWnd;
 
 public:
     LedLineItMainFrame ();
@@ -33,7 +33,7 @@ public:
 public:
     class   StatusBar : public CStatusBar {
     private:
-        typedef CStatusBar  inherited;
+        using   inherited   =   CStatusBar;
     public:
         StatusBar ():
             CStatusBar (),

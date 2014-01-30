@@ -34,8 +34,8 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
-        typedef typename CONCRETE_CONTAINER::MultiSetOfElementType     MultiSetOfElementType;
+        using   TraitsType              =   typename CONCRETE_CONTAINER::TraitsType;
+        using   MultiSetOfElementType   =   typename CONCRETE_CONTAINER::MultiSetOfElementType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & t) {
             // verify in sorted order
             Memory::Optional<MultiSetOfElementType> last;
@@ -56,7 +56,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithComparer_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
@@ -66,10 +66,10 @@ namespace   {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
-        typedef SortedMultiSet_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithComparer_
-        >   SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS;
+        using   SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS  =   SortedMultiSet_DefaultTraits <
+                SimpleClassWithoutComparisonOperators,
+                MySimpleClassWithoutComparisonOperators_ComparerWithComparer_
+                >;
 
         DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet<SimpleClass>> ();

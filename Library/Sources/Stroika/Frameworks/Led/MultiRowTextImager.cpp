@@ -1427,7 +1427,7 @@ namespace   Stroika {
                 if (pm == fCurFillCachePM) {
                     return fCurFillCacheInfo;   // allow recursive call to get PMCacheInfo (so far) DURING context of call to FillCache()
                 }
-                typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
+                using   MAP_CACHE   =   map<Partition::PartitionMarker*, PartitionElementCacheInfo>;
                 MAP_CACHE::iterator i   =   fPMCache.find (pm);
                 if (i == fPMCache.end ()) {
                     try {
@@ -1477,7 +1477,7 @@ namespace   Stroika {
             void    MultiRowTextImager::PMInfoCacheMgr::DidSplit (void* infoRecord) const noexcept
             {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-                typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
+                using   MAP_CACHE       =   map<Partition::PartitionMarker*, PartitionElementCacheInfo>;
                 MAP_CACHE::iterator i   =   fPMCache.find (pm);
                 if (i != fPMCache.end ()) {
                     fPMCache.erase (i);
@@ -1551,7 +1551,7 @@ namespace   Stroika {
             void    MultiRowTextImager::PMInfoCacheMgr::DidCoalece (void* infoRecord) const noexcept
             {
                 PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-                typedef map<Partition::PartitionMarker*, PartitionElementCacheInfo>  MAP_CACHE;
+                using   MAP_CACHE   =   map<Partition::PartitionMarker*, PartitionElementCacheInfo>;
                 MAP_CACHE::iterator i   =   fPMCache.find (pm);
                 if (i != fPMCache.end ()) {
                     fPMCache.erase (i);

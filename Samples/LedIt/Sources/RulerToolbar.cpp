@@ -20,12 +20,12 @@ using   namespace   Stroika::Frameworks::Led::Platform;
 using   namespace   Stroika::Frameworks::Led::StyledTextIO;
 
 
-typedef RulerBar::RulerItem         RulerItem;
-typedef RulerBar::CComboRulerItem   CComboRulerItem;
-typedef RulerBar::CTabRulerItem     CTabRulerItem;
+using       RulerItem       =   RulerBar::RulerItem;
+using       CComboRulerItem =   RulerBar::CComboRulerItem;
+using       CTabRulerItem   =   RulerBar::CTabRulerItem;
 
 
-typedef WordProcessor::IncrementalParagraphInfo IncrementalParagraphInfo;
+using       IncrementalParagraphInfo    =   WordProcessor::IncrementalParagraphInfo;
 
 
 

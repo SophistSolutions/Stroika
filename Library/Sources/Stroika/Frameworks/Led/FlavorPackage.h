@@ -48,7 +48,7 @@ namespace   Stroika {
             */
             class   FlavorPackageExternalizer : public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 FlavorPackageExternalizer (TextStore& ts);
@@ -78,7 +78,7 @@ namespace   Stroika {
             */
             class   FlavorPackageInternalizer : public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 FlavorPackageInternalizer (TextStore& ts);

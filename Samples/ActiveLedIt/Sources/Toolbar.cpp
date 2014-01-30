@@ -1191,7 +1191,7 @@ void    ActiveLedIt_Toolbar::OnEnterIdle ()
 
 STDMETHODIMP    ActiveLedIt_Toolbar::get__NewEnum (IUnknown** ppUnk)
 {
-    typedef CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch> > > VarVarEnum;
+    using   VarVarEnum  =   CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch>>>;
     try {
         if (ppUnk == NULL) {
             return E_INVALIDARG;
@@ -1474,7 +1474,7 @@ LRESULT ActiveLedIt_ToolbarList::OnPaint (UINT uMsg, WPARAM wParam, LPARAM lPara
 
 STDMETHODIMP    ActiveLedIt_ToolbarList::get__NewEnum (IUnknown** ppUnk)
 {
-    typedef CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch> > > VarVarEnum;
+    using   VarVarEnum  =   CComEnumOnSTL<IEnumVARIANT, &IID_IEnumVARIANT, VARIANT, STL_ATL_COPY_VARIANT_IDISPATCH, std::vector<CComPtr<IDispatch>>>;
     if (ppUnk == NULL) {
         return E_INVALIDARG;
     }

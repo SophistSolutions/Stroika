@@ -448,7 +448,7 @@ struct  ChunkedArrayTextStore::CollectLookupCacheElt  {
 
 class   ChunkedArrayMarkerOwnerHook : public MarkerOwner::HookData {
 private:
-    typedef MarkerOwner::HookData   inherited;
+    using   inherited   =   MarkerOwner::HookData;
 public:
     ChunkedArrayMarkerOwnerHook (MarkerOwner* mo, size_t len):
         inherited (),
@@ -523,8 +523,8 @@ public:
 
 #if     qUseLRUCacheForRecentlyLookedUpMarkers
 public:
-    typedef ChunkedArrayTextStore::CollectLookupCacheElt        CollectLookupCacheElt;
-    typedef Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM> >  CACHE_TYPE;
+    using       CollectLookupCacheElt   =   ChunkedArrayTextStore::CollectLookupCacheElt;
+    using       CACHE_TYPE              =   Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM>>;
 public:
     nonvirtual  void    ClearCache ()
     {

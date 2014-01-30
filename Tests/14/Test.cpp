@@ -64,7 +64,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_1_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -105,7 +105,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_2_Contains_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -138,7 +138,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_3_Compare_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using       T       =   typename CONCRETE_SEQUENCE_T::ElementType;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -165,10 +165,10 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_4_Equals_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   T       =   typename CONCRETE_SEQUENCE_T::ElementType;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
-            typedef typename CONCRETE_SEQUENCE_T::TraitsType    TraitsType;
+            using   TraitsType  =   typename CONCRETE_SEQUENCE_T::TraitsType;
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
@@ -242,8 +242,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_7_IndexOf_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::TraitsType        TraitsType;
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   TraitsType      =   typename CONCRETE_SEQUENCE_T::TraitsType;
+        using   T               =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -297,8 +297,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::TraitsType        TraitsType;
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   TraitsType  =   typename CONCRETE_SEQUENCE_T::TraitsType;
+        using   T           =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         {
             for (size_t i = 0; i < 1000; ++i) {
@@ -453,7 +453,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -518,7 +518,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
-        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        using   T       =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
 
@@ -545,7 +545,7 @@ namespace {
     void    SimpleSequenceTest_13_Initializers_ ()
     {
         CONCRETE_SEQUENCE_T s;
-        typedef typename CONCRETE_SEQUENCE_T::ElementType T;
+        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
         VerifyTestResult (s.empty ());
 
         // fix - once we have on all subclasses - do be basic test for aech
@@ -661,17 +661,17 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
-        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
+        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
         struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
 
-        typedef Sequence_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+        using   Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits  =   Sequence_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators>;
 
 
         SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();

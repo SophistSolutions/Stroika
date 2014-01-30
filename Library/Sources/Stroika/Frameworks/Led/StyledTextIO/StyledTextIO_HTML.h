@@ -62,8 +62,6 @@ namespace   Stroika {
 
                         string  fEntityRefName;
                         wchar_t fCharValue;
-
-                        STLDefCTORDeclare_BWA (EntityRefMapEntry)
                     };
 
                     static  EntityRefMapEntry   sDefaultEntityRefMapTable[];
@@ -100,7 +98,7 @@ namespace   Stroika {
                     virtual     bool    QuickLookAppearsToBeRightFormat () override;
 
                 public:
-                    typedef HTMLInfo::EntityRefMapEntry EntityRefMapEntry;
+                    using   EntityRefMapEntry   =   HTMLInfo::EntityRefMapEntry;
                 protected:
                     virtual const vector<EntityRefMapEntry>&    GetEntityRefMapTable () const;
 
@@ -233,12 +231,12 @@ namespace   Stroika {
                     virtual     void    Write () override;
 
                 public:
-                    typedef HTMLInfo::EntityRefMapEntry EntityRefMapEntry;
+                    using   EntityRefMapEntry   =   HTMLInfo::EntityRefMapEntry;
                 protected:
                     virtual const vector<EntityRefMapEntry>&    GetEntityRefMapTable () const;
 
                 public:
-                    typedef StyledTextIOWriter::SrcStream::Table    Table;
+                    using   Table   =   StyledTextIOWriter::SrcStream::Table;
 
                 protected:
                     class   WriterContext;

@@ -558,7 +558,7 @@ InteractiveReplaceCommand::SavedTextRep*    StandardStyledTextInteractor::Intera
  ************************* StandardStyledTextIOSinkStream ***********************
  ********************************************************************************
  */
-typedef StandardStyledTextInteractor::StandardStyledTextIOSinkStream    StandardStyledTextIOSinkStream;
+using       StandardStyledTextIOSinkStream  =   StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
 StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (
     TextStore* textStore,
     const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -740,7 +740,7 @@ void    StandardStyledTextIOSinkStream::PopContext ()
  **************************** StandardStyledTextIOSrcStream *********************
  ********************************************************************************
  */
-typedef StandardStyledTextInteractor::StandardStyledTextIOSrcStream StandardStyledTextIOSrcStream;
+using       StandardStyledTextIOSrcStream   =   StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
 StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (
     TextStore* textStore,
     const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
@@ -842,7 +842,7 @@ StandardStyledTextIOSrcStream::Table*   StandardStyledTextIOSrcStream::GetTableA
 
 void    StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const
 {
-    typedef StandardStyledTextImager::InfoSummaryRecord InfoSummaryRecord;
+    using   InfoSummaryRecord   =   StandardStyledTextImager::InfoSummaryRecord;
     if (fontNames != nullptr or colorsUsed != nullptr) {
         size_t                      totalTextLength =   GetTotalTextLength ();
         vector<InfoSummaryRecord>   styleRuns;
@@ -881,7 +881,7 @@ size_t  StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
  ************************* StyledTextFlavorPackageInternalizer ******************
  ********************************************************************************
  */
-typedef StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer   StyledTextFlavorPackageInternalizer;
+using       StyledTextFlavorPackageInternalizer =   StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer;
 StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase):
     inherited (ts),
     fStyleDatabase (styleDatabase)
@@ -1190,7 +1190,7 @@ StandardStyledTextInteractor::StandardStyledTextIOSinkStream*   StyledTextFlavor
  ************************* StyledTextFlavorPackageExternalizer ******************
  ********************************************************************************
  */
-typedef StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer   StyledTextFlavorPackageExternalizer;
+using       StyledTextFlavorPackageExternalizer =   StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer;
 StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase):
     inherited (ts),
     fStyleDatabase (styleDatabase)
@@ -1322,7 +1322,7 @@ StandardStyledTextInteractor::StandardStyledTextIOSrcStream*    StyledTextFlavor
  ***************************** EmptySelStyleTextRep *****************************
  ********************************************************************************
  */
-typedef StandardStyledTextInteractor::EmptySelStyleTextRep  EmptySelStyleTextRep;
+using       EmptySelStyleTextRep    =   StandardStyledTextInteractor::EmptySelStyleTextRep;
 
 EmptySelStyleTextRep::EmptySelStyleTextRep (StandardStyledTextInteractor* interactor, size_t selStart, size_t selEnd):
     inherited (selStart, selEnd),

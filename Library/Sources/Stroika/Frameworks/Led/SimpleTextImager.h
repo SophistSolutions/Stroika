@@ -55,7 +55,7 @@ namespace   Stroika {
             */
             class   SimpleTextImager : public PartitioningTextImager {
             private:
-                typedef PartitioningTextImager  inherited;
+                using   inherited   =   PartitioningTextImager;
 
             protected:
                 SimpleTextImager ();
@@ -109,7 +109,7 @@ namespace   Stroika {
                 virtual    Led_Distance    MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
             protected:
-                typedef Partition::PartitionMarker  PartitionMarker;
+                using   PartitionMarker =   Partition::PartitionMarker;
 
             public:
                 /*

@@ -13,7 +13,7 @@
 
 class   ActiveLedItApp : public COleControlModule {
 private:
-    typedef COleControlModule   inherited;
+    using   inherited   =   COleControlModule;
 public:
     virtual    BOOL    InitInstance () override;
     virtual    int     ExitInstance () override;

@@ -38,8 +38,8 @@ inline  LedLineItView*  GetActiveLedItView ()
  ***************** LedLineItMainFrame::StatusBar::GotoEdit **********************
  ********************************************************************************
  */
-typedef LedLineItMainFrame::StatusBar   StatusBar;
-typedef StatusBar::GotoEdit             GotoEdit;
+using       StatusBar   =   LedLineItMainFrame::StatusBar;
+using       GotoEdit    =   StatusBar::GotoEdit;
 BEGIN_MESSAGE_MAP(GotoEdit, CEdit)
     ON_WM_GETDLGCODE ()
     ON_WM_KEYDOWN   ()
@@ -73,7 +73,7 @@ void    GotoEdit::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
  ********************************************************************************
  */
 const   int kMagicGotoWidgetID  =   9991;
-typedef LedLineItMainFrame::StatusBar   StatusBar;
+using   StatusBar   =   LedLineItMainFrame::StatusBar;
 BEGIN_MESSAGE_MAP(StatusBar, CStatusBar)
     ON_EN_CHANGE        (kMagicGotoWidgetID,        OnMagicEdited)
     ON_EN_KILLFOCUS     (kMagicGotoWidgetID,        OnMagicLoseFocus)

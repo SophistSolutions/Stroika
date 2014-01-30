@@ -34,7 +34,7 @@ namespace   Stroika {
         namespace   Led {
 
 
-            typedef char    Led_PrivateEmbeddingTag[10];
+            using       Led_PrivateEmbeddingTag =   char[10];
 
 
             /*
@@ -146,7 +146,7 @@ namespace   Stroika {
             */
             class   SimpleEmbeddedObjectStyleMarker : public StyledTextImager::StyleMarker {
             private:
-                typedef StyledTextImager::StyleMarker   inherited;
+                using   inherited   =   StyledTextImager::StyleMarker;
 
             protected:
                 SimpleEmbeddedObjectStyleMarker ();
@@ -229,13 +229,13 @@ namespace   Stroika {
             */
             class   StandardMacPictureStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using   inherited   =    SimpleEmbeddedObjectStyleMarker;
 
             public:
 #if     qPlatform_MacOS
-                typedef Led_Picture**   PictureHandle;
+                using       PictureHandle   =   Led_Picture** ;
 #elif   qPlatform_Windows
-                typedef HANDLE          PictureHandle;
+                using       PictureHandle   =   HANDLE;
 #endif
 
             public:
@@ -298,7 +298,7 @@ namespace   Stroika {
             */
             class   StandardDIBStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using       inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 static  const   Led_ClipFormat          kClipFormat;
@@ -377,7 +377,7 @@ namespace   Stroika {
             */
             class   StandardURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using       inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 static  const   Led_ClipFormat          kURLDClipFormat;
@@ -448,7 +448,7 @@ namespace   Stroika {
 #if     qPlatform_MacOS || qPlatform_Windows
             class   StandardMacPictureWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using   inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 static  const   Led_ClipFormat          kClipFormats[];
@@ -509,7 +509,7 @@ namespace   Stroika {
 
             class   StandardDIBWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using   inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 static  const   Led_ClipFormat          kClipFormats[];
@@ -571,7 +571,7 @@ namespace   Stroika {
             */
             class   StandardUnknownTypeStyleMarker : public SimpleEmbeddedObjectStyleMarker {
             private:
-                typedef SimpleEmbeddedObjectStyleMarker inherited;
+                using   inherited   =   SimpleEmbeddedObjectStyleMarker;
 
             public:
                 static  const   Led_PrivateEmbeddingTag kDefaultEmbeddingTag;

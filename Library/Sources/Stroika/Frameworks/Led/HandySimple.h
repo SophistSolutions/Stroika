@@ -90,7 +90,7 @@ namespace   Stroika {
 
             private:
                 struct  MyTrivImager : public TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR> {
-                    typedef TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR>  inherited;
+                    using       inherited   =   TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR>;
                     MyTrivImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText):
                         inherited (t, bounds, initialText)
                     {

@@ -80,7 +80,7 @@ namespace   Stroika {
             */
             class   TableDrivenKeywordSyntaxAnalyzer : public SyntaxAnalyzer {
             private:
-                typedef SyntaxAnalyzer  inherited;
+                using   inherited   =   SyntaxAnalyzer;
             public:
                 class   KeywordTable {
                 public:
@@ -127,7 +127,7 @@ namespace   Stroika {
             */
             class   SyntaxColoringMarkerOwner : public MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
 
             public:
                 SyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
@@ -148,7 +148,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
                     Syntax Analyzer code. This simply takes a @'Led_FontSpecification' object and applies that to the given text.</p>
                 */
-                typedef TrivialFontSpecStyleMarker  FontChangeStyleMarker;
+                using   FontChangeStyleMarker   =   TrivialFontSpecStyleMarker;
 
             public:
                 virtual    TextStore*  PeekAtTextStore () const override;
@@ -172,7 +172,7 @@ namespace   Stroika {
             */
             class   SimpleSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
             private:
-                typedef SyntaxColoringMarkerOwner   inherited;
+                using   inherited   =   SyntaxColoringMarkerOwner;
 
             public:
                 SimpleSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
@@ -206,7 +206,7 @@ namespace   Stroika {
             */
             class   WindowedSyntaxColoringMarkerOwner : public SyntaxColoringMarkerOwner {
             private:
-                typedef SyntaxColoringMarkerOwner   inherited;
+                using   inherited   =   SyntaxColoringMarkerOwner;
 
             public:
                 WindowedSyntaxColoringMarkerOwner (TextInteractor& interactor, TextStore& textStore, const SyntaxAnalyzer& syntaxAnalyzer);
@@ -256,7 +256,7 @@ namespace   Stroika {
             */
             class   SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<> {
             private:
-                typedef SimpleStyleMarkerByFontSpec<>   inherited;
+                using   inherited   =   SimpleStyleMarkerByFontSpec<>;
             public:
                 ColoredStyleMarker (const Led_Color& color);
 

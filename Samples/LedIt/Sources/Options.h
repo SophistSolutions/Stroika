@@ -25,7 +25,7 @@ public:
     ~Options ();
 
 public:
-    typedef TextInteractor::SearchParameters    SearchParameters;
+    using       SearchParameters    =   TextInteractor::SearchParameters;
 public:
     nonvirtual  SearchParameters    GetSearchParameters () const;
     nonvirtual  void                SetSearchParameters (const SearchParameters& searchParameters);

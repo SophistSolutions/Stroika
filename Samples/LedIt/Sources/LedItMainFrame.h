@@ -19,7 +19,7 @@
 
 class   LedItMainFrame : public CFrameWnd, private FormatToolbarOwner {
 private:
-    typedef CFrameWnd   inherited;
+    using   inherited   =   CFrameWnd;
 
 protected: // create from serialization only
     LedItMainFrame ();

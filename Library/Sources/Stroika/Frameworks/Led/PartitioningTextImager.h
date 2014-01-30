@@ -63,7 +63,7 @@ namespace   Stroika {
             */
             class   Partition : public virtual MarkerOwner {
             private:
-                typedef MarkerOwner inherited;
+                using   inherited   =   MarkerOwner;
             public:
                 Partition (TextStore& textStore);
                 virtual ~Partition ();
@@ -162,7 +162,7 @@ namespace   Stroika {
             */
             class   Partition::PartitionMarker : public Marker {
             private:
-                typedef Marker  inherited;
+                using   inherited   =   Marker;
             public:
                 PartitionMarker (Partition& owner, PartitionMarker* insertAfterMe); // if insertAfter==nullptr then prepend
 
@@ -185,8 +185,6 @@ namespace   Stroika {
             public:
                 nonvirtual  Partition&  GetOwner () const;
 
-            private:
-                STLDefCTORDeclare_BWA(PartitionMarker)
             private:
                 friend  class   Partition;
             };
@@ -224,14 +222,14 @@ namespace   Stroika {
             */
             class   PartitioningTextImager : public virtual TextImager {
             private:
-                typedef TextImager  inherited;
+                using   inherited   =   TextImager;
 
             protected:
                 PartitioningTextImager ();
                 virtual ~PartitioningTextImager ();
 
             public:
-                typedef shared_ptr<Partition>    PartitionPtr;
+                using   PartitionPtr    =   shared_ptr<Partition>;
                 nonvirtual  PartitionPtr    GetPartition () const;
             protected:
                 virtual     void            SetPartition (const PartitionPtr& partitionPtr);
@@ -251,7 +249,7 @@ namespace   Stroika {
 #endif
 
             public:
-                typedef Partition::PartitionMarker  PartitionMarker;
+                using   PartitionMarker     =   Partition::PartitionMarker;
 
                 // Simple wrappers on the Partition object
             protected:
@@ -308,7 +306,7 @@ namespace   Stroika {
             */
             class   PartitioningTextImager::MeasureTextCache : private Partition::PartitionWatcher, public MarkerOwner {
             private:
-                typedef void*   inherited;  // so any references to inherited generate an error...
+                using   inherited   =   void* ; // so any references to inherited generate an error...
 
             public:
                 MeasureTextCache (const PartitionPtr& partition);

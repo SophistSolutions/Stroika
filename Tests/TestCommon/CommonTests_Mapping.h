@@ -26,7 +26,7 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_MAPPING_CONTAINER::ElementType ELEMENT_TYPE;
+                using   ELEMENT_TYPE    =   typename USING_MAPPING_CONTAINER::ElementType;
                 USING_MAPPING_CONTAINER   s;
                 applyToContainer (s);
                 USING_MAPPING_CONTAINER   s1 = s;
@@ -81,8 +81,8 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType      KeyEqualsCompareFunctionType;
-                typedef typename USING_MAPPING_CONTAINER::ValueEqualsCompareFunctionType    ValueEqualsCompareFunctionType;
+                using   KeyEqualsCompareFunctionType    =   typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
+                using   ValueEqualsCompareFunctionType  =   typename USING_MAPPING_CONTAINER::ValueEqualsCompareFunctionType;
                 USING_MAPPING_CONTAINER m;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
@@ -160,8 +160,8 @@ namespace CommonTests {
                 m.Add (1, 88);
                 m.Add (2, 101);
 
-                typedef typename USING_MAPPING_CONTAINER::KeyType KeyType;
-                typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
+                using   KeyType     =   typename USING_MAPPING_CONTAINER::KeyType;
+                using   ValueType   =   typename USING_MAPPING_CONTAINER::ValueType;
 
                 {
                     map<KeyType, ValueType>      n   =   m.template As<map<KeyType, ValueType>> ();
@@ -186,8 +186,8 @@ namespace CommonTests {
                 m.Add (2, 101);
                 VerifyTestResult (m.size () == 2);
 
-                typedef typename USING_MAPPING_CONTAINER::KeyType KeyType;
-                typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
+                using   KeyType     =   typename USING_MAPPING_CONTAINER::KeyType;
+                using   ValueType   =   typename USING_MAPPING_CONTAINER::ValueType;
 
                 {
                     vector<KeyValuePair<KeyType, ValueType>>      n   =   m.template As<vector<KeyValuePair<KeyType, ValueType>>> ();

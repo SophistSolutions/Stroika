@@ -65,18 +65,18 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
+            using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Mapping_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-        >   SimpleClassWithoutComparisonOperators_MappingTRAITS;
+        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   Mapping_DefaultTraits <
+                SimpleClassWithoutComparisonOperators,
+                SimpleClassWithoutComparisonOperators,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+                >   ;
 
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
@@ -94,19 +94,20 @@ namespace   {
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
         {
             struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-                typedef SimpleClassWithoutComparisonOperators ElementType;
+                using   ElementType =   SimpleClassWithoutComparisonOperators;
                 static  int    Compare (ElementType v1, ElementType v2)
                 {
                     return v1.GetValue () - v2.GetValue ();
                 }
             };
-            typedef Concrete::Mapping_stdmap_DefaultTraits <
-            SimpleClassWithoutComparisonOperators,
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
-            >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
+            using   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS =
+                Concrete::Mapping_stdmap_DefaultTraits <
+                SimpleClassWithoutComparisonOperators,
+                SimpleClassWithoutComparisonOperators,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
+                >;
             DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
 

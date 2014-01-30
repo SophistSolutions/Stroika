@@ -16,9 +16,9 @@ using   namespace   Stroika::Frameworks::Led;
 
 
 
-typedef StyledTextImager::StyleMarker                   StyleMarker;
-typedef StandardStyledTextImager::StyleDatabaseRep      StyleDatabaseRep;
-typedef StandardStyledTextImager::InfoSummaryRecord     InfoSummaryRecord;
+using   StyleMarker         =   StyledTextImager::StyleMarker;
+using   StyleDatabaseRep    =   StandardStyledTextImager::StyleDatabaseRep;
+using   InfoSummaryRecord   =   StandardStyledTextImager::InfoSummaryRecord;
 
 
 
@@ -31,7 +31,7 @@ typedef StandardStyledTextImager::InfoSummaryRecord     InfoSummaryRecord;
  *************** StandardStyledTextImager::StandardStyleMarker ******************
  ********************************************************************************
  */
-typedef StandardStyledTextImager::StandardStyleMarker   StandardStyleMarker;
+using   StandardStyleMarker =   StandardStyledTextImager::StandardStyleMarker;
 
 void    StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
         size_t from, size_t to, const TextLayoutBlock& text,

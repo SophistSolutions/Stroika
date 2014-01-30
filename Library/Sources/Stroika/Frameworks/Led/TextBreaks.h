@@ -117,7 +117,7 @@ namespace   Stroika {
             */
             class   TextBreaks_Basic : public TextBreaks {
             private:
-                typedef TextBreaks  inherited;
+                using   inherited   =   TextBreaks;
             public:
                 TextBreaks_Basic ();
 
@@ -164,7 +164,7 @@ namespace   Stroika {
             */
             class   TextBreaks_Basic_WP : public TextBreaks_Basic {
             private:
-                typedef TextBreaks_Basic    inherited;
+                using       inherited   =   TextBreaks_Basic;
             public:
                 TextBreaks_Basic_WP ();
 
@@ -188,7 +188,7 @@ namespace   Stroika {
             */
             class   TextBreaks_Basic_TextEditor : public TextBreaks_Basic {
             private:
-                typedef TextBreaks_Basic    inherited;
+                using   inherited   =   TextBreaks_Basic;
             public:
                 TextBreaks_Basic_TextEditor ();
 
@@ -239,7 +239,7 @@ namespace   Stroika {
                         probably what you should use.</p>
                             <p>Note that it defaults to @'TextBreaks_Basic_WP'.</p>
             */
-            typedef TextBreaks_Basic_WP TextBreaks_DefaultImpl;
+            using       TextBreaks_DefaultImpl  =   TextBreaks_Basic_WP;
 
 
 
