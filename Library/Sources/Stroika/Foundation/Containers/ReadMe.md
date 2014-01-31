@@ -11,8 +11,8 @@ Rejected Ideas
 	Make KEYs a UNIFYING concept for containers
 		*	Think about somehow making KEYs a UNIFYING concept for containers? Special case of unsticky keys –
 			like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact, an interator is
-			somewhat better htan a key. 
-			*	We may wany Find() to (optionally) return an iterator positioned at the first entry
+			somewhat better than a key. 
+			*	We may want Find() to (optionally) return an iterator positioned at the first entry
 				(unclear what ++ would do).
 			*	We may want a[i] or some rough analog for sequnces to get a sequence – offset by I.
 		*	Reason Rejected:

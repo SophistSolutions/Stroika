@@ -36,9 +36,11 @@ AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const Strin
     if (i.IsPresent ()) {
         return *i;
     }
+    AtomManager_Default::AtomInternalType v = sSeq_.GetLength ();
     sSeq_.Append (s);
-    sMap_.Add (s, sSeq_.GetLength ());
-    return sSeq_.GetLength ();
+    sMap_.Add (s, v);
+    Ensure (Extract (v) == s);
+    return v;
 }
 
 String  AtomManager_Default::Extract (AtomInternalType atomI)

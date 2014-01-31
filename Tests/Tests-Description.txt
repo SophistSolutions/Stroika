@@ -31,7 +31,7 @@
 [31]	Foundation::Execution::Exceptions
 [32]	Foundation::Execution::ProcessRunner
 [33]	Foundation::Execution::Signals
-[34]	Foundation::Execution::Threads		[Note - includes atomics]
+[34]	Foundation::Execution::Threads
 [35]	Foundation::Execution::Other
 [36]	Foundation::IO::Network
 [37]	Foundation::IO::Network::HTTP

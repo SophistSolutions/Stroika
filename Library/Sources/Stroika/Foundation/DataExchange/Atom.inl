@@ -41,6 +41,12 @@ namespace   Stroika {
             {
             }
             template    <typename   ATOM_MANAGER>
+            inline  Atom<ATOM_MANAGER>& Atom<ATOM_MANAGER>::operator= (const Atom& rhs)
+            {
+                fValue_ = rhs.fValue_;
+                return *this;
+            }
+            template    <typename   ATOM_MANAGER>
             inline  String   Atom<ATOM_MANAGER>::GetName () const
             {
                 return fValue_ == ATOM_MANAGER::kEmpty ?
