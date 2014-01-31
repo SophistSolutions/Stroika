@@ -118,7 +118,7 @@ int main (void)
 
 
 #if     qPlatform_Windows
-// /SEE THIS COD EOFR WINDOWS
+// /SEE THIS CODE FOR WINDOWS
 //http ://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q129/3/15.asp&NoWebContent=1
 #endif
 
