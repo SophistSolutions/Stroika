@@ -6,7 +6,6 @@
 
 #include    <iostream>
 #include    <mutex>
-#include    <sstream>
 
 #include    "Stroika/Foundation/Execution/BlockingQueue.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
