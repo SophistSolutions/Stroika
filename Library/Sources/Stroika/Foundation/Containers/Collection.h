@@ -80,7 +80,9 @@ namespace   Stroika {
              *  \note   Shake
              *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
              *      the use to backends capable of this randomizing of order (eg. not hashtables
-             *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>
+             *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>. Also
+             *      since a Collection<> intrinsically has no ordering, I'm not totally sure waht it would
+             *      mean to Shake/change its ordering?
              */
             template    <typename T>
             class   Collection : public Iterable<T> {
