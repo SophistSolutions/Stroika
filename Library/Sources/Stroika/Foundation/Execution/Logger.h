@@ -108,6 +108,7 @@ namespace   Stroika {
                  */
                 enum class  Priority : uint8_t {
                     // Names and numbers for syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
+                    eDebug              =   7,              // SYSLOG name LOG_DEBUG    -   The message is debug info (not a good use of syslog - consider using DbgTrace)
                     eInfo               =   6,              // SYSLOG name LOG_INFO     -   The message is purely informational
                     eNotice             =   5,              // SYSLOG name LOG_NOTICE   -   The message describes a normal but important event
                     eWarning            =   4,              // SYSLOG name LOG_WARNING  -   The message is a warning
@@ -116,7 +117,7 @@ namespace   Stroika {
                     eAlertError         =   1,              // SYSLOG name LOG_ALERT    -   Action on the message must be taken immediately
                     eEmergency          =   0,              // SYSLOG name LOG_EMERG    -   The message says the system is unusable
 
-                    Stroika_Define_Enum_Bounds(eEmergency, eInfo)
+                    Stroika_Define_Enum_Bounds(eEmergency, eDebug)
                 };
             public:
                 // EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS

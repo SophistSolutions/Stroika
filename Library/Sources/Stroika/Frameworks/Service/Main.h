@@ -29,7 +29,7 @@
  * TODO:
  *
  *      @todo   Window service not fully working - see why when you start/stop we dont see
- *              Logger::Log (Logger::Priority::eInfo, L"User-service code is shut down");
+ *              Logger::Log (Logger::Priority::eNotice, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
  *
  *      @todo   Decide if we want PIDFILE support on windows or not? Maybe not need. But also we have

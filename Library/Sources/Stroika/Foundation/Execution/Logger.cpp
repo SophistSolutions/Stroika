@@ -146,6 +146,9 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
     const   TCHAR   kEventSourceName[]  =   _T ("xxxtest");
     WORD    eventType   =   EVENTLOG_ERROR_TYPE;
     switch (logLevel) {
+        case Priority::eDebug:
+            eventType = EVENTLOG_INFORMATION_TYPE;
+            break;
         case Priority::eInfo:
             eventType = EVENTLOG_INFORMATION_TYPE;
             break;

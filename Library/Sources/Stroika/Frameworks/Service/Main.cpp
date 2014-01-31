@@ -396,7 +396,7 @@ Main::State     Main::LoggerServiceWrapper::_GetState () const
 
 void    Main::LoggerServiceWrapper::_Install ()
 {
-    Logger::Log (Logger::Priority::eInfo, L"Installing Service...");
+    Logger::Log (Logger::Priority::eNotice, L"Installing Service...");
     try {
         fDelegateTo_->_Install ();
     }
@@ -409,7 +409,7 @@ void    Main::LoggerServiceWrapper::_Install ()
 
 void    Main::LoggerServiceWrapper::_UnInstall ()
 {
-    Logger::Log (Logger::Priority::eInfo, L"UnInstalling Service...");
+    Logger::Log (Logger::Priority::eNotice, L"UnInstalling Service...");
     try {
         fDelegateTo_->_UnInstall ();
     }
@@ -422,7 +422,7 @@ void    Main::LoggerServiceWrapper::_UnInstall ()
 
 void    Main::LoggerServiceWrapper::_RunAsAsService ()
 {
-    Logger::Log (Logger::Priority::eInfo, L"Service Starting");
+    Logger::Log (Logger::Priority::eNotice, L"Service Starting");
     try {
         fDelegateTo_->_RunAsAsService ();
     }
@@ -430,12 +430,12 @@ void    Main::LoggerServiceWrapper::_RunAsAsService ()
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
         Execution::DoReThrow ();
     }
-    Logger::Log (Logger::Priority::eInfo, L"Service Stopped Normally");
+    Logger::Log (Logger::Priority::eNotice, L"Service Stopped Normally");
 }
 
 void    Main::LoggerServiceWrapper::_RunDirectly ()
 {
-    Logger::Log (Logger::Priority::eInfo, L"Service Starting in Run-Direct (non service) mode.");
+    Logger::Log (Logger::Priority::eNotice, L"Service Starting in Run-Direct (non service) mode.");
     try {
         fDelegateTo_->_RunDirectly ();
     }
@@ -443,7 +443,7 @@ void    Main::LoggerServiceWrapper::_RunDirectly ()
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service directly - aborting...");
         Execution::DoReThrow ();
     }
-    Logger::Log (Logger::Priority::eInfo, L"Service Stopped Normally");
+    Logger::Log (Logger::Priority::eNotice, L"Service Stopped Normally");
 }
 
 void  Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
