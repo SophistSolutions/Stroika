@@ -19,7 +19,6 @@
  *  \file
  *
  * TODO:
- *
  *      @todo   Very weak (performance), first draft implementaiton of AtomManager_Default.
  *
  *              Instead, store a linked list of BLOBs - and for each BLOB keep
@@ -38,10 +37,13 @@ namespace   Stroika {
 
 
             /**
-            * default is single global registey. Implemnt using compact storage - with strings allocated in memory blcoks next to one another (not full string objects)
-            and then return String_Constant objectst hat point into it.
-            *
-            * like blockallocation - gains in performacne dueto not ever having to free anything
+             * Default is single global registey. Implemnt using compact storage - with strings allocated
+             *  in memory blcoks next to one another (not full string objects)
+             *  and then return String_Constant objectst hat point into it.
+             *
+             * like blockallocation - gains in performacne dueto not ever having to free anything
+             *
+             *  @todo - CLEANUP DOCS
              */
             struct  AtomManager_Default {
                 typedef ptrdiff_t   AtomInternalType;
@@ -51,21 +53,22 @@ namespace   Stroika {
             };
 
 
-            /*
+            /**
              *  \brief An Atom is like a String, except that its much cheaper to copy/store/compare, and the semantics of compare are queer
              *
              *  An Atom is a wrapper on an underlying String object. You can always extract the original String.
              *
-             *  But its much cheaper to copy/store and compare. However - note that the compare is NOT the same as
+             *  The name 'atom' comes from LISP, and how it represented symbol names.
+             *
+             *  An Atom is much cheaper to copy/store and compare than a String. However - note that the compare is NOT the same as
              *  the traditioanl string compare. One Atom is equal to another IFF the underlying Strings would be
              *  equal. But the < behavior is very arbitrary. The only garuantee is that its consistent for the lifetime
              *  of the ATOM_MANAGER.
              *
-             *  Can EVEN be used with Set_Bitstring () – esp if you don’t use generic Atom<>
-             *  but one with its own custom areana!
-             *
              *  Note converting a String to an Atom maybe expensive, but if you can store the values as Atoms, future lookups
              *  with something like a hashtable can be much faster.
+             *
+             *  Atom can even be used with Set_Bitstring () – esp if you don’t use generic Atom<> but one with its own custom arena!
              *
              *  \em Design Choice:
              *      In some ways, this could be more powerful if the Atom construction took a ATOM_MANAGER as parameter.
@@ -85,7 +88,6 @@ namespace   Stroika {
              *  like C00013044, or H342341 are concepts. Also - the objects returned internally are concepts.
              *
              *  This fits perfectly. You can use:
-             *
              *      struct  AtomManager_Concepts {
              *          typedef ConceptKey  AtomInternalType;
              *          DEFINE_CONSTEXPR_CONSTANT (Concept, kEmpty, ConceptKey);
@@ -94,6 +96,7 @@ namespace   Stroika {
              *      };
              *
              *  and then use for
+             *
              *  struct Enumeration : Atom<AtomManager_Concepts> {
              *      // just constructors /forwarding
              *      // and
@@ -108,20 +111,20 @@ namespace   Stroika {
              */
             template    <typename   ATOM_MANAGER = AtomManager_Default>
             class   Atom {
-            public:
-                using AtomInternalType = typename ATOM_MANAGER::AtomInternalType;
+            protected:
+                using _AtomInternalType = typename ATOM_MANAGER::AtomInternalType;
 
             public:
-                /*
+                /**
                  */
                 Atom  ();
                 explicit Atom (const String& src);
                 Atom (const Atom& src);
             protected:
-                Atom (const AtomInternalType& src);
+                Atom (const _AtomInternalType& src);
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  String   GetName () const;
 
@@ -155,10 +158,10 @@ namespace   Stroika {
             protected:
                 /*
                  */
-                nonvirtual  AtomInternalType    _GetInternalRep () const;
+                nonvirtual  _AtomInternalType    _GetInternalRep () const;
 
             private:
-                AtomInternalType  fValue_;
+                _AtomInternalType  fValue_;
             };
 
 

@@ -27,7 +27,12 @@ namespace   Stroika {
             }
             template    <typename   ATOM_MANAGER>
             inline  Atom<ATOM_MANAGER>::Atom  (const Atom& src)
-                : fValue_ (ATOM_src.fValue_)
+                : fValue_ (src.fValue_)
+            {
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  Atom<ATOM_MANAGER>::Atom  (const _AtomInternalType& src)
+                : fValue_ (src)
             {
             }
             template    <typename   ATOM_MANAGER>
@@ -83,6 +88,11 @@ namespace   Stroika {
             inline  void    Atom<ATOM_MANAGER>::clear ()
             {
                 fValue_ = ATOM_MANAGER::kEmpty;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  typename Atom<ATOM_MANAGER>::_AtomInternalType    Atom<ATOM_MANAGER>::_GetInternalRep () const
+            {
+                return fValue_;
             }
 
 
