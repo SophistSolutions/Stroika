@@ -84,30 +84,28 @@ namespace   Stroika {
              *
              *  \em Extending Atom type and funky Managers
              *
-             *  In HealthFrame, we use 'atoms' for user-defined strings, but specailly formatted strings
-             *  like C00013044, or H342341 are concepts. Also - the objects returned internally are concepts.
+             *      In HealthFrame, we use 'atoms' for user-defined strings, but specially formatted strings
+             *      like C00013044, or H342341 are concepts. Also - the objects returned internally are concepts.
              *
-             *  This fits perfectly. You can use:
-             *      struct  AtomManager_Concepts {
-             *          typedef ConceptKey  AtomInternalType;
-             *          DEFINE_CONSTEXPR_CONSTANT (Concept, kEmpty, ConceptKey);
-             *          static  AtomInternalType    Intern (const String& s);
-             *          static  String  Extract (AtomInternalType atomI);
+             *      This fits perfectly. You can use:
+             *          struct  AtomManager_Concepts {
+             *              typedef ConceptKey  AtomInternalType;
+             *              DEFINE_CONSTEXPR_CONSTANT (Concept, kEmpty, ConceptKey());
+             *              static  AtomInternalType    Intern (const String& s);
+             *              static  String  Extract (AtomInternalType atomI);
+             *          };
+             *
+             *      and then use for
+             *
+             *      struct Enumeration : Atom<AtomManager_Concepts> {
+             *          // just constructors /forwarding
+             *          // and
+             *          inline ConceptKey GetConceptKey () const { return _GetInternalRep (); }
              *      };
              *
-             *  and then use for
-             *
-             *  struct Enumeration : Atom<AtomManager_Concepts> {
-             *      // just constructors /forwarding
-             *      // and
-             *      inline ConceptKey GetConceptKey () const { return _GetInternalRep (); }
-             *  };
-             *
-             *  at least roughly
-             *
-             *  AtomManager_Concepts::Intern () can look to specailly formatted strings and treat them as concept ids and strore
-             *  them differntly, and can look at the values in AtomInternalType (ConceptKey) - to use a diffent algoritm to
-             *  genearte the name.
+             *      AtomManager_Concepts::Intern () can look to specailly formatted strings and treat them as concept ids and strore
+             *      them differntly, and can look at the values in AtomInternalType (ConceptKey) - to use a different algorithm to
+             *      genearte the name.
              */
             template    <typename   ATOM_MANAGER = AtomManager_Default>
             class   Atom {

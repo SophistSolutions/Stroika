@@ -15,6 +15,11 @@ namespace   Stroika {
         namespace   DataExchange {
 
 
+            /*
+             ********************************************************************************
+             ****************************** Atom<ATOM_MANAGER> ******************************
+             ********************************************************************************
+             */
             template    <typename   ATOM_MANAGER>
             inline  Atom<ATOM_MANAGER>::Atom  ()
                 : fValue_ (ATOM_MANAGER::kEmpty)
