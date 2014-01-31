@@ -116,10 +116,13 @@ namespace   Stroika {
                 /**
                  */
                 Atom  ();
-                explicit Atom (const String& src);
+                Atom (const String& src);
                 Atom (const Atom& src);
             protected:
                 Atom (const _AtomInternalType& src);
+
+            public:
+                nonvirtual  Atom&   operator= (const Atom& rhs);
 
             public:
                 /**

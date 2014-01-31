@@ -4,6 +4,7 @@
 //  TEST    Foundation::DataExchange::Other
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/DataExchange/Atom.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -13,11 +14,30 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 namespace   {
-    void    Test1_()
+    void    Test1_Atom_()
     {
+        {
+            Atom<> a = L"d";
+            Atom<> b = L"d";
+            VerifyTestResult (a == b);
+            VerifyTestResult (a.GetName () == L"d");
+            VerifyTestResult (not a.empty ());
+        }
+        {
+            VerifyTestResult (Atom<> ().empty ());
+        }
+        {
+            Atom<> a = L"d";
+            Atom<> b = L"e";
+            VerifyTestResult (a != b);
+            VerifyTestResult (not a.empty ());
+            Atom<>  c   =   a;
+            VerifyTestResult (c == a);
+        }
     }
 }
 
@@ -25,7 +45,7 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test1_ ();
+        Test1_Atom_ ();
     }
 }
 
