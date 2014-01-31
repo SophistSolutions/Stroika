@@ -1,44 +1,68 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::IO::Network::HTTP
+//  TEST    Foundation::Execution::Exceptions
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include    <iostream>
+#include    <sstream>
 
-#include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/Memory/SharedByValue.h"
-//#include    "Stroika/Foundation/Memory/VariantValue.h"
+#if     qPlatform_Windows
+#include    <Windows.h>
+#include    <winerror.h>
+#include    <wininet.h>     // for error codes
+#endif
 
-#include    "../TestHarness/SimpleClass.h"
+#include    "Stroika/Foundation/Execution/Exceptions.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
+
 #include    "../TestHarness/TestHarness.h"
 
 
-using   namespace   Stroika;
+
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Execution;
+
+
+
+
 
 
 namespace   {
+    void    RegressionTest1_ ()
+    {
+#if         qPlatform_Windows
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
+#endif
+    }
 }
+
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
+        RegressionTest1_ ();
     }
+
 }
 
 
 
-int main (int argc, const char* argv[])
+
+
+int     main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-
-
 

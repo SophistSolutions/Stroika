@@ -1,133 +1,88 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::IO::Network::Transfer
+//  TEST    Foundation::Execution::ProcessRunner
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-
-#include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
-#include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
-#if     qHasFeature_libcurl
-#include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
-#endif
-#if     qHasFeature_WinHTTP
-#include    "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
-#endif
+#include    "Stroika/Foundation/Execution/ProcessRunner.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
 
 
-
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO;
-using   namespace   Stroika::Foundation::IO::Network;
-using   namespace   Stroika::Foundation::IO::Network::Transfer;
+using   namespace   Stroika::Foundation::Execution;
 
+using   Characters::String;
 
-
-
-
-namespace {
-    void    TestURLParsing_ ()
-    {
-        {
-            URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
-            VerifyTestResult (url.GetEffectivePortNumber () == 80);
-            VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-            VerifyTestResult (url.GetHost ().empty ());
-            VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-            VerifyTestResult (url.GetFragment ().empty ());
-            VerifyTestResult (url.GetProtocol () == L"http");
-        }
-        {
-            URL url (L"http://www.recordsforliving.com/");
-            VerifyTestResult (url.GetEffectivePortNumber () == 80);
-            VerifyTestResult (url.GetQueryString ().empty ());
-            VerifyTestResult (url.GetFragment ().empty ());
-            VerifyTestResult (url.GetHostRelativePath ().empty ());
-            VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-            VerifyTestResult (url.GetProtocol () == L"http");
-            VerifyTestResult (not url.IsSecure ());
-        }
-        {
-            URL url (L"https://xxx.recordsforliving.com/");
-            VerifyTestResult (url.GetEffectivePortNumber () == 443);
-            VerifyTestResult (url.GetQueryString ().empty ());
-            VerifyTestResult (url.GetFragment ().empty ());
-            VerifyTestResult (url.GetHostRelativePath ().empty ());
-            VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-            VerifyTestResult (url.GetProtocol () == L"https");
-            VerifyTestResult (url.IsSecure ());
-        }
-    }
-}
 
 
 
 namespace   {
-    void    Test_1_SimpleFetch_Google_C_ (Connection c)
+    void    RegressionTest1_ ()
     {
-        c.SetURL (URL (L"http://www.google.com"));
-        Response    r   =   c.Get ();
-        VerifyTestResult (r.GetSucceeded ());
-        VerifyTestResult (r.fData.size () > 1);
+        Streams::BasicBinaryOutputStream myStdOut;
+#if         qPlatform_Windows
+        // quickie about to test..
+        ProcessRunner pr (SDKSTR ("echo hi mom"), nullptr, myStdOut);
+        pr.Run ();
+#endif
     }
-    void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
+    void    RegressionTest2_ ()
     {
-        c.SetURL (URL (L"https://www.google.com"));
-        Response    r   =   c.Get ();
-        VerifyTestResult (r.GetSucceeded ());
-        VerifyTestResult (r.fData.size () > 1);
+        Streams::BasicBinaryOutputStream myStdOut;
+#if         qPlatform_Windows
+        // quickie about to test..
+        ProcessRunner pr (SDKSTR ("echo hi mom"));
+        String out = pr.Run (L"");
+        VerifyTestResult (out.Trim () == L"hi mom");
+#endif
+    }
+    void    RegressionTest3_Pipe_ ()
+    {
+        Streams::BasicBinaryOutputStream myStdOut;
+#if         qPlatform_Windows
+        ProcessRunner pr1 (SDKSTR ("echo hi mom"));
+        Streams::BasicBinaryInputOutputStream pipe;
+        ProcessRunner pr2 (SDKSTR ("cat"));
+        pr1.SetStdOut (pipe);
+        pr2.SetStdIn (pipe);
+
+        Streams::BasicBinaryOutputStream pr2Out;
+        pr2.SetStdOut (pr2Out);
+
+        pr1.Run ();
+        pr2.Run ();
+
+        String out = String::FromUTF8 (pr2Out.As<string> ());
+
+        VerifyTestResult (out.Trim () == L"hi mom");
+#endif
     }
 }
 
 
-
-
-//// CREATE TEMPLATE THAT ITERATES OVER ALL USEFUL CONNECTION TYPES (default one, and special chosen depending on available defines - so eventually
-// on windows, we test BTOH win32 and curl (if avaialble).
-
 namespace   {
-    void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
-    {
-        Test_1_SimpleFetch_Google_C_ ((factory) ());
-        Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
-    }
 
     void    DoRegressionTests_ ()
     {
-        TestURLParsing_ ();
-
-        try {
-            DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
-        }
-        catch (const Execution::RequiredComponentMissingException&) {
-#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
-            // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-            // This is more like the absence of a feature beacuse of the missing component.
-#else
-            Execution::DoReThrow ();
-#endif
-        }
-
-#if     qHasFeature_libcurl
-        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
-#endif
-#if     qHasFeature_WinHTTP
-        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
-#endif
+        RegressionTest1_ ();
+        RegressionTest2_ ();
+        RegressionTest3_Pipe_ ();
     }
+
 }
 
 
 
 
 
-int main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
+

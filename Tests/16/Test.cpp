@@ -1,22 +1,23 @@
 /*
-* Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
-*/
-//  TEST    Foundation::Containers::SortedCollection
+ * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
+ */
+//      TEST    Foundation::Containers::Queue
+//      STATUS  PRELIMINARY
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/SortedCollection.h"
+#include    "Stroika/Foundation/Containers/Queue.h"
+#include    "Stroika/Foundation/Containers/Concrete/Queue_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/Queue_DoublyLinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
 
-#include    "../TestCommon/CommonTests_Collection.h"
+
+#include    "../TestCommon/CommonTests_Queue.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
-
-#include    "Stroika/Foundation/Containers/Concrete/SortedCollection_LinkedList.h"
 
 
 
@@ -24,64 +25,70 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
-using   Concrete::SortedCollection_LinkedList;
 
-using   Memory::Optional;
+using   Concrete::Queue_Array;
+using   Concrete::Queue_DoublyLinkedList;
+
+
+
+
+
+
 
 
 namespace {
-    template    <typename CONCRETE_CONTAINER>
-    void     RunTests_ ()
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_NotRequiringEquals_For_Type ()
     {
-        using   T           =   typename CONCRETE_CONTAINER::ElementType;
-        using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
-        auto testFunc = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
-            // verify in sorted order
-            Optional<T> last;
-            for (T i : s) {
-                if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
-                }
-                last = i;
-            }
-        };
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (testFunc);
+        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    }
+
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_For_Type ()
+    {
+        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 }
 
 
-namespace   {
 
+
+
+
+namespace   {
     void    DoRegressionTests_ ()
     {
-        struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
+        using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
+        using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
+        struct  COMPARE_SimpleClassWithoutComparisonOperators {
             using   ElementType =   SimpleClassWithoutComparisonOperators;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
-            static  int    Compare (ElementType v1, ElementType v2)
-            {
-                return v1.GetValue () - v2.GetValue ();
-            }
         };
-        using   SimpleClassWithoutComparisonOperators_CollectionTRAITS  =   SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>;
 
-        RunTests_<SortedCollection<size_t>> ();
-        RunTests_<SortedCollection<SimpleClass>> ();
-        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        using   Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits =   Queue_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators>;
 
-        RunTests_<SortedCollection_LinkedList<size_t>> ();
-        RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
-        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        SimpleQueueTest_All_For_Type<Queue<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        SimpleQueueTest_All_For_Type<Queue_Array<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
     }
-
 }
 
 
-
-
-int main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

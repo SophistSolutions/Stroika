@@ -1,110 +1,92 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::Math
+// TEST: Foundation::Execution::Signals
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#include    "Stroika/Foundation/Execution/Sleep.h"
 
-#include    "Stroika/Foundation/Math/Angle.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Math/Overlap.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
-
-
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Math;
+using   namespace   Stroika::Foundation::Execution;
 
-
-
-
-
-
-
-namespace {
-    // test helper to assure answer for (A,B) is same as (B,A) - commutative
-    template    <typename T>
-    bool    VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
-    {
-        bool r  = Overlaps<T> (p1, p2);
-        VerifyTestResult (r == Overlaps<T> (p2, p1));
-        return r;
-    }
-}
+using   Containers::Set;
 
 
 namespace   {
-    void    Test1_Overlap_ ()
+    void    Test1_Basic_ ()
     {
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (0, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (1, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 4)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 3)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
-    }
-    void    Test2_Round_ ()
-    {
-        // really could use more cases!!!
-        VerifyTestResult (RoundUpTo (2, 10) == 10);
-        VerifyTestResult (RoundDownTo (2, 10) == 0);
-        VerifyTestResult (RoundUpTo (2, 2) == 2);
-        VerifyTestResult (RoundDownTo (2, 2) == 2);
-    }
-    void    Test3_Angle_ ()
-    {
-        // really could use more cases!!!
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (360, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
-    }
-    void    Test4_OddEvenPrime_ ()
-    {
-        VerifyTestResult (IsPrime (2));
-        VerifyTestResult (IsOdd (3));
-        VerifyTestResult (IsEven (4));
-        VerifyTestResult (IsPrime (5));
-        for (int i = 1; i < 1000; ++i) {
-            VerifyTestResult (IsOdd (i) != IsEven (i));
-            if (IsPrime (i)) {
-                VerifyTestResult (i == 2 or IsOdd (i));
-            }
-            if (IsEven (i)) {
-                VerifyTestResult (i == 2 or not IsPrime (i));
-            }
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
+            ::raise (SIGINT);
+            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+            VerifyTestResult (called);
         }
+        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+    }
+}
+
+
+namespace   {
+    void    Test2_Direct_ ()
+    {
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}, SignalHandler::Type::eDirect));
+            ::raise (SIGINT);
+            VerifyTestResult (called);
+        }
+        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }
 
 
 
 namespace   {
+    void    Test3_Safe_ ()
+    {
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
+            ::raise (SIGINT);
+            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+            VerifyTestResult (called);
+        }
+        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+    }
+}
+
+
+namespace   {
+
     void    DoRegressionTests_ ()
     {
-        Test1_Overlap_ ();
-        Test2_Round_ ();
-        Test3_Angle_ ();
-        Test4_OddEvenPrime_ ();
+        Test1_Basic_ ();
+        Test2_Direct_ ();
+        Test3_Safe_ ();
     }
+
 }
 
 
 
-int main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
+    SignalHandlerRegistry::SafeSignalsManager   safeSignals;
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-
-
 
