@@ -660,6 +660,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1524,6 +1527,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2297,6 +2303,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
 </Project>
