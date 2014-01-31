@@ -97,15 +97,20 @@ namespace   Stroika {
              *
              *      and then use for
              *
-             *      struct Enumeration : Atom<AtomManager_Concepts> {
-             *          // just constructors /forwarding
-             *          // and
-             *          inline ConceptKey GetConceptKey () const { return _GetInternalRep (); }
-             *      };
+             *          struct Concept : Atom<AtomManager_Concepts> {
+             *              // just constructors /forwarding
+             *              Concept () = default;
+             *              Concept (const String& s) = default;
+             *              Concept (const Concept& concept) = default;
+             *              Concept (const ConceptKey& concept) = default;
              *
-             *      AtomManager_Concepts::Intern () can look to specailly formatted strings and treat them as concept ids and strore
-             *      them differntly, and can look at the values in AtomInternalType (ConceptKey) - to use a different algorithm to
-             *      genearte the name.
+             *              // and access concept key
+             *              inline ConceptKey GetConceptKey () const { return _GetInternalRep (); }
+             *          };
+             *
+             *      AtomManager_Concepts::Intern () just indirects to AtomManager_Default::Intern () and
+             *      them differntly, and Extract() can look at the fields of the concept key and either
+             *      algorithmically generate a name or indirect to AtomManager_Default::Extract ();
              */
             template    <typename   ATOM_MANAGER = AtomManager_Default>
             class   Atom {
