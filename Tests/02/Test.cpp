@@ -37,19 +37,6 @@ using   namespace   Stroika::Foundation::Characters::Concrete;
 
 
 
-////@todo - MOVE CONFIGUATION TESTS TO SEPARTE MODULE
-#include    "Stroika/Foundation/Configuration/Version.h"
-namespace {
-    void DO_CONFIG_TEST_ ()
-    {
-        const   Configuration::Version  kTestVersion_ =
-            Configuration::Version (1, 0, Configuration::VersionStage::Alpha, 1, false
-                                   )
-            ;
-        VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
-    }
-}
-
 
 
 #define qPrintTimings   0
@@ -994,9 +981,6 @@ namespace   {
         Test24_Float2String ();
         Test25_RemoveAt_ ();
         Test26_Iteration_ ();
-
-
-        DO_CONFIG_TEST_ ();
     }
 }
 
