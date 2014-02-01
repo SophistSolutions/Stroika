@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+
+#include    <type_traits>
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
@@ -57,8 +62,17 @@ namespace   Stroika {
             template    <typename   ATOM_MANAGER>
             inline  int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
             {
-                // @todo be more careful about overflow
-                return static_cast<int> (fValue_ - rhs.fValue_);
+                using ST = make_signed<_AtomInternalType>::type;
+                ST i = static_cast<ST> (fValue_) - static_cast<ST> (rhs.fValue_);
+                if (i == 0) {
+                    return 0;
+                }
+                else if (i < 0) {
+                    return -1;
+                }
+                else {
+                    return 1;
+                }
             }
             template    <typename   ATOM_MANAGER>
             inline  bool Atom<ATOM_MANAGER>::operator< (Atom rhs) const

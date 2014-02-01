@@ -6,13 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <istream>
+#include    "../Characters/String.h"
 
-#include    "../Memory/SharedByValue.h"
-#include    "../Streams/BinaryInputStream.h"
-#include    "../Streams/TextInputStream.h"
-
-#include    "VariantValue.h"
 
 
 /**
@@ -31,9 +26,13 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
+
+
+            using   Characters::String;
 
 
             /**
@@ -127,6 +126,8 @@ namespace   Stroika {
                 Atom (const _AtomInternalType& src);
 
             public:
+                /**
+                 */
                 nonvirtual  Atom&   operator= (const Atom& rhs);
 
             public:
