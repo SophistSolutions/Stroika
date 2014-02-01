@@ -1536,8 +1536,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h">
-      <Filter>Sources\Containers\STL</Filter>
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2324,6 +2327,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.inl">
+      <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
 </Project>
