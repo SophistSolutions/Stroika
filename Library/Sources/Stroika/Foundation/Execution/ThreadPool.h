@@ -18,6 +18,9 @@
 /**
  *  TODO:
  *
+ *      @todo   REDO USING Stroika Q - CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
+ *              how these tie together.
+ *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
  *              should correct that at some point - and allow a thread to undo its abort-in-progress.
@@ -67,6 +70,12 @@ namespace   Stroika {
 
             public:
                 nonvirtual  const ThreadPool& operator= (const ThreadPool&) = delete;
+
+            public:
+                /*
+                 *  Destroying a threadpool implicitly calls AbortAndWaitForDone () and eats any errors (cannot rethrow)
+                 */
+                ~ThreadPool ();
 
             public:
                 using   TaskType    =   shared_ptr<IRunnable>;

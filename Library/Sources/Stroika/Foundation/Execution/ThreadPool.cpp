@@ -108,6 +108,16 @@ ThreadPool::ThreadPool (unsigned int nThreads)
     SetPoolSize (nThreads);
 }
 
+ThreadPool::~ThreadPool ()
+{
+    try {
+        this->AbortAndWaitForDone ();
+    }
+    catch (...) {
+        DbgTrace ("Ignore exception in destroying thread pool ** probably bad thing...");
+    }
+}
+
 unsigned int    ThreadPool::GetPoolSize () const
 {
     lock_guard<recursive_mutex> critSection (fCriticalSection_);
@@ -328,6 +338,7 @@ void    ThreadPool::Abort ()
 
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
+    Thread::SuppressAbortInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     Abort ();
     WaitForDone (timeout);
 }
