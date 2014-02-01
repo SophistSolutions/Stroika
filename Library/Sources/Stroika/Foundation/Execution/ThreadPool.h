@@ -8,7 +8,9 @@
 
 #include    <list>
 #include    <mutex>
-#include    <vector>
+
+#include    "../Containers/Collection.h"
+#include    "../Containers/Queue.h"
 
 #include    "Thread.h"
 #include    "WaitableEvent.h"
@@ -128,10 +130,10 @@ namespace   Stroika {
                 /**
                  *  Includes those QUEUED AND those Running (IsPresent)
                  */
-                nonvirtual  vector<TaskType>    GetTasks () const;
+                nonvirtual  Containers::Collection<TaskType>    GetTasks () const;
 
             public:
-                nonvirtual  vector<TaskType>    GetRunningTasks () const;
+                nonvirtual  Containers::Collection<TaskType>    GetRunningTasks () const;
 
             public:
                 /**
@@ -169,11 +171,11 @@ namespace   Stroika {
 #endif
                 class   MyRunnable_;
             private:
-                mutable recursive_mutex fCriticalSection_;
-                bool                    fAborted_;
-                vector<Thread>          fThreads_;
-                list<TaskType>          fTasks_;            // Use Stroika Queue
-                WaitableEvent           fTasksAdded_;
+                mutable recursive_mutex         fCriticalSection_;
+                bool                            fAborted_;
+                Containers::Collection<Thread>  fThreads_;
+                list<TaskType>                  fTasks_;            // Use Stroika Queue
+                WaitableEvent                   fTasksAdded_;
             private:
                 friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };

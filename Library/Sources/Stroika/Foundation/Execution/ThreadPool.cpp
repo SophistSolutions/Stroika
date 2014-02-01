@@ -14,8 +14,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
-
 
 
 
@@ -129,11 +129,26 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::SetPoolSize"));
     Require (not fAborted_);
     lock_guard<recursive_mutex> critSection (fCriticalSection_);
-    fThreads_.reserve (poolSize);
     while (poolSize > fThreads_.size ()) {
-        fThreads_.push_back (mkThread_ ());
+        fThreads_.Add (mkThread_ ());
     }
 
+#if 1
+    // Still quite weak implementation
+    while (poolSize < fThreads_.size ()) {
+        // iterate over threads if any not busy, remove that one
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
+            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
+            shared_ptr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            if (ct == nullptr) {
+                // since we have fCriticalSection_ - we can safely remove this thread
+                fThreads_.Remove (i);
+                break;
+            }
+        }
+    }
+#else
     if (poolSize < fThreads_.size ()) {
         AssertNotImplemented ();
 
@@ -144,6 +159,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         //      (1) HOIRRIBLE - NOW
         fThreads_.resize (poolSize);    // remove some off the end. OK if they are running?
     }
+#endif
 }
 
 void    ThreadPool::AddTask (const TaskType& task)
@@ -249,37 +265,35 @@ void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType
     }
 }
 
-vector<ThreadPool::TaskType>    ThreadPool::GetTasks () const
+Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
 {
-    vector<ThreadPool::TaskType>    result;
+    Collection<ThreadPool::TaskType>    result;
     {
         lock_guard<recursive_mutex> critSection (fCriticalSection_);
-        result.reserve (fTasks_.size () + fThreads_.size ());
-        result.insert (result.begin (), fTasks_.begin (), fTasks_.end ());          // copy pending tasks
+        result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
             if (task.get () != nullptr) {
-                result.push_back (task);
+                result.Add (task);
             }
         }
     }
     return result;
 }
 
-vector<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
+Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
 {
-    vector<ThreadPool::TaskType>    result;
+    Collection<ThreadPool::TaskType>    result;
     {
         lock_guard<recursive_mutex> critSection (fCriticalSection_);
-        result.reserve (fThreads_.size ());
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
             shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
             if (task.get () != nullptr) {
-                result.push_back (task);
+                result.Add (task);
             }
         }
     }
@@ -310,14 +324,14 @@ void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForDone"));
     Require (fAborted_);
     {
-        Time::DurationSecondsType   endAt   =   timeout + Time::GetTickCount ();
-        vector<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+        Time::DurationSecondsType   timeoutAt   =   timeout + Time::GetTickCount ();
+        Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
         {
             lock_guard<recursive_mutex> critSection (fCriticalSection_);
             threadsToShutdown = fThreads_;
         }
-        for (auto i = threadsToShutdown.begin (); i != threadsToShutdown.end (); ++i) {
-            i->WaitForDone (endAt - Time::GetTickCount ());
+        for (auto t : threadsToShutdown) {
+            t.WaitForDone (timeoutAt - Time::GetTickCount ());
         }
     }
 }
