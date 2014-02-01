@@ -946,6 +946,28 @@ namespace {
 
 
 
+
+
+
+namespace {
+    void    Test27_Repeat_ ()
+    {
+        {
+            String x;
+            String r = x.Repeat (5);
+            VerifyTestResult (r.length () == 0);
+        }
+        {
+            String x = L"123";
+            String r = x.Repeat (3);
+            VerifyTestResult (r.length () == 9);
+            VerifyTestResult (r.SubString (3, 6) == L"123");
+        }
+    }
+}
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -981,6 +1003,7 @@ namespace   {
         Test24_Float2String ();
         Test25_RemoveAt_ ();
         Test26_Iteration_ ();
+        Test27_Repeat_ ();
     }
 }
 
