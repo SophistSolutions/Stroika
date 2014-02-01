@@ -47,3 +47,9 @@
    fun:_ZN7Stroika10Foundation13Configuration15FindNamedLocaleERKNS0_10Characters6StringES5_
 }
 
+{
+   wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
+   Memcheck:Cond
+   fun:wcscmp
+   ...
+}
