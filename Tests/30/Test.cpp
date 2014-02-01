@@ -24,7 +24,6 @@ using   namespace   Stroika::Foundation::DataExchange;
 namespace   {
     void    Test1_Atom_()
     {
-
         {
             Atom<> a = L"d";
             Atom<> b = L"d";
