@@ -656,6 +656,15 @@ String  String::SubString (size_t from, size_t to) const
 #endif
 }
 
+String  String::Repeat (unsigned int count) const
+{
+    String  result;
+    for (unsigned int i = 0; i < count; ++i) {
+        result += *this;
+    }
+    return result;
+}
+
 String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);

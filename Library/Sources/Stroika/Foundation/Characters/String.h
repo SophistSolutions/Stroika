@@ -471,6 +471,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return 'count' copies of this String (concatenated after one another).
+                 */
+                nonvirtual  String  Repeat (unsigned int count) const;
+
+            public:
+                /**
                  *  Returns true if the argument character or string is found anywhere inside this string.
                  *  This is equivilent to
                  *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
