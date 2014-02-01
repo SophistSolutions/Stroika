@@ -133,7 +133,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  String   GetName () const;
+                nonvirtual  String   GetPrintName () const;
 
             public:
                 /**
@@ -153,14 +153,33 @@ namespace   Stroika {
                 nonvirtual  bool operator!= (Atom rhs) const;
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  bool    empty () const;
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  void    clear ();
+
+
+            public:
+                /**
+                 *  Template on <T> only defined for
+                 *      T == String
+                 *      T == wstring
+                 */
+                template    <typename   T>
+                nonvirtual  T   As () const;
+
+            private:
+                template    <typename T>
+                struct  type_ {};
+
+                template    <typename   T>
+                nonvirtual  T       As (type_<T>) const;
+                nonvirtual  String  As (type_<String>) const;
+                nonvirtual  wstring As (type_<wstring>) const;
 
             protected:
                 /*
@@ -170,6 +189,8 @@ namespace   Stroika {
             private:
                 _AtomInternalType  fValue_;
             };
+
+
 
 
         }

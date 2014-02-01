@@ -52,7 +52,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename   ATOM_MANAGER>
-            inline  String   Atom<ATOM_MANAGER>::GetName () const
+            inline  String   Atom<ATOM_MANAGER>::GetPrintName () const
             {
                 return fValue_ == ATOM_MANAGER::kEmpty ?
                        String () :
@@ -113,6 +113,23 @@ namespace   Stroika {
             inline  void    Atom<ATOM_MANAGER>::clear ()
             {
                 fValue_ = ATOM_MANAGER::kEmpty;
+            }
+            template    <typename   ATOM_MANAGER>
+            template    <typename   T>
+            inline  T   Atom<ATOM_MANAGER>::As () const
+            {
+                return  As (type_<T>());
+            }
+
+            template    <typename   ATOM_MANAGER>
+            inline  String   Atom<ATOM_MANAGER>::As (type_<String>) const
+            {
+                return GetPrintName ();
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  wstring   Atom<ATOM_MANAGER>::As (type_<wstring>) const
+            {
+                return GetPrintName ().As<wstring> ();
             }
             template    <typename   ATOM_MANAGER>
             inline  typename Atom<ATOM_MANAGER>::_AtomInternalType    Atom<ATOM_MANAGER>::_GetInternalRep () const

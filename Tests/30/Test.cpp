@@ -17,14 +17,21 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
+
+
+
+
 namespace   {
     void    Test1_Atom_()
     {
+
         {
             Atom<> a = L"d";
             Atom<> b = L"d";
             VerifyTestResult (a == b);
-            VerifyTestResult (a.GetName () == L"d");
+            VerifyTestResult (a.GetPrintName () == L"d");
+            VerifyTestResult (a.As<String> () == L"d");
+            VerifyTestResult (a.As<wstring> () == L"d");
             VerifyTestResult (not a.empty ());
         }
         {
