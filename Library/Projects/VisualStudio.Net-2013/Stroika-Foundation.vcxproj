@@ -715,6 +715,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
@@ -776,6 +778,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h" />
@@ -1032,6 +1035,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
@@ -1095,6 +1100,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl" />

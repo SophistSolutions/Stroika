@@ -1530,6 +1530,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h">
+      <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2306,6 +2315,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

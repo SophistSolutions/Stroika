@@ -1,0 +1,327 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
+ */
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
+#include    "../Debug/Assertions.h"
+
+#include    "Concrete/Association_Factory.h"
+
+#ifndef _Stroika_Foundation_Containers_Association_inl_
+#define _Stroika_Foundation_Containers_Association_inl_
+
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Containers {
+
+
+            /*
+             ********************************************************************************
+             ***************** Association<KEY_TYPE, VALUE_TYPE, TRAITS> ************************
+             ********************************************************************************
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association ()
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+                : inherited (static_cast < const inherited&& > (src))
+            {
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (src);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (src);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const std::map<KEY_TYPE, VALUE_TYPE>& m)
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (m);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const CONTAINER_OF_PAIR_KEY_T& src)
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (src);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_KEY_T>
+            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                : inherited (move (Concrete::Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (start, end);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Association (const _SharedPtrIRep& rep)
+                : inherited (typename inherited::_SharedPtrIRep (rep))
+            {
+                RequireNotNull (rep);
+            }
+#if     qDebug
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Association<KEY_TYPE, VALUE_TYPE, TRAITS>::~Association ()
+            {
+                if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
+                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                }
+            }
+#endif
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  const typename  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep () const
+            {
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureMember (&inherited::_GetRep (), _IRep);
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  typename    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&     Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep ()
+            {
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureMember (&inherited::_GetRep (), _IRep);
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Iterable<KEY_TYPE>    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Keys () const
+            {
+                return _GetRep ().Keys ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
+            {
+                if (item == nullptr) {
+                    return _GetRep ().Lookup (key, nullptr);
+                }
+                else {
+                    Memory::Optional<ValueType> tmp;
+                    if (_GetRep ().Lookup (key, &tmp)) {
+                        *item = *tmp;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            {
+                return _GetRep ().Lookup (key, item);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Memory::Optional<VALUE_TYPE>    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
+            {
+                Memory::Optional<VALUE_TYPE>   r;
+                bool    result = _GetRep ().Lookup (key, &r);
+                Ensure (result == r.IsPresent ());
+                return r;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
+            {
+                return _GetRep ().Lookup (key, nullptr);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  VALUE_TYPE   Association<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
+            {
+                Memory::Optional<VALUE_TYPE>   r    =   Lookup (key);
+                return r.IsPresent () ? *r : defaultValue;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
+            {
+                return _GetRep ().Lookup (key, nullptr);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
+            {
+                //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                for (KeyValuePair<KEY_TYPE, VALUE_TYPE> t : *this) {
+                    if (t.second == v) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
+            {
+                _GetRep ().Add (key, newElt);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
+            {
+                _GetRep ().Add (p.fKey, p.fValue);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_KEYVALUE>
+            void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+            {
+                for (auto i = start; i != end; ++i) {
+                    Add (*i);
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_KEYVALUE>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
+            {
+                /*
+                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                 *  attempt to add items that already exist, it would do nothing to our iteration
+                 *  and therefore not lead to an infinite loop.
+                 */
+                AddAll (std::begin (items), std::end (items));
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
+            {
+                _GetRep ().Remove (key);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
+            {
+                _GetRep ().Remove (i);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll ()
+            {
+                _GetRep ().RemoveAll ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            {
+                for (auto i : items) {
+                    Remove (i.first);
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_KEY_T>
+            void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            {
+                for (auto i = start; i != end; ++i) {
+                    Remove (i->first);
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_Key_T>
+            inline  CONTAINER_OF_Key_T Association<KEY_TYPE, VALUE_TYPE, TRAITS>::As() const
+            {
+                return As_<CONTAINER_OF_Key_T> ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_Key_T>
+            CONTAINER_OF_Key_T  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair) const
+            {
+                CONTAINER_OF_Key_T  result;
+                for (auto i : *this) {
+                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
+                    result.insert (result.end (), pair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
+                }
+                return result;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename   CONTAINER_OF_Key_T>
+            inline  CONTAINER_OF_Key_T  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type) const
+            {
+                CONTAINER_OF_Key_T  result;
+                for (auto i : *this) {
+                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
+                    result.insert (result.end (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
+                }
+                return result;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            {
+                return (_GetRep ().Equals (rhs._GetRep ()));
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
+            {
+                _GetRep ().RemoveAll ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>&    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            {
+                AddAll (items);
+                return *this;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>&    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            {
+                RemoveAll (items);
+                return *this;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::operator== (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            {
+                return not Equals (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ***************** Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep *****************
+             ********************************************************************************
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_IRep ()
+            {
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::~_IRep ()
+            {
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            bool    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            {
+                if (this == &rhs) {
+                    return true;
+                }
+                // If sizes differ, the Associations differ
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+                // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
+                // are present, and with the same Association in the second.
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+                    Memory::Optional<ValueType>   tmp;
+                    if (not rhs.Lookup (i->fKey, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->fValue)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
+        }
+    }
+}
+#endif /* _Stroika_Foundation_Containers_Association_inl_ */
