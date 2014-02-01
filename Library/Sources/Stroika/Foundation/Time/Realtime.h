@@ -53,7 +53,7 @@ namespace   Stroika {
             /**
             */
 #if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr   DurationSecondsType kInfinite   =   numeric_limits<DurationSecondsType>::max ();
+            constexpr   DurationSecondsType kInfinite   =   std::numeric_limits<DurationSecondsType>::max ();
 #else
             const   DurationSecondsType kInfinite       =   DBL_MAX;
 #endif
