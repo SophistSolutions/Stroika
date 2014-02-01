@@ -710,9 +710,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     while (not _IsServiceActuallyRunning ()) {
         Execution::Sleep (0.5);
-        if (Time::GetTickCount () > timeoutAt) {
-            Execution::DoThrow (Execution::WaitTimedOutException ());
-        }
+        ThrowTimeoutExceptionAfter (timeoutAt);
     }
 }
 
@@ -734,9 +732,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
                 if (waitFor < timeout and waitFor < 5) {
                     waitFor *= 2;
                 }
-                if (Time::GetTickCount () > timeoutAt) {
-                    Execution::DoThrow (Execution::WaitTimedOutException ());
-                }
+                Execution::ThrowTimeoutExceptionAfter (timeoutAt);
             }
         }
         // in case not cleanly stopped before

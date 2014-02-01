@@ -228,15 +228,13 @@ void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType
 {
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForTask"));
     // Inefficient / VERY SLOPPY impl
-    Time::DurationSecondsType   endAt   =   timeout + Time::GetTickCount ();
+    Time::DurationSecondsType   timeoutAt   =   timeout + Time::GetTickCount ();
     while (true) {
         if (not IsPresent (task)) {
             return;
         }
-        Time::DurationSecondsType   remaining   =   timeout - Time::GetTickCount ();
-        if (remaining <= 0.0) {
-            DoThrow (WaitTimedOutException ());
-        }
+        Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
+        Execution::ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (min (remaining, 1.0));
     }
 }
