@@ -49,6 +49,8 @@ namespace   Stroika {
             }
 #endif
 
+            Execution::ModuleDependency MakeModuleDependency_Trace ();
+
 
             struct  TraceModuleData_ {
                 TraceModuleData_ ();
