@@ -73,6 +73,8 @@ namespace   Stroika {
 
             public:
                 nonvirtual  unsigned int    GetPoolSize () const;
+
+            public:
                 /**
                  *  This could be tricky to implement if tasks are busy running.
                  *  Perhaps require no tasks in Queue to run
@@ -101,11 +103,13 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    IsPresent (const TaskType& task) const;
 
+            public:
                 /**
                  *  returns true actively running
                  */
                 nonvirtual  bool    IsRunning (const TaskType& task) const;
 
+            public:
                 /**
                  *  throws if timeout. Returns when task has completed (or if not in task q)
                  */
@@ -131,10 +135,14 @@ namespace   Stroika {
                  *  throws if timeout
                  */
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+            public:
                 /**
                  * Tells the ThreadPool to shutdown - once aborted - it is an error to keep adding new tasks
                  */
                 nonvirtual  void    Abort ();
+
+            public:
                 /**
                  *  throws if timeout
                  */
