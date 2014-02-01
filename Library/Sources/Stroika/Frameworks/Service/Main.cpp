@@ -710,7 +710,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     while (not _IsServiceActuallyRunning ()) {
         Execution::Sleep (0.5);
-        ThrowTimeoutExceptionAfter (timeoutAt);
+        Execution::ThrowTimeoutExceptionAfter (timeoutAt);
     }
 }
 
