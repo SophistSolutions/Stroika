@@ -120,6 +120,8 @@ namespace   Stroika {
                 /**
                  */
                 Atom  ();
+                Atom (const wchar_t* src);
+                Atom (const wstring& src);
                 Atom (const String& src);
                 Atom (const Atom& src);
             protected:

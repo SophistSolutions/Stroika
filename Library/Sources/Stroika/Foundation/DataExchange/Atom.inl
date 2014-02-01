@@ -31,6 +31,16 @@ namespace   Stroika {
             {
             }
             template    <typename   ATOM_MANAGER>
+            inline  Atom<ATOM_MANAGER>::Atom  (const wstring& src)
+                : fValue_ (ATOM_MANAGER::Intern (src))
+            {
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  Atom<ATOM_MANAGER>::Atom  (const wchar_t* src)
+                : fValue_ (ATOM_MANAGER::Intern (src))
+            {
+            }
+            template    <typename   ATOM_MANAGER>
             inline  Atom<ATOM_MANAGER>::Atom  (const String& src)
                 : fValue_ (ATOM_MANAGER::Intern (src))
             {
