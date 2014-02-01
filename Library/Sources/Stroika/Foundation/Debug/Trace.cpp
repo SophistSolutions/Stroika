@@ -168,10 +168,16 @@ TraceModuleData_::~TraceModuleData_ ()
 namespace   {
     inline  recursive_mutex&    GetCritSection_ ()
     {
+        // obsolete comemnt because as of 2014-01-31 (or earlier) we are acutallly deleting this. But we do have
+        // some race where we sometimes - rarely - trigger this error. So we may need to re-instate that leak!!!
+        // and this comment!!!
+        //  --LGP 2014-02-01
+#if 0
         // this is a 'false' or 'apparent' memory leak, but we allocate the object this way because in C++ things
         // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
         // someone might do a trace message.
         //      -- LGP 2008-12-21
+#endif
         EnsureNotNull (sEmitTraceCritSec_);
         return *sEmitTraceCritSec_;
     }
