@@ -123,14 +123,15 @@ namespace   {
         }
         return result;
     }
-    const string    sThreadPrintDashAdornment_          =   mkPrintDashAdornment_ ();
-    bool            sDidOneTimePrimaryThreadMessage_    =   false;
+    char        sThreadPrintDashAdornment_[32]; // use static array to avoid putting the string object into TraceModuleData_, and otherwise having to worry about use after main when calls DbgTrace()
+    bool        sDidOneTimePrimaryThreadMessage_    =   false;
 }
 
 
 TraceModuleData_::TraceModuleData_ ()
     : fStringDependency (Characters::MakeModuleDependency_String ())
 {
+    CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
     sEmitTraceCritSec_ = DEBUG_NEW recursive_mutex ();
 #if     qDefaultTracingOn
@@ -152,9 +153,11 @@ TraceModuleData_::~TraceModuleData_ ()
     AssertNotNull (sTraceFile);
     sTraceFile->close ();
     delete sTraceFile;
+    sTraceFile = nullptr;
 #endif
 #if     qDefaultTracingOn
     delete sCounts_;
+    sCounts_ = nullptr;
 #endif
 }
 
@@ -168,7 +171,7 @@ TraceModuleData_::~TraceModuleData_ ()
 namespace   {
     inline  recursive_mutex&    GetCritSection_ ()
     {
-        // obsolete comemnt because as of 2014-01-31 (or earlier) we are acutallly deleting this. But we do have
+        // obsolete comment because as of 2014-01-31 (or earlier) we are acutallly deleting this. But we do have
         // some race where we sometimes - rarely - trigger this error. So we may need to re-instate that leak!!!
         // and this comment!!!
         //  --LGP 2014-02-01
@@ -379,7 +382,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
-            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_.c_str (), sThreadPrintDashAdornment_.c_str (), curRelativeTime) > 0);
+            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, curRelativeTime) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
