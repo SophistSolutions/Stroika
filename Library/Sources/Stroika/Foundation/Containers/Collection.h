@@ -199,6 +199,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief STL-ish alias for Remove ().
+                 */
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  void    erase (T item);
+                nonvirtual  void    erase (const Iterator<T>& i);
+
+            public:
+                /**
                  *  operator+ is syntactic sugar on Add() or AddAll() - depending on the overload.
                  *
                  *  *DEVELOPER NOTE*

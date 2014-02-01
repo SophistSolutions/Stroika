@@ -175,6 +175,17 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            inline  void    Collection<T>::erase (T item)
+            {
+                Remove<EQUALS_COMPARER> (i);
+            }
+            template    <typename T>
+            inline  void    Collection<T>::erase (const Iterator<T>& i)
+            {
+                Remove (i);
+            }
+            template    <typename T>
             Collection<T>    Collection<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
             {
                 Collection<T>   result;
