@@ -376,36 +376,46 @@ namespace   {
 }
 
 
-
 namespace   {
-    static  unsigned int    sUsingModuleHelper_Count;
     UsingLibInterHelper*    sUsingLibInterHelper    =   nullptr;
 }
-
-class   UsingModuleHelper {
-public:
-    UsingModuleHelper ();
-    ~UsingModuleHelper ();
-};
+#endif
 
 
-UsingModuleHelper::UsingModuleHelper ()
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************** DataExcahnge::XML::SAXReader_ModuleInit_ **********************
+ ********************************************************************************
+ */
+SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
+#if     qDefaultTracingOn
+    : fDebugTraceDependency (Debug::MakeModuleDependency_Trace ())
+#endif
 {
-    TraceContextBumper ctx (SDKSTR ("XMLDB::Private::UsingModuleHelper::UsingModuleHelper"));
+#if     qHasLibrary_Xerces
+    TraceContextBumper ctx (SDKSTR ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_"));
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = DEBUG_NEW UsingLibInterHelper ();
+#endif
 }
 
-UsingModuleHelper::~UsingModuleHelper ()
+SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 {
-    TraceContextBumper ctx (SDKSTR ("XMLDB::Private::UsingModuleHelper::~UsingModuleHelper"));
+#if     qHasLibrary_Xerces
+    TraceContextBumper ctx (SDKSTR ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_"));
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
     sUsingLibInterHelper = nullptr;
+#endif
 }
 
-UsingModuleHelper   sUsingModuleHelper_;        // not sure how we want to control lifetime of this object!!!
-#endif
+
+
 
 
 #if     qHasLibrary_Xerces
