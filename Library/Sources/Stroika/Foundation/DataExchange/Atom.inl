@@ -62,7 +62,7 @@ namespace   Stroika {
             template    <typename   ATOM_MANAGER>
             inline  int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
             {
-                using ST = make_signed<_AtomInternalType>::type;
+                using ST = typename make_signed<_AtomInternalType>::type;
                 ST i = static_cast<ST> (fValue_) - static_cast<ST> (rhs.fValue_);
                 if (i == 0) {
                     return 0;
