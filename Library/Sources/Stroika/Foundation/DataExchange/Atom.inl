@@ -120,7 +120,6 @@ namespace   Stroika {
             {
                 return  As (type_<T>());
             }
-
             template    <typename   ATOM_MANAGER>
             inline  String   Atom<ATOM_MANAGER>::As (type_<String>) const
             {
