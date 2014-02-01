@@ -133,10 +133,10 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         fThreads_.Add (mkThread_ ());
     }
 
-#if 1
-    // Still quite weak implementation
+    // Still quite weak implementation of REMOVAL
     while (poolSize < fThreads_.size ()) {
         // iterate over threads if any not busy, remove that one
+        bool anyFoundToKill = false;
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
@@ -144,22 +144,16 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
+                anyFoundToKill = true;
                 break;
             }
         }
+        if (not anyFoundToKill) {
+            // @todo - fix this better/eventually
+            DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up");
+            return;
+        }
     }
-#else
-    if (poolSize < fThreads_.size ()) {
-        AssertNotImplemented ();
-
-        // MUST STOP THREADS and WAIT FOR THEM TO BE DONE (OR STORE THEM SOMEPLACE ELSE - NO - I THINK MUST ABORTANDWAIT().  Unsure.
-        // For now - just assert!!!
-
-        // TODO:
-        //      (1) HOIRRIBLE - NOW
-        fThreads_.resize (poolSize);    // remove some off the end. OK if they are running?
-    }
-#endif
 }
 
 void    ThreadPool::AddTask (const TaskType& task)
@@ -173,6 +167,8 @@ void    ThreadPool::AddTask (const TaskType& task)
 
     // Notify any waiting threads to wakeup and claim the next task
     fTasksAdded_.Set ();
+    // this would be a race - if aborting and adding tasks at the same time
+    Require (not fAborted_);
 }
 
 void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)

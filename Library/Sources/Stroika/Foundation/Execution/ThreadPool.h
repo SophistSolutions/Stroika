@@ -18,10 +18,17 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  *  TODO:
  *
  *      @todo   REDO USING Stroika Q - CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
- *              how these tie together.
+ *              how these tie together. Issue with using Queue<> is that we nee dto be able to remove
+ *              something from the middle of it, which isnt reasonable for a queue. Or is it?
+ *
+ *              Not sure if fix is to use Stroika sequnece here, or to change Queue to allow Remove(iterator);
  *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
@@ -50,14 +57,14 @@ namespace   Stroika {
 
 
             /**
-             *  The ThreadPool class takes a small fixed number of Thread objects, and lets you use them
+             *  The ThreadPool class creates a small fixed number of Thread objects, and lets you use them
              *  as if there were many more. You submit a task (representable as a copyable IRunnable) -
              *  and it gets eventually executed.
              *
-             *
              *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
              *  special case of ThreadAbortException which  is used internally to end the threadpool or
-             *  remove some threads).
+             *  remove some threads). Because of this, your submitted runnables should take care of their own
+             *  error handling internally.
              *
              *  ThreadPool mainly useful for servicing lost-cost calls/threads, where the overhead
              *  of constructing the thread is significant compared to the cost of performing the action,
@@ -87,8 +94,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This could be tricky to implement if tasks are busy running.
-                 *  Perhaps require no tasks in Queue to run
+                 *  SetPoolSize () is advisory. It attempts to add or remove entries as requested.
+                 *
+                 *  But under some circumstances, it will fail. For example, if tasks are busy
+                 *  running on all threads, the number of threads in the pool cannot be decreased.
+                 *
+                 *  @todo - WE CAN do better than this - at least marking the thread as to be removed when the
+                 *      task finsihes - but NYI
                  */
                 nonvirtual  void            SetPoolSize (unsigned int poolSize);
 
