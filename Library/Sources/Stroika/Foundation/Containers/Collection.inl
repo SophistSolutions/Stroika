@@ -178,7 +178,7 @@ namespace   Stroika {
             template    <typename EQUALS_COMPARER>
             inline  void    Collection<T>::erase (T item)
             {
-                Remove<EQUALS_COMPARER> (i);
+                Remove<EQUALS_COMPARER> (item);
             }
             template    <typename T>
             inline  void    Collection<T>::erase (const Iterator<T>& i)
