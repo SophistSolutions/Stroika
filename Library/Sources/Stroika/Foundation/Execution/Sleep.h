@@ -39,6 +39,10 @@ namespace   Stroika {
              *      Sleep can be interupted by receipt of a signal (see POSIX nanosleep()). But the second form can
              *      be used to easily continue the sleep.
              *
+             *  @see SleepUntil
+             *
+             *  \req    seconds2Wait >= 0
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              *  \note   This calls CheckForThreadAborting ();
@@ -48,6 +52,21 @@ namespace   Stroika {
             void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
             void    Sleep (const Time::Duration& wait);
             void    Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
+
+
+            /*
+             *  Wait until the tickCount is >= the given value.
+             *
+             *  This function facilitates writing code like:
+             *      Time::DurationSeconds startedAt =   Time::GetTickCount ();
+             *      do_someting_dont_know_how_long_it_will_take();
+             *      Execution::SleepUntil (1.0 + startedAt);
+             *
+             *  @see Sleep ();
+             *
+             *  \note   This always calls CheckForThreadAborting () at least once, but may not call Sleep() if not needed.
+             */
+            void    SleepUntil (Time::DurationSecondsType untilTickCount);
 
 
         }
