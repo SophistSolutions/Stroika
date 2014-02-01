@@ -162,6 +162,10 @@ namespace   Stroika {
              *              time. In STL, some kinds of iterators act more like pointers where you can do
              *              address arithmatic.
              *
+             *      5.      In STL, reverse iterators are a special type, incompatible with regular iterator.s
+             *              In Stroika, reverse iterators are also created with rbegin(), rend (), but
+             *              their type is no differnt than regular iterators.
+             *
              *
              * Some Rules about Iterators:
              *
