@@ -768,7 +768,12 @@ namespace   {
     {
         VerifyTestResult (CString::Length ("hi") == 2);
         VerifyTestResult (CString::Length (L"hi") == 2);
-
+       {
+            // This test was mostly to confirm the false-warning from valgrind
+            // SEE THIS VALGRIND SUPRESSION - wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
+            wchar_t buf[3] = {'1', '2', 0 };
+            VerifyTestResult (::wcscmp (buf, L"12") == 0);
+        }
         {
             char    buf[3] = {'1', '1', '1' };
             CString::Copy (buf, NEltsOf (buf), "3");
@@ -779,8 +784,6 @@ namespace   {
             CString::Copy (buf, NEltsOf (buf), L"3");
             VerifyTestResult (::wcscmp (buf, L"3") == 0);
         }
-
-
         {
             char    buf[3] = {'1', '1', '1' };
             CString::Copy (buf, NEltsOf (buf), "12345");
@@ -791,7 +794,6 @@ namespace   {
             CString::Copy (buf, NEltsOf (buf), L"12345");
             VerifyTestResult (::wcscmp (buf, L"12") == 0);
         }
-
     }
 }
 
