@@ -77,7 +77,7 @@ namespace   Stroika {
             *************************** Execution::SleepUntil ******************************
             ********************************************************************************
             */
-            void    SleepUntil (Time::DurationSecondsType untilTickCount)
+            inline  void    SleepUntil (Time::DurationSecondsType untilTickCount)
             {
                 Time::DurationSecondsType waitMoreSeconds  = untilTickCount - Time::GetTickCount ();
                 if (waitMoreSeconds <= 0) {
