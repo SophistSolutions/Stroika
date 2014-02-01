@@ -768,7 +768,7 @@ namespace   {
     {
         VerifyTestResult (CString::Length ("hi") == 2);
         VerifyTestResult (CString::Length (L"hi") == 2);
-       {
+        {
             // This test was mostly to confirm the false-warning from valgrind
             // SEE THIS VALGRIND SUPRESSION - wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
             wchar_t buf[3] = {'1', '2', 0 };
