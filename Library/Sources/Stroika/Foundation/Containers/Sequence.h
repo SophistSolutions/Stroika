@@ -26,6 +26,8 @@
  *
  *  TODO:
  *
+ *      @todo       Sequence<> must support RandomAccessIterator<>
+ *
  *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
  *                  returns something of same underlying data structure  type.
  *
