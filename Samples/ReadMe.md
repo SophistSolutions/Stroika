@@ -16,6 +16,9 @@ SimpleLedTest - Test the simple-to-use Led library wrapper code. This can easily
 SimpleSequenceUsage -
 		A simple demonstration of how to use the Stroika Sequence containers.
 
+SystemPerformanceClient -
+		A simple demonstration of how to use the Stroika System Performance framework.
+
 WebServer	Not started (but I've written this before with basically this code
 		so not too hard to write as a demo.
 

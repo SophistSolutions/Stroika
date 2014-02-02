@@ -15,4 +15,5 @@ system ("cd SimpleLedTest; perl buildall.pl");
 system ("cd SSDPClient; perl buildall.pl");
 system ("cd SSDPServer; perl buildall.pl");
 system ("cd SimpleService; perl buildall.pl");
+system ("cd SystemPerformanceClient; perl buildall.pl");
 system ("cd WebServer; perl buildall.pl");
