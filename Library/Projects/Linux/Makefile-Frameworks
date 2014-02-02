@@ -11,6 +11,7 @@ VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 SubDirs=	\
 		Service\
+		SystemPerformance\
 		WebServer\
 		UPnP\
 

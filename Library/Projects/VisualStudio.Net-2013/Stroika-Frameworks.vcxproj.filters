@@ -2,5 +2,6 @@
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
   </ItemGroup>
 </Project>

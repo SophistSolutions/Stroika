@@ -1,0 +1,13 @@
+include ../../Configuration.mk
+include	../../SharedBuildRules.mk
+include	../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Measurement.o\
+
+all:	$(Objs)
