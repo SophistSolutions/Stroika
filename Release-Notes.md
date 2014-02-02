@@ -20,15 +20,26 @@ History
 
 
   <tr>
-	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19x</a><br/>2014-??</td>
+	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a19">v2.0a19</a><br/>2014-02-02</td>
 	<td>
 		<ul>
+			<li>Started SystemPerformance framework (mostly placeholders)</li>
+			<li>Started Containers Association, SortedAssociation, and Bag (just placeholders)</li>
 			<li>New DataExchange::Atom</li>
 			<li>Renamed Execution::Event -> Execution::WaitableEvent (old name around but deprecated)</li>
 			<li>Draft of AbortableMutex (and list things todo); 
 			Lose lose qEVENT_GCCTHREADS_LINUX_WAITBUG, and fixed Event (WaitableEvent) class.
-			Net effect is making Thread::AbortAndWaitTilDone() much faster. Lots of related docs/things todo</li>
-			<li>make run-tests VALGRIND=1 (and default suppression file - not perfect results, but good)</li>
+			Net effect is making Thread::AbortAndWaitTilDone() much faster. Lots of related docs/things todo
+			</li>
+			<li>ThreadPool clenaups</li>
+			<li>make run-tests VALGRIND=1
+				<ul>
+					<li>default suppression file - not perfect results, but good</li>
+					<li>Alot of work here to cleanup valgrind results</li>
+					<li>Cleanup issues with Trace code (module init startup)</li>
+					<li>Now just two problem areas</li>
+				</ul>
+			 </li>
 			<li>make run-tests (makefile cleanups +) REMOTE= (so can run via ssh on remote host)</li>
 			<li>Renamed Tally<> to MultiSet<></li>
 			<li>Iterator/Iterable cleanups (much docs) - but also deprecated ApplyStatic (use Apply), and deprecated
