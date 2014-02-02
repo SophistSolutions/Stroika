@@ -138,7 +138,7 @@ namespace   Stroika {
             template    <typename   ATOM_MANAGER>
             inline  wstring   Atom<ATOM_MANAGER>::As (type_<wstring>) const
             {
-                return GetPrintName ().As<wstring> ();
+                return GetPrintName ().template As<wstring> ();
             }
             template    <typename   ATOM_MANAGER>
             inline  typename Atom<ATOM_MANAGER>::_AtomInternalType    Atom<ATOM_MANAGER>::_GetInternalRep () const
