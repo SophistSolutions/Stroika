@@ -255,6 +255,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Wait until thread is done (use Abort to request termination) - throws if timeout
+                 *  Note that its legal to call WaitForDoneUntil on a thread in any state - including nullptr.
+                 *  Some may just have no effect
+                 */
+                nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+
+            public:
+                /**
                  *  Note that its legal to call AbortAndWaitForDone on a thread in any state -
                  *  including nullptr. Some may just have no effect
                  *  An example of when this is useful is if you have a thread (performing some operation on

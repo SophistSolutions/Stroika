@@ -687,9 +687,9 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
     }
 }
 
-void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
+void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("Thread::WaitForDone"));
+    Debug::TraceContextBumper ctx (SDKSTR ("Thread::WaitForDoneUntil"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     if (fRep_.get () == nullptr) {
         // then its effectively already done.
@@ -698,7 +698,7 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
     if (fRep_->fStatus_ == Status::eCompleted) {
         return;
     }
-    if (timeout < 0) {
+    if (timeoutAt < Time::GetTickCount ()) {
         DoThrow (WaitTimedOutException ());
     }
     bool    doWait  =   false;
@@ -706,7 +706,7 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
      *  First wait on fThreadDone_. If we get passed it, its safe to block indefinitely (since we're exiting
      *  the thread).
      */
-    fRep_->fThreadDone_.Wait (timeout);
+    fRep_->fThreadDone_.WaitUntil (timeoutAt);
     // If not joinable, presume that means cuz its done
     if (fRep_->fThread_.joinable  ()) {
         // this will block indefinitely - but if a timeout was specified
