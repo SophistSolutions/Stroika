@@ -9,5 +9,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Measurement.o\
+	$(ObjDir)MeasurementTypes.o\
 
 all:	$(Objs)
