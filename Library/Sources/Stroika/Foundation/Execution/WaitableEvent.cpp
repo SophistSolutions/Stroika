@@ -42,8 +42,8 @@ using   Stroika::Foundation::Time::Duration;
 
 /*
  * TODO:
- *          o   POSIX/C++ code below on wait is a bit of a KLUGE. Unclear if it was a red-herring or
- *              osmething like that needed. Review once threading stuff stable.
+ *      @todo   POSIX/C++ code below on wait is a bit of a KLUGE. Unclear if it was a red-herring or
+ *              something like that needed. Review once threading stuff stable.
  *                  -- LGP 2011-10-27
  *              NB: its been working and stable for quite a while. It could use cleanup/docs (working on that).
  *              and the timeout part maybe wrong (esp with signals). But it appears to mostly be
@@ -52,21 +52,19 @@ using   Stroika::Foundation::Time::Duration;
 
 
 
-
-
 /*
  ********************************************************************************
  ******************************** WaitableEvent *********************************
  ********************************************************************************
  */
-void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
+void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Wait"));
-    DbgTrace ("(timeout = %.2f)", timeout);
+    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WaitUntil"));
+    DbgTrace ("(timeout = %.2f)", timeoutAt);
 #endif
     CheckForThreadAborting ();
-    if (timeout < 0) {
+    if (timeoutAt <= Time::GetTickCount ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
         DoThrow (WaitTimedOutException ());
@@ -74,9 +72,6 @@ void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
         throw (WaitTimedOutException ());
 #endif
     }
-
-    Time::DurationSecondsType   until   =   Time::GetTickCount () + timeout;
-    Assert (until >= timeout);  // so no funny overflow issues...
 
     /*
      *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
@@ -89,7 +84,7 @@ void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
      */
     while (not fTriggered_) {
         CheckForThreadAborting ();
-        Time::DurationSecondsType   remaining   =   until - Time::GetTickCount ();
+        Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue

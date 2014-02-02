@@ -77,6 +77,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  WaitTimedOutException throw when the timeout is exceeeded.
+                 */
+                nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
+
+            public:
+                /**
                  *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
                  *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
                  *

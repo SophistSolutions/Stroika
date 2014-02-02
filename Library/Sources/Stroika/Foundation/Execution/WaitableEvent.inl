@@ -50,6 +50,10 @@ namespace   Stroika {
                     fConditionVariable_.notify_all ();
                 }
             }
+            inline  void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
+            {
+                WaitUntil (timeout + Time::GetTickCount ());
+            }
 
 
         }
