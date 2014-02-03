@@ -23,7 +23,7 @@ History
   <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20x</a><br/>2014-02-??</td>
 <td>
 <ul>
-<li></li>
+<li>Sample for SystemPerformance framework(DRAFT - STARTING - BUT GET WORKING THIS  RELEASE)</li>
 </ul>
 </td>
 </tr>
