@@ -179,9 +179,9 @@ namespace   Stroika {
                 struct  type_ {};
 
                 template    <typename   T>
-                nonvirtual  T       As (type_<T>) const;
-                nonvirtual  String  As (type_<String>) const;
-                nonvirtual  wstring As (type_<wstring>) const;
+                nonvirtual  T           As_ (type_<T>) const;
+                nonvirtual  String      As_ (type_<String>) const;
+                nonvirtual  wstring     As_ (type_<wstring>) const;
 
             protected:
                 /*

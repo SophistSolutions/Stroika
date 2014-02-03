@@ -126,15 +126,15 @@ namespace   Stroika {
             template    <typename   T>
             inline  T   Atom<ATOM_MANAGER>::As () const
             {
-                return  As (type_<T>());
+                return  As_ (type_<T>());
             }
             template    <typename   ATOM_MANAGER>
-            inline  String   Atom<ATOM_MANAGER>::As (type_<String>) const
+            inline  String   Atom<ATOM_MANAGER>::As_ (type_<String>) const
             {
                 return GetPrintName ();
             }
             template    <typename   ATOM_MANAGER>
-            inline  wstring   Atom<ATOM_MANAGER>::As (type_<wstring>) const
+            inline  wstring   Atom<ATOM_MANAGER>::As_ (type_<wstring>) const
             {
                 return GetPrintName ().template As<wstring> ();
             }
