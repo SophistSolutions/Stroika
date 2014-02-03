@@ -5,10 +5,24 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
 
+SubDirs	=	\
+	Capturers	\
+
+.PHONY:			$(SubDirs)
+
+
 vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Measurement.o\
 	$(ObjDir)MeasurementTypes.o\
 
-all:	$(Objs)
+all:	$(Objs) $(SubDirs)
+
+Capturers_OBJS := $(addprefix "Capturers/", $(shell $(MAKE) --directory Capturers -s list-objs))
+
+list-objs::
+	@echo $(Capturers_OBJS)
+
+Capturers:
+	@$(MAKE) --directory Capturers -s

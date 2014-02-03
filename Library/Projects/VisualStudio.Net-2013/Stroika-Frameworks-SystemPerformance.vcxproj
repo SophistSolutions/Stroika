@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementTypes.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
@@ -83,11 +84,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementTypes.h" />
   </ItemGroup>
