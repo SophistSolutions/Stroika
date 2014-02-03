@@ -30,11 +30,23 @@ namespace   Stroika {
 
 
             /**
-             *
+             *          <<<not sure we need this registry>>>
              */
             struct  MeasurementTypeRegistry {
             public:
+                static  MeasurementTypeRegistry&    Get ();
+
+            public:
                 nonvirtual  Set<MeasurementType>    GetRegisteredTypes () const;
+
+            public:
+                nonvirtual  void                    SetRegisteredTypes (const Set<MeasurementType>& mt);
+
+            public:
+                nonvirtual  void                    AddRegisteredTypes (MeasurementType mt);
+
+            private:
+                Set<MeasurementType>    fMeasuredTypes_;
             };
 
 
