@@ -205,10 +205,10 @@ namespace   Stroika {
                 return TRAITS::kUpperBound;
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONVERT_TO>
-            inline  CONVERT_TO  Range<T, TRAITS>::As () const
+            template    <typename... ARGS>
+            inline  Characters::String  Range<T, TRAITS>::Format (ARGS&& ... args) const
             {
-                return GetLowerBound ().As<CONVERT_TO> () + static_cast<CONVERT_TO> (L" - ") + GetUpperBound  ().As<CONVERT_TO> ();
+                return GetLowerBound ().Format (forward<ARGS> (args)...) + L" - " + GetUpperBound  ().Format (forward<ARGS> (args)...);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const

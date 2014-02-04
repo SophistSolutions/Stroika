@@ -8,6 +8,7 @@
 
 #include    <limits>
 
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Memory/Optional.h"
 
@@ -275,10 +276,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  For now (maybe forever) only works for CONVERT_TO == String.
+                 *  This function is only defined if there is a format method on type T, and that method
+                 *
                  */
-                template    <typename CONVERT_TO>
-                nonvirtual  CONVERT_TO  As () const;
+                template    <typename... ARGS>
+                nonvirtual  Characters::String  Format (ARGS&& ... args) const;
 
             public:
                 /**
