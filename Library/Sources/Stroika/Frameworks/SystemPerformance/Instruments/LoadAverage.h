@@ -34,7 +34,7 @@ namespace   Stroika {
 #endif
 
 
-#if		qSupport_SystemPerformance_Instruments_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_LoadAverage
                 Instrument  GetLoadAverage ();
 #endif
 
