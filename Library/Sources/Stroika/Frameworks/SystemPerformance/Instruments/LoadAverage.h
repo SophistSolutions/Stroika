@@ -34,10 +34,10 @@ namespace   Stroika {
 #endif
 
 
-                // @todo PROBABLY do substype style - like we do with containers (Seqwuqnce and Sqeunce_Array) so in CTOR you can specify params
-#if qSupport_SystemPerformance_Instruments_LoadAverage
+#if		qSupport_SystemPerformance_Instruments_LoadAverage
                 Instrument  GetLoadAverage ();
 #endif
+
 
             }
         }
