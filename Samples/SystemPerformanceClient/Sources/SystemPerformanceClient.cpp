@@ -40,23 +40,6 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    cout << "Results for each instrument:" << endl;
-    for (Instrument i : SystemPerformance::GetAllInstruments ()) {
-        cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
-        Measurements m = i.fCaptureFunction ();
-        if (m.fMeasurements.empty ()) {
-            cout << "    NO DATA";
-        }
-        else {
-            cout << "    MeasuredAt: " << m.fMeasuredAt.As<String> ().AsNarrowSDKString () << endl;
-            for (Measurement mi : m.fMeasurements) {
-                cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << endl;
-                cout << "      " << serialize_ (mi.fValue) << endl;
-            }
-        }
-    }
-
-
     bool            printNames  =   false;
     Set<String>     run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
@@ -103,7 +86,7 @@ int main (int argc, const char* argv[])
                 cout << "    NO DATA";
             }
             else {
-                cout << "    MeasuredAt: " << m.fMeasuredAt.As<String> ().AsNarrowSDKString () << endl;
+                cout << "    MeasuredAt: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                 for (Measurement mi : m.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << endl;
                     cout << "      " << serialize_ (mi.fValue) << endl;
