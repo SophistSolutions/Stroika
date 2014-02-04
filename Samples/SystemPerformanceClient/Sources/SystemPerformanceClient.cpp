@@ -3,17 +3,17 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <mutex>
 #include    <iostream>
 
+#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+
+#include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
 #include    "Stroika/Frameworks/SystemPerformance/Measurement.h"
 #include    "Stroika/Frameworks/SystemPerformance/MeasurementTypes.h"
-
-#include    "Stroika/Frameworks/SystemPerformance/InstrumentSet.h"
-#include    "Stroika/Frameworks/SystemPerformance/Instruments/LoadAverage.h"
 
 using   namespace std;
 
@@ -25,12 +25,15 @@ using   Characters::String;
 using   Containers::Sequence;
 using   Memory::Optional;
 
+
+
 namespace {
-    InstrumentSetType   kInstruments_ = {
-#if     qSupport_SystemPerformance_Instruments_LoadAverage
-        Instruments::kLoadAverage;
-#endif
-    };
+	string	serialize_ (VariantValue v) 
+	{
+        Streams::BasicBinaryOutputStream    out;
+        DataExchange::JSON::Writer ().Write (v, out);
+        return out.As<string> ();
+	}
 }
 
 
@@ -38,7 +41,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
     cout << "Results for each instrument:" << endl;
-    for (Instrument i : kInstruments_) {
+    for (Instrument i : SystemPerformance::GetAllInstruments ()) {
         cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
         Measurements m = i.fCaptureFunction ();
         if (m.fMeasurements.empty ()) {
@@ -48,11 +51,10 @@ int main (int argc, const char* argv[])
             cout << "    MeasuredAt: " << m.fMeasuredAt.As<String> ().AsNarrowSDKString () << endl;
             for (Measurement mi : m.fMeasurements) {
                 cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << endl;
-                cout << "      ";
+                cout << "      " << serialize_ (mi.fValue) << endl;
             }
         }
     }
-
 
 
     bool    listen  =   false;
