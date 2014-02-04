@@ -12,7 +12,7 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include	"Instruments/LoadAverage.h"
+#include    "Instruments/LoadAverage.h"
 
 #include    "AllInstruments.h"
 
