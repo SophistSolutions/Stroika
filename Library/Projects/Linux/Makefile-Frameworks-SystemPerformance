@@ -14,6 +14,9 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)AllInstruments.o\
+	$(ObjDir)Instrument.o\
+	$(ObjDir)InstrumentSet.o\
 	$(ObjDir)Measurement.o\
 	$(ObjDir)MeasurementTypes.o\
 
