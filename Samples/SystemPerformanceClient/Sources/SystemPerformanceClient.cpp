@@ -21,6 +21,7 @@ using   namespace Stroika::Foundation;
 using   namespace Stroika::Frameworks;
 using   namespace Stroika::Frameworks::SystemPerformance;
 
+using   Characters::Character;
 using   Characters::String;
 using   Containers::Sequence;
 using   Memory::Optional;
@@ -32,7 +33,8 @@ namespace {
     {
         Streams::BasicBinaryOutputStream    out;
         DataExchange::JSON::Writer ().Write (v, out);
-        return out.As<string> ();
+        // strip CRLF - so shows up on one line
+        return String::FromUTF8 (out.As<string> ()).StripAll ([] (Character c)-> bool { return c == '\n' or c == '\r';}).AsNarrowSDKString ();
     }
 }
 
@@ -40,10 +42,14 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+    bool            printUsage  =   false;
     bool            printNames  =   false;
     Set<String>     run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"h")) {
+            printUsage = true;
+        }
         if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
             printNames = true;
         }
@@ -58,9 +64,9 @@ int main (int argc, const char* argv[])
             }
         }
     }
-    if (not printNames and run.empty ()) {
-        cerr << "Usage: SystemPerformanceClient [-l] [-r RUN-INSTRUMENT]" << endl;
-        return EXIT_FAILURE;
+    if (printUsage) {
+        cerr << "Usage: SystemPerformanceClient [-l] [-r RUN-INSTRUMENT]*" << endl;
+        return EXIT_SUCCESS;
     }
 
     try {
@@ -88,8 +94,7 @@ int main (int argc, const char* argv[])
             else {
                 cout << "    MeasuredAt: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                 for (Measurement mi : m.fMeasurements) {
-                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << endl;
-                    cout << "      " << serialize_ (mi.fValue) << endl;
+                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << serialize_ (mi.fValue) << endl;
                 }
             }
         }

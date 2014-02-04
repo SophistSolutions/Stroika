@@ -39,7 +39,7 @@ namespace {
 Instrument  SystemPerformance::Instruments::GetLoadAverage ()
 {
     static  Instrument  kLoadAverageInstrument_    = Instrument (
-                L"Load Average",
+                L"Load-Average",
     [] () -> Measurements {
         Measurements    results;
         double loadAve[3];
