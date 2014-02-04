@@ -57,37 +57,58 @@ int main (int argc, const char* argv[])
     }
 
 
-    bool    listen  =   false;
-    Optional<String>    searchFor;
-
+    bool            printNames  =   false;
+    Set<String>     run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
-            listen = true;
+            printNames = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"r")) {
             ++argi;
             if (argi != args.end ()) {
-                searchFor = *argi;
+                run.Add (*argi);
             }
             else {
-                cerr << "Expected arg to -s" << endl;
+                cerr << "Expected arg to -r" << endl;
                 return EXIT_FAILURE;
             }
         }
     }
-    if (not listen and searchFor.IsMissing ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+    if (not printNames and run.empty ()) {
+        cerr << "Usage: SystemPerformanceClient [-l] [-r RUN-INSTRUMENT]" << endl;
         return EXIT_FAILURE;
     }
 
     try {
-        if (listen or searchFor.IsPresent ()) {
-            Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
+        if (printNames) {
+            cout << "Instrument:" << endl;
+            for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+                cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
+                // print measurements too?
+            }
+            return EXIT_SUCCESS;
         }
-        else {
-            cerr << "Specify -l to listen or -s STRING to search" << endl;
-            return EXIT_FAILURE;
+
+        cout << "Results for each instrument:" << endl;
+        for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+            if (not run.empty ()) {
+                if (not run.Contains (i.fInstrumentName)) {
+                    continue;
+                }
+            }
+            cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
+            Measurements m = i.fCaptureFunction ();
+            if (m.fMeasurements.empty ()) {
+                cout << "    NO DATA";
+            }
+            else {
+                cout << "    MeasuredAt: " << m.fMeasuredAt.As<String> ().AsNarrowSDKString () << endl;
+                for (Measurement mi : m.fMeasurements) {
+                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << endl;
+                    cout << "      " << serialize_ (mi.fValue) << endl;
+                }
+            }
         }
     }
     catch (...) {
