@@ -36,7 +36,7 @@ namespace   Stroika {
              *
              */
             struct  Measurement {
-                MeasurementType fType;  //Type (would be nice to use new atom class here but as quick hack use string
+                MeasurementType fType;
                 VariantValue    fValue;
             };
 
