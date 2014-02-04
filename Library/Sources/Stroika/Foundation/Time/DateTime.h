@@ -279,6 +279,7 @@ namespace   Stroika {
                  *      struct timespec
                  *      SYSTEMTIME          (WINDOWS ONLY)
                  *      Date
+                 *      String              (Format (PrintFormat::eDEFAULT))
                  *
                  *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
                  *  logically extends Date with extra (TOD) information.

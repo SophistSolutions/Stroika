@@ -592,6 +592,12 @@ SYSTEMTIME  DateTime::As () const
 }
 #endif
 
+template    <>
+String  DateTime::As () const
+{
+    return Format ();
+}
+
 void    DateTime::SetDate (const Date& d)
 {
     fDate_ = d;
