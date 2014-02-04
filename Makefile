@@ -23,7 +23,7 @@ help:
 	@echo "    check-tools:            -    Check the tools needed to build Stroika are installed."
 
 
-all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools tests samples documentation
+all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
 	@make check
 
 
