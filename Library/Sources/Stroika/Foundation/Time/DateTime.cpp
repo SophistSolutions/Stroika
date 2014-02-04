@@ -592,10 +592,16 @@ SYSTEMTIME  DateTime::As () const
 }
 #endif
 
-template    <>
-String  DateTime::As () const
-{
-    return Format ();
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
+            template    <>
+            String  DateTime::As () const
+            {
+                return Format ();
+            }
+        }
+    }
 }
 
 void    DateTime::SetDate (const Date& d)
