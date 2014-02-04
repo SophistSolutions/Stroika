@@ -4,7 +4,7 @@
     <Filter Include="Sources">
       <UniqueIdentifier>{0c61b34c-9ce3-42a0-9df0-9e0c54670ccf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Capturers">
+    <Filter Include="Sources\Instruments">
       <UniqueIdentifier>{8b72bc0d-f445-44ff-9830-4770676f0fb3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -17,11 +17,14 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.inl">
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.inl">
+      <Filter>Sources\Instruments</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl">
       <Filter>Sources</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.inl">
-      <Filter>Sources\Capturers</Filter>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl">
+      <Filter>Sources</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -31,11 +34,14 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementTypes.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.cpp">
+      <Filter>Sources\Instruments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.cpp">
-      <Filter>Sources\Capturers</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -45,11 +51,14 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementTypes.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureRegistry.h">
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.h">
+      <Filter>Sources\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturers\LoadAverage.h">
-      <Filter>Sources\Capturers</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

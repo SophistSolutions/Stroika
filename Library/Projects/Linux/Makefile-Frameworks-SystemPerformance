@@ -6,7 +6,7 @@ RelPathToStroikaDevRoot		=	../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
 
 SubDirs	=	\
-	Capturers	\
+	Instruments	\
 
 .PHONY:			$(SubDirs)
 
@@ -19,10 +19,10 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-Capturers_OBJS := $(addprefix "Capturers/", $(shell $(MAKE) --directory Capturers -s list-objs))
+Instruments_OBJS := $(addprefix "Instruments/", $(shell $(MAKE) --directory Instruments -s list-objs))
 
 list-objs::
-	@echo $(Capturers_OBJS)
+	@echo $(Instruments_OBJS)
 
-Capturers:
-	@$(MAKE) --directory Capturers -s
+Instruments:
+	@$(MAKE) --directory Instruments -s

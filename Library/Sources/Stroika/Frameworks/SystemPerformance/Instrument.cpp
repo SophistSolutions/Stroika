@@ -12,7 +12,7 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "CaptureRegistry.h"
+#include    "Instrument.h"
 
 
 using   namespace   Stroika::Foundation;
