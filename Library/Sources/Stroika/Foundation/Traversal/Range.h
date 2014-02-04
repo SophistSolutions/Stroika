@@ -272,6 +272,14 @@ namespace   Stroika {
                  */
                 static  T    GetTraitsUpperBound ();
 
+
+            public:
+                /**
+                 *  For now (maybe forever) only works for CONVERT_TO == String.
+                 */
+                template    <typename CONVERT_TO>
+                nonvirtual  CONVERT_TO  As () const;
+
             public:
                 /**
                  *      Syntactic sugar on Equals()

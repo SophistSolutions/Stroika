@@ -205,6 +205,12 @@ namespace   Stroika {
                 return TRAITS::kUpperBound;
             }
             template    <typename T, typename TRAITS>
+            template    <typename CONVERT_TO>
+            inline  CONVERT_TO  Range<T, TRAITS>::As () const
+            {
+                return GetLowerBound ().As<CONVERT_TO> () + static_cast<CONVERT_TO> (L" - ") + GetUpperBound  ().As<CONVERT_TO> ();
+            }
+            template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
