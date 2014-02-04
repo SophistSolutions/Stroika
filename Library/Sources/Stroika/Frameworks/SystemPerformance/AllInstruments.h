@@ -23,10 +23,10 @@ namespace   Stroika {
         namespace   SystemPerformance {
 
 
-			/*
-			 *
-			 */
-			InstrumentSetType	GetAllInstruments ();
+            /*
+             *
+             */
+            InstrumentSetType   GetAllInstruments ();
 
 
         }

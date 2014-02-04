@@ -36,27 +36,31 @@ namespace {
  ********************************************************************************
  */
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-Instrument  kLoadAverage    = Instrument (
-                                  L"Load Average",
-[] () -> Measurements {
-    Measurements    results;
-    double loadAve[3];
-    DateTime    before = DateTime::Now ();
-    int result = getloadavg(loadAve, 3);
-    results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
-    if (result == 3)
-    {
-        Mapping<String, VariantValue> v;
-        v.Add (L"1-minute", loadAve[0]);
-        v.Add (L"5-minute", loadAve[1]);
-        v.Add (L"15-minute", loadAve[2]);
-        Measurement m;
-        m.fValue = VariantValue (v);
-        m.fType = kLoadAverage_;
-        results.fMeasurements.Add (m);
-    }
-    return results;
-},
-{kLoadAverage_}
-                              );
+Instrument  Instruments::GetLoadAverage ()
+{
+    static  Instrument  kLoadAverage    = Instrument (
+            L"Load Average",
+    [] () -> Measurements {
+        Measurements    results;
+        double loadAve[3];
+        DateTime    before = DateTime::Now ();
+        int result = getloadavg(loadAve, 3);
+        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        if (result == 3)
+        {
+            Mapping<String, VariantValue> v;
+            v.Add (L"1-minute", loadAve[0]);
+            v.Add (L"5-minute", loadAve[1]);
+            v.Add (L"15-minute", loadAve[2]);
+            Measurement m;
+            m.fValue = VariantValue (v);
+            m.fType = kLoadAverage_;
+            results.fMeasurements.Add (m);
+        }
+        return results;
+    },
+    {kLoadAverage_}
+                                          );
+}
+
 #endif

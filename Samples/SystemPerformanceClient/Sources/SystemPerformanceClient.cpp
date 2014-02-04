@@ -28,12 +28,12 @@ using   Memory::Optional;
 
 
 namespace {
-	string	serialize_ (VariantValue v) 
-	{
+    string  serialize_ (VariantValue v)
+    {
         Streams::BasicBinaryOutputStream    out;
         DataExchange::JSON::Writer ().Write (v, out);
         return out.As<string> ();
-	}
+    }
 }
 
 

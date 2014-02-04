@@ -31,14 +31,14 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
  ******************* SystemPerformance::GetAllInstruments ***********************
  ********************************************************************************
  */
-InstrumentSetType	SystemPerformance::GetAllInstruments ()
+InstrumentSetType   SystemPerformance::GetAllInstruments ()
 {
-	// OK to cache - copyable - but construct AFTER main (only when called here)
-    static	InstrumentSetType   kInstruments_ = {
+    // OK to cache - copyable - but construct AFTER main (only when called here)
+    static  InstrumentSetType   kInstruments_ = {
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-        Instruments::kLoadAverage
+        Instruments::GetLoadAverage ()
 #endif
     };
-	return kInstruments_;
+    return kInstruments_;
 }
 
