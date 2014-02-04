@@ -25,7 +25,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
 namespace {
-    const   MeasurementType kLoadAverage_   =   MeasurementType (L"Load Average");
+    const   MeasurementType kLoadAverage_   =   MeasurementType (L"Load-Average");
 }
 #endif
 
@@ -38,7 +38,7 @@ namespace {
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
 Instrument  Instruments::GetLoadAverage ()
 {
-    static  Instrument  kLoadAverage    = Instrument (
+    static  Instrument  kLoadAverage_    = Instrument (
             L"Load Average",
     [] () -> Measurements {
         Measurements    results;
@@ -61,6 +61,7 @@ Instrument  Instruments::GetLoadAverage ()
     },
     {kLoadAverage_}
                                           );
+										  retrun kLoadAverage_;
 }
 
 #endif
