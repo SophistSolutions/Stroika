@@ -65,7 +65,7 @@ int main (int argc, const char* argv[])
         }
     }
     if (printUsage) {
-        cerr << "Usage: SystemPerformanceClient [-l] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "Usage: SystemPerformanceClient [-h] [-l] [-r RUN-INSTRUMENT]*" << endl;
         return EXIT_SUCCESS;
     }
 
