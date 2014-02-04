@@ -208,7 +208,12 @@ namespace   Stroika {
             template    <typename... ARGS>
             inline  Characters::String  Range<T, TRAITS>::Format (ARGS&& ... args) const
             {
-                return GetLowerBound ().Format (forward<ARGS> (args)...) + L" - " + GetUpperBound  ().Format (forward<ARGS> (args)...);
+                if (GetLowerBound () == GetUpperBound ()) {
+                    return GetLowerBound ().Format (forward<ARGS> (args)...);
+                }
+                else {
+                    return GetLowerBound ().Format (forward<ARGS> (args)...) + L" - " + GetUpperBound  ().Format (forward<ARGS> (args)...);
+                }
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const
