@@ -36,10 +36,10 @@ namespace {
  ********************************************************************************
  */
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-Instrument  Instruments::GetLoadAverage ()
+Instrument  SystemPerformance::Instruments::GetLoadAverage ()
 {
-    static  Instrument  kLoadAverage_    = Instrument (
-            L"Load Average",
+    static  Instrument  kLoadAverageInstrument_    = Instrument (
+                L"Load Average",
     [] () -> Measurements {
         Measurements    results;
         double loadAve[3];
@@ -60,8 +60,8 @@ Instrument  Instruments::GetLoadAverage ()
         return results;
     },
     {kLoadAverage_}
-                                          );
-										  retrun kLoadAverage_;
+            );
+    return kLoadAverageInstrument_;
 }
 
 #endif
