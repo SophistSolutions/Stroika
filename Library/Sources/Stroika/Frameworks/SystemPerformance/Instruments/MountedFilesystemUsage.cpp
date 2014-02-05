@@ -107,7 +107,7 @@ namespace {
         // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
         // run def with ProcessRunner
         Sequence<VolumeInfo_>   result;
-        ProcessRunner pr (SDKSTR ("/bin/df"));
+        ProcessRunner pr (SDKSTR ("/bin/df -k -T"));
         Streams::BasicBinaryInputOutputStream   useStdOut;
         pr.SetStdOut (useStdOut);
         pr.Run ();
@@ -120,15 +120,21 @@ namespace {
                 continue;
             }
             Sequence<String>    l    =  Characters::Tokenize<String> (i, L" ");
-            if (l.size () < 6) {
+            if (l.size () < 7) {
                 DbgTrace ("skipping line cuz len=%d", l.size ());
                 continue;
             }
             VolumeInfo_ v;
-            v.fMountedOnName = l[5];
-            v.fDeviceOrVolumeName = l[0];
-            v.fDiskSizeInBytes = Characters::String2Float<double> (l[1]) * 1024;
-            v.fUsedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
+            v.fFileSystemType = l[1].Trim ();
+            v.fMountedOnName = l[6].Trim ();
+            {
+                String  d   =   l[0].Trim ();
+                if (not d.empty () and d != L"none") {
+                    v.fDeviceOrVolumeName = d;
+                }
+            }
+            v.fDiskSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
+            v.fUsedSizeInBytes = Characters::String2Float<double> (l[3]) * 1024;
             result.Append (v);
         }
         return result;
@@ -158,11 +164,15 @@ Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
         for (VolumeInfo_ v : volumes)
         {
             Mapping<String, VariantValue> vv;
-            vv.Add (L"Filesystem-Type", v.fFileSystemType);
+            if (not v.fFileSystemType.empty ()) {
+                vv.Add (L"Filesystem-Type", v.fFileSystemType);
+            }
             if (not v.fDeviceOrVolumeName.empty ()) {
                 vv.Add (L"Device-Name", v.fDeviceOrVolumeName);
             }
-            vv.Add (L"Volume-ID", v.fVolumeID);
+            if (not v.fVolumeID.empty ()) {
+                vv.Add (L"Volume-ID", v.fVolumeID);
+            }
             vv.Add (L"Mounted-On", v.fMountedOnName);
             if (v.fDiskSizeInBytes.IsPresent ()) {
                 vv.Add (L"Disk-Size", *v.fDiskSizeInBytes);
