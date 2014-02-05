@@ -561,7 +561,7 @@ DoneWithProcess:
             useArgsV.push_back (nullptr);
             // throw if not long enuf
             string thisEXEPath = tmpTStrArgs[0];
-            int r   =   execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+            int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
             _exit(EXIT_FAILURE);
         }
         else {
@@ -571,13 +571,15 @@ DoneWithProcess:
             close (jStdin[1]);
             close (jStdout[0]);
             close (jStderr[0]);
-            int useSTDOUT = jStdout[1];
+            int useSTDIN    =   jStdin[0];
+            int useSTDOUT   =   jStdout[1];
+            int useSTDERR   =   jStderr[1];
 
             // really need to do peicemail like above to avoid deadlock
             {
                 const Byte* p   =   stdinBLOB.begin ();
                 const Byte* e   =   p + stdinBLOB.GetSize ();
-                write (jStdin[0], p, e - p);
+                write (useSTDIN, p, e - p);
             }
             /*
                 *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.

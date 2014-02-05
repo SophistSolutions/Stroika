@@ -103,7 +103,7 @@ namespace {
         // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
         // run def with ProcessRunner
         Sequence<VolumeInfo_>   result;
-        ProcessRunner pr (SDKSTR ("df"));
+        ProcessRunner pr (SDKSTR ("/bin/df"));
         String out = pr.Run (L"");
         VolumeInfo_ foo;
         foo.fMountedOnName = out;
