@@ -53,6 +53,11 @@ String TextInputStream::ReadLine () const
     }
 }
 
+Traversal::Iterable<String> TextInputStream::ReadLines () const
+{
+    AssertNotImplemented ();
+}
+
 String TextInputStream::ReadAll () const
 {
     String      result;

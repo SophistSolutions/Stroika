@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *      @todo   TextInputStream::ReadLines () NYI
+ *
  *      @todo   Add Close() as with - binaryinputstream!
  *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
@@ -122,8 +124,19 @@ namespace   Stroika {
                 /**
                  * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
                  * it encounters as part of the read line.
+                 *
+                 *  ReadLine() will return an empty string iff EOF.
                  */
                 nonvirtual  String ReadLine () const;
+
+            public:
+                /**
+                 *  Returns Iterable<String> object, so you can
+                 *  write code:
+                 *          for (String line : stream.ReadLines ()) {
+                 *          }
+                 */
+                nonvirtual  Traversal::Iterable<String> ReadLines () const;
 
             public:
                 /**
