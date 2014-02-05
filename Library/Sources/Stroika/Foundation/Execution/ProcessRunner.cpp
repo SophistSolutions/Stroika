@@ -530,9 +530,9 @@ DoneWithProcess:
         int  jStdout[2];
         int  jStderr[2];
         // @todo REDO USING pipe2 and set flags !!!
-        Verify (::pipe (&jStdin));
-        Verify (::pipe (&jStdout));
-        Verify (::pipe (&jStderr));
+        Verify (::pipe (jStdin));
+        Verify (::pipe (jStdout));
+        Verify (::pipe (jStderr));
         int cpid = fork();
         if (cpid == -1) {
             Execution::DoThrow (StringException (L"fork failed"));  // must throw errno here
@@ -549,7 +549,7 @@ DoneWithProcess:
             close (jStdout[1]);
             close (jStderr[1]);
             Sequence<string>    tmpTStrArgs;
-            for (auto i : Execution::ParseCommandLine (cmdLine)) {
+            for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
                 tmpTStrArgs.push_back (i.AsNarrowSDKString ());
             }
             vector<char*>   useArgsV;
@@ -560,6 +560,8 @@ DoneWithProcess:
                 useArgsV.push_back (const_cast<char*> (i->c_str ()));
             }
             useArgsV.push_back (nullptr);
+            // throw if not long enuf
+            string thisEXEPath = tmpTStrArgs[0];
             int r   =   execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
             _exit(EXIT_FAILURE);
         }
@@ -583,10 +585,10 @@ DoneWithProcess:
                 */
             if (not out.empty ()) {
                 Byte    buf[1024];
-                DWORD   nBytesRead  =   0;
+                int   nBytesRead  =   0;
 
                 // @todo not quite right - unless we have blcokgin
-                while (::read (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr) > 0) {
+                while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
                     out.Write (buf, buf + nBytesRead);
                 }
             }
