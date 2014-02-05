@@ -531,9 +531,9 @@ DoneWithProcess:
         int  jStdout[2];
         int  jStderr[2];
         // @todo REDO USING pipe2 and set flags !!!
-        Verify (::pipe (jStdin));
-        Verify (::pipe (jStdout));
-        Verify (::pipe (jStderr));
+        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::: pipe (jStdin);});
+        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::: pipe (jStdout);});
+        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::: pipe (jStderr);});
         int cpid = fork();
         if (cpid == -1) {
             Execution::DoThrow (StringException (L"fork failed"));  // must throw errno here
