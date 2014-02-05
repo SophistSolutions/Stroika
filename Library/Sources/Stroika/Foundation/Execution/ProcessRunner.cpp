@@ -616,6 +616,8 @@ DoneWithProcess:
                 if (p != e) {
                     write (useSTDIN, p, e - p);
                 }
+                // in case child process reads from its STDIN to EOF
+                CLOSE_ (useSTDIN);
             }
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*
