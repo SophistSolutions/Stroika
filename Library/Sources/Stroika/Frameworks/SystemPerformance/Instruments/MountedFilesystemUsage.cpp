@@ -108,10 +108,15 @@ namespace {
         ProcessRunner pr (SDKSTR ("/bin/df"));
 #if 1
         Streams::BasicBinaryInputOutputStream   useStdOut;
-        SetStdOut (useStdOut);
-        Run ();
+        pr.SetStdOut (useStdOut);
+        pr.Run ();
+        String out;
         Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
-        String out =  stdOut.ReadAll ();
+        for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+            out = i;
+        }
+
+        //String out =  stdOut.ReadAll ();
         // redo with a bunch of readlines
 #else
         String out = pr.Run (L"");
