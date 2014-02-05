@@ -17,3 +17,4 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 
 const   MeasurementType SystemPerformance::kLoadAverage         =   MeasurementType (L"Load-Average");
 const   MeasurementType SystemPerformance::kPercentCPUUsage     =   MeasurementType (L"Percent-CPU");
+const   MeasurementType SystemPerformance::kDiskUsage           =   MeasurementType (L"Disk-Usage");

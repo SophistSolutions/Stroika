@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "Instruments/LoadAverage.h"
+#include    "Instruments/MountedFilesystemUsage.h"
 #include    "Instruments/SystemTimes.h"
 
 #include    "AllInstruments.h"
@@ -35,6 +36,7 @@ InstrumentSetType   SystemPerformance::GetAllInstruments ()
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
         Instruments::GetSystemTimes (),
 #endif
+        Instruments::GetMountedFilesystemUsage (),
     };
     return kInstruments_;
 }

@@ -87,6 +87,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp" />
   </ItemGroup>
@@ -96,6 +97,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
   </ItemGroup>
