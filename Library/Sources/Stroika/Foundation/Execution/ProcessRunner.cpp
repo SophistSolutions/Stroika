@@ -534,19 +534,32 @@ DoneWithProcess:
         Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
         Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
         Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
+        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1])
         int cpid = ::fork ();
         Execution::ThrowErrNoIfNegative (cpid);
         if (cpid == 0) {
-            // we are the child - so close xxx and exec
-            close (0);
-            close (1);
-            close (2);
-            dup2 (jStdin[0], 0);
-            dup2 (jStdout[1], 1);
-            dup2 (jStderr[1], 2);
-            close (jStdin[0]);
-            close (jStdout[1]);
-            close (jStderr[1]);
+            /*
+             *  In child process
+             */
+            // @todo we are the child - so close xxx and exec
+            {
+                // move arg stdin/out/err to 0/1/2 file-descriptors
+                int useSTDIN    =   jStdin[1];
+                int useSTDOUT   =   jStdout[0];
+                int useSTDERR   =   jStderr[0];
+                ::close (0);
+                ::close (1);
+                ::close (2);
+                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::dup2 (useSTDIN, 0);});
+                Execution::Handle_ErrNoResultInteruption ([useSTDOUT] () -> int { return ::dup2 (useSTDOUT, 1);});
+                Execution::Handle_ErrNoResultInteruption ([useSTDERR] () -> int { return ::dup2 (useSTDERR, 2);});
+                ::close (jStdin[0]);
+                ::close (jStdin[1]);
+                ::close (jStdout[0]);
+                ::close (jStdout[1]);
+                ::close (jStderr[0]);
+                ::close (jStderr[1]);
+            }
             Sequence<string>    tmpTStrArgs;
             for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
                 tmpTStrArgs.push_back (i.AsNarrowSDKString ());
@@ -562,18 +575,20 @@ DoneWithProcess:
             // throw if not long enuf
             string thisEXEPath = tmpTStrArgs[0];
             int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
-            _exit(EXIT_FAILURE);
+            _exit (EXIT_FAILURE);
         }
         else {
             /*
              * WE ARE PARENT
              */
-            close (jStdin[1]);
-            close (jStdout[0]);
-            close (jStderr[0]);
             int useSTDIN    =   jStdin[0];
             int useSTDOUT   =   jStdout[1];
             int useSTDERR   =   jStderr[1];
+            {
+                close (jStdin[1]);
+                close (jStdout[0]);
+                close (jStderr[0]);
+            }
 
             // really need to do peicemail like above to avoid deadlock
             {
@@ -581,6 +596,7 @@ DoneWithProcess:
                 const Byte* e   =   p + stdinBLOB.GetSize ();
                 write (useSTDIN, p, e - p);
             }
+            // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*
                 *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                 */
@@ -590,8 +606,10 @@ DoneWithProcess:
 
                 // @todo not quite right - unless we have blcokgin
                 while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
+                    DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
                     out.Write (buf, buf + nBytesRead);
                 }
+                DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
             }
             // not sure we need?
             wait (NULL);                /* Wait for child */
