@@ -24,26 +24,21 @@ namespace   {
     void    RegressionTest1_ ()
     {
         Streams::BasicBinaryOutputStream myStdOut;
-#if         qPlatform_Windows
         // quickie about to test..
         ProcessRunner pr (SDKSTR ("echo hi mom"), nullptr, myStdOut);
         pr.Run ();
-#endif
     }
     void    RegressionTest2_ ()
     {
         Streams::BasicBinaryOutputStream myStdOut;
-#if         qPlatform_Windows
         // quickie about to test..
         ProcessRunner pr (SDKSTR ("echo hi mom"));
         String out = pr.Run (L"");
         VerifyTestResult (out.Trim () == L"hi mom");
-#endif
     }
     void    RegressionTest3_Pipe_ ()
     {
         Streams::BasicBinaryOutputStream myStdOut;
-#if         qPlatform_Windows
         ProcessRunner pr1 (SDKSTR ("echo hi mom"));
         Streams::BasicBinaryInputOutputStream pipe;
         ProcessRunner pr2 (SDKSTR ("cat"));
@@ -59,7 +54,6 @@ namespace   {
         String out = String::FromUTF8 (pr2Out.As<string> ());
 
         VerifyTestResult (out.Trim () == L"hi mom");
-#endif
     }
 }
 
