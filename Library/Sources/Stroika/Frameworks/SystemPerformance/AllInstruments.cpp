@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "Instruments/LoadAverage.h"
+#include    "Instruments/SystemTimes.h"
 
 #include    "AllInstruments.h"
 
@@ -30,6 +31,9 @@ InstrumentSetType   SystemPerformance::GetAllInstruments ()
     static  InstrumentSetType   kInstruments_ = {
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
         Instruments::GetLoadAverage (),
+#endif
+#if     qSupport_SystemPerformance_Instruments_SystemTimes
+        Instruments::GetSystemTimes (),
 #endif
     };
     return kInstruments_;
