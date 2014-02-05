@@ -104,7 +104,16 @@ namespace {
         // run def with ProcessRunner
         Sequence<VolumeInfo_>   result;
         ProcessRunner pr (SDKSTR ("/bin/df"));
+#if 1
+        Streams::BasicBinaryInputOutputStream   useStdOut;
+        SetStdOut (useStdOut);
+        Run ();
+        Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
+        String out =  stdOut.ReadAll ();
+        // redo with a bunch of readlines
+#else
         String out = pr.Run (L"");
+#endif
         VolumeInfo_ foo;
         foo.fMountedOnName = out;
         result.Append (foo);    //tmphack to test
