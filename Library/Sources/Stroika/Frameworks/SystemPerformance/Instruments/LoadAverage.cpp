@@ -12,6 +12,8 @@
 #include    "../../../Foundation/Execution/Exceptions.h"
 #include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
+#include    "../CommonMeasurementTypes.h"
+
 #include    "LoadAverage.h"
 
 
@@ -23,11 +25,6 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
 
-#if     qSupport_SystemPerformance_Instruments_LoadAverage
-namespace {
-    const   MeasurementType kLoadAverage_   =   MeasurementType (L"Load-Average");
-}
-#endif
 
 
 /*
@@ -54,12 +51,12 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
             v.Add (L"15-minute", loadAve[2]);
             Measurement m;
             m.fValue = VariantValue (v);
-            m.fType = kLoadAverage_;
+            m.fType = kLoadAverage;
             results.fMeasurements.Add (m);
         }
         return results;
     },
-    {kLoadAverage_}
+    {kLoadAverage}
             );
     return kLoadAverageInstrument_;
 }

@@ -23,11 +23,6 @@ namespace   Stroika {
             namespace   Instruments {
 
 
-                using   namespace   Stroika::Foundation;
-                using   Characters::String;
-                using   Containers::Set;
-
-
 #ifndef qSupport_SystemPerformance_Instruments_SystemTimes
 #define qSupport_SystemPerformance_Instruments_SystemTimes  qPlatform_Windows
 #endif

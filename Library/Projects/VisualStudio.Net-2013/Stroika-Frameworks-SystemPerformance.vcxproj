@@ -75,7 +75,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
@@ -84,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.cpp" />
@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.h" />

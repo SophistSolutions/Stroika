@@ -3,12 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if     qPlatform_Windows
 #include    <Windows.h>
-#endif // qPlatform_Windows
+#endif
 
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
+
+#include    "../CommonMeasurementTypes.h"
 
 #include    "SystemTimes.h"
 
@@ -21,11 +23,6 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
 
-#if     qSupport_SystemPerformance_Instruments_SystemTimes
-namespace {
-    const   MeasurementType kSystemTimes_   =   MeasurementType (L"System-Times");
-}
-#endif
 
 
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
@@ -61,7 +58,7 @@ namespace {
 
 /*
  ********************************************************************************
- ************************* Instruments::GetLoadAverage **************************
+ ************************* Instruments::GetSystemTimes **************************
  ********************************************************************************
  */
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
@@ -95,15 +92,13 @@ Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecond
         Assert (sys > 0);
         double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
 
-        Mapping<String, VariantValue> v;
-        v.Add (L"cpu", cpu);
         Measurement m;
-        m.fValue = VariantValue (v);
-        m.fType = kSystemTimes_;
+        m.fValue = cpu;
+        m.fType = kPercentCPUUsage;
         results.fMeasurements.Add (m);
         return results;
     },
-    {kSystemTimes_}
+    {kPercentCPUUsage}
             );
     return kkSystemTimesInstrument_;
 }

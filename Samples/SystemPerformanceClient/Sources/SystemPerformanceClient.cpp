@@ -92,7 +92,7 @@ int main (int argc, const char* argv[])
                 cout << "    NO DATA";
             }
             else {
-                cout << "    MeasuredAt: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+                cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                 for (Measurement mi : m.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << serialize_ (mi.fValue) << endl;
                 }

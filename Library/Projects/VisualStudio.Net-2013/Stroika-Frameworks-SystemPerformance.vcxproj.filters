@@ -20,9 +20,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl">
       <Filter>Sources</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.inl">
-      <Filter>Sources</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">
@@ -43,6 +40,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
@@ -62,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.h">
       <Filter>Sources\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

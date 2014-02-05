@@ -40,6 +40,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "AllInstruments.inl"
 
 #endif  /*_Stroika_Framework_SystemPerformance_AllInstruments_h_*/

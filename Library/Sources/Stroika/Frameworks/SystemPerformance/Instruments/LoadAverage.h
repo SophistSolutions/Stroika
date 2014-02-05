@@ -6,9 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../../../Foundation/Containers/Set.h"
-#include    "../../../Foundation/DataExchange/Atom.h"
-
 #include    "../Instrument.h"
 
 
@@ -22,11 +19,6 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-
-
-                using   namespace   Stroika::Foundation;
-                using   Characters::String;
-                using   Containers::Set;
 
 
 #ifndef qSupport_SystemPerformance_Instruments_LoadAverage
