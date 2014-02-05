@@ -104,6 +104,15 @@ namespace {
 #endif
 
 
+#if     qPlatform_POSIX
+namespace {
+    void    CLOSE_(int fd)
+    {
+        Execution::Handle_ErrNoResultInteruption ([fd] () -> int { return ::close (fd);});
+    }
+}
+#endif
+
 
 #if     qPlatform_Windows
 namespace {
@@ -547,18 +556,18 @@ DoneWithProcess:
                 int useSTDIN    =   jStdin[1];
                 int useSTDOUT   =   jStdout[0];
                 int useSTDERR   =   jStderr[0];
-                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (0);});
-                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (1);});
-                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (2);});
+                CLOSE_ (0);
+                CLOSE_ (1);
+                CLOSE_ (2);
                 Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::dup2 (useSTDIN, 0);});
                 Execution::Handle_ErrNoResultInteruption ([useSTDOUT] () -> int { return ::dup2 (useSTDOUT, 1);});
                 Execution::Handle_ErrNoResultInteruption ([useSTDERR] () -> int { return ::dup2 (useSTDERR, 2);});
-                ::close (jStdin[0]);
-                ::close (jStdin[1]);
-                ::close (jStdout[0]);
-                ::close (jStdout[1]);
-                ::close (jStderr[0]);
-                ::close (jStderr[1]);
+                CLOSE_ (jStdin[0]);
+                CLOSE_ (jStdin[1]);
+                CLOSE_ (jStdout[0]);
+                CLOSE_ (jStdout[1]);
+                CLOSE_ (jStderr[0]);
+                CLOSE_ (jStderr[1]);
             }
             Sequence<string>    tmpTStrArgs;
             for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
@@ -574,8 +583,9 @@ DoneWithProcess:
             useArgsV.push_back (nullptr);
             // throw if not long enuf
             string thisEXEPath = tmpTStrArgs[0];
-            DbgTrace ("In Child  - exec ", thisEXEPath.c_str ());   // not sure if/will work due to fork
+            DbgTrace ("In Child  - exec '%s'", thisEXEPath.c_str ());   // not sure if/will work due to fork
             int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+            DbgTrace ("In Child - exec FAILED r = %d", r);
             _exit (EXIT_FAILURE);
         }
         else {
@@ -611,7 +621,18 @@ DoneWithProcess:
                     DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
                     out.Write (buf, buf + nBytesRead);
                 }
-                DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
+                DbgTrace ("from stdout nBytesRead = %d, errno=%d", nBytesRead, errno);
+            }
+            if (not err.empty ()) {
+                Byte    buf[1024];
+                int   nBytesRead  =   0;
+
+                // @todo not quite right - unless we have blcokgin
+                while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
+                    DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
+                    err.Write (buf, buf + nBytesRead);
+                }
+                DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
             }
             // not sure we need?
             wait (NULL);                /* Wait for child */
