@@ -536,6 +536,13 @@ DoneWithProcess:
 #elif   qPlatform_POSIX
         // first draft impl...-- 2014-02-05
         // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
+        /*
+         *  NOTE:
+         *      From http://linux.die.net/man/2/pipe
+         *          "The array pipefd is used to return two file descriptors referring to the ends
+         *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
+         *          the write end of the pipe"
+         */
         int  jStdin[2];
         int  jStdout[2];
         int  jStderr[2];
@@ -553,9 +560,9 @@ DoneWithProcess:
             // @todo we are the child - so close xxx and exec
             {
                 // move arg stdin/out/err to 0/1/2 file-descriptors
-                int useSTDIN    =   jStdin[1];
-                int useSTDOUT   =   jStdout[0];
-                int useSTDERR   =   jStderr[0];
+                int useSTDIN    =   jStdin[0];
+                int useSTDOUT   =   jStdout[1];
+                int useSTDERR   =   jStderr[1];
                 CLOSE_ (0);
                 CLOSE_ (1);
                 CLOSE_ (2);
@@ -592,13 +599,13 @@ DoneWithProcess:
             /*
              * WE ARE PARENT
              */
-            int useSTDIN    =   jStdin[0];
-            int useSTDOUT   =   jStdout[1];
-            int useSTDERR   =   jStderr[1];
+            int useSTDIN    =   jStdin[1];
+            int useSTDOUT   =   jStdout[0];
+            int useSTDERR   =   jStderr[0];
             {
-                close (jStdin[1]);
-                close (jStdout[0]);
-                close (jStderr[0]);
+                close (jStdin[0]);
+                close (jStdout[1]);
+                close (jStderr[1]);
             }
 
             // really need to do peicemail like above to avoid deadlock
