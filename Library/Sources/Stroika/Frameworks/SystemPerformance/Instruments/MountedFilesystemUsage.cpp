@@ -10,6 +10,8 @@
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
+#include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
+#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "../CommonMeasurementTypes.h"
 
