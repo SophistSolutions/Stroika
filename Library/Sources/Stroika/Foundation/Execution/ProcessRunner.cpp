@@ -603,9 +603,9 @@ DoneWithProcess:
             int useSTDOUT   =   jStdout[0];
             int useSTDERR   =   jStderr[0];
             {
-                close (jStdin[0]);
-                close (jStdout[1]);
-                close (jStderr[1]);
+                CLOSE_ (jStdin[0]);
+                CLOSE_ (jStdout[1]);
+                CLOSE_ (jStderr[1]);
             }
 
             // really need to do peicemail like above to avoid deadlock
@@ -613,7 +613,9 @@ DoneWithProcess:
                 const Byte* p   =   stdinBLOB.begin ();
                 const Byte* e   =   p + stdinBLOB.GetSize ();
                 // @todo need error checking
-                write (useSTDIN, p, e - p);
+                if (p != e) {
+                    write (useSTDIN, p, e - p);
+                }
             }
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*

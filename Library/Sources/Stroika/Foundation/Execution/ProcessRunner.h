@@ -25,7 +25,12 @@
  *
  *      @todo   Windows implementation is weak, but appears fully functional.
  *
- *      @todo   POSIX implementation is non-existent.
+ *      @todo   Fix POSIX version to use vfork() instead of fork () - but carefully! Must setup data just so.
+ *
+ *      @todo   Fix POSIX version to properly handle reading and writing streams at the same time to avoid deadlock
+ *              in finite kernel buffer sizes.
+ *
+ *      @todo   Fix POSIX version to use pipe2 and close appropriate open file descriptors (and other 'clean invoke' stuff.
  *
  *      @todo   Redo DWORD   waitResult  =   ::WaitForMultipleObjects()... logic to wait on thread and each read/write socket
  *              with select() AND somehow maybe eventually wait on streams (so we dont have to pre-read it all)
