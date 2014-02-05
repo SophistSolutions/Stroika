@@ -10,6 +10,7 @@
 #include    <unistd.h>
 #include    <sys/stat.h>
 #include    <fcntl.h>
+#include    <sys/wait.h>
 #endif
 
 #include    "../Characters/CString/Utilities.h"
@@ -593,7 +594,7 @@ DoneWithProcess:
                 }
             }
             // not sure we need?
-            wait(NULL);                /* Wait for child */
+            wait (NULL);                /* Wait for child */
         }
 #endif
     });
