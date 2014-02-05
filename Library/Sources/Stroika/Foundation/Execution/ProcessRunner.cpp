@@ -534,7 +534,7 @@ DoneWithProcess:
         Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
         Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
         Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
-        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1])
+        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
         int cpid = ::fork ();
         Execution::ThrowErrNoIfNegative (cpid);
         if (cpid == 0) {
@@ -547,9 +547,9 @@ DoneWithProcess:
                 int useSTDIN    =   jStdin[1];
                 int useSTDOUT   =   jStdout[0];
                 int useSTDERR   =   jStderr[0];
-                ::close (0);
-                ::close (1);
-                ::close (2);
+                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (0);});
+                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (1);});
+                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::close (2);});
                 Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::dup2 (useSTDIN, 0);});
                 Execution::Handle_ErrNoResultInteruption ([useSTDOUT] () -> int { return ::dup2 (useSTDOUT, 1);});
                 Execution::Handle_ErrNoResultInteruption ([useSTDERR] () -> int { return ::dup2 (useSTDERR, 2);});
@@ -574,6 +574,7 @@ DoneWithProcess:
             useArgsV.push_back (nullptr);
             // throw if not long enuf
             string thisEXEPath = tmpTStrArgs[0];
+            DbgTrace ("In Child  - exec ", thisEXEPath.c_str ());   // not sure if/will work due to fork
             int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
             _exit (EXIT_FAILURE);
         }
@@ -594,6 +595,7 @@ DoneWithProcess:
             {
                 const Byte* p   =   stdinBLOB.begin ();
                 const Byte* e   =   p + stdinBLOB.GetSize ();
+                // @todo need error checking
                 write (useSTDIN, p, e - p);
             }
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
