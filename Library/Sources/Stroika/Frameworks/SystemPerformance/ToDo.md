@@ -1,14 +1,8 @@
 TODO
 
 
-	>	JHave tegoister of TYPES
-
-	>	and regsitery of 'measuremnet sets' - each set has a handler associated
-
-	>	CaptureMgr - you pass in a selected set of measurementset and freqeuncey to measure, and a callabnck to notify with the measuremes.
-
-
-
+	>	CaptureMgr - you pass in a selected set of measurementset and freqeuncey to measure,
+		and a callabnck to notify with the measuremes.
 
 	>	be able to measure
 		 load average, or pct-cpu-usage, or amount of free disk space?
