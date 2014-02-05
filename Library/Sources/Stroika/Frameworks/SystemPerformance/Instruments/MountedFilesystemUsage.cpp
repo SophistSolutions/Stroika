@@ -108,7 +108,6 @@ namespace {
         // run def with ProcessRunner
         Sequence<VolumeInfo_>   result;
         ProcessRunner pr (SDKSTR ("/bin/df"));
-#if 1
         Streams::BasicBinaryInputOutputStream   useStdOut;
         pr.SetStdOut (useStdOut);
         pr.Run ();
@@ -128,21 +127,10 @@ namespace {
             VolumeInfo_ v;
             v.fMountedOnName = l[5];
             v.fDeviceOrVolumeName = l[0];
-            v.fDiskSizeInBytes = Characters::String2Float (l[1]) * 1024;
-            v.fUsedSizeInBytes = Characters::String2Float (l[2]) * 1024;
+            v.fDiskSizeInBytes = Characters::String2Float<double> (l[1]) * 1024;
+            v.fUsedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
             result.Append (v);
         }
-
-        //String out =  stdOut.ReadAll ();
-        // redo with a bunch of readlines
-#else
-        String out = pr.Run (L"");
-#endif
-#if 0
-        VolumeInfo_ foo;
-        foo.fMountedOnName = out;
-        result.Append (foo);    //tmphack to test
-#endif
         return result;
     }
 #endif
