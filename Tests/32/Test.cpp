@@ -69,7 +69,7 @@ namespace   {
         // Many performance instruments use pipes
         // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
         //  --LGP 2014-02-05
-        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIG_PIPE, Execution::SignalHandlerRegistry::kIGNORED);
+        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
         RegressionTest1_ ();
         RegressionTest2_ ();
