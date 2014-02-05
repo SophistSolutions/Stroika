@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/Tokenize.h"
 
 #include    "CommandLine.h"
 
@@ -54,6 +55,14 @@ Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String&
  ************************* Execution::ParseCommandLine **************************
  ********************************************************************************
  */
+Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
+{
+    Sequence<String>    result;
+    // super quickie hack impl
+    result = Characters::Tokenize<String> (cmdLine, L" ");
+    return result;
+}
+
 Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);

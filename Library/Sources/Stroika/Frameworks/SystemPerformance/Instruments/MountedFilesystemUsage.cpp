@@ -104,9 +104,9 @@ namespace {
         Sequence<VolumeInfo_>   result;
         ProcessRunner pr (SDKSTR ("df"));
         String out = pr.Run (L"");
-		VolumeInfo_	foo;
-		foo.fMountedOnName = out;
-		result.Append (foo);	//tmphack to test
+        VolumeInfo_ foo;
+        foo.fMountedOnName = out;
+        result.Append (foo);    //tmphack to test
         return result;
     }
 #endif

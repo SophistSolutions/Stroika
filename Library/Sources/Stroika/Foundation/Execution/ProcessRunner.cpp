@@ -20,6 +20,7 @@
 #if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
 #endif
+#include    "../Execution/CommandLine.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../IO/FileSystem/FileSystem.h"
 #include    "../IO/FileSystem/FileUtils.h"
@@ -547,6 +548,10 @@ DoneWithProcess:
             close (jStdin[0]);
             close (jStdout[1]);
             close (jStderr[1]);
+            Sequence<string>    tmpTStrArgs;
+            for (auto i : Execution::ParseCommandLine (cmdLine)) {
+                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
+            }
             vector<char*>   useArgsV;
             for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
                 // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine

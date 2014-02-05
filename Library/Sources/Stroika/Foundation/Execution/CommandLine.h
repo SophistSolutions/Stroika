@@ -24,6 +24,7 @@ namespace   Stroika {
             using   Containers::Sequence;
 
 
+            Sequence<String>  ParseCommandLine (const String& cmdLine);
             Sequence<String>  ParseCommandLine (int argc, const char* argv[]);
             Sequence<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
 
