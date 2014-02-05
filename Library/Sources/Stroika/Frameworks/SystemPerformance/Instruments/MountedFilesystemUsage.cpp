@@ -7,6 +7,7 @@
 #include    <Windows.h>
 #endif
 
+#include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
@@ -112,8 +113,23 @@ namespace {
         pr.Run ();
         String out;
         Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
+        bool skippedHeader = false;
         for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-            out = i;
+            if (not skippedHeader) {
+                skippedHeader = true;
+                continue;
+            }
+            Sequence<String>    l    =  Characters::Tokenize<String> (i, L" ");
+            if (l.size () < 6) {
+                DbgTrace ("skipping line cuz len=%d", l.size ());
+                continue;
+            }
+            VolumeInfo_ v;
+            v.fMountedOnName = l[5];
+            v.fDeviceOrVolumeName = l[0];
+            v.fDiskSizeInBytes = Characters::String2Float (l[1]) * 1024;
+            v.fUsedSizeInBytes = Characters::String2Float (l[2]) * 1024;
+            result.Append (v);
         }
 
         //String out =  stdOut.ReadAll ();
@@ -121,9 +137,11 @@ namespace {
 #else
         String out = pr.Run (L"");
 #endif
+#if 0
         VolumeInfo_ foo;
         foo.fMountedOnName = out;
         result.Append (foo);    //tmphack to test
+#endif
         return result;
     }
 #endif
