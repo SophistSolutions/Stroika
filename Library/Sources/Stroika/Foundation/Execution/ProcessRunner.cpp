@@ -522,6 +522,72 @@ DoneWithProcess:
         }
 
         // now write the temps to the stream
+#elif   qPlatform_POSIX
+        // first draft impl...-- 2014-02-05
+        // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
+        int  jStdin[2];
+        int  jStdout[2];
+        int  jStderr[2];
+        // @todo REDO USING pipe2 and set flags !!!
+        Verify (::pipe (&jStdin));
+        Verify (::pipe (&jStdout));
+        Verify (::pipe (&jStderr));
+        int cpid = fork();
+        if (cpid == -1) {
+            Execution::DoThrow (StringException (L"fork failed"));  // must throw errno here
+        }
+        else if (cpid == 0) {
+            // we are the child - so close xxx and exec
+            close (0);
+            close (1);
+            close (2);
+            dup2 (jStdin[0], 0);
+            dup2 (jStdout[1], 1);
+            dup2 (jStderr[1], 2);
+            close (jStdin[0]);
+            close (jStdout[1]);
+            close (jStderr[1]);
+            vector<char*>   useArgsV;
+            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+                // their overwriting these strings!
+                // -- LGP 2013-06-08
+                useArgsV.push_back (const_cast<char*> (i->c_str ()));
+            }
+            useArgsV.push_back (nullptr);
+            int r   =   execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+            _exit(EXIT_FAILURE);
+        }
+        else {
+            /*
+             * WE ARE PARENT
+             */
+            close (jStdin[1]);
+            close (jStdout[0]);
+            close (jStderr[0]);
+            int useSTDOUT = jStdout[1];
+
+            // really need to do peicemail like above to avoid deadlock
+            {
+                const Byte* p   =   stdinBLOB.begin ();
+                const Byte* e   =   p + stdinBLOB.GetSize ();
+                write (jStdin[0], p, e - p);
+            }
+            /*
+                *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
+                */
+            if (not out.empty ()) {
+                Byte    buf[1024];
+                DWORD   nBytesRead  =   0;
+
+                // @todo not quite right - unless we have blcokgin
+                while (::read (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr) > 0) {
+                    out.Write (buf, buf + nBytesRead);
+                }
+            }
+            // not sure we need?
+            wait(NULL);                /* Wait for child */
+        }
 #endif
     });
 }
@@ -614,7 +680,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
-
+    // consider using 'system' here...
 #endif
 
     // @todo - better job both parsing separate args, and documenting how this is done!!!

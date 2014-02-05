@@ -33,7 +33,7 @@ namespace   Stroika {
             /*
              * Portable listing of mounted disk usage (like UNIX df)
              */
-            extern  const   MeasurementType kDiskUsage;
+            extern  const   MeasurementType kMountedVolumeUsage;
 
         }
     }

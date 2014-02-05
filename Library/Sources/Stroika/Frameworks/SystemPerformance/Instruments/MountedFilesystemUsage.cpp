@@ -102,10 +102,11 @@ namespace {
         // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
         // run def with ProcessRunner
         Sequence<VolumeInfo_>   result;
-#if 0
         ProcessRunner pr (SDKSTR ("df"));
         String out = pr.Run (L"");
-#endif
+		VolumeInfo_	foo;
+		foo.fMountedOnName = out;
+		result.Append (foo);	//tmphack to test
         return result;
     }
 #endif
@@ -149,11 +150,11 @@ Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
         }
         Measurement m;
         m.fValue = volumnesAsVariants;
-        m.fType = kDiskUsage;
+        m.fType = kMountedVolumeUsage;
         results.fMeasurements.Add (m);
         return results;
     },
-    {kDiskUsage}
+    {kMountedVolumeUsage}
                                           );
     return kInstrument_;
 }
