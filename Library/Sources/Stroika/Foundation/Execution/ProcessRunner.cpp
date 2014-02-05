@@ -531,14 +531,12 @@ DoneWithProcess:
         int  jStdout[2];
         int  jStderr[2];
         // @todo REDO USING pipe2 and set flags !!!
-        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::: pipe (jStdin);});
-        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::: pipe (jStdout);});
-        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::: pipe (jStderr);});
-        int cpid = fork();
-        if (cpid == -1) {
-            Execution::DoThrow (StringException (L"fork failed"));  // must throw errno here
-        }
-        else if (cpid == 0) {
+        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
+        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
+        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
+        int cpid = ::fork ();
+        Execution::ThrowErrNoIfNegative (cpid);
+        if (cpid == 0) {
             // we are the child - so close xxx and exec
             close (0);
             close (1);
