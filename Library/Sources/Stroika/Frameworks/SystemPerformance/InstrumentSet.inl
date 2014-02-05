@@ -17,6 +17,16 @@ namespace   Stroika {
         namespace   SystemPerformance {
 
 
+            /*
+             ********************************************************************************
+             **************** CaptureSetTraits_::EqualsCompareFunctionType ******************
+             ********************************************************************************
+             */
+            inline  bool    Private_::CaptureSetTraits_::EqualsCompareFunctionType::Equals (const Instrument& l, const Instrument& r)
+            {
+                return l.fInstrumentName == r.fInstrumentName;
+            }
+
 
         }
     }

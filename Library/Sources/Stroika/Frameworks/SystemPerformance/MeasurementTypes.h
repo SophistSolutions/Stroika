@@ -9,10 +9,14 @@
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/DataExchange/Atom.h"
 
+#include    "Measurement.h"
 
 /*
  * TODO:
- *      @todo
+ *      @todo       PERHAPS RENAME TO MeasuremetnTypeMetaInfoRegistry?
+ *                  DOC OPTIONAL - bUT CNA BE used to store extra info about measurement types
+ *
+ *
  */
 
 namespace   Stroika {
@@ -25,12 +29,12 @@ namespace   Stroika {
             using   Containers::Set;
 
 
-            // @todo - consider using independent atom registry
-            using   MeasurementType =  DataExchange::Atom<>;
-
 
             /**
              *          <<<not sure we need this registry>>>
+             *
+             *      THIS MAYBE HELPFUL - DO DOCUMENT METAINFO ABOUT REGISTERED METAINFO - PRETTY NAME ASSOCIATED WITH ATOM (without the dash),
+             *      And maybe a doc-string?
              */
             struct  MeasurementTypeRegistry {
             public:

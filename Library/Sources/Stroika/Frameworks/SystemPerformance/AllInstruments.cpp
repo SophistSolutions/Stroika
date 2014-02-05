@@ -3,15 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cstdlib>
-
-#include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchange/BadFormatException.h"
-#include    "../../Foundation/Debug/Assertions.h"
-#include    "../../Foundation/Execution/Exceptions.h"
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
-
 #include    "Instruments/LoadAverage.h"
 
 #include    "AllInstruments.h"
@@ -38,9 +29,8 @@ InstrumentSetType   SystemPerformance::GetAllInstruments ()
     // OK to cache - copyable - but construct AFTER main (only when called here)
     static  InstrumentSetType   kInstruments_ = {
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-        Instruments::GetLoadAverage ()
+        Instruments::GetLoadAverage (),
 #endif
     };
     return kInstruments_;
 }
-

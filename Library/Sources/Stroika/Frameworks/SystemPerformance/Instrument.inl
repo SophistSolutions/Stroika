@@ -22,7 +22,7 @@ namespace   Stroika {
              ************************ SystemPerformance::Instrument *************************
              ********************************************************************************
              */
-            inline  Instrument::Instrument (const String& instrumentName, const function<Measurements()>& capturer, const Set<MeasurementType>& capturedMeasurements)
+            inline  Instrument::Instrument (InstrumentNameType instrumentName, const function<Measurements()>& capturer, const Set<MeasurementType>& capturedMeasurements)
                 : fInstrumentName (instrumentName)
                 , fCaptureFunction (capturer)
                 , fCapturedMeasurements (capturedMeasurements)

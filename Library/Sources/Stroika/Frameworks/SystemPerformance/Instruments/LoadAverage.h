@@ -51,6 +51,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "LoadAverage.inl"
 
 #endif  /*_Stroika_Framework_SystemPerformance_Instruments_LoadAverage_h_*/

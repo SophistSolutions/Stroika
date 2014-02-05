@@ -29,18 +29,18 @@ namespace   Stroika {
 
 
             // @todo - consider using independent atom registry
-            using   MeasurementType =  DataExchange::Atom<>;
+            using   InstrumentNameType =  DataExchange::Atom<>;
 
 
             /**
              *          <<<not sure we need this registry>>>
              */
             struct  Instrument {
-                String                      fInstrumentName;
+                InstrumentNameType          fInstrumentName;
                 function<Measurements()>    fCaptureFunction;
                 Set<MeasurementType>        fCapturedMeasurements;
 
-                Instrument (const String& instrumentName, const function<Measurements()>& capturer, const Set<MeasurementType>& capturedMeasurements);
+                Instrument (InstrumentNameType instrumentName, const function<Measurements()>& capturer, const Set<MeasurementType>& capturedMeasurements);
             };
 
 

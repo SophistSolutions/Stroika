@@ -18,7 +18,6 @@ Objs	=	\
 	$(ObjDir)Instrument.o\
 	$(ObjDir)InstrumentSet.o\
 	$(ObjDir)Measurement.o\
-	$(ObjDir)MeasurementTypes.o\
 
 all:	$(Objs) $(SubDirs)
 

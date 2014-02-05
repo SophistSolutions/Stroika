@@ -39,7 +39,7 @@ namespace {
 Instrument  SystemPerformance::Instruments::GetLoadAverage ()
 {
     static  Instrument  kLoadAverageInstrument_    = Instrument (
-                L"Load-Average",
+                InstrumentNameType (L"Load-Average"),
     [] () -> Measurements {
         Measurements    results;
         double loadAve[3];
@@ -63,5 +63,4 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
             );
     return kLoadAverageInstrument_;
 }
-
 #endif

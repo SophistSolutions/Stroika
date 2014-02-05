@@ -8,16 +8,22 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Containers/Collection.h"
+#include    "../../Foundation/DataExchange/Atom.h"
 #include    "../../Foundation/DataExchange/VariantValue.h"
 #include    "../../Foundation/Time/DateTimeRange.h"
 
-#include    "MeasurementTypes.h"
 
 
 /*
  * TODO:
- *      @todo
+ *      @todo   Consider adding some sort of MeasurementType registry to capture meta inforamtion - descriptions
+ *              etc - about measurements. Don't do yet, cuz I'm not sure how to manage it - when to add things.
+ *
+ *              The challenge is how do to this modularly.
+ *
  */
+
+
 
 namespace   Stroika {
     namespace   Frameworks {
@@ -30,6 +36,12 @@ namespace   Stroika {
             using   DataExchange::VariantValue;
             using   Time::DateTime;
             using   Time::DateTimeRange;
+
+
+            /**
+             *
+             */
+            using   MeasurementType =  DataExchange::Atom<>;
 
 
             /**

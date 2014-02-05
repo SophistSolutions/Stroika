@@ -13,7 +13,7 @@
 
 #include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
 #include    "Stroika/Frameworks/SystemPerformance/Measurement.h"
-#include    "Stroika/Frameworks/SystemPerformance/MeasurementTypes.h"
+//#include    "Stroika/Frameworks/SystemPerformance/MeasurementTypes.h"
 
 using   namespace std;
 
@@ -42,9 +42,9 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    bool            printUsage  =   false;
-    bool            printNames  =   false;
-    Set<String>     run;
+    bool                    printUsage  =   false;
+    bool                    printNames  =   false;
+    Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, L"h")) {
@@ -73,7 +73,7 @@ int main (int argc, const char* argv[])
         if (printNames) {
             cout << "Instrument:" << endl;
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
-                cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
+                cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
                 // print measurements too?
             }
             return EXIT_SUCCESS;
@@ -86,7 +86,7 @@ int main (int argc, const char* argv[])
                     continue;
                 }
             }
-            cout << "  " << i.fInstrumentName.AsNarrowSDKString () << endl;
+            cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
             Measurements m = i.fCaptureFunction ();
             if (m.fMeasurements.empty ()) {
                 cout << "    NO DATA";

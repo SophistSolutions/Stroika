@@ -31,10 +31,7 @@ namespace   Stroika {
             namespace Private_ {
                 struct   CaptureSetTraits_ {
                     struct EqualsCompareFunctionType  {
-                        static bool Equals (Instrument l, Instrument r)
-                        {
-                            return l.fInstrumentName == r.fInstrumentName;
-                        }
+                        static bool Equals (const Instrument& l, const Instrument& r);
                     };
                     using   SetTraitsType = CaptureSetTraits_;
                 };

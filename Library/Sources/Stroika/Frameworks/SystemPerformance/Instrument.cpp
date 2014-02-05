@@ -22,12 +22,3 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
-
-
-
-
-/*
- ********************************************************************************
- ************************* WebServer::Request ***********************************
- ********************************************************************************
- */
