@@ -53,6 +53,11 @@ namespace {
                 v.fFileSystemType = String::FromSDKString (FileSysNameBuf);
                 v.fVolumeID = String::FromSDKString (volumeNameBuf);
                 {
+                    // @todo - use
+                    //      http://msdn.microsoft.com/en-us/library/windows/desktop/cc542456(v=vs.85).aspx
+                    //      CharCount = QueryDosDeviceW(&VolumeName[4], DeviceName, ARRAYSIZE(DeviceName));
+                    //      to get DEVICENAME
+                    //
                     TCHAR volPathsBuf[1024];
                     DWORD retLen = 0;
                     DWORD x = GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
