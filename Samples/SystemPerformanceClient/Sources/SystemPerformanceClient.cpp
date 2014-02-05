@@ -7,13 +7,15 @@
 
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#if     qPlatform_POSIX
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#endif
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
 #include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
 #include    "Stroika/Frameworks/SystemPerformance/Measurement.h"
-//#include    "Stroika/Frameworks/SystemPerformance/MeasurementTypes.h"
 
 using   namespace std;
 
@@ -42,6 +44,12 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+#if     qPlatform_POSIX
+    // Many performance instruments use pipes
+    // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+    //  --LGP 2014-02-05
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (Execution::SignalHandlerRegistry::kIGNORED);
+#endif
     bool                    printUsage  =   false;
     bool                    printNames  =   false;
     Set<InstrumentNameType> run;

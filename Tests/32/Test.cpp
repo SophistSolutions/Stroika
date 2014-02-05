@@ -5,6 +5,9 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Execution/ProcessRunner.h"
+#if     qPlatform_POSIX
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#endif
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
@@ -62,6 +65,12 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
+#if     qPlatform_POSIX
+        // Many performance instruments use pipes
+        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+        //  --LGP 2014-02-05
+        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (Execution::SignalHandlerRegistry::kIGNORED);
+#endif
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_Pipe_ ();
