@@ -31,6 +31,10 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
             }
+            inline  string  Duration::AsUTF8 () const
+            {
+                return As<Characters::String> ().AsUTF8 ();
+            }
             inline  bool Duration::operator<= (const Duration& rhs) const
             {
                 return Compare (rhs) <= 0;

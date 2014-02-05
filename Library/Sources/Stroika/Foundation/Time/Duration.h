@@ -117,7 +117,13 @@ namespace   Stroika {
                 Duration (const std::chrono::duration<double>& d);
 
             public:
+                /**
+                 */
                 nonvirtual  void    clear ();
+
+            public:
+                /**
+                 */
                 nonvirtual  bool    empty () const;
 
             public:
@@ -138,6 +144,12 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 nonvirtual  T   As () const;
+
+            public:
+                /**
+                 *  Shorthand for As<String> ().AsUTF8 ()
+                 */
+                nonvirtual  string  AsUTF8 () const;
 
             public:
                 struct  PrettyPrintInfo {
@@ -165,19 +177,20 @@ namespace   Stroika {
                 static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
                 nonvirtual  wstring PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
-
             public:
-                /*
+                /**
                  * Duration::kMin is the least duration this Duration class supports representing.
                  */
                 static  const   Duration&   kMin;
-                /*
+                /**
                  * DateTime::kMax is the largest duration this Duration class supports representing.
                  */
                 static  const   Duration&   kMax;
 
             public:
-                // Unary negation
+                /**
+                 *  Unary negation
+                 */
                 nonvirtual  Duration    operator- () const;
 
             public:
@@ -188,7 +201,7 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                  * this comparison function - see the notes about 'empty' in the class description.
                  */
-                nonvirtual  int Compare (const Duration& rhs) const;
+                nonvirtual  int     Compare (const Duration& rhs) const;
 
             public:
                 /**
