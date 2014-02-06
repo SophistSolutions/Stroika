@@ -15,6 +15,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AllInstruments.o\
+	$(ObjDir)Capturer.o\
 	$(ObjDir)CaptureSet.o\
 	$(ObjDir)CommonMeasurementTypes.o\
 	$(ObjDir)Instrument.o\
