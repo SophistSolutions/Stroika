@@ -31,12 +31,16 @@ using   Memory::Optional;
 
 
 namespace {
-    string  serialize_ (VariantValue v)
+    string  Serialize_ (VariantValue v, bool oneLineMode)
     {
         Streams::BasicBinaryOutputStream    out;
         DataExchange::JSON::Writer ().Write (v, out);
         // strip CRLF - so shows up on one line
-        return String::FromUTF8 (out.As<string> ()).StripAll ([] (Character c)-> bool { return c == '\n' or c == '\r';}).AsNarrowSDKString ();
+        String result = String::FromUTF8 (out.As<string> ());
+        if (oneLineMode) {
+            result = result.StripAll ([] (Character c)-> bool { return c == '\n' or c == '\r';});
+        }
+        return result.AsNarrowSDKString ();
     }
 }
 
@@ -52,6 +56,7 @@ int main (int argc, const char* argv[])
 #endif
     bool                    printUsage  =   false;
     bool                    printNames  =   false;
+    bool                    oneLineMode =   false;
     Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
@@ -60,6 +65,9 @@ int main (int argc, const char* argv[])
         }
         if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
             printNames = true;
+        }
+        if (Execution::MatchesCommandLineArgument (*argi, L"o")) {
+            oneLineMode = true;
         }
         if (Execution::MatchesCommandLineArgument (*argi, L"r")) {
             ++argi;
@@ -73,7 +81,11 @@ int main (int argc, const char* argv[])
         }
     }
     if (printUsage) {
-        cerr << "Usage: SystemPerformanceClient [-h] [-l] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "Usage: SystemPerformanceClient [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "    -h prints this help" << endl;
+        cerr << "    -o prints instrument results (with newlines stripped)" << endl;
+        cerr << "    -l prints only the instrument names" << endl;
+        cerr << "    -r runs the given instrument (it can be repeated)" << endl;
         return EXIT_SUCCESS;
     }
 
@@ -102,7 +114,7 @@ int main (int argc, const char* argv[])
             else {
                 cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                 for (Measurement mi : m.fMeasurements) {
-                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << serialize_ (mi.fValue) << endl;
+                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                 }
             }
         }
