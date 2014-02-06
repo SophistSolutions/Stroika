@@ -64,8 +64,9 @@ namespace {
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
 Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecondsType measureInterval)
 {
-    static  Instrument  kkSystemTimesInstrument_    = Instrument (
-                InstrumentNameType (L"System-Times"),
+    // NB: Cannot cache systemTimesInstrument since takes capture argument
+    Instrument  systemTimesInstrument    = Instrument (
+            InstrumentNameType (L"System-Times"),
     [measureInterval] () -> Measurements {
         Measurements    results;
         DateTime    before = DateTime::Now ();
@@ -99,7 +100,7 @@ Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecond
         return results;
     },
     {kPercentCPUUsage}
-            );
-    return kkSystemTimesInstrument_;
+                                           );
+    return systemTimesInstrument;
 }
 #endif
