@@ -26,7 +26,7 @@ namespace   Stroika {
             /*
              *
              */
-            InstrumentSetType   GetAllInstruments ();
+            InstrumentSet   GetAllInstruments ();
 
 
         }

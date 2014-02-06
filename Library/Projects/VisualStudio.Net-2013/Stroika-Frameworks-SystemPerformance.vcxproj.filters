@@ -20,6 +20,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl">
       <Filter>Sources</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.inl">
+      <Filter>Sources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">
@@ -46,6 +49,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
@@ -71,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.h">
       <Filter>Sources\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -41,7 +41,7 @@ namespace   Stroika {
             /*
              *
              */
-            using InstrumentSetType = Set<Instrument, Private_::CaptureSetTraits_>;
+            using InstrumentSet = Set<Instrument, Private_::CaptureSetTraits_>;
 
 
         }
