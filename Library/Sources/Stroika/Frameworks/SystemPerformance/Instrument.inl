@@ -28,6 +28,10 @@ namespace   Stroika {
                 , fCapturedMeasurements (capturedMeasurements)
             {
             }
+            inline  MeasurementSet  Instrument::Capture () const
+            {
+                return fCaptureFunction ();
+            }
 
 
         }

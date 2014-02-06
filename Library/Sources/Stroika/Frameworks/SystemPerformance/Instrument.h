@@ -42,6 +42,11 @@ namespace   Stroika {
                 Set<MeasurementType>        fCapturedMeasurements;
 
                 Instrument (InstrumentNameType instrumentName, const function<MeasurementSet()>& capturer, const Set<MeasurementType>& capturedMeasurements);
+
+
+                /*
+                 */
+                nonvirtual  MeasurementSet  Capture () const;
             };
 
 

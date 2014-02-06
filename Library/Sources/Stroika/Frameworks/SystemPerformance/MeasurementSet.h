@@ -36,7 +36,10 @@ namespace   Stroika {
 
 
             /**
+             *  A MeasurementSet is typically produced by a call to Instrument::Capture (). It represents the data
+             *  from a single run of that instrument. It can be point in time, or potentially span a range of times.
              *
+             *  MeasurementSets can be combined (@see MeasurementSet::Merge).
              */
             struct  MeasurementSet {
                 DateTimeRange    fMeasuredAt;
@@ -45,13 +48,13 @@ namespace   Stroika {
 
 
 
-				// NEED PARAMS TO SAY HOW TO COMBINE - MAYBE RENAME THIS TO COMBINE?
-				// WHAT ABOUT ADDING HEIRARCHY??? HOW TO COMBINE MEASUREDAT???
-				// ONE ANSEER IS MERGE AT THIS LEVEN AND EXPAND MEASUREDAT.
-				// ANOTHE aNSER IS CREATE  A NERW "INSTURMENT" that jsut adds HIERARCHY (and a label for sub-measured-at).
-				// NYI
-				//
-				nonvirtual	MeasurementSet	Merge (const MeasurementSet& rhs) const;
+                // NEED PARAMS TO SAY HOW TO COMBINE - MAYBE RENAME THIS TO COMBINE?
+                // WHAT ABOUT ADDING HEIRARCHY??? HOW TO COMBINE MEASUREDAT???
+                // ONE ANSEER IS MERGE AT THIS LEVEN AND EXPAND MEASUREDAT.
+                // ANOTHE aNSER IS CREATE  A NERW "INSTURMENT" that jsut adds HIERARCHY (and a label for sub-measured-at).
+                // NYI
+                //
+                nonvirtual  MeasurementSet  Merge (const MeasurementSet& rhs) const;
             };
 
 
