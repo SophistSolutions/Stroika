@@ -155,8 +155,8 @@ Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
 {
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (L"Mounted-Filesystem-Usage"),
-    [] () -> Measurements {
-        Measurements    results;
+    [] () -> MeasurementSet {
+        MeasurementSet    results;
         DateTime    before = DateTime::Now ();
         Sequence<VolumeInfo_> volumes   =   capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());

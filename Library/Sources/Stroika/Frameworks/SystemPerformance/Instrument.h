@@ -10,6 +10,7 @@
 #include    "../../Foundation/DataExchange/Atom.h"
 
 #include    "Measurement.h"
+#include    "MeasurementSet.h"
 
 
 /*
@@ -37,10 +38,10 @@ namespace   Stroika {
              */
             struct  Instrument {
                 InstrumentNameType          fInstrumentName;
-                function<Measurements()>    fCaptureFunction;
+                function<MeasurementSet()>  fCaptureFunction;
                 Set<MeasurementType>        fCapturedMeasurements;
 
-                Instrument (InstrumentNameType instrumentName, const function<Measurements()>& capturer, const Set<MeasurementType>& capturedMeasurements);
+                Instrument (InstrumentNameType instrumentName, const function<MeasurementSet()>& capturer, const Set<MeasurementType>& capturedMeasurements);
             };
 
 

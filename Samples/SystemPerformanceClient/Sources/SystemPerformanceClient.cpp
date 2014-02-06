@@ -107,7 +107,7 @@ int main (int argc, const char* argv[])
                 }
             }
             cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
-            Measurements m = i.fCaptureFunction ();
+            MeasurementSet m = i.fCaptureFunction ();
             if (m.fMeasurements.empty ()) {
                 cout << "    NO DATA";
             }

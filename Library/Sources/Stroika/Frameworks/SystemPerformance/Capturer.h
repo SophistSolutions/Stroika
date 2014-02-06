@@ -10,6 +10,7 @@
 #include    "../../Foundation/Time/Duration.h"
 
 #include    "CaptureSet.h"
+#include    "Measurement.h"
 
 
 /*
@@ -51,19 +52,18 @@ namespace   Stroika {
                 /**
                 *WRONG RETVAL
                  */
-                nonvirtual  Duration    GetTrackLastMeasurementSet () const;
+                nonvirtual  MeasurementSet    GetTrackLastMeasurementSet () const;
 
             public:
                 /**
                 *WRONG ARG
                  */
-                nonvirtual  void        SetGetTrackLastMeasurementSet (const Duration& p);
+                nonvirtual  void        SetGetTrackLastMeasurementSet (const MeasurementSet& p);
 
             public:
                 /**
-                *WRONG RETVAL
                  */
-                nonvirtual  Duration    GetLastMeasurementSet () const;
+                nonvirtual  MeasurementSet    GetLastMeasurementSet () const;
 
             public:
                 /**

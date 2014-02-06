@@ -1,17 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Measurement_h_
-#define _Stroika_Framework_SystemPerformance_Measurement_h_ 1
+#ifndef _Stroika_Framework_SystemPerformance_MeasurementSet_h_
+#define _Stroika_Framework_SystemPerformance_MeasurementSet_h_ 1
 
 #include    "../StroikaPreComp.h"
 
-#include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Containers/Collection.h"
-#include    "../../Foundation/DataExchange/Atom.h"
-#include    "../../Foundation/DataExchange/VariantValue.h"
-#include    "../../Foundation/Time/DateTimeRange.h"
 
+#include    "Measurement.h"
 
 
 /*
@@ -41,15 +38,20 @@ namespace   Stroika {
             /**
              *
              */
-            using   MeasurementType =  DataExchange::Atom<>;
+            struct  MeasurementSet {
+                DateTimeRange    fMeasuredAt;
+
+                Collection<Measurement> fMeasurements;
 
 
-            /**
-             *
-             */
-            struct  Measurement {
-                MeasurementType fType;
-                VariantValue    fValue;
+
+				// NEED PARAMS TO SAY HOW TO COMBINE - MAYBE RENAME THIS TO COMBINE?
+				// WHAT ABOUT ADDING HEIRARCHY??? HOW TO COMBINE MEASUREDAT???
+				// ONE ANSEER IS MERGE AT THIS LEVEN AND EXPAND MEASUREDAT.
+				// ANOTHE aNSER IS CREATE  A NERW "INSTURMENT" that jsut adds HIERARCHY (and a label for sub-measured-at).
+				// NYI
+				//
+				nonvirtual	MeasurementSet	Merge (const MeasurementSet& rhs) const;
             };
 
 
@@ -64,6 +66,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Measurement.inl"
+#include    "MeasurementSet.inl"
 
-#endif  /*_Stroika_Framework_SystemPerformance_Measurement_h_*/
+#endif  /*_Stroika_Framework_SystemPerformance_MeasurementSet_h_*/

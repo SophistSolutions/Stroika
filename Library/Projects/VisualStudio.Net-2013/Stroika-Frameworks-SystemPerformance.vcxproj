@@ -80,6 +80,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md" />
   </ItemGroup>
@@ -94,6 +95,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h" />
@@ -106,6 +108,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A6C00B9D-8B7F-4C43-A043-1127387E712D}</ProjectGuid>

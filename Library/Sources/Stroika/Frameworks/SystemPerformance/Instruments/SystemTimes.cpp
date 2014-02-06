@@ -67,8 +67,8 @@ Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecond
     // NB: Cannot cache systemTimesInstrument since takes capture argument
     Instrument  systemTimesInstrument    = Instrument (
             InstrumentNameType (L"System-Times"),
-    [measureInterval] () -> Measurements {
-        Measurements    results;
+    [measureInterval] () -> MeasurementSet {
+        MeasurementSet    results;
         DateTime    before = DateTime::Now ();
 
         double  baselineIdleTime = 0;

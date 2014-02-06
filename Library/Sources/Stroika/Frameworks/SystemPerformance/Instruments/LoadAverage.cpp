@@ -30,8 +30,8 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
 {
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (L"Load-Average"),
-    [] () -> Measurements {
-        Measurements    results;
+    [] () -> MeasurementSet {
+        MeasurementSet    results;
         double loadAve[3];
         DateTime    before = DateTime::Now ();
         int result = getloadavg(loadAve, 3);

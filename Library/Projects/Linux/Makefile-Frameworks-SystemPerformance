@@ -21,6 +21,7 @@ Objs	=	\
 	$(ObjDir)Instrument.o\
 	$(ObjDir)InstrumentSet.o\
 	$(ObjDir)Measurement.o\
+	$(ObjDir)MeasurementSet.o\
 
 all:	$(Objs) $(SubDirs)
 
