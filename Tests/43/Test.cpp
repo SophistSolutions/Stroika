@@ -454,6 +454,10 @@ namespace   {
 
     void    Test_7_Duration_ ()
     {
+        {
+            VerifyTestResult (Duration (0).As<time_t> () == 0);
+            VerifyTestResult (Duration (0).As<String> () == L"PT0S");
+        }
         const   int kSecondsPerDay      =   TimeOfDay::kMaxSecondsPerDay;
         {
             const   Duration    k30Days     =   Duration (L"P30D");

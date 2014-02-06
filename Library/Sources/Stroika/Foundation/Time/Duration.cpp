@@ -591,6 +591,9 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
             result += "S";
         }
     }
+    if (result.length () == 1) {
+        result += "T0S";
+    }
     return result;
 }
 #if     qCompilerAndStdLib_GCC_48_OptimizerBug
