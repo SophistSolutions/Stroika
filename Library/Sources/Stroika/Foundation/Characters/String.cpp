@@ -691,23 +691,25 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     RequireNotNull (shouldBeTrimmmed);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    size_t length = GetLength ();
-    if (length != 0) {
-        for (ptrdiff_t i = length - 1; i != 0; --i) {
-            if (not (*shouldBeTrimmmed) (_GetRep ().GetAt (i))) {
-                size_t  nCharsRemoved   =   (length - 1) - i;
-                if (nCharsRemoved == 0) {
-                    // no change in string
-                    return *this;
-                }
-                else {
-                    return SubString (0, length - nCharsRemoved);
-                }
-            }
+    ptrdiff_t length = GetLength ();
+    ptrdiff_t endOfFirstTrim = length;
+    for (; endOfFirstTrim != 0; --endOfFirstTrim) {
+        if ((*shouldBeTrimmmed) (_GetRep ().GetAt (endOfFirstTrim - 1))) {
+            // keep going backwards
+        }
+        else {
+            break;
         }
     }
-    // all trimmed
-    return String ();
+    if (endOfFirstTrim == 0) {
+        return String ();       // all trimmed
+    }
+    else if (endOfFirstTrim == length) {
+        return *this;           // nothing trimmed
+    }
+    else {
+        return SubString (0, endOfFirstTrim);
+    }
 }
 
 String  String::Trim (bool (*shouldBeTrimmmed) (Character)) const

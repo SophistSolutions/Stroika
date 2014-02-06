@@ -539,8 +539,10 @@ namespace   {
         VerifyTestResult (kT1.RTrim () == kT1);
         VerifyTestResult (kT1.LTrim () == kT1.Trim ());
         VerifyTestResult (kT1.Trim () == L"abc");
+        VerifyTestResult (String (L" abc ").Trim () == L"abc");
 
         VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
+        VerifyTestResult (String (L"/\n").Trim () == L"/");
     }
 }
 
