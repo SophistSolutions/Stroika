@@ -7,7 +7,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../../../Foundation/Characters/Format.h"
+#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Debug/Assertions.h"
