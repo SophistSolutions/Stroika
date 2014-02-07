@@ -13,6 +13,9 @@
 
 /*
  * TODO:
+ *
+ *      @todo   HANDLE MERGE (or COMBINE) feature on MeasurmentSet...
+ *
  *      @todo   Consider adding some sort of MeasurementType registry to capture meta inforamtion - descriptions
  *              etc - about measurements. Don't do yet, cuz I'm not sure how to manage it - when to add things.
  *

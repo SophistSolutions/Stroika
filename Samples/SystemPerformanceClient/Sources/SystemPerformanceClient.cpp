@@ -5,6 +5,7 @@
 
 #include    <iostream>
 
+#include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #if     qPlatform_POSIX
@@ -15,6 +16,7 @@
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
 #include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
+#include    "Stroika/Frameworks/SystemPerformance/Capturer.h"
 #include    "Stroika/Frameworks/SystemPerformance/Measurement.h"
 
 using   namespace std;
@@ -54,9 +56,10 @@ int main (int argc, const char* argv[])
     //  --LGP 2014-02-05
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                    printUsage  =   false;
-    bool                    printNames  =   false;
-    bool                    oneLineMode =   false;
+    bool                        printUsage  =   false;
+    bool                        printNames  =   false;
+    bool                        oneLineMode =   false;
+    Time::DurationSecondsType   runFor      =   30.0;
     Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
@@ -79,6 +82,16 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
+        if (Execution::MatchesCommandLineArgument (*argi, L"t")) {
+            ++argi;
+            if (argi != args.end ()) {
+                runFor = Characters::String2Float<Time::DurationSecondsType> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -t" << endl;
+                return EXIT_FAILURE;
+            }
+        }
     }
     if (printUsage) {
         cerr << "Usage: SystemPerformanceClient [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
@@ -86,6 +99,7 @@ int main (int argc, const char* argv[])
         cerr << "    -o prints instrument results (with newlines stripped)" << endl;
         cerr << "    -l prints only the instrument names" << endl;
         cerr << "    -r runs the given instrument (it can be repeated)" << endl;
+        cerr << "    -t time to run for" << endl;
         return EXIT_SUCCESS;
     }
 
@@ -99,6 +113,31 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
 
+#if 1
+        Capturer capturer;
+        {
+            CaptureSet cs;
+            cs.SetRunPeriod (Duration (15));
+            for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+                if (not run.empty ()) {
+                    if (not run.Contains (i.fInstrumentName)) {
+                        continue;
+                    }
+                }
+                cs.AddInstrument (i);
+            }
+            capturer.AddCaptureSet (cs);
+        }
+        capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
+            cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+            for (Measurement mi : ms.fMeasurements) {
+                cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+            }
+        });
+
+        // run til timeout and then fall out...
+        IgnoreExceptionsForCall (Execution::WaitableEvent ().Wait (runFor));
+#else
         cout << "Results for each instrument:" << endl;
         for (Instrument i : SystemPerformance::GetAllInstruments ()) {
             if (not run.empty ()) {
@@ -118,6 +157,7 @@ int main (int argc, const char* argv[])
                 }
             }
         }
+#endif
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;

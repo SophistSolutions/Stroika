@@ -6,7 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Containers/Collection.h"
 #include    "../../Foundation/Containers/Set.h"
+#include    "../../Foundation/Execution/ThreadPool.h"
 #include    "../../Foundation/Time/Duration.h"
 
 #include    "CaptureSet.h"
@@ -15,14 +17,24 @@
 
 /*
  * TODO:
+ *
+ *      @todo   VERY primitive, but for simple cases functional implementation. FIX IT, so its better, and
+ *              more complete (and efficient).
+ *
+ *      @todo   Current impl only supports one CaptureSet<>. To support more, we need a strategy to merge
+ *              or handle composites.
+ *
+ *      @todo   make it optional storing the most recent measurement set.
+ *
  *      @todo   Use new (NYI as of 2014-02-06) Callback (or Function??) helper class so that Callbacks can be
  *              unregistered.
  *
- *      @todo   Consider if this should use threadpool (and if so how exactly?) Maybe push ALL measurements into
+ *      @todo   Use threadpool CORRECTLY!. Maybe push ALL measurements into
  *              threadpool at just the right time, and then paralell process as much as the threadpool size allows.
  *              That seems the best appraoch! Default to theadpool size of one! One recurring task in threadpool
  *              would be to re-schedule rest of measurements...
  */
+
 
 
 namespace   Stroika {
@@ -32,6 +44,7 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
+            using   Containers::Collection;
             using   Containers::Set;
             using   Time::Duration;
 
@@ -43,6 +56,9 @@ namespace   Stroika {
              *
              *  This also runs its capturing on a (single) background thread. This has implications for how much its able to
              *  keep up with and maintain all the measurements in question.
+             *
+             *  Note - there is no reason you cannot use the rest of teh SystemPerformance framework without this class,
+             *  if its pattern doesnt meet your needs.
              */
             class   Capturer {
             public:
@@ -50,52 +66,59 @@ namespace   Stroika {
 
             public:
                 /**
-                *WRONG RETVAL
+                 *  Call this anytime (for example if you dont want to bother with callbacks or if
+                 *  some other process needs to query the latest values from the instrument measurers.
                  */
-                nonvirtual  MeasurementSet    GetTrackLastMeasurementSet () const;
+                nonvirtual  MeasurementSet    GetMostRecentMeasurements () const;
 
             public:
-                /**
-                *WRONG ARG
-                 */
-                nonvirtual  void        SetGetTrackLastMeasurementSet (const MeasurementSet& p);
-
-            public:
-                /**
-                 */
-                nonvirtual  MeasurementSet    GetLastMeasurementSet () const;
-
-            public:
-                /**
-                *WRONG RETVAL
-                 */
-                nonvirtual  Duration    GetMeasurementsCallbacks () const;
-
-            public:
-                /**
-                *WRONG ARG
-                 */
-                nonvirtual  void        SetMeasurementsCallbacks (const Duration& p);
-
-            public:
-                /**
-                *WRONG ARG
-                 */
-                nonvirtual  void        AddMeasurementsCallback (const Duration& p);
+                /*
+                */
+                using   NewMeasurementsCallbackType = function<void(MeasurementSet)>;
 
             public:
                 /**
                  */
-                nonvirtual  Set<CaptureSet>   GetCaptureSets () const;
+                nonvirtual  Collection<NewMeasurementsCallbackType>    GetMeasurementsCallbacks () const;
 
             public:
                 /**
                  */
-                nonvirtual  void            SetCaptureSets (const Set<CaptureSet>& captureSets);
+                nonvirtual  void        SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
+
+            public:
+                /**
+                 */
+                nonvirtual  void        AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+
+            public:
+                /**
+                 */
+                nonvirtual  Collection<CaptureSet>   GetCaptureSets () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void        SetCaptureSets (const Collection<CaptureSet>& captureSets);
+
+            public:
+                /**
+                 */
+                nonvirtual  void        AddCaptureSet (const CaptureSet& cs);
 
             private:
-                InstrumentSet   fInstruments_;
-                Duration        fPeriod_;
+                nonvirtual  void    Runner_ ();
+
+            private:
+                // FOR NOW - just assign/overwrite the latest measurement set, and call
+                // callbacks as needed
+                nonvirtual  void    UpdateMeasurementSet_ (const MeasurementSet& ms);
+
+            private:
+                Execution::ThreadPool                       fThreadPool_;
+                Collection<CaptureSet>                      fCaptureSets_;
+                Collection<NewMeasurementsCallbackType>     fCallbacks_;
+                MeasurementSet                              fCurrentMeasurementSet_;
             };
 
 

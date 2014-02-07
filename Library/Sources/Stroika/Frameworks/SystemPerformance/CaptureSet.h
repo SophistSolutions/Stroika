@@ -57,6 +57,9 @@ namespace   Stroika {
                  */
                 nonvirtual  void            SetInstrumentSet (const InstrumentSet& i);
 
+            public:
+                nonvirtual  void            AddInstrument (const Instrument i);
+
             private:
                 InstrumentSet   fInstruments_;
                 Duration        fPeriod_;

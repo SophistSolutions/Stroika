@@ -43,6 +43,10 @@ namespace   Stroika {
             {
                 fInstruments_ = i;
             }
+            inline  void    CaptureSet::AddInstrument (const Instrument i)
+            {
+                fInstruments_.Add (i);
+            }
 
 
         }
