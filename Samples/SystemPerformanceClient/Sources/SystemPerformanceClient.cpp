@@ -113,51 +113,60 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
 
-#if 1
-        Capturer capturer;
-        {
-            CaptureSet cs;
-            cs.SetRunPeriod (Duration (15));
+
+        bool    useCapturer =   runFor > 0;
+        if (useCapturer) {
+            /*
+             * Demo using capturer
+             */
+            Capturer capturer;
+            {
+                CaptureSet cs;
+                cs.SetRunPeriod (Duration (15));
+                for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+                    if (not run.empty ()) {
+                        if (not run.Contains (i.fInstrumentName)) {
+                            continue;
+                        }
+                    }
+                    cs.AddInstrument (i);
+                }
+                capturer.AddCaptureSet (cs);
+            }
+            capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
+                cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+                for (Measurement mi : ms.fMeasurements) {
+                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+                }
+            });
+
+            // run til timeout and then fall out...
+            IgnoreExceptionsForCall (Execution::WaitableEvent ().Wait (runFor));
+        }
+        else {
+            /*
+             * Demo NOT using capturer
+             */
+            cout << "Results for each instrument:" << endl;
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
                     if (not run.Contains (i.fInstrumentName)) {
                         continue;
                     }
                 }
-                cs.AddInstrument (i);
-            }
-            capturer.AddCaptureSet (cs);
-        }
-        capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-            cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
-            for (Measurement mi : ms.fMeasurements) {
-                cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
-            }
-        });
-
-        // run til timeout and then fall out...
-        IgnoreExceptionsForCall (Execution::WaitableEvent ().Wait (runFor));
-#else
-        cout << "Results for each instrument:" << endl;
-        for (Instrument i : SystemPerformance::GetAllInstruments ()) {
-            if (not run.empty ()) {
-                if (not run.Contains (i.fInstrumentName)) {
-                    continue;
+                cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
+                MeasurementSet m = i.Capture ();
+                if (m.fMeasurements.empty ()) {
+                    cout << "    NO DATA";
                 }
-            }
-            cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
-            MeasurementSet m = i.Capture ();
-            if (m.fMeasurements.empty ()) {
-                cout << "    NO DATA";
-            }
-            else {
-                cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
-                for (Measurement mi : m.fMeasurements) {
-                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+                else {
+                    cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+                    for (Measurement mi : m.fMeasurements) {
+                        cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+                    }
                 }
             }
         }
-#endif
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;
