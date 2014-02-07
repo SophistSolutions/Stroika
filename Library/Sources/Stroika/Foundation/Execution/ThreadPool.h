@@ -122,6 +122,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  See AbortTask () - it aborts all tasks - if any.
+                 */
+                nonvirtual  void    AbortTasks (Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
                  *  returns true if queued OR actively running
                  */
                 nonvirtual  bool    IsPresent (const TaskType& task) const;

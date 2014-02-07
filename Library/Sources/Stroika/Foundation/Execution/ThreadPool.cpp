@@ -215,6 +215,32 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     }
 }
 
+void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
+{
+    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTasks"));
+    {
+        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        fTasks_.clear ();
+    }
+    {
+        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        for (Thread ti : fThreads_) {
+            ti.Abort ();
+        }
+    }
+    size_t tps = GetPoolSize ();
+    {
+        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        for (Thread ti : fThreads_) {
+            // @todo fix wrong timeout value here
+            ti.AbortAndWaitForDone (timeout);
+        }
+        fThreads_.RemoveAll ();
+    }
+    // hack - not a good design or impl!!! - waste to recreate if not needed!
+    SetPoolSize (tps);
+}
+
 bool    ThreadPool::IsPresent (const TaskType& task) const
 {
     {
