@@ -27,6 +27,10 @@
  *
  * TODO:
  *
+ *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+ *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
+ *              Maybe Float2StringOptions is optional param to As<String> ()???
+ *
  *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
  *              use ModuleInit<> code to assure proper construction order.
  *

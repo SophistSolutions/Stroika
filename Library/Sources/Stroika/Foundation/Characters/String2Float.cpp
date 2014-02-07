@@ -3,27 +3,19 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <cstdarg>
-#include    <cstdlib>
-#include    <iomanip>
 #include    <limits>
-#include    <sstream>
 
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "../Math/Common.h"
-#include    "../Memory/SmallStackBuffer.h"
-#include    "CodePage.h"
 
 #include    "String2Float.h"
 
 
 
-
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Memory;
 
 
 

@@ -3,7 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <cstdarg>
 #include    <cstdlib>
 
 #include    "../Containers/Common.h"
@@ -60,7 +59,7 @@ long long int Characters::Private_::String2Int_ (const String& s)
 
 /*
  ********************************************************************************
- ********************************* String2UInt ***********************************
+ ******************************** String2UInt ***********************************
  ********************************************************************************
  */
 unsigned long long int Characters::Private_::String2UInt_ (const String& s)

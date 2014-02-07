@@ -13,11 +13,10 @@
 /**
  * TODO:
  *
- *      @todo   Consdier if we should have variants of these funtions taking a locale, or
+ *      @todo   Consdier if String2Float should take a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
  *              But DOCUMENT in all cases!!! And maybe implement variants...
  */
-
 
 
 

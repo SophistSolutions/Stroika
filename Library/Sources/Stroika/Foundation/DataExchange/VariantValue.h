@@ -25,6 +25,11 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+ *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
+ *              Maybe Float2StringOptions is optional param to As<String> ()???
+ *
  *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.

@@ -22,7 +22,14 @@
  *  @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
  *          correct.
  *
+ *          using PrecisionType = uint16_t;
+ *
+ *  @todo   Document meaning with examples 1.01 prec1=1, prec2=1.0, prec3=1.01, prec4=1.010
+ *
  *  @todo   Notion of fPrecision in this module should probably be called something else (precisionAfterDecimalPoint?)
+ *
+ *  @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+ *          notion of precision. Not sure how to add unobtrusively.
  *
  */
 

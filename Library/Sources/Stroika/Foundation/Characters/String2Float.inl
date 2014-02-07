@@ -16,8 +16,6 @@ namespace   Stroika {
         namespace   Characters {
 
 
-
-
         }
     }
 }
