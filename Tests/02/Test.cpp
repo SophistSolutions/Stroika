@@ -975,6 +975,27 @@ namespace {
 
 
 
+
+
+
+
+
+namespace {
+    void    Test28_ReplacementForStripTrailingCharIfAny_ ()
+    {
+        auto StripTrailingCharIfAny = [] (const String & s, const Character & c) -> String {
+            return s.EndsWith (c) ? s.CircularSubString (0, -1) : s;
+        };
+        VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
+        VerifyTestResult (StripTrailingCharIfAny (L"xxx.", '.') == L"xxx");
+        VerifyTestResult (StripTrailingCharIfAny (L"xxx..", '.') == L"xxx.");
+    }
+}
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1011,6 +1032,7 @@ namespace   {
         Test25_RemoveAt_ ();
         Test26_Iteration_ ();
         Test27_Repeat_ ();
+        Test28_ReplacementForStripTrailingCharIfAny_ ();
     }
 }
 
