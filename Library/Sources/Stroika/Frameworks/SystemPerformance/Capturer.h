@@ -18,6 +18,12 @@
 /*
  * TODO:
  *
+ *      @todo   Somehow make captrueset comparable, so that we can use it as a KEY with mreasumrnes
+ *              and then store latest for each captureset.
+ *
+ *              Then combine into one massive measuremnets list fMeasurmentsMapping.Values() (once
+ *              we have impelemtend values() on mapping).
+ *
  *      @todo   VERY primitive, but for simple cases functional implementation. FIX IT, so its better, and
  *              more complete (and efficient).
  *
@@ -105,6 +111,9 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void        AddCaptureSet (const CaptureSet& cs);
+
+            private:
+                nonvirtual  void    ManageRunner_(bool on);
 
             private:
                 nonvirtual  void    Runner_ ();
