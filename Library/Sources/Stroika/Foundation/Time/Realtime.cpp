@@ -40,7 +40,7 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
     return (float (::TickCount ()) / 60.0f);
 #elif   qPlatform_POSIX
     timespec ts;
-    Verify (clock_gettime (CLOCK_REALTIME, &ts) == 0);
+    Verify (clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
     return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 #elif   qPlatform_Windows
     static  bool            sInited =   false;
