@@ -230,6 +230,9 @@
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
  *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  *
+ *      @todo   CircularSubString() is not a good name for what it does. But overloading SubString() seemed worse
+ *              it was likely to mask bugs...
+ *
  */
 
 
@@ -471,6 +474,20 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
+                 *  of the String. Also CircularSubString () has no special exception for kBadStingIndex.
+                 *
+                 *  So for example, CircularSubString (0, -1) is equivlent to SubString (0, GetLength () - 1) - and so is an
+                 *  error if the string is empty.
+                 *
+                 *  \note \em Design Note
+                 *      We chose not to overload SubString() with this functionality because it would have been to easy
+                 *      to mask bugs.
+                 */
+                nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
+
+            public:
+                /**
                  *  Return 'count' copies of this String (concatenated after one another).
                  */
                 nonvirtual  String  Repeat (unsigned int count) const;
@@ -498,6 +515,7 @@ namespace   Stroika {
                  *  @see Match
                  *  @see EndsWith
                  */
+                nonvirtual  bool    StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  bool    StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
@@ -511,6 +529,7 @@ namespace   Stroika {
                  *  @see Match
                  *  @see StartsWith
                  */
+                nonvirtual  bool    EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  bool    EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:

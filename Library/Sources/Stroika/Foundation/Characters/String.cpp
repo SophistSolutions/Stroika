@@ -574,6 +574,15 @@ size_t  String::RFind (const String& subString) const
     return (kBadIndex);
 }
 
+bool    String::StartsWith (const Character& c, CompareOptions co) const
+{
+    if (empty ()) {
+        return false;
+    }
+    // @todo fix - slight race!!! Another thread could clear between these two lines (but only on envelope
+    return this->operator[] (0).Compare (c, co) == 0;
+}
+
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
     size_t  subStrLen = subString.GetLength ();
@@ -588,6 +597,16 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
     bool    result = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
+}
+
+bool    String::EndsWith (const Character& c, CompareOptions co) const
+{
+    size_t  thisStrLen = GetLength ();
+    if (thisStrLen == 0) {
+        return false;
+    }
+    // @todo fix - slight race!!! Another thread could clear between these two lines (but only on envelope
+    return this->operator[] (thisStrLen - 1).Compare (c, co) == 0;
 }
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
@@ -654,6 +673,17 @@ String  String::SubString (size_t from, size_t to) const
 #else
     return (String (_GetRep ().Peek () + from, _GetRep ().Peek () + from + length));
 #endif
+}
+
+String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
+{
+    size_t  f = from < 0 ? (GetLength () + from) : from;
+    size_t  t = to < 0 ? (GetLength () + to) : to;
+    Require (f != kBadIndex);
+    Require (t != kBadIndex);
+    Require (f <= t);
+    Require (t <= GetLength ());
+    return SubString (f, t);
 }
 
 String  String::Repeat (unsigned int count) const
