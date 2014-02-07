@@ -25,12 +25,14 @@ History
 <ul>
 	<li>SystemPerformance framework
 		<ul>
-			<li>SystemPerformance Client now works well</li>
 			<li>Variety of framework clenaups so a more respectable first draft</li>
-			<li>New (first working draft) Capturer module - used in SystemPerformance Client to demonstrate. Incomplete, but usable.</li>
+			<li>SystemPerformance Client now works well</li>
+			<li>New Capturer module - used in SystemPerformance Client to demonstrate. Incomplete, but usable.</li>
 		</ul>
 	</li>
 	<li>Factored String2Int<>, HexString2Int(), ... to String2Int.h; String2Float<> to String2Float.h, and Float2String<>(and its related options class) to Float2String.h</li>
+	<li>Fixed POSIX GetTickCount() to use monotonic clock</li>
+	<li>Characters::StripTrailingCharIfAny deprecated and new String methods to support replacement</li>
 </ul>
 </td>
 </tr>
