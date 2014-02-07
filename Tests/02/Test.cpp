@@ -8,7 +8,10 @@
 #include    <cstdarg>
 
 #include    "Stroika/Foundation/Characters/CString/Utilities.h"
+#include    "Stroika/Foundation/Characters/Float2String.h"
 #include    "Stroika/Foundation/Characters/Format.h"
+#include    "Stroika/Foundation/Characters/String2Float.h"
+#include    "Stroika/Foundation/Characters/String2Int.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_BufferedArray.h"

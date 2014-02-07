@@ -5,7 +5,7 @@
 
 #include    <iostream>
 
-#include    "Stroika/Foundation/Characters/Format.h"
+#include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #if     qPlatform_POSIX
@@ -99,7 +99,7 @@ int main (int argc, const char* argv[])
         cerr << "    -o prints instrument results (with newlines stripped)" << endl;
         cerr << "    -l prints only the instrument names" << endl;
         cerr << "    -r runs the given instrument (it can be repeated)" << endl;
-        cerr << "    -t time to run for" << endl;
+        cerr << "    -t time to run for (if zero dont use capturer code)" << endl;
         return EXIT_SUCCESS;
     }
 
