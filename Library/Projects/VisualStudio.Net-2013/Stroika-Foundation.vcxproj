@@ -124,6 +124,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Characters-CString-Utilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Characters-CString-Utilities.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
@@ -149,6 +150,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp" />
@@ -682,6 +685,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
@@ -689,6 +693,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
@@ -1016,6 +1022,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
@@ -1024,6 +1031,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />

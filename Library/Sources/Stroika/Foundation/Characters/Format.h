@@ -19,10 +19,7 @@
 /**
  * TODO:
  *
- *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
- *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
- *
- *      @todo   Same changes to HexString2Int() as we did with String2Int() - template on return value.
+ *		@todo	Get rid of StripTrailingCharIfAny - and probably merge into String class??
  *
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
@@ -113,87 +110,6 @@ namespace   Stroika {
              */
             String FormatV (const wchar_t* format, va_list argsList);
             String Format (const wchar_t* format, ...);
-
-
-            /**
-             *  Convert the given hex-format string to an unsigned integer.
-             *  String2Int will return 0 if no valid parse, and UINT_MAX on overflow.
-             *
-             *  @see strtoul(), or @see wcstol (). This is a simple wrapper on strtoul() or wcstoul().
-             *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
-             *  Use strtoul etc directly to see if the string parsed properly.
-             */
-            unsigned int     HexString2Int (const String& s);
-
-
-            /**
-             *  Convert the given decimal-format integral string to any integer type
-             *  ( e.g. signed char, unsigned short int, long long int, uint32_t etc).
-             *
-             *  String2Int will return 0 if no valid parse, and numeric_limits<T>::min on underflow,
-             *  numeric_limits<T>::max on overflow.
-             *      @todo consider if this is unwise - it seems we ought to throw? Or have a variant
-             *              perhaps that does no throw?
-             *
-             *              CONSIDER!
-             *
-             *  @see strtoll(), or @see wcstoll (). This is a simple wrapper on strtoll() / wcstoll ().
-             *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
-             *  Use strtoll etc directly to see if the string parsed properly.
-             */
-            template    <typename T>
-            T     String2Int (const String& s);
-
-
-            /**
-             *  Convert the given decimal-format floating point string to an float,
-             *  double, or long double.
-             *
-             *  String2Float will return nan () if no valid parse.
-             *
-             *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod () /
-             *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
-             *
-             *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
-             *  Use strtod etc directly to see if the string parsed properly.
-             */
-            template    <typename T>
-            T  String2Float (const String& s);
-
-
-            /**
-             *  Note - Float2String uses the locale specified by Float2StringOptions, but defaults to
-             *  the "C" locale.
-             *
-             *  Precision (here) is defined to be the number of digits after the decimal point.
-             *
-             *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
-             *  by deafult.
-             *
-             *  Float2String maps nan to empty string;
-             */
-            struct  Float2StringOptions {
-                enum UseCLocale { eUseCLocale };
-                enum UseCurrentLocale { eUseCurrentLocale };
-                struct Precision {
-                    Precision (unsigned int p);
-                    unsigned int fPrecision;
-                };
-                Float2StringOptions ();
-                Float2StringOptions (UseCLocale);   // same as default
-                Float2StringOptions (UseCurrentLocale);
-                Float2StringOptions (const std::locale& l);
-                Float2StringOptions (std::ios_base::fmtflags fmtFlags);
-                Float2StringOptions (Precision precision);
-
-                Memory::Optional<unsigned int>              fPrecision;
-                Memory::Optional<std::ios_base::fmtflags>   fFmtFlags;
-                Memory::Optional<std::locale>               fUseLocale; // if empty, use C-locale
-                bool                                        fTrimTrailingZeros;
-            };
-            String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
-            String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());
-            String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
 
 
             /**

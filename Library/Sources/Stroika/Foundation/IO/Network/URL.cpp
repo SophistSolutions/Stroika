@@ -13,6 +13,7 @@
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String2Int.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/StringException.h"
 #if     qPlatform_Windows

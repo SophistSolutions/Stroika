@@ -27,9 +27,10 @@ History
 		<ul>
 			<li>SystemPerformance Client now works well</li>
 			<li>Variety of framework clenaups so a more respectable first draft</li>
-			<li>WELL SEE BUT MAYBE A FEW MORE INSTRUMENTS</li>
+			<li>New (first working draft) Capturer module - used in SystemPerformance Client to demonstrate. Incomplete, but usable.</li>
 		</ul>
 	</li>
+	<li>Factored String2Int<>, HexString2Int(), ... to String2Int.h; String2Float<> to String2Float.h, and Float2String<>(and its related options class) to Float2String.h</li>
 </ul>
 </td>
 </tr>

@@ -5,7 +5,10 @@
 
 #include    <sstream>
 
+#include    "../Characters/Float2String.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String2Float.h"
+#include    "../Characters/String2Int.h"
 #include    "../DataExchange/BadFormatException.h"
 #include    "../Math/Common.h"
 

@@ -5,6 +5,8 @@
 
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String2Float.h"
+#include    "../../Characters/String2Int.h"
 #include    "../BadFormatException.h"
 
 #include    "SAXObjectReader.h"

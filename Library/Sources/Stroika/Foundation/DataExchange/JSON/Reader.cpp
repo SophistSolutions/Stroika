@@ -4,6 +4,8 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String2Float.h"
+#include    "../../Characters/String2Int.h"
 #include    "../../Streams/TextInputStreamBinaryAdapter.h"
 #include    "../BadFormatException.h"
 

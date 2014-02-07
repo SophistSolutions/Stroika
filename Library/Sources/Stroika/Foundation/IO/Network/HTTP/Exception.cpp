@@ -5,6 +5,7 @@
 
 #include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
+#include    "../../../Characters/String2Int.h"
 #include    "../../../Execution/Exceptions.h"
 
 #include    "Exception.h"
