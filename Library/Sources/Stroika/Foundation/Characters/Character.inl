@@ -123,6 +123,10 @@ namespace   Stroika {
                 using   SIGNED_WCHART_      =       make_signed<wchar_t>::type;
                 return static_cast<SIGNED_WCHART_> (GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
             }
+            inline  int Character::Compare (Character rhs, CompareOptions co) const
+            {
+                return Compare (this, this + 1, &rhs, &rhs + 1, co);
+            }
             inline  bool    Character::operator< (Character rhs) const
             {
                 return Compare (rhs) < 0;
