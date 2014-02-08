@@ -25,7 +25,6 @@
  *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html (which is already in README file for
  *              Foundation::Execution::ReadMe.md
  *
- *
  */
 
 
@@ -43,12 +42,13 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
-             *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and other similar classes are not.
-                            and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
+             *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
+             *              other similar classes are not.
+             *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
              */
             class   WaitableEvent {
             public:
-                WaitableEvent ();
+                WaitableEvent () = default;
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
@@ -94,10 +94,17 @@ namespace   Stroika {
                 nonvirtual  void    SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 
             private:
-                mutex                       fMutex_;
-                condition_variable          fConditionVariable_;
-                bool                        fTriggered_;
-                Time::DurationSecondsType   fThreadAbortCheckFrequency_;
+                struct WE_ {
+                    mutex                       fMutex;
+                    condition_variable          fConditionVariable;
+                    bool                        fTriggered = false;
+                    Time::DurationSecondsType   fThreadAbortCheckFrequency = 0.5;
+
+                    nonvirtual  void    Reset ();
+                    nonvirtual  void    Set ();
+                    nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
+                };
+                WE_ fWE_;
             };
 
 

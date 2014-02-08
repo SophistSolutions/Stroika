@@ -52,15 +52,17 @@ using   Stroika::Foundation::Time::Duration;
 
 
 
+
+
 /*
  ********************************************************************************
- ******************************** WaitableEvent *********************************
+ ****************************** WaitableEvent::WE_ ******************************
  ********************************************************************************
  */
-void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
+void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WaitUntil"));
+    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WE_::WaitUntil"));
     DbgTrace ("(timeout = %.2f)", timeoutAt);
 #endif
     CheckForThreadAborting ();
@@ -77,12 +79,12 @@ void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
      *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
      *  unlock.
      */
-    std::unique_lock<mutex>     lock (fMutex_);
+    std::unique_lock<mutex>     lock (fMutex);
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurrious.
      */
-    while (not fTriggered_) {
+    while (not fTriggered) {
         CheckForThreadAborting ();
         Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
@@ -97,9 +99,9 @@ void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
         /*
          *  See WaitableEvent::SetThreadAbortCheckFrequency ();
          */
-        remaining = min (remaining, fThreadAbortCheckFrequency_);
+        remaining = min (remaining, fThreadAbortCheckFrequency);
 
-        if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
+        if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
             /*
              *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
              *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
@@ -108,5 +110,5 @@ void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
              */
         }
     }
-    fTriggered_ = false ;   // autoreset
+    fTriggered = false ;   // autoreset
 }

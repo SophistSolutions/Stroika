@@ -23,36 +23,44 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************** Execution::WaitableEvent::WE_ ***************************
+             ********************************************************************************
+             */
+            inline  void    WaitableEvent::WE_::Reset ()
+            {
+                std::lock_guard<mutex> lockGaurd (fMutex);
+                fTriggered = false;
+            }
+            inline  void    WaitableEvent::WE_::Set ()
+            {
+                std::lock_guard<mutex> lockGaurd (fMutex);
+                fTriggered = true;
+                fConditionVariable.notify_all ();
+            }
+
+
+            /*
+             ********************************************************************************
              *************************** Execution::WaitableEvent ***************************
              ********************************************************************************
              */
-            inline  WaitableEvent::WaitableEvent ()
-                : fMutex_ ()
-                , fConditionVariable_ ()
-                , fTriggered_ (false)
-                , fThreadAbortCheckFrequency_ (0.5)
-            {
-            }
             inline  void    WaitableEvent::Reset ()
             {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
-                {
-                    std::lock_guard<mutex> lockGaurd (fMutex_);
-                    fTriggered_ = false;
-                }
+                fWE_.Reset ();
             }
             inline  void    WaitableEvent::Set ()
             {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
-                {
-                    std::lock_guard<mutex> lockGaurd (fMutex_);
-                    fTriggered_ = true;
-                    fConditionVariable_.notify_all ();
-                }
+                fWE_.Set ();
             }
             inline  void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
             {
-                WaitUntil (timeout + Time::GetTickCount ());
+                fWE_.WaitUntil (timeout + Time::GetTickCount ());
+            }
+            inline  void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
+            {
+                fWE_.WaitUntil (timeoutAt);
             }
 
 
