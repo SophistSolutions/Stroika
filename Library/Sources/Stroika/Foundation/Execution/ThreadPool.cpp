@@ -218,6 +218,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
 void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTasks"));
+    auto tps = GetPoolSize ();
     {
         lock_guard<recursive_mutex> critSection (fCriticalSection_);
         fTasks_.clear ();
@@ -228,7 +229,6 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
             ti.Abort ();
         }
     }
-    size_t tps = GetPoolSize ();
     {
         lock_guard<recursive_mutex> critSection (fCriticalSection_);
         for (Thread ti : fThreads_) {
