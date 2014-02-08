@@ -2358,5 +2358,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.inl">
       <Filter>Sources\Characters</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md">
+      <Filter>Sources\Characters</Filter>
+    </None>
   </ItemGroup>
 </Project>

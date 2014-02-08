@@ -103,6 +103,13 @@ namespace   Stroika {
              *  It is best to logically think of Duration as a number of seconds (at least lossly) –
              *  since for comparisons – that’s how things are normalized. #days etc are dumbed down
              *  to number of seconds for comparison sakes.
+             *
+             *  \note Design Note - why no c_str () method
+             *      In order to implement c_str () - we would need to return an internal pointer. That would
+             *      constrain the internal implementation, and would need careful definition of lifetime. The
+             *      simplest way around this is to have the caller pass something in, or to return something
+             *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
+             *      As<wstring> ().c_str ()
              */
             class   Duration {
             public:
@@ -186,6 +193,8 @@ namespace   Stroika {
                  * Duration::kMin is the least duration this Duration class supports representing.
                  */
                 static  const   Duration&   kMin;
+
+            public:
                 /**
                  * DateTime::kMax is the largest duration this Duration class supports representing.
                  */

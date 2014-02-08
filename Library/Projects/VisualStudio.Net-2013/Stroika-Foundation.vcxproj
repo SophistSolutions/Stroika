@@ -1033,6 +1033,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
