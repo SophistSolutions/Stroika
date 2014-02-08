@@ -322,29 +322,34 @@ namespace   Stroika {
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 pair<const Character*, const Character*> l = _GetRep ().GetData ();
                 pair<const Character*, const Character*> r = rhs._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, r.first, r.second, co);
             }
             inline  int String::Compare (const Character* rhs, CompareOptions co) const
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 pair<const Character*, const Character*> l = _GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
             }
             inline  int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 pair<const Character*, const Character*> l = _GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, rhsStart, rhsEnd, co);
             }
             inline  int String::Compare (const wchar_t* rhs, CompareOptions co) const
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 pair<const Character*, const Character*> l = _GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (rhs), co);
             }
             inline  int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 pair<const Character*, const Character*> l = _GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
