@@ -108,11 +108,11 @@ namespace {
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
-            VerifyTestResult (not s.Contains<EQUALS_COMPARER> (1));
+            VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (1));
             s.Append (1);
-            VerifyTestResult (s.Contains<EQUALS_COMPARER> (1));
+            VerifyTestResult (s.template Contains<EQUALS_COMPARER> (1));
             s.RemoveAll ();
-            VerifyTestResult (not s.Contains<EQUALS_COMPARER> (1));
+            VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (1));
             VerifyTestResult (s.empty ());
         }
         {
@@ -121,8 +121,8 @@ namespace {
                 s.Append (i + 1000);
             }
             for (size_t i = 0; i < 1000; ++i) {
-                VerifyTestResult (not s.Contains<EQUALS_COMPARER> (i));
-                VerifyTestResult (s.Contains<EQUALS_COMPARER> (i + 1000));
+                VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (i));
+                VerifyTestResult (s.template Contains<EQUALS_COMPARER> (i + 1000));
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
@@ -172,12 +172,12 @@ namespace {
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-            VerifyTestResult (not s.Equals<EQUALS_COMPARER> (s2));
-            VerifyTestResult (not s2.Equals<EQUALS_COMPARER> (s));
+            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
+            VerifyTestResult (not s2.template Equals<EQUALS_COMPARER> (s));
             s.Append (2);
-            VerifyTestResult (s2.Equals<EQUALS_COMPARER> (s));
+            VerifyTestResult (s2.template Equals<EQUALS_COMPARER> (s));
             s.RemoveAll ();
-            VerifyTestResult (not s.Equals<EQUALS_COMPARER> (s2));
+            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
             VerifyTestResult (s.empty ());
         }
     }
@@ -247,7 +247,7 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (5) == kBadSequenceIndex);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (5) == kBadSequenceIndex);
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -261,14 +261,14 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (s2) == 0);
-            VerifyTestResult (s2.IndexOf<EQUALS_COMPARER> (s) == 0);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0);
+            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0);
 
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (s3.IndexOf<EQUALS_COMPARER> (s) == kBadSequenceIndex);
-            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (s3) == 3);
+            VerifyTestResult (s3.template IndexOf<EQUALS_COMPARER> (s) == kBadSequenceIndex);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -329,7 +329,7 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            VerifyTestResult (s.Equals<EQUALS_COMPARER> (x));
+            VerifyTestResult (s.template Equals<EQUALS_COMPARER> (x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[2], 12));
@@ -730,9 +730,6 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-
-        using   Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits  =   Sequence_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators>;
-
 
         SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
