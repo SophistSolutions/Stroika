@@ -22,7 +22,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename FUNCTION_SIGNATURE>
-            inline  Function<FUNCTION_SIGNATURE>::Function (const STDFUNCTION& f)
+            template    <typename CTOR_FUNC_SIG>
+            inline  Function<FUNCTION_SIGNATURE>::Function (const CTOR_FUNC_SIG& f)
                 : fFun_ (new STDFUNCTION (f))
             {
             }
@@ -42,19 +43,47 @@ namespace   Stroika {
                 return (*fFun_) (args...);
             }
             template    <typename FUNCTION_SIGNATURE>
+            inline  int Function<FUNCTION_SIGNATURE>::Compare (const Function& rhs) const
+            {
+                if (fFun_.get () < rhs.fFun_.get ()) {
+                    return -1;
+                }
+                else if (fFun_.get () == rhs.fFun_.get ()) {
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
+            }
+            template    <typename FUNCTION_SIGNATURE>
             inline  bool    Function<FUNCTION_SIGNATURE>::operator< (const Function& rhs) const
             {
-                return fFun_ < rhs.fFun_;
+                return Compare (rhs) < 0;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator<= (const Function& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator> (const Function& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator>= (const Function& rhs) const
+            {
+                return Compare (rhs) >= 0;
             }
             template    <typename FUNCTION_SIGNATURE>
             inline  bool    Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
             {
-                return fFun_ == rhs.fFun_;
+                return Compare (rhs) == 0;
             }
             template    <typename FUNCTION_SIGNATURE>
             inline  bool    Function<FUNCTION_SIGNATURE>::operator!= (const Function& rhs) const
             {
-                return fFun_ != rhs.fFun_;
+                return Compare (rhs) != 0;
             }
 
 

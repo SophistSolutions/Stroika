@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  */
 
 
@@ -39,28 +41,40 @@ namespace   Stroika {
             public:
                 using STDFUNCTION   =   function<FUNCTION_SIGNATURE>;
                 using result_type   =   typename STDFUNCTION::result_type;
+                //using argument_type   =   typename STDFUNCTION::argument_type;
+                //using first_argument_type   =   typename STDFUNCTION::first_argument_type;
+                //using second_argument_type   =   typename STDFUNCTION::second_argument_type;
 
             public:
                 Function () = default;
                 Function (const Function&) = default;
-                Function (const STDFUNCTION& f);
-                template    <typename X>
-                Function (const X& f)
-                    : Function (STDFUNCTION (f))
-                {
-
-                }
+                template    <typename CTOR_FUNC_SIG>
+                Function (const CTOR_FUNC_SIG& f);
 
             public:
                 nonvirtual  operator STDFUNCTION () const;
 
             public:
-                template    < typename... Args>
+                template    <typename... Args>
                 nonvirtual  result_type     operator() ( Args... args ) const;
 
             public:
-                // todo add all other compare operators and Compare() compare(), Equals()
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 *  Note - this has nothing todo with the actual value of the 'target' function passed in.
+                 *  This is just magic associated with the object so it can be stored in a map.
+                 *      @todo DOCUMENT BETTER
+                 */
+                nonvirtual  int Compare (const Function& rhs) const;
+
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Atom& rhs)
+                 */
                 nonvirtual  bool operator< (const Function& rhs) const;
+                nonvirtual  bool operator<= (const Function& rhs) const;
+                nonvirtual  bool operator> (const Function& rhs) const;
+                nonvirtual  bool operator>= (const Function& rhs) const;
                 nonvirtual  bool operator== (const Function& rhs) const;
                 nonvirtual  bool operator!= (const Function& rhs) const;
 
