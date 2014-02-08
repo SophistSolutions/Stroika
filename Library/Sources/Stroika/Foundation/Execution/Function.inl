@@ -18,9 +18,44 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************************* Execution::Function ***************************
+             ******************************** Execution::Function ***************************
              ********************************************************************************
              */
+            template    <typename FUNCTION_SIGNATURE>
+            inline  Function<FUNCTION_SIGNATURE>::Function (const STDFUNCTION& f)
+                : fFun_ (new STDFUNCTION (f))
+            {
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  Function<FUNCTION_SIGNATURE>::operator STDFUNCTION () const
+            {
+                if (fFun_ == nullptr) {
+                    return STDFUNCTION ();
+                }
+                return *fFun_;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            template< typename... Args>
+            inline  typename Function<FUNCTION_SIGNATURE>::result_type  Function<FUNCTION_SIGNATURE>::operator()( Args... args ) const
+            {
+                RequireNotNull (fFun_);
+                return (*fFun_) (args...);
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator< (const Function& rhs) const
+            {
+                return fFun_ < rhs.fFun_;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
+            {
+                return fFun_ == rhs.fFun_;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    Function<FUNCTION_SIGNATURE>::operator!= (const Function& rhs) const
+            {
+                return fFun_ != rhs.fFun_;
+            }
 
 
         }

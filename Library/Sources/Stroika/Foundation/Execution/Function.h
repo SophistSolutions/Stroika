@@ -34,67 +34,36 @@ namespace   Stroika {
              *      lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
              *      and then later removed by value.
              */
-            template    <typename FUNCTION_SIGNATURE >
-            struct  Function {
+            template    <typename FUNCTION_SIGNATURE>
+            class   Function {
+            public:
+                using STDFUNCTION   =   function<FUNCTION_SIGNATURE>;
+                using result_type   =   typename STDFUNCTION::result_type;
 
-                using STDFUNCTION = function<FUNCTION_SIGNATURE>;
-
-                using result_type = typename STDFUNCTION::result_type;
-
-                //using FUNCTION_SIGNATURE = function<R(Args...)>;
-
-
-                Function (const STDFUNCTION& f)
-                    : fFun_ (new STDFUNCTION (f))
-                {
-                }
-                Function (const Function&) = default;
+            public:
                 Function () = default;
-
-
-
-                operator STDFUNCTION ()
+                Function (const Function&) = default;
+                Function (const STDFUNCTION& f);
+                template    <typename X>
+                Function (const X& f)
+                    : Function (STDFUNCTION (f))
                 {
-                    if (fFun_ == nullptr) {
-                        return STDFUNCTION ();
-                    }
-                    return *fFun_;
-                }
-                operator const STDFUNCTION () const
-                {
-                    if (fFun_ == nullptr) {
-                        return STDFUNCTION ();
-                    }
-                    return *fFun_;
+
                 }
 
-                template< typename... Args>
-                result_type operator()( Args... args ) const
-                {
-                    RequireNotNull (fFun_);
-                    return (*fFun_) (args...);
-                }
-#if 0
-                R operator()( Args... args ) const
-                {
-                    return (*fFun_) (args...);
-                }
-#endif
+            public:
+                nonvirtual  operator STDFUNCTION () const;
 
+            public:
+                template    < typename... Args>
+                nonvirtual  result_type     operator() ( Args... args ) const;
 
+            public:
                 // todo add all other compare operators and Compare() compare(), Equals()
-                bool operator< (const Function& rhs) const
-                {
-                    return fFun_ < rhs.fFun_;
-                }
-                bool operator== (const Function& rhs) const
-                {
-                    return fFun_ == rhs.fFun_;
-                }
-                bool operator!= (const Function& rhs) const
-                {
-                    return fFun_ != rhs.fFun_;
-                }
+                nonvirtual  bool operator< (const Function& rhs) const;
+                nonvirtual  bool operator== (const Function& rhs) const;
+                nonvirtual  bool operator!= (const Function& rhs) const;
+
             private:
                 shared_ptr<STDFUNCTION> fFun_;
             };
