@@ -341,19 +341,18 @@ size_t  ThreadPool::GetTasksCount () const
     return count;
 }
 
-void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
+void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForDone"));
+    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForDoneUntil"));
     Require (fAborted_);
     {
-        Time::DurationSecondsType   timeoutAt   =   timeout + Time::GetTickCount ();
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
         {
             lock_guard<recursive_mutex> critSection (fCriticalSection_);
             threadsToShutdown = fThreads_;
         }
         for (auto t : threadsToShutdown) {
-            t.WaitForDone (timeoutAt - Time::GetTickCount ());
+            t.WaitForDoneUntil (timeoutAt);
         }
     }
 }

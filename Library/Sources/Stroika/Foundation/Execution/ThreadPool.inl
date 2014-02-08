@@ -16,6 +16,18 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
+            /*
+             ********************************************************************************
+             *********************************** ThreadPool *********************************
+             ********************************************************************************
+             */
+            inline  void    ThreadPool::WaitForDone (Time::DurationSecondsType timeout) const
+            {
+                WaitForDoneUntil (timeout + Time::GetTickCount ());
+            }
+
+
         }
     }
 }

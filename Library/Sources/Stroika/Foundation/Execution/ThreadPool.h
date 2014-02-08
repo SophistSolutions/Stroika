@@ -167,6 +167,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  throws if timeout
+                 */
+                nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+
+            public:
+                /**
                  * Tells the ThreadPool to shutdown - once aborted - it is an error to keep adding new tasks
                  */
                 nonvirtual  void    Abort ();
