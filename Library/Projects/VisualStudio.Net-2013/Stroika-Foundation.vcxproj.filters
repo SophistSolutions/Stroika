@@ -672,6 +672,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1560,6 +1563,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2360,6 +2366,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>

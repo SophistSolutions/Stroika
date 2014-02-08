@@ -22,6 +22,7 @@ Objs	=	\
 	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
 	$(ObjDir)Finally.o\
+	$(ObjDir)Function.o\
 	$(ObjDir)IRunnable.o\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
