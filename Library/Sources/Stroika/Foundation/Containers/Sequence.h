@@ -26,24 +26,13 @@
  *
  *  TODO:
  *
- *      @todo       Probably GET RID of TRAITS for Sequence<> - and instead - have COMPARE functor
- *                  arg to things that need it (like Equals, Contians, etc)
- *
- *      @todo       Review with Sterl the choice (and better document) - that Sequence<> can be used on type T
- *                  without operator==, but when you got to call Contains/IndexOf/Equals() you get a compile
- *                  error. Can always fix with explicit TRIATS.
- *
- *                  Key is that these functions all implemented NON-VIRTUALLY (otherwise they would need
- *                  to be compiled to fill in vtable).
- *
- *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
+ *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
  *      @todo       Sequence<> must support RandomAccessIterator<>
  *
  *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
  *                  returns something of same underlying data structure  type.
- *
  *
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
@@ -99,29 +88,6 @@ namespace   Stroika {
 
 
             constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
-
-
-            /**
-             *  NOTE - Traits for Sequence<T> don't NEED an EQUALS_COMPARER, and the default one should
-             *  should be fine (never called if never used).
-             *
-             *  It will only be invoked if you call
-             *      o   Sequence<T,TRAITS>::Contains ()
-             *      o   Sequence<T,TRAITS>::Equals ()
-             *      o   Sequence<T,TRAITS>::IndexOf ()
-             *
-             *  This means that
-             *      Sequence<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
-             *      // works FINE, UNTIL you try to call Contains/Equals/IndexOf - and at that point you must adjust
-             *      // the traits to specify the Equals() compare function.
-             *
-             */
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
-            struct   Sequence_DefaultTraits {
-                /**
-                 */
-                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
-            };
 
 
             /**
@@ -259,6 +225,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \note   Why no Functional optional parameter to Contains()?
+                 *      You can call FindFirstThat () directly - and pass in a lambda (bound with whatever data) to get this
+                 *      effect.
+                 *
+                 *      Contains<EQUALS_COMPARERE> is defined as
+                 *          return c.FindFirstThat ([item] (T i) -> bool {
+                 *              return EQUALS_COMPARERE::Equals (i, item);
+                 *          });
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    Contains (T item) const;
@@ -269,7 +243,7 @@ namespace   Stroika {
                  *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
                  */
-                nonvirtual  Sequence<T>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Sequence<T>    EachWith (const function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**
@@ -282,6 +256,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  A Sequence<T> doesnt generally require a comparison for individual elements
+                 *  be be defined, but obviously to compare if the containers are equal, you must
+                 *  compare the individual elements (at least sometimes).
+                 *
+                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+                 *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
@@ -290,6 +270,11 @@ namespace   Stroika {
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to
                  *  @Compare (const Sequence<T>& rhs) and uses  Equals() for ==/!=
+                 *
+                 *  Note that these are trivial wrappers on Compare () and Equals () - which
+                 *  take optional COMPARER arguments (for the elements). These don't take
+                 *  any such arguments because it would ruin the syntactic sugar, and
+                 *  if we are losing that anyhow, just use Equals<> or Compare<>.
                  */
                 nonvirtual  bool operator< (const Sequence<T>& rhs) const;
                 nonvirtual  bool operator<= (const Sequence<T>& rhs) const;
@@ -387,9 +372,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This is roughly AppendAll (GetLength(), s), except that there is a race after you call GetLength, and before
-                 *  Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment, the appended items
-                 *  wont necesarily all get appended at once, since other threads could make changes in between.
+                 *  This is roughly AppendAll (GetLength(), s), except that there is a race after you call GetLength,
+                 *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment,
+                 *  the appended items wont necesarily all get appended at once, since other threads could make
+                 *  changes in between.
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
@@ -411,8 +397,7 @@ namespace   Stroika {
                  * The value pointed to by 'i' is removed.
                  *
                  * Not an error to remove an item that is not an element of the list, instead has no effect.
-                 */
-                /**
+                 *
                  *      Remove the item at the given position of the sequence. Make sure
                  *  that iteration is not disturbed by this removal. In particular, any
                  *  items (other than the one at index) that would have been seen, will
