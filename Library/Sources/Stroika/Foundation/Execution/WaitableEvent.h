@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <condition_variable>
+#include    <forward_list>
 #include    <mutex>
 
 #include    "../Configuration/Common.h"
@@ -83,6 +84,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+                nonvirtual  unsigned int    WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+                nonvirtual  unsigned int    WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+
+            public:
+                /**
                  *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
                  *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
                  *
@@ -104,7 +113,9 @@ namespace   Stroika {
                     nonvirtual  void    Set ();
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
                 };
-                WE_ fWE_;
+                WE_                             fWE_;
+                static  mutex                   sExtraWaitableEventsMutex_;
+                forward_list<shared_ptr<WE_>>   fExtraWaitableEvents_;
             };
 
 

@@ -53,6 +53,10 @@ namespace   Stroika {
             {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
                 fWE_.Set ();
+                lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                for (auto i : fExtraWaitableEvents_) {
+                    i->Set ();
+                }
             }
             inline  void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
             {
@@ -61,6 +65,52 @@ namespace   Stroika {
             inline  void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
             {
                 fWE_.WaitUntil (timeoutAt);
+            }
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+            inline  unsigned int    WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+            {
+                return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
+            }
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+            unsigned int    WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+            {
+                /////VERY ROUGH DRAFT
+                //AssertNotImplemented ();
+
+                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ ());
+                {
+                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        i->fExtraWaitableEvents_.push_front (we);
+                    }
+                }
+                try {
+                    we->WaitUntil (timeoutAt);
+                    unsigned int cnt = 0;
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        if (i->fWE_.fTriggered) {
+                            return cnt;
+                        }
+                        ++cnt;
+                    }
+
+                }
+                catch (...) {
+                    /// NEED TO FIX AND REMOVE FROM LSIT AND RETHROW
+                }
+
+                {
+                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        i->fExtraWaitableEvents_->remove (we);
+                    }
+                }
+
+                // create another WE as shared.
+                // stick it onto the list ofr each waitablevent
+                // wait on invated evnet (and if it successeds, then check orig events and return right now)
+                // either way - undo additions
+                return 0;
             }
 
 

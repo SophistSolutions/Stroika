@@ -112,3 +112,16 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
     }
     fTriggered = false ;   // autoreset
 }
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************** WaitableEvent *******************************
+ ********************************************************************************
+ */
+mutex   WaitableEvent::sExtraWaitableEventsMutex_;
