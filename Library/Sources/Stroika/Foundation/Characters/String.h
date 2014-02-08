@@ -55,19 +55,8 @@
  *
  * TODO:
  *
- *      @todo   The string REPS are (I think) fully threadsafe, but I dont think the String envelope class is.
- *              We need to be much more careful about the Envelope class thread safety.
- *
- *              For example,
- *
- *              String  String::StripAll (bool (*removeCharIf) (Character)) const
- *              {
- *                  ...
- *                  size_t  n   =   GetLength ();
- *                  for (size_t i = 0; i < n; ++i) {
- *                      Character   c   =   operator[] (i);
- *              ...
- *              What if someone changed the length in the middle of the loop!
+ *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
+ *              Appends and Removes.
  *
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
@@ -298,6 +287,20 @@ namespace   Stroika {
              *      For now - stick to simple impl - of just copy on start of iteration.
              *          -- LGP 2013-12-17
              *
+             *  \note   Implementation Details - Thread Safety
+             *      This reason this class is threadsafe, is because of using a shared_ptr<> rep strategy, and
+             *      COW (copy on write). Basically - we only modify the data inside the rep if we have
+             *      the only reference count. That protects the REPs - which is crucial, since the semantics
+             *      of String are copy by value, but internally - we just copy pointers (mostly).
+             *
+             *      But how do we achieve envelope thread safety? For code implemented in the envelope, there
+             *      is no obvious way without locks! But then there is! Just leverage the above trick.
+             *
+             *      Any method that requires consistency across sub-actions -and doesnt do that work in the rep,
+             *      just COPIES the string object, and does its action on the COPY. The COST of this is that
+             *      we must do an extra shared_ptr<> copy (refcount++/-- and ptr copy). But the gain is we get
+             *      otherwise lock free consistent action on the data, even if other methods operate
+             *      on our envelope (because we arent - we're using the copy).
              */
             class   String : public Traversal::Iterable<Character> {
             private:

@@ -140,27 +140,33 @@ namespace   Stroika {
             }
             inline  void    String::Append (Character c)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (c, GetLength ());
             }
             inline  void    String::Append (const String& s)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (s, GetLength ());
             }
             inline  void    String::Append (const wchar_t* from, const wchar_t* to)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (from, to, GetLength ());
             }
             inline  void    String::Append (const Character* from, const Character* to)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (from, to, GetLength ());
             }
             inline  String& String::operator+= (Character appendage)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
                 return (*this);
             }
             inline  String& String::operator+= (const String& appendage)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
                 return (*this);
             }
@@ -228,8 +234,9 @@ namespace   Stroika {
             inline  void    String::As (wstring* into) const
             {
                 RequireNotNull (into);
-                size_t  n   =   GetLength ();
-                const Character* cp = _GetRep ().Peek ();
+                String  threadSafeCopy  =   *this;
+                size_t  n   =   threadSafeCopy.GetLength ();
+                const Character* cp = threadSafeCopy._GetRep ().Peek ();
                 Assert (sizeof (Character) == sizeof (wchar_t));        // going to want to clean this up!!!    --LGP 2011-09-01
                 const wchar_t* wcp  =   (const wchar_t*)cp;
                 into->assign (wcp, wcp + n);
@@ -305,10 +312,12 @@ namespace   Stroika {
             }
             inline  void    String::push_back (wchar_t c)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (c, GetLength ());
             }
             inline  void    String::push_back (Character c)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (c, GetLength ());
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
