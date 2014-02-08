@@ -58,6 +58,18 @@
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
  *
+ *              NO WORSE THAN THAT - MUCH IS NOT ENVELOPE THREADSAFE. Issue is that even with no sharing (sharecount=1)
+ *              if I have one thread reading and one writing - that's intrinsically not safe!
+ *
+ *              I THINK the only ways out are:
+ *                  o   lock every operation (makes reads too costly)
+ *                  o   Do all multistep operations in reps (so they can manage locking (I think that
+ *                      still means read/write locks like we have for Containers).
+ *                  o   OR every changing operation makes a new string rep. THAT - as it turns out- maybe
+ *                      the way to go (lisp/functional programming).
+ *
+ *              That may mean the CopyOnWrite stuff is useless here?
+ *
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *
@@ -191,7 +203,7 @@
  *                          ;
  *                      return basic_string<TCHAR> (text.begin (), i);
  *                  }
- *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
+ *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
  *
  *      @todo   Implement String_Common
  *              NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
@@ -202,7 +214,7 @@
  *              allocated permanently - for the lifetime of the application, and will take potentially
  *              extra time looking for the given string.
  *
- *              We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in
+ *              We MAY handle this like the DataExchange::Atom<> class - where we store the string in
  *              a hashtable (or map), and do quick lookup of associated index, and also store in a table
  *              (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value
  *              of the stored rep. Then doing a PEEK() is trivial and efficient.
@@ -340,7 +352,8 @@ namespace   Stroika {
 
             protected:
                 /**
-                 * rep MUST be not-null
+                 * \req rep MUST be not-null
+                 *  However, with move constructor, it maybe null on exit.
                  */
                 String (const _SharedPtrIRep& rep);
                 String (_SharedPtrIRep&& rep);
