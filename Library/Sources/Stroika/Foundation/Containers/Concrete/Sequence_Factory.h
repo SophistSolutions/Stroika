@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             class   Sequence;
 
 
@@ -42,25 +42,25 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 class   Sequence_Factory {
                 private:
-                    static  atomic<Sequence<T, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Sequence<T> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Sequence<T, TRAITS>  mk ();
+                    static  Sequence<T>  mk ();
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Sequence<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Sequence<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Sequence<T> (*factory) () = nullptr);
 
                 private:
-                    static  Sequence<T, TRAITS>  Default_ ();
+                    static  Sequence<T>  Default_ ();
                 };
 
 

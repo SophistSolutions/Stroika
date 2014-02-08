@@ -109,11 +109,11 @@ namespace {
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
-            VerifyTestResult (not s.Contains (1));
+            VerifyTestResult (not s.Contains<EQUALS_COMPARER> (1));
             s.Append (1);
-            VerifyTestResult (s.Contains (1));
+            VerifyTestResult (s.Contains<EQUALS_COMPARER> (1));
             s.RemoveAll ();
-            VerifyTestResult (not s.Contains (1));
+            VerifyTestResult (not s.Contains<EQUALS_COMPARER> (1));
             VerifyTestResult (s.empty ());
         }
         {
@@ -122,8 +122,8 @@ namespace {
                 s.Append (i + 1000);
             }
             for (size_t i = 0; i < 1000; ++i) {
-                VerifyTestResult (not s.Contains (i));
-                VerifyTestResult (s.Contains (i + 1000));
+                VerifyTestResult (not s.Contains<EQUALS_COMPARER> (i));
+                VerifyTestResult (s.Contains<EQUALS_COMPARER> (i + 1000));
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
@@ -168,18 +168,17 @@ namespace {
         using   T       =   typename CONCRETE_SEQUENCE_T::ElementType;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
-            using   TraitsType  =   typename CONCRETE_SEQUENCE_T::TraitsType;
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
-            Sequence<T, TraitsType> s2 = s;
+            Sequence<T> s2 = s;
             s2.Append (2);
-            VerifyTestResult (not s.Equals (s2));
-            VerifyTestResult (not s2.Equals (s));
+            VerifyTestResult (not s.Equals<EQUALS_COMPARER> (s2));
+            VerifyTestResult (not s2.Equals<EQUALS_COMPARER> (s));
             s.Append (2);
-            VerifyTestResult (s2.Equals (s));
+            VerifyTestResult (s2.Equals<EQUALS_COMPARER> (s));
             s.RemoveAll ();
-            VerifyTestResult (not s.Equals (s2));
+            VerifyTestResult (not s.Equals<EQUALS_COMPARER> (s2));
             VerifyTestResult (s.empty ());
         }
     }
@@ -242,7 +241,6 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_7_IndexOf_ ()
     {
-        using   TraitsType      =   typename CONCRETE_SEQUENCE_T::TraitsType;
         using   T               =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         {
@@ -250,7 +248,7 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            VerifyTestResult (s.IndexOf (5) == kBadSequenceIndex);
+            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (5) == kBadSequenceIndex);
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -263,15 +261,15 @@ namespace {
             VerifyTestResult (not s.empty ());
             VerifyTestResult (s.size () == 1000);
 
-            Sequence<T, TraitsType> s2 = s;
-            VerifyTestResult (s.IndexOf (s2) == 0);
-            VerifyTestResult (s2.IndexOf (s) == 0);
+            Sequence<T> s2 = s;
+            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (s2) == 0);
+            VerifyTestResult (s2.IndexOf<EQUALS_COMPARER> (s) == 0);
 
-            Sequence<T, TraitsType> s3;
+            Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (s3.IndexOf (s) == kBadSequenceIndex);
-            VerifyTestResult (s.IndexOf (s3) == 3);
+            VerifyTestResult (s3.IndexOf<EQUALS_COMPARER> (s) == kBadSequenceIndex);
+            VerifyTestResult (s.IndexOf<EQUALS_COMPARER> (s3) == 3);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -297,7 +295,6 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
-        using   TraitsType  =   typename CONCRETE_SEQUENCE_T::TraitsType;
         using   T           =   typename CONCRETE_SEQUENCE_T::ElementType;
         CONCRETE_SEQUENCE_T s;
         {
@@ -327,13 +324,13 @@ namespace {
 
         {
             // primitive, but at least somthing - test of Insert() of sequence (cuz Prepend/Append call Insert internally)
-            Sequence<T, TraitsType> x;
+            Sequence<T> x;
             x.Append (10);
             x.Append (11);
             x.Append (12);
 
             s.PrependAll (x);
-            VerifyTestResult (s.Equals (x));
+            VerifyTestResult (s.Equals<EQUALS_COMPARER> (x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[2], 12));
@@ -741,27 +738,27 @@ namespace   {
         SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_Array<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence_Array<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_Array<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_All_For_Type_<Sequence_stdvector<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ();
 

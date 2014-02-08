@@ -17,94 +17,94 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************************** Sequence<T, TRAITS> *******************************
+             ******************************** Sequence<T> ***********************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence ()
-                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Sequence<T>::Sequence ()
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence (const Sequence<T, TRAITS>& s)
+            template    <typename T>
+            inline  Sequence<T>::Sequence (const Sequence<T>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence (const initializer_list<T>& s)
-                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Sequence<T>::Sequence (const initializer_list<T>& s)
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 AppendAll (s);
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence (const vector<T>& s)
-                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Sequence<T>::Sequence (const vector<T>& s)
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 AppendAll (s);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Sequence<T, TRAITS>::Sequence (const CONTAINER_OF_T& s)
-                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
+            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 AppendAll (s);
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence (const _SharedPtrIRep& rep)
+            template    <typename T>
+            inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Sequence<T, TRAITS>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (move (Concrete::Sequence_Factory<T, TRAITS>::mk ()))
+            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 AppendAll (start, end);
             }
 #if     qDebug
-            template    <typename T, typename TRAITS>
-            Sequence<T, TRAITS>::~Sequence ()
+            template    <typename T>
+            Sequence<T>::~Sequence ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     _GetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>& Sequence<T, TRAITS>::operator= (const Sequence<T, TRAITS>& rhs)
+            template    <typename T>
+            inline  Sequence<T>& Sequence<T>::operator= (const Sequence<T>& rhs)
             {
                 inherited::operator= (rhs);
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            inline  const typename  Sequence<T, TRAITS>::_IRep&    Sequence<T, TRAITS>::_GetRep () const
+            template    <typename T>
+            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T, typename TRAITS>
-            inline  typename    Sequence<T, TRAITS>::_IRep&  Sequence<T, TRAITS>::_GetRep ()
+            template    <typename T>
+            inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T, typename TRAITS>
-            inline  bool    Sequence<T, TRAITS>::Contains (T item) const
+            template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            inline  bool    Sequence<T>::Contains (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                return Private::Contains_<EqualsCompareFunctionType> (*this, item);
+                return Private::Contains_<EQUALS_COMPARER, T> (*this, item);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename ELEMENT_COMPARER>
-            inline  int    Sequence<T, TRAITS>::Compare (const Iterable<T>& rhs) const
+            inline  int    Sequence<T>::Compare (const Iterable<T>& rhs) const
             {
                 return Private::Compare_<T, ELEMENT_COMPARER> (*this, rhs);
             }
-            template    <typename T, typename TRAITS>
-            Sequence<T, TRAITS>    Sequence<T, TRAITS>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            template    <typename T>
+            Sequence<T>    Sequence<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
             {
-                Sequence<T, TRAITS>  result;
+                Sequence<T>  result;
                 for (T i : *this) {
                     if (doToElement (i)) {
                         result.Append (i);
@@ -112,61 +112,62 @@ namespace   Stroika {
                 }
                 return result;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                return Private::Equals_<T, EqualsCompareFunctionType> (*this, rhs);
+                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::RemoveAll ()
+            template    <typename T>
+            inline  void    Sequence<T>::RemoveAll ()
             {
                 _GetRep ().Remove (0, this->GetLength ());
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::GetAt (size_t i) const
+            template    <typename T>
+            inline  T    Sequence<T>::GetAt (size_t i) const
             {
                 Require (i < this->GetLength ());
                 return _GetRep ().GetAt (i);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::SetAt (size_t i, T item)
+            template    <typename T>
+            inline  void    Sequence<T>::SetAt (size_t i, T item)
             {
                 Require (i < this->GetLength ());
                 _GetRep ().SetAt (i, item);
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::operator[] (size_t i) const
+            template    <typename T>
+            inline  T    Sequence<T>::operator[] (size_t i) const
             {
                 Require (i < this->GetLength ());
                 return _GetRep ().GetAt (i);
             }
-            template    <typename T, typename TRAITS>
-            inline  size_t    Sequence<T, TRAITS>::IndexOf (T item) const
+            template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            inline  size_t    Sequence<T>::IndexOf (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                return Private::IndexOf_<T, EqualsCompareFunctionType> (*this, item, kBadSequenceIndex);
+                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, kBadSequenceIndex);
             }
-            template    <typename T, typename TRAITS>
-            inline  size_t    Sequence<T, TRAITS>::IndexOf (const Sequence<T, TRAITS>& s) const
+            template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                return Private::IndexOf_<T, EqualsCompareFunctionType> (*this, s, kBadSequenceIndex);
+                return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, kBadSequenceIndex);
             }
-            template    <typename T, typename TRAITS>
-            inline  size_t    Sequence<T, TRAITS>::IndexOf (const Iterator<T>& i) const
+            template    <typename T>
+            template    <typename IGNORED>
+            inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
             {
                 return _GetRep ().IndexOf (i);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Insert (size_t i, T item)
+            template    <typename T>
+            inline  void    Sequence<T>::Insert (size_t i, T item)
             {
                 Require (i <= this->GetLength ());
                 return _GetRep ().Insert (i, &item, &item + 1);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            void    Sequence<T, TRAITS>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 Require (i <= this->GetLength ());
                 size_t  insertAt = i;
@@ -174,159 +175,159 @@ namespace   Stroika {
                     Insert (insertAt++, *i);
                 }
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  void    Sequence<T, TRAITS>::InsertAll (size_t i, const CONTAINER_OF_T& s)
+            inline  void    Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_T& s)
             {
                 Require (i <= this->GetLength ());
                 InsertAll (i, s.begin (), s.end ());
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Prepend (T item)
+            template    <typename T>
+            inline  void    Sequence<T>::Prepend (T item)
             {
                 Insert (0, item);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  void    Sequence<T, TRAITS>::PrependAll (const CONTAINER_OF_T& s)
+            inline  void    Sequence<T>::PrependAll (const CONTAINER_OF_T& s)
             {
                 InsertAll (0, s);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline void Sequence<T, TRAITS>::PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline void Sequence<T>::PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 InsertAll (0, start, end);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Append (T item)
+            template    <typename T>
+            inline  void    Sequence<T>::Append (T item)
             {
                 _GetRep ().Insert (kBadSequenceIndex, &item, &item + 1);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  void    Sequence<T, TRAITS>::AppendAll (const CONTAINER_OF_T& s)
+            inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
                 for (auto i : s) {
                     _GetRep ().Insert (kBadSequenceIndex, &i, &i + 1);
                 }
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline void Sequence<T, TRAITS>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     auto tmp = *i;
                     _GetRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
                 }
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Update (const Iterator<T>& i, T newValue)
+            template    <typename T>
+            inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
             {
                 _GetRep ().Update (i, newValue);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Remove (size_t i)
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (size_t i)
             {
                 Require (i < this->GetLength ());
                 _GetRep ().Remove (i, i + 1);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Remove (size_t start, size_t end)
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (size_t start, size_t end)
             {
                 Require (start <= end and end <= this->GetLength ());
                 _GetRep ().Remove (start, end);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::Remove (const Iterator<T>& i)
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (const Iterator<T>& i)
             {
                 _GetRep ().Remove (i);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename   CONTAINER_OF_T>
-            inline  CONTAINER_OF_T  Sequence<T, TRAITS>::As () const
+            inline  CONTAINER_OF_T  Sequence<T>::As () const
             {
                 return CONTAINER_OF_T (this->begin (), this->end ());
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename   CONTAINER_OF_T>
-            inline  void    Sequence<T, TRAITS>::As (CONTAINER_OF_T* into) const
+            inline  void    Sequence<T>::As (CONTAINER_OF_T* into) const
             {
                 RequireNotNull (into);
                 *into = CONTAINER_OF_T (this->begin (), this->end ());
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::GetFirst () const
+            template    <typename T>
+            inline  T    Sequence<T>::GetFirst () const
             {
                 Require (not this->IsEmpty ());
                 return GetAt (0);
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::GetLast () const
+            template    <typename T>
+            inline  T    Sequence<T>::GetLast () const
             {
                 Require (not this->IsEmpty ());
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
                 return _GetRep ().GetAt (kBadSequenceIndex);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::push_back (T item)
+            template    <typename T>
+            inline  void    Sequence<T>::push_back (T item)
             {
                 Append (item);
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::back () const
+            template    <typename T>
+            inline  T    Sequence<T>::back () const
             {
                 return GetLast ();
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Sequence<T, TRAITS>::front () const
+            template    <typename T>
+            inline  T    Sequence<T>::front () const
             {
                 return GetFirst ();
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Sequence<T, TRAITS>::clear ()
+            template    <typename T>
+            inline  void    Sequence<T>::clear ()
             {
                 RemoveAll ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>& Sequence<T, TRAITS>::operator+= (T item)
+            template    <typename T>
+            inline  Sequence<T>& Sequence<T>::operator+= (T item)
             {
                 Append (item);
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>& Sequence<T, TRAITS>::operator+= (const Sequence<T, TRAITS>& items)
+            template    <typename T>
+            inline  Sequence<T>& Sequence<T>::operator+= (const Sequence<T>& items)
             {
                 AppendAll (items);
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator< (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator< (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) < 0;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator<= (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator<= (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator> (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator> (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) > 0;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator>= (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator>= (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator== (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator== (const Sequence<T>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  bool Sequence<T, TRAITS>::operator!= (const Sequence<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool Sequence<T>::operator!= (const Sequence<T>& rhs) const
             {
                 return not Equals (rhs);
             }
@@ -337,12 +338,12 @@ namespace   Stroika {
              *************************** Sequence<T>::_IRep *********************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::_IRep::_IRep ()
+            template    <typename T>
+            inline  Sequence<T>::_IRep::_IRep ()
             {
             }
-            template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::_IRep::~_IRep ()
+            template    <typename T>
+            inline  Sequence<T>::_IRep::~_IRep ()
             {
             }
 

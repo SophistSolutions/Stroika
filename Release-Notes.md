@@ -23,6 +23,9 @@ History
   <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20x</a><br/>2014-02-??</td>
 <td>
 <ul>
+	<li>Sequence<T> no longer has TRAITS support - I decided it was simpler to just pass in equals comparer on
+		methods that needed it (template param) - rationale documented in class docs header.
+	</li>
 	<li>SystemPerformance framework
 		<ul>
 			<li>Variety of framework clenaups so a more respectable first draft</li>

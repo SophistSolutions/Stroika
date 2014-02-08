@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** Sequence_Factory<T, TRAITS> ****************************
+                 **************************** Sequence_Factory<T> *******************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<Sequence<T, TRAITS> (*) ()>  Sequence_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template    <typename T, typename TRAITS>
-                inline  Sequence<T, TRAITS>  Sequence_Factory<T, TRAITS>::mk ()
+                template    <typename T>
+                atomic<Sequence<T> (*) ()>  Sequence_Factory<T>::sFactory_ (nullptr);
+                template    <typename T>
+                inline  Sequence<T>  Sequence_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,15 +42,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_Factory<T, TRAITS>::Register (Sequence<T, TRAITS> (*factory) ())
+                template    <typename T>
+                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                Sequence<T, TRAITS>  Sequence_Factory<T, TRAITS>::Default_ ()
+                template    <typename T>
+                Sequence<T>  Sequence_Factory<T>::Default_ ()
                 {
-                    return Sequence_Array<T, TRAITS> ();
+                    return Sequence_Array<T> ();
                 }
 
 

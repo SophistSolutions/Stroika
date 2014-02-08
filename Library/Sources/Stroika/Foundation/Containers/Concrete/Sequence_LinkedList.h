@@ -36,21 +36,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
-                class   Sequence_LinkedList : public Sequence<T, TRAITS> {
+                template    <typename T>
+                class   Sequence_LinkedList : public Sequence<T> {
                 private:
-                    using   inherited   =   Sequence<T, TRAITS>;
+                    using   inherited   =   Sequence<T>;
 
                 public:
                     Sequence_LinkedList ();
-                    Sequence_LinkedList (const Sequence_LinkedList<T, TRAITS>& s);
+                    Sequence_LinkedList (const Sequence_LinkedList<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_LinkedList (const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Sequence_LinkedList<T, TRAITS>& operator= (const Sequence_LinkedList<T, TRAITS>& s);
+                    nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

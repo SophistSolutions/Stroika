@@ -26,11 +26,6 @@
  *
  *  TODO:
  *
- *      @todo       Sequence<> must support RandomAccessIterator<>
- *
- *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
- *                  returns something of same underlying data structure  type.
- *
  *      @todo       Probably GET RID of TRAITS for Sequence<> - and instead - have COMPARE functor
  *                  arg to things that need it (like Equals, Contians, etc)
  *
@@ -40,6 +35,15 @@
  *
  *                  Key is that these functions all implemented NON-VIRTUALLY (otherwise they would need
  *                  to be compiled to fill in vtable).
+ *
+ *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
+ *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
+ *
+ *      @todo       Sequence<> must support RandomAccessIterator<>
+ *
+ *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
+ *                  returns something of same underlying data structure  type.
+ *
  *
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
@@ -64,8 +68,6 @@
  *
  *                  Consider  if we can make this work, or document why and that we cannot. Maybe we need a concept of
  *                  SequenceIterator (like we had in Stroika 1) - which adds operator-?
- *
- *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *
  *      @todo       Add Sequence_SparseArray<T> - using btree implementation
  *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
@@ -194,8 +196,26 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   Design Note - TRAITS for equals versus COMPARER template param to methods that need it
+             *      We experimented (until Stroika 2.0a20 apx) with using TRAITS that were optional
+             *      with Sequence<> - and had the equals comparer. This worked OK. The advantage of
+             *      having the 'equals' method in the TRAITS was that it assured (for a given instance of Sequence)
+             *      that all comparisons/notions of equality were tied to the instance.
+             *
+             *      The idea WAS that you could even have a comparer that stored data in the instance (we never implemented that).
+             *
+             *      But this notion of equals has problems for defining Sequence<>::Equals() - do you use the
+             *      one from the RHS or LHS?
+             *
+             *      Plus - making it a template param just added to the syntactic garbage in the template
+             *      names (like in the debugger how the names printed out). This is no biggie, but
+             *      it wasnt a plus.
+             *
+             *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
+             *      methods that need it.
+             *
              */
-            template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
+            template    <typename T>
             class   Sequence : public Iterable<T> {
             private:
                 using   inherited   =   Iterable<T>;
@@ -208,24 +228,7 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Sequence<T, TRAITS>;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Sequence<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                using   TraitsType              =   TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 *
-                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
-                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
-                 */
-                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
+                using   ArchetypeContainerType  =   Sequence<T>;
 
             public:
                 /**
@@ -233,7 +236,7 @@ namespace   Stroika {
                  *  all the elements.
                  */
                 Sequence ();
-                Sequence (const Sequence<T, TRAITS>& s);
+                Sequence (const Sequence<T>& s);
                 Sequence (const initializer_list<T>& s);
                 Sequence (const vector<T>& s);
                 template <typename CONTAINER_OF_T>
@@ -252,13 +255,13 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Sequence<T, TRAITS>& operator= (const Sequence<T, TRAITS>& rhs);
+                nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs);
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
-                nonvirtual  bool Contains (T item) const;
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    Contains (T item) const;
 
             public:
                 /**
@@ -266,37 +269,34 @@ namespace   Stroika {
                  *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
                  */
-                nonvirtual  Sequence<T, TRAITS>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Sequence<T>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**
                  * Only supported of T::Compare() or T::compare() defined
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
-                 *
-                 *      @todo - FIXUP USING LOGIC WE DID FOR ABOVE
-                 *          \req xxxxRequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
                 template    <typename ELEMENT_COMPARER = Common::ComparerWithWellOrder<T>>
                 nonvirtual  int     Compare (const Iterable<T>& rhs) const;
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
-                nonvirtual  bool    Equals (const Sequence<T, TRAITS>& rhs) const;
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
 
             public:
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to
-                 *  @Compare (const Sequence<T, TRAITS>& rhs) and uses  Equals() for ==/!=
+                 *  @Compare (const Sequence<T>& rhs) and uses  Equals() for ==/!=
                  */
-                nonvirtual  bool operator< (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator<= (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator> (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator>= (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator== (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator!= (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator< (const Sequence<T>& rhs) const;
+                nonvirtual  bool operator<= (const Sequence<T>& rhs) const;
+                nonvirtual  bool operator> (const Sequence<T>& rhs) const;
+                nonvirtual  bool operator>= (const Sequence<T>& rhs) const;
+                nonvirtual  bool operator== (const Sequence<T>& rhs) const;
+                nonvirtual  bool operator!= (const Sequence<T>& rhs) const;
 
             public:
                 /**
@@ -329,10 +329,15 @@ namespace   Stroika {
                  *  TRAITS::EqualsCompareFunctionType (which defaults to operator== (T, T))
                  *  for first two overloads - third taking iterator always works)
                  *
-                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
+                 *  Note that the IndexOf(Iterator<T>) overload ignores the EQUALS_COMPARER
+                 *  but still must be a template method because non-template methods
+                 *  cannot be overloaded with template members.
                  */
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  size_t  IndexOf (T i) const;
-                nonvirtual  size_t  IndexOf (const Sequence<T, TRAITS>& s) const;
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
+                template    <typename IGNORED = void>
                 nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
 
             public:
@@ -419,7 +424,7 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Convert Sequence<T, TRAITS> losslessly into a standard supported C++ type.
+                 *  Convert Sequence<T> losslessly into a standard supported C++ type.
                  *  Supported types include:
                  *      o   vector<T>
                  *      o   list<T>
@@ -464,12 +469,12 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
-                nonvirtual  Sequence<T, TRAITS>&    operator+= (T item);
-                nonvirtual  Sequence<T, TRAITS>&    operator+= (const Sequence<T, TRAITS>& items);
+                nonvirtual  Sequence<T>&    operator+= (T item);
+                nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
 
             public:
-                nonvirtual  Sequence<T, TRAITS>&    operator-= (T item);
-                nonvirtual  Sequence<T, TRAITS>&    operator-= (const Sequence<T, TRAITS>& items);
+                nonvirtual  Sequence<T>&    operator-= (T item);
+                nonvirtual  Sequence<T>&    operator-= (const Sequence<T>& items);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -481,13 +486,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Sequence<T, TRAITS> implementors.
+             *  \brief  Implementation detail for Sequence<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Sequence<T, TRAITS> container API.
+             *  the Sequence<T> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Sequence<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T>
+            class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

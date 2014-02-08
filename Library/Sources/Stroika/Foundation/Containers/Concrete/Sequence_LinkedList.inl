@@ -24,10 +24,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T, typename TRAITS>
-                class   Sequence_LinkedList<T, TRAITS>::Rep_ : public Sequence<T, TRAITS>::_IRep {
+                template    <typename T>
+                class   Sequence_LinkedList<T>::Rep_ : public Sequence<T>::_IRep {
                 private:
-                    using   inherited   =   typename    Sequence<T, TRAITS>::_IRep;
+                    using   inherited   =   typename    Sequence<T>::_IRep;
 
                 public:
                     using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
-                    // Sequence<T, TRAITS>::_IRep overrides
+                    // Sequence<T>::_IRep overrides
                 public:
                     virtual T       GetAt (size_t i) const override;
                     virtual void    SetAt (size_t i, const T& item) override;
@@ -78,24 +78,24 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******************* Sequence_LinkedList<T, TRAITS>::Rep_ ***********************
+                ************************* Sequence_LinkedList<T>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                inline  Sequence_LinkedList<T, TRAITS>::Rep_::Rep_ ()
+                template    <typename T>
+                inline  Sequence_LinkedList<T>::Rep_::Rep_ ()
                     : inherited ()
                     , fData_ ()
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Sequence_LinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+                template    <typename T>
+                inline  Sequence_LinkedList<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
                 }
-                template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  Sequence_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                template    <typename T>
+                typename Iterable<T>::_SharedPtrIRep  Sequence_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -103,8 +103,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  Sequence_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>  Sequence_LinkedList<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -114,24 +114,24 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
                 }
-                template    <typename T, typename TRAITS>
-                size_t  Sequence_LinkedList<T, TRAITS>::Rep_::GetLength () const
+                template    <typename T>
+                size_t  Sequence_LinkedList<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                bool  Sequence_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
+                template    <typename T>
+                bool  Sequence_LinkedList<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength () == 0);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void      Sequence_LinkedList<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                template    <typename T>
+                void      Sequence_LinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -140,8 +140,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     Sequence_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>     Sequence_LinkedList<T>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<T>;
                     shared_ptr<IteratorRep_> resultRep;
@@ -162,8 +162,8 @@ namespace   Stroika {
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
 #endif
                 }
-                template    <typename T, typename TRAITS>
-                T    Sequence_LinkedList<T, TRAITS>::Rep_::GetAt (size_t i) const
+                template    <typename T>
+                T    Sequence_LinkedList<T>::Rep_::GetAt (size_t i) const
                 {
                     Require (not IsEmpty ());
                     Require (i == kBadSequenceIndex or i < GetLength ());
@@ -175,8 +175,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::SetAt (size_t i, const T& item)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::SetAt (size_t i, const T& item)
                 {
                     Require (i < GetLength ());
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -184,8 +184,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                size_t    Sequence_LinkedList<T, TRAITS>::Rep_::IndexOf (const Iterator<T>& i) const
+                template    <typename T>
+                size_t    Sequence_LinkedList<T>::Rep_::IndexOf (const Iterator<T>& i) const
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -195,8 +195,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -206,8 +206,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -217,8 +217,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::Insert (size_t at, const T* from, const T* to)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     Require (at == kBadSequenceIndex or at <= GetLength ());
@@ -254,8 +254,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::Remove (size_t from, size_t to)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::Remove (size_t from, size_t to)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     // quickie poor impl
@@ -275,8 +275,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #if     qDebug
-                template    <typename T, typename TRAITS>
-                void    Sequence_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                template    <typename T>
+                void    Sequence_LinkedList<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
@@ -288,35 +288,35 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************* Sequence_LinkedList<T, TRAITS> ***********************
+                **************************** Sequence_LinkedList<T> ****************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                Sequence_LinkedList<T, TRAITS>::Sequence_LinkedList ()
+                template    <typename T>
+                Sequence_LinkedList<T>::Sequence_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Sequence_LinkedList<T, TRAITS>::Sequence_LinkedList (const CONTAINER_OF_T& s)
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     this->AppendAll (s);
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Sequence_LinkedList<T, TRAITS>::Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     this->AppendAll (start, end);
                 }
-                template    <typename T, typename TRAITS>
-                inline  Sequence_LinkedList<T, TRAITS>::Sequence_LinkedList (const Sequence_LinkedList<T, TRAITS>& s)
+                template    <typename T>
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)
                     : inherited (s)
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Sequence_LinkedList<T, TRAITS>&   Sequence_LinkedList<T, TRAITS>::operator= (const Sequence_LinkedList<T, TRAITS>& s)
+                template    <typename T>
+                inline  Sequence_LinkedList<T>&   Sequence_LinkedList<T>::operator= (const Sequence_LinkedList<T>& s)
                 {
                     inherited::operator= (s);
                     return *this;
