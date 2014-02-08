@@ -2,7 +2,6 @@
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
 //      TEST    Foundation::Containers::Sequence
-//      STATUS  TOTALLY WRONG - PLACEHOLDER
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -43,7 +42,7 @@ using   Concrete::Sequence_stdvector;
  *  @todo   Move more tests into SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ... so
  *          that case gets more testing. Even if we have to breakup exsiting tests into parts.
  *
- *  @todo   Fix COMPARE (test case 3) support (test cases) once we better support the feautre with traits!
+ *  @todo   Fix COMPARE (test case 3) support
  *
  *  @todo   Look at Container tests for Bag/MultiSet, and see if any of them can be lifted and applied here.
  *
@@ -135,7 +134,7 @@ namespace {
 
 namespace {
 
-    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
     void    SimpleSequenceTest_3_Compare_ ()
     {
         using       T       =   typename CONCRETE_SEQUENCE_T::ElementType;
