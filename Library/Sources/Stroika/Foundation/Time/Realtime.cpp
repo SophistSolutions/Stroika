@@ -37,10 +37,10 @@ using   namespace   Stroika::Foundation::Time;
 DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
 {
 #if     qPlatform_MacOS
-    return (float (::TickCount ()) / 60.0f);
+    return (DurationSecondsType (::TickCount ()) / 60.0);
 #elif   qPlatform_POSIX
     timespec ts;
-    Verify (clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
+    Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
     return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 #elif   qPlatform_Windows
     static  bool            sInited =   false;
@@ -53,21 +53,21 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
     }
     if (sPerformanceFrequency.QuadPart == 0) {
 #if     (_WIN32_WINNT >= 0x0600)
-        return (float (::GetTickCount64 ()) / 1000.0f);
+        return (DurationSecondsType (::GetTickCount64 ()) / 1000.0);
 #else
         DISABLE_COMPILER_MSC_WARNING_START(28159)
-        return (float (::GetTickCount ()) / 1000.0f);
+        return (DurationSecondsType (::GetTickCount ()) / 1000.0);
         DISABLE_COMPILER_MSC_WARNING_END(28159)
 #endif
     }
     else {
         LARGE_INTEGER   counter;
-        counter.QuadPart = 0;
+        //counter.QuadPart = 0;
         Verify (::QueryPerformanceCounter (&counter));
-        return static_cast<DurationSecondsType> (static_cast<double> (counter.QuadPart) / static_cast<double> (sPerformanceFrequency.QuadPart));
+        return static_cast<DurationSecondsType> (static_cast<DurationSecondsType> (counter.QuadPart) / static_cast<DurationSecondsType> (sPerformanceFrequency.QuadPart));
     }
 #else
-    return time (0);    //tmphack... not good but better than assert erorr
+    return ::time (0);    //tmphack... not good but better than assert erorr
 #endif
 }
 
