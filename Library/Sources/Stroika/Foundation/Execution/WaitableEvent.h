@@ -84,11 +84,20 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  */
                 template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-                nonvirtual  unsigned int    WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                static  unsigned int    WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
                 template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-                nonvirtual  unsigned int    WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+                static  unsigned int    WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
+                 */
+                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+                static  unsigned int    WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+                static  unsigned int    WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 
             public:
                 /**

@@ -68,6 +68,16 @@ namespace   Stroika {
                 fWE_.WaitUntil (timeoutAt);
             }
             template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+            inline  unsigned int    WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+            {
+                return WaitForAnyUntil (waitableEvents, timeout + Time::GetTickCount ());
+            }
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+            inline  unsigned int    WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+            {
+                return WaitForAnyUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
+            }
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
             inline  unsigned int    WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
             {
                 return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
@@ -75,31 +85,32 @@ namespace   Stroika {
             template    <typename ITERATOR_OF_WAITABLE_EVENTS>
             unsigned int    WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
             {
-                /////VERY ROUGH DRAFT
-                //
-                // create another WE as shared.
-                // stick it onto the list ofr each waitablevent
-                // wait on invated evnet (and if it successeds, then check orig events and return right now)
-                // either way - undo additions
-
+                /*
+                 *  Create another WE as shared.
+                 *  Stick it onto the list for each waitablevent
+                 *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
+                 *  Either way - undo additions
+                 *
+                 *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
+                 */
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ ());
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
                     lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                        i->fExtraWaitableEvents_->remove (we);
+                        (*i)->fExtraWaitableEvents_.remove (we);
                     }
                 });
                 {
                     lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                        i->fExtraWaitableEvents_.push_front (we);
+                        (*i)->fExtraWaitableEvents_.push_front (we);
                     }
                 }
                 while (true) {
                     we->WaitUntil (timeoutAt);
                     unsigned int cnt = 0;
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                        if (i->fWE_.fTriggered) {
+                        if ((*i)->fWE_.fTriggered) {
                             return cnt;
                         }
                         ++cnt;

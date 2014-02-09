@@ -27,8 +27,13 @@ using   Execution::Lockable;
 using   Execution::Thread;
 using   Execution::Finally;
 using   Execution::ThreadPool;
+using   Execution::WaitableEvent;
 
 
+
+
+#include    "Stroika/Foundation/Containers/Sequence.h"
+using   Containers::Sequence;
 
 
 
@@ -599,6 +604,39 @@ namespace {
 
 
 
+
+
+
+namespace {
+    void    RegressionTest12_WaitAny_ ()
+    {
+        // EXPERIMENTAL
+        WaitableEvent we1;
+        WaitableEvent we2;
+        Thread t1 = [&we1] () {
+            Execution::Sleep (1.0);
+            we1.Set ();
+        };
+        Thread t2 = [&we2] () {
+            Execution::Sleep (0.1);
+            we2.Set ();
+        };
+        Time::DurationSecondsType   startAt = Time::GetTickCount ();
+        t1.Start ();
+        t2.Start ();
+        VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == 1);        // match second one
+        Time::DurationSecondsType   timeTaken = Time::GetTickCount () - startAt;
+        VerifyTestResult (timeTaken < 0.5);     // make sure we didnt wait for the 1.0 second on first thread
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+    }
+}
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -613,6 +651,7 @@ namespace   {
         RegressionTest9_ThreadsAbortingEarly_ ();
         RegressionTest10_BlockingQueue_ ();
         RegressionTest11_AbortSubAbort_ ();
+        RegressionTest12_WaitAny_ ();
     }
 }
 
