@@ -67,24 +67,25 @@ namespace   Stroika {
                 fWE_.WaitUntil (timeoutAt);
             }
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-            inline  WaitableEvent*  WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
+            inline  SET_OF_WAITABLE_EVENTS_RESULT  WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
             {
                 return WaitForAnyUntil (waitableEvents, timeout + Time::GetTickCount ());
             }
-            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-            inline  WaitableEvent*  WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
+            inline  SET_OF_WAITABLE_EVENTS_RESULT  WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
             {
                 return WaitForAnyUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
             }
-            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-            inline  WaitableEvent*  WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
+            inline  SET_OF_WAITABLE_EVENTS_RESULT  WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
             {
                 return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
             }
-            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-            WaitableEvent*  WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
+            SET_OF_WAITABLE_EVENTS_RESULT  WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
             {
+                SET_OF_WAITABLE_EVENTS_RESULT   result;
                 /*
                  *  Create another WE as shared.
                  *  Stick it onto the list for each waitablevent
@@ -106,7 +107,7 @@ namespace   Stroika {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
                 }
-                while (true) {
+                while (result.empty ()) {
                     we->WaitUntil (timeoutAt);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         WaitableEvent*  we2Test =   *i;
@@ -114,10 +115,11 @@ namespace   Stroika {
                             if (we2Test->fWE_.fResetType == eAutoReset) {
                                 we2Test->fWE_.Reset ();
                             }
-                            return we2Test;
+                            result.insert (we2Test);
                         }
                     }
                 }
+                return result;
             }
             template    <typename CONTAINER_OF_WAITABLE_EVENTS>
             inline  void    WaitableEvent::WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
