@@ -25,6 +25,11 @@
  *      @todo   Maybe change WaitForAny/WaitForAnyUntil to return a SET! That addresses one of the main issues reported in
  *              the below referenced compaints about starvation.
  *
+ *              The challenge is that I dont want to use STL set, but also dont want to create interdependncy with Containers
+ *              and something this low level.
+ *
+ *              Maybe can use SET_TYPE template arg, and have it default to set<>?
+ *
  *      @todo   Consider if there is a need for timed mutexes.
  *
  *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
