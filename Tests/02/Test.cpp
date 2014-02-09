@@ -1075,7 +1075,7 @@ namespace   {
         Test27_Repeat_ ();
         Test28_ReplacementForStripTrailingCharIfAny_ ();
         Test29_StringWithSequenceOfCharacter_ ();
-		Test30_LimitLength_ ();
+        Test30_LimitLength_ ();
     }
 }
 

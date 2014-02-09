@@ -399,7 +399,7 @@ String Date::Format (PrintFormat pf) const
                  *  and map
                  *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
                  */
-                const   String_Constant   kZero_  =   String_Constant (L"0");
+                static  const   String_Constant   kZero_  =   String_Constant (L"0");
                 size_t i = 0;
                 while ( (i = tmp.Find (kZero_, i)) != wstring::npos) {
                     // any 0N (where n a digit) is replaced with a single '0'

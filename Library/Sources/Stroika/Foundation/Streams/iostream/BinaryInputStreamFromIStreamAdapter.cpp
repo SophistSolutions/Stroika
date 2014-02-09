@@ -5,7 +5,7 @@
 
 #include    <mutex>
 
-#include	"../../Characters/String_Constant.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
-using	Characters::String_Constant;
+using   Characters::String_Constant;
 
 
 
