@@ -87,12 +87,6 @@
  *      @todo   Performance optimize FromUTF8, and AsUtf8() functions to not go through intermediate string
  *              objects!
  *
- *      @todo   Redo SetLength() API, so caller must specify fill-character.
- *              Or maybe better yet - replace with two APIs
- *                  GrowToLength(n, fillChar)
- *                  ShriunkToLength(n) - AKA Qt::QString::truncate().
- *              Not an error if nothing todo (even if already longer/shorter).
- *
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
  *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
  *
@@ -412,8 +406,18 @@ namespace   Stroika {
                 /**
                  * NOTE - when you increase the size of a string with SetLength() - the extra characters
                  * added are not initialized, and will have random values.
+                 *
+                 * OBSOLETE TODO:
+                 *              Redo SetLength() API, so caller must specify fill-character.
+                 *              Or maybe better yet - replace with two APIs
+                 *                  GrowToLength(n, fillChar)
+                 *                  ShriunkToLength(n) - AKA Qt::QString::truncate().
+                 *              Not an error if nothing todo (even if already longer/shorter).
+                 *
+                 *  INSTEAD I THINK WE CAN JUST LOSE THIS API
+                 *
                  */
-                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v20a20");
+                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20");
 
             public:
                 /**
