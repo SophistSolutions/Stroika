@@ -413,7 +413,7 @@ namespace   Stroika {
                  * NOTE - when you increase the size of a string with SetLength() - the extra characters
                  * added are not initialized, and will have random values.
                  */
-                nonvirtual  void    SetLength (size_t newLength);
+                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v20a20");
 
             public:
                 /**
