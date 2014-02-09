@@ -165,6 +165,7 @@ namespace   Stroika {
                     bool anyStillWaiting = false;
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         WaitableEvent*  we2Test =   *i;
+                        RequireNotNull (we2Test);
                         if (not we2Test->fWE_.fTriggered) {
                             anyStillWaiting = true;
                         }
@@ -173,9 +174,10 @@ namespace   Stroika {
                         continue;
                     }
                     else {
-                        if (we2Test->fWE_.fResetType == eAutoReset) {
-                            for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                                WaitableEvent*  we2Test =   *i;
+                        for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                            WaitableEvent*  we2Test =   *i;
+                            RequireNotNull (we2Test);
+                            if (we2Test->fWE_.fResetType == eAutoReset) {
                                 Assert (we2Test->fWE_.fTriggered);  // we probably need some mechanism to assure this is true but we currently have no enforcement of this!
                                 we2Test->fWE_.Reset ();
                             }

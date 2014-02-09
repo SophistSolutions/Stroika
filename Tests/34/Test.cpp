@@ -637,6 +637,40 @@ namespace {
 
 
 
+
+
+namespace {
+    void    RegressionTest13_WaitAll_ ()
+    {
+        // EXPERIMENTAL
+        WaitableEvent we1 (WaitableEvent::eAutoReset);
+        WaitableEvent we2 (WaitableEvent::eAutoReset);
+        bool w1Fired = false;
+        bool w2Fired = false;
+        Thread t1 = [&we1, &w1Fired] () {
+            Execution::Sleep (0.5);
+            w1Fired = true;
+            we1.Set ();
+        };
+        Thread t2 = [&we2, &w2Fired] () {
+            Execution::Sleep (0.1);
+            w2Fired = true;
+            we2.Set ();
+        };
+        Time::DurationSecondsType   startAt = Time::GetTickCount ();
+        t2.Start ();
+        t1.Start ();
+        WaitableEvent::WaitForAll (Sequence<WaitableEvent*> ({&we1, &we2}));
+        VerifyTestResult (w1Fired and w2Fired);
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+    }
+}
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -652,6 +686,7 @@ namespace   {
         RegressionTest10_BlockingQueue_ ();
         RegressionTest11_AbortSubAbort_ ();
         RegressionTest12_WaitAny_ ();
+        RegressionTest13_WaitAll_ ();
     }
 }
 
