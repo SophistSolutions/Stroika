@@ -26,6 +26,14 @@
  *
  *  TODO:
  *
+ *      @todo       Sequence<T> x;
+ *                  x[3] = T();     // This compiles but does the wrong thing (because the return value is rvalue not lvalue)
+ *                  Find a safe reliable way to turn this into a warning (not needed to work).
+ *
+ *                  This
+ *                      nonvirtual  T&       operator[] (size_t i) = delete;
+ *                  didn't work.
+ *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
