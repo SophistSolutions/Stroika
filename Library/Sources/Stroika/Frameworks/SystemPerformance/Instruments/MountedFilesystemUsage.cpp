@@ -7,6 +7,7 @@
 #include    <Windows.h>
 #endif
 
+#include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Sequence.h"
@@ -27,6 +28,8 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
+
+using   Characters::String_Constant;
 
 
 
@@ -154,7 +157,7 @@ namespace {
 Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
 {
     static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (L"Mounted-Filesystem-Usage"),
+            InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
     [] () -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -165,20 +168,20 @@ Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
         {
             Mapping<String, VariantValue> vv;
             if (not v.fFileSystemType.empty ()) {
-                vv.Add (L"Filesystem-Type", v.fFileSystemType);
+                vv.Add (String_Constant (L"Filesystem-Type"), v.fFileSystemType);
             }
             if (not v.fDeviceOrVolumeName.empty ()) {
-                vv.Add (L"Device-Name", v.fDeviceOrVolumeName);
+                vv.Add (String_Constant (L"Device-Name"), v.fDeviceOrVolumeName);
             }
             if (not v.fVolumeID.empty ()) {
-                vv.Add (L"Volume-ID", v.fVolumeID);
+                vv.Add (String_Constant (L"Volume-ID"), v.fVolumeID);
             }
-            vv.Add (L"Mounted-On", v.fMountedOnName);
+            vv.Add (String_Constant (L"Mounted-On"), v.fMountedOnName);
             if (v.fDiskSizeInBytes.IsPresent ()) {
-                vv.Add (L"Disk-Size", *v.fDiskSizeInBytes);
+                vv.Add (String_Constant (L"Disk-Size"), *v.fDiskSizeInBytes);
             }
             if (v.fUsedSizeInBytes.IsPresent ()) {
-                vv.Add (L"Disk-Used-Size", *v.fUsedSizeInBytes);
+                vv.Add (String_Constant (L"Disk-Used-Size"), *v.fUsedSizeInBytes);
             }
             volumnesAsVariants.Append (VariantValue (vv));
         }

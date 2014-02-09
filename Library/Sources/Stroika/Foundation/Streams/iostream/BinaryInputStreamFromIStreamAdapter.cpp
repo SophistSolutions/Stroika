@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include	"../../Characters/String_Constant.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
@@ -17,6 +18,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
+using	Characters::String_Constant;
 
 
 
@@ -49,7 +51,7 @@ protected:
 
         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
         if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-            Execution::DoThrow (Execution::StringException (L"Failed to read from istream"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to read from istream")));
         }
         return n;
     }

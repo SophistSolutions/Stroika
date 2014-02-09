@@ -371,7 +371,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 {
     // Should this throw if already has something bound - already non-null!???
     if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_) {
-        throw Execution::StringException (L"Cannot bind an already bound socket");
+        throw Execution::StringException (String_Constant (L"Cannot bind an already bound socket"));
     }
 
     addrinfo hints;

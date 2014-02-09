@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Characters/String_Constant.h"
+
 #include    "CommonMeasurementTypes.h"
 
 
@@ -13,8 +15,9 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
+using   Characters::String_Constant;
 
 
-const   MeasurementType SystemPerformance::kLoadAverage         =   MeasurementType (L"Load-Average");
-const   MeasurementType SystemPerformance::kPercentCPUUsage     =   MeasurementType (L"Percent-CPU");
-const   MeasurementType SystemPerformance::kMountedVolumeUsage  =   MeasurementType (L"Mounted-Volume-Usage");
+const   MeasurementType SystemPerformance::kLoadAverage         =   MeasurementType (String_Constant (L"Load-Average"));
+const   MeasurementType SystemPerformance::kPercentCPUUsage     =   MeasurementType (String_Constant (L"Percent-CPU"));
+const   MeasurementType SystemPerformance::kMountedVolumeUsage  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));

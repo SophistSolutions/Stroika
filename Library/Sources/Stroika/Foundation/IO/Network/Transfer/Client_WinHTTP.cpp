@@ -12,7 +12,7 @@
 
 #include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
-#include    "../../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "../../../Characters/String_Constant.h"
 #include    "../../../Containers/STL/Utilities.h"
 #include    "../../../Time/Date.h"
 #include    "../../../Time/DateTime.h"
@@ -223,7 +223,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
      * when called within HealthFrameWorks - for example.
      *
      */
-    String      userAgent = Concrete::String_Constant (L"Stroika/2.0");
+    String      userAgent = String_Constant (L"Stroika/2.0");
     Mapping<String, String>  useHeadersMap   =   request.fOverrideHeaders;
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP

@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 
 #include    "../CommonMeasurementTypes.h"
@@ -17,6 +18,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
+using   Characters::String_Constant;
 
 
 
@@ -29,7 +31,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 Instrument  SystemPerformance::Instruments::GetLoadAverage ()
 {
     static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (L"Load-Average"),
+            InstrumentNameType (String_Constant (L"Load-Average")),
     [] () -> MeasurementSet {
         MeasurementSet    results;
         double loadAve[3];
@@ -39,9 +41,9 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
         if (result == 3)
         {
             Mapping<String, VariantValue> v;
-            v.Add (L"1-minute", loadAve[0]);
-            v.Add (L"5-minute", loadAve[1]);
-            v.Add (L"15-minute", loadAve[2]);
+            v.Add (String_Constant (L"1-minute"), loadAve[0]);
+            v.Add (String_Constant (L"5-minute"), loadAve[1]);
+            v.Add (String_Constant (L"15-minute"), loadAve[2]);
             Measurement m;
             m.fValue = VariantValue (v);
             m.fType = kLoadAverage;

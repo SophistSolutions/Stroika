@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/String_Constant.h"
+
 #include    "WaitTimedOutException.h"
 
 
@@ -10,6 +12,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
+using   Characters::String_Constant;
 
 
 /*
@@ -18,7 +21,7 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 WaitTimedOutException::WaitTimedOutException ()
-    : StringException (L"WAIT timed out")
+    : StringException (String_Constant (L"WAIT timed out"))
 {
 }
 

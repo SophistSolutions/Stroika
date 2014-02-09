@@ -18,9 +18,9 @@
 
 #include    "RegularExpression.h"
 #include    "Concrete/String_BufferedArray.h"
-#include    "SDKString.h"
-
 #include    "Concrete/Private/String_BufferedStringRep.h"
+#include    "SDKString.h"
+#include    "String_Constant.h"
 
 #include    "String.h"
 
@@ -864,7 +864,11 @@ bool String::IsWhitespace () const
 
 String  String::LimitLength (size_t maxLen, bool keepLeft) const
 {
-    static  const String kELIPSIS_  = L"...";
+#if 1
+    static	const String kELIPSIS_  = String_Constant (L"\u2026");
+#else
+    static	const String kELIPSIS_  = String_Constant (L"...");
+#endif
     String  tmp =   Trim ();
     if (tmp.length () <= maxLen) {
         return tmp;

@@ -7,6 +7,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "../Linguistics/Words.h"
@@ -19,11 +20,10 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Time;
 
+using   Characters::String_Constant;
 using   Debug::TraceContextBumper;
 
 using   namespace   Time;
-
-
 
 
 
@@ -37,7 +37,7 @@ using   namespace   Time;
  ********************************************************************************
  */
 Duration::FormatException::FormatException ()
-    : StringException (L"Invalid Duration Format")
+    : StringException (String_Constant (L"Invalid Duration Format"))
 {
 }
 

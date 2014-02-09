@@ -25,7 +25,7 @@ namespace   {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
-            return Characters::CString::Format (L"File busy");
+            return L"File busy";
         }
         else {
             return Characters::CString::Format (L"File busy: '%.200s'", fileName.LimitLength (100, false).c_str ());

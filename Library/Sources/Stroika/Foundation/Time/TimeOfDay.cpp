@@ -12,6 +12,7 @@
 #endif
 
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/Concrete/String_BufferedArray.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
@@ -34,6 +35,7 @@ using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Time;
 
+using   Characters::String_Constant;
 using   Debug::TraceContextBumper;
 
 using   namespace   Time;
@@ -216,7 +218,7 @@ namespace   {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : StringException (L"Invalid Time Format")
+    : StringException (String_Constant (L"Invalid Time Format"))
 {
 }
 

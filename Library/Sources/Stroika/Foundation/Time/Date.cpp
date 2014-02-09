@@ -11,8 +11,8 @@
 #include    <atlbase.h>     // For CComBSTR
 #endif
 
-#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -206,7 +206,7 @@ namespace {
  ********************************************************************************
  */
 Date::FormatException::FormatException ()
-    : StringException (L"Invalid Date Format")
+    : StringException (String_Constant (L"Invalid Date Format"))
 {
 }
 
@@ -399,7 +399,7 @@ String Date::Format (PrintFormat pf) const
                  *  and map
                  *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
                  */
-                const   Characters::Concrete::String_Constant   kZero_  =   Characters::Concrete::String_Constant (L"0");
+                const   String_Constant   kZero_  =   String_Constant (L"0");
                 size_t i = 0;
                 while ( (i = tmp.Find (kZero_, i)) != wstring::npos) {
                     // any 0N (where n a digit) is replaced with a single '0'

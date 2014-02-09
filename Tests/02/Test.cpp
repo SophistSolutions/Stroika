@@ -1019,6 +1019,24 @@ namespace {
 
 
 
+
+
+
+
+
+
+namespace {
+    void    Test30_LimitLength_ ()
+    {
+        VerifyTestResult (String (L"12345").LimitLength (3) == L"12\u2026");
+        VerifyTestResult (String (L"12345").LimitLength (5) == L"12345");
+    }
+}
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1057,6 +1075,7 @@ namespace   {
         Test27_Repeat_ ();
         Test28_ReplacementForStripTrailingCharIfAny_ ();
         Test29_StringWithSequenceOfCharacter_ ();
+		Test30_LimitLength_ ();
     }
 }
 

@@ -7,6 +7,7 @@
 
 #include    "../Characters/Float2String.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/String2Float.h"
 #include    "../Characters/String2Int.h"
 #include    "../DataExchange/BadFormatException.h"
@@ -17,6 +18,8 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
+
+using   Characters::String_Constant;
 
 
 namespace {
@@ -275,7 +278,7 @@ bool    VariantValue::As () const
             }
         case    Type::eString: {
                 //return tmp != L"false";           // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
-                return As<String> () == L"true";   // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
+                return As<String> () == String_Constant (L"true");   // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
             }
         case    Type::eInteger: {
                 return As<IntegerType_> () != 0;
@@ -468,7 +471,7 @@ String  VariantValue::AsString_ () const
         case    Type::eBoolean: {
                 auto    v   =   dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal ? L"true" : L"false";
+                return v->fVal ? String_Constant (L"true") : String_Constant (L"false");
             }
         case    Type::eInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());

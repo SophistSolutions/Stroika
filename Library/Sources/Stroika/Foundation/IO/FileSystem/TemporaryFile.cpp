@@ -21,6 +21,7 @@
 #endif
 
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
@@ -151,7 +152,7 @@ AppTempFileManager::AppTempFileManager ()
     // But whatever we do, the DLL may do also, so we must use what is in the filesystem
     // to disambiguiate.
     //
-    tmpDir += L"HealthFrameWorks\\";
+    tmpDir += String_Constant (L"HealthFrameWorks\\");
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         String d   =   tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());

@@ -23,6 +23,10 @@ History
   <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20x</a><br/>2014-02-??</td>
 <td>
 <ul>
+	<li>Move String_Constant to its own file in Characters/String_Constant.h. Use of Characters::Concrete::String_Constant is deprecated.
+		Generally this is fixed by just changing #include of Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h to
+		String_Constant.h
+	</li>
 	<li>WaitableEvent changes:
 		<ul>
 			<li>WaitableEvent now requires a parameter indicating auto-reset or manual reset.</li>

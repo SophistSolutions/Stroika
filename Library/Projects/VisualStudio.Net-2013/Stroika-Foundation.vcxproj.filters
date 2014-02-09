@@ -1566,6 +1566,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

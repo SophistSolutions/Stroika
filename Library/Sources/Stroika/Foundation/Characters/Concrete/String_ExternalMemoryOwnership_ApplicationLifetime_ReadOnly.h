@@ -71,15 +71,7 @@ namespace   Stroika {
                 };
 
 
-                /**
-                 *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
-                 * with a minimum of cost.
-                 *
-                 *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly - so be
-                 *      sure arguments have application lifetime.
-                 *
-                 */
-                using       String_Constant     =    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
+                typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly _Deprecated_ (String_Constant, "Deprecated as of v2.0a20 - see Characters::String_Constant instead");
 
 
             }

@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "../Characters/String_Constant.h"
 
 #include    "InternetMediaType.h"
 
@@ -25,29 +25,29 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kOctetStream_CT                       (Concrete::String_Constant (L"application/octet-stream"))
+    : kOctetStream_CT                       (String_Constant (L"application/octet-stream"))
 
-    , kImage_CT                             (Concrete::String_Constant (L"image"))
-    , kImage_PNG_CT                         (Concrete::String_Constant (L"image/png"))
-    , kImage_GIF_CT                         (Concrete::String_Constant (L"image/gif"))
+    , kImage_CT                             (String_Constant (L"image"))
+    , kImage_PNG_CT                         (String_Constant (L"image/png"))
+    , kImage_GIF_CT                         (String_Constant (L"image/gif"))
 
-    , kText_CT                              (Concrete::String_Constant (L"text"))
-    , kText_HTML_CT                         (Concrete::String_Constant (L"text/html"))
-    , kText_XHTML_CT                        (Concrete::String_Constant (L"text/xhtml"))
-    , kText_PLAIN_CT                        (Concrete::String_Constant (L"text/plain"))
+    , kText_CT                              (String_Constant (L"text"))
+    , kText_HTML_CT                         (String_Constant (L"text/html"))
+    , kText_XHTML_CT                        (String_Constant (L"text/xhtml"))
+    , kText_PLAIN_CT                        (String_Constant (L"text/plain"))
 
-    , kJSON_CT                              (Concrete::String_Constant (L"application/json"))
+    , kJSON_CT                              (String_Constant (L"application/json"))
 
-    , kPDF_CT                               (Concrete::String_Constant (L"application/pdf"))
+    , kPDF_CT                               (String_Constant (L"application/pdf"))
 
     // very unclear what to use, no clear standard!
-    , kURL_CT                               (Concrete::String_Constant (L"application/x-url"))
+    , kURL_CT                               (String_Constant (L"application/x-url"))
 
-    , kXML_CT                               (Concrete::String_Constant (L"text/xml"))
+    , kXML_CT                               (String_Constant (L"text/xml"))
 
-    , kXSLT_CT                              (Concrete::String_Constant (L"application/x-xslt"))
-    , kJavaArchive_CT                       (Concrete::String_Constant (L"application/java-archive"))
-    , kApplication_RTF_CT                   (Concrete::String_Constant (L"application/rtf"))
+    , kXSLT_CT                              (String_Constant (L"application/x-xslt"))
+    , kJavaArchive_CT                       (String_Constant (L"application/java-archive"))
+    , kApplication_RTF_CT                   (String_Constant (L"application/rtf"))
 {
 }
 

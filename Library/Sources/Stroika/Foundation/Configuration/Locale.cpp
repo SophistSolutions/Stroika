@@ -8,6 +8,7 @@
 #include    "StroikaConfig.h"
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/StringException.h"
 
@@ -18,6 +19,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
 
 
+using   Characters::String_Constant;
 
 
 
@@ -63,7 +65,7 @@ vector<Characters::String>    Configuration::GetAvailableLocales ()
     // horrible!!!! - see TOOD
     vector<Characters::String>  result;
     result.reserve (10);
-    IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en", L"us")));
+    IgnoreExceptionsForCall (result.push_back (FindLocaleName (String_Constant (L"en"), String_Constant (L"us"))));
     return result;
 }
 
@@ -92,17 +94,17 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
     part1.insert (iso2LetterLanguageCode.ToLowerCase ());
     part1.insert (iso2LetterLanguageCode.ToUpperCase ());
     set<String> part2;
-    part2.insert (L"-");
-    part2.insert (L"_");
-    part2.insert (L".");
-    part2.insert (L" ");
+    part2.insert (String_Constant (L"-"));
+    part2.insert (String_Constant (L"_"));
+    part2.insert (String_Constant (L"."));
+    part2.insert (String_Constant (L" "));
     set<String> part3;
     part3.insert (iso2LetterTerritoryCode);
     part3.insert (iso2LetterTerritoryCode.ToLowerCase ());
     part3.insert (iso2LetterTerritoryCode.ToUpperCase ());
     set<String> part4;
-    part4.insert (L"");
-    part4.insert (L".utf8");
+    part4.insert (String_Constant (L""));
+    part4.insert (String_Constant (L".utf8"));
     for (String i1 : part1) {
         for (String i2 : part2) {
             for (String i3 : part3) {
@@ -112,7 +114,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
             }
         }
     }
-    Execution::DoThrow (Execution::StringException (L"Locale not found"));
+    Execution::DoThrow (Execution::StringException (String_Constant (L"Locale not found")));
 }
 
 

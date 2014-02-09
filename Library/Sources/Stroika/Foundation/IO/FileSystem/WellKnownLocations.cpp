@@ -10,6 +10,7 @@
 #include    <cstdlib>
 #endif
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Execution/Exceptions.h"
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
@@ -28,6 +29,7 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
 using   Characters::SDKChar;
+using   Characters::String_Constant;
 
 
 
@@ -49,7 +51,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     String result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = L"c:";    // shouldn't happen
+        result = String_Constant (L"c:");    // shouldn't happen
     }
     // assure ends in '\'
     if (result[result.size () - 1] != '\\') {
@@ -99,7 +101,7 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
     Ensure (not createIfNotPresent or Directory (String::FromSDKString (result)).Exists ());
     return String::FromSDKString (result);
 #elif   qPlatform_POSIX
-    return L"/var/lib/";
+    return String_Constant (L"/var/lib/");
 #else
     AssertNotImplemented ();
     return String ();
@@ -153,13 +155,13 @@ String FileSystem::WellKnownLocations::GetTemporary ()
 #if     qPlatform_Windows
     wchar_t   buf[1024];
     if (::GetTempPathW (NEltsOf (buf), buf) == 0) {
-        tempPath = L"c:\\Temp\\";
+        tempPath = String_Constant (L"c:\\Temp\\");
     }
     else {
         tempPath = buf;
     }
 #elif   qPlatform_POSIX
-    return String (L"/tmp/");
+    return String_Constant (L"/tmp/");
 #else
     AssertNotImplemented ();
 #endif

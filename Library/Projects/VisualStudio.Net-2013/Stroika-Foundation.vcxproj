@@ -696,6 +696,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />

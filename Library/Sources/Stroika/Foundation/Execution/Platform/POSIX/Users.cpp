@@ -5,6 +5,7 @@
 
 #include    <unistd.h>
 
+#include    "../../../Characters/String_Constant.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../ErrNoException.h"
 
@@ -16,7 +17,7 @@ using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Execution::Platform::POSIX;
 
 using   Characters::String;
-
+using   Characters::String_Constant;
 
 
 /*
@@ -40,7 +41,7 @@ uid_t   Platform::POSIX::UserName2UID (const String& name)
         errno_ErrorException::DoThrow (err);
     }
     if (result == nullptr) {
-        Execution::DoThrow (StringException (L"No such username"));
+        Execution::DoThrow (StringException (String_Constant (L"No such username")));
     }
     return pwd.pw_uid;
 }
@@ -68,7 +69,7 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid)
         errno_ErrorException::DoThrow (err);
     }
     if (result == nullptr) {
-        Execution::DoThrow (StringException (L"No such username"));
+        Execution::DoThrow (StringException (String_Constant (L"No such username")));
     }
     return String::FromSDKString (pwd.pw_name);
 }

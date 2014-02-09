@@ -3,8 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
 
@@ -17,7 +17,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 
 
-using   Characters::Concrete::String_Constant;
+using   Characters::String_Constant;
 
 
 

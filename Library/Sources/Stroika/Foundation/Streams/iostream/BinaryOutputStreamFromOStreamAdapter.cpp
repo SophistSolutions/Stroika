@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "BinaryOutputStreamFromOStreamAdapter.h"
@@ -16,7 +17,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
-
+using   Characters::String_Constant;
 
 
 
@@ -38,7 +39,7 @@ protected:
 
         fOriginalStream_.write (reinterpret_cast<const char*> (start), end - start);
         if (fOriginalStream_.fail ()) {
-            Execution::DoThrow (Execution::StringException (L"Failed to write from ostream"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to write from ostream")));
         }
     }
 
@@ -47,7 +48,7 @@ protected:
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         fOriginalStream_.flush ();
         if (fOriginalStream_.fail ()) {
-            Execution::DoThrow (Execution::StringException (L"Failed to flush ostream"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to flush ostream")));
         }
     }
 

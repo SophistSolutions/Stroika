@@ -6,6 +6,7 @@
 #include    "StroikaConfig.h"
 
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 
 #include    "Version.h"
 
@@ -14,6 +15,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Configuration;
 
+using   Characters::String_Constant;
 
 
 /*
@@ -43,22 +45,22 @@ Characters::String      Version::AsWin32Version4DotString () const
 
 Characters::String      Version::AsPrettyVersionString () const
 {
-    String  stageStr    =   L"?";
+    String  stageStr    =   String_Constant (L"?");
     switch (fVerStage) {
         case    VersionStage::Dev:
-            stageStr = L"d";
+            stageStr = String_Constant (L"d");
             break;
         case    VersionStage::Alpha:
-            stageStr = L"a";
+            stageStr = String_Constant (L"a");
             break;
         case    VersionStage::Beta:
-            stageStr = L"b";
+            stageStr = String_Constant (L"b");
             break;
         case    VersionStage::ReleaseCandidate:
-            stageStr = L"rc";
+            stageStr = String_Constant (L"rc");
             break;
         case    VersionStage::Release:
-            stageStr = fVerSubStage == 0 ? L"" : L".";
+            stageStr = fVerSubStage == 0 ? String () : String_Constant (L".");
             break;
     }
     String  verSubStagStr   =   L"";

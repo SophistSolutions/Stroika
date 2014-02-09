@@ -3,14 +3,17 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
+
 #include    "SerializationConfiguration.h"
+
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
-
+using   Characters::String_Constant;
 
 
 /*
@@ -19,7 +22,7 @@ using   namespace   Stroika::Foundation::DataExchange::XML;
  ********************************************************************************
  */
 SerializationConfiguration::SerializationConfiguration ()
-    : fDocumentElementName_ (L"Document")
-    , fArrayElementName_ (L"Array")
+    : fDocumentElementName_ (String_Constant (L"Document"))
+    , fArrayElementName_ (String_Constant (L"Array"))
 {
 }

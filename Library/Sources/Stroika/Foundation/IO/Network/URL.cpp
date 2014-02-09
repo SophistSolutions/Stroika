@@ -11,8 +11,8 @@
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
-#include    "../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Characters/String2Int.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/StringException.h"
@@ -33,7 +33,7 @@ using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
-using   Characters::Concrete::String_Constant;
+using   Characters::String_Constant;
 
 
 
@@ -146,7 +146,7 @@ namespace   {
 
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
-            String  matchStr        =   *protocol + L"://" + *host;
+            String  matchStr        =   *protocol + String_Constant (L"://") + *host;
             size_t  startOfPath     =   canonical.Find (matchStr);
             if (startOfPath == String::kBadIndex) {
                 matchStr        =   *protocol + L":";
@@ -306,8 +306,8 @@ URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortT
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
-    Require (not relPath.StartsWith (L"/"));
-    Require (not query.StartsWith (L"?"));
+    Require (not relPath.StartsWith (String_Constant (L"/")));
+    Require (not query.StartsWith (String_Constant (L"?")));
     ValidateScheme_ (fProtocol_);
 }
 
@@ -319,8 +319,8 @@ URL::URL (const SchemeType& protocol, const String& host, const String& relPath,
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
-    Require (not relPath.StartsWith (L"/"));
-    Require (not query.StartsWith (L"?"));
+    Require (not relPath.StartsWith (String_Constant (L"/")));
+    Require (not query.StartsWith (String_Constant (L"?")));
     ValidateScheme_ (fProtocol_);
 }
 
@@ -362,7 +362,7 @@ void    URL::SetProtocol (const SchemeType& protocol)
 bool    URL::IsSecure () const
 {
     // should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
-    return fProtocol_ == L"https" or fProtocol_ == L"ftps" or fProtocol_ == L"ldaps";
+    return fProtocol_ == String_Constant (L"https") or fProtocol_ == String_Constant (L"ftps") or fProtocol_ == String_Constant (L"ldaps");
 }
 
 String URL::GetFullURL () const

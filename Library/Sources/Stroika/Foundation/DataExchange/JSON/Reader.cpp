@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Characters/String2Float.h"
 #include    "../../Characters/String2Int.h"
 #include    "../../Streams/TextInputStreamBinaryAdapter.h"
@@ -15,6 +16,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
+using   Characters::String_Constant;
 
 
 
@@ -78,7 +80,7 @@ namespace   {
         if ('a' <= c and c <= 'a') {
             return (c - 'a') + 10;
         }
-        Execution::DoThrow (BadFormatException (L"JSON: bad hex digit after \\u"));
+        Execution::DoThrow (BadFormatException (String_Constant (L"JSON: bad hex digit after \\u")));
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
@@ -88,13 +90,13 @@ namespace   {
         Require (*i < end);
         wchar_t c   =   NextChar_ (i, end);
         if (c != '\"') {
-            Execution::DoThrow (BadFormatException (L"JSON: Expected quoted string"));
+            Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Expected quoted string")));
         }
         // accumulate chars, and check for close-quote
         wstring result;
         while (true) {
             if (IsAtEOF_ (i, end)) {
-                Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
+                Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
             }
             c = NextChar_ (i, end);
             if (c == '\"') {
@@ -103,7 +105,7 @@ namespace   {
             else if (c == '\\') {
                 // quoted character read...
                 if (IsAtEOF_ (i, end)) {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                 }
                 c = NextChar_ (i, end);
                 switch (c) {
@@ -127,7 +129,7 @@ namespace   {
                             wchar_t newC    =   '\0';
                             for (int n = 0; n < 4; ++n) {
                                 if (IsAtEOF_ (i, end)) {
-                                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for close quote)"));
+                                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for close quote)")));
                                 }
                                 newC += HexChar2Num_ (static_cast<char> (NextChar_ (i, end)));
                                 if (n != 3) {
@@ -179,7 +181,7 @@ namespace   {
         }
         // if got not valid characters, THATS not a valid # - so error
         if (tmp.empty ()) {
-            Execution::DoThrow (BadFormatException (L"JSON: no valid number found"));
+            Execution::DoThrow (BadFormatException (String_Constant (L"JSON: no valid number found")));
         }
         if (containsDot) {
             return VariantValue (Characters::String2Float<long double> (tmp));

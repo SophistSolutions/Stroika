@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/Tokenize.h"
 
 #include    "CommandLine.h"
@@ -14,7 +15,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-
+using   Characters::String_Constant;
 
 
 
@@ -25,7 +26,7 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : StringException (L"Invalid Command Argument")
+    : StringException (String_Constant (L"Invalid Command Argument"))
     , fMessage ()
     , fArgument ()
 {

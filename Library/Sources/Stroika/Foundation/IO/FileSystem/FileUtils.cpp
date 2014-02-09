@@ -21,6 +21,7 @@
 #endif
 
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Containers/Set.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
@@ -50,6 +51,8 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 using   namespace   Stroika::Foundation::Memory;
 
+
+using   Characters::String_Constant;
 
 #if     qPlatform_Windows
 using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
@@ -174,7 +177,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
 #elif   qPlatform_POSIX
         ////TODO: Somewhat PRIMITIVE - TMPHACK
         if (filePathName.empty ()) {
-            Execution::DoThrow (StringException (L"bad filename"));
+            Execution::DoThrow (StringException (String_Constant (L"bad filename")));
         }
         struct  stat    s;
         ThrowErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
@@ -510,8 +513,8 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
             SDKString fileName = (LPCTSTR) &fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 String fileName = String::FromSDKString ((LPCTSTR) &fd.cFileName);
-                const   String kDOT    =   L".";
-                const   String kDOTDOT =   L"..";
+                const   String kDOT    =   String_Constant (L".");
+                const   String kDOTDOT =   String_Constant (L"..");
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
                     resultSet += Containers::Set<String> (FindFiles (usePath + fileName, fileNameToMatch));
                 }
@@ -554,7 +557,7 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
             do {
                 String fileName = String::FromSDKString (fd.cFileName);
                 if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    if ((fileName != L".") and (fileName != L"..")) {
+                    if ((fileName != String_Constant (L".")) and (fileName != String_Constant (L".."))) {
                         DeleteAllFilesInDirectory (dir2Use + fileName + L"\\", ignoreErrors);
                         try {
                             ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).AsSDKString ().c_str ()));

@@ -18,8 +18,8 @@
 #include    "../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
-#include    "../../Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../Foundation/Characters/Format.h"
+#include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/SDKString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
@@ -49,6 +49,7 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
 using   Characters::SDKString;
+using   Characters::String_Constant;
 using   Execution::Logger;
 
 
@@ -206,7 +207,7 @@ void    Main::Run (const CommandArgs& args)
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (args.fMajorOperation.IsMissing ()) {
-        Execution::DoThrow (Execution::InvalidCommandLineArgument (L"No recognized operation"));
+        Execution::DoThrow (Execution::InvalidCommandLineArgument (String_Constant (L"No recognized operation")));
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
@@ -919,7 +920,7 @@ void    Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
 
     const DWORD   kServiceMgrAccessPrivs   =   SC_MANAGER_CREATE_SERVICE;
-    String  cmdLineForRunSvc = Characters::Concrete::String_Constant (L"\"") + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
+    String  cmdLineForRunSvc = Characters::String_Constant (L"\"") + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
