@@ -20,8 +20,6 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Add WaitForAllEvents() - VERY simple varinat  on WaitForAny...
- *
  *      @todo   Maybe change WaitForAny/WaitForAnyUntil to return a SET! That addresses one of the main issues reported in
  *              the below referenced compaints about starvation.
  *
@@ -161,6 +159,28 @@ namespace   Stroika {
                 static  WaitableEvent*  WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
                 template    <typename ITERATOR_OF_WAITABLE_EVENTS>
                 static  WaitableEvent*  WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+
+            public:
+                /**
+                 *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
+                 *
+                 *  \note   WaitForAll IS EXPERIMENTAL
+                 */
+                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+                static  void  WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+                static  void  WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
+                 *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
+                 *
+                 *  \note   WaitForAll IS EXPERIMENTAL
+                 */
+                template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+                static  void  WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+                static  void  WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 #endif
 
             public:

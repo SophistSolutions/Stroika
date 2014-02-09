@@ -119,6 +119,69 @@ namespace   Stroika {
                     }
                 }
             }
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+            inline  void    WaitableEvent::WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+            {
+                WaitForAllUntil (waitableEvents, timeout + Time::GetTickCount ());
+            }
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+            inline  void    WaitableEvent::WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+            {
+                WaitForAllUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
+            }
+            template    <typename CONTAINER_OF_WAITABLE_EVENTS>
+            inline  void    WaitableEvent::WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+            {
+                WaitForAllUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
+            }
+            template    <typename ITERATOR_OF_WAITABLE_EVENTS>
+            void    WaitableEvent::WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+            {
+                /*
+                 *  Create another WE as shared.
+                 *  Stick it onto the list for each waitablevent
+                 *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
+                 *  Either way - undo additions
+                 *
+                 *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
+                 */
+                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
+                Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
+                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        (*i)->fExtraWaitableEvents_.remove (we);
+                    }
+                });
+                {
+                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        (*i)->fExtraWaitableEvents_.push_front (we);
+                    }
+                }
+                while (true) {
+                    we->WaitUntil (timeoutAt);
+                    bool anyStillWaiting = false;
+                    for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                        WaitableEvent*  we2Test =   *i;
+                        if (not we2Test->fWE_.fTriggered) {
+                            anyStillWaiting = true;
+                        }
+                    }
+                    if (anyStillWaiting) {
+                        continue;
+                    }
+                    else {
+                        if (we2Test->fWE_.fResetType == eAutoReset) {
+                            for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                                WaitableEvent*  we2Test =   *i;
+                                Assert (we2Test->fWE_.fTriggered);  // we probably need some mechanism to assure this is true but we currently have no enforcement of this!
+                                we2Test->fWE_.Reset ();
+                            }
+                        }
+                        return; // success
+                    }
+                }
+            }
 #endif
 
 
