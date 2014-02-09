@@ -51,7 +51,7 @@ int main (int argc, const char* argv[])
             runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
         };
         Listener l (SocketAddress (Network::V4::kAddrAny, 8080), onConnect);
-        Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;

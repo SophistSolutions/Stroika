@@ -110,7 +110,8 @@ int main (int argc, const char* argv[])
         }
 
         if (listen or searchFor.IsPresent ()) {
-            Execution::WaitableEvent ().Wait ();    // wait forever - til user hits ctrl-c
+            using   Execution::WaitableEvent;
+            WaitableEvent (WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
         }
         else {
             cerr << "Specify -l to listen or -s STRING to search" << endl;

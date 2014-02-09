@@ -148,7 +148,7 @@ namespace {
             Logger::Log (Logger::Priority::eInfo, L"User-service code is started");
 #endif
             if (false) {
-                Execution::WaitableEvent forever;
+                Execution::WaitableEvent forever (Execution::WaitableEvent::eAutoReset);
                 forever.Wait ();            // until told to stop by abort exception
             }
             else {

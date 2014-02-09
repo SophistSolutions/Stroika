@@ -141,7 +141,7 @@ int main (int argc, const char* argv[])
             });
 
             // run til timeout and then fall out...
-            IgnoreExceptionsForCall (Execution::WaitableEvent ().Wait (runFor));
+            IgnoreExceptionsForCall (Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (runFor));
         }
         else {
             /*
