@@ -131,8 +131,8 @@ namespace   Stroika {
                 /**
                  * defaults to CWD at the time the ProcessRunner was created
                  */
-                nonvirtual  SDKString GetWorkingDirectory ();
-                nonvirtual  void    SetWorkingDirectory (const SDKString& d);
+                nonvirtual  SDKString   GetWorkingDirectory ();
+                nonvirtual  void        SetWorkingDirectory (const SDKString& d);
 
             public:
                 /**
