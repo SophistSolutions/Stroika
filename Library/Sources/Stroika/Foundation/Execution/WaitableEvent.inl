@@ -119,6 +119,9 @@ namespace   Stroika {
                     unsigned int cnt = 0;
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         if ((*i)->fWE_.fTriggered) {
+                            if ((*i)->fWE_.fResetType == eAutoReset) {
+                                (*i)->fWE_->Reset ();
+                            }
                             return cnt;
                         }
                         ++cnt;

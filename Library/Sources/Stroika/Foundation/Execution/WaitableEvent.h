@@ -61,7 +61,11 @@ namespace   Stroika {
                     eAutoReset,
                     eManualreset,
                 };
+
             public:
+                /**
+                 *
+                 */
                 WaitableEvent (ResetType resetType);
                 WaitableEvent (const WaitableEvent&) = delete;
 
@@ -76,7 +80,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Set the event to the signaled state
+                 *  Set the event to the signaled state.
+                 *
+                 *  \note   This COULD have been called 'Signal', or 'SetSignaled'.
                  */
                 nonvirtual  void    Set ();
 
@@ -85,13 +91,13 @@ namespace   Stroika {
                  *  Simple wait. Can use operator HANDLE() to do fancier waits.
                  *  timeout can be negative (which triggers an immediate exception).
                  *
-                 *  WaitTimedOutException throw when the timeout is exceeeded.
+                 *  WaitTimedOutException throws if the timeout is exceeeded.
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
-                 *  WaitTimedOutException throw when the timeout is exceeeded.
+                 *  WaitTimedOutException throws if the event is not signaled before timeoutAt is exceeeded.
                  */
                 nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
 
