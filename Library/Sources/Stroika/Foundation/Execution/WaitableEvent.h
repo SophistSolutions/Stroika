@@ -49,7 +49,20 @@ namespace   Stroika {
              */
             class   WaitableEvent {
             public:
-                WaitableEvent () = default;
+                /**
+                 *  eAutoReset is ALMOST worth being the default, and is very frequently the simplest thing to do.
+                 *  eManualReset is the simplest to understand. Wait only returns when the event is set, and the only thing that can set it
+                 *  is a call to Set().
+                 *
+                 *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
+                 *  a successful wait, the event is automatically 'Reset'.
+                 */
+                enum    ResetType {
+                    eAutoReset,
+                    eManualreset,
+                };
+            public:
+                WaitableEvent (ResetType resetType);
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
@@ -114,11 +127,13 @@ namespace   Stroika {
 
             private:
                 struct WE_ {
+                    ResetType                   fResetType;
                     mutex                       fMutex;
                     condition_variable          fConditionVariable;
                     bool                        fTriggered = false;
                     Time::DurationSecondsType   fThreadAbortCheckFrequency = 0.5;
 
+                    WE_ (ResetType resetType);
                     nonvirtual  void    Reset ();
                     nonvirtual  void    Set ();
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);

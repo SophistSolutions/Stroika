@@ -101,8 +101,8 @@ namespace   {
 
 
 namespace   {
-    Execution::WaitableEvent    sRegTest3Event_T1_;
-    Execution::WaitableEvent    sRegTest3Event_T2_;
+    WaitableEvent    sRegTest3Event_T1_ (WaitableEvent::eAutoReset);
+    WaitableEvent    sRegTest3Event_T2_ (WaitableEvent::eAutoReset);
     namespace   WAITABLE_EVENTS_ {
         void    NOTIMEOUTS_ ()
         {
@@ -611,8 +611,8 @@ namespace {
     void    RegressionTest12_WaitAny_ ()
     {
         // EXPERIMENTAL
-        WaitableEvent we1;
-        WaitableEvent we2;
+        WaitableEvent we1 (WaitableEvent::eAutoReset);
+        WaitableEvent we2 (WaitableEvent::eAutoReset);
         Thread t1 = [&we1] () {
             Execution::Sleep (1.0);
             we1.Set ();

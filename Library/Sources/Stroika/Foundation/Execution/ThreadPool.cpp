@@ -103,7 +103,7 @@ ThreadPool::ThreadPool (unsigned int nThreads)
     , fAborted_ (false)
     , fThreads_ ()
     , fTasks_ ()
-    , fTasksAdded_ ()
+    , fTasksAdded_ (WaitableEvent::eAutoReset)
 {
     SetPoolSize (nThreads);
 }

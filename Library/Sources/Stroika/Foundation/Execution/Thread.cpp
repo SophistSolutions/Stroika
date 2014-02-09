@@ -202,9 +202,9 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     , fStatusCriticalSection_ ()
 #endif
     , fStatus_ (Status::eNotYetRunning)
-    , fRefCountBumpedEvent_ ()
-    , fOK2StartEvent_ ()
-    , fThreadDone_ ()
+    , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
+    , fOK2StartEvent_ (WaitableEvent::eAutoReset)
+    , fThreadDone_ (WaitableEvent::eAutoReset)
     , fThreadName_ ()
 {
 #if     qPlatform_POSIX

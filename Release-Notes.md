@@ -23,6 +23,12 @@ History
   <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20x</a><br/>2014-02-??</td>
 <td>
 <ul>
+	<li>WaitableEvent changes:
+		<ul>
+			<li>WaitableEvent now requires a parameter indicating auto-reset or manual reset.</li>
+			<li>New experimental WaitableEvent::WaitForAny*</li>
+		</ul>
+	</li>
 	<li>new Function<> object - like std::function - but can be used for callbacks</li>
 	<li>String class - progress on - but mostly docs - on envelope thread safety</li>
 	<li>Sequence<T> no longer has TRAITS support - I decided it was simpler to just pass in equals comparer on

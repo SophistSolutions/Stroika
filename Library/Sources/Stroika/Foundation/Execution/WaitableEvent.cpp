@@ -110,7 +110,10 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
              */
         }
     }
-    fTriggered = false ;   // autoreset
+    if (fResetType == eAutoReset) {
+        // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
+        fTriggered = false ;   // autoreset
+    }
 }
 
 

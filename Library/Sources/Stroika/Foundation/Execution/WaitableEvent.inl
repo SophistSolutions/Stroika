@@ -27,6 +27,10 @@ namespace   Stroika {
              ********************** Execution::WaitableEvent::WE_ ***************************
              ********************************************************************************
              */
+            inline  WaitableEvent::WE_::WE_ (ResetType resetType)
+                : fResetType (resetType)
+            {
+            }
             inline  void    WaitableEvent::WE_::Reset ()
             {
                 std::lock_guard<mutex> lockGaurd (fMutex);
@@ -45,6 +49,10 @@ namespace   Stroika {
              *************************** Execution::WaitableEvent ***************************
              ********************************************************************************
              */
+            inline  WaitableEvent::WaitableEvent (ResetType resetType)
+                : fWE_ (resetType)
+            {
+            }
             inline  void    WaitableEvent::Reset ()
             {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
@@ -93,7 +101,7 @@ namespace   Stroika {
                  *
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
-                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ ());
+                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
                     lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {

@@ -23,13 +23,13 @@ namespace   Stroika {
              */
             template    <typename T>
             BlockingQueue<T>::BlockingQueue ()
-                : fDataAvailable_ ()
+                : fDataAvailable_ (WaitableEvent::eAutoReset)
                 , fQueue_ ()
             {
             }
             template    <typename T>
             BlockingQueue<T>::BlockingQueue (const Containers::Queue<T>& useQueue)
-                : fDataAvailable_ ()
+                : fDataAvailable_ (WaitableEvent::eAutoReset)
                 , fQueue_ (useQueue)
             {
                 Require (useQueue.empty ());
