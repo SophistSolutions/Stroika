@@ -112,7 +112,7 @@ namespace   Stroika {
                         WaitableEvent*  we2Test =   *i;
                         if (we2Test->fWE_.fTriggered) {
                             if (we2Test->fWE_.fResetType == eAutoReset) {
-                                we2Test->fWE_->Reset ();
+                                we2Test->fWE_.Reset ();
                             }
                             return we2Test;
                         }
