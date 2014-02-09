@@ -93,6 +93,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  */
                 template    <typename CONTAINER_OF_WAITABLE_EVENTS>
                 static  unsigned int    WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
