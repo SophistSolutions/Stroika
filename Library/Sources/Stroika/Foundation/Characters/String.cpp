@@ -229,6 +229,22 @@ String::String (const std::wstring& r)
 #endif
 }
 
+namespace {
+    wstring mkWS_ (const Traversal::Iterable<Character>& src)
+    {
+        wstring r;
+        for (auto i : src) {
+            r.push_back (i.As<wchar_t> ());
+        }
+        return r;
+    }
+}
+
+String::String (const Iterable<Character>& src)
+    : String (mkWS_ (src))      // @todo SLOPPY INEFFICIENT IMPLEMENTATION!
+{
+}
+
 String::String (const _SharedPtrIRep& rep)
     : inherited (rep)
 {

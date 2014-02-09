@@ -33,6 +33,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Concrete;
 
+using   Containers::Sequence;
 
 
 
@@ -90,7 +91,7 @@ namespace   {
                     VerifyTestResult ((big.GetLength () - 1) == i);
                     VerifyTestResult (big[i] == 'a');
                 }
-                big.SetLength (0);
+                big.clear ();
             }
 
             String  s1  =   L"test strings";
@@ -996,6 +997,28 @@ namespace {
 
 
 
+
+
+
+
+
+
+namespace {
+    void    Test29_StringWithSequenceOfCharacter_ ()
+    {
+        {
+            String  initialString   =   L"012345";
+            Sequence<Character> s1  =   Sequence<Character> (initialString);        // THIS NEEDS TO BE MORE SEEMLESS
+            s1.SetAt (3, 'E');
+            VerifyTestResult (String (s1) == L"012E45");
+        }
+    }
+}
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1033,6 +1056,7 @@ namespace   {
         Test26_Iteration_ ();
         Test27_Repeat_ ();
         Test28_ReplacementForStripTrailingCharIfAny_ ();
+        Test29_StringWithSequenceOfCharacter_ ();
     }
 }
 
