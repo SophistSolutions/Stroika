@@ -66,23 +66,24 @@ namespace   Stroika {
             {
                 fWE_.WaitUntil (timeoutAt);
             }
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
             template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-            inline  unsigned int    WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+            inline  WaitableEvent*  WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
             {
                 return WaitForAnyUntil (waitableEvents, timeout + Time::GetTickCount ());
             }
             template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-            inline  unsigned int    WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+            inline  WaitableEvent*  WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
             {
                 return WaitForAnyUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
             }
             template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-            inline  unsigned int    WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+            inline  WaitableEvent*  WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
             {
                 return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
             }
             template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-            unsigned int    WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+            WaitableEvent*  WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
             {
                 /*
                  *  Create another WE as shared.
@@ -107,18 +108,18 @@ namespace   Stroika {
                 }
                 while (true) {
                     we->WaitUntil (timeoutAt);
-                    unsigned int cnt = 0;
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                        if ((*i)->fWE_.fTriggered) {
-                            if ((*i)->fWE_.fResetType == eAutoReset) {
-                                (*i)->fWE_->Reset ();
+                        WaitableEvent*  we2Test =   *i;
+                        if (we2Test->fWE_.fTriggered) {
+                            if (we2Test->fWE_.fResetType == eAutoReset) {
+                                we2Test->fWE_->Reset ();
                             }
-                            return cnt;
+                            return we2Test;
                         }
-                        ++cnt;
                     }
                 }
             }
+#endif
 
 
         }

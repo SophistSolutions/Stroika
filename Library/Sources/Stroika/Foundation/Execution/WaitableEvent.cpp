@@ -127,14 +127,18 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
  ********************************** WaitableEvent *******************************
  ********************************************************************************
  */
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
 mutex   WaitableEvent::sExtraWaitableEventsMutex_;
+#endif
 
 void    WaitableEvent::Set ()
 {
     //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
     fWE_.Set ();
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
     lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
     for (auto i : fExtraWaitableEvents_) {
         i->Set ();
     }
+#endif
 }

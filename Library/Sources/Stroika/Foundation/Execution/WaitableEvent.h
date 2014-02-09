@@ -20,6 +20,11 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   Add WaitForAllEvents() - VERY simple varinat  on WaitForAny...
+ *
+ *      @todo   Maybe change WaitForAny/WaitForAnyUntil to return a SET! That addresses one of the main issues reported in
+ *              the below referenced compaints about starvation.
+ *
  *      @todo   Consider if there is a need for timed mutexes.
  *
  *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
@@ -35,17 +40,45 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /*
+             *  UNSURE IF/HOW LONG WE WANT TO SUPPORT THIS API. EXPERIMENTAL!
+             */
+#ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#define qExecution_WaitableEvent_SupportWaitForMultipleObjects      1
+#endif
+
+
             /**
-             *  AutoReset Waitable Event (like Windows' CreateEvent (false, false)).
-             *
-             *  Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm,
-             *  and simpler to assume always in unset state by default.
+             *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
              *              other similar classes are not.
              *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
+             *
+             *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
+             *
+             *      See also qExecution_WaitableEvent_SupportWaitForMultipleObjects
+             *
+             *      This appears to be an issue with strong arguments on both sides. I'm very uncertain.
+             *
+             *      I've used the Windows WaitForMutlipleObjects API for years, and feel pretty comfortable with it.
+             *      I find it handy.
+             *
+             *      However, there are compelling arguments (for example):
+             *          https://groups.google.com/forum/#!msg/comp.unix.programmer/q2x0yQR5txk/34v1qQZN_u0J
+             *          https://groups.google.com/forum/#!msg/comp.unix.programmer/WsgZZmu4ESA/Rv1MCun1CmUJ
+             *
+             *      which argue that its a bad idea, and that it leads to bad programming (bugs).
+             *
+             *      References:
+             *          o   Notes on implementing Windows WaitForMultipleEvents API using POSIX (which are similar to stdc++) APIs:
+             *              https://www.hackerzvoice.net/madchat/windoz/coding/winapi/waitfor_api.pdf
+             *
+             *          o   Interesting notes on how to implement WaitForMultipleEvents
+             *              http://lists.boost.org/Archives/boost/2004/12/77175.php
+             *
              */
             class   WaitableEvent {
             public:
@@ -101,23 +134,29 @@ namespace   Stroika {
                  */
                 nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
 
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
             public:
                 /**
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
+                 *
+                 *  \note   WaitForAny IS EXPERIMENTAL
                  */
                 template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-                static  unsigned int    WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+                static  WaitableEvent*  WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
                 template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-                static  unsigned int    WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+                static  WaitableEvent*  WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
+                 *
+                 *  \note   WaitForAny IS EXPERIMENTAL
                  */
                 template    <typename CONTAINER_OF_WAITABLE_EVENTS>
-                static  unsigned int    WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+                static  WaitableEvent*  WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
                 template    <typename ITERATOR_OF_WAITABLE_EVENTS>
-                static  unsigned int    WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+                static  WaitableEvent*  WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+#endif
 
             public:
                 /**
@@ -145,8 +184,10 @@ namespace   Stroika {
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
                 };
                 WE_                             fWE_;
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
                 static  mutex                   sExtraWaitableEventsMutex_;
                 forward_list<shared_ptr<WE_>>   fExtraWaitableEvents_;
+#endif
             };
 
 
