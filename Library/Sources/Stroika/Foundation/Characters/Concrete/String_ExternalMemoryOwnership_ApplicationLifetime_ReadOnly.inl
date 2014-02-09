@@ -20,6 +20,11 @@ namespace   Stroika {
                 ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly **********
                 ********************************************************************************
                 */
+                template    <int    SIZE>
+                inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t cString[SIZE])
+                    : String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (&cString[0], &cString[SIZE-1])
+                {
+                }
                 inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
                     : inherited (s)
                 {

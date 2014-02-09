@@ -57,8 +57,24 @@ namespace   Stroika {
                 private:
                     using   inherited   =   String;
 
+                private:
+                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* start, const wchar_t* end);
+
                 public:
-                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString);
+#if 1
+                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* c)
+                        : String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (c, c + wcslen (c))
+                    {
+                    }
+#endif
+
+                    /**
+                     *  The constructor requires an applicaiton lifetime NUL-terminated array of characters - such as one
+                     *  created with L"sample"
+                     */
+                    template    <int    SIZE>
+                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t cString[SIZE]);
+
                     String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
 
                     String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);

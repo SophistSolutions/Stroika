@@ -11,10 +11,7 @@
 
 
 /**
- * TODO:
- *
- *      @todo   Consider if there is some way - maybe in String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly - to
- *              assure the type of the string arg is constexpr wchar_t[]
+ *  \file
  */
 
 

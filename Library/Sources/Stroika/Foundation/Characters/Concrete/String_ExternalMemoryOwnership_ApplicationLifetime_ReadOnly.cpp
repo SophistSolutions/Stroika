@@ -104,9 +104,11 @@ public:
  ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly *********
  ********************************************************************************
  */
-String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-    : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
+String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* start, const wchar_t* end)
+    : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (start, end)))
 {
+    Require (*end == '\0');
+    Require (end == start + ::wcslen (start));  // require standards C-string
 }
 
 
