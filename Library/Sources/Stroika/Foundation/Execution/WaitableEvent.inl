@@ -58,15 +58,6 @@ namespace   Stroika {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
                 fWE_.Reset ();
             }
-            inline  void    WaitableEvent::Set ()
-            {
-                //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
-                fWE_.Set ();
-                lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
-                for (auto i : fExtraWaitableEvents_) {
-                    i->Set ();
-                }
-            }
             inline  void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
             {
                 fWE_.WaitUntil (timeout + Time::GetTickCount ());

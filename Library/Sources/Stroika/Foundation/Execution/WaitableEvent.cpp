@@ -128,3 +128,13 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
  ********************************************************************************
  */
 mutex   WaitableEvent::sExtraWaitableEventsMutex_;
+
+void    WaitableEvent::Set ()
+{
+    //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
+    fWE_.Set ();
+    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+    for (auto i : fExtraWaitableEvents_) {
+        i->Set ();
+    }
+}
