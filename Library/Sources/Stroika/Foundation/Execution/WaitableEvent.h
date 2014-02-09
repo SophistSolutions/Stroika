@@ -9,6 +9,7 @@
 #include    <condition_variable>
 #include    <forward_list>
 #include    <mutex>
+#include    <set>
 
 #include    "../Configuration/Common.h"
 
@@ -20,20 +21,19 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Maybe change WaitForAny/WaitForAnyUntil to return a SET! That addresses one of the main issues reported in
- *              the below referenced compaints about starvation.
- *
- *              The challenge is that I dont want to use STL set, but also dont want to create interdependncy with Containers
- *              and something this low level.
- *
- *              Maybe can use SET_TYPE template arg, and have it default to set<>?
  *
  *      @todo   Consider if there is a need for timed mutexes.
+ *              Reviewed 2014-02-09, and I'm pretty sure not needed.
  *
- *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
- *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html (which is already in README file for
- *              Foundation::Execution::ReadMe.md
+ *      @todo   SEE IF fThreadAbortCheckFrequency can be replaced with use of WaitForAny() – I THINK SO –
+ *              which is GOOD – cuz eliminates pointless wakeups portably…but probably require adding
+ *              NON-AUTO-RESET waitable events
  *
+ *      @todo   Consider doing an #if qPlatform_Windows implemeantion using Windows 'CreateEvent'. I had this in Stroika
+ *              circa 2013-06-01, and could just grab that implemenation (really pretty simple).
+ *
+ *              But unless there is a performance or other such issue, it maybe better to stick to a single portable
+ *              implementation.
  */
 
 
@@ -74,6 +74,19 @@ namespace   Stroika {
              *          https://groups.google.com/forum/#!msg/comp.unix.programmer/WsgZZmu4ESA/Rv1MCun1CmUJ
              *
              *      which argue that its a bad idea, and that it leads to bad programming (bugs).
+             *
+             *      To some extent I we may have addressed the reported concerns by having WaitForAny/WaitForAnyUnitl
+             *      return the full set of events that were signaled (and the issue about races I dont think applies
+             *      to WaitForAll).
+             *
+             *      Note also that some recommend using the BlockingQueue<> pattern to avoid WaitForMultipleObjects (WaitForAny)
+             *      such as:
+             *              http://stackoverflow.com/questions/788835/waitformultipleobjects-in-java
+             *      Stroika supports this sort of BlockingQueue<>
+             *
+             *      Note - WaitForAny() takes a templated SET because I dont want to create interdependncy
+             *      with Containers and something this low level, and yet we want to make it easy for users of this
+             *      to use Stroika Set<> objects.
              *
              *      References:
              *          o   Notes on implementing Windows WaitForMultipleEvents API using POSIX (which are similar to stdc++) APIs:

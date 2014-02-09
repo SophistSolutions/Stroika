@@ -624,7 +624,7 @@ namespace {
         Time::DurationSecondsType   startAt = Time::GetTickCount ();
         t1.Start ();
         t2.Start ();
-        VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == 1);        // match second one
+        VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2}));
         Time::DurationSecondsType   timeTaken = Time::GetTickCount () - startAt;
         VerifyTestResult (timeTaken < 0.5);     // make sure we didnt wait for the 1.0 second on first thread
         // They capture so must wait for them to complete
