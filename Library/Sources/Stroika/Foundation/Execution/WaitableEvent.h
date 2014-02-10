@@ -108,7 +108,7 @@ namespace   Stroika {
                  */
                 enum    ResetType {
                     eAutoReset,
-                    eManualreset,
+                    eManualReset,
                 };
 
             public:
