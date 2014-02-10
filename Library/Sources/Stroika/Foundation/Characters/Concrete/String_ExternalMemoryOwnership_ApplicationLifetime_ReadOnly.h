@@ -15,6 +15,9 @@
  * TODO:
  *      @todo   Consider if param to String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly should use
  *              constexpr? Would that add to safety?
+ *
+ *      @todo   Consider adding platform-specific code to detect if the argument is in fact read-only memory
+ *              or stack memory, with debug asserts - as a debugging aid to help prevent accidental mis-use.
  */
 
 
