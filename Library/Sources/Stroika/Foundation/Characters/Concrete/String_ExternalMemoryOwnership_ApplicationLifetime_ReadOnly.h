@@ -13,8 +13,8 @@
  *  \file
  *
  * TODO:
- *      @todo
- *
+ *      @todo   Consider if param to String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly should use
+ *              constexpr? Would that add to safety?
  */
 
 
@@ -57,27 +57,21 @@ namespace   Stroika {
                 private:
                     using   inherited   =   String;
 
-                private:
-                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* start, const wchar_t* end);
-
                 public:
-#if 0
-                    explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* c)
-                        : String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (c, c + wcslen (c))
-                    {
-                    }
-#endif
-
                     /**
-                     *  The constructor requires an applicaiton lifetime NUL-terminated array of characters - such as one
-                     *  created with L"sample"
+                     *  The constructor requires an application lifetime NUL-terminated array of characters - such as one
+                     *  created with L"sample".
+                     *
+                     *      \req SIZE >= 1
+                     *      \req cString[SIZE-1] == '\0'
                      */
                     template    <size_t SIZE>
                     explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t (&cString)[SIZE]);
+                    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* start, const wchar_t* end);
+                    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& src) = default;
 
-                    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
-
-                    String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
+                public:
+                    nonvirtual  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
