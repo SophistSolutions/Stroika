@@ -20,7 +20,7 @@ History
 
 <tr>
 <td>
-  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20x</a><br/>2014-02-??</td>
+  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a20">v2.0a20</a><br/>2014-02-09</td>
 <td>
 <ul>
 	<li>Move String_Constant to its own file in Characters/String_Constant.h. Use of Characters::Concrete::String_Constant is deprecated.
