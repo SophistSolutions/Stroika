@@ -82,6 +82,10 @@
  *              Or maybe better - just change code that uses TSTring version of APIs to use W version of APIS!!!
  *              I THINK THAT IS BEST!
  *
+ *      @todo   Add PadLeft/PadRight or FillLeft/FilLRight() - not sure which name is better. But idea is to
+ *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
+ *              the given arg char repeated on teh left or right.
+ *
  *      @todo   Add FromISOLatin1()
  *
  *      @todo   Performance optimize FromUTF8, and AsUtf8() functions to not go through intermediate string
@@ -418,7 +422,7 @@ namespace   Stroika {
                  *  INSTEAD I THINK WE CAN JUST LOSE THIS API
                  *
                  */
-                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20");
+                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20 - consider using erase() to shorten");
 
             public:
                 /**

@@ -274,9 +274,7 @@ namespace   {
         VerifyTestResult (t2 != String (L"Fred Flintstone"));
 
         VerifyTestResult (t1.GetLength () == 15);
-        t1.SetLength (20);
-        VerifyTestResult (t1.GetLength () == 20);
-        t1.SetLength (4);
+        t1.erase (4);
         VerifyTestResult (t1.GetLength () == 4);
         VerifyTestResult (t1 == L"Fred");
 
@@ -326,8 +324,8 @@ namespace   {
         VerifyTestResult (t5.Find (L"STONE", CompareOptions::eCaseInsensitive) == 5);
         VerifyTestResult (t5.Contains (L"SToNE", CompareOptions::eCaseInsensitive));
 
-        t1.SetLength (20);
-        t1.SetLength (4);
+        t1.erase (4);
+        VerifyTestResult (t1.length () == 4);
 
         t5 = t1;
         t5.SetCharAt ('f', 0);
@@ -465,11 +463,12 @@ namespace   {
     {
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
-        String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
+        String s    =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"fred");
         VerifyTestResult (s[0] == 'f');
-        s.SetLength (3);
+        s.erase (3);
         VerifyTestResult (s[0] == 'f');
         VerifyTestResult (s.GetLength () == 3);
+        VerifyTestResult (s == L"fre");
         s += L"x";
         VerifyTestResult (s.GetLength () == 4);
         VerifyTestResult (s[3] == 'x');
@@ -491,7 +490,7 @@ namespace   {
     {
         String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
         VerifyTestResult (s[0] == 'f');
-        s.SetLength (3);
+        s.erase (3);
         VerifyTestResult (s[0] == 'f');
         VerifyTestResult (s.GetLength () == 3);
         s += L"x";
@@ -590,7 +589,7 @@ namespace   {
         {
             String_ExternalMemoryOwnership_StackLifetime_ReadOnly s (buf);
             VerifyTestResult (s[0] == 'f');
-            s.SetLength (3);
+            s.erase (3);
             VerifyTestResult (s[0] == 'f');
             VerifyTestResult (s.GetLength () == 3);
             s += L"x";
@@ -605,7 +604,7 @@ namespace   {
         {
             String_ExternalMemoryOwnership_StackLifetime_ReadWrite s (buf);
             VerifyTestResult (s[0] == 'f');
-            s.SetLength (3);
+            s.erase (3);
             VerifyTestResult (s[0] == 'f');
             VerifyTestResult (s.GetLength () == 3);
             s += L"x";
