@@ -437,8 +437,20 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Character   operator[] (size_t i) const;
+                nonvirtual  const Character   GetCharAt (size_t i) const;
+
+            public:
+                /**
+                 */
                 nonvirtual  void        SetCharAt (Character c, size_t i);
+
+            public:
+                /**
+                 *  \brief return (read-only) Character object
+                 *
+                 *  Alias for GetCharAt (size_t i) const;
+                 */
+                nonvirtual  const Character   operator[] (size_t i) const;
 
             public:
                 /**

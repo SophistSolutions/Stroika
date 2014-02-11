@@ -162,19 +162,25 @@ namespace   Stroika {
             {
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
-                return (*this);
+                return *this;
             }
             inline  String& String::operator+= (const String& appendage)
             {
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
-                return (*this);
+                return *this;
             }
-            inline  Character   String::operator[] (size_t i) const
+            inline  const Character   String::GetCharAt (size_t i) const
             {
                 Require (i >= 0);
                 Require (i < GetLength ());
                 return (_GetRep ().GetAt (i));
+            }
+            inline  const Character   String::operator[] (size_t i) const
+            {
+                Require (i >= 0);
+                Require (i < GetLength ());
+                return GetCharAt (i);
             }
             template    <typename   T>
             T   String::As () const

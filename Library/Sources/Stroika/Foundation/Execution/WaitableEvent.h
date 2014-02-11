@@ -45,6 +45,7 @@ namespace   Stroika {
 
             /*
              *  UNSURE IF/HOW LONG WE WANT TO SUPPORT THIS API. EXPERIMENTAL!
+             *  (introduced in Stroika 2.0a20 - 2014-02-08)
              */
 #ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
 #define qExecution_WaitableEvent_SupportWaitForMultipleObjects      1
