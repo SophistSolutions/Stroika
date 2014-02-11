@@ -1015,14 +1015,13 @@ namespace   Stroika {
             };
 
 
-
             /*
              *  Return the concatenation of these two strings.
              *
              *  EXPERIMENTAL AS OF 2014-02-11 - unsure how this works with namespace imports (requires using Foundation::Characters) and not totally
              *  clear how overloading interacts with String::operator+ .. so fiddle a bit and see..
              *
-             *  But adnvantage of this CAN eb that L"x" + String () works, and doesnt work with member operator+.
+             *  But advantage of this CAN be that L"x" + String () works, and doesnt work with member operator+.
              *      -- LGP 2014-02-11
              */
             String  operator+ (const wchar_t* lhs, const String& rhs);
