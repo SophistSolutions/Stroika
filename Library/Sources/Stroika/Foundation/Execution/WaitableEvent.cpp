@@ -129,7 +129,9 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
  */
 void    WaitableEvent::Set ()
 {
-    //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
+#endif
     fWE_.Set ();
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
     lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
