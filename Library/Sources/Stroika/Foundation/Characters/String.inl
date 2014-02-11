@@ -201,6 +201,11 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
+            inline  String::operator T () const
+            {
+                return As<T> ();
+            }
+            template    <typename   T>
             T   String::AsUTF8 () const
             {
 #if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy

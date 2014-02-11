@@ -769,6 +769,17 @@ namespace   Stroika {
                 nonvirtual  void    As (T* into) const;
 
             public:
+                /*
+                 *  explicit operator T () provides an alterntive syntax to As<> - depending on user
+                 *  preference or context. Note - its important that this is explicit - to avoid
+                 *  creating overload problems
+                 *
+                 *      EXPERIMENTAL AS OF 2014-02-11
+                 */
+                template    <typename   T>
+                nonvirtual  explicit operator T () const;
+
+            public:
                 /**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * Note - template param is optional.
