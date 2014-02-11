@@ -14,6 +14,24 @@
 #include    "ModuleInit.h"
 
 
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
+            namespace Private_ {
+                struct  WaitableEvent_ModuleInit_ {
+                    mutex     fExtraWaitableEventsMutex_;
+                };
+            }
+        }
+    }
+}
+namespace   {
+    extern  Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::WaitableEvent_ModuleInit_>   _Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+}
+#endif
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -21,20 +39,6 @@ namespace   Stroika {
 
             //redeclare to avoid having to #include Thread.h
             void    CheckForThreadAborting ();
-
-
-            /*
-            ********************************************************************************
-            ***************** Private::WaitableEvent_ModuleInit_ ***************************
-            ********************************************************************************
-            */
-#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-            namespace Private_ {
-                struct  WaitableEvent_ModuleInit_ {
-                    mutex     fExtraWaitableEventsMutex_;
-                };
-            }
-#endif
 
 
             /*
