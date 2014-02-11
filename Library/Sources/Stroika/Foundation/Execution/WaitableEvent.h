@@ -224,7 +224,6 @@ namespace   Stroika {
                 };
                 WE_                             fWE_;
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-                static  mutex                   sExtraWaitableEventsMutex_;
                 forward_list<shared_ptr<WE_>>   fExtraWaitableEvents_;
 #endif
             };
