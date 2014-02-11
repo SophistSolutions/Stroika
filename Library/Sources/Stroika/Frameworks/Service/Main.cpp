@@ -573,7 +573,7 @@ void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType 
 
 pid_t   Main::RunTilIdleService::_GetServicePID () const
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (L"GetServicePID"));
+    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant (L"GetServicePID")));
 }
 
 
@@ -646,18 +646,18 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 
 void    Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (L"Install"));
+    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant (L"Install")));
 }
 
 void    Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
+    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant (L"UnInstall")));
 }
 
 void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
 {
     if (_IsServiceActuallyRunning ()) {
-        Execution::DoThrow (Execution::StringException (L"Service Already Running"));
+        Execution::DoThrow (Execution::StringException (String_Constant (L"Service Already Running")));
     }
 
     // VERY WEAK IMPL
@@ -704,7 +704,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID ()  != 0) {
-        Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
+        Execution::DoThrow (Execution::StringException (String_Constant (L"Cannot Start service because its already running")));
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String (L"--") + String (CommandNames::kRunAsService))}));
@@ -770,7 +770,7 @@ void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
 
 String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetTemporary () + fAppRep_->GetServiceDescription ().fRegistrationName + L".pid";
+    return IO::FileSystem::WellKnownLocations::GetTemporary () + fAppRep_->GetServiceDescription ().fRegistrationName + String_Constant (L".pid");
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
@@ -920,7 +920,7 @@ void    Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
 
     const DWORD   kServiceMgrAccessPrivs   =   SC_MANAGER_CREATE_SERVICE;
-    String  cmdLineForRunSvc = Characters::String_Constant (L"\"") + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
+    String  cmdLineForRunSvc = Characters::String_Constant (L"\"") + Execution::GetEXEPath () + String_Constant (L"\" --") + CommandNames::kRunAsService;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {

@@ -77,10 +77,10 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
             for (auto a : advertisements) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 String msg;
-                msg += L"alive,";
-                msg += String (L"location=") + a.fLocation + L", ";
-                msg += String (L"ST=") + a.fST + L", ";
-                msg += String (L"USN=") + a.fUSN;
+                msg += String_Constant (L"alive,");
+                msg += String_Constant (L"location=") + a.fLocation + String_Constant (L", ");
+                msg += String_Constant (L"ST=") + a.fST + String_Constant (L", ");
+                msg += String_Constant (L"USN=") + a.fUSN;
                 DbgTrace (L"(%s)", msg.c_str ());
 #endif
             }

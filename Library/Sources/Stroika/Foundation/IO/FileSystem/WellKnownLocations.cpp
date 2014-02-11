@@ -55,7 +55,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     }
     // assure ends in '\'
     if (result[result.size () - 1] != '\\') {
-        result += L"\\";
+        result += String_Constant (L"\\");
     }
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or Directory (result).Exists ());
@@ -129,7 +129,7 @@ String FileSystem::WellKnownLocations::GetWinSxS ()
     if (result.empty ()) {
         return result;
     }
-    result = AssureDirectoryPathSlashTerminated (result) + L"WinSxS";
+    result = AssureDirectoryPathSlashTerminated (result) + String_Constant (L"WinSxS");
     result = AssureDirectoryPathSlashTerminated (result);
     if (not Directory (result).Exists ()) {
         result.clear ();

@@ -17,6 +17,7 @@
 #include    <sys/ioctl.h>
 #endif
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/Sleep.h"
 #include    "../../Execution/Thread.h"
@@ -32,6 +33,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
@@ -117,7 +119,7 @@ namespace   {
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
                 int r = ::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags);
                 if (r < 0) {
-                    Execution::DoThrow (StringException (L"fix error"));
+                    Execution::DoThrow (StringException (String_Constant (L"fix error")));
                 }
                 return size_t (r);// rough attempt...
 #elif   qPlatform_POSIX

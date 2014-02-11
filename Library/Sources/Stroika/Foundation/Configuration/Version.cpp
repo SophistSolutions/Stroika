@@ -63,12 +63,12 @@ Characters::String      Version::AsPrettyVersionString () const
             stageStr = fVerSubStage == 0 ? String () : String_Constant (L".");
             break;
     }
-    String  verSubStagStr   =   L"";
+    String  verSubStagStr;
     if (fVerSubStage != 0) {
         verSubStagStr = Characters::Format (L"%d", fVerSubStage);
     }
     if (not fFinalBuild) {
-        verSubStagStr += L"x";
+        verSubStagStr +=  String_Constant (L"x");
     }
     return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
 }

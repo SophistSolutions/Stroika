@@ -188,7 +188,7 @@ namespace   {
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            return Characters::String (tmp).LTrim ().StartsWith (L"-") ?
+            return Characters::String (tmp).LTrim ().StartsWith (String_Constant (L"-")) ?
                    VariantValue (Characters::String2Int<long long int> (tmp)) :
                    VariantValue (Characters::String2Int<unsigned long long int> (tmp))
                    ;
@@ -202,7 +202,7 @@ namespace   {
         map<wstring, VariantValue>   result;
 
         if (NextChar_ (i, end) != '{') {
-            Execution::DoThrow (BadFormatException (L"JSON: Expected '{'"));
+            Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Expected '{'")));
         }
         // accumulate elements, and check for close-array
         enum LookingFor { eName, eValue, eColon, eComma };
@@ -211,7 +211,7 @@ namespace   {
         wstring curName;
         while (true) {
             if (IsAtEOF_ (i, end)) {
-                Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for '}')"));
+                Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for '}')")));
             }
             if (**i == '}') {
                 if (lf == eName or lf == eComma) {
@@ -219,7 +219,7 @@ namespace   {
                     return VariantValue (result);
                 }
                 else {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected '}' reading object"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected '}' reading object")));
                 }
             }
             else if (iswspace (**i)) {
@@ -231,7 +231,7 @@ namespace   {
                     lf = eName;             // next elt
                 }
                 else {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected ',' reading object"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected ',' reading object")));
                 }
             }
             else if (**i == ':') {
@@ -240,7 +240,7 @@ namespace   {
                     lf = eValue;            // next elt
                 }
                 else {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected ':' reading object"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected ':' reading object")));
                 }
             }
             else {
@@ -255,7 +255,7 @@ namespace   {
                     lf = eComma;
                 }
                 else {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected character looking for colon or comma reading object"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected character looking for colon or comma reading object")));
                 }
             }
         }
@@ -268,13 +268,13 @@ namespace   {
         vector<VariantValue>    result;
 
         if (NextChar_ (i, end) != '[') {
-            Execution::DoThrow (BadFormatException (L"JSON: Expected '['"));
+            Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Expected '['")));
         }
         // accumulate elements, and check for close-array
         bool    lookingForElt   =   true;
         while (true) {
             if (IsAtEOF_ (i, end)) {
-                Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF reading string (looking for ']')"));
+                Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF reading string (looking for ']')")));
             }
             if (**i == ']') {
                 if (lookingForElt) {
@@ -285,7 +285,7 @@ namespace   {
             }
             else if (**i == ',') {
                 if (lookingForElt) {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected second ',' in reading array"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected second ',' in reading array")));
                 }
                 else {
                     lookingForElt = true;
@@ -303,7 +303,7 @@ namespace   {
                     lookingForElt = false;
                 }
                 else {
-                    Execution::DoThrow (BadFormatException (L"JSON: Unexpected character (missing ',' ?) in reading array"));
+                    Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected character (missing ',' ?) in reading array")));
                 }
             }
         }
@@ -349,7 +349,7 @@ namespace   {
                 }
                 break;
         }
-        Execution::DoThrow (BadFormatException (L"JSON: Unrecognized token"));
+        Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unrecognized token")));
     }
 
     VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end)
@@ -395,14 +395,14 @@ namespace   {
                             // ignore
                         }
                         else {
-                            Execution::DoThrow (BadFormatException (L"JSON: Unexpected character looking for start of value"));
+                            Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected character looking for start of value")));
                         }
                     }
             }
 
         }
         // if we get here - nothing found
-        Execution::DoThrow (BadFormatException (L"JSON: Unexpected EOF looking for value"));
+        Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Unexpected EOF looking for value")));
     }
 }
 

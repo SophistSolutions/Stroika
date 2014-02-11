@@ -4,6 +4,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../../Foundation/Characters/Format.h"
+#include    "../../../../Foundation/Characters/String_Constant.h"
 #include    "../../../../Foundation/Containers/Sequence.h"
 #include    "../../../../Foundation/Debug/Trace.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
@@ -55,7 +56,7 @@ public:
             dan.fLocation = d.fLocation.GetFullURL ();
             dan.fServer = d.fServer;
             {
-                dan.fST = L"upnp:rootdevice";
+                dan.fST = String_Constant (L"upnp:rootdevice");
                 dan.fUSN = Format (L"uuid:%s::upnp:rootdevice", d.fDeviceID.c_str ());
                 fAdvertisements.Append (dan);
             }

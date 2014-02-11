@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "TextInputStreamFromIStreamAdapter.h"
@@ -11,6 +12,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
@@ -41,7 +43,7 @@ protected:
 
         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
         if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-            Execution::DoThrow (Execution::StringException (L"Failed to read from wistream"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to read from wistream")));
         }
         return n;
     }

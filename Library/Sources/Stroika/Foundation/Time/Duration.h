@@ -165,28 +165,28 @@ namespace   Stroika {
             public:
                 struct  PrettyPrintInfo {
                     struct  Labels {
-                        wstring fYear;
-                        wstring fYears;
-                        wstring fMonth;
-                        wstring fMonths;
-                        wstring fDay;
-                        wstring fDays;
-                        wstring fHour;
-                        wstring fHours;
-                        wstring fMinute;
-                        wstring fMinutes;
-                        wstring fSecond;
-                        wstring fSeconds;
-                        wstring fMilliSecond;
-                        wstring fMilliSeconds;
-                        wstring fMicroSecond;
-                        wstring fMicroSeconds;
-                        wstring fNanoSecond;
-                        wstring fNanoSeconds;
+                        Characters::String fYear;
+                        Characters::String fYears;
+                        Characters::String fMonth;
+                        Characters::String fMonths;
+                        Characters::String fDay;
+                        Characters::String fDays;
+                        Characters::String fHour;
+                        Characters::String fHours;
+                        Characters::String fMinute;
+                        Characters::String fMinutes;
+                        Characters::String fSecond;
+                        Characters::String fSeconds;
+                        Characters::String fMilliSecond;
+                        Characters::String fMilliSeconds;
+                        Characters::String fMicroSecond;
+                        Characters::String fMicroSeconds;
+                        Characters::String fNanoSecond;
+                        Characters::String fNanoSeconds;
                     }   fLabels;
                 };
                 static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
-                nonvirtual  wstring PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+                nonvirtual  Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
                 /**

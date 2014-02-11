@@ -68,10 +68,12 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation::Execution;
             using   namespace   Stroika::Foundation::Memory;
 
+            using   Characters::String;
+
 
             class   Exception : public StringException {
             public:
-                Exception (const wstring& message);
+                Exception (const String& message);
             };
             class   NoDataException : public Exception {
             public:

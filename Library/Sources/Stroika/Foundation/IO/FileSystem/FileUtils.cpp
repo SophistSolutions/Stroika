@@ -551,14 +551,14 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
 
     WIN32_FIND_DATA fd;
     (void)::memset (&fd, 0, sizeof (fd));
-    HANDLE          hFind = ::FindFirstFile ((dir2Use + L"*").AsSDKString ().c_str (), &fd);
+    HANDLE          hFind = ::FindFirstFile ((dir2Use + String_Constant (L"*")).AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
                 String fileName = String::FromSDKString (fd.cFileName);
                 if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                     if ((fileName != String_Constant (L".")) and (fileName != String_Constant (L".."))) {
-                        DeleteAllFilesInDirectory (dir2Use + fileName + L"\\", ignoreErrors);
+                        DeleteAllFilesInDirectory (dir2Use + fileName + String_Constant (L"\\"), ignoreErrors);
                         try {
                             ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).AsSDKString ().c_str ()));
                         }

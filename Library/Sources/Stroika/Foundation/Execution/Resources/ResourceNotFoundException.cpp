@@ -3,11 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
+
 #include    "ResourceNotFoundException.h"
 
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Execution;
 
 
@@ -20,6 +23,6 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 ResourceNotFoundException::ResourceNotFoundException ()
-    : StringException (L"Resource Not Found")
+    : StringException (String_Constant (L"Resource Not Found"))
 {
 }

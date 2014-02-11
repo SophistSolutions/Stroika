@@ -421,7 +421,7 @@ String DateTime::Format (PrintFormat pf) const
                 if (not timeStr.empty ()) {
                     r += Characters::String_Constant (L"T") + timeStr;
                     if (GetTimezone () == Timezone::eUTC) {
-                        r += L"Z";
+                        r += String_Constant (L"Z");
                     }
                     else {
                         time_t  tzBias      =   -GetLocaltimeToGMTOffset (IsDaylightSavingsTime (*this));

@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "../../Streams/TextOutputStreamBinaryAdapter.h"
 
@@ -26,7 +27,7 @@ namespace   {
     void    Indent_ (const TextOutputStream& out, int indentLevel)
     {
         for (int i = 0; i < indentLevel; ++i) {
-            out.Write (L"    ");
+            out.Write (String_Constant (L"    "));
         }
     }
 }
@@ -35,10 +36,10 @@ namespace   {
     void    PrettyPrint_ (bool v, const TextOutputStream& out)
     {
         if (v) {
-            out.Write (L"true");
+            out.Write (String_Constant (L"true"));
         }
         else {
-            out.Write (L"false");
+            out.Write (String_Constant (L"false"));
         }
     }
     void    PrettyPrint_ (long long int v, const TextOutputStream& out)

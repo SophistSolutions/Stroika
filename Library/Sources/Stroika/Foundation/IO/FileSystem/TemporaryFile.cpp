@@ -196,7 +196,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 
     SDKString::size_type  suffixStart = fn.rfind ('.');
     if (suffixStart == SDKString::npos) {
-        fn += L".txt";
+        fn += String_Constant (L".txt");
         suffixStart = fn.rfind ('.');
     }
     int attempts = 0;
@@ -236,7 +236,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             return s;
         }
     }
-    Execution::DoThrow (StringException (L"Unknown error creating temporary file"), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::DoThrow (StringException (String_Constant (L"Unknown error creating temporary file")), "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
 
 

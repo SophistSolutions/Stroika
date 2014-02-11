@@ -753,7 +753,7 @@ float   Time::YearDifferenceF (const Date& lhs, const Date& rhs)
 String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 {
     if (birthDate.empty ()) {
-        return L"?";
+        return String_Constant (L"?");
     }
     else {
         int yearDiff    =   deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);
@@ -764,7 +764,7 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
 String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
 {
     if (birthDate.empty ()) {
-        return L"?";
+        return String_Constant (L"?");
     }
     else {
         int yearDiff    =   deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);

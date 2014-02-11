@@ -8,6 +8,7 @@
 #endif
 
 #include    "../../../Characters/Format.h"
+#include    "../../../Characters/String_Constant.h"
 #include    "../../../Execution/Exceptions.h"
 
 #include    "Client_libcurl.h"
@@ -217,7 +218,7 @@ Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH    =   nullptr;
     for (auto i : request.fOverrideHeaders) {
-        tmpH = curl_slist_append (tmpH, (i.fKey + L": " + i.fValue).AsUTF8 ().c_str ());
+        tmpH = curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));

@@ -238,7 +238,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
     String  useHeaderStrBuf;
     {
         for (auto i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
-            useHeaderStrBuf += i->fKey + L": " + i->fValue + L"\r\n";
+            useHeaderStrBuf += i->fKey + String_Constant (L": ") + i->fValue + String_Constant (L"\r\n");
         }
     }
 
@@ -279,7 +279,7 @@ RetryWithNoCERTCheck:
     try {
         //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
-            DoThrow (StringException (L"Too large a message to send using WinHTTP"));
+            DoThrow (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
         }
         DISABLE_COMPILER_MSC_WARNING_START(4267)
         ThrowIfFalseGetLastError (::WinHttpSendRequest (

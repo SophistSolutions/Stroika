@@ -39,7 +39,7 @@ namespace   {
         }
         if (not fileOffset.IsMissing ()) {
             if (not result.empty ()) {
-                result += L"; ";
+                result += String_Constant (L"; ");
             }
             result += Format (L"; FileOffset %d", *fileOffset);
         }
@@ -47,7 +47,7 @@ namespace   {
     }
     inline  String mkMessage_ ()
     {
-        return L"Badly formatted input";
+        return String_Constant (L"Badly formatted input");
     }
     inline  String mkMessage_ (const String& details)
     {
@@ -58,7 +58,7 @@ namespace   {
         String msg             =   mkMessage_ ();
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += Characters::String_Constant (L" (") + lineInfoExtra + L").";
+            msg += Characters::String_Constant (L" (") + lineInfoExtra + String_Constant (L").");
         }
         return msg;
     }
@@ -67,7 +67,7 @@ namespace   {
         String msg             =   mkMessage_ (details);
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += Characters::String_Constant (L" (") + lineInfoExtra + L").";
+            msg += Characters::String_Constant (L" (") + lineInfoExtra + String_Constant (L").");
         }
         return msg;
     }

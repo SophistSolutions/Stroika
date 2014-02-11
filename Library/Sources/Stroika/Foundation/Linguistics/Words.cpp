@@ -194,6 +194,18 @@ namespace   {
         }
     }
 }
+#if 1
+String Linguistics::PluralizeNoun (const String& s, int count)
+{
+    return PluralizeNoun_HLPR (s, count);
+}
+
+String  Linguistics::PluralizeNoun (const String& s, const String& sPlural, int count)
+{
+    return count == 1 ? s : sPlural;
+}
+
+#else
 string  Linguistics::PluralizeNoun (const string& s, int count)
 {
     return PluralizeNoun_HLPR (s, count);
@@ -213,6 +225,7 @@ wstring Linguistics::PluralizeNoun (const wstring& s, const wstring& sPlural, in
 {
     return count == 1 ? s : sPlural;
 }
+#endif
 
 
 
@@ -257,13 +270,19 @@ namespace   {
                 r = s.substr (0, s.length () - 1);
             }
             // because of diabets mellitus - (and others???? - don't map trailing 'us' to 'u'
-            else if (s[s.length () - 1] == 's' and isascii (s[s.length () - 2]) and isalpha (s[s.length () - 2]) and (s[s.length () - 2] != 's' and s[s.length () - 2] != 'u')) {
+            else if (s[s.length () - 1] == 's' and s[s.length () - 2].IsAscii () and s[s.length () - 2].IsAlphabetic () and (s[s.length () - 2] != 's' and s[s.length () - 2] != 'u')) {
                 r = s.substr (0, s.length () - 1);
             }
         }
         return r;
     }
 }
+#if 1
+String  Linguistics::MungeStringSoSingular (const String& s)
+{
+    return MungeStringSoSingular_ (s);
+}
+#else
 wstring Linguistics::MungeStringSoSingular (const wstring& s)
 {
     return MungeStringSoSingular_ (s);
@@ -273,7 +292,7 @@ string  Linguistics::MungeStringSoSingular (const string& s)
 {
     return MungeStringSoSingular_ (s);
 }
-
+#endif
 
 
 
@@ -286,24 +305,45 @@ string  Linguistics::MungeStringSoSingular (const string& s)
  ************************************ CapitalizeEachWord ************************
  ********************************************************************************
  */
+#if 0
 namespace   {
     template    <typename STR>
     inline  STR CapitalizeEachWord_ (const STR& s)
     {
-        STR r   =   s;
+        STR r;
         // take an ENGLISH string (assume English)
 
         // toupper each lower-case character preceeded by a space
         bool    prevCharSpace   =   true;   // so we upper first char
-        for (auto i = r.begin (); i != r.end (); ++i) {
+        for (Character i : r)
             if (prevCharSpace) {
-                *i = TOUPPER (*i);
+                i = i.ToUpperCase ();
             }
-            prevCharSpace = ISSPACE (*i);
-        }
-        return r;
+        r += i;
+        prevCharSpace = i.IsWhitespace ();
     }
+    return r;
 }
+}
+#endif
+#if 1
+String Linguistics::CapitalizeEachWord (const String& s)
+{
+    String r;
+    // take an ENGLISH string (assume English)
+
+    // toupper each lower-case character preceeded by a space
+    bool    prevCharSpace   =   true;   // so we upper first char
+    for (Character i : s)  {
+        if (prevCharSpace) {
+            i = i.ToUpperCase ();
+        }
+        r += i;
+        prevCharSpace = i.IsWhitespace ();
+    }
+    return r;
+}
+#else
 wstring Linguistics::CapitalizeEachWord (const wstring& s)
 {
     return CapitalizeEachWord_ (s);
@@ -313,6 +353,7 @@ string  Linguistics::CapitalizeEachWord (const string& s)
 {
     return CapitalizeEachWord_ (s);
 }
+#endif
 
 
 
@@ -348,6 +389,30 @@ namespace   {
         return r;
     }
 }
+
+#if 1
+String  Linguistics::CapitalizeEachSentence (const String& s)
+{
+    // WAY too kludgly - but hopefully adequate for primitive message cleanups...
+    //      -- LGP 2008-09-20
+    String r;
+    // take an ENGLISH string (assume English)
+
+    // toupper each lower-case character preceeded by a ENDOFSENTECE PUNCT
+    bool    nextCharStartsSentence  =   true;   // so we upper first char
+    for (Character i : s) {
+        if (nextCharStartsSentence and i.IsWhitespace ()) {
+            i = i.ToUpperCase ();
+            nextCharStartsSentence = false;
+        }
+        else {
+            nextCharStartsSentence |= (i == '.' or i == '!' or i == '?');
+        }
+        r += i;
+    }
+    return r;
+}
+#else
 wstring Linguistics::CapitalizeEachSentence (const wstring& s)
 {
     return CapitalizeEachSentence_ (s);
@@ -357,6 +422,7 @@ string  Linguistics::CapitalizeEachSentence (const string& s)
 {
     return CapitalizeEachSentence_ (s);
 }
+#endif
 
 
 
@@ -385,6 +451,20 @@ namespace   {
         return r;
     }
 }
+#if 1
+String Linguistics::UnCapitalizeFirstWord (const String& s)
+{
+    // WAY too kludgly - but hopefully adequate for primitive message cleanups...
+    //      -- LGP 2008-09-20
+    String r    =   s;
+    if (r.length () > 2) {
+        if (r[0].ToUpperCase () == r[0] and r[1].ToUpperCase () != r[1]) {
+            r.SetCharAt (r[0].ToLowerCase (), 0);
+        }
+    }
+    return r;
+}
+#else
 wstring Linguistics::UnCapitalizeFirstWord (const wstring& s)
 {
     return UnCapitalizeFirstWord_ (s);
@@ -394,6 +474,7 @@ string  Linguistics::UnCapitalizeFirstWord (const string& s)
 {
     return UnCapitalizeFirstWord_ (s);
 }
+#endif
 
 
 
@@ -405,6 +486,12 @@ string  Linguistics::UnCapitalizeFirstWord (const string& s)
  ********************************** IsAllCaps ***********************************
  ********************************************************************************
  */
+#if 1
+bool    Linguistics::IsAllCaps (const String& s)
+{
+    return not s.empty () and s == s.ToUpperCase ();
+}
+#else
 bool    Linguistics::IsAllCaps (const string& s)
 {
     return not s.empty () and s == toupper (s);
@@ -414,7 +501,7 @@ bool    Linguistics::IsAllCaps (const wstring& s)
 {
     return not s.empty () and s == toupper (s);
 }
-
+#endif
 
 
 

@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/String.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Memory/Optional.h"
 #include    "../../Time/Date.h"
 #include    "../../Time/DateTime.h"
@@ -68,7 +69,7 @@ namespace   Stroika {
 
                 class   Indenter {
                 public:
-                    Indenter (const String& indentText = String (L"\t"));
+                    Indenter (const String& indentText = Characters::String_Constant (L"\t"));
 
                 public:
                     nonvirtual  void    Indent (unsigned int indentLevel, ostream& out) const;

@@ -15,6 +15,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/Tokenize.h"
 #include    "../Containers/Sequence.h"
 #include    "../Debug/Trace.h"
@@ -38,6 +39,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 
@@ -749,7 +751,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 
     vector<wstring> tmp =   Characters::Tokenize<wstring> (commandLine.As<wstring> (), L" ");
     if (tmp.size () == 0) {
-        Execution::DoThrow (Execution::StringException (L"invalid command argument to DetachedProcessRunner"));
+        Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
     }
     exe = tmp[0];
     for (auto i = tmp.begin (); i != tmp.end (); ++i) {

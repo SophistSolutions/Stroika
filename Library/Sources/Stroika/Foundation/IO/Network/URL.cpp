@@ -49,7 +49,7 @@ namespace {
         // use for (Character c : s) {... when that works -- LGP 2013-05-29)
         for (size_t i = 0; i < s.GetLength (); ++i) {
             if (not s[i].IsAscii () or not (s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
-                Execution::DoThrow (Execution::StringException (L"bad character in scheme"));
+                Execution::DoThrow (Execution::StringException (String_Constant (L"bad character in scheme")));
             }
         }
     }
@@ -149,7 +149,7 @@ namespace   {
             String  matchStr        =   *protocol + String_Constant (L"://") + *host;
             size_t  startOfPath     =   canonical.Find (matchStr);
             if (startOfPath == String::kBadIndex) {
-                matchStr        =   *protocol + L":";
+                matchStr        =   *protocol + String_Constant (L":");
                 startOfPath     =   canonical.Find (matchStr);
             }
             if (startOfPath == String::kBadIndex) {

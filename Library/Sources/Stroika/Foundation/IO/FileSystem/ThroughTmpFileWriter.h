@@ -14,6 +14,7 @@
 #endif
 
 #include    "../../Characters/SDKChar.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Exceptions.h"
@@ -57,7 +58,7 @@ namespace   Stroika {
                  */
                 class   ThroughTmpFileWriter {
                 public:
-                    ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = L".tmp");
+                    ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = Characters::String_Constant (L".tmp"));
                     ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
                     ~ThroughTmpFileWriter ();
 

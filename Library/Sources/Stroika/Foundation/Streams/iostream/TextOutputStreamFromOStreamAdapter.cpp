@@ -3,6 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
+
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "TextOutputStreamFromOStreamAdapter.h"
@@ -11,6 +13,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
@@ -34,7 +37,7 @@ protected:
 
         fOriginalStream_.write (reinterpret_cast<const wchar_t*> (start), end - start);
         if (fOriginalStream_.fail ()) {
-            Execution::DoThrow (Execution::StringException (L"Failed to write from ostream"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to write from ostream")));
         }
     }
 

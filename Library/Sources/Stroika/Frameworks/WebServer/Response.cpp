@@ -8,6 +8,7 @@
 #include    <sstream>
 
 #include    "../../Foundation/Characters/CString/Utilities.h"
+#include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/Containers/STL/SetUtils.h"
@@ -23,6 +24,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
@@ -74,7 +76,7 @@ Response::Response (const IO::Network::Socket& s,  Streams::BinaryOutputStream o
     , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute)
     , fContentSize_ (0)
 {
-    AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
+    AddHeader (IO::Network::HTTP::HeaderName::kServer, String_Constant (L"Stroka-Based-Web-Server"));
 }
 
 Response::~Response ()
@@ -232,8 +234,8 @@ void    Response::Redirect (const String& url)
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
-    AddHeader (L"Connection", L"close");    // needed for redirect
-    AddHeader (L"Location", url);           // needed for redirect
+    AddHeader (String_Constant (L"Connection"), String_Constant (L"close"));    // needed for redirect
+    AddHeader (String_Constant (L"Location"), url);           // needed for redirect
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;

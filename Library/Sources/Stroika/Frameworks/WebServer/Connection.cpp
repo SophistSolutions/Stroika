@@ -6,6 +6,7 @@
 #include    <algorithm>
 #include    <cstdlib>
 
+#include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/Tokenize.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
@@ -18,6 +19,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
@@ -59,29 +61,29 @@ void    Connection::ReadHeaders ()
         String line = inTextStream.ReadLine ();
         vector<String> tokens = Characters::Tokenize<String> (line, L" ");
         if (tokens.size () < 3) {
-            Execution::DoThrow (Execution::StringException (L"Bad METHOD REQUEST HTTP line"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
         }
         fRequest_.fMethod = tokens[0];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST line - missing host-relative URL"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         fRequest_.fURL = IO::Network::URL::ParseHostRelativeURL (tokens[1]);
         if (fRequest_.fMethod.empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::DoThrow (Execution::StringException (L"Bad METHOD in REQUEST HTTP line"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
         }
     }
     while (true) {
         String line = inTextStream.ReadLine ();
-        if (line == L"\r\n" or line.empty ()) {
+        if (line == String_Constant (L"\r\n") or line.empty ()) {
             return; // done
         }
 
         // add subsequent items to the header map
         size_t  i   =   line.find (':');
         if (i == string::npos) {
-            Execution::DoThrow (Execution::StringException (L"Bad HTTP REQUEST missing colon in headers"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
         }
         else {
             String  hdr     =   line.SubString (0, i).Trim ();

@@ -7,6 +7,7 @@
 #include    <Windows.h>
 #endif
 
+#include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 
@@ -16,6 +17,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
@@ -66,7 +68,7 @@ Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecond
 {
     // NB: Cannot cache systemTimesInstrument since takes capture argument
     Instrument  systemTimesInstrument    = Instrument (
-            InstrumentNameType (L"System-Times"),
+            InstrumentNameType (String_Constant (L"System-Times")),
     [measureInterval] () -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();

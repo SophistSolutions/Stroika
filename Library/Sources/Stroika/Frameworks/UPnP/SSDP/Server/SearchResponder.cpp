@@ -4,6 +4,8 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../../Foundation/Characters/Format.h"
+#include    "../../../../Foundation/Characters/String_Constant.h"
+
 #include    "../../../../Foundation/Execution/Sleep.h"
 #include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
@@ -63,7 +65,7 @@ namespace {
         Debug::TraceContextBumper ctx (SDKSTR ("Read SSDP Packet"));
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
-        const   String  kNOTIFY_LEAD = L"M-SEARCH ";
+        const   String  kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement da;
             while (true) {
@@ -100,7 +102,7 @@ namespace {
             else if (da.fST == L"ssdp:all") {
                 matches = true;
             }
-            else if (da.fST.StartsWith (String (L"uuid:"))) {
+            else if (da.fST.StartsWith (String_Constant (L"uuid:"))) {
                 for (auto a : advertisements) {
                     // @todo - not quite right... well - maybe right - look more closely
                     if (a.fUSN == da.fST) {

@@ -13,6 +13,7 @@
 #endif
 
 #include    "../Characters/CString/Utilities.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/Format.h"
 
 #include    "ODBCClient.h"
@@ -35,8 +36,8 @@ using   namespace   Stroika::Foundation::Database;
  **************************** ODBCSupport::Exception ****************************
  ********************************************************************************
  */
-Database::Exception::Exception (const wstring& message):
-    StringException (CString::Format (L"Database connection error: %s", message.c_str ()))
+Database::Exception::Exception (const String& message):
+    StringException (Format (L"Database connection error: %s", message.c_str ()))
 {
 }
 
@@ -49,7 +50,7 @@ Database::Exception::Exception (const wstring& message):
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ():
-    Exception (L"No Data")
+    Exception (String_Constant (L"No Data"))
 {
 }
 

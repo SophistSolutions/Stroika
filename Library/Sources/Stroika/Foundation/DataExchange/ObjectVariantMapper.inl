@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Characters/String_Constant.h"
 #include    "../Execution/Exceptions.h"
 
 #include    "BadFormatException.h"
@@ -174,6 +175,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
             {
+                using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
@@ -197,7 +199,7 @@ namespace   Stroika {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
                             DbgTrace ("Bijection ('%s') element with item count (%d) other than 2", typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
                         }
                         actualInto->Add (mapper->ToObject<DOMAIN_TYPE> (p[0]), mapper->ToObject<RANGE_TYPE> (p[1]));
                     }
@@ -207,6 +209,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
+                using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
@@ -230,7 +233,7 @@ namespace   Stroika {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
                             DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
                         }
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
@@ -244,6 +247,7 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (T ar[SZ])
 #endif
             {
+                using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
@@ -261,7 +265,7 @@ namespace   Stroika {
                     if (s.size () > SZ)
                     {
                         DbgTrace ("Array ('%s') actual size %d out of range", typeid (T[SZ]).name (), static_cast<int> (s.size ()));
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Array size out of range"));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Array size out of range")));
                     }
                     size_t idx = 0;
                     for (auto i : s)
@@ -288,6 +292,7 @@ namespace   Stroika {
             template    <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
             {
+                using   Characters::String_Constant;
                 /*
                  *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
                  *  the data, and this is simple and efficient.
@@ -311,13 +316,13 @@ namespace   Stroika {
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND))
                     {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
 #else
                     if (not (static_cast<typename underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eSTART) <= static_cast<typename underlying_type<ENUM_TYPE>::type> (*actualInto) and static_cast<typename underlying_type<ENUM_TYPE>::type> (*actualInto) <= static_cast<typename underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eEND)))
                     {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
 #endif
                 };
@@ -326,6 +331,7 @@ namespace   Stroika {
             template <typename RANGE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
             {
+                using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     using   ElementType     =   typename RANGE_TYPE::ElementType;
@@ -336,8 +342,8 @@ namespace   Stroika {
                         return VariantValue ();
                     }
                     else {
-                        m.Add (L"LowerBound", mapper->FromObject<ElementType> (actualMember->GetLowerBound ()));
-                        m.Add (L"UpperBound", mapper->FromObject<ElementType> (actualMember->GetUpperBound ()));
+                        m.Add (String_Constant (L"LowerBound"), mapper->FromObject<ElementType> (actualMember->GetLowerBound ()));
+                        m.Add (String_Constant (L"UpperBound"), mapper->FromObject<ElementType> (actualMember->GetUpperBound ()));
                         return VariantValue (m);
                     }
                 };
@@ -354,30 +360,32 @@ namespace   Stroika {
                         if (m.size () != 2)
                         {
                             DbgTrace ("Range ('%s') element needs LowerBound and UpperBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs LowerBound and UpperBound"));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
                         }
                         // temporary backward compat -- LGP 2013-11-01
+#if 0
                         if (1)
                         {
                             if (not m.ContainsKey (L"LowerBound") and m.ContainsKey (L"Begin")) {
                                 m.Add (L"LowerBound", m.LookupValue (L"Begin"));
                             }
                             if (not m.ContainsKey (L"UpperBound") and m.ContainsKey (L"End")) {
-                                m.Add (L"UpperBound", m.LookupValue (L"End"));
+                                m.Add (String_Constant (L"UpperBound"), m.LookupValue (L"End"));
                             }
                         }
-                        if (not m.ContainsKey (L"LowerBound"))
+#endif
+                        if (not m.ContainsKey (String_Constant (L"LowerBound")))
                         {
                             DbgTrace ("Range ('%s') needs LowerBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'LowerBound' element"));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
                         }
-                        if (not m.ContainsKey (L"UpperBound"))
+                        if (not m.ContainsKey (String_Constant (L"UpperBound")))
                         {
                             DbgTrace ("Range ('%s') needs UpperBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'UpperBound' element"));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
-                        ElementType from = mapper->ToObject<ElementType> (*m.Lookup (L"LowerBound"));
-                        ElementType to = mapper->ToObject<ElementType> (*m.Lookup (L"UpperBound"));
+                        ElementType from = mapper->ToObject<ElementType> (*m.Lookup (String_Constant (L"LowerBound")));
+                        ElementType to = mapper->ToObject<ElementType> (*m.Lookup (String_Constant (L"UpperBound")));
                         * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                     }
                 };

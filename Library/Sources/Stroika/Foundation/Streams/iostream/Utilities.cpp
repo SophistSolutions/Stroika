@@ -42,7 +42,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START(6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
-        Execution::DoThrow (Execution::StringException (L"stream too large"));
+        Execution::DoThrow (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t  bufLen  =   static_cast<size_t> (end - start);
     Memory::SmallStackBuffer<Byte>  buf (bufLen);

@@ -3,12 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
 #include     "../../Execution/ErrNoException.h"
 
 #include    "InternetAddress.h"
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
@@ -87,7 +89,7 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
                 break;
             default: {
                     // @todo need better exception
-                    Execution::DoThrow (Execution::StringException (L"Unrecognized address family"));
+                    Execution::DoThrow (Execution::StringException (String_Constant (L"Unrecognized address family")));
                 }
                 break;
         }

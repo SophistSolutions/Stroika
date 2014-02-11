@@ -5,6 +5,7 @@
 
 #include    <sstream>
 
+#include    "../../../../Foundation/Characters/String_Constant.h"
 #include    "../../../../Foundation/Debug/Trace.h"
 #include    "../../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
@@ -18,6 +19,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -122,7 +124,7 @@ public:
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
 
-        const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";
+        const   String  kOKRESPONSELEAD_    =   String_Constant (L"HTTP/1.1 200");
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
             SSDP::Advertisement d;
             while (true) {

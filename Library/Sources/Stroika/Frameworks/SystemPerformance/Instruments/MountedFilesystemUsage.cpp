@@ -122,7 +122,7 @@ namespace {
                 skippedHeader = true;
                 continue;
             }
-            Sequence<String>    l    =  Characters::Tokenize<String> (i, L" ");
+            Sequence<String>    l    =  Characters::Tokenize<String> (i, String_Constant (L" "));
             if (l.size () < 7) {
                 DbgTrace ("skipping line cuz len=%d", l.size ());
                 continue;

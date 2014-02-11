@@ -8,6 +8,7 @@
 #endif
 
 #include    "../Characters/CodePage.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Containers/Common.h"
 #include    "../Execution/StringException.h"
 #include    "../Execution/OperationNotSupportedException.h"
@@ -17,6 +18,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
 
 
@@ -60,7 +62,7 @@ Again:
         }
         if (r != codecvt_utf8<wchar_t>::ok) {
             // not sure waht to throw!
-            Execution::DoThrow (Execution::StringException (L"Error converting characters codepage"));
+            Execution::DoThrow (Execution::StringException (String_Constant (L"Error converting characters codepage")));
         }
 #else
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);

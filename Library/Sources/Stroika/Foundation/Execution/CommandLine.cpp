@@ -60,7 +60,7 @@ Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
 {
     Sequence<String>    result;
     // super quickie hack impl
-    result = Characters::Tokenize<String> (cmdLine, L" ");
+    result = Characters::Tokenize<String> (cmdLine, String_Constant(L" "));
     return result;
 }
 

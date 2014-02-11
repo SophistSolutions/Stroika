@@ -5,6 +5,7 @@
 
 #include    <vector>
 
+#include    "../../../../Foundation/Characters/String_Constant.h"
 #include    "../../../../Foundation/Debug/Trace.h"
 #include    "../../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
@@ -19,6 +20,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -104,7 +106,7 @@ public:
         Debug::TraceContextBumper ctx (SDKSTR ("Read SSDP Packet"));
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
-        const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
+        const   String  kNOTIFY_LEAD    =   String_Constant (L"NOTIFY ");
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement d;
             while (true) {
