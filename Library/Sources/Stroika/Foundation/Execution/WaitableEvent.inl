@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "Finally.h"
+#include    "ModuleInit.h"
 
 
 namespace   Stroika {
@@ -20,6 +21,20 @@ namespace   Stroika {
 
             //redeclare to avoid having to #include Thread.h
             void    CheckForThreadAborting ();
+
+
+            /*
+            ********************************************************************************
+            ***************** Private::WaitableEvent_ModuleInit_ ***************************
+            ********************************************************************************
+            */
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+            namespace Private_ {
+                struct  WaitableEvent_ModuleInit_ {
+                    mutex     fExtraWaitableEventsMutex_;
+                };
+            }
+#endif
 
 
             /*
@@ -96,13 +111,13 @@ namespace   Stroika {
                  */
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
-                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.remove (we);
                     }
                 });
                 {
-                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
@@ -149,13 +164,13 @@ namespace   Stroika {
                  */
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
-                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.remove (we);
                     }
                 });
                 {
-                    lock_guard<mutex> critSec (sExtraWaitableEventsMutex_);
+                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
@@ -192,4 +207,12 @@ namespace   Stroika {
         }
     }
 }
+
+
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::WaitableEvent_ModuleInit_>   _Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+}
+#endif
+
 #endif  /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/
