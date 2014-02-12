@@ -22,8 +22,11 @@ namespace   Stroika {
 
 
             /**
-             *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
-             * with a minimum of cost.
+             *      String_Constant can safely be used to create Stroika String's from constant C-strings
+             *  (string literals) with a minimum of performance cost.
+             *
+             *  The resulting String is a perfectly compliant Stroika String, and can be modified. It's just
+             *  that the initial copy is nearly free.
              *
              *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly - so be
              *      sure arguments have application lifetime.
