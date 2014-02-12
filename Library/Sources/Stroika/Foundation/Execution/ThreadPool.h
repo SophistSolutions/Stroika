@@ -24,6 +24,8 @@
  *
  *  TODO:
  *
+ *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
+ *
  *      @todo   REDO USING Stroika Q - CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
  *              how these tie together. Issue with using Queue<> is that we nee dto be able to remove
  *              something from the middle of it, which isnt reasonable for a queue. Or is it?

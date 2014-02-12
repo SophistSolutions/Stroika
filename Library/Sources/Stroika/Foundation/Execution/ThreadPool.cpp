@@ -120,7 +120,6 @@ ThreadPool::~ThreadPool ()
 
 unsigned int    ThreadPool::GetPoolSize () const
 {
-    lock_guard<recursive_mutex> critSection (fCriticalSection_);
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
