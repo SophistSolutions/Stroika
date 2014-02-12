@@ -46,7 +46,7 @@
  *
  *      @todo   EFFICIENCY NOTES AND TODO MAYBE IMPROVE?
  *
- *              This can be moderately efficient, but it is not highly efficient. The use of std::function
+ *              This can be moderately efficient, but it is not highly efficient. The use of function
  *              for the serializer/desearizers adds costs.
  *
  *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
@@ -356,14 +356,14 @@ namespace   Stroika {
             /**
              */
             struct  ObjectVariantMapper::TypeMappingDetails {
-                type_index                                                                                  fForType;
-                std::function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>       fToVariantMapper;
-                std::function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>   fFromVariantMapper;
+                type_index                                                                              fForType;
+                function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>        fToVariantMapper;
+                function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>    fFromVariantMapper;
 
                 TypeMappingDetails (
                     const type_index& forTypeInfo,
-                    const std::function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-                    const std::function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+                    const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+                    const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
                 );
                 TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 

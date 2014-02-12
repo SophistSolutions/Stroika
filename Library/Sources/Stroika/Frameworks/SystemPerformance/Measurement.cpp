@@ -13,21 +13,3 @@
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include    "Measurement.h"
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Memory;
-
-using   namespace   Stroika::Frameworks;
-using   namespace   Stroika::Frameworks::SystemPerformance;
-
-
-
-
-
-/*
- ********************************************************************************
- ************************* WebServer::Request ***********************************
- ********************************************************************************
- */

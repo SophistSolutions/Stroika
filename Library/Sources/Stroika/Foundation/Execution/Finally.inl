@@ -29,7 +29,7 @@ namespace   Stroika {
             }
             template <typename FUNCTION>
             inline  Finally::Finally (FUNCTION f, typename is_function<FUNCTION>::type*) :
-                Finally (std::function<void()>(f))
+                Finally (function<void()>(f))
             {
             }
             inline  Finally::~Finally()

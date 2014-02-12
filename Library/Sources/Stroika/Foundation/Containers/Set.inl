@@ -162,7 +162,7 @@ namespace   Stroika {
                 return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(const T& item)>& doToElement) const
             {
                 Set<T, TRAITS>   result;
                 for (T i : *this) {

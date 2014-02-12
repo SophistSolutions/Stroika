@@ -61,7 +61,7 @@ namespace   Stroika {
 
             public:
                 // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
-                OpenSSLCryptoParams (const std::function<void(EVP_CIPHER_CTX*)>& f);
+                OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*)>& f);
 
 
                 /**
@@ -105,7 +105,7 @@ namespace   Stroika {
                 OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV = Memory::BLOB ());
 
             public:
-                std::function<void(EVP_CIPHER_CTX*)>  fInitializer;
+                function<void(EVP_CIPHER_CTX*)>  fInitializer;
             };
 #endif
 

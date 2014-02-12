@@ -186,7 +186,7 @@ namespace   Stroika {
                 Remove (i);
             }
             template    <typename T>
-            Bag<T>    Bag<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            Bag<T>    Bag<T>::EachWith (const function<bool(const T& item)>& doToElement) const
             {
                 Bag<T>   result;
                 for (T i : *this) {

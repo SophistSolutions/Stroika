@@ -186,7 +186,7 @@ namespace   Stroika {
                 Remove (i);
             }
             template    <typename T>
-            Collection<T>    Collection<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            Collection<T>    Collection<T>::EachWith (const function<bool(const T& item)>& doToElement) const
             {
                 Collection<T>   result;
                 for (T i : *this) {

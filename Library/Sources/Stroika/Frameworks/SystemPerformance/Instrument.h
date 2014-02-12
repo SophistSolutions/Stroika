@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/DataExchange/Atom.h"
+#include    "../../Foundation/Execution/Function.h"
 
 #include    "Measurement.h"
 #include    "MeasurementSet.h"
@@ -29,8 +30,15 @@ namespace   Stroika {
             using   Containers::Set;
 
 
-            // @todo - consider using independent atom registry
+            /**
+             *  @todo - consider using independent atom registry
+             */
             using   InstrumentNameType =  DataExchange::Atom<>;
+
+
+            /**
+             */
+            using   CapturerCallback = Execution::Function<MeasurementSet()>;
 
 
             /**
@@ -38,10 +46,10 @@ namespace   Stroika {
              */
             struct  Instrument {
                 InstrumentNameType          fInstrumentName;
-                function<MeasurementSet()>  fCaptureFunction;
+                CapturerCallback            fCaptureFunction;
                 Set<MeasurementType>        fCapturedMeasurements;
 
-                Instrument (InstrumentNameType instrumentName, const function<MeasurementSet()>& capturer, const Set<MeasurementType>& capturedMeasurements);
+                Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements);
 
 
                 /*

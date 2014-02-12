@@ -102,7 +102,7 @@ namespace   Stroika {
                 return Private::Compare_<T, ELEMENT_COMPARER> (*this, rhs);
             }
             template    <typename T>
-            Sequence<T>    Sequence<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            Sequence<T>    Sequence<T>::EachWith (const function<bool(const T& item)>& doToElement) const
             {
                 Sequence<T>  result;
                 for (T i : *this) {

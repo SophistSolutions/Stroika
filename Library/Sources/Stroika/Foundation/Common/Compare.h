@@ -118,9 +118,9 @@ namespace   Stroika {
             // size implications when used with the above default case (ok that this costs)
             template <typename T>
             struct  ComparerWithEquals_XXX  {
-                std::function<bool(T, T)> fEq;
+                function<bool(T, T)> fEq;
 
-                ComparerWithEquals_XXX (std::function<bool(T, T)> e)
+                ComparerWithEquals_XXX (function<bool(T, T)> e)
                     : fEq (e)
                 {
                 }

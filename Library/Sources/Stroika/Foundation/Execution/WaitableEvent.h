@@ -147,7 +147,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  WaitTimedOutException throws if the event is not signaled before timeoutAt is exceeeded.
+                 *  WaitTimedOutException throws if the event is not signaled before timeoutAt is
+                 *  exceeeded (includes when reached).
                  */
                 nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
 

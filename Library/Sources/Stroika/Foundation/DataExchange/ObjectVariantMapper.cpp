@@ -33,8 +33,8 @@ using   Time::TimeOfDay;
  */
 ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
     const type_index& forTypeInfo,
-    const std::function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-    const std::function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+    const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+    const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
 )
     : fForType (forTypeInfo)
     , fToVariantMapper (toVariantMapper)

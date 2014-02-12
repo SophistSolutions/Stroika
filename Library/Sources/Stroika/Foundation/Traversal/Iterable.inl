@@ -260,13 +260,13 @@ namespace   Stroika {
                 _GetRep ().Apply (doToElement);
             }
             template    <typename T>
-            inline  void    Iterable<T>::Apply (const std::function<void(const T& item)>& doToElement) const
+            inline  void    Iterable<T>::Apply (const function<void(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 _GetRep ().Apply (doToElement);
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const
+            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (const function<bool(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 return _GetRep ().FindFirstThat (doToElement, this);
@@ -284,7 +284,7 @@ namespace   Stroika {
                 return _GetRep ().FindFirstThat (doToElement, this);
             }
             template    <typename T>
-            bool    Iterable<T>::ContainsWith (const std::function<bool(const T& item)>& doToElement) const
+            bool    Iterable<T>::ContainsWith (const function<bool(const T& item)>& doToElement) const
             {
                 for (T i : *this) {
                     if (doToElement (i)) {

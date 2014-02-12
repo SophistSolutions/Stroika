@@ -16,6 +16,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Execution/Function.h"
 
 #include    "InternetAddress.h"
 
@@ -75,9 +76,6 @@ namespace   Stroika {
                  *  Create an instance of this class, and add callbacks to it, and they will be notified
                  *  when a network connection comes up or down.
                  *
-                 *  @todo - IF we add a new stroika Function() class (like std::function but that you can compare)
-                 *          we can then add a RemoveCallback () funciton!!! HANDY IDEA
-                 *
                  *  @todo  POSIX code is not really posix but assumes linux==posix =- relaly need separate define to check for netlink
                  *         and a windoze impl.
                  *
@@ -94,7 +92,9 @@ namespace   Stroika {
                         eAdded,
                         eRemoved,
                     };
-                    nonvirtual  void    AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback);
+                    using   Callback = Execution::Function<void(LinkChange, const String& linkName, const String& ipAddr)>;
+                    nonvirtual  void    AddCallback (const Callback& callback);
+                    nonvirtual  void    RemoveCallback (const Callback& callback);
 
                 private:
                     struct      Rep_;

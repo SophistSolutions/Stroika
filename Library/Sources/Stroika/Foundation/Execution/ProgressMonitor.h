@@ -12,6 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Containers/Sequence.h"
 #include    "../DataExchange/VariantValue.h"
+#include    "../Execution/Function.h"
 
 
 
@@ -92,7 +93,7 @@ namespace   Stroika {
                  *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
                  *  or may register a callback to be notified of progress.
                  */
-                using   ChangedCallbackType =   std::function<void (const ProgressMonitor& progressMonitor)>;
+                using   ChangedCallbackType =   Execution::Function<void(const ProgressMonitor& progressMonitor)>;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

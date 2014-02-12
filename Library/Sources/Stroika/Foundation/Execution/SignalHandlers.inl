@@ -25,12 +25,12 @@ namespace   Stroika {
              */
             inline  SignalHandler::SignalHandler (void (*signalHandler)(SignalID), Type type)
                 : fType_ (type)
-                , fCall_ (shared_ptr<function<void(SignalID)>> (new function<void(SignalID)> (signalHandler)))
+                , fCall_ (signalHandler)
             {
             }
-            inline                SignalHandler::SignalHandler (const function<void(SignalID)>& signalHandler, Type type)
+            inline                SignalHandler::SignalHandler (const Function<void(SignalID)>& signalHandler, Type type)
                 : fType_ (type)
-                , fCall_ (shared_ptr<function<void(SignalID)>> (new function<void(SignalID)> (signalHandler)))
+                , fCall_ (signalHandler)
             {
             }
             inline  SignalHandler::Type SignalHandler::GetType () const
@@ -39,22 +39,21 @@ namespace   Stroika {
             }
             inline  void SignalHandler::operator () (SignalID i) const
             {
-                Require (fCall_.get () != nullptr);
-                (*fCall_) (i);
+                fCall_ (i);
             }
             inline  bool SignalHandler::operator== (const SignalHandler& rhs) const
             {
-                return fType_ == rhs.fType_ and fCall_.get () == rhs.fCall_.get ();
+                return fType_ == rhs.fType_ and fCall_ == rhs.fCall_;
             }
             inline  bool SignalHandler::operator!= (const SignalHandler& rhs) const
             {
-                return fType_ != rhs.fType_ or fCall_.get () != rhs.fCall_.get ();
+                return fType_ != rhs.fType_ or fCall_ != rhs.fCall_;
             }
             inline  bool SignalHandler::operator< (const SignalHandler& rhs) const
             {
                 if (fType_ == rhs.fType_) {
                     // technically not quite real... - compute address of ptr...
-                    return fCall_.get () < rhs.fCall_.get ();
+                    return fCall_ < rhs.fCall_;
                 }
                 else {
                     return fType_ < rhs.fType_;

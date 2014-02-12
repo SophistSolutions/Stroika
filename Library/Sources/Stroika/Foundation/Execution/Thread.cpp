@@ -506,7 +506,7 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (const std::function<void()>& fun2CallOnce)
+Thread::Thread (const function<void()>& fun2CallOnce)
     : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (mkIRunnablePtr (fun2CallOnce))))
 {
     Rep_::DoCreate (&fRep_);

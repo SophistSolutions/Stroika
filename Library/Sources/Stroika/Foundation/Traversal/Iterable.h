@@ -331,7 +331,7 @@ namespace   Stroika {
                  *
                  *  \pre    doToElement != nullptr
                  */
-                nonvirtual  void    Apply (const std::function<void(const T& item)>& doToElement) const;
+                nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
                 nonvirtual  void  _Deprecated_ (ApplyStatic (void(*doToElement)(const T& item)) const, "Obsolete as of Stroika v2.0a19 - use Apply");
 
             public:
@@ -454,8 +454,8 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             public:
-                using   _APPLY_ARGTYPE      =   const std::function<void(const T& item)>& ;
-                using   _APPLYUNTIL_ARGTYPE =   const std::function<bool(const T& item)>& ;
+                using   _APPLY_ARGTYPE      =   const function<void(const T& item)>& ;
+                using   _APPLYUNTIL_ARGTYPE =   const function<bool(const T& item)>& ;
 
             public:
                 virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const              =   0;
@@ -477,7 +477,7 @@ namespace   Stroika {
                 virtual size_t              GetLength () const                                                          =   0;
                 virtual bool                IsEmpty () const                                                            =   0;
                 virtual void                Apply (_APPLY_ARGTYPE doToElement) const                                    =   0;
-                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const  =   0;
+                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const   =   0;
 
             protected:
                 /*

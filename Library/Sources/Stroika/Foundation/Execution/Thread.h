@@ -193,7 +193,7 @@ namespace   Stroika {
                  *  another thread with the arg 'arg'.
                  */
                 Thread ();
-                Thread (const std::function<void()>& fun2CallOnce);
+                Thread (const function<void()>& fun2CallOnce);
                 Thread (const IRunnablePtr& runnable);
                 template <typename FUNCTION>
                 Thread (FUNCTION f, typename is_function<FUNCTION>::type* = nullptr);

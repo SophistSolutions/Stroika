@@ -84,7 +84,7 @@ namespace   Stroika {
              */
             IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) ());
             IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) (void* arg), void* arg);
-            IRunnablePtr    mkIRunnablePtr (const std::function<void()>& fun2CallOnce);
+            IRunnablePtr    mkIRunnablePtr (const function<void()>& fun2CallOnce);
             IRunnablePtr    mkIRunnablePtr (const IRunnablePtr& fun2CallOnce);
 
 

@@ -18,6 +18,11 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 
 
 
+/*
+ ********************************************************************************
+ ***************** SystemPerformance::Capturer **********************************
+ ********************************************************************************
+ */
 Capturer::Capturer ()
     : fThreadPool_ ()
     , fCaptureSets_ ()
@@ -124,4 +129,3 @@ void    Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)
         cb (ms);
     }
 }
-

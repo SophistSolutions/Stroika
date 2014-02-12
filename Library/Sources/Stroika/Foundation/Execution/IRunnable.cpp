@@ -44,7 +44,7 @@ namespace {
         DECLARE_USE_BLOCK_ALLOCATION(SimpleRunnable2_);
     };
     struct   SimpleRunnable3_ : IRunnable {
-        SimpleRunnable3_ (const std::function<void()>& fun2CallOnce)
+        SimpleRunnable3_ (const function<void()>& fun2CallOnce)
             : IRunnable ()
             , fCall_ (fun2CallOnce)
         {
@@ -53,7 +53,7 @@ namespace {
         {
             fCall_ ();
         }
-        std::function<void()>   fCall_;
+        function<void()>   fCall_;
         DECLARE_USE_BLOCK_ALLOCATION(SimpleRunnable3_);
     };
 }
@@ -79,7 +79,7 @@ IRunnablePtr    Execution::mkIRunnablePtr (void (*fun2CallOnce) (void* arg), voi
     return IRunnablePtr (DEBUG_NEW SimpleRunnable2_ (fun2CallOnce, arg));
 }
 
-IRunnablePtr    Execution::mkIRunnablePtr (const std::function<void()>& fun2CallOnce)
+IRunnablePtr    Execution::mkIRunnablePtr (const function<void()>& fun2CallOnce)
 {
     Require (static_cast<bool> (fun2CallOnce));
     return IRunnablePtr (DEBUG_NEW SimpleRunnable3_ (fun2CallOnce));

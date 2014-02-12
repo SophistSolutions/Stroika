@@ -110,7 +110,7 @@ namespace   Stroika {
              */
             template <typename FUNCTION>
             inline  Thread::Thread (FUNCTION f, typename is_function<FUNCTION>::type*) :
-                Thread (std::function<void()>(f))
+                Thread (function<void()>(f))
             {
             }
 #if     qPlatform_POSIX

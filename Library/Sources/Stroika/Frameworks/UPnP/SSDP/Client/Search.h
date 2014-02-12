@@ -64,7 +64,7 @@ namespace   Stroika {
                          *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
                          *  This can be done after the listening has started.
                          */
-                        void    AddOnFoundCallback (const std::function<void (const SSDP::Advertisement& d)>& callOnFinds);
+                        void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds);
 
                     public:
                         /**

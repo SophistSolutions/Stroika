@@ -50,7 +50,7 @@ public:
         Execution::Thread::SuppressAbortInContext  suppressAbort;
         IgnoreExceptionsForCall (fThread_.AbortAndWaitForDone ());
     }
-    void    AddOnFoundCallback (const std::function<void (const SSDP::Advertisement& d)>& callOnFinds)
+    void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
         lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
@@ -167,7 +167,7 @@ public:
     }
 private:
     recursive_mutex                                             fCritSection_;
-    vector<std::function<void (const SSDP::Advertisement& d)>>  fFoundCallbacks_;
+    vector<function<void (const SSDP::Advertisement& d)>>       fFoundCallbacks_;
     Socket                                                      fSocket_;
     Execution::Thread                                           fThread_;
 };

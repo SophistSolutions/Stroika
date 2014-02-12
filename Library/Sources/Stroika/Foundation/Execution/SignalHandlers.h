@@ -12,6 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Set.h"
+#include    "Function.h"
 #include    "Signals.h"
 
 
@@ -84,7 +85,7 @@ namespace   Stroika {
 
             public:
                 SignalHandler (void (*signalHandler)(SignalID), Type type = Type::eDEFAULT);
-                SignalHandler (const function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
+                SignalHandler (const Function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 
             public:
                 nonvirtual  Type    GetType () const;
@@ -101,8 +102,8 @@ namespace   Stroika {
                 nonvirtual  bool operator< (const SignalHandler& rhs) const;
 
             private:
-                Type                                    fType_;
-                shared_ptr<function<void(SignalID)>>    fCall_;
+                Type                        fType_;
+                Function<void(SignalID)>    fCall_;
             };
 
 

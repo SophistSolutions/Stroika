@@ -261,12 +261,17 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
 
 
 struct  LinkMonitor::Rep_ {
-    void    AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback)
+    void    AddCallback (const Callback& callback)
     {
         fCallbacks_.Add (callback);
         StartMonitorIfNeeded_();
     }
-    Containers::Collection<function<void(LinkChange, const String& linkName, const String& ipAddr)>>  fCallbacks_;
+    void    RemoveCallback (const Callback& callback)
+    {
+        fCallbacks_.Remove (callback);
+        // @todo - add some such StopMonitorIfNeeded_();
+    }
+    Containers::Collection<Callback>  fCallbacks_;
 #if     qPlatform_POSIX
     Execution::Thread   fMonitorThread_;
 #endif
@@ -405,7 +410,12 @@ LinkMonitor::LinkMonitor (const LinkMonitor&& rhs)
 {
 }
 
-void    LinkMonitor::AddCallback (const function<void(LinkChange, const String& linkName, const String& ipAddr)>& callback)
+void    LinkMonitor::AddCallback (const Callback& callback)
 {
     fRep_->AddCallback (callback);
+}
+
+void    LinkMonitor::RemoveCallback (const Callback& callback)
+{
+    fRep_->RemoveCallback (callback);
 }

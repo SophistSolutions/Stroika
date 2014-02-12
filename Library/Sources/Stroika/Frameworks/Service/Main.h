@@ -503,7 +503,7 @@ namespace   Stroika {
                  *
                  *  See the Samples/SimpleService example code for a functioanl example.
                  */
-                virtual void                MainLoop (std::function<void()> startedCB) = 0;
+                virtual void                MainLoop (function<void()> startedCB) = 0;
 
             public:
                 virtual void                OnReReadConfigurationRequest ();

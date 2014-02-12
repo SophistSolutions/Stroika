@@ -189,7 +189,7 @@ namespace   Stroika {
                  *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
                  */
-                nonvirtual  Collection<T>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Collection<T>    EachWith (const function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**
