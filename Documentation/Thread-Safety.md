@@ -22,7 +22,7 @@
 	<h3><a name='Automatically-Synchronized-Thread-Safety'>Automatically-Synchronized-Thread-Safety</a></h3>
 	<div>
 		Callers can freely mix readers and writers. The class automatically
-		managers assuring maintainance of a consistent internal state.
+		manages assuring maintainance of a consistent internal state.
 
 		Most Stroika classes use this.
 		
