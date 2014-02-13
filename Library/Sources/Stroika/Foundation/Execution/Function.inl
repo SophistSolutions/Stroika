@@ -40,7 +40,7 @@ namespace   Stroika {
             inline  typename Function<FUNCTION_SIGNATURE>::result_type  Function<FUNCTION_SIGNATURE>::operator()( Args... args ) const
             {
                 RequireNotNull (fFun_);
-                return (*fFun_) (args...);
+                return (*fFun_) (forward<Args>(args)...);
             }
             template    <typename FUNCTION_SIGNATURE>
             inline  int Function<FUNCTION_SIGNATURE>::Compare (const Function& rhs) const
