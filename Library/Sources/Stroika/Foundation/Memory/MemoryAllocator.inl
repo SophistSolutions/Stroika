@@ -97,7 +97,7 @@ namespace   Stroika {
             template    <typename... ARGS>
             inline  void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS&&  ... args)
             {
-                ::new ((void*)p) T (std::forward<ARGS> (args)...);
+                ::new ((void*)p) T (forward<ARGS> (args)...);
             }
             template <typename T, typename BASE_ALLOCATOR>
             inline  size_t  STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept
