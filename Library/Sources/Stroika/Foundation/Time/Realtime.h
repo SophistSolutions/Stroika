@@ -19,6 +19,8 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *      @todo   Consider making Time::GetTickCount () inline. Measure code-size impact.
+ *
  */
 
 

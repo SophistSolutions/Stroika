@@ -43,15 +43,16 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
     Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
     return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 #elif   qPlatform_Windows
-    static  bool            sInited =   false;
-    static  LARGE_INTEGER   sPerformanceFrequency;
-    if (not sInited) {
-        if (not ::QueryPerformanceFrequency (&sPerformanceFrequency)) {
-            sPerformanceFrequency.QuadPart = 0;
+    static  DurationSecondsType sPerformanceFrequencyBasis_ = [] () {
+        LARGE_INTEGER   performanceFrequency;
+        if (::QueryPerformanceFrequency (&performanceFrequency) == 0) {
+            return 0.0;
         }
-        sInited = true;
-    }
-    if (sPerformanceFrequency.QuadPart == 0) {
+        else {
+            return static_cast<DurationSecondsType> (performanceFrequency.QuadPart);
+        }
+    } ();
+    if (sPerformanceFrequencyBasis_ == 0.0) {
 #if     (_WIN32_WINNT >= 0x0600)
         return (DurationSecondsType (::GetTickCount64 ()) / 1000.0);
 #else
@@ -60,12 +61,9 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
         DISABLE_COMPILER_MSC_WARNING_END(28159)
 #endif
     }
-    else {
-        LARGE_INTEGER   counter;
-        //counter.QuadPart = 0;
-        Verify (::QueryPerformanceCounter (&counter));
-        return static_cast<DurationSecondsType> (static_cast<DurationSecondsType> (counter.QuadPart) / static_cast<DurationSecondsType> (sPerformanceFrequency.QuadPart));
-    }
+    LARGE_INTEGER   counter;
+    Verify (::QueryPerformanceCounter (&counter));
+    return static_cast<DurationSecondsType> (counter.QuadPart) / sPerformanceFrequencyBasis_;
 #else
     return ::time (0);    //tmphack... not good but better than assert erorr
 #endif
