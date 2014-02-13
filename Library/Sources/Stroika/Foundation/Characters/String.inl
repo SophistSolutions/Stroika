@@ -11,7 +11,6 @@
  */
 #include    "../Debug/Assertions.h"
 #include    "../Execution/ModuleInit.h"
-#include    "Concrete/String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h"
 
 
 namespace   Stroika {
@@ -373,6 +372,10 @@ namespace   Stroika {
                 }
                 return Compare (rhs, co) == 0;
             }
+            inline  bool String::Equals (const wchar_t* rhs, CompareOptions co) const
+            {
+                return Compare (rhs, co) == 0;
+            }
             inline  bool String::operator<= (const String& rhs) const
             {
                 return Compare (rhs) <= 0;
@@ -439,13 +442,11 @@ namespace   Stroika {
             }
             inline  bool String::operator== (const wchar_t* rhs) const
             {
-                // call Equals() not compare cuz can be quicker
-                return Equals (Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (rhs));
+                return Equals (rhs);
             }
             inline  bool String::operator!= (const wchar_t* rhs) const
             {
-                // call Equals() not compare cuz can be quicker
-                return not Equals (Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (rhs));
+                return not Equals (rhs);
             }
 
 
@@ -456,7 +457,8 @@ namespace   Stroika {
             */
             inline  String  operator+ (const wchar_t* lhs, const String& rhs)
             {
-                return Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (lhs) + rhs;
+                // @todo - consider use of Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly()
+                return String (lhs) + rhs;
             }
 
 

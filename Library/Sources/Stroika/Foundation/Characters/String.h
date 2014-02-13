@@ -832,6 +832,7 @@ namespace   Stroika {
                 *              lhs.Compare (rhs, co);
                 */
                 nonvirtual  bool    Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  bool    Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
