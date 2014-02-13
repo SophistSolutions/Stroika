@@ -23,7 +23,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************** Execution::WaitTimedOutException::WE_ ***************************
+             ********************** Execution::WaitTimedOutException ************************
              ********************************************************************************
              */
             inline  void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
