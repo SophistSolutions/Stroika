@@ -128,10 +128,13 @@ namespace   Stroika {
             }
             inline  void    String::InsertAt (const String& s, size_t at)
             {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
+
                 // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
                 // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
                 // another thread could only change that other envelopes copy
-                pair<const Character*, const Character*> d = s._GetRep ().GetData ();
+                String  sCopy  =   s;
+                pair<const Character*, const Character*> d = sCopy._GetRep ().GetData ();
                 InsertAt (d.first, d.second, at);
             }
             inline  void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
@@ -140,13 +143,15 @@ namespace   Stroika {
             }
             inline  void    String::Append (Character c)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (c, GetLength ());
+                String  tmp =   *this;
+                tmp.InsertAt (c, tmp.GetLength ());
+                *this = tmp;
             }
             inline  void    String::Append (const String& s)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (s, GetLength ());
+                String  tmp =   *this;
+                tmp.InsertAt (s, tmp.GetLength ());
+                *this = tmp;
             }
             inline  void    String::Append (const wchar_t* from, const wchar_t* to)
             {
@@ -333,40 +338,42 @@ namespace   Stroika {
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                pair<const Character*, const Character*> l = _GetRep ().GetData ();
-                pair<const Character*, const Character*> r = rhs._GetRep ().GetData ();
+                String  threadSafeCopy  =   *this;
+                pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
+                String  threadSafeRHSCopy  =   rhs;
+                pair<const Character*, const Character*> r = threadSafeRHSCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, r.first, r.second, co);
             }
             inline  int String::Compare (const Character* rhs, CompareOptions co) const
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                pair<const Character*, const Character*> l = _GetRep ().GetData ();
+                String  threadSafeCopy  =   *this;
+                pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
             }
             inline  int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                pair<const Character*, const Character*> l = _GetRep ().GetData ();
+                String  threadSafeCopy  =   *this;
+                pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, rhsStart, rhsEnd, co);
             }
             inline  int String::Compare (const wchar_t* rhs, CompareOptions co) const
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                pair<const Character*, const Character*> l = _GetRep ().GetData ();
+                String  threadSafeCopy  =   *this;
+                pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (rhs), co);
             }
             inline  int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                pair<const Character*, const Character*> l = _GetRep ().GetData ();
+                String  threadSafeCopy  =   *this;
+                pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }
             inline  bool String::Equals (const String& rhs, CompareOptions co) const
             {
+                // OK in two steps because first doesnt affect correctness - just performance
                 if (GetLength () != rhs.GetLength ()) {
                     return false;
                 }
