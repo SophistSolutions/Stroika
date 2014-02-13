@@ -57,6 +57,6 @@ void    ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
     for (ChangedCallbackType f : fRep_->fCallbacks_) {
-        return f (ProgressMonitor (fRep_));
+        f (ProgressMonitor (fRep_));
     }
 }
