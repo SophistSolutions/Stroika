@@ -36,12 +36,7 @@ namespace   Stroika {
              *
              *  \note   This always calls CheckForThreadAborting () at least once, but may not call Sleep() if not needed.
              */
-            inline  void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
-            {
-                if (Time::GetTickCount () > afterTickCount) {
-                    DoThrow (WaitTimedOutException ());
-                }
-            }
+            void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount);
 
 
         }
@@ -49,5 +44,12 @@ namespace   Stroika {
 }
 
 
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include    "WaitTimedOutException.inl"
 
 #endif  /*_Stroika_Foundation_Execution_WaitTimedOutException_h_*/

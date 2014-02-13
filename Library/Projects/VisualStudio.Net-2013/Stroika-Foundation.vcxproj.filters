@@ -2373,5 +2373,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl">
       <Filter>Sources\Execution</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
   </ItemGroup>
 </Project>

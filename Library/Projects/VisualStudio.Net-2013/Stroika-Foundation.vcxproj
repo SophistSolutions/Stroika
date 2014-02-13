@@ -1213,6 +1213,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
