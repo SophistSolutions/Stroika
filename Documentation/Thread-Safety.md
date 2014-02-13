@@ -32,3 +32,26 @@
 
 		
 		
+
+
+
+
+
+
+	<h3>DOCS TO ADD - ILLORGANIZED</h3>
+	<div>
+		<ul>
+			<li>DOCUMENT /? DEAL WITH THE ISSUE OF deadlocks: Apply/FindFirstThat 
+			and lambda - use Iterator<> directly instead of apply to avoid deadlocks.
+			Advantage of using Apply is its faster - since it acuires locks once
+			and logically atomic
+			</li>
+			
+			<li>
+			</li>
+			
+		</ul>
+	</div>
+
+		
+		

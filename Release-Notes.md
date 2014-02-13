@@ -24,6 +24,7 @@ History
 	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a21">v2.0a21x</a><br/>2014-02-??</td>
 	<td>
 		<ul>
+			<li>???string classlib improvemnts - maybe fix threadsafty issue</li>
 			<li>Duration::PrettyPrint and Lingustics/Word Pluralize etc all use new String class (instead of std::wstring/string). This isn't backward comptable, but close. (so we can use String_Constant in more places).</li>
 		</ul>
 	</td>
