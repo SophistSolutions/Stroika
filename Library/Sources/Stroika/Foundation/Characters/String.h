@@ -1027,7 +1027,7 @@ namespace   Stroika {
             };
 
 
-            /*
+            /**
              *  Return the concatenation of these two strings.
              *
              *  EXPERIMENTAL AS OF 2014-02-11 - unsure how this works with namespace imports (requires using Foundation::Characters) and not totally
@@ -1037,6 +1037,21 @@ namespace   Stroika {
              *      -- LGP 2014-02-11
              */
             String  operator+ (const wchar_t* lhs, const String& rhs);
+
+
+            /**
+             *  Use Stroika String more easily with std::ostream.
+             *
+             *  Note - this uses templates to avoid the need to create a dependency of this module on iostream.
+             *
+             *  \note   EXPERIMENTAL API
+             *
+             *  \note   Note sure how well this works being in a namespace!
+             *
+             *  \note   Intentionally dont do operator>> because not so well defined for strings (could do as wtith STL I guess?)
+             */
+            template    <typename OSTREAM>
+            OSTREAM&    operator<< (OSTREAM& out, const String& s);
 
 
             /**
