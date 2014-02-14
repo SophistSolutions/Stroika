@@ -31,7 +31,10 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug)
+#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug)
+
+
+
 
 
 
@@ -46,38 +49,46 @@ namespace {
         return Time::GetTickCount () - start;
     }
 
-    void    Tester(String testName,
-                   function<void()> baselineT, String baselineTName,
-                   function<void()> compareWithT, String compareWithTName,
-                   unsigned int runCount,
-    function<void(String testName, String baselineTName, String compareWithTName, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = [] (String testName, String baselineTName, String compareWithTName, DurationSecondsType baselineTime, DurationSecondsType compareWithTime) -> void {
+    void    Tester (String testName,
+                    function<void()> baselineT, String baselineTName,
+                    function<void()> compareWithT, String compareWithTName,
+                    unsigned int runCount,
+                    double expectedPercentFaster,
+    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = [] (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime) -> void {
         cout << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
         DurationSecondsType totalTime = baselineTime + compareWithTime;
         double ratio = compareWithTime / baselineTime;
-        if (ratio < 1)
+        double  changePct   =   (1 - ratio) * 100.0;
+        if (changePct >= 0)
         {
-            cout << "    " << testName.AsNarrowSDKString () << " is " << (1 - ratio) * 100 << "% faster";
+            cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << changePct << "% faster";
         }
         else {
-            cout << "    " << testName.AsNarrowSDKString () << " is " << (ratio - 1) * 100 << "% slower";
+            cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
         }
-        cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds)" << endl;
+        if (changePct < expectedPercentFaster)
+        {
+            cout << " {{{WARNING - expected at least " << expectedPercentFaster << " faster}}}";
+        }
+        cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
 
     }
-                  )
+                   )
     {
         DurationSecondsType time1 = RunTest_ (baselineT, runCount);
         DurationSecondsType time2 = RunTest_ (compareWithT, runCount);
 #if qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals (time1, 1, .1)) {
-            cout << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << (runCount / time1) << endl;
+            cout << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << int (runCount / time1) << endl;
         }
 #endif
-        printResults (testName, baselineTName, compareWithTName, time1, time2);
+        printResults (testName, baselineTName, compareWithTName, expectedPercentFaster, time1, time2);
     }
 
-
 }
+
+
+
 
 
 namespace {
@@ -112,17 +123,51 @@ namespace {
         VerifyTestResult (v[0].fS1 == v[1].fS1);
     }
 
+}
+
+
+
+
+
+
+
+
+
+namespace {
+
+    template <typename WIDESTRING_IMPL>
+    void    Test_SimpleStringAppends1_()
+    {
+        const WIDESTRING_IMPL KBase = L"1234568321";
+        WIDESTRING_IMPL w = KBase;
+        for (int i = 0; i < 10; ++i) {
+            w += KBase;
+        }
+        VerifyTestResult (w.length () == KBase.length () * 11);
+    }
 
 }
+
+
+
+
+
 
 namespace   {
     void    RunPerformanceTests_ ()
     {
-        Tester(L"Simple Struct With Strings Filling And Copying",
-               Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-               Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-               5700
-              );
+        Tester (L"Simple Struct With Strings Filling And Copying",
+                Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
+                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
+                40000,
+                6
+               );
+        Tester (L"Simple String append test (+=STROBJ) 10x",
+                Test_SimpleStringAppends1_<wstring>, L"wstring",
+                Test_SimpleStringAppends1_<String>, L"Charactes::String",
+                1172017,
+                -1800
+               );
     }
 }
 
