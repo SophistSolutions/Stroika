@@ -57,6 +57,10 @@ void    ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
     for (ChangedCallbackType f : fRep_->fCallbacks_) {
+#if     qFoundation_Execution_Function_OperatorForwardNeedsRefBug
         f (ProgressMonitor (fRep_));
+#else
+        f (ref (ProgressMonitor (fRep_)));
+#endif
     }
 }
