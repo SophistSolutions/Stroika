@@ -75,13 +75,13 @@ namespace {
         else {
             cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
         }
+        cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster)
         {
-            cout << " {{{WARNING - expected at least " << expectedPercentFaster << " faster}}}";
+            cout << "    {{{WARNING - expected at least " << expectedPercentFaster << "% faster}}}" << endl;
         }
 #endif
-        cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
 
     }
                    )
@@ -155,14 +155,16 @@ namespace {
     void    Test_SimpleStringAppends1_()
     {
         const WIDESTRING_IMPL KBase = L"1234568321";
-        WIDESTRING_IMPL w = KBase;
+        WIDESTRING_IMPL w;
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == KBase.length () * 11);
+        VerifyTestResult (w.length () == KBase.length () * 10);
     }
 
 }
+
+
 
 
 
@@ -172,16 +174,33 @@ namespace {
     void    Test_SimpleStringAppends2_()
     {
         const wchar_t KBase[] = L"1234568321";
-        WIDESTRING_IMPL w = KBase;
+        WIDESTRING_IMPL w;
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == wcslen(KBase) * 11);
+        VerifyTestResult (w.length () == wcslen(KBase) * 10);
     }
 
 }
 
 
+
+
+
+namespace {
+
+    template <typename WIDESTRING_IMPL>
+    void    Test_SimpleStringAppends3_()
+    {
+        const wchar_t KBase[] = L"1234568321";
+        WIDESTRING_IMPL w;
+        for (int i = 0; i < 100; ++i) {
+            w += KBase;
+        }
+        VerifyTestResult (w.length () == wcslen(KBase) * 100);
+    }
+
+}
 
 
 
@@ -246,13 +265,15 @@ namespace {
 
 
 
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
         Tester (L"Test of simple locking strategies",
                 Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-                40000,
+                15239,
                 -1000000    // disable warning for this
                );
         Tester (L"Simple Struct With Strings Filling And Copying",
@@ -261,21 +282,24 @@ namespace   {
                 40000,
                 6
                );
-        Tester (L"Simple String append test (+=STROBJ) 10x",
+        Tester (L"Simple String append test (+='string object') 10x",
                 Test_SimpleStringAppends1_<wstring>, L"wstring",
                 Test_SimpleStringAppends1_<String>, L"Charactes::String",
                 1172017,
-                -1800
+                -1900
                );
         Tester (L"Simple String append test (+=wchar_t[]) 10x",
                 Test_SimpleStringAppends2_<wstring>, L"wstring",
                 Test_SimpleStringAppends2_<String>, L"Charactes::String",
                 1312506,
-                -2400
+                -2500
                );
-
-
-
+        Tester (L"Simple String append test (+=wchar_t[]) 100x",
+                Test_SimpleStringAppends3_<wstring>, L"wstring",
+                Test_SimpleStringAppends3_<String>, L"Charactes::String",
+                272170,
+                -5000
+               );
     }
 }
 
