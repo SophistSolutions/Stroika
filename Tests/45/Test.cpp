@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <mutex>
 
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
@@ -74,7 +75,7 @@ namespace {
         else {
             cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
         }
-#if		qPrintOutIfFailsToMeetPerformanceExpectations
+#if     qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster)
         {
             cout << " {{{WARNING - expected at least " << expectedPercentFaster << " faster}}}";
@@ -85,12 +86,12 @@ namespace {
     }
                    )
     {
-#if		qDebug
-		runCount = static_cast<unsigned int> (runCount*qDebugCaseRuncountRatio);
+#if     qDebug
+        runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
         DurationSecondsType time1 = RunTest_ (baselineT, runCount);
         DurationSecondsType time2 = RunTest_ (compareWithT, runCount);
-#if		qPrintOutIfBaselineOffFromOneSecond
+#if     qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (time1, 1, .1)) {
             cout << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << int (runCount / time1) << endl;
         }
@@ -166,9 +167,77 @@ namespace {
 
 
 
+
+
+
+
+namespace {
+
+    namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
+        mutex   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
+        int     Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
+        void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK(function<void(int*)> doInsideLock)
+        {
+            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
+            // or just using a mutex
+            //
+            // I dont care about the (much rarer) write case where we really need to modify
+            lock_guard<mutex> critSec (Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex);
+            doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
+        }
+        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int (1));
+        void    Test_MutexVersusSharedPtrCopy_SharedPtrCopy(function<void(int*)> doInsideLock)
+        {
+            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
+            // or just using a mutex
+            //
+            // I dont care about the (much rarer) write case where we really need to modify
+            shared_ptr<int> tmp = Test_MutexVersusSharedPtrCopy_sharedPtrCase;
+            doInsideLock (tmp.get ());
+        }
+
+        int s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT;
+        void    Test_MutexVersusSharedPtrCopy_COUNTEST (int* i)
+        {
+            s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT += *i;
+        }
+
+    }
+
+    void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK()
+    {
+        using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
+        s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (Test_MutexVersusSharedPtrCopy_COUNTEST);
+        }
+        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
+    }
+    void    Test_MutexVersusSharedPtrCopy_shared_ptr_copy()
+    {
+        using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
+        s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MutexVersusSharedPtrCopy_SharedPtrCopy (Test_MutexVersusSharedPtrCopy_COUNTEST);
+        }
+        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
+    }
+
+}
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
+        Tester (L"Test of simple locking strategies",
+                Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
+                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
+                40000,
+                -1000000    // disable warning for this
+               );
         Tester (L"Simple Struct With Strings Filling And Copying",
                 Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
