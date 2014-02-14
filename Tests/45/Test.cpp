@@ -34,6 +34,14 @@ using   namespace   Stroika::Foundation::Time;
 #define   qPrintOutIfBaselineOffFromOneSecond (!qDebug)
 
 
+// My performance expectation numbers are calibrated for MSVC (2k13.net)
+// Dont print when they differ on other platforms.
+// This is only intended to alert me when something changes GROSSLY.
+#define   qPrintOutIfFailsToMeetPerformanceExpectations (!qDebug && defined (_MSC_VER))
+
+
+// Use this so when running #if qDebug case - we dont waste a ton of time with this test
+#define   qDebugCaseRuncountRatio (.1)
 
 
 
@@ -66,19 +74,24 @@ namespace {
         else {
             cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
         }
+#if		qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster)
         {
             cout << " {{{WARNING - expected at least " << expectedPercentFaster << " faster}}}";
         }
+#endif
         cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
 
     }
                    )
     {
+#if		qDebug
+		runCount = static_cast<unsigned int> (runCount*qDebugCaseRuncountRatio);
+#endif
         DurationSecondsType time1 = RunTest_ (baselineT, runCount);
         DurationSecondsType time2 = RunTest_ (compareWithT, runCount);
-#if qPrintOutIfBaselineOffFromOneSecond
-        if (not NearlyEquals (time1, 1, .1)) {
+#if		qPrintOutIfBaselineOffFromOneSecond
+        if (not NearlyEquals<DurationSecondsType> (time1, 1, .1)) {
             cout << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << int (runCount / time1) << endl;
         }
 #endif
