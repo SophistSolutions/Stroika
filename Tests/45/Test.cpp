@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <fstream>
 #include    <mutex>
 
 #include    "Stroika/Foundation/Characters/String.h"
@@ -12,7 +13,7 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-
+#include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -27,6 +28,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Math;
 using   namespace   Stroika::Foundation::Time;
 
@@ -47,6 +49,13 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
+
+namespace {
+    const char kDefaultPerfOutFile_[]   =   "PERF-OUT.txt";
+    bool    sShowOutput_    =   false;
+}
+
+
 namespace {
 
     DurationSecondsType RunTest_(function<void()> t, unsigned int runCount)
@@ -64,22 +73,29 @@ namespace {
                     unsigned int runCount,
                     double expectedPercentFaster,
     function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = [] (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime) -> void {
-        cout << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
+
+        static  shared_ptr<ostream> out2File;
+        if (not sShowOutput_ and out2File.get () == nullptr)
+        {
+            out2File.reset (new ofstream (kDefaultPerfOutFile_));
+        }
+        ostream&    outTo = (sShowOutput_ ? cout : *out2File);
+        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
         DurationSecondsType totalTime = baselineTime + compareWithTime;
         double ratio = compareWithTime / baselineTime;
         double  changePct   =   (1 - ratio) * 100.0;
         if (changePct >= 0)
         {
-            cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << changePct << "% faster";
+            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << changePct << "% faster";
         }
         else {
-            cout << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
+            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << (-changePct) << "% slower";
         }
-        cout << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
+        outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds]" << endl;
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster)
         {
-            cout << "    {{{WARNING - expected at least " << expectedPercentFaster << "% faster}}}" << endl;
+            outTo << "    {{{WARNING - expected at least " << expectedPercentFaster << "% faster}}}" << endl;
         }
 #endif
 
@@ -270,44 +286,54 @@ namespace {
 namespace   {
     void    RunPerformanceTests_ ()
     {
-        Tester (L"Test of simple locking strategies",
-                Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-                15239,
-                -1000000    // disable warning for this
-               );
-        Tester (L"Simple Struct With Strings Filling And Copying",
-                Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-                40000,
-                6
-               );
-        Tester (L"Simple String append test (+='string object') 10x",
-                Test_SimpleStringAppends1_<wstring>, L"wstring",
-                Test_SimpleStringAppends1_<String>, L"Charactes::String",
-                1172017,
-                -1900
-               );
-        Tester (L"Simple String append test (+=wchar_t[]) 10x",
-                Test_SimpleStringAppends2_<wstring>, L"wstring",
-                Test_SimpleStringAppends2_<String>, L"Charactes::String",
-                1312506,
-                -2500
-               );
-        Tester (L"Simple String append test (+=wchar_t[]) 100x",
-                Test_SimpleStringAppends3_<wstring>, L"wstring",
-                Test_SimpleStringAppends3_<String>, L"Charactes::String",
-                272170,
-                -5000
-               );
+        Tester (
+            L"Test of simple locking strategies",
+            Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
+            Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
+            15239,
+            -1000000    // disable warning for this
+        );
+        Tester (
+            L"Simple Struct With Strings Filling And Copying",
+            Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
+            Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
+            40000,
+            6
+        );
+        Tester (
+            L"Simple String append test (+='string object') 10x",
+            Test_SimpleStringAppends1_<wstring>, L"wstring",
+            Test_SimpleStringAppends1_<String>, L"Charactes::String",
+            1172017,
+            -1900
+        );
+        Tester (
+            L"Simple String append test (+=wchar_t[]) 10x",
+            Test_SimpleStringAppends2_<wstring>, L"wstring",
+            Test_SimpleStringAppends2_<String>, L"Charactes::String",
+            1312506,
+            -2500
+        );
+        Tester (
+            L"Simple String append test (+=wchar_t[]) 100x",
+            Test_SimpleStringAppends3_<wstring>, L"wstring",
+            Test_SimpleStringAppends3_<String>, L"Charactes::String",
+            272170,
+            -5000
+        );
     }
 }
 
 
 
 
+
+
 int     main (int argc, const char* argv[])
 {
+    // NOTE: run with --show or look for output in PERF-OUT.txt
+    Sequence<String>  cmdLine   =   Execution::ParseCommandLine (argc, argv);
+    sShowOutput_ = Execution::MatchesCommandLineArgument (cmdLine, L"show");
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
     return EXIT_SUCCESS;
