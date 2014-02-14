@@ -32,7 +32,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug)
+//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -110,7 +110,7 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void    Test_StructWithStringsFillingAndCopying()
     {
-		DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
         struct  S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
@@ -125,7 +125,7 @@ namespace {
             {
             }
         };
-		DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
         S   s1;
         S   s2 (L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144");
         s1 = s2;
@@ -165,6 +165,21 @@ namespace {
 }
 
 
+
+namespace {
+
+    template <typename WIDESTRING_IMPL>
+    void    Test_SimpleStringAppends2_()
+    {
+        const wchar_t KBase[] = L"1234568321";
+        WIDESTRING_IMPL w = KBase;
+        for (int i = 0; i < 10; ++i) {
+            w += KBase;
+        }
+        VerifyTestResult (w.length () == wcslen(KBase) * 11);
+    }
+
+}
 
 
 
@@ -252,6 +267,15 @@ namespace   {
                 1172017,
                 -1800
                );
+        Tester (L"Simple String append test (+=wchar_t[]) 10x",
+                Test_SimpleStringAppends2_<wstring>, L"wstring",
+                Test_SimpleStringAppends2_<String>, L"Charactes::String",
+                1312506,
+                -2400
+               );
+
+
+
     }
 }
 
