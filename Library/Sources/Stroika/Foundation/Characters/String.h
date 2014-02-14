@@ -265,6 +265,17 @@ namespace   Stroika {
              *      internal NUL-characters, if their underling implementation doesn't allow for that.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *                              with caveats!
+             *
+             *                              const wchar_t* c_str ()
+             *                              const wchar_t* As<const wchar_t*> ()
+             *                              const Character* As<const Character*> ()
+             *
+             *                              all return 'internal' pointers whose lifetime extends until the next modification of the String object.
+             *                              But if another thread modifies this String object, that might not be usefully long.
+             *
+             *                              You can always copy a 'shared' String to a copy no other thread is modifying, and call c_str() on that.
+             *
              *
              *      @see   Concrete::String_BufferedArray
              *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)

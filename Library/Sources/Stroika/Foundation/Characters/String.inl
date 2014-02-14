@@ -80,19 +80,22 @@ namespace   Stroika {
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
+                String  threadSafeCopy  =   *this;
                 RequireNotNull (bufFrom);
-                Require (bufFrom + GetLength () >= bufTo);
-                _GetRep ().CopyTo (bufFrom, bufTo);
+                Require (bufFrom + threadSafeCopy.GetLength () >= bufTo);
+                threadSafeCopy._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  void    String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
+                String  threadSafeCopy  =   *this;
                 RequireNotNull (bufFrom);
-                Require (bufFrom + GetLength () >= bufTo);
-                _GetRep ().CopyTo (bufFrom, bufTo);
+                Require (bufFrom + threadSafeCopy.GetLength () >= bufTo);
+                threadSafeCopy._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  size_t  String::GetLength () const
             {
-                return (_GetRep ().GetLength ());
+                String  threadSafeCopy  =   *this;
+                return threadSafeCopy._GetRep ().GetLength ();
             }
             inline  void    String::RemoveAt (size_t charAt)
             {
@@ -100,7 +103,8 @@ namespace   Stroika {
             }
             inline  bool    String::empty () const
             {
-                return _GetRep ().GetLength () == 0;
+                String  threadSafeCopy  =   *this;
+                return threadSafeCopy._GetRep ().GetLength () == 0;
             }
             inline  void    String::clear ()
             {
@@ -128,14 +132,14 @@ namespace   Stroika {
             }
             inline  void    String::InsertAt (const String& s, size_t at)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-
                 // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
                 // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
                 // another thread could only change that other envelopes copy
-                String  sCopy  =   s;
-                pair<const Character*, const Character*> d = sCopy._GetRep ().GetData ();
-                InsertAt (d.first, d.second, at);
+                String  rhsCopy  =   s;
+                pair<const Character*, const Character*> d = rhsCopy._GetRep ().GetData ();
+                String  thisCopy =  *this;
+                thisCopy.InsertAt (d.first, d.second, at);
+                *this = thisCopy;
             }
             inline  void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
             {
@@ -155,8 +159,9 @@ namespace   Stroika {
             }
             inline  void    String::Append (const wchar_t* from, const wchar_t* to)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (from, to, GetLength ());
+                String  tmp =   *this;
+                tmp.InsertAt (from, to, tmp.GetLength ());
+                *this = tmp;
             }
             inline  void    String::Append (const Character* from, const Character* to)
             {
