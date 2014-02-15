@@ -240,8 +240,8 @@
 namespace   std {
     template    <class charT> struct char_traits;
     template<>  struct char_traits<wchar_t>;
-    template <class charT, class traits = char_traits<charT>> class basic_ostream;
-    using   wostream    =   basic_ostream<wchar_t>;
+    template <class charT, class traits> class basic_ostream;
+    using   wostream    =   basic_ostream<wchar_t, char_traits<wchar_t>>;
 }
 
 
