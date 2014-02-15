@@ -236,6 +236,15 @@
 
 
 
+// forward declare so we can provide operator<<, but doing #include iostream/iosfwd creates much more dependency
+namespace   std {
+    template    <class charT> struct char_traits;
+    template<>  struct char_traits<wchar_t>;
+    template <class charT, class traits = char_traits<charT>> class basic_ostream;
+    using   wostream    =   basic_ostream<wchar_t>;
+}
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
@@ -1042,16 +1051,16 @@ namespace   Stroika {
             /**
              *  Use Stroika String more easily with std::ostream.
              *
-             *  Note - this uses templates to avoid the need to create a dependency of this module on iostream.
-             *
              *  \note   EXPERIMENTAL API
              *
              *  \note   Note sure how well this works being in a namespace!
              *
              *  \note   Intentionally dont do operator>> because not so well defined for strings (could do as wtith STL I guess?)
+             *
+             *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
+             *          but that failed (maybe doable but overloading was trickier).
              */
-            template    <typename OSTREAM>
-            OSTREAM&    operator<< (OSTREAM& out, const String& s);
+            wostream&    operator<< (wostream& out, const String& s);
 
 
             /**

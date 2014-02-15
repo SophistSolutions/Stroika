@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <sstream>
 #include    <cstdarg>
 
 #include    "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -1036,6 +1037,21 @@ namespace {
 
 
 
+namespace {
+    void    Test31_OperatorINSERT_ostream_ ()
+    {
+        using namespace std;
+        wstringstream   out;
+        out << String (L"abc");
+        VerifyTestResult (out.str () == L"abc");
+    }
+}
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1075,6 +1091,7 @@ namespace   {
         Test28_ReplacementForStripTrailingCharIfAny_ ();
         Test29_StringWithSequenceOfCharacter_ ();
         Test30_LimitLength_ ();
+        Test31_OperatorINSERT_ostream_ ();
     }
 }
 

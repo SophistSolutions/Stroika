@@ -479,11 +479,13 @@ namespace   Stroika {
             ********************************** operator<< **********************************
             ********************************************************************************
             */
-            template    <typename OSTREAM>
-            OSTREAM&    operator<< (OSTREAM& out, const String& s)
+#if 1
+//            template    <typename OSTREAM>
+            inline  wostream&    operator<< (wostream& out, const String& s)
             {
-                return out << c._str ();
+                return out << s.c_str ();
             }
+#endif
 
 
             /*
