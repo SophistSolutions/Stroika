@@ -7,6 +7,7 @@
 #include    <iostream>
 #include    <fstream>
 #include    <mutex>
+#include    <sstream>
 
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
@@ -34,7 +35,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER))
+#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -109,7 +110,7 @@ namespace {
         DurationSecondsType time2 = RunTest_ (compareWithT, runCount);
 #if     qPrintOutIfBaselineOffFromOneSecond
         if (not NearlyEquals<DurationSecondsType> (time1, 1, .1)) {
-            cout << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << int (runCount / time1) << endl;
+            cerr << "SUGGESTION: Baseline Time: " << time1 << " and runCount = " << runCount << " so try using runCount = " << int (runCount / time1) << endl;
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, expectedPercentFaster, time1, time2);
@@ -283,6 +284,30 @@ namespace {
 
 
 
+
+namespace {
+    template <typename WIDESTRING_IMPL>
+    void    Test_OperatorINSERT_ostream_ ()
+    {
+        using namespace std;
+        WIDESTRING_IMPL kT1 =   L"abc";
+        WIDESTRING_IMPL kT2 =   L"123";
+        WIDESTRING_IMPL kT3 =   L"abc123abc123";
+        wstringstream   out;
+        for (int i = 0; i < 1000; ++i) {
+            out << kT1 << kT2 << kT3;
+        }
+        VerifyTestResult (out.str ().length () == 18 * 1000);
+    }
+}
+
+
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -321,8 +346,17 @@ namespace   {
             272170,
             -5000
         );
+        Tester (
+            L"wstringstream << test",
+            Test_OperatorINSERT_ostream_<wstring>, L"wstring",
+            Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
+            5438 ,
+            -10
+        );
     }
 }
+
+
 
 
 
