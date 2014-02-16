@@ -16,6 +16,9 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
+ *
  *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.
  *              I THINK if one SEEKS this, but the underlying
  *              class doesn't support seeking, we MAY need to either BUFFER MORE, or throw not supported.

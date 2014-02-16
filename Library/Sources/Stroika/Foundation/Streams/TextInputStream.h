@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
  *      @todo   TextInputStream::ReadLines () NYI
  *
  *      @todo   Add Close() as with - binaryinputstream!

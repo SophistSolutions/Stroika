@@ -18,6 +18,9 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
+ *
  *  TODO:
  *          @todo   Do a better job TIEING these together. For example assert about no seekability? Or ???
  *                  somehow better handle calls to common seek interface? Maybe make seek private/issekable, so you

@@ -18,12 +18,20 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
+ *
  *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
  *
  *              (maybe close/flush ignored).
  *
  *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
  *              have flush/close allowed, and anything else generate an assert error?
+ *
+ *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
+ *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
+ *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
+ *              PullBackEOF() or RestrictEOF() or RemovePast(); OR ResetEOFToCurrentPosiiton(). Later maybe best API.
  *
  *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where
  *              it was a PROPERTY OF THE CLASS (or alternate API) where writes timeout after

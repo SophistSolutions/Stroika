@@ -20,6 +20,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
  *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
  *
  *              (maybe close ignored).

@@ -16,9 +16,17 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
+ *
  *      @todo   Add Close() as with - binaryoutputstream!
  *
  *      @todo   Add Flush() like we have for binaryoutputstream!
+ *
+ *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
+ *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
+ *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
+ *              PullBackEOF() or RestrictEOF() or RemovePast(); OR ResetEOFToCurrentPosiiton(). Later maybe best API.
  *
  *      @todo   Consider adding locale feature. if you use narrow string (char* or string) it uses associated
  *              locale. If none, use global locale? Could use codepage instead of locale, but propba
