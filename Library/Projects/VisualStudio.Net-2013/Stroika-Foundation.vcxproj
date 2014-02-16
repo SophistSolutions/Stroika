@@ -619,6 +619,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
@@ -967,6 +968,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
@@ -1264,6 +1266,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />

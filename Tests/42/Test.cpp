@@ -13,6 +13,7 @@
 #include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -166,6 +167,45 @@ namespace   {
 
 
 
+
+namespace   {
+    namespace   TestBasicTextOutputStream_ {
+
+        namespace  Private_ {
+            void    T1_ ()
+            {
+                BasicTextOutputStream    out;
+                out << L"abc";
+                VerifyTestResult (out.As<String> () == L"abc");
+                out << L"123";
+                VerifyTestResult (out.As<String> () == L"abc123");
+            }
+            void    T2_ ()
+            {
+                BasicTextOutputStream    out;
+                out << L"abc";
+                VerifyTestResult (out.As<String> () == L"abc");
+                out << L"123";
+                VerifyTestResult (out.As<String> () == L"abc123");
+                out.Seek (2);
+                out << L"C";
+                VerifyTestResult (out.As<String> () == L"abC123");
+            }
+        }
+
+        void    Tests_ ()
+        {
+            Private_::T1_ ();
+        }
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -173,6 +213,7 @@ namespace   {
         BasicBinaryOutputStream_::Tests_ ();
         BasicBinaryInputOutputStream_::Tests_ ();
         BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
+        TestBasicTextOutputStream_::Tests_ ();
     }
 }
 

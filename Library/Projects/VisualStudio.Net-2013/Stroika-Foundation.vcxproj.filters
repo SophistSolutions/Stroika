@@ -675,6 +675,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1569,6 +1572,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2375,6 +2381,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
 </Project>
