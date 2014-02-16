@@ -19,6 +19,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
@@ -35,11 +36,12 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Math;
+using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -49,7 +51,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Use this so when running #if qDebug case - we dont waste a ton of time with this test
-#define   qDebugCaseRuncountRatio (.1)
+#define   qDebugCaseRuncountRatio (.01)
 
 
 
@@ -75,6 +77,32 @@ namespace {
 
 namespace {
 
+    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+    {
+        static  shared_ptr<ostream> out2File;
+        if (not sShowOutput_ and out2File.get () == nullptr) {
+            out2File.reset (new ofstream (kDefaultPerfOutFile_));
+        }
+        ostream&    outTo = (sShowOutput_ ? cout : *out2File);
+        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
+        DurationSecondsType totalTime = baselineTime + compareWithTime;
+        double ratio = compareWithTime / baselineTime;
+        double  changePct   =   (1 - ratio) * 100.0;
+        if (changePct >= 0) {
+            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+        }
+        else {
+            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+        }
+        outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
+#if     qPrintOutIfFailsToMeetPerformanceExpectations
+        if (changePct < expectedPercentFaster) {
+            outTo << "    {{{WARNING - expected at least " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
+        }
+#endif
+    }
+
+
     DurationSecondsType RunTest_(function<void()> t, unsigned int runCount)
     {
         DurationSecondsType start = Time::GetTickCount ();
@@ -90,34 +118,7 @@ namespace {
                     function<void()> compareWithT, String compareWithTName,
                     unsigned int runCount,
                     double expectedPercentFaster,
-    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = [] (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime) -> void {
-
-        static  shared_ptr<ostream> out2File;
-        if (not sShowOutput_ and out2File.get () == nullptr)
-        {
-            out2File.reset (new ofstream (kDefaultPerfOutFile_));
-        }
-        ostream&    outTo = (sShowOutput_ ? cout : *out2File);
-        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
-        DurationSecondsType totalTime = baselineTime + compareWithTime;
-        double ratio = compareWithTime / baselineTime;
-        double  changePct   =   (1 - ratio) * 100.0;
-        if (changePct >= 0)
-        {
-            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
-        }
-        else {
-            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
-        }
-        outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
-        if (changePct < expectedPercentFaster)
-        {
-            outTo << "    {{{WARNING - expected at least " << expectedPercentFaster << "% faster}}}" << endl;
-        }
-#endif
-
-    }
+                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
                    )
     {
 #if     qDebug
@@ -140,6 +141,19 @@ namespace {
 #endif
     }
 
+    void    Tester (String testName,
+                    function<void()> baselineT, String baselineTName,
+                    function<void()> compareWithT, String compareWithTName,
+                    unsigned int runCount,
+                    double expectedPercentFaster,
+                    Set<String>* failedTestAccumulator,
+                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
+                   )
+    {
+        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, runCount, expectedPercentFaster, printResults)) {
+            failedTestAccumulator->Add (testName);
+        }
+    }
 }
 
 
@@ -157,12 +171,14 @@ namespace {
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
+            WIDESTRING_IMPL fS5;    // sometimes you have a string uninitialized
             S() {}
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
                 : fS1(w1)
                 , fS2(w2)
                 , fS3(w3)
                 , fS4(w4)
+                , fS5 ()
             {
             }
         };
@@ -333,70 +349,89 @@ namespace {
 
 
 namespace   {
+
+    template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_EXTRACTOR>
+    void    Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
+    {
+        STREAMISH_STRINGBUILDERIMPL    out;
+        for (int i = 0; i < 20; ++i) {
+            out << L"0123456789";
+            out << L" ";
+            out << L"01234567890123456789";
+        }
+        VerifyTestResult (extractor (out).length () == 31 * 20);
+    }
+
+}
+
+
+
+
+
+
+
+
+namespace   {
     void    RunPerformanceTests_ ()
     {
         Set<String> failedTests;
+        Tester (
+            L"Test of simple locking strategies",
+            Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
+            Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
+            15239,
+            0,    // just a warning, fyi
+            &failedTests
+        );
+        Tester (
+            L"Simple Struct With Strings Filling And Copying",
+            Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
+            Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
+            40000,
+            1,
+            &failedTests
+        );
+        Tester (
+            L"Simple String append test (+='string object') 10x",
+            Test_SimpleStringAppends1_<wstring>, L"wstring",
+            Test_SimpleStringAppends1_<String>, L"Charactes::String",
+            1172017,
+            -2000,
+            &failedTests
+        );
+        Tester (
+            L"Simple String append test (+=wchar_t[]) 10x",
+            Test_SimpleStringAppends2_<wstring>, L"wstring",
+            Test_SimpleStringAppends2_<String>, L"Charactes::String",
+            1312506,
+            -2500,
+            &failedTests
+        );
+        Tester (
+            L"Simple String append test (+=wchar_t[]) 100x",
+            Test_SimpleStringAppends3_<wstring>, L"wstring",
+            Test_SimpleStringAppends3_<String>, L"Charactes::String",
+            272170,
+            -5200,
+            &failedTests
+        );
+        Tester (
+            L"wstringstream << test",
+            Test_OperatorINSERT_ostream_<wstring>, L"wstring",
+            Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
+            5438 ,
+            -27,
+            &failedTests
+        );
+        Tester (
+            L"wstringstream versus ",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
+        184098 ,
+        -320,
+        &failedTests
+        );
 
-        if (Tester (
-                    L"Test of simple locking strategies",
-                    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                    Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-                    15239,
-                    0    // just a warning, fyi
-                )
-           ) {
-            failedTests.Add (L"Test of simple locking strategies");
-        }
-        if (Tester (
-                    L"Simple Struct With Strings Filling And Copying",
-                    Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                    Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-                    40000,
-                    6
-                )
-           ) {
-            failedTests.Add (L"Simple Struct With Strings Filling And Copying");
-        }
-        if (Tester (
-                    L"Simple String append test (+='string object') 10x",
-                    Test_SimpleStringAppends1_<wstring>, L"wstring",
-                    Test_SimpleStringAppends1_<String>, L"Charactes::String",
-                    1172017,
-                    -2000
-                )
-           ) {
-            failedTests.Add (L"Simple String append test (+='string object') 10x");
-        }
-        if (Tester (
-                    L"Simple String append test (+=wchar_t[]) 10x",
-                    Test_SimpleStringAppends2_<wstring>, L"wstring",
-                    Test_SimpleStringAppends2_<String>, L"Charactes::String",
-                    1312506,
-                    -2500
-                )
-           ) {
-            failedTests.Add (L"Simple String append test (+=wchar_t[]) 10x");
-        }
-        if (Tester (
-                    L"Simple String append test (+=wchar_t[]) 100x",
-                    Test_SimpleStringAppends3_<wstring>, L"wstring",
-                    Test_SimpleStringAppends3_<String>, L"Charactes::String",
-                    272170,
-                    -5200
-                )
-           ) {
-            failedTests.Add (L"Simple String append test (+=wchar_t[]) 100x");
-        }
-        if (Tester (
-                    L"wstringstream << test",
-                    Test_OperatorINSERT_ostream_<wstring>, L"wstring",
-                    Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-                    5438 ,
-                    -15
-                )
-           ) {
-            failedTests.Add (L"wstringstream << test");
-        }
 
         if (not failedTests.empty ()) {
             String listAsMsg;
