@@ -1051,7 +1051,7 @@ namespace   Stroika {
             /**
              *  Use Stroika String more easily with std::ostream.
              *
-             *  \note   EXPERIMENTAL API
+             *  \note   EXPERIMENTAL API (added /as of 2014-02-15 - Stroika 2.0a21)
              *
              *  \note   Note sure how well this works being in a namespace!
              *
