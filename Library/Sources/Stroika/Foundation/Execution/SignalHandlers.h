@@ -26,7 +26,7 @@
  *
  * TODO:
  *      @todo   SignalHandlerRegistry::FirstPassSignalHandler_ is NOT signal safe. Its close (esp given
- *              the block allocation). But its not safe. SO MUST FIX!!! But can be done without
+ *              the block allocation). But its not fully safe. SO MUST FIX!!! But can be done without
  *              changing API (just store vector of actual direct handlers).
  *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
@@ -146,7 +146,7 @@ namespace   Stroika {
                 ~SignalHandlerRegistry ();
 
             public:
-                nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
+                nonvirtual  const SignalHandlerRegistry&    operator= (const SignalHandlerRegistry&) = delete;
 
             public:
                 class   SafeSignalsManager;
@@ -206,26 +206,49 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Install the given signal handler for
-                 *      o   SIGINT
+                 *  These signals are generally associated with a programming error or bug, and these signals
+                 *  should generally be treated as a crash and terminate the program with a core-dump file.
+                 *      o   SIGABRT
                  *      o   SIGILL
                  *      o   SIGFPE
                  *      o   SIGSEGV
-                 *      o   SIGTERM
                  *      o   SIGSYS      (POSIX ONLY)
                  *      o   SIGBUS      (POSIX ONLY)
                  *      o   SIGQUIT     (POSIX ONLY)
-                 *      o   SIGPIPE     (POSIX ONLY)
+                 */
+                static  Containers::Set<SignalID>    GetStandardCrashSignals ();
+
+            public:
+                /**
+                 *      o   SIGABRT
+                 *      o   SIGILL
+                 *      o   SIGINT
+                 *      o   SIGFPE
+                 *      o   SIGSEGV
+                 *      o   SIGTERM
+                 *      o   SIGBUS      (POSIX ONLY)
                  *      o   SIGHUP      (POSIX ONLY)
+                 *      o   SIGPIPE     (POSIX ONLY)
+                 *      o   SIGQUIT     (POSIX ONLY)
+                 *      o   SIGSYS      (POSIX ONLY)
                  *      o   SIGXCPU     (POSIX ONLY)
                  *      o   SIGXFSZ     (POSIX ONLY)
-                 * signals, so that errors get neatly logged. A common use is to provide a handler that uses the LogMgr to record the crash.
                  *
-                 * NB:  SIGABRT intentionally omitted from this list because it prevents abort() from functioning properly. We COULD
-                 *      disable SIGABRT upon receipt of that signal (SIG_DFL) but that would be different than other signals handled, raise
-                 *      re-entrancy issues etc. Didn't seem owrh while.
+                 *  These  signals - by default (without any coding) - will generally (depends on OS, and environment) terminate the
+                 *  process.
                  */
-                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& excludedSignals = Containers::Set<SignalID> ());
+                static  Containers::Set<SignalID>    GetStandardTerminationSignals ();
+
+            public:
+                /**
+                 *  The set of signals given (by default GetStandardCrashSignals) will be set to the given handler
+                 *  (by default DefaultCrashSignalHandler).
+                 *
+                 *  The only exception is SIGABRT will be intentionally ignored from this call because it prevents abort()
+                 *  from functioning properly. We COULD disable SIGABRT upon receipt of that signal (SIG_DFL) but that
+                 *  would be different than other signals handled, raise re-entrancy issues etc. Didn't seem owrh while.
+                 */
+                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
             private:
                 Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;

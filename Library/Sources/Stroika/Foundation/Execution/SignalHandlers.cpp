@@ -284,22 +284,48 @@ void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalID signal)
     abort ();
 }
 
-void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handler, const Set<SignalID>& excludedSignals)
+Containers::Set<SignalID>   SignalHandlerRegistry::GetStandardCrashSignals ()
 {
-    if (not excludedSignals.Contains (SIGINT))      {  SetSignalHandlers (SIGINT, handler);        }
-    if (not excludedSignals.Contains (SIGILL))      {  SetSignalHandlers (SIGILL, handler);        }
-    if (not excludedSignals.Contains (SIGFPE))      {  SetSignalHandlers (SIGFPE, handler);        }
-    if (not excludedSignals.Contains (SIGSEGV))     {  SetSignalHandlers (SIGSEGV, handler);       }
-    if (not excludedSignals.Contains (SIGTERM))     {  SetSignalHandlers (SIGTERM, handler);       }
+    Containers::Set<SignalID>   results;
+    results.Add (SIGABRT);
+    results.Add (SIGILL);
+    results.Add (SIGFPE);
+    results.Add (SIGSEGV);
 #if     qPlatform_POSIX
-    if (not excludedSignals.Contains (SIGSYS))      {  SetSignalHandlers (SIGSYS, handler);        }
-    if (not excludedSignals.Contains (SIGBUS))      {  SetSignalHandlers (SIGBUS, handler);        }
-    if (not excludedSignals.Contains (SIGQUIT))     {  SetSignalHandlers (SIGQUIT, handler);       }
-    if (not excludedSignals.Contains (SIGPIPE))     {  SetSignalHandlers (SIGPIPE, handler);       }
-    if (not excludedSignals.Contains (SIGHUP))      {  SetSignalHandlers (SIGHUP, handler);        }
-    if (not excludedSignals.Contains (SIGXCPU))     {  SetSignalHandlers (SIGXCPU, handler);       }
-    if (not excludedSignals.Contains (SIGXFSZ))     {  SetSignalHandlers (SIGXFSZ, handler);       }
+    results.Add (SIGSYS);
+    results.Add (SIGBUS);
 #endif
+    return results;
+}
+
+Containers::Set<SignalID>    SignalHandlerRegistry::GetStandardTerminationSignals ()
+{
+    Containers::Set<SignalID>   results;
+    results.Add (SIGABRT);
+    results.Add (SIGINT);
+    results.Add (SIGTERM);
+    results.Add (SIGILL);
+    results.Add (SIGFPE);
+    results.Add (SIGSEGV);
+#if     qPlatform_POSIX
+    results.Add (SIGHUP);
+    results.Add (SIGQUIT);
+    results.Add (SIGSYS);
+    results.Add (SIGBUS);
+    results.Add (SIGPIPE);
+    results.Add (SIGXCPU);
+    results.Add (SIGXFSZ);
+#endif
+    return results;
+}
+
+void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handler, const Containers::Set<SignalID>& forSignals)
+{
+    for (SignalID s : forSignals) {
+        if (s != SIGABRT) {
+            SetSignalHandlers (s, handler);
+        }
+    }
 }
 
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)

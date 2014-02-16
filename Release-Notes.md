@@ -25,6 +25,7 @@ History
 	<td>
 		<ul>
 			<li>???string classlib improvemnts - maybe fix threadsafty issue</li>
+			<li>SetStandardCrashHandlerSignals() incompatable second argument changes, and improved/factoring</li>
 			<li>Duration::PrettyPrint and Lingustics/Word Pluralize etc all use new String class (instead of std::wstring/string). This isn't backward comptable, but close. (so we can use String_Constant in more places).</li>
 		</ul>
 	</td>
