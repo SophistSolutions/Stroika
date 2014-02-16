@@ -20,6 +20,10 @@
  *
  *      @todo   Add Flush() like we have for binaryoutputstream!
  *
+ *      @todo   Consider adding locale feature. if you use narrow string (char* or string) it uses associated
+ *              locale. If none, use global locale? Could use codepage instead of locale, but propba
+ *              best to have one notion and extract that codepage from teh given (or global) locale.
+ *
  */
 
 
@@ -60,7 +64,6 @@ namespace   Stroika {
                  */
                 explicit TextOutputStream (const _SharedIRep& rep);
 
-
             protected:
                 /**
                  *
@@ -80,7 +83,23 @@ namespace   Stroika {
                 nonvirtual  void    Write (const Character* start, const Character* end) const;
                 nonvirtual  void    Write (const wchar_t* cStr) const;
                 nonvirtual  void    Write (const String& s) const;
+
+            public:
+                /**
+                 * EXPERIEMNTAL API
+                 * done as template so third parties can externally extend, and have overloading work right..
+                 * @todo need overloads for basic types, std::string, int, float, etc...
+                 * But dont do except for string for now. Dont make same mistake as iostream - with formatting. Not clear how todo
+                 * right so dont dig a hole and do it wrong (yet).
+                 */
+                template    <typename T>
+                const TextOutputStream&     operator<< (T write2TextStream) const;
             };
+
+            template    <>
+            const TextOutputStream& TextOutputStream::operator<< (const String& write2TextStream) const;
+            template    <>
+            const TextOutputStream& TextOutputStream::operator<< (const wchar_t* write2TextStream) const;
 
 
             /**
@@ -93,7 +112,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  const _IRep& operator= (const _IRep&) = delete;
-
 
             public:
                 /**

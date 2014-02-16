@@ -62,6 +62,19 @@ namespace   Stroika {
             {
                 Write (s.c_str ());
             }
+            template    <>
+            inline  const TextOutputStream& TextOutputStream::operator<< (const String& write2TextStream) const
+            {
+                Write (write2TextStream);
+                return *this;
+            }
+            template    <>
+            inline  const TextOutputStream& TextOutputStream::operator<< (const wchar_t* write2TextStream) const
+            {
+                Write (write2TextStream);
+                return *this;
+            }
+
 
 
         }
