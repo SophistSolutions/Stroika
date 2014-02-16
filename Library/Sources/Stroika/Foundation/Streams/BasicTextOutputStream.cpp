@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Containers/Common.h"
 #include    "../Execution/Exceptions.h"
 
 #include    "BasicTextOutputStream.h"
