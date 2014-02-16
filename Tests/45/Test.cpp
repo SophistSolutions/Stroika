@@ -89,17 +89,18 @@ namespace {
         double ratio = compareWithTime / baselineTime;
         double  changePct   =   (1 - ratio) * 100.0;
         if (changePct >= 0) {
-            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
         }
         else {
-            outTo << "    " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
         }
         outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster) {
-            outTo << "    {{{WARNING - expected at least " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
+            outTo << "      {{{WARNING - expected at least " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
         }
 #endif
+        outTo << endl;
     }
 
 
@@ -155,6 +156,9 @@ namespace {
         }
     }
 }
+
+
+
 
 
 
