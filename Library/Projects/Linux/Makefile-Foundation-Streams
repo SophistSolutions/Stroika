@@ -21,6 +21,7 @@ Objs	=	\
 	$(ObjDir)BinaryInputStream.o\
 	$(ObjDir)BinaryInputOutputStream.o\
 	$(ObjDir)BinaryOutputStream.o\
+	$(ObjDir)BasicTextOutputStream.o\
 	$(ObjDir)BinaryTiedStreams.o\
 	$(ObjDir)BufferedBinaryInputStream.o\
 	$(ObjDir)BufferedBinaryOutputStream.o\
