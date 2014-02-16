@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
+#include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -38,13 +39,13 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER))
+//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
 // Dont print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
-#define   qPrintOutIfFailsToMeetPerformanceExpectations (!qDebug && defined (_MSC_VER))
+#define   qPrintOutIfFailsToMeetPerformanceExpectations (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // Use this so when running #if qDebug case - we dont waste a ton of time with this test
@@ -83,6 +84,7 @@ namespace {
         return Time::GetTickCount () - start;
     }
 
+    // return true if test failed (slower than expected)
     bool    Tester (String testName,
                     function<void()> baselineT, String baselineTName,
                     function<void()> compareWithT, String compareWithTName,
@@ -129,9 +131,13 @@ namespace {
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, expectedPercentFaster, baselineTime, compareWithTime);
+#if     qPrintOutIfFailsToMeetPerformanceExpectations
         double ratio = compareWithTime / baselineTime;
         double  changePct   =   (1 - ratio) * 100.0;
         return changePct < expectedPercentFaster;
+#else
+        return false;
+#endif
     }
 
 }
@@ -329,57 +335,77 @@ namespace {
 namespace   {
     void    RunPerformanceTests_ ()
     {
-        bool anyFailed = false;
+        Set<String> failedTests;
 
-        anyFailed |= Tester (
-                         L"Test of simple locking strategies",
-                         Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                         Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-                         15239,
-                         0    // just a warning, fyi
-                     );
-        anyFailed |= Tester (
-                         L"Simple Struct With Strings Filling And Copying",
-                         Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                         Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-                         40000,
-                         6
-                     );
-        anyFailed |= Tester (
-                         L"Simple String append test (+='string object') 10x",
-                         Test_SimpleStringAppends1_<wstring>, L"wstring",
-                         Test_SimpleStringAppends1_<String>, L"Charactes::String",
-                         1172017,
-                         -1900
-                     );
-        anyFailed |= Tester (
-                         L"Simple String append test (+=wchar_t[]) 10x",
-                         Test_SimpleStringAppends2_<wstring>, L"wstring",
-                         Test_SimpleStringAppends2_<String>, L"Charactes::String",
-                         1312506,
-                         -2500
-                     );
-        anyFailed |= Tester (
-                         L"Simple String append test (+=wchar_t[]) 100x",
-                         Test_SimpleStringAppends3_<wstring>, L"wstring",
-                         Test_SimpleStringAppends3_<String>, L"Charactes::String",
-                         272170,
-                         -5200
-                     );
-        anyFailed |= Tester (
-                         L"wstringstream << test",
-                         Test_OperatorINSERT_ostream_<wstring>, L"wstring",
-                         Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-                         5438 ,
-                         -15
-                     );
+        if (Tester (
+                    L"Test of simple locking strategies",
+                    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
+                    Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
+                    15239,
+                    0    // just a warning, fyi
+                )
+           ) {
+            failedTests.Add (L"Test of simple locking strategies");
+        }
+        if (Tester (
+                    L"Simple Struct With Strings Filling And Copying",
+                    Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
+                    Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
+                    40000,
+                    6
+                )
+           ) {
+            failedTests.Add (L"Simple Struct With Strings Filling And Copying");
+        }
+        if (Tester (
+                    L"Simple String append test (+='string object') 10x",
+                    Test_SimpleStringAppends1_<wstring>, L"wstring",
+                    Test_SimpleStringAppends1_<String>, L"Charactes::String",
+                    1172017,
+                    -2000
+                )
+           ) {
+            failedTests.Add (L"Simple String append test (+='string object') 10x");
+        }
+        if (Tester (
+                    L"Simple String append test (+=wchar_t[]) 10x",
+                    Test_SimpleStringAppends2_<wstring>, L"wstring",
+                    Test_SimpleStringAppends2_<String>, L"Charactes::String",
+                    1312506,
+                    -2500
+                )
+           ) {
+            failedTests.Add (L"Simple String append test (+=wchar_t[]) 10x");
+        }
+        if (Tester (
+                    L"Simple String append test (+=wchar_t[]) 100x",
+                    Test_SimpleStringAppends3_<wstring>, L"wstring",
+                    Test_SimpleStringAppends3_<String>, L"Charactes::String",
+                    272170,
+                    -5200
+                )
+           ) {
+            failedTests.Add (L"Simple String append test (+=wchar_t[]) 100x");
+        }
+        if (Tester (
+                    L"wstringstream << test",
+                    Test_OperatorINSERT_ostream_<wstring>, L"wstring",
+                    Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
+                    5438 ,
+                    -15
+                )
+           ) {
+            failedTests.Add (L"wstringstream << test");
+        }
 
-        if (anyFailed) {
+        if (not failedTests.empty ()) {
+            String listAsMsg;
+            failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
-                Execution::DoThrow (StringException (L"At least one test failed expected time constaint (see above)"));
+                Execution::DoThrow (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
             }
             else {
-                Execution::DoThrow (StringException (Format (L"at least one test failed expected time constaint (see %s)", String::FromAscii (kDefaultPerfOutFile_).c_str ())));
+                Execution::DoThrow (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromAscii (kDefaultPerfOutFile_).c_str ())));
             }
         }
     }
