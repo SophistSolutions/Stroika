@@ -41,7 +41,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -60,10 +60,10 @@ namespace {
     string  pctFaster2String_ (double pct)
     {
         if (pct < 0) {
-            return Format (L"%.2f slower", -pct).AsNarrowSDKString ();
+            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
         }
         else {
-            return Format (L"%.2f faster", pct).AsNarrowSDKString ();
+            return Format (L"%.2f%% faster", pct).AsNarrowSDKString ();
         }
     }
 }
