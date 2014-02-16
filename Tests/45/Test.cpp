@@ -175,14 +175,12 @@ namespace {
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
-            WIDESTRING_IMPL fS5;    // sometimes you have a string uninitialized
             S() {}
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
                 : fS1(w1)
                 , fS2(w2)
                 , fS3(w3)
                 , fS4(w4)
-                , fS5 ()
             {
             }
         };
