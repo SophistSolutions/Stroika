@@ -61,7 +61,8 @@ public:
             if (roomLeft < roomRequired) {
                 size_t  curReadOffset = fReadCursor_ - fData_.begin ();
                 size_t  curWriteOffset = fWriteCursor_ - fData_.begin ();
-                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft);
+                const size_t    kChunkSize_     =   128;        // WAG: @todo tune number...
+                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft, kChunkSize_);
                 fData_.resize (curWriteOffset + roomRequired);
                 fReadCursor_ = fData_.begin () + curReadOffset;
                 fWriteCursor_ = fData_.begin () + curWriteOffset;

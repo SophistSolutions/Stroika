@@ -173,7 +173,7 @@ namespace   Stroika {
                     links.reserve (kChunks * 2);
                     void*   link = sNextLink_;
                     while (link != nullptr) {
-                        // probably should use Containers::ReserveSpeedTweekAddN - but want to avoid embrance of dependencies
+                        // probably should use Containers::ReserveSpeedTweekAddN - but want to avoid embrace of dependencies
                         if (links.size () == links.capacity ()) {
                             links.reserve (links.size () * 2);
                         }

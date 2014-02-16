@@ -43,7 +43,8 @@ public:
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
                 size_t  curOffset = fCursor_ - fData_.begin ();
-                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft);
+                const size_t    kChunkSize_     =   128;        // WAG: @todo tune number...
+                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft, kChunkSize_);
                 fData_.resize (curOffset + roomRequired);
                 fCursor_ = fData_.begin () + curOffset;
                 Assert (fCursor_ < fData_.end ());
