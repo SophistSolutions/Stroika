@@ -232,7 +232,7 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy || 1
 const   TimeOfDay   TimeOfDay::kMin =   TimeOfDay (0);
 const   TimeOfDay   TimeOfDay::kMax =   TimeOfDay (kMaxSecondsPerDay - 1);
 #endif

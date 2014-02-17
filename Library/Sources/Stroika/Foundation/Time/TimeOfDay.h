@@ -27,6 +27,11 @@
  *  \version    <a href="code_status.html">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *              stuff for kMin/kMax
+ *
+ *              If we cannot, may need to use ModuleInitializer<> stuff.
+ *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
@@ -148,7 +153,7 @@ namespace   Stroika {
                 /**
                  *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy || 1
                 static  const   TimeOfDay   kMin;
 #else
                 static  constexpr   TimeOfDay   kMin (0);
@@ -159,7 +164,7 @@ namespace   Stroika {
                  *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
                  *  not like 'end' - one past the last legal value.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy || 1
                 static  const   TimeOfDay   kMax;
 #else
                 static  constexpr   TimeOfDay   kMax (kMaxSecondsPerDay - 1);
