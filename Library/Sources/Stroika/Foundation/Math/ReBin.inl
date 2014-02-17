@@ -66,7 +66,7 @@ namespace   Stroika {
                     // start a new x bucket each time through the loop
                     X_OFFSET_TYPE       xLeftInThisSrcBucket =   1.0;
 
-                    Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, 0)); // careful of floating point round
+                    Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, X_OFFSET_TYPE (0))); // careful of floating point round
                     if (ti >= trgEnd) {
                         break;  //in case float round error
                     }
@@ -81,7 +81,7 @@ namespace   Stroika {
                         xLeftInThisTrgBucket -= amount2AdvanceX;
 
                         if (xLeftInThisTrgBucket <= 0) {        // allow for < case because of floating point rounding
-                            Assert (NearlyEquals (xLeftInThisTrgBucket, 0.0));
+                            Assert (NearlyEquals (xLeftInThisTrgBucket, X_OFFSET_TYPE (0)));
                             ++ti;
                             xLeftInThisTrgBucket = srcBucketsPerTrgBucket;
                         }
