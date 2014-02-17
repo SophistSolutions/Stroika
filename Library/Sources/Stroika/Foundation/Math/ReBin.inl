@@ -32,22 +32,27 @@ namespace   Stroika {
                 /*
                  *  Algorithm:
                  *      Two iterators - one marking (start/end of target buckets), and one marking current src bucket.
-                 *      iterate over outer buckets. Move contents to new bucket. And adjust new iterators. When they overlpap and must
-                 *      advance - proprtionally add to bucket, adnvace and add rest to next target bucket.
+                 *      iterate over outer buckets. Move contents to new bucket. And adjust new iterators. When they overlap and must
+                 *      advance - proportionally add to bucket, advance and add rest to next target bucket.
                  */
                 size_t  nSrcBuckets =   srcEnd - srcStart;
                 size_t  nTrgBuckets =   trgEnd - trgStart;
+                Require (nSrcBuckets >= 1);
+                Require (nTrgBuckets >= 1);
+                Assert (nSrcBuckets >= nTrgBuckets);    // not a requirement, but otherwise NYI
 
                 // zero target bins
                 for (TRG_BUCKET_TYPE* i = trgStart; i != trgEnd; ++i) {
                     *i = 0;
                 }
 
-                X_OFFSET_TYPE       trgBucketsPerSrcBucket = static_cast<X_OFFSET_TYPE> (nTrgBuckets) / static_cast<X_OFFSET_TYPE> (nSrcBuckets);
+                X_OFFSET_TYPE       srcBucketsPerTrgBucket = static_cast<X_OFFSET_TYPE> (nSrcBuckets) / static_cast<X_OFFSET_TYPE> (nTrgBuckets);
                 TRG_BUCKET_TYPE*    ti  =   trgStart;
-                X_OFFSET_TYPE       fracLeftInThisTrgBucket =   trgBucketsPerSrcBucket;
+                X_OFFSET_TYPE       xLeftInThisTrgBucket =   srcBucketsPerTrgBucket;
 
                 /*
+                 *  x               0    1    2    3    4    5
+                 *
                  *  SRC-BUCKETS:    |    |    |    |    |    |
                  *  TRG-BUCKETS:    |      |      |      |
                  *
@@ -59,31 +64,29 @@ namespace   Stroika {
                  *
                  */
                 for (const SRC_BUCKET_TYPE* si = srcStart; si != srcEnd; ++si) {
+                    // start a new x bucket each time through the loop
+                    X_OFFSET_TYPE       xLeftInThisSrcBucket =   1.0;
+
                     //Assert (ti < trgEnd); // not quite cuz of floatpoint roudnd error but should do nearlyequals assert here
                     if (ti >= trgEnd) {
                         break;  //hack!!!
                     }
 
-                    // Divide the si value across possibly multiple fractional ti (target) bins!
-                    if (fracLeftInThisTrgBucket < 1) {
-                        *ti += (*si) * fracLeftInThisTrgBucket;
-                        TRG_BUCKET_TYPE     rollOverFromLastBucket  =   (*si) * (1 - fracLeftInThisTrgBucket);  // even though data is all from src bucket use TRG_BUCKET_TYPE since thats where its going and could be fractional??? (not clear)
-                        fracLeftInThisTrgBucket = 0;
-                        ++ti;
-                        fracLeftInThisTrgBucket = trgBucketsPerSrcBucket;
-                        //Assert (ti < trgEnd); // not quite cuz of floatpoint roudnd error but should do nearlyequals assert here
-                        if (ti < trgEnd) {
-                            *ti += rollOverFromLastBucket;
+                    while (xLeftInThisSrcBucket > 0) {
+                        // Divide the si value across possibly multiple fractional ti (target) bins!
+
+                        X_OFFSET_TYPE   amount2AdvanceX =   min (xLeftInThisSrcBucket, xLeftInThisTrgBucket);
+                        *ti += (*si) * amount2AdvanceX;
+
+                        xLeftInThisSrcBucket -= amount2AdvanceX;
+                        xLeftInThisTrgBucket -= amount2AdvanceX;
+
+                        if (xLeftInThisTrgBucket <= 0) {
+                            ++ti;
+                            xLeftInThisTrgBucket = srcBucketsPerTrgBucket;
                         }
                     }
-                    else {
-                        *ti += (*si);
-                        fracLeftInThisTrgBucket -= 1;
-                        ++ti;
-                        if (fracLeftInThisTrgBucket == 0) {
-                            fracLeftInThisTrgBucket = trgBucketsPerSrcBucket;
-                        }
-                    }
+
                 }
 
 

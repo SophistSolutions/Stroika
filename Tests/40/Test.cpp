@@ -99,6 +99,13 @@ namespace {
             }
         }
         {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[2];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (8 == resultData[0]);
+            VerifyTestResult (21 == resultData[1]);
+        }
+        {
             uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
             double  resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
