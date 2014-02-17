@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
-#include	"Common.h"
+#include    "Common.h"
 
 
 namespace   Stroika {
@@ -67,7 +67,7 @@ namespace   Stroika {
                     // start a new x bucket each time through the loop
                     X_OFFSET_TYPE       xLeftInThisSrcBucket =   1.0;
 
-                    Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, 0));	// careful of floating point round
+                    Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, 0)); // careful of floating point round
                     if (ti >= trgEnd) {
                         break;  //in case float round error
                     }
