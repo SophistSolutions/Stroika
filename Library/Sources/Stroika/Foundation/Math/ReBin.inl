@@ -32,9 +32,10 @@ namespace   Stroika {
             {
                 /*
                  *  Algorithm:
-                 *      Two iterators - one marking (start/end of target buckets), and one marking current src bucket.
-                 *      iterate over outer buckets. Move contents to new bucket. And adjust new iterators. When they overlap and must
-                 *      advance - proportionally add to bucket, advance and add rest to next target bucket.
+                 *      Two iterators - one marking (start/end of target buckets), and one marking current
+                 *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new
+                 *      iterators. When they overlap and must advance - proportionally add to bucket,
+                 *      advance and add rest to next target bucket.
                  */
                 size_t  nSrcBuckets =   srcEnd - srcStart;
                 size_t  nTrgBuckets =   trgEnd - trgStart;
@@ -60,8 +61,6 @@ namespace   Stroika {
                  *  For each one (si), but part into current ti (proportional), and put reset into next
                  *  ti (proportional).
                  *
-                 *      @todo - THIS CODE ASSUMES COUNT SRC BUCKETS > count TRG BUCKETS - MUST FIX!!!
-                 *
                  */
                 for (const SRC_BUCKET_TYPE* si = srcStart; si != srcEnd; ++si) {
                     // start a new x bucket each time through the loop
@@ -81,7 +80,8 @@ namespace   Stroika {
                         xLeftInThisSrcBucket -= amount2AdvanceX;
                         xLeftInThisTrgBucket -= amount2AdvanceX;
 
-                        if (xLeftInThisTrgBucket <= 0) {
+                        if (xLeftInThisTrgBucket <= 0) {        // allow for < case because of floating point rounding
+                            Assert (NearlyEquals (xLeftInThisTrgBucket, 0.0));
                             ++ti;
                             xLeftInThisTrgBucket = srcBucketsPerTrgBucket;
                         }

@@ -13,9 +13,8 @@
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
- *      @todo   IMPL incomplete and untested. API unclear. Not sure how (if) to specify
- *              x-offset on rebinning (float/double)? And NYI, and not sure hwo to spec in AP
- *              uisng flat or infered linear for rebalancing between buckets.
+ *      @todo   Consider adding an x-offset, so that we logically re-bin, plus shift along the x-axis by
+ *              a (given) offset (in units of src-bin widths).
  */
 
 
