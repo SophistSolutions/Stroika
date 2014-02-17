@@ -73,14 +73,17 @@ run-tests:
 	@echo "Running Tests..."
 	@for i in $(TESTS);\
 	do\
-	    TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
+	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 		for ci in $(CONFIGRUATIONS);\
 		do\
 		$(RUNTEST_REMOTECOPYSETUP);\
 	        TIMESTAMP=`date +%s`;\
 	        EXERESULT=`$(RUNTEST_EXE_RUN)`;\
+		   if [ -e PerformanceDump.txt ]; then\
+	          mv PerformanceDump.txt ../IntermediateFiles/PerformanceDump.$$ci.txt;\
+		   fi;\
 	        TIMESTAMP2=`date +%s`;\
-		    EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
+		   EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
 	        DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 	            DIFFTIME=$$DIFFTIME" ";\
