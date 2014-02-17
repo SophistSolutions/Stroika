@@ -373,6 +373,41 @@ namespace   {
 
 
 
+
+
+
+
+namespace   {
+
+    template <typename WIDESTRING_IMPL>
+    void    Test_String_cstr_call_ ()
+    {
+        WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
+        WIDESTRING_IMPL s2 = L"o3424";
+        WIDESTRING_IMPL s3 = L"o3424";
+        WIDESTRING_IMPL s4 = L"o3424";
+        WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
+        size_t s1len    =   s1.length ();
+        size_t s2len    =   s2.length ();
+        size_t s3len    =   s3.length ();
+        size_t s4len    =   s4.length ();
+        size_t s5len    =   s5.length ();
+        for (int i = 0; i < 200; ++i) {
+            VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
+            VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
+            VerifyTestResult (s3len == ::wcslen (s3.c_str ()));
+            VerifyTestResult (s4len == ::wcslen (s4.c_str ()));
+            VerifyTestResult (s5len == ::wcslen (s5.c_str ()));
+        }
+    }
+
+}
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -433,6 +468,16 @@ namespace   {
         -320,
         &failedTests
         );
+        Tester (
+            L"Simple c_str() test",
+            Test_String_cstr_call_<wstring>, L"wstring",
+            Test_String_cstr_call_<String>, L"Charactes::String",
+            39001,
+            -30,
+            &failedTests
+        );
+
+
 
 
         if (not failedTests.empty ()) {
