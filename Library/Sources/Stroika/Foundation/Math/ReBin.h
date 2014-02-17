@@ -1,0 +1,66 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
+ */
+#ifndef _Stroika_Foundation_Math_ReBin_h_
+#define _Stroika_Foundation_Math_ReBin_h_   1
+
+#include    "../StroikaPreComp.h"
+
+
+
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *      @todo   IMPL incomplete and untested. API unclear. Not sure how (if) to specify
+ *              x-offset on rebinning (float/double)? And NYI, and not sure hwo to spec in AP
+ *              uisng flat or infered linear for rebalancing between buckets.
+ */
+
+
+
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Math {
+
+
+            /**
+             *  Take one array of counts (buckets/samples) - and stretch them (rebin them) to another number
+             *  of buckets.
+             *
+             *  Logically, think of a 2D graph, x versus y. The source buckets represent an appoximation
+             *  of a real curve (y=f(x)). The buckets represent equally spaced measurements along the x-axis
+             *  and the corresponding y-axis value.
+             *
+             *  Re-binning means selecting a differnt (could be larger or smaller) bin count, and infering the
+             *  curve from the source bins, and producing target bins that match that curve as best as possible.
+             *
+             *  The new bins could also - have been offset sligtly versus the new bins (that is the zeroth bin of the
+             *  new set of bins need not start at the same x-valeu as the original set of bins).
+             *
+             *  Classicly - this assumes the curve was fairly linear across the new set original set of bins.
+             *  As a future excecise, we may want to experiemnt with differnt assumptions (like linear up/down according
+             *  to prev and successive bins?).
+             */
+            template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>
+            void    ReBin (
+                const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
+                TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
+            );
+
+
+        }
+    }
+}
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include    "ReBin.inl"
+
+#endif  /*_Stroika_Foundation_Math_ReBin_h_*/
