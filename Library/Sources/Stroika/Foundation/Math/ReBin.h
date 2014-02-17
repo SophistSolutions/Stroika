@@ -29,18 +29,18 @@ namespace   Stroika {
              *  Take one array of counts (buckets/samples) - and stretch them (rebin them) to another number
              *  of buckets.
              *
-             *  Logically, think of a 2D graph, x versus y. The source buckets represent an appoximation
+             *  Logically, think of a 2D graph, x versus y. The source buckets represent an approximation
              *  of a real curve (y=f(x)). The buckets represent equally spaced measurements along the x-axis
              *  and the corresponding y-axis value.
              *
-             *  Re-binning means selecting a differnt (could be larger or smaller) bin count, and infering the
+             *  Re-binning means selecting a different (could be larger or smaller) bin count, and inferring the
              *  curve from the source bins, and producing target bins that match that curve as best as possible.
              *
-             *  The new bins could also - have been offset sligtly versus the new bins (that is the zeroth bin of the
+             *  The new bins could also - have been offset slightly versus the new bins (that is the zeroth bin of the
              *  new set of bins need not start at the same x-valeu as the original set of bins).
              *
-             *  Classicly - this assumes the curve was fairly linear across the new set original set of bins.
-             *  As a future excecise, we may want to experiemnt with differnt assumptions (like linear up/down according
+             *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
+             *  As a future exercise, we may want to experiment  with different assumptions (like linear up/down according
              *  to prev and successive bins?).
              */
             template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>

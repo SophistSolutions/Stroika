@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include	"Common.h"
 
 
 namespace   Stroika {
@@ -39,7 +40,6 @@ namespace   Stroika {
                 size_t  nTrgBuckets =   trgEnd - trgStart;
                 Require (nSrcBuckets >= 1);
                 Require (nTrgBuckets >= 1);
-                Assert (nSrcBuckets >= nTrgBuckets);    // not a requirement, but otherwise NYI
 
                 // zero target bins
                 for (TRG_BUCKET_TYPE* i = trgStart; i != trgEnd; ++i) {
@@ -67,9 +67,9 @@ namespace   Stroika {
                     // start a new x bucket each time through the loop
                     X_OFFSET_TYPE       xLeftInThisSrcBucket =   1.0;
 
-                    //Assert (ti < trgEnd); // not quite cuz of floatpoint roudnd error but should do nearlyequals assert here
+                    Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, 0));	// careful of floating point round
                     if (ti >= trgEnd) {
-                        break;  //hack!!!
+                        break;  //in case float round error
                     }
 
                     while (xLeftInThisSrcBucket > 0) {

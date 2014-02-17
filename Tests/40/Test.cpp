@@ -109,10 +109,17 @@ namespace {
             uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
             double  resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            for (int i = 0; i < NEltsOf(srcBinData); ++i) {
-                //VerifyTestResult (srcBinData[i] == resultData[i]);
-                int breakhere = 1;
-            }
+            VerifyTestResult (NearlyEquals ((3 + (5*((7.0/4.0)-1))), resultData[0]));
+            VerifyTestResult (0 == resultData[3]);
+        }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[8];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (NearlyEquals (1.5, resultData[0]));
+            VerifyTestResult (NearlyEquals (1.5, resultData[1]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[2]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[3]));
         }
     }
 }
