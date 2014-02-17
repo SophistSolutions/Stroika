@@ -37,7 +37,7 @@ namespace   Stroika {
              *  curve from the source bins, and producing target bins that match that curve as best as possible.
              *
              *  The new bins could also - have been offset slightly versus the new bins (that is the zeroth bin of the
-             *  new set of bins need not start at the same x-valeu as the original set of bins).
+             *  new set of bins need not start at the same x-value as the original set of bins).
              *
              *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
              *  As a future exercise, we may want to experiment  with different assumptions (like linear up/down according
