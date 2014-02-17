@@ -478,8 +478,6 @@ namespace   {
         );
 
 
-
-
         if (not failedTests.empty ()) {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
