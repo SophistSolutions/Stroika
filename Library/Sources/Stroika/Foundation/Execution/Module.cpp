@@ -83,23 +83,23 @@ SDKString Execution::GetEXEPathT ()
     //
 #if     qPlatform_Windows
     Characters::SDKChar   buf[MAX_PATH];
-    memset (buf, 0, sizeof (buf));
+    //memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
+    buf[NEltsOf (buf) - 1] = '\0';  // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
     return buf;
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. THe only way to tell it wasn't enuf (maybe) is if all the
     // bytes passed in are used. That COULD mean it all fit, or there was more. If we get that - double buf size and try again
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1000);
     ssize_t n;
-    while ( (n = readlink ("/proc/self/exe", buf, buf.GetSize () - 1)) == buf.GetSize ()) {
+    while ( (n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
         errno_ErrorException::DoThrow (errno);
     }
-    Assert (n < buf.GetSize ());
-    *(buf.begin () + n) = '\0';
-    return buf.begin ();
+    Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
+    return SDKString (buf.begin (), buf.begin () + n);
 #else
     AssertNotImplemented ();
     return SDKString ();
