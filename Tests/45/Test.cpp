@@ -97,7 +97,7 @@ namespace {
         outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
         if (changePct < expectedPercentFaster) {
-            outTo << "      {{{WARNING - expected at least " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
+            outTo << "      {{{WARNING - expected no worse than " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
         }
 #endif
         outTo << endl;
