@@ -10,6 +10,7 @@
 #include    "Stroika/Foundation/Math/Angle.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Math/Overlap.h"
+#include    "Stroika/Foundation/Math/ReBin.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -86,6 +87,29 @@ namespace   {
 }
 
 
+namespace {
+    void    Test5_ReBin_ ()
+    {
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            for (int i = 0; i < NEltsOf(srcBinData); ++i) {
+                VerifyTestResult (srcBinData[i] == resultData[i]);
+            }
+        }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
+            double  resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            for (int i = 0; i < NEltsOf(srcBinData); ++i) {
+                //VerifyTestResult (srcBinData[i] == resultData[i]);
+                int breakhere = 1;
+            }
+        }
+    }
+}
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -94,6 +118,7 @@ namespace   {
         Test2_Round_ ();
         Test3_Angle_ ();
         Test4_OddEvenPrime_ ();
+        Test5_ReBin_ ();
     }
 }
 

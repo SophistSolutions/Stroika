@@ -39,14 +39,25 @@ namespace   Stroika {
                 size_t  nTrgBuckets =   trgEnd - trgStart;
 
                 // zero target bins
-                for (TRG_BUCKET_TYPE i = trgStart; i != trgEnd; ++i) {
+                for (TRG_BUCKET_TYPE* i = trgStart; i != trgEnd; ++i) {
                     *i = 0;
                 }
 
                 X_OFFSET_TYPE       trgBucketsPerSrcBucket = static_cast<X_OFFSET_TYPE> (nTrgBuckets) / static_cast<X_OFFSET_TYPE> (nSrcBuckets);
-                TRG_BUCKET_TYPE     ti  =   trgStart;
+                TRG_BUCKET_TYPE*    ti  =   trgStart;
                 X_OFFSET_TYPE       fracLeftInThisTrgBucket =   trgBucketsPerSrcBucket;
 
+                /*
+                 *  SRC-BUCKETS:    |    |    |    |    |    |
+                 *  TRG-BUCKETS:    |      |      |      |
+                 *
+                 *  Filling target buckets (pre-initialized to zero). Major iteration over SRC buckets.
+                 *  For each one (si), but part into current ti (proportional), and put reset into next
+                 *  ti (proportional).
+                 *
+                 *      @todo - THIS CODE ASSUMES COUNT SRC BUCKETS > count TRG BUCKETS - MUST FIX!!!
+                 *
+                 */
                 for (const SRC_BUCKET_TYPE* si = srcStart; si != srcEnd; ++si) {
                     //Assert (ti < trgEnd); // not quite cuz of floatpoint roudnd error but should do nearlyequals assert here
                     if (ti >= trgEnd) {
@@ -56,9 +67,10 @@ namespace   Stroika {
                     // Divide the si value across possibly multiple fractional ti (target) bins!
                     if (fracLeftInThisTrgBucket < 1) {
                         *ti += (*si) * fracLeftInThisTrgBucket;
-                        SRC_BUCKET_TYPE     rollOverFromLastBucket  =   (*si) * (1 - fracLeftInThisTrgBucket);
+                        TRG_BUCKET_TYPE     rollOverFromLastBucket  =   (*si) * (1 - fracLeftInThisTrgBucket);  // even though data is all from src bucket use TRG_BUCKET_TYPE since thats where its going and could be fractional??? (not clear)
                         fracLeftInThisTrgBucket = 0;
                         ++ti;
+                        fracLeftInThisTrgBucket = trgBucketsPerSrcBucket;
                         //Assert (ti < trgEnd); // not quite cuz of floatpoint roudnd error but should do nearlyequals assert here
                         if (ti < trgEnd) {
                             *ti += rollOverFromLastBucket;
@@ -68,6 +80,9 @@ namespace   Stroika {
                         *ti += (*si);
                         fracLeftInThisTrgBucket -= 1;
                         ++ti;
+                        if (fracLeftInThisTrgBucket == 0) {
+                            fracLeftInThisTrgBucket = trgBucketsPerSrcBucket;
+                        }
                     }
                 }
 
