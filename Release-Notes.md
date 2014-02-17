@@ -24,6 +24,10 @@ History
 	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a21">v2.0a21x</a><br/>2014-02-??</td>
 	<td>
 		<ul>
+			<li>Stroika performance measurements tool and regression test. Little done to improve performance, but 
+			at least now we have baseline measurements of some key benchmarks. Motivated by neeed to evaluate costs of
+			String threadsafety.</li>
+			<li>Math::ReBin() draft</li>
 			<li>???string classlib improvemnts - maybe fix threadsafty issue</li>
 			<li>SetStandardCrashHandlerSignals() incompatable second argument changes, and improved/factoring</li>
 			<li>Duration::PrettyPrint and Lingustics/Word Pluralize etc all use new String class (instead of std::wstring/string). This isn't backward comptable, but close. (so we can use String_Constant in more places).</li>

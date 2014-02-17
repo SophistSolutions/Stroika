@@ -20,23 +20,21 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************************** Math::Overlaps ******************************
+             ********************************** Math::ReBin *********************************
              ********************************************************************************
              */
-            /*
-
-            two iterators - one marking (start/end of target buckets), and one marking current src bucket.
-
-            iteratoe over outer buckets. move contents to new bucket. And adjust new iteraotrs. When they overlpap and must
-                adnvace - proprtionally add to bucket, adnvace and add rest to next target bucket.
-
-            */
             template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE>
             void    ReBin (
                 const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
                 TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
             )
             {
+                /*
+                 *  Algorithm:
+                 *      Two iterators - one marking (start/end of target buckets), and one marking current src bucket.
+                 *      iterate over outer buckets. Move contents to new bucket. And adjust new iterators. When they overlpap and must
+                 *      advance - proprtionally add to bucket, adnvace and add rest to next target bucket.
+                 */
                 size_t  nSrcBuckets =   srcEnd - srcStart;
                 size_t  nTrgBuckets =   trgEnd - trgStart;
 
