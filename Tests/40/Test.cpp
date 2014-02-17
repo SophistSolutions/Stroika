@@ -109,7 +109,7 @@ namespace {
             uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
             double  resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            VerifyTestResult (NearlyEquals ((3 + (5*((7.0/4.0)-1))), resultData[0]));
+            VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
             VerifyTestResult (0 == resultData[3]);
         }
         {
