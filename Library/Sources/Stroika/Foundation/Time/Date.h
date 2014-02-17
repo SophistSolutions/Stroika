@@ -27,13 +27,13 @@
  *
  * TODO:
  *
- *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr stuff for kMin/kMax
+ *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *              stuff for kMin/kMax
  *
- *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
- *              use ModuleInit<> code to assure proper construction order.
+ *              For now using ModuleInit<> code to assure proper construction order.
  *
- *              So far this doesnt appear to have caused problems by the DateRange<> code refrences
- *              these constants at its module init time.
+ *              After I get this working, consider fixing derivitate classes like DateTime and
+ *              DateRange, etc, to also use constexpr - but this one must work first!
  *
  *      @todo   See if Year should maybe be based on uint16_t.
  *
@@ -213,6 +213,9 @@ namespace   Stroika {
              *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
              *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
              *          point concept of negative infinity.
+             *
+             *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
+             *          static de-initializaiton.
              */
             class   Date {
             public:

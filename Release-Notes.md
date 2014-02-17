@@ -28,6 +28,8 @@ History
 			at least now we have baseline measurements of some key benchmarks. Motivated by neeed to evaluate costs of
 			String threadsafety.</li>
 			<li>Math::ReBin() draft</li>
+			<li>Duration/Time/etc Range () code now fixed for 'startup before main()' races, and todo comments on how to fix more performantly in
+			the future</li>
 			<li>???string classlib improvemnts - maybe fix threadsafty issue</li>
 			<li>SetStandardCrashHandlerSignals() incompatable second argument changes, and improved/factoring</li>
 			<li>Duration::PrettyPrint and Lingustics/Word Pluralize etc all use new String class (instead of std::wstring/string). This isn't backward comptable, but close. (so we can use String_Constant in more places).</li>

@@ -14,7 +14,26 @@ using   namespace   Stroika::Foundation::Time;
 
 using   namespace   Time;
 
-#if 1
-const Duration Time::Private_::DurationRangeTraitsType_::kLowerBound   =   Duration::kMin;
-const Duration Time::Private_::DurationRangeTraitsType_::kUpperBound   =   Duration::kMax;;
-#endif
+
+
+
+/*
+ ********************************************************************************
+ ************************* Private_::DurationRange_ModuleData_ ******************
+ ********************************************************************************
+ */
+Time::Private_::DurationRange_ModuleData_::DurationRange_ModuleData_ ()
+    : fLowerBound (Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin)
+    , fUpperBound (Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax)
+{
+}
+
+
+/*
+ ********************************************************************************
+ ************************* Private_::DurationRangeTraitsType_ *******************
+ ********************************************************************************
+ */
+
+const Duration& Time::Private_::DurationRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fLowerBound;
+const Duration& Time::Private_::DurationRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fUpperBound;

@@ -14,7 +14,26 @@ using   namespace   Stroika::Foundation::Time;
 
 using   namespace   Time;
 
-#if 1
-const DateTime Time::Private_::DateTimeRangeTraitsType_::kLowerBound   =   DateTime::kMin;
-const DateTime Time::Private_::DateTimeRangeTraitsType_::kUpperBound   =   DateTime::kMax;;
-#endif
+
+
+
+/*
+ ********************************************************************************
+ ************************* Private_::DateTimeRange_ModuleData_ ******************
+ ********************************************************************************
+ */
+Time::Private_::DateTimeRange_ModuleData_::DateTimeRange_ModuleData_ ()
+    : fLowerBound (Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin)
+    , fUpperBound (Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax)
+{
+}
+
+
+/*
+ ********************************************************************************
+ ************************* Private_::DateTimeRangeTraitsType_ *******************
+ ********************************************************************************
+ */
+
+const DateTime& Time::Private_::DateTimeRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateTimeRange_ModuleData_>::Actual ().fLowerBound;
+const DateTime& Time::Private_::DateTimeRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateTimeRange_ModuleData_>::Actual ().fUpperBound;

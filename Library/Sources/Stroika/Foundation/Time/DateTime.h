@@ -116,6 +116,9 @@ namespace   Stroika {
              *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number of seconds or days (JulienRep),
              *          treat empty as DateTime::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
              *          This is a bit like the floating point concept of negative infinity.
+             *
+             *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
+             *          static de-initializaiton.
              */
             class   DateTime {
             public:

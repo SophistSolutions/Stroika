@@ -31,11 +31,13 @@
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
  *              Maybe Float2StringOptions is optional param to As<String> ()???
  *
- *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
- *              use ModuleInit<> code to assure proper construction order.
+ *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *              stuff for kMin/kMax
  *
- *              So far this doesnt appear to have caused problems by the DurationRange<> code refrences
- *              these constants at its module init time.
+ *              For now using ModuleInit<> code to assure proper construction order.
+ *
+ *              After I get this working, consider fixing derivitate classes like DurationRange
+ *              to also use constexpr - but this one must work first!
  *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
@@ -110,6 +112,9 @@ namespace   Stroika {
              *      simplest way around this is to have the caller pass something in, or to return something
              *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
              *      As<wstring> ().c_str ()
+             *
+             *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
+             *          static de-initializaiton.
              */
             class   Duration {
             public:
