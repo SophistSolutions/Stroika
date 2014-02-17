@@ -22,6 +22,24 @@ namespace   Stroika {
              ************************************ TimeOfDay *********************************
              ********************************************************************************
              */
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            TimeOfDay::TimeOfDay ()
+                : fTime_ (-1)
+            {
+            }
+
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            TimeOfDay::TimeOfDay (uint32_t t)
+                : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
+            {
+            }
+
             inline  bool    TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);

@@ -235,16 +235,6 @@ TimeOfDay::FormatException::FormatException ()
 const   TimeOfDay   TimeOfDay::kMin =   TimeOfDay (0);
 const   TimeOfDay   TimeOfDay::kMax =   TimeOfDay (kMaxSecondsPerDay - 1);
 
-TimeOfDay::TimeOfDay ()
-    : fTime_ (-1)
-{
-}
-
-TimeOfDay::TimeOfDay (uint32_t t)
-    : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
-{
-}
-
 TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {

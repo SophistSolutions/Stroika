@@ -96,15 +96,25 @@ namespace   Stroika {
                 /**
                  * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay
                  */
+#if     qCompilerAndStdLib_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT(uint32_t, kMaxSecondsPerDay, 60 * 60 * 24);
+#else
+                static  constexpr   uint32_t    kMaxSecondsPerDay = 60 * 60 * 24;       // nb: 86400: wont fit in uint16_t
+#endif
 
             public:
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 TimeOfDay ();
 
                 /**
                  * If value out of range - pinned to kMax.
                  * We normalize to be within a given day (seconds since midnight)
                  */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 explicit TimeOfDay (uint32_t t);
 
             public:
