@@ -39,7 +39,6 @@ namespace   Stroika {
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
             }
-
             inline  bool    TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);

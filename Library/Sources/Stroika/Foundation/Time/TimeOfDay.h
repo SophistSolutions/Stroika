@@ -30,6 +30,9 @@
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
+ *      @todo   Review how we use 'empty()'. Efficient, but might be cleaner design to use Optional
+ *              and in places that use TimeOfDay::empty () and lose the concept of empty here?
+ *
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
  *               use Optional<>
  *
@@ -103,15 +106,14 @@ namespace   Stroika {
 #endif
 
             public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                TimeOfDay ();
-
                 /**
                  * If value out of range - pinned to kMax.
                  * We normalize to be within a given day (seconds since midnight)
                  */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                TimeOfDay ();
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
 #endif
@@ -144,13 +146,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 * TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
+                 *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
                  */
+#if     qCompilerAndStdLib_constexpr_Buggy
                 static  const   TimeOfDay   kMin;
+#else
+                static  constexpr   TimeOfDay   kMin (0);
+#endif
+
+            public:
                 /**
-                 * TimeOfDay::kMax is the last date this TimeOfDay class supports representing.
+                 *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
+                 *  not like 'end' - one past the last legal value.
                  */
+#if     qCompilerAndStdLib_constexpr_Buggy
                 static  const   TimeOfDay   kMax;
+#else
+                static  constexpr   TimeOfDay   kMax (kMaxSecondsPerDay - 1);
+#endif
 
             public:
                 class   FormatException;

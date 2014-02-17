@@ -232,8 +232,10 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
+#if     qCompilerAndStdLib_constexpr_Buggy
 const   TimeOfDay   TimeOfDay::kMin =   TimeOfDay (0);
 const   TimeOfDay   TimeOfDay::kMax =   TimeOfDay (kMaxSecondsPerDay - 1);
+#endif
 
 TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
