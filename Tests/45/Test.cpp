@@ -107,7 +107,8 @@ namespace {
     DurationSecondsType RunTest_(function<void()> t, unsigned int runCount)
     {
         DurationSecondsType start = Time::GetTickCount ();
-        for (unsigned int i = 0; i < runCount; ++i) {
+        // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
+        for (volatile unsigned int i = 0; i < runCount; ++i) {
             t();
         }
         return Time::GetTickCount () - start;
