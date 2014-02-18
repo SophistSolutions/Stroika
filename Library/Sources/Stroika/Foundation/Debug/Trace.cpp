@@ -233,7 +233,7 @@ namespace   {
 #if     qTraceToFile
 SDKString Emitter::GetTraceFileName () const
 {
-    return Execution::ModuleInitializer<TraceModuleData_>::Actual ().fTraceFileName;
+    return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fTraceFileName;
 }
 #endif
 
