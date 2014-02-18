@@ -28,16 +28,20 @@ namespace   Stroika {
             using   Characters::SDKChar;
 
 
-            /*
-             *  So we can distribute near-release versions of HF to users, and get feedback - a trace file
-             *  to help debug problems we cannot reproduce.
+            /**
+             *  If qTraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output
+             *  screen, and to an auto-generated logfile.
+             *
+             *  This can be handy for building a version of code to hand to customers with an irreproducible bug to get a detailed
+             *  report of what happened. Its also handy for embedded or timing sensative programs where capturing the log
+             *  of exactly what happened is helpful.
              */
 #if     !defined (qTraceToFile)
 #error "qTraceToFile should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 
-            /*
+            /**
             @CONFIGVAR:     qDefaultTracingOn
             @DESCRIPTION:   <p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
                         depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
@@ -59,11 +63,14 @@ namespace   Stroika {
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
 
+
             namespace Private_ {
                 struct  TraceModuleData_;
             }
 
 
+            /**
+            */
             class   Emitter {
             private:
                 Emitter ();
@@ -124,6 +131,8 @@ namespace   Stroika {
             };
 
 
+            /**
+            */
             class   TraceContextBumper {
             public:
                 TraceContextBumper ();
@@ -150,7 +159,7 @@ namespace   Stroika {
             };
 
 
-            /*
+            /**
             @METHOD:        DbgTrace
             @DESCRIPTION:   <p>This function either does NOTHING (trying to not even evaluate its arguments)
                         or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
