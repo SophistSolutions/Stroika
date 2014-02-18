@@ -141,6 +141,9 @@ namespace   Stroika {
                 static  SignalHandlerRegistry&  Get ();
 
             private:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 SignalHandlerRegistry ();
                 SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
                 ~SignalHandlerRegistry ();

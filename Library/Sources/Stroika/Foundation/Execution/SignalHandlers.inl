@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "../Execution/ModuleInit.h"
 
 
 namespace   Stroika {
@@ -61,7 +62,18 @@ namespace   Stroika {
             }
 
 
+            namespace Private_ {
+                struct SignalHandlers_ModuleData_ {
+                    mutex                               fMutex;
+                    shared_ptr<SignalHandlerRegistry>   fTheRegistry;
+                };
+            }
+
+
         }
     }
+}
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::SignalHandlers_ModuleData_>    _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Execution_SignalHandlers_inl_*/
