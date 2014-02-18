@@ -128,8 +128,53 @@ namespace   {
 }
 
 
+
+
+
+
+
+#if     qTraceToFile
+namespace   {
+    SDKString mkTraceFileName_ ()
+    {
+        // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
+        // (could fix of course, but I'm not sure desirable - reasonable defaults)
+        //
+        // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
+        SDKString mfname;
+        {
+            mfname = Execution::GetEXEPathT ();
+            size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
+            if (i != SDKString::npos) {
+                mfname = mfname.substr (i + 1);
+            }
+            i = mfname.rfind ('.');
+            if (i != SDKString::npos) {
+                mfname.erase (i);
+            }
+            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
+                if (*i == ' ') {
+                    *i = '-';
+                }
+            }
+        }
+        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
+        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+            if (*i == ':') {
+                *i = '-';
+            }
+        }
+        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+    }
+}
+#endif
+
 TraceModuleData_::TraceModuleData_ ()
-    : fStringDependency (Characters::MakeModuleDependency_String ())
+    : fEmitter ()
+#if     qTraceToFile
+    , fTraceFileName (mkTraceFileName_ ())
+#endif
+    , fStringDependency (Characters::MakeModuleDependency_String ())
 {
     CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
@@ -189,44 +234,9 @@ namespace   {
 
 
 #if     qTraceToFile
-namespace   {
-    SDKString mkTraceFileName_ ()
-    {
-        // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
-        // (could fix of course, but I'm not sure desirable - reasonable defaults)
-        //
-        // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
-        SDKString mfname;
-        {
-            mfname = Execution::GetEXEPathT ();
-            size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
-            if (i != SDKString::npos) {
-                mfname = mfname.substr (i + 1);
-            }
-            i = mfname.rfind ('.');
-            if (i != SDKString::npos) {
-                mfname.erase (i);
-            }
-            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
-                if (*i == ' ') {
-                    *i = '-';
-                }
-            }
-        }
-        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
-        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-            if (*i == ':') {
-                *i = '-';
-            }
-        }
-        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
-    }
-}
-
 SDKString Emitter::GetTraceFileName () const
 {
-    static  SDKString sTraceFileName_ =   mkTraceFileName_ ();
-    return sTraceFileName_;
+    return Execution::ModuleInitializer<TraceModuleData_>::Actual ().fTraceFileName;
 }
 #endif
 
