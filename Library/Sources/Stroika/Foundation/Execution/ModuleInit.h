@@ -36,7 +36,6 @@ namespace   Stroika {
 
 
             /**
-             *
              *  For the most part, using ModuleInitializer<> automatically takes care of all your module interdependencies
              *  automatically, just by #including the right files. This is true because the #include dependency graph
              *  matches the module dependency graph. But if you have module interdependencies which are not captured by
@@ -68,6 +67,10 @@ namespace   Stroika {
              *
              *  The net effect is in the TraceModuleData_ - it will have an object which calls the 'start' and 'stop' methods of
              *  ModuleInitializer<String_ModuleInit_>... accordingly - to force the proper order of initialization.
+             *
+             *  \note   ModuleDependency<>s are effectively transative, so that if the 'String' module depends on
+             *          the 'BlockAllocated' module, for example, then having your module depend on the 'String' module
+             *          effectively means it automatically depends on the 'BlockAllocated' module.
              */
             class   ModuleDependency {
             public:
