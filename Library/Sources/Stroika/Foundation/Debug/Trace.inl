@@ -57,10 +57,10 @@ namespace   Stroika {
                     ~TraceModuleData_ ();
 
                     Emitter                     fEmitter;
+                    Execution::ModuleDependency fStringDependency;
 #if     qTraceToFile
                     SDKString                   fTraceFileName;
 #endif
-                    Execution::ModuleDependency fStringDependency;
                 };
             }
 

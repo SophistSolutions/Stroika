@@ -168,10 +168,10 @@ namespace   {
 
 Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     : fEmitter ()
+    , fStringDependency (Characters::MakeModuleDependency_String ())
 #if     qTraceToFile
     , fTraceFileName (mkTraceFileName_ ())
 #endif
-    , fStringDependency (Characters::MakeModuleDependency_String ())
 {
     CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
