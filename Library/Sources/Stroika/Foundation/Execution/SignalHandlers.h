@@ -145,6 +145,8 @@ namespace   Stroika {
             public:
 #endif
                 SignalHandlerRegistry ();
+
+            public:
                 SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
                 ~SignalHandlerRegistry ();
 
