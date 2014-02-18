@@ -34,6 +34,5 @@ Time::Private_::DateRange_ModuleData_::DateRange_ModuleData_ ()
  ************************* Private_::DateRangeTraitsType_ ***********************
  ********************************************************************************
  */
-
 const Date& Time::Private_::DateRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fLowerBound;
 const Date& Time::Private_::DateRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DateRange_ModuleData_>::Actual ().fUpperBound;

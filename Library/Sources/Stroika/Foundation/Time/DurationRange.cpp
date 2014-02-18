@@ -34,6 +34,5 @@ Time::Private_::DurationRange_ModuleData_::DurationRange_ModuleData_ ()
  ************************* Private_::DurationRangeTraitsType_ *******************
  ********************************************************************************
  */
-
 const Duration& Time::Private_::DurationRangeTraitsType_::kLowerBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fLowerBound;
 const Duration& Time::Private_::DurationRangeTraitsType_::kUpperBound   =   Execution::ModuleInitializer<Time::Private_::DurationRange_ModuleData_>::Actual ().fUpperBound;
