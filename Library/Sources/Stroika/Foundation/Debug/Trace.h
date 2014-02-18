@@ -59,7 +59,10 @@ namespace   Stroika {
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-            struct  TraceModuleData_;
+            namespace Private_ {
+                struct  TraceModuleData_;
+            }
+
 
             class   Emitter {
             private:
@@ -117,7 +120,7 @@ namespace   Stroika {
                 nonvirtual  void    DoEmit_ (const wchar_t* p, const wchar_t* e);
 
             private:
-                friend  struct  TraceModuleData_;
+                friend  struct  Private_::TraceModuleData_;
             };
 
 

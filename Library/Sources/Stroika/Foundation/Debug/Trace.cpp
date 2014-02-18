@@ -24,7 +24,6 @@
 #include    "../Time/DateTime.h"
 #endif
 
-
 #include    "Trace.h"
 
 
@@ -91,7 +90,7 @@ FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA();
 
 /*
  ********************************************************************************
- ********************************** TraceModuleData_ ****************************
+ ************************ Private_::TraceModuleData_ ****************************
  ********************************************************************************
  */
 namespace   {
@@ -126,8 +125,6 @@ namespace   {
     char        sThreadPrintDashAdornment_[32]; // use static array to avoid putting the string object into TraceModuleData_, and otherwise having to worry about use after main when calls DbgTrace()
     bool        sDidOneTimePrimaryThreadMessage_    =   false;
 }
-
-
 
 
 
@@ -169,7 +166,7 @@ namespace   {
 }
 #endif
 
-TraceModuleData_::TraceModuleData_ ()
+Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     : fEmitter ()
 #if     qTraceToFile
     , fTraceFileName (mkTraceFileName_ ())
@@ -190,7 +187,7 @@ TraceModuleData_::TraceModuleData_ ()
 #endif
 }
 
-TraceModuleData_::~TraceModuleData_ ()
+Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
 {
     delete sEmitTraceCritSec_;
     sEmitTraceCritSec_ = nullptr;
@@ -278,7 +275,7 @@ namespace   {
  */
 Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
 {
-    return Execution::ModuleInitializer<TraceModuleData_>::GetDependency ();
+    return Execution::ModuleInitializer<Debug::Private_::TraceModuleData_>::GetDependency ();
 }
 
 

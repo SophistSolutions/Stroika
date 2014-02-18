@@ -51,17 +51,18 @@ namespace   Stroika {
 
             Execution::ModuleDependency MakeModuleDependency_Trace ();
 
+            namespace Private_ {
+                struct  TraceModuleData_ {
+                    TraceModuleData_ ();
+                    ~TraceModuleData_ ();
 
-            struct  TraceModuleData_ {
-                TraceModuleData_ ();
-                ~TraceModuleData_ ();
-
-                Emitter                     fEmitter;
+                    Emitter                     fEmitter;
 #if     qTraceToFile
-                SDKString                   fTraceFileName;
+                    SDKString                   fTraceFileName;
 #endif
-                Execution::ModuleDependency fStringDependency;
-            };
+                    Execution::ModuleDependency fStringDependency;
+                };
+            }
 
 
         }
@@ -70,12 +71,12 @@ namespace   Stroika {
 
 
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::TraceModuleData_> _Stroika_Foundation_Debug_Trace_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::Private_::TraceModuleData_> _Stroika_Foundation_Debug_Trace_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 
 inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get ()
 {
-    return Execution::ModuleInitializer<TraceModuleData_>::Actual ().fEmitter;
+    return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fEmitter;
 }
 #endif  /*_Stroika_Foundation_Debug_Trace_inl_*/
