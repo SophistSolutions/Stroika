@@ -294,6 +294,34 @@ namespace {
 
 
 
+
+
+
+namespace {
+    namespace {
+        template <typename WIDESTRING_IMPL>
+        void    Test_StringSubStr_T1_ (const WIDESTRING_IMPL& src)
+        {
+            WIDESTRING_IMPL tmp = src.substr (5, 20);
+            VerifyTestResult (tmp.length () == 20);
+            VerifyTestResult (src.substr (5, 20).length () == 20);
+            VerifyTestResult (src.substr (5, 20).substr (3, 3).length () == 3);
+        }
+    }
+    template <typename WIDESTRING_IMPL>
+    void    Test_StringSubStr_()
+    {
+        static  const WIDESTRING_IMPL KBase = L"01234567890123456789012345678901234567890123456789";
+        Test_StringSubStr_T1_ (KBase);
+    }
+}
+
+
+
+
+
+
+
 namespace {
 
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
@@ -360,9 +388,9 @@ namespace {
     void    Test_OperatorINSERT_ostream_ ()
     {
         using namespace std;
-        WIDESTRING_IMPL kT1 =   L"abc";
-        WIDESTRING_IMPL kT2 =   L"123";
-        WIDESTRING_IMPL kT3 =   L"abc123abc123";
+        static  WIDESTRING_IMPL kT1 =   L"abc";
+        static  WIDESTRING_IMPL kT2 =   L"123";
+        static  WIDESTRING_IMPL kT3 =   L"abc123abc123";
         wstringstream   out;
         for (int i = 0; i < 1000; ++i) {
             out << kT1 << kT2 << kT3;
@@ -406,21 +434,20 @@ namespace   {
 
 
 namespace   {
-
     template <typename WIDESTRING_IMPL>
     void    Test_String_cstr_call_ ()
     {
-        WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
-        WIDESTRING_IMPL s2 = L"o3424";
-        WIDESTRING_IMPL s3 = L"o3424";
-        WIDESTRING_IMPL s4 = L"o3424";
-        WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
+        static  WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
+        static  WIDESTRING_IMPL s2 = L"o3424";
+        static  WIDESTRING_IMPL s3 = L"o3424";
+        static  WIDESTRING_IMPL s4 = L"o3424";
+        static  WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
         size_t s1len    =   s1.length ();
         size_t s2len    =   s2.length ();
         size_t s3len    =   s3.length ();
         size_t s4len    =   s4.length ();
         size_t s5len    =   s5.length ();
-        for (int i = 0; i < 200; ++i) {
+        for (volatile int i = 0; i < 200; ++i) {
             VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
             VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
             VerifyTestResult (s3len == ::wcslen (s3.c_str ()));
@@ -428,7 +455,6 @@ namespace   {
             VerifyTestResult (s5len == ::wcslen (s5.c_str ()));
         }
     }
-
 }
 
 
@@ -462,7 +488,6 @@ namespace   {
         }
         Private_::Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, 20);
     }
-
 }
 
 
@@ -584,7 +609,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -2500,
+            -2600,
             &failedTests
         );
         Tester (
@@ -592,7 +617,15 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -27,
+            -32,
+            &failedTests
+        );
+        Tester (
+            L"String::substr()",
+            Test_StringSubStr_<wstring>, L"wstring",
+            Test_StringSubStr_<String>, L"Charactes::String",
+            3023007 ,
+            -3500,
             &failedTests
         );
         Tester (
