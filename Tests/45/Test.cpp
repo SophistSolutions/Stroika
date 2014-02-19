@@ -547,7 +547,11 @@ namespace {
     {
         {
             wchar_t buf[1024];
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 9);     // not with swprintf %s means narrow string unlike Format()
+#if     qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", L"xxx", 33) == 10);
+#else
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 10);     // not with swprintf %s means narrow string unlike Format()
+#endif
             VerifyTestResult (wstring (buf) == L"a, xxx, 33");
         }
         {
