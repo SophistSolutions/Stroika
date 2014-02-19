@@ -148,12 +148,18 @@ namespace   Stroika {
             template    <typename   T>
             inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
             {
-                return std::fabs ( l - r ) <= epsilon;
+                T diff = (l - r);
+                if (std::isnan (diff)) {
+                    // nan-nan, or inf-inf
+                    // maybe other cases shouldnt be considered nearly equals?
+                    return std::fpclassify (l) == std::fpclassify (r);
+                }
+                return std::fabs (diff) <= epsilon;
             }
             template    <typename   T>
             inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_integral<T>::value >::type*)
             {
-                return std::abs ( l - r ) <= epsilon;
+                return std::abs (l - r) <= epsilon;
             }
 #if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
             inline  bool   NearlyEquals (float l, float r, float epsilon = (10000 * numeric_limits<float>::epsilon ()))
