@@ -123,6 +123,12 @@ namespace   Stroika {
                 return *fRep_;
             }
             template    <typename T>
+            inline  const typename Iterable<T>::_IRep&   Iterable<T>::_ConstGetRep () const
+            {
+                EnsureNotNull (fRep_.get ());
+                return *fRep_;
+            }
+            template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
                 return _GetRep ().MakeIterator (this);
