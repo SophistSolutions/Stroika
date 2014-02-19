@@ -517,7 +517,6 @@ namespace   {
 }
 #endif
 
-
 template    <>
 time_t  DateTime::As () const
 {
@@ -636,18 +635,18 @@ DateTime    DateTime::AddSeconds (time_t seconds) const
         dayDiff = int (- (-n + time_t (TimeOfDay::kMaxSecondsPerDay) - 1) / time_t (TimeOfDay::kMaxSecondsPerDay));
         Assert (dayDiff < 0);
     }
-    n -= dayDiff * TimeOfDay::kMaxSecondsPerDay;
+    n -= dayDiff * static_cast<time_t> (TimeOfDay::kMaxSecondsPerDay);
     Assert (n >= 0);
 
     // Now see if we overflowed
-    if (n >= TimeOfDay::kMaxSecondsPerDay) {
+    if (n >= static_cast<time_t> (TimeOfDay::kMaxSecondsPerDay)) {
         Assert (dayDiff == 0);
         dayDiff = int (n / time_t (TimeOfDay::kMaxSecondsPerDay));
-        n -= dayDiff * TimeOfDay::kMaxSecondsPerDay;
+        n -= dayDiff * static_cast<time_t> (TimeOfDay::kMaxSecondsPerDay);
     }
     Assert (n >= 0);
 
-    Ensure (0 <= n and n < TimeOfDay::kMaxSecondsPerDay);
+    Ensure (0 <= n and n < static_cast<time_t> (TimeOfDay::kMaxSecondsPerDay));
     return DateTime (GetDate ().AddDays (dayDiff), TimeOfDay (static_cast<uint32_t> (n)), GetTimezone ());
 }
 
