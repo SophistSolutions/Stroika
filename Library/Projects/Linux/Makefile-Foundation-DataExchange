@@ -18,6 +18,7 @@ Objs	=	\
 	$(ObjDir)Writer.o\
 
 SubDirs	=	\
+	INI \
 	JSON \
 	XML \
 
@@ -27,18 +28,20 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs))
 JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs))
 XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs))
 
 
 list-objs::
-	@echo $(JSON_OBJS) $(XML_OBJS)
+	@echo $(INI_OBJS) $(JSON_OBJS) $(XML_OBJS)
 
+
+INI:
+	@$(MAKE) --directory INI -s
 
 JSON:
 	@$(MAKE) --directory JSON -s
 
 XML:
 	@$(MAKE) --directory XML -s
-
-
