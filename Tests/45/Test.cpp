@@ -473,6 +473,42 @@ namespace   {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+namespace {
+    template <typename WIDESTRING_IMPL>
+    void    Test_String_Format_ ()
+    {
+        VerifyTestResult (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
+        VerifyTestResult (Format (L"0x%x", 0x20) == L"0x20");
+    }
+    template <>
+    void    Test_String_Format_<wstring> ()
+    {
+        wchar_t buf[1024];
+        swprintf (buf, NEltsOf (buf), L"a, %s, %d", L"xxx", 33);
+        VerifyTestResult (wstring (buf) == L"a, xxx, 33");
+
+        swprintf (buf, NEltsOf (buf), L"0x%x", 0x20);
+        VerifyTestResult (wstring (buf) == L"0x20");
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -589,6 +625,15 @@ namespace   {
         -15,
         &failedTests
         );
+        Tester (
+            L"String Chracters::Format ()",
+            Test_String_Format_<wstring>, L"sprintf",
+            Test_String_Format_<String>, L"String Characters::Format",
+            1349818,
+            -260,
+            &failedTests
+        );
+
 
 
         if (not failedTests.empty ()) {
