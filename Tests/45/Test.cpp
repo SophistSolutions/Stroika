@@ -11,6 +11,7 @@
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
@@ -409,6 +410,69 @@ namespace   {
 
 
 
+
+
+
+
+
+namespace   {
+    namespace Private_ {
+        template <typename CONTAINER>
+        void    Test_SequenceVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
+        {
+            if (recCalls > 0) {
+                Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
+            }
+            VerifyTestResult (c.size () == 500);
+        }
+    }
+    template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
+    void    Test_SequenceVectorAdditionsAndCopies_ ()
+    {
+        ELEMENTTYPE addEachTime = ELEMENTTYPE ();
+        CONTAINER c;
+        for (int i = 0; i < 500; ++i) {
+            c.push_back (addEachTime);
+        }
+        Private_::Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, 20);
+    }
+
+}
+
+
+
+
+
+
+
+
+namespace   {
+    namespace Private_ {
+        template <typename CONTAINER>
+        void    Test_CollectionVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
+        {
+            if (recCalls > 0) {
+                Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
+            }
+            VerifyTestResult (c.size () == 500);
+        }
+    }
+    template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
+    void    Test_CollectionVectorAdditionsAndCopies_ (function<void(CONTAINER* c)> f2Add)
+    {
+        CONTAINER c;
+        for (int i = 0; i < 500; ++i) {
+            f2Add (&c);
+        }
+        Private_::Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, 20);
+    }
+}
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -462,7 +526,7 @@ namespace   {
             &failedTests
         );
         Tester (
-            L"wstringstream versus ",
+            L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
@@ -474,8 +538,56 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             39001,
-            -30,
+            -31,
             &failedTests
+        );
+        Tester (
+            L"Sequence<int> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+            Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
+            135365,
+            -550,
+            &failedTests
+        );
+        Tester (
+            L"Sequence<string> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
+            Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
+            8712,
+            25,
+            &failedTests
+        );
+        Tester (
+            L"Sequence_DoublyLinkedList<int> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+            Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
+            139926,
+            -560,
+            &failedTests
+        );
+        Tester (
+            L"Sequence_DoublyLinkedList<string> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
+            Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
+            8712,
+            30,
+            &failedTests
+        );
+        Tester (
+            L"Collection<int> basics",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
+        94862,
+        -1050,
+        &failedTests
+        );
+        Tester (
+            L"Collection<string> basics",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
+        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
+        8712,
+        -15,
+        &failedTests
         );
 
 
