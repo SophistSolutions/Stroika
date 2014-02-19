@@ -401,6 +401,12 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  size () const;
 
+            public:
+                /**
+                 * \brief STL-ish alias for ElementType
+                 */
+                using   value_type   =       ElementType;
+
             protected:
                 /**
                  *  @see Memory::SharedByValue_State
