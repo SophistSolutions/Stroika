@@ -269,6 +269,32 @@ namespace {
 
 
 namespace {
+    namespace {
+        template <typename WIDESTRING_IMPL>
+        void    Test_SimpleStringConCat1_T1_(const WIDESTRING_IMPL& src)
+        {
+            WIDESTRING_IMPL tmp = src + src;
+            tmp = tmp + src;
+            tmp = src + tmp;
+            VerifyTestResult (tmp.length () == src.length () * 4);
+        }
+    }
+    template <typename WIDESTRING_IMPL>
+    void    Test_SimpleStringConCat1_()
+    {
+        const WIDESTRING_IMPL KBase = L"1234568321";
+        Test_SimpleStringConCat1_T1_ (KBase);
+    }
+
+}
+
+
+
+
+
+
+
+namespace {
 
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
         mutex   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
@@ -517,7 +543,7 @@ namespace   {
             L"Test of simple locking strategies",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-            15239,
+            15000,
             0,    // just a warning, fyi
             &failedTests
         );
@@ -551,6 +577,14 @@ namespace   {
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
             -5200,
+            &failedTests
+        );
+        Tester (
+            L"String a + b",
+            Test_SimpleStringConCat1_<wstring>, L"wstring",
+            Test_SimpleStringConCat1_<String>, L"String",
+            2038815,
+            -2500,
             &failedTests
         );
         Tester (
@@ -597,7 +631,7 @@ namespace   {
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
-            139926,
+            135000,
             -560,
             &failedTests
         );
@@ -633,6 +667,7 @@ namespace   {
             -260,
             &failedTests
         );
+
 
 
 
