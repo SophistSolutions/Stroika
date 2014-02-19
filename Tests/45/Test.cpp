@@ -577,7 +577,7 @@ namespace   {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             15000,
-            0,    // just a warning, fyi
+            -30.0,    // just a warning, fyi
             &failedTests
         );
         Tester (
@@ -585,7 +585,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            1,
+            25.0,
             &failedTests
         );
         Tester (
@@ -593,7 +593,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1172017,
-            -2000,
+            -1400.0,
             &failedTests
         );
         Tester (
@@ -601,7 +601,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -2500,
+            -2000.0,
             &failedTests
         );
         Tester (
@@ -609,7 +609,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -5200,
+            -4000.0,
             &failedTests
         );
         Tester (
@@ -617,7 +617,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -2600,
+            -1200.0,
             &failedTests
         );
         Tester (
@@ -625,7 +625,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -32,
+            -20.0,
             &failedTests
         );
         Tester (
@@ -633,7 +633,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -3500,
+            -600.0,
             &failedTests
         );
         Tester (
@@ -641,7 +641,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
-        -320,
+        -320.0,
         &failedTests
         );
         Tester (
@@ -649,7 +649,7 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             39001,
-            -33,
+            -33.0,
             &failedTests
         );
         Tester (
@@ -657,7 +657,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            -550,
+            -550.0,
             &failedTests
         );
         Tester (
@@ -665,7 +665,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             8712,
-            25,
+            25.0,
             &failedTests
         );
         Tester (
@@ -673,7 +673,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             135000,
-            -560,
+            -560.0,
             &failedTests
         );
         Tester (
@@ -681,7 +681,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            27,
+            27.0,
             &failedTests
         );
         Tester (
@@ -689,7 +689,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         94862,
-        -1050,
+        -1050.0,
         &failedTests
         );
         Tester (
@@ -697,7 +697,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
         8712,
-        -15,
+        -18.0,
         &failedTests
         );
         Tester (
@@ -705,10 +705,9 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -260,
+            -140.0,
             &failedTests
         );
-
 
 
 
