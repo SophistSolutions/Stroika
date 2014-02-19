@@ -545,12 +545,16 @@ namespace {
     template <>
     void    Test_String_Format_<wstring> ()
     {
-        wchar_t buf[1024];
-        swprintf (buf, NEltsOf (buf), L"a, %s, %d", L"xxx", 33);
-        VerifyTestResult (wstring (buf) == L"a, xxx, 33");
-
-        swprintf (buf, NEltsOf (buf), L"0x%x", 0x20);
-        VerifyTestResult (wstring (buf) == L"0x20");
+        {
+            wchar_t buf[1024];
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 9);     // not with swprintf %s means narrow string unlike Format()
+            VerifyTestResult (wstring (buf) == L"a, xxx, 33");
+        }
+        {
+            wchar_t buf[1024];
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
+            VerifyTestResult (wstring (buf) == L"0x20");
+        }
     }
 }
 
