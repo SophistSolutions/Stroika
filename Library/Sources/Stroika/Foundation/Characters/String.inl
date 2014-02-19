@@ -80,21 +80,21 @@ namespace   Stroika {
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 RequireNotNull (bufFrom);
                 Require (bufFrom + threadSafeCopy.GetLength () >= bufTo);
                 threadSafeCopy._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  void    String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 RequireNotNull (bufFrom);
                 Require (bufFrom + threadSafeCopy.GetLength () >= bufTo);
                 threadSafeCopy._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  size_t  String::GetLength () const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 return threadSafeCopy._GetRep ().GetLength ();
             }
             inline  void    String::RemoveAt (size_t charAt)
@@ -103,7 +103,7 @@ namespace   Stroika {
             }
             inline  bool    String::empty () const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 return threadSafeCopy._GetRep ().GetLength () == 0;
             }
             inline  void    String::clear ()
@@ -255,7 +255,7 @@ namespace   Stroika {
             inline  void    String::As (wstring* into) const
             {
                 RequireNotNull (into);
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 size_t  n   =   threadSafeCopy.GetLength ();
                 const Character* cp = threadSafeCopy._GetRep ().Peek ();
                 Assert (sizeof (Character) == sizeof (wchar_t));        // going to want to clean this up!!!    --LGP 2011-09-01
@@ -343,7 +343,7 @@ namespace   Stroika {
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 String  threadSafeRHSCopy  =   rhs;
                 pair<const Character*, const Character*> r = threadSafeRHSCopy._GetRep ().GetData ();
@@ -352,27 +352,27 @@ namespace   Stroika {
             inline  int String::Compare (const Character* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
             }
             inline  int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, rhsStart, rhsEnd, co);
             }
             inline  int String::Compare (const wchar_t* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (rhs), co);
             }
             inline  int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                String  threadSafeCopy  =   *this;
+                const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }

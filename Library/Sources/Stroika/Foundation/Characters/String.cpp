@@ -417,7 +417,7 @@ void    String::Remove (Character c)
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     Require (startAt <= threadSafeCopy.GetLength ());
     //TODO: HORRIBLE PERFORMANCE!!!
     size_t length = threadSafeCopy.GetLength ();
@@ -444,7 +444,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     Require (startAt <= threadSafeCopy.GetLength ());
     if (subString.GetLength () == 0) {
         return ((threadSafeCopy.GetLength () == 0) ? kBadIndex : 0);
@@ -489,7 +489,7 @@ nogood2:
 
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     Require (startAt <= threadSafeCopy.GetLength ());
     Assert (startAt == 0);  // else NYI
     wstring tmp     =   threadSafeCopy.As<wstring> ();
@@ -504,7 +504,7 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
 vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t>  result;
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     for (size_t i = threadSafeCopy.Find (string2SearchFor, 0, co); i != String::kBadIndex; i = threadSafeCopy.Find (string2SearchFor, i, co)) {
         result.push_back (i);
         i += string2SearchFor.length ();    // this cannot point past end of this string because we FOUND string2SearchFor
@@ -566,7 +566,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
 size_t  String::RFind (Character c) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     size_t length = threadSafeCopy.GetLength ();
     for (size_t i = length; i > 0; --i) {
         if (threadSafeCopy._GetRep ().GetAt (i - 1) == c) {
@@ -578,7 +578,7 @@ size_t  String::RFind (Character c) const
 
 size_t  String::RFind (const String& subString) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     /*
      * Do quickie implementation, and dont worry about efficiency...
@@ -599,7 +599,7 @@ size_t  String::RFind (const String& subString) const
 
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     if (threadSafeCopy.empty ()) {
         return false;
     }
@@ -609,7 +609,7 @@ bool    String::StartsWith (const Character& c, CompareOptions co) const
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
 
     size_t  subStrLen = subString.GetLength ();
     if (subStrLen >  threadSafeCopy.GetLength ()) {
@@ -627,7 +627,7 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 
 bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     size_t  thisStrLen = threadSafeCopy.GetLength ();
     if (thisStrLen == 0) {
         return false;
@@ -638,7 +638,7 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
 
     size_t  thisStrLen = threadSafeCopy.GetLength ();
     size_t  subStrLen = subString.GetLength ();
@@ -686,7 +686,7 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 
 String  String::SubString (size_t from, size_t to) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
 
     Require ((from <= to) or (to == kBadIndex));
     Require ((to <= threadSafeCopy.GetLength ()) or (to == kBadIndex));
@@ -708,7 +708,7 @@ String  String::SubString (size_t from, size_t to) const
 
 String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
 {
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     size_t  f = from < 0 ? (threadSafeCopy.GetLength () + from) : from;
     size_t  t = to < 0 ? (threadSafeCopy.GetLength () + to) : to;
     Require (f != kBadIndex);
@@ -926,7 +926,7 @@ void    String::AsASCII (string* into) const
 {
     RequireNotNull (into);
     into->clear ();
-    String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  =   *this;
     size_t  len =   threadSafeCopy.GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
@@ -978,7 +978,7 @@ String      String::substr (size_t from, size_t count) const
         return SubString (from);
     }
     else {
-        String  threadSafeCopy  =   *this;
+        const String  threadSafeCopy  =   *this;
         size_t  end =   min (from + count, threadSafeCopy.GetLength ());   // really should worry more about overflow (say if count is kBadIndex-1)
         Assert (from <= end);
         return threadSafeCopy.SubString (from, end);
