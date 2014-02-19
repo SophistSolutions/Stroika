@@ -497,7 +497,7 @@ String  VariantValue::AsString_ () const
                 // Acutally - I'm really not sure of any of this. But this seems to work for now...
                 //      -- LGP 2013-11-17
                 //
-                const   Float2StringOptions kFmtOptions_ = Float2StringOptions (Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2));
+                static  const   Float2StringOptions kFmtOptions_ = Float2StringOptions (Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2));
                 return Float2String (v->fVal, kFmtOptions_);
             }
         case    Type::eMap: {
