@@ -538,7 +538,7 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             39001,
-            -31,
+            -33,
             &failedTests
         );
         Tester (
@@ -570,7 +570,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            30,
+            27,
             &failedTests
         );
         Tester (
