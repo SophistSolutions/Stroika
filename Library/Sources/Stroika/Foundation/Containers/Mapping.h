@@ -102,6 +102,12 @@ namespace   Stroika {
              *      if you declare an API with Mapping<KEY_TYPE,VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
              *
              *      Similarly for std::initalizer_list.
+             *
+             *  \note   Design Note:
+             *      Defined operator[](KEY_TYPE) const - to return VALUE_TYPE, instead of Optional<VALUE_TYPE> because
+             *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
+             *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
+             *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
@@ -211,12 +217,17 @@ namespace   Stroika {
                 nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
                 nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
 
-
             public:
                 /**
                  *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
                  */
                 nonvirtual  ValueType   LookupValue (KeyType key, ValueType defaultValue = ValueType ()) const;
+
+            public:
+                /**
+                 *  \req ContainsKey (key);
+                 */
+                nonvirtual  ValueType   operator[] (KeyType key) const;
 
             public:
                 /**
