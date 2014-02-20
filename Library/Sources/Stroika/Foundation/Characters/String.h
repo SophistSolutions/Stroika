@@ -70,6 +70,9 @@
  *
  *              That may mean the CopyOnWrite stuff is useless here?
  *
+ *      @todo   Change APIs that return vector to return Iterable<> using CreateGenerator (). Tried once and worked
+ *              very nicely.
+ *
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *
@@ -354,7 +357,7 @@ namespace   Stroika {
                 String (const wchar_t* cString);
                 String (const wchar_t* from, const wchar_t* to);
                 String (const Character* from, const Character* to);
-                String (const std::wstring& r);
+                String (const wstring& r);
                 String (const Iterable<Character>& src);
                 String (const String& from) noexcept;
                 String (String&& from) noexcept;
@@ -386,7 +389,7 @@ namespace   Stroika {
                  */
                 static  String  FromUTF8 (const char* from);
                 static  String  FromUTF8 (const char* from, const char* to);
-                static  String  FromUTF8 (const std::string& from);
+                static  String  FromUTF8 (const string& from);
 
             public:
                 /**
@@ -451,6 +454,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Alias for *this = String ();
                  */
                 nonvirtual  void    clear ();
 
@@ -474,7 +478,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note that it is legal, but pointless to pass in an empty string to insert
+                 *  Note that it is legal, but pointless to pass in an empty string to insert.
+                 *
+                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
                 nonvirtual  void        InsertAt (Character c, size_t at);
                 nonvirtual  void        InsertAt (const String& s, size_t at);
@@ -484,6 +490,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Note that it is legal, but pointless to pass in an empty string to insert
+                 *
+                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
@@ -499,16 +507,20 @@ namespace   Stroika {
                  *  \req (charAt < GetLength ())
                  *  \req (from <= to)
                  *  \req (to <= GetLength ())
+                 *
+                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                nonvirtual  void        RemoveAt (size_t charAt);
-                nonvirtual  void        RemoveAt (size_t from, size_t to);
+                nonvirtual  void        _Deprecated_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                nonvirtual  void        _Deprecated_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
 
             public:
                 /**
                  *  Remove the first occurence of Character 'c' from the string. Not an error if none
                  *  found.
+                 *
+                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                nonvirtual  void        Remove (Character c);
+                nonvirtual  void        _Deprecated_ (Remove (Character c), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
 
             public:
                 /**
@@ -794,7 +806,7 @@ namespace   Stroika {
                  *  preference or context. Note - its important that this is explicit - to avoid
                  *  creating overload problems
                  *
-                 *      EXPERIMENTAL AS OF 2014-02-11
+                 *      EXPERIMENTAL AS OF 2014-02-11 (v2.0a21)
                  */
                 template    <typename   T>
                 nonvirtual  explicit operator T () const;

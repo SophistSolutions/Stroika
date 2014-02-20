@@ -24,6 +24,9 @@ History
 	<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a21">v2.0a21x</a><br/>2014-02-??</td>
 	<td>
 		<ul>
+			<li>Deprecated String::Remove, and String::RemoveAt - not because really going away, but because changing API to return a new string and
+					this will make it easier to avoid code subtly depending on old behavior. DO switch next release.
+			</li>
 			<li>Stroika performance measurements tool and regression test. Little done to improve performance, but 
 			at least now we have baseline measurements of some key benchmarks. Motivated by neeed to evaluate costs of
 			String threadsafety.</li>
