@@ -29,35 +29,36 @@ namespace   Stroika {
             namespace   INI {
 
 
-				using	Containers::Collection;
-				using	Containers::Mapping;
-				using	Memory::Optional;
+                using   Containers::Collection;
+                using   Containers::Mapping;
+                using   Memory::Optional;
 
 
-				/**
+                /**
                  */
-				struct  Section {
-					Mapping<String,String>	fProperties;
+                struct  Section {
+                    Mapping<String, String>  fProperties;
 
-					//TEMPORARY HACK TIL WE FIX Mapping<> to not require operator==
-					// -- LGP 2014-02-19
-					bool operator==(const Section& rhs) const {
-					return fProperties == rhs.fProperties;
-					}
-				};
+                    //TEMPORARY HACK TIL WE FIX Mapping<> to not require operator==
+                    // -- LGP 2014-02-19
+                    bool operator==(const Section& rhs) const
+                    {
+                        return fProperties == rhs.fProperties;
+                    }
+                };
 
 
-				/**
-				 *	@todo maybe have struct with fields - unnamedprofile, and collection of named sections?
+                /**
+                 *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
                  */
-				struct	Profile {
-					Section					fUnnamedSection;
-					Mapping<String,Section>	fNamedSections;
+                struct  Profile {
+                    Section                 fUnnamedSection;
+                    Mapping<String, Section> fNamedSections;
 
-				};
+                };
 
-				Profile			Convert (VariantValue v);
-				VariantValue	Convert (Profile p);
+                Profile         Convert (VariantValue v);
+                VariantValue    Convert (Profile p);
 
 
             }

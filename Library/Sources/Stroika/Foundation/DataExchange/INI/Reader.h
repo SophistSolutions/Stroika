@@ -12,13 +12,27 @@
 #include    "../Reader.h"
 #include    "../VariantValue.h"
 
-#include	"Profile.h"
+#include    "Profile.h"
 
 
 /**
  *  \file
  *
  * TODO:
+ *      @todo   Add DOCS
+ *
+ *      @todo   Quoted characters (see http://en.wikipedia.org/wiki/INI_file)
+ *
+ *		@todo	VERY PRIMITIVE IMPL (no error checking/validation) - or at least little
+ *
+ *      @todo   Add these referiences to docs:
+ *              http://en.wikipedia.org/wiki/INI_file
+ *              http://stackoverflow.com/questions/190629/what-is-the-easiest-way-to-parse-an-ini-file-in-java
+ *
+ *      @todo   Config params should take choice about quoting (always, never)???
+ *
+ *      @todo   Characterset / BOM
+ *
  */
 
 
@@ -30,7 +44,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  @todo add example usage (and docs)
+                 *  See example usage in Regregssion test(@todo fixup)
                  */
                 class Reader : public DataExchange::Reader {
                 private:
@@ -42,13 +56,13 @@ namespace   Stroika {
                 public:
                     Reader ();
 
-				public:
-					/**
-					*/
-					nonvirtual	Profile	ReadProfile (const Streams::BinaryInputStream& in);
-					nonvirtual	Profile	ReadProfile (const Streams::TextInputStream& in);
-					nonvirtual	Profile	ReadProfile (istream& in);
-					nonvirtual	Profile	ReadProfile (wistream& in);
+                public:
+                    /**
+                    */
+                    nonvirtual  Profile ReadProfile (const Streams::BinaryInputStream& in);
+                    nonvirtual  Profile ReadProfile (const Streams::TextInputStream& in);
+                    nonvirtual  Profile ReadProfile (istream& in);
+                    nonvirtual  Profile ReadProfile (wistream& in);
                 };
 
 

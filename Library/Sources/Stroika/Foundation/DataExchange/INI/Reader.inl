@@ -16,30 +16,30 @@ namespace   Stroika {
             namespace   INI {
 
 
-					/*
-					 ********************************************************************************
-					 ************************************ INI::Reader *******************************
-					 ********************************************************************************
-					 */
-					inline	Profile	Reader::ReadProfile (const Streams::BinaryInputStream& in)
-					{
-						return Convert (Read (in));
-					}
-					inline	Profile	Reader::ReadProfile (const Streams::TextInputStream& in)
-					{
-						return Convert (Read (in));
-					}
-					inline	Profile	Reader::ReadProfile (istream& in)
-					{
-						return Convert (Read (in));
-					}
-					inline	Profile	Reader::ReadProfile (wistream& in)
-					{
-						return Convert (Read (in));
-					}
+                /*
+                 ********************************************************************************
+                 ************************************ INI::Reader *******************************
+                 ********************************************************************************
+                 */
+                inline  Profile Reader::ReadProfile (const Streams::BinaryInputStream& in)
+                {
+                    return Convert (Read (in));
+                }
+                inline  Profile Reader::ReadProfile (const Streams::TextInputStream& in)
+                {
+                    return Convert (Read (in));
+                }
+                inline  Profile Reader::ReadProfile (istream& in)
+                {
+                    return Convert (Read (in));
+                }
+                inline  Profile Reader::ReadProfile (wistream& in)
+                {
+                    return Convert (Read (in));
+                }
 
-			
-			}
+
+            }
         }
     }
 }
