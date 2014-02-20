@@ -690,6 +690,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.cpp">
       <Filter>Sources\DataExchange\INI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1599,6 +1602,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.h">
       <Filter>Sources\DataExchange\INI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2417,6 +2423,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.inl">
       <Filter>Sources\DataExchange\INI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
