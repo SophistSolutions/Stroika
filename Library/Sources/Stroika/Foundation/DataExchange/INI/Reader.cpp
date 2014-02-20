@@ -70,9 +70,9 @@ public:
                     p.fUnnamedSection.fProperties.Add (key, value);
                 }
             }
-			else {
-				// @todo not sure what todo with other sorts of lines??
-			}
+            else {
+                // @todo not sure what todo with other sorts of lines??
+            }
         }
         return Convert (p);
     }

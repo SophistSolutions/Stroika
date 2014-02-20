@@ -23,7 +23,7 @@
  *
  *      @todo   Quoted characters (see http://en.wikipedia.org/wiki/INI_file)
  *
- *		@todo	VERY PRIMITIVE IMPL (no error checking/validation) - or at least little
+ *      @todo   VERY PRIMITIVE IMPL (no error checking/validation) - or at least little
  *
  *      @todo   Add these referiences to docs:
  *              http://en.wikipedia.org/wiki/INI_file

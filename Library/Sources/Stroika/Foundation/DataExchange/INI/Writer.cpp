@@ -29,11 +29,11 @@ public:
     }
     virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {
-		AssertNotImplemented ();
+        AssertNotImplemented ();
     }
     virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override
     {
-		AssertNotImplemented ();
+        AssertNotImplemented ();
     }
 };
 
