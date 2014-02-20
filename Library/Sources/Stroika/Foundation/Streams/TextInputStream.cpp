@@ -59,7 +59,8 @@ Traversal::Iterable<String> TextInputStream::ReadLines () const
     TextInputStream copyOfStream =  *this;
     return Traversal::CreateGenerator<String> ([copyOfStream] () -> Memory::Optional<String> {
         String  line = copyOfStream.ReadLine ();
-        if (line.empty ()) {
+        if (line.empty ())
+        {
             return Memory::Optional<String> ();
         }
         else {
