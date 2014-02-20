@@ -408,6 +408,7 @@ void    String::RemoveAt (size_t from, size_t to)
 
 void    String::Remove (Character c)
 {
+    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START(4996)
     // @TODO - NOT THREADSAFE
     size_t index = Find (c, CompareOptions::eWithCase);
@@ -415,6 +416,7 @@ void    String::Remove (Character c)
         RemoveAt (index);
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
+    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 }
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
@@ -962,6 +964,7 @@ const wchar_t*  String::c_str () const
 
 void    String::erase (size_t from, size_t count)
 {
+    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START(4996)
     // @todo - NOT ENVELOPE THREADSAFE
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
@@ -973,6 +976,7 @@ void    String::erase (size_t from, size_t count)
         RemoveAt (from,  from + min (count, max2Erase));
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
+    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 }
 
 String      String::substr (size_t from, size_t count) const

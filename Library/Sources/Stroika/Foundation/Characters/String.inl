@@ -97,12 +97,14 @@ namespace   Stroika {
                 const String  threadSafeCopy  =   *this;
                 return threadSafeCopy._GetRep ().GetLength ();
             }
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START(4996)
             inline  void    String::RemoveAt (size_t charAt)
             {
                 RemoveAt (charAt, charAt + 1);
             }
             DISABLE_COMPILER_MSC_WARNING_END(4996)
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             inline  bool    String::empty () const
             {
                 const String  threadSafeCopy  =   *this;

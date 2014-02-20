@@ -510,6 +510,10 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
+                /*
+                 *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
+                 *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
+                 */
                 nonvirtual  void        _Deprecated_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
                 nonvirtual  void        _Deprecated_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
 
@@ -519,6 +523,10 @@ namespace   Stroika {
                  *  found.
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+                 */
+                /*
+                 *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
+                 *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
                  */
                 nonvirtual  void        _Deprecated_ (Remove (Character c), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
 
