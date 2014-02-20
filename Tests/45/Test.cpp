@@ -384,6 +384,71 @@ namespace {
 
 
 namespace {
+
+    namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_ {
+        shared_ptr<int> s_SharedPtrCase = shared_ptr<int> (new int (1));
+        void    Test_SharedPtrCopy(function<void(int*)> doInsideLock)
+        {
+            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
+            // or just using a mutex
+            //
+            // I dont care about the (much rarer) write case where we really need to modify
+            shared_ptr<int> tmp = s_SharedPtrCase;
+            doInsideLock (tmp.get ());
+        }
+
+        atomic<shared_ptr<int>> s_AtomicSharedPtrCase (shared_ptr<int> (new int (1)));
+        void    Test_AtomicSharedPtrCopy(function<void(int*)> doInsideLock)
+        {
+			//Assert (s_AtomicSharedPtrCase.load ().use_count () == 2);
+            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
+            // or just using a mutex
+            //
+            // I dont care about the (much rarer) write case where we really need to modify
+            atomic<shared_ptr<int>> tmp = s_AtomicSharedPtrCase.load ();
+            doInsideLock (tmp.load ().get ());
+        }
+
+		int CNT = 0;
+        void    COUNTEST_ (int* i)
+        {
+            CNT += *i;
+        }
+
+    }
+
+    void    Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE()
+    {
+        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
+        CNT = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_SharedPtrCopy (COUNTEST_);
+        }
+        VerifyTestResult (CNT == 1000);   // so nothing optimized away
+    }
+    void    Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE()
+    {
+        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
+        CNT = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_AtomicSharedPtrCopy (COUNTEST_);
+        }
+        VerifyTestResult (CNT == 1000);   // so nothing optimized away
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+namespace {
     template <typename WIDESTRING_IMPL>
     void    Test_OperatorINSERT_ostream_ ()
     {
@@ -580,6 +645,16 @@ namespace   {
             -30.0,    // just a warning, fyi
             &failedTests
         );
+#if 0
+        Tester (
+            L"atomic sharedptr versus sharedptr",
+            Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE, L"shared_ptr",
+            Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE, L"atomic<shared_ptr<>>",
+            15000,
+            -30.0,    // just a warning, fyi
+            &failedTests
+        );
+#endif
         Tester (
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
