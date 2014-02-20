@@ -52,31 +52,31 @@ using   Memory::Byte;
 
 
 namespace {
-	namespace INI_ONLY_ {
+    namespace INI_ONLY_ {
 
-		void	DoBasicReader1_ ()
-		{
+        void    DoBasicReader1_ ()
+        {
             stringstream    tmp;
-			tmp << "NAME=\"Ubuntu\"" << endl;
-			tmp << "VERSION=\"13.10, Saucy Salamander\"" << endl;
-			tmp << "ID=ubuntu" << endl;
-			tmp << "ID_LIKE=debian" << endl;
-			tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << endl;
-			tmp << "VERSION_ID=\"13.10\"" << endl;
-			tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << endl;
-			tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
-			tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
-			INI::Profile p = INI::Reader ().ReadProfile (tmp);
-			VerifyTestResult (p.fNamedSections.empty ());
-			VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
-			VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
-		}
+            tmp << "NAME=\"Ubuntu\"" << endl;
+            tmp << "VERSION=\"13.10, Saucy Salamander\"" << endl;
+            tmp << "ID=ubuntu" << endl;
+            tmp << "ID_LIKE=debian" << endl;
+            tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << endl;
+            tmp << "VERSION_ID=\"13.10\"" << endl;
+            tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << endl;
+            tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
+            tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
+            INI::Profile p = INI::Reader ().ReadProfile (tmp);
+            VerifyTestResult (p.fNamedSections.empty ());
+            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
+            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
+        }
 
         void    DoAll_ ()
         {
             DoBasicReader1_ ();
         }
-	}
+    }
 }
 
 
@@ -575,7 +575,7 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-		INI_ONLY_::DoAll_ ();
+        INI_ONLY_::DoAll_ ();
         JSON_ONLY_::DoAll_();
         XML_ONLY_::DoAll_();
         GENERIC_SERIALIZE_DESERIALIZE_::DoAll_();
