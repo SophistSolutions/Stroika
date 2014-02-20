@@ -408,11 +408,13 @@ void    String::RemoveAt (size_t from, size_t to)
 
 void    String::Remove (Character c)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // @TODO - NOT THREADSAFE
     size_t index = Find (c, CompareOptions::eWithCase);
     if (index != kBadIndex) {
         RemoveAt (index);
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
@@ -960,6 +962,7 @@ const wchar_t*  String::c_str () const
 
 void    String::erase (size_t from, size_t count)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // @todo - NOT ENVELOPE THREADSAFE
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
@@ -969,6 +972,7 @@ void    String::erase (size_t from, size_t count)
     else {
         RemoveAt (from,  from + min (count, max2Erase));
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 String      String::substr (size_t from, size_t count) const
