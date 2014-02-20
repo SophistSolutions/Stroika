@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Containers/Collection.h"
 #include    "../../Foundation/Containers/Set.h"
+#include    "../../Foundation/Execution/Function.h"
 #include    "../../Foundation/Execution/ThreadPool.h"
 #include    "../../Foundation/Time/Duration.h"
 
@@ -32,9 +33,6 @@
  *
  *      @todo   make it optional storing the most recent measurement set.
  *
- *      @todo   Use new (NYI as of 2014-02-06) Callback (or Function??) helper class so that Callbacks can be
- *              unregistered.
- *
  *      @todo   Use threadpool CORRECTLY!. Maybe push ALL measurements into
  *              threadpool at just the right time, and then paralell process as much as the threadpool size allows.
  *              That seems the best appraoch! Default to theadpool size of one! One recurring task in threadpool
@@ -52,6 +50,7 @@ namespace   Stroika {
             using   Characters::String;
             using   Containers::Collection;
             using   Containers::Set;
+            using   Execution::Function;
             using   Time::Duration;
 
 
@@ -78,9 +77,9 @@ namespace   Stroika {
                 nonvirtual  MeasurementSet    GetMostRecentMeasurements () const;
 
             public:
-                /*
-                */
-                using   NewMeasurementsCallbackType = function<void(MeasurementSet)>;
+                /**
+                 */
+                using   NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
 
             public:
                 /**
@@ -96,6 +95,11 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void        AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+
+            public:
+                /**
+                 */
+                nonvirtual  void        RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
             public:
                 /**

@@ -51,6 +51,11 @@ void        Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType
     fCallbacks_.Add (cb);
 }
 
+void        Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
+{
+    fCallbacks_.Remove (cb);
+}
+
 Collection<CaptureSet>   Capturer::GetCaptureSets () const
 {
     return fCaptureSets_;
