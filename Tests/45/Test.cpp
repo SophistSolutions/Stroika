@@ -448,7 +448,7 @@ namespace {
 
 
 
-
+#if 0
 namespace {
 
     namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_ {
@@ -503,7 +503,7 @@ namespace {
     }
 
 }
-
+#endif
 
 
 
