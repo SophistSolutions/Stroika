@@ -400,7 +400,7 @@ namespace {
         atomic<shared_ptr<int>> s_AtomicSharedPtrCase (shared_ptr<int> (new int (1)));
         void    Test_AtomicSharedPtrCopy(function<void(int*)> doInsideLock)
         {
-			//Assert (s_AtomicSharedPtrCase.load ().use_count () == 2);
+            //Assert (s_AtomicSharedPtrCase.load ().use_count () == 2);
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
             //
@@ -409,7 +409,7 @@ namespace {
             doInsideLock (tmp.load ().get ());
         }
 
-		int CNT = 0;
+        int CNT = 0;
         void    COUNTEST_ (int* i)
         {
             CNT += *i;
