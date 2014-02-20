@@ -7,6 +7,40 @@
    fun:_ZN7Stroika10Foundation6Memory7Private12GetMem_Util_Em
 }
 {
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_1
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation6Memory7Private20BlockAllocationPool_ILm?EE8AllocateEm.isra.*
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_2
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation6Memory7Private20BlockAllocationPool_ILm??EE8AllocateEm.isra.*
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_HARD_TO_SEE_HOW_TODO_GOOD_MATCHER_FOR_THIS
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation10Containers8Concrete10Set_stdsetIiNS2_24Set_stdset_DefaultTraitsIiNS0_6Common18ComparerWithEqualsIiEENS5_21ComparerWithWellOrderIiEEEEEC1Ev
+   fun:_ZN7Stroika10Foundation10Containers8Concrete11Set_FactoryIiNS1_17Set_DefaultTraitsIiNS0_6Common18ComparerWithEqualsIiEEEEE8Default_Ev
+   fun:_ZN7Stroika10Foundation9Execution21SignalHandlerRegistry23GetStandardCrashSignalsEv
+   fun:_ZN7Stroika11TestHarness5SetupEv
+   fun:main
+}
+
+
+
+
+
+
+{
    Apparently_Bogus_Warning_About_StrToD_Code_calling_Looks_OK
    Memcheck:Cond
    fun:____strtod_l_internal
