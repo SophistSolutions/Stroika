@@ -25,7 +25,7 @@ namespace   Stroika {
              *  Abotu to run tests to compare perofmrance numbers. But this maybe useful for at least some(many) cases.
              *
              */
-            class SpinLock {
+            class   SpinLock {
             public:
                 SpinLock ();
                 SpinLock (const SpinLock&) = delete;
