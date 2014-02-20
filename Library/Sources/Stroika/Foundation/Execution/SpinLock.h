@@ -40,7 +40,8 @@ namespace   Stroika {
                 nonvirtual  void    unlock ();
 
             private:
-                atomic_flag fLock_;
+				atomic_flag fLock_;
+                //atomic_flag fLock_ = ATOMIC_FLAG_INIT;
             };
 
 

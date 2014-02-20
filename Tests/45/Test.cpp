@@ -18,6 +18,7 @@
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
@@ -383,6 +384,71 @@ namespace {
 
 
 
+
+
+
+
+namespace {
+
+    namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
+        mutex   s_Mutex_;
+        int     sCnt2Add_ = 1;
+        void    Test_MutexVersusSpinLock_MUTEXT_LOCK(function<void(int*)> doInsideLock)
+        {
+            lock_guard<mutex> critSec (s_Mutex_);
+            doInsideLock (&sCnt2Add_);
+        }
+		SpinLock   s_SpinLock_;
+        void    Test_MutexVersusSpinLock_SPINLOCK_LOCK(function<void(int*)> doInsideLock)
+        {
+            lock_guard<SpinLock> critSec (s_SpinLock_);
+            doInsideLock (&sCnt2Add_);
+        }
+		int sRunningCnt_;
+        void    Test_MutexVersusSpinLock_COUNTEST (int* i)
+        {
+            sRunningCnt_ += *i;
+        }
+    }
+
+
+	
+	void    Test_MutexVersusSpinLock_MUTEXT_LOCK()
+    {
+        using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
+        sRunningCnt_ = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MutexVersusSpinLock_MUTEXT_LOCK (Test_MutexVersusSpinLock_COUNTEST);
+        }
+        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
+    }
+    void    Test_MutexVersusSpinLock_SPIN_LOCK()
+    {
+        using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
+        sRunningCnt_ = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MutexVersusSpinLock_SPINLOCK_LOCK (Test_MutexVersusSpinLock_COUNTEST);
+        }
+        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace {
 
     namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_ {
@@ -437,6 +503,7 @@ namespace {
     }
 
 }
+
 
 
 
@@ -632,17 +699,24 @@ namespace {
 
 
 
-
 namespace   {
     void    RunPerformanceTests_ ()
     {
         Set<String> failedTests;
         Tester (
-            L"Test of simple locking strategies",
+            L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             15000,
             -30.0,    // just a warning, fyi
+            &failedTests
+        );
+        Tester (
+            L"Test of simple locking strategies (mutex v SpinLock)",
+            Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
+            Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
+            15000,
+            -60.0,
             &failedTests
         );
 #if 0
