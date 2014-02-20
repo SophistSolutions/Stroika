@@ -24,8 +24,8 @@ namespace   Stroika {
             inline  SpinLock::SpinLock ()
                 : fLock_ ( /*ATOMIC_FLAG_INIT*/)
             {
-				// unclear we need to set???
-				fLock_.clear (std::memory_order_release);	// docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with falg_init not working?
+                // unclear we need to set???
+                fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with falg_init not working?
             }
             inline  void    SpinLock::lock ()
             {

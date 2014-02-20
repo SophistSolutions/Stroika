@@ -398,13 +398,13 @@ namespace {
             lock_guard<mutex> critSec (s_Mutex_);
             doInsideLock (&sCnt2Add_);
         }
-		SpinLock   s_SpinLock_;
+        SpinLock   s_SpinLock_;
         void    Test_MutexVersusSpinLock_SPINLOCK_LOCK(function<void(int*)> doInsideLock)
         {
             lock_guard<SpinLock> critSec (s_SpinLock_);
             doInsideLock (&sCnt2Add_);
         }
-		int sRunningCnt_;
+        int sRunningCnt_;
         void    Test_MutexVersusSpinLock_COUNTEST (int* i)
         {
             sRunningCnt_ += *i;
@@ -412,8 +412,8 @@ namespace {
     }
 
 
-	
-	void    Test_MutexVersusSpinLock_MUTEXT_LOCK()
+
+    void    Test_MutexVersusSpinLock_MUTEXT_LOCK()
     {
         using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
         sRunningCnt_ = 0;
