@@ -215,6 +215,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchange-INI-Reader.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchange-INI-Reader.obj</ObjectFileName>
@@ -854,6 +855,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
@@ -1184,6 +1186,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />

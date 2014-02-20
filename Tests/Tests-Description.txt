@@ -24,7 +24,7 @@
 [24]	Foundation::Containers::Stack
 [25]	Foundation::Containers::MultiSet
 [26]	Foundation::Cryptography
-[27]	Foundation::DataExchange::Reader/Writers(JSON/XML)
+[27]	Foundation::DataExchange::Reader/Writers(INI/JSON/XML)
 [28]	Foundation::DataExchange::ObjectVariantMapper
 [29]	Foundation::DataExchange::XML::SaxParser
 [30]	Foundation::DataExchange::Other

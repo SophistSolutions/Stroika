@@ -7,11 +7,12 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryInputStream.h"
-#include    "../../Streams/TextInputStream.h"
+#include    "../../Containers/Collection.h"
 
 #include    "../Reader.h"
 #include    "../VariantValue.h"
+
+#include	"Profile.h"
 
 
 /**
@@ -40,6 +41,14 @@ namespace   Stroika {
 
                 public:
                     Reader ();
+
+				public:
+					/**
+					*/
+					nonvirtual	Profile	ReadProfile (const Streams::BinaryInputStream& in);
+					nonvirtual	Profile	ReadProfile (const Streams::TextInputStream& in);
+					nonvirtual	Profile	ReadProfile (istream& in);
+					nonvirtual	Profile	ReadProfile (wistream& in);
                 };
 
 
@@ -55,5 +64,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "Reader.inl"
 
 #endif  /*_Stroika_Foundation_DataExchange_INI_Reader_h_*/

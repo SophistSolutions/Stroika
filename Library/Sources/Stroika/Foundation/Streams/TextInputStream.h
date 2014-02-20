@@ -137,6 +137,8 @@ namespace   Stroika {
                  *  write code:
                  *          for (String line : stream.ReadLines ()) {
                  *          }
+				 *
+				 *	Like ReadLine(), the returned lines include trailing newlines/etc.
                  */
                 nonvirtual  Traversal::Iterable<String> ReadLines () const;
 

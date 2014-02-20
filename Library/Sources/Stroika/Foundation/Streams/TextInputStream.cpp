@@ -5,6 +5,7 @@
 
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
+#include	"../Traversal/Generator.h"
 
 #include    "TextInputStream.h"
 
@@ -55,7 +56,16 @@ String TextInputStream::ReadLine () const
 
 Traversal::Iterable<String> TextInputStream::ReadLines () const
 {
-    AssertNotImplemented ();
+	TextInputStream	copyOfStream =	*this;
+	return Traversal::CreateGenerator<String> ([copyOfStream] () -> Memory::Optional<String> {
+		String	line = copyOfStream.ReadLine ();
+		if (line.empty ()) {
+			return Memory::Optional<String> ();
+		}
+		else {
+			return line;
+		}
+	});
 }
 
 String TextInputStream::ReadAll () const

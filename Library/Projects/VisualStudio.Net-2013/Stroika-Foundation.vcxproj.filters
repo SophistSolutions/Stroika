@@ -687,6 +687,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Writer.cpp">
       <Filter>Sources\DataExchange\INI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.cpp">
+      <Filter>Sources\DataExchange\INI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1593,6 +1596,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Writer.h">
       <Filter>Sources\DataExchange\INI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.h">
+      <Filter>Sources\DataExchange\INI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2405,6 +2411,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl">
       <Filter>Sources\Math</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.inl">
+      <Filter>Sources\DataExchange\INI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.inl">
+      <Filter>Sources\DataExchange\INI</Filter>
     </None>
   </ItemGroup>
 </Project>
