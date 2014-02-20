@@ -24,13 +24,13 @@
  *
  *  TODO:
  *
- *		@todo	Current API REQUIRES definition of EQUALS (VALUE_TYPE)!!!! (if cannot done operator== we lose because of
- *				Mapping<>::REp::Equals()).
+ *      @todo   Current API REQUIRES definition of EQUALS (VALUE_TYPE)!!!! (if cannot done operator== we lose because of
+ *              Mapping<>::REp::Equals()).
  *
- *				INESTAED do outside of Mapping<> ::REP - and not using MAPPING_TRAITS.. Any compares requoiring
- *				VALUE_TYPE equals MUST GO INTO method-provided TRAITS EXTRA PARAM (like with Sequence)
+ *              INESTAED do outside of Mapping<> ::REP - and not using MAPPING_TRAITS.. Any compares requoiring
+ *              VALUE_TYPE equals MUST GO INTO method-provided TRAITS EXTRA PARAM (like with Sequence)
  *
- *				<<< WHEN WE FIX - LOSE KLUDGE operator==) in DataExcahgne::INI::Profile/Section>>>
+ *              <<< WHEN WE FIX - LOSE KLUDGE operator==) in DataExcahgne::INI::Profile/Section>>>
  *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
@@ -73,8 +73,8 @@ namespace   Stroika {
 
                 /**
                  * only defined optionally...(see what can call this - gen list here @todo)
-				 *
-				 *	@todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
+                 *
+                 *  @todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
                  */
                 using   ValueEqualsCompareFunctionType  =   VALUE_EQUALS_COMPARER;
 
@@ -160,8 +160,8 @@ namespace   Stroika {
                 /**
                  *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
-				 *
-				 *	@todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
+                 *
+                 *  @todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
                  */
                 using   ValueEqualsCompareFunctionType  =   typename TraitsType::ValueEqualsCompareFunctionType;
 
@@ -326,8 +326,8 @@ namespace   Stroika {
                  *  Equals is commutative().
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-				 *
-				 *	@todo -REDO THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
+                 *
+                 *  @todo -REDO THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
                  */
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
