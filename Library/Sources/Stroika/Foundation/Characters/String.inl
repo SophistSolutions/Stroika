@@ -341,7 +341,7 @@ namespace   Stroika {
             {
                 const String  threadSafeCopy  =   *this;
                 pair<const Character*, const Character*> l = threadSafeCopy._GetRep ().GetData ();
-                String  threadSafeRHSCopy  =   rhs;
+                const String  threadSafeRHSCopy  =   rhs;
                 pair<const Character*, const Character*> r = threadSafeRHSCopy._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, r.first, r.second, co);
             }
