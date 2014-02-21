@@ -16,6 +16,7 @@ Objs	=	\
 	$(ObjDir)Common.o\
 	$(ObjDir)LeakChecker.o\
 	$(ObjDir)MemoryAllocator.o\
+	$(ObjDir)SharedPtr.o\
 
 
 all:	$(Objs)
