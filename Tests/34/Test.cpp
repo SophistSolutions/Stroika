@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/ThreadPool.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -26,6 +27,7 @@ using   Execution::BlockingQueue;
 using   Execution::Lockable;
 using   Execution::Thread;
 using   Execution::Finally;
+using   Execution::SpinLock;
 using   Execution::ThreadPool;
 using   Execution::WaitableEvent;
 
@@ -671,6 +673,48 @@ namespace {
 
 
 
+
+
+
+
+
+
+namespace {
+    void    RegressionTest14_SpinLock_ ()
+    {
+        SpinLock lock;
+        int     sum =   0;
+        Thread t1 = [&lock, &sum] () {
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001);
+                lock_guard<SpinLock> critSec (lock);
+                sum += i;
+            }
+        };
+        Thread t2 = [&lock, &sum] () {
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001);
+                lock_guard<SpinLock> critSec (lock);
+                sum -= i;
+            }
+        };
+        t1.Start ();
+        t2.Start ();
+        t1.WaitForDone ();
+        t2.WaitForDone ();
+        VerifyTestResult (sum == 0);
+    }
+}
+
+
+
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -687,6 +731,7 @@ namespace   {
         RegressionTest11_AbortSubAbort_ ();
         RegressionTest12_WaitAny_ ();
         RegressionTest13_WaitAll_ ();
+        RegressionTest14_SpinLock_ ();
     }
 }
 
