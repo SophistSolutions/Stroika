@@ -60,14 +60,6 @@ namespace   Stroika {
             inherited (std::move (from))
             {
             }
-            inline  String& String::operator= (const String& newString)
-            {
-                inherited::operator= (newString);
-                return *this;
-            }
-            inline  String::~String ()
-            {
-            }
             inline  const String::_IRep&    String::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), String::_IRep);

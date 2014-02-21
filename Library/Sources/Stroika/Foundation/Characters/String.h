@@ -361,7 +361,9 @@ namespace   Stroika {
                 String (const Iterable<Character>& src);
                 String (const String& from) noexcept;
                 String (String&& from) noexcept;
-                ~String ();
+
+            public:
+                ~String () = default;
 
             protected:
                 class   _IRep;
@@ -381,7 +383,7 @@ namespace   Stroika {
                 String (_SharedPtrIRep&& rep);
 
             public:
-                nonvirtual  String& operator= (const String& newString);
+                nonvirtual  String& operator= (const String& newString) = default;
 
             public:
                 /**
