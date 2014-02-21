@@ -20,6 +20,9 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   THREADSAFETY BUG - shared_ptr<> not threadsafe, so our envelope needs
+ *              to be fixed.
+ *
  *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
  *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
  *              Or around a static array.
@@ -81,7 +84,7 @@ namespace   Stroika {
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
              *  change (except by assignement - being assigned over).
              *
-             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
+             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! SAFE CUZ READONLY
              */
             class   BLOB {
             public:
