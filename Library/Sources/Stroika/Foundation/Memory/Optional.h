@@ -35,9 +35,9 @@ namespace   Stroika {
 
 
             /**
-             *  Default traits object for type T (for use in Optional<T>). This can generally be ignored.
+             *  Default traits object for type T (for use in Optional<T, TRAITS>). This can generally be ignored.
              *  It requires operator== and operator< are defined for type T (if they are not, you must
-             *  provide your own traits to use Optional<T>).
+             *  provide your own traits to use Optional<T, TRAITS>).
              */
             template    <typename T>
             struct   Optional_DefaultTraits {
@@ -46,7 +46,7 @@ namespace   Stroika {
 
 
             /**
-             *  Optional<T> can be used to store an object which may or may not be present. This can be
+             *  Optional<T, TRAITS> can be used to store an object which may or may not be present. This can be
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
              *
@@ -57,7 +57,7 @@ namespace   Stroika {
              *
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
              *  runs the risk of producing surprising exceptions, we treat dereferencing an empty
-             *  Optional<T> as an Assertion Erorr.
+             *  Optional<T, TRAITS> as an Assertion Erorr.
              *
              *  However, see @ref Value()
              *
@@ -100,14 +100,14 @@ namespace   Stroika {
              *
              *  \note   \em Design-Note - why no operator T()
              *      -   We considered having an operator T () method. This has advantages, in that
-             *          it makes more seemless replacing use of a T with an Optional<T>. But it has
-             *          the disadvantage that, when coupled with the Optional<T> (T) CTOR, you can
+             *          it makes more seemless replacing use of a T with an Optional<T, TRAITS>. But it has
+             *          the disadvantage that, when coupled with the Optional<T, TRAITS> (T) CTOR, you can
              *          get overloading problems.
              *      -   Plus, one must carefully check each use of a variable of type T, being converted
-             *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
+             *          to type Optional<T, TRAITS>, so being forced to say "*" first isn't totally unreasonable.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
-             *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
+             *          It would have been impractical to make Optional<T, TRAITS> fully thread-safe, due to its returning
              *          of internal pointers.
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
@@ -134,28 +134,28 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
+                 *  Erases (destroys) any present value for this Optional<T, TRAITS> instance. After calling clear (),
                  *  the IsMissing () will return true.
                  */
                 nonvirtual  void    clear ();
 
             public:
                 /**
-                *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
-                *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
+                *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
+                *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
                 */
                 nonvirtual  bool    IsMissing () const; // means no value (it is optional!)
 
             public:
                 /**
-                 *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
-                 *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
+                 *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
+                 *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
                  */
                 nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
 
             public:
                 /**
-                 *  Returns true iff the Optional<T> has a valid value ( not empty ());
+                 *  Returns true iff the Optional<T, TRAITS> has a valid value ( not empty ());
                  */
                 nonvirtual  bool    IsPresent () const;
 
@@ -170,8 +170,8 @@ namespace   Stroika {
                  *  Returns nullptr if value is missing
                  *
                  *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
+                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
                  */
                 nonvirtual  T*          get ();
                 nonvirtual  const T*    get () const;
@@ -181,8 +181,8 @@ namespace   Stroika {
                  *  \pre (IsPresent ())
                  *
                  *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
+                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
                  *
                  *  This is really just syntactic sugar equivilent to get () - except that it requires
                  *  not-null - but more convenient since it allows the use of an optional to
@@ -196,8 +196,8 @@ namespace   Stroika {
                  *  \pre (IsPresent ())
                  *
                  *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
+                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
                  */
                 nonvirtual  T& operator* ();
                 nonvirtual  const T& operator* () const;
@@ -208,17 +208,17 @@ namespace   Stroika {
                  *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
                  */
-                nonvirtual  Optional<T>&    operator+= (const T& rhs);
-                nonvirtual  Optional<T>&    operator-= (const T& rhs);
-                nonvirtual  Optional<T>&    operator*= (const T& rhs);
-                nonvirtual  Optional<T>&    operator/= (const T& rhs);
+                nonvirtual  Optional<T, TRAITS>&    operator+= (const T& rhs);
+                nonvirtual  Optional<T, TRAITS>&    operator-= (const T& rhs);
+                nonvirtual  Optional<T, TRAITS>&    operator*= (const T& rhs);
+                nonvirtual  Optional<T, TRAITS>&    operator/= (const T& rhs);
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
                  */
-                nonvirtual  int Compare (const Optional<T>& rhs) const;
+                nonvirtual  int Compare (const Optional<T, TRAITS>& rhs) const;
 
             public:
                 /**

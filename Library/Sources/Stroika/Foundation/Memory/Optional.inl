@@ -38,7 +38,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************************** Optional<T> *********************************
+             ************************** Optional<T, TRAITS> *********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -77,7 +77,7 @@ namespace   Stroika {
             {
                 if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
+                    //  Optional<T, TRAITS> x;
                     //  x = *x;
                 }
                 else {
@@ -95,7 +95,7 @@ namespace   Stroika {
             {
                 if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
+                    //  Optional<T, TRAITS> x;
                     //  x = *x;
                 }
                 else {
@@ -199,31 +199,31 @@ namespace   Stroika {
                 return *fValue_->get ();
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T>&    Optional<T, TRAITS>::operator+= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
                 (*fValue_->get ()) += rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T>&    Optional<T, TRAITS>::operator-= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
                 (*fValue_->get ()) -= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T>&    Optional<T, TRAITS>::operator*= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
                 (*fValue_->get ()) *= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T>&    Optional<T, TRAITS>::operator/= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
                 (*fValue_->get ()) /= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  int Optional<T, TRAITS>::Compare (const Optional<T>& rhs) const
+            inline  int Optional<T, TRAITS>::Compare (const Optional<T, TRAITS>& rhs) const
             {
                 if (fValue_ == nullptr) {
                     return (rhs.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
