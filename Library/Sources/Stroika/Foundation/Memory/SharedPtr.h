@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <atomic>
+#include    <cstdint>
 
 #include    "../Configuration/Common.h"
 
@@ -67,14 +68,14 @@ namespace   Stroika {
                      * if we use one smaller than sizeof(void*) we cannot use BlockAllocation<> code -
                      * which currently requires sizeof (T) >= sizeof (void*)
                      */
-                    using   ReferenceCountType_ =    atomic<size_t>  ;
+                    using   ReferenceCountType_ =    uint32_t;
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
                 }
                 namespace   enable_shared_from_this_Traits_Helpers_ {
                     // size_t of counter should be enough for any reasonable application
-                    using   ReferenceCountType_ = atomic<size_t>    ;
+                    using   ReferenceCountType_ = uint32_t;
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
@@ -88,8 +89,8 @@ namespace   Stroika {
              */
             template    <typename   T>
             struct  SharedPtr_Default_Traits {
-                using   ReferenceCountType  =   Private_::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_;
-                using   Envelope            =   Private_::SharedPtr_Default_Traits_Helpers_::Envelope_<T>;
+                using   ReferenceCountType          =   Private_::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_;
+                using   Envelope                    =   Private_::SharedPtr_Default_Traits_Helpers_::Envelope_<T>;
             };
 
 
@@ -359,7 +360,7 @@ namespace   Stroika {
             template    <typename   T>
             class   enable_shared_from_this {
             private:
-                Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_   fCount_;
+                atomic<Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_>   fCount_;
 
             public:
                 enable_shared_from_this ();

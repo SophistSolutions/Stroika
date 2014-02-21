@@ -12,6 +12,8 @@
  */
 #include    "BlockAllocated.h"
 
+#include    "../Execution/Exceptions.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -23,7 +25,7 @@ namespace   Stroika {
              *
              *      We have Decrement() return a boolean and if it returns true to delete in the
              *  caller because otehrwise the PRIVATE stuff (if you use SharedRep<> of a private type) -
-             *  generates erorrs. At least it causes problems on Visual Studio.Net 2010. I'm not
+             *  generates errors. At least it causes problems on Visual Studio.Net 2010. I'm not
              *  sure if this is MY bug or a compiler  bug. Anyhow - this is fine for now...
              *          -- LGP 2012-05-15
              */
@@ -33,7 +35,7 @@ namespace   Stroika {
                 namespace   SharedPtr_Default_Traits_Helpers_ {
 
                     struct  ReferenceCounterContainerType_ {
-                        ReferenceCountType_ fCount;
+                        atomic<ReferenceCountType_> fCount;
                         ReferenceCounterContainerType_ ()
                             : fCount (0)
                         {
@@ -148,7 +150,7 @@ namespace   Stroika {
                         }
                         ReferenceCountType_ CurrentRefCount () const
                         {
-                            return fPtr_ == nullptr ? 0 : fPtr_->fCount_;
+                            return fPtr_ == nullptr ? 0 : fPtr_->fCount_.load ();
                         }
                         void    Increment ()
                         {
