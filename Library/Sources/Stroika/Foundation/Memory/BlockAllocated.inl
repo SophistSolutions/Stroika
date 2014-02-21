@@ -143,7 +143,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* BlockAllocationPool_<SIZE> ***************************
+             *************** Private_::BlockAllocationPool_<SIZE> ***************************
              ********************************************************************************
              */
             template    <size_t SIZE>
@@ -251,7 +251,6 @@ namespace   Stroika {
             void*   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
 
 
-
             /*
              ********************************************************************************
              ********************************** BlockAllocator<T> ***************************
@@ -299,6 +298,56 @@ namespace   Stroika {
                 BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif
             }
+
+
+            /*
+             ********************************************************************************
+             ******************************* BlockAllocated<T> ******************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            inline  BlockAllocated<T>::BlockAllocated ()
+                : fValue_ ()
+            {
+            }
+            template    <typename   T>
+            inline  BlockAllocated<T>::BlockAllocated (const BlockAllocated<T>& t)
+                : fValue_ (t)
+            {
+            }
+            template    <typename   T>
+            inline  BlockAllocated<T>::BlockAllocated (const T& t)
+                : fValue_ (t)
+            {
+            }
+            template    <typename   T>
+            inline  BlockAllocated<T>::BlockAllocated (T&&  t)
+                : fValue_ (std::move (t))
+            {
+            }
+            template    <typename   T>
+            inline   const BlockAllocated<T>& BlockAllocated<T>::operator= (const BlockAllocated<T>& t)
+            {
+                fValue_ = t.fValue_;
+                return *this;
+            }
+            template    <typename   T>
+            inline   const BlockAllocated<T>& BlockAllocated<T>::operator= (const T& t)
+            {
+                fValue_ = t;
+                return *this;
+            }
+            template    <typename   T>
+            inline    BlockAllocated<T>::operator T () const
+            {
+                return fValue_;
+            }
+            template    <typename   T>
+            inline    T* BlockAllocated<T>::get ()
+            {
+                return &fValue_;
+            }
+
 
         }
     }

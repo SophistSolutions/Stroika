@@ -121,6 +121,8 @@ namespace   Stroika {
              *
              *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
              *  false (0), this will just default to the global ::new/::delete
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename   T>
             class   BlockAllocator  {
@@ -249,28 +251,19 @@ namespace   Stroika {
                  *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
                  *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
                  */
-                BlockAllocated () : fValue_ () {}
-                BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
-                BlockAllocated (const T& t) : fValue_ (t) {}
-                BlockAllocated (T&&  t) : fValue_ (std::move (t)) {}
-                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t)
-                {
-                    fValue_ = t.fValue_;
-                    return *this;
-                }
-                nonvirtual const BlockAllocated<T>& operator= (const T& t)
-                {
-                    fValue_ = t;
-                    return *this;
-                }
-                nonvirtual  operator T () const
-                {
-                    return fValue_;
-                }
-                nonvirtual  T* get ()
-                {
-                    return &fValue_;
-                }
+                BlockAllocated ();
+                BlockAllocated (const BlockAllocated<T>& t);
+                BlockAllocated (const T& t);
+                BlockAllocated (T&&  t);
+            public:
+                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t);
+                nonvirtual const BlockAllocated<T>& operator= (const T& t);
+
+            public:
+                nonvirtual  operator T () const;
+
+            public:
+                nonvirtual  T* get ();
 
             private:
                 T   fValue_;
@@ -286,7 +279,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 
