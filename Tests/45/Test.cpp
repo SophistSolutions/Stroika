@@ -21,6 +21,7 @@
 #include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Memory/SharedPtr.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -38,6 +39,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Math;
+using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Time;
 
@@ -388,6 +390,92 @@ namespace {
 
 
 
+
+
+
+namespace {
+
+    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
+        int     COUNTER = 1;
+		shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        void    Test_stdsharedptr_use_(function<void(int*)> doInsideLock)
+        {
+            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void    Test_stdsharedptr_alloc_()
+        {
+           s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        }
+		SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        void    Test_MemorySharedPtr_use_(function<void(int*)> doInsideLock)
+        {
+            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void    Test_MemorySharedPtr_alloc_()
+        {
+           s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        }
+        void    Test_ACCUM (int* i)
+        {
+            COUNTER += *i;
+        }
+    }
+
+    void    Test_stdsharedptrBaseline()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_stdsharedptr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+		// less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_stdsharedptr_alloc_ ();
+        }
+    }
+    void    Test_MemorySharedPtr()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MemorySharedPtr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+		// less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_MemorySharedPtr_alloc_ ();
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
@@ -719,6 +807,14 @@ namespace   {
             -60.0,
             &failedTests
         );
+        Tester (
+            L"std::shared_ptr versus Memory::SharedPtr",
+            Test_stdsharedptrBaseline, L"shared_ptr",
+            Test_MemorySharedPtr, L"SharedPtr",
+            22500,
+            14.0,
+            &failedTests
+        );
 #if 0
         Tester (
             L"atomic sharedptr versus sharedptr",
@@ -814,7 +910,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             8712,
-            29.0,
+            27.0,
             &failedTests
         );
         Tester (
