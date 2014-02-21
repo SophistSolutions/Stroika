@@ -23,11 +23,11 @@
  *      @todo   THREADSAFETY BUG - shared_ptr<> not threadsafe, so our envelope needs
  *              to be fixed.
  *
+ *				FIX AND DOCUMENT: thresafeaty on assignment!
+ *
  *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
  *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
  *              Or around a static array.
- *
- *      @todo   FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
  *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
