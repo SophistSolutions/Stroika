@@ -696,6 +696,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1611,6 +1614,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2434,6 +2440,9 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
       <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
