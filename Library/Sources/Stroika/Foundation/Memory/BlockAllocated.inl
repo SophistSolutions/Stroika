@@ -260,6 +260,9 @@ namespace   Stroika {
             template    <typename   T>
             inline  void*   BlockAllocator<T>::Allocate (size_t n)
             {
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+#endif
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
@@ -272,6 +275,9 @@ namespace   Stroika {
             template    <typename   T>
             inline  void    BlockAllocator<T>::Deallocate (void* p)
             {
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+#endif
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
                     Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
@@ -283,6 +289,9 @@ namespace   Stroika {
             template    <typename   T>
             void    BlockAllocator<T>::Compact ()
             {
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+#endif
 #if     qAllowBlockAllocation
                 Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif

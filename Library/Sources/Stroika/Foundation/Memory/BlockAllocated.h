@@ -21,6 +21,10 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *
+ *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-gaurd, and if
+ *          we get multiple results, just patch them into the linked list. That way in case of
+ *          multithreading (when we're paging in freepool) - we'll do less busy waiting.
+ *
  *  @todo   Document why we didnt use BlockAllocated<T> : T ... issue is that wouldnt work for non-class T, such
  *          as int.
  *
@@ -217,7 +221,6 @@ namespace   Stroika {
 #else
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
-
 
 
             /**
