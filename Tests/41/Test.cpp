@@ -153,15 +153,15 @@ namespace   {
         }
     }
 
-	void	Test_6_SharedPtr ()
-	{
-		{
-			SharedPtr<int> p (new int (3));
-			VerifyTestResult (p.use_count () == 1);
-			VerifyTestResult (p.unique ());
-			VerifyTestResult (*p == 3);
-		}
-	}
+    void    Test_6_SharedPtr ()
+    {
+        {
+            SharedPtr<int> p (new int (3));
+            VerifyTestResult (p.use_count () == 1);
+            VerifyTestResult (p.unique ());
+            VerifyTestResult (*p == 3);
+        }
+    }
 }
 
 
@@ -173,7 +173,7 @@ namespace   {
         Test2_SharedByValue ();
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
         Test_5_AnyVariantValue_ ();
-		Test_6_SharedPtr ();
+        Test_6_SharedPtr ();
     }
 }
 

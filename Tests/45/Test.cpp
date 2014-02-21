@@ -397,7 +397,7 @@ namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
         int     COUNTER = 1;
-		shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
         void    Test_stdsharedptr_use_(function<void(int*)> doInsideLock)
         {
             shared_ptr<int> tmp = s_stdSharedPtr2Copy;
@@ -405,9 +405,9 @@ namespace {
         }
         void    Test_stdsharedptr_alloc_()
         {
-           s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+            s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
         }
-		SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
         void    Test_MemorySharedPtr_use_(function<void(int*)> doInsideLock)
         {
             SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
@@ -415,7 +415,7 @@ namespace {
         }
         void    Test_MemorySharedPtr_alloc_()
         {
-           s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
         }
         void    Test_ACCUM (int* i)
         {
@@ -431,7 +431,7 @@ namespace {
             Test_stdsharedptr_use_ (Test_ACCUM);
         }
         VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
-		// less important but still important
+        // less important but still important
         for (int i = 0; i < 100; ++i) {
             Test_stdsharedptr_alloc_ ();
         }
@@ -444,7 +444,7 @@ namespace {
             Test_MemorySharedPtr_use_ (Test_ACCUM);
         }
         VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
-		// less important but still important
+        // less important but still important
         for (int i = 0; i < 100; ++i) {
             Test_MemorySharedPtr_alloc_ ();
         }

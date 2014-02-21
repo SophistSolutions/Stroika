@@ -29,7 +29,7 @@ namespace   Stroika {
              */
 
 
-            namespace   Private {
+            namespace   Private_ {
                 namespace   SharedPtr_Default_Traits_Helpers_ {
 
                     struct  ReferenceCounterContainerType_ {
@@ -66,9 +66,10 @@ namespace   Stroika {
                             : fPtr_ (newP)
                             , fCountHolder_ (from.fCountHolder_)
                         {
-                            Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
+                            // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                             // actual ptr cannot change, and this assert check automatically converts pointers to
                             // a common base pointer type
+                            Require (newP == from.GetPtr ());
                         }
                         inline  T*      GetPtr () const
                         {
@@ -85,7 +86,7 @@ namespace   Stroika {
                         inline  void    Increment ()
                         {
                             RequireNotNull (fCountHolder_);
-                           fCountHolder_->fCount++;
+                            fCountHolder_->fCount++;
                         }
                         inline  bool    Decrement ()
                         {
@@ -112,7 +113,7 @@ namespace   Stroika {
             }
 
 
-            namespace   Private {
+            namespace   Private_ {
                 namespace   enable_shared_from_this_Traits_Helpers_ {
 
                     template    <typename   T>
@@ -152,7 +153,7 @@ namespace   Stroika {
                         void    Increment ()
                         {
                             RequireNotNull (fPtr_);
-							fPtr_->fCount_++;
+                            fPtr_->fCount_++;
                         }
                         bool    Decrement ()
                         {
@@ -175,15 +176,15 @@ namespace   Stroika {
             }
 
 
-
-
-
-
-
-            //  class   SharedPtr<T,T_TRAITS>
+            /*
+             ********************************************************************************
+             ***************************** SharedPtr<T, T_TRAITS> ***************************
+             ********************************************************************************
+             */
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::SharedPtr ()
-                : fEnvelope_ (nullptr)
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr () noexcept
+:
+            fEnvelope_ (nullptr)
             {
             }
             template    <typename T, typename T_TRAITS>
@@ -280,7 +281,7 @@ namespace   Stroika {
             template    <typename T, typename T_TRAITS>
             inline  T*  SharedPtr<T, T_TRAITS>::get () const
             {
-                return (fEnvelope_.GetPtr ());
+                return fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
             inline  void    SharedPtr<T, T_TRAITS>::release ()
@@ -300,7 +301,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename T_TRAITS>
-            template <typename T2>
+            template    <typename T2>
             SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
             {
                 return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
@@ -327,7 +328,7 @@ namespace   Stroika {
                 return IsUnique ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -335,7 +336,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -343,7 +344,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -351,7 +352,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -359,27 +360,28 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const
             {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const
+            inline  const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const
             {
                 return fEnvelope_;
             }
 
 
 
-
-
-
-            //  class   enable_shared_from_this<T>
+            /*
+             ********************************************************************************
+             ************************* enable_shared_from_this<T> ***************************
+             ********************************************************************************
+             */
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
                 : fCount_ (0)
@@ -391,7 +393,7 @@ namespace   Stroika {
             }
             template    <typename   T>
             template    <typename   RESULT_TRAITS>
-            SharedPtr<T, RESULT_TRAITS> enable_shared_from_this<T>::shared_from_this ()
+            inline  SharedPtr<T, RESULT_TRAITS> enable_shared_from_this<T>::shared_from_this ()
             {
                 /*
                  * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
@@ -407,18 +409,9 @@ namespace   Stroika {
                 T*  tStarThis   =   dynamic_cast<T*> (this);
                 return (SharedPtr<T, RESULT_TRAITS> (tStarThis));
             }
-#if     !qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
-            template    <typename   T>
-            inline SharedPtr<T, SharedPtrFromThis_Traits<T>> enable_shared_from_this<T>::shared_from_this ()
-            {
-                return shared_from_this<SharedPtrFromThis_Traits<T>> ();
-            }
-#endif
 
 
         }
-
-
 
 
         namespace   Execution {

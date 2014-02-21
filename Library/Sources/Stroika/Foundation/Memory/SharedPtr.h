@@ -6,30 +6,31 @@
 
 #include    "../StroikaPreComp.h"
 
-#include	<atomic>
+#include    <atomic>
 
 #include    "../Configuration/Common.h"
 
 
 
-
-
-
-
-/*
+/**
+ *  \file
+ *
  *      TODO:
  *
- *      @todo   CLEANUP AND CONSIDER RE-INCLUSION INTO STROIKA!!!
+ *      @todo   Add to regrssion test code somethning to assure enable_shared_from_this<> still works. I'm sure
+ *              it used to but who knows now!!!
  *
- *              Test if performs better.
- *              (because of blcok allocation of count and not supporitng weak_ptr)
+ *      @todo   MASSIVE CLEANUPS SO UPDTATE FOR STROIKA STANDARDS
  *
- *              See if I can transparently add (optional traits) locker, to make it threadsafe.
+ *      @todo   Get rid of legacy crap
+ *
+ *      @todo   MoveCTORs
+ *              supported && move operations!
+ *
+ *      @todo   See if I can transparently add (optional traits) locker, to make it threadsafe.
  *              (at least copying envelope safe)
  *
- *          (o)     CLEAR DOCS!!! - once we have stuff stable...
- *
- *          (o)      supported && move operations!
+ *      @todo   CLEAR DOCS!!! - once we have stuff stable...
  *
  *          (o)     CAREFULLY writeup differences between this class and shared_ptr<>
  *                  +   I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
@@ -40,90 +41,9 @@
  *                      SOME way to implemnet athat (e.g. PHRDB:: shared DB stuff).
  *
  *          (o)     BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
- *
- *          (o)     And document the issue wtih Also - Thread::Cretae() issue - but htat has a workaround...
- *
- *
- */
-
-
-
-
-
-
-
-
-/*
- *  TODO:
  *          (o)     Cleanup documentation, especially about the purpose/point, and how to use.
  *
  */
-
-
-
-/*
-
-<<<OBSOLETE>>>
-
- *          It is principally to solve THIS problem - that SharedPtrBase/UsesSharedPtrBase still exists for. There is as common base class
- *          (so you can always find the shared reference count).
- *
- *          For example:
- *
-                void    PHRDBBaseRep::DoSave (ProgressStatusCallback* progressCallback)
-                {
-                    wstring soapBody;
-                    {
-                        BLOBs::BLOB phrBLOB;
-                        {
-                            stringstream    tmpOut;
-                            ImportExport::Export (PHRDB::DB (SharedPtr<IDBRep> (SharedPtr<IDBRep>::eUsesSharedPtrBase, this)), MimeTypes::Predefined::HealthFramePHR2_CT (), ImportExport::ExportOptions (), tmpOut, ProgressSubTask (progressCallback, 0.0f, .5f));
-                            phrBLOB = StreamUtils::ReadStreamAsBLOB (tmpOut);
-                        }
-                        CreateSOAPEnvelope_PUTPHR (&soapBody, NarrowSDKStringToWide (Cryptography::EncodeBase64 (phrBLOB)), fUserName, fPassword, fOverridePHRName);
-                    }
-                    const wstring   kSoapAction =    wstring (kHealthFrameWorksURLNamespaceURI_V10) + L"UploadPHR";
-                    (void)HTTPSupport::SimpleSOAPSendReceive (L"POST", fUploadURL, kSoapAction, soapBody, CalcSendBestTimeout2Use (soapBody), sOurUserAgent, ProgressSubTask (progressCallback, 0.5f, 1.0f));
-                }
-
- *
- *          ALTERNATIVES:
- *
- *          (A)     DELETER argument to SharedPtr<>. Basically - we would have a TEMPLATD ARG to SharedPtr - the default of
- *                  which would take up zero size (calling regular operaotr delete on T arg to SharedPtr).
- *
- *                  That has the advantage that if someone delcared SharedPtr<T,T::SPECIALDELETER> and tried to assign something of
- *                  type SharedPtr<T> - that would not compile (in contrast with existing practice where SharedPtr<IDBRep> (this) would compile
- *                  and just crash badly).
- *
- *          (B)     DELETER function pointer - in EVERY SharedPtr<> - passed in for orignal CTOR call. Stores extra pointer with every underlying SharedPtrREP.
- *                  But then have specail one that does NOTHING. And then
- *
- *          (C)     ScopedNODELETER
- *                  This would be a specail class (or parameter to SharedPtr<>) which initializes the sharedptr with a specail count
- *                  with - perhaps - the value 1, and then asserts at the end - when the envoleope is desroyed, that hte value is still 1,
- *                  and THEN delete the COUNTER (cuz 1 was magically like zero - means all refernces went away).
- *
- *                  It would be a BUG if the originating ScopeNoDeleter/SharedPtr didn't left behind any references. All the cases I have currently
- *                  that would be fine for - and it works pretty well - but could be create buggy code if called code with this special pointer
- *                  stored those poitners. Really just doesnt work for those cases. Maybe not too bad.
- *
- *          (D)     Partial specialization with SharedPtrBase.
- *                  If I had faith in this always working - it would probably be the best choice. I guess I should try it...
- *                  Basically - if you have a class you want to pull this trick on - then inheirt from a specail base class, and the rest
- *                  happens fully automatically.
- *                  [attractive enuf - IF I can make the partial-specailation stuff work well enuf - then its perhaps the best way to go]
- *
- *                  This MAYBE as simple as template specialize of
- *                                  template    <typename T>
-                                        inline  SharedPtr<T>::~SharedPtr ()
-                            and
-                                op=
-                            (or bette ryet - but the delete part in its own template and template partial specialize that
-
- *
- */
-
 
 
 
@@ -132,25 +52,29 @@ namespace   Stroika {
         namespace   Memory {
 
 
+            /**
+             *  This is like the std::enable_shared_from_this - making your type inherit from it, allows you to recover the
+             *  underlying SharedPtr<> given a plain C++ pointer to T.
+             */
             template    <typename   T>
             class   enable_shared_from_this;
 
 
-            namespace   Private {
+            namespace   Private_ {
                 namespace   SharedPtr_Default_Traits_Helpers_ {
                     /*
                      * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) -
                      * if we use one smaller than sizeof(void*) we cannot use BlockAllocation<> code -
                      * which currently requires sizeof (T) >= sizeof (void*)
                      */
-                    typedef atomic<size_t>  ReferenceCountType_;
+                    using   ReferenceCountType_ =    atomic<size_t>  ;
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
                 }
                 namespace   enable_shared_from_this_Traits_Helpers_ {
-                    // 32 bits of counter should be enough for any reasonable application
-                    typedef uint32_t    ReferenceCountType_;
+                    // size_t of counter should be enough for any reasonable application
+                    using   ReferenceCountType_ = atomic<size_t>    ;
                     // This is used to wrap/combine the shared pointer with the counter.
                     template    <typename   T>
                     class   Envelope_;
@@ -158,16 +82,14 @@ namespace   Stroika {
             }
 
 
-
-
-            /*
+            /**
              * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will
              * not be used directly, but just part of using @SharedPtr<T>
              */
             template    <typename   T>
             struct  SharedPtr_Default_Traits {
-                typedef Private::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_             ReferenceCountType;
-                typedef Private::SharedPtr_Default_Traits_Helpers_::Envelope_<T>                    Envelope;
+                using   ReferenceCountType  =   Private_::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_;
+                using   Envelope            =   Private_::SharedPtr_Default_Traits_Helpers_::Envelope_<T>;
             };
 
 
@@ -181,7 +103,7 @@ namespace   Stroika {
              *      class   VeryFancyObj : SharedPtrBase {
              *      };
              *
-             *      typedef SharedPtr<VeryFancyObj,SharedPtrFromThis_TraitsVeryFancyObj>>   VeryFancySmartPointer;
+             *      using VeryFancySmartPointer =  SharedPtr<VeryFancyObj,SharedPtrFromThis_TraitsVeryFancyObj>>;
              *
              *      THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION,
              *      you can ALWAYS safely create a VeryFancySmartPointer from an already existing VeryFancyObj -
@@ -190,14 +112,29 @@ namespace   Stroika {
              */
             template    <typename   T>
             struct  SharedPtrFromThis_Traits {
-                typedef Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_   ReferenceCountType;
-                typedef Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>          Envelope;
+                using   ReferenceCountType  =    Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_ ;
+                using   Envelope            =    Private_::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
             };
 
 
 
 
-            /*
+            /**
+            *
+            * NEW NOTES:
+
+
+            * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
+            *
+            *       >   Doesnt support weak ptr.
+            *
+            *       >   Emprically appears faster than std::shared_ptr<> (probably due to block allocaiton of envelope and
+            *           not suppoprting weak_ptr)
+            *
+            *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
+            *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
+            *
+            *
             @CLASS:         SharedPtr<T,T_TRAITS>
             @DESCRIPTION:
                     <p>This class is for keeping track of a data structure with reference counts,
@@ -252,7 +189,7 @@ namespace   Stroika {
             template    <typename   T, typename T_TRAITS = SharedPtr_Default_Traits<T>>
             class   SharedPtr {
             public:
-                SharedPtr ();
+                SharedPtr () noexcept;
                 explicit SharedPtr (T* from);
                 explicit SharedPtr (const typename T_TRAITS::Envelope& from);
                 SharedPtr (const SharedPtr<T, T_TRAITS>& from);
@@ -285,10 +222,9 @@ namespace   Stroika {
                 nonvirtual  T&          GetRep () const;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::operator->
-                @DESCRIPTION:   <p>Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)</p>
-                */
+                /**
+                 *  \em Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)
+                 */
                 nonvirtual  T* operator-> () const;
 
             public:
@@ -416,31 +352,25 @@ namespace   Stroika {
              *      struct  TTT : Memory::enable_shared_from_this<TTT> {
              *          string x;
              *      };
-             *      typedef SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>>    TTT_SP;
+             *      using TTT_SP =  SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>> ;
              *
              *
              */
             template    <typename   T>
             class   enable_shared_from_this {
             private:
-                Private::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_   fCount_;
+                Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_   fCount_;
 
             public:
                 enable_shared_from_this ();
                 virtual ~enable_shared_from_this ();
 
             public:
-#if     qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
                 template    <typename   RESULT_TRAITS = SharedPtrFromThis_Traits<T>>
                 SharedPtr<T, RESULT_TRAITS> shared_from_this ();
-#else
-                template    <typename   RESULT_TRAITS>
-                SharedPtr<T, RESULT_TRAITS> shared_from_this ();
-                SharedPtr<T, SharedPtrFromThis_Traits<T>> shared_from_this ();
-#endif
 
             private:
-                friend  class   Private::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
+                friend  class   Private_::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
             };
 
 
