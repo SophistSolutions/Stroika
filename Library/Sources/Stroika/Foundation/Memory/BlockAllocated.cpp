@@ -13,14 +13,14 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Memory::Private;
+using   namespace   Stroika::Foundation::Memory::Private_;
 using   namespace   Stroika::Foundation::Execution;
 
 using   namespace   Execution;
 
 
 
-Private::LockType_*    Private::sLock_  =   nullptr;
+Private_::LockType_*    Private_::sLock_  =   nullptr;
 
 
 
@@ -32,7 +32,7 @@ Private::LockType_*    Private::sLock_  =   nullptr;
 BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
     Require (sLock_ == nullptr);
-    sLock_ = DEBUG_NEW Private::LockType_ ();
+    sLock_ = DEBUG_NEW Private_::LockType_ ();
 }
 
 BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
@@ -52,5 +52,5 @@ BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
  */
 Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocated ()
 {
-    return Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependency ();
+    return Execution::ModuleInitializer<Private_::BlockAllocation_ModuleInit_>::GetDependency ();
 }

@@ -38,7 +38,7 @@ namespace   Stroika {
         namespace   Memory {
 
 
-            namespace   Private {
+            namespace   Private_ {
 
                 struct  BlockAllocation_ModuleInit_ {
                     BlockAllocation_ModuleInit_ ();
@@ -54,14 +54,14 @@ namespace   Stroika {
 
                 inline  LockType_&    GetLock_ ()
                 {
-                    AssertNotNull (sLock_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
+                    AssertNotNull (sLock_);  // automatically initailized by BlockAllocated::Private_::ActualModuleInit
                     return *sLock_;
                 }
 
             }
 
 
-            namespace   Private {
+            namespace   Private_ {
 
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define BlockAllocation_Private_AdjustSizeForPool_(n)\
@@ -147,13 +147,13 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <size_t SIZE>
-            inline  void*   Private::BlockAllocationPool_<SIZE>::Allocate (size_t n)
+            inline  void*   Private_::BlockAllocationPool_<SIZE>::Allocate (size_t n)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
-                lock_guard<LockType_>  critSec (Private::GetLock_ ());
+                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -170,19 +170,19 @@ namespace   Stroika {
                 return result;
             }
             template    <size_t SIZE>
-            inline  void    Private::BlockAllocationPool_<SIZE>::Deallocate (void* p)
+            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (p != nullptr);
-                lock_guard<LockType_>  critSec (Private::GetLock_ ());
+                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
                 // push p onto the head of linked free list
                 (*(void**)p) = sNextLink_;
                 sNextLink_ = p;
             }
             template    <size_t SIZE>
-            void    Private::BlockAllocationPool_<SIZE>::Compact ()
+            void    Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
-                lock_guard<LockType_>  critSec (Private::GetLock_ ());
+                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
 
                 // step one: put all the links into a single, sorted vector
                 const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
@@ -248,7 +248,7 @@ namespace   Stroika {
                 }
             }
             template    <size_t SIZE>
-            void*   Private::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
+            void*   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
 
 
 
@@ -260,14 +260,15 @@ namespace   Stroika {
             template    <typename   T>
             inline  void*   BlockAllocator<T>::Allocate (size_t n)
             {
+                using Private_::BlockAllocationPool_;
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocation_Private_AdjustSizeForPool_;
 #endif
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
 #if     qAllowBlockAllocation
-                return Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
+                return BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
 #else
                 return ::operator new (n);
 #endif
@@ -275,12 +276,13 @@ namespace   Stroika {
             template    <typename   T>
             inline  void    BlockAllocator<T>::Deallocate (void* p)
             {
+                using Private_::BlockAllocationPool_;
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocation_Private_AdjustSizeForPool_;
 #endif
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
-                    Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
+                    BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
                 }
 #else
                 ::operator delete (p);
@@ -289,11 +291,12 @@ namespace   Stroika {
             template    <typename   T>
             void    BlockAllocator<T>::Compact ()
             {
+                using Private_::BlockAllocationPool_;
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                using Private::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocation_Private_AdjustSizeForPool_;
 #endif
 #if     qAllowBlockAllocation
-                Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
+                BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif
             }
 
@@ -301,6 +304,6 @@ namespace   Stroika {
     }
 }
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::BlockAllocation_ModuleInit_>   _Stroika_Foundation_Memory_BlockAllocated_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocation_ModuleInit_>   _Stroika_Foundation_Memory_BlockAllocated_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Memory_BlockAllocated_inl_*/
