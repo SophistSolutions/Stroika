@@ -766,7 +766,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -700.0,
+            -610.0,
             &failedTests
         );
         Tester (
@@ -774,7 +774,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -28.0,
+            -29.0,
             &failedTests
         );
         Tester (
@@ -782,7 +782,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -400.0,
+            -380.0,
             &failedTests
         );
         Tester (
@@ -830,7 +830,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            29.0,
+            27.0,
             &failedTests
         );
         Tester (

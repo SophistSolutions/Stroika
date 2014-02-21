@@ -23,7 +23,7 @@
  *      @todo   THREADSAFETY BUG - shared_ptr<> not threadsafe, so our envelope needs
  *              to be fixed.
  *
- *				FIX AND DOCUMENT: thresafeaty on assignment!
+ *              FIX AND DOCUMENT: thresafeaty on assignment!
  *
  *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
  *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
