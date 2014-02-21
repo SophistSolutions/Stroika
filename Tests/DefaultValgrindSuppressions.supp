@@ -4,7 +4,7 @@
    fun:malloc
    fun:_Znwm
    fun:_Znam
-   fun:_ZN7Stroika10Foundation6Memory7Private12GetMem_Util_Em
+   fun:_ZN7Stroika10Foundation6Memory8Private_12GetMem_Util_Em
 }
 {
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_1
@@ -12,7 +12,7 @@
    fun:malloc
    fun:_Znwm
    fun:_Znam
-   fun:_ZN7Stroika10Foundation6Memory7Private20BlockAllocationPool_ILm?EE8AllocateEm.isra.*
+   fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_ILm?EE8AllocateEm.isra.*
 }
 {
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_2
@@ -20,7 +20,7 @@
    fun:malloc
    fun:_Znwm
    fun:_Znam
-   fun:_ZN7Stroika10Foundation6Memory7Private20BlockAllocationPool_ILm??EE8AllocateEm.isra.*
+   fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_ILm??EE8AllocateEm.isra.*
 }
 {
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_HARD_TO_SEE_HOW_TODO_GOOD_MATCHER_FOR_THIS
