@@ -3,8 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
-
 #include    "BlockAllocated.h"
 
 
@@ -22,7 +20,7 @@ using   namespace   Execution;
 
 
 
-mutex*    Private::sCritSection_  =   nullptr;
+Private::LockType_*    Private::sLock_  =   nullptr;
 
 
 
@@ -33,15 +31,15 @@ mutex*    Private::sCritSection_  =   nullptr;
  */
 BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
-    Require (sCritSection_ == nullptr);
-    sCritSection_ = DEBUG_NEW mutex ();
+    Require (sLock_ == nullptr);
+    sLock_ = DEBUG_NEW Private::LockType_ ();
 }
 
 BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
 {
-    RequireNotNull (sCritSection_);
-    delete sCritSection_;
-    sCritSection_ = nullptr;
+    RequireNotNull (sLock_);
+    delete sLock_;
+    sLock_ = nullptr;
 }
 
 

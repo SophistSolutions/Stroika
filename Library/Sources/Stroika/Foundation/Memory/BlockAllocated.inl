@@ -20,6 +20,19 @@
 #include    "Common.h"
 
 
+
+// Private IMPL define - may allow another way to specify eventually, but for now just to test
+#if     !defined (qBlockAllocation_UseSpinLock_)
+#define qBlockAllocation_UseSpinLock_   1
+#endif
+
+#if    qBlockAllocation_UseSpinLock_
+#include    "../Execution/SpinLock.h"
+#endif
+
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
@@ -32,12 +45,17 @@ namespace   Stroika {
                     ~BlockAllocation_ModuleInit_ ();
                 };
 
-                extern  mutex*    sCritSection_;
+#if    qBlockAllocation_UseSpinLock_
+                using LockType_ = Execution::SpinLock;
+#else
+                using LockType_ = mutex;
+#endif
+                extern  LockType_*    sLock_;
 
-                inline  mutex&    GetCritSection_ ()
+                inline  LockType_&    GetLock_ ()
                 {
-                    AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
-                    return *sCritSection_;
+                    AssertNotNull (sLock_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
+                    return *sLock_;
                 }
 
             }
@@ -45,22 +63,21 @@ namespace   Stroika {
 
             namespace   Private {
 
-
-#if !qCompilerAndStdLib_constexpr_Buggy && 0
+#if     qCompilerAndStdLib_constexpr_Buggy || 1
+#define BlockAllocation_Private_AdjustSizeForPool_(n)\
+    (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*))
+#else
                 // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
-                constexpr inline    size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
+                inline    constexpr size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
                 {
                     // when we really fix constexpr usage, we can use the below!
                     //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
                     return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
                 }
-#else
-#define BlockAllocation_Private_AdjustSizeForPool_(n)\
-    (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*))
 #endif
 
 
-                inline    size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
+                inline    constexpr size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
                     /*
                      * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
@@ -135,7 +152,7 @@ namespace   Stroika {
                 Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
-                lock_guard<mutex>  critSec (Private::GetCritSection_ ());
+                lock_guard<LockType_>  critSec (Private::GetLock_ ());
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -156,7 +173,7 @@ namespace   Stroika {
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (p != nullptr);
-                lock_guard<mutex>  critSec (Private::GetCritSection_ ());
+                lock_guard<LockType_>  critSec (Private::GetLock_ ());
                 // push p onto the head of linked free list
                 (*(void**)p) = sNextLink_;
                 sNextLink_ = p;
@@ -164,7 +181,7 @@ namespace   Stroika {
             template    <size_t SIZE>
             void    Private::BlockAllocationPool_<SIZE>::Compact ()
             {
-                lock_guard<mutex>  critSec (Private::GetCritSection_ ());
+                lock_guard<LockType_>  critSec (Private::GetLock_ ());
 
                 // step one: put all the links into a single, sorted vector
                 const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
