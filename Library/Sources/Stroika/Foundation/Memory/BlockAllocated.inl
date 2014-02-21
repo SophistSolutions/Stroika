@@ -63,7 +63,7 @@ namespace   Stroika {
 
             namespace   Private {
 
-#if     qCompilerAndStdLib_constexpr_Buggy || 1
+#if     qCompilerAndStdLib_constexpr_Buggy
 #define BlockAllocation_Private_AdjustSizeForPool_(n)\
     (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*))
 #else
@@ -77,14 +77,15 @@ namespace   Stroika {
 #endif
 
 
+                /*
+                * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
+                * a chunk which memory allocator can do a good job on.
+                */
+                constexpr   size_t  kTargetMallocSize_   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
+
                 inline    constexpr size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
-                    /*
-                     * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
-                     * a chunk which memory allocator can do a good job on.
-                     */
-                    constexpr   size_t  kTargetMallocSize   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
-                    return std::max (static_cast<size_t> (kTargetMallocSize / poolElementSize), static_cast<size_t> (10));
+                    return std::max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
                 }
 
 
