@@ -21,6 +21,7 @@
 #include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Memory/SharedPtr.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -38,6 +39,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Math;
+using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Time;
 
@@ -388,6 +390,92 @@ namespace {
 
 
 
+
+
+
+namespace {
+
+    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
+        int     COUNTER = 1;
+        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        void    Test_stdsharedptr_use_(function<void(int*)> doInsideLock)
+        {
+            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void    Test_stdsharedptr_alloc_()
+        {
+            s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        }
+        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        void    Test_MemorySharedPtr_use_(function<void(int*)> doInsideLock)
+        {
+            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void    Test_MemorySharedPtr_alloc_()
+        {
+            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        }
+        void    Test_ACCUM (int* i)
+        {
+            COUNTER += *i;
+        }
+    }
+
+    void    Test_stdsharedptrBaseline()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_stdsharedptr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+        // less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_stdsharedptr_alloc_ ();
+        }
+    }
+    void    Test_MemorySharedPtr()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MemorySharedPtr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
+        // less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_MemorySharedPtr_alloc_ ();
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
@@ -719,6 +807,14 @@ namespace   {
             -60.0,
             &failedTests
         );
+        Tester (
+            L"std::shared_ptr versus Memory::SharedPtr",
+            Test_stdsharedptrBaseline, L"shared_ptr",
+            Test_MemorySharedPtr, L"SharedPtr",
+            22500,
+            14.0,
+            &failedTests
+        );
 #if 0
         Tester (
             L"atomic sharedptr versus sharedptr",
@@ -734,7 +830,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            25.0,
+            45.0,
             &failedTests
         );
         Tester (
@@ -742,7 +838,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1172017,
-            -1400.0,
+            -800.0,
             &failedTests
         );
         Tester (
@@ -750,7 +846,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -2000.0,
+            -1000.0,
             &failedTests
         );
         Tester (
@@ -758,7 +854,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -4000.0,
+            -2500.0,
             &failedTests
         );
         Tester (
@@ -766,7 +862,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -1200.0,
+            -610.0,
             &failedTests
         );
         Tester (
@@ -774,7 +870,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -20.0,
+            -29.0,
             &failedTests
         );
         Tester (
@@ -782,7 +878,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -600.0,
+            -380.0,
             &failedTests
         );
         Tester (
@@ -790,7 +886,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
-        -320.0,
+        -280.0,
         &failedTests
         );
         Tester (
@@ -798,7 +894,7 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             39001,
-            -33.0,
+            -22.0,
             &failedTests
         );
         Tester (
@@ -806,7 +902,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            -550.0,
+            -460.0,
             &failedTests
         );
         Tester (
@@ -814,7 +910,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             8712,
-            25.0,
+            27.0,
             &failedTests
         );
         Tester (
@@ -822,7 +918,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             135000,
-            -560.0,
+            -480.0,
             &failedTests
         );
         Tester (
@@ -838,7 +934,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         94862,
-        -1050.0,
+        -510.0,
         &failedTests
         );
         Tester (
@@ -846,7 +942,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
         8712,
-        -18.0,
+        25.0,
         &failedTests
         );
         Tester (
@@ -854,7 +950,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -140.0,
+            -50.0,
             &failedTests
         );
 

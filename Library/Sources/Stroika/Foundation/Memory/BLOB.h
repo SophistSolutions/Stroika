@@ -20,11 +20,14 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   THREADSAFETY BUG - shared_ptr<> not threadsafe, so our envelope needs
+ *              to be fixed.
+ *
+ *              FIX AND DOCUMENT: thresafeaty on assignment!
+ *
  *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
  *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
  *              Or around a static array.
- *
- *      @todo   FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
  *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
@@ -81,7 +84,7 @@ namespace   Stroika {
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
              *  change (except by assignement - being assigned over).
              *
-             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
+             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! SAFE CUZ READONLY
              */
             class   BLOB {
             public:

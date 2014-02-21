@@ -6,7 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-//#include    <algorithm>
 #include    <cstddef>
 
 #include    "../Configuration/Common.h"
@@ -36,33 +35,6 @@
  *
  *  @todo   Comments generally need a thorough review. Many VERY VERY old - from Led days.
  *
- *  @todo   Fix all the BlockAllocated<T>::fValue_ code - clean it up, put it in INL file, and
- *          think through more carefully CTORs etc - to make it act more like a "T" type.
- *
- *          Sterl thinks its best to just add a generic solution like:
- *              template <typename T>
- *              struct  AsObject {
- *                  AsObject ()    {    }
- *
- *                  AsObject (T value) :         fValue (value)    {    }
- *
- *                  nonvirtual  operator T () const    {        return fValue;    }
- *                  nonvirtual  operator T ()    {        return fValue;    }
- *
- *                  T fValue;
- *              };
- *
- *          Closely related - document WHY we didn't just have BlockAllocated<T> inherit from T (issue is
- *          when T = int, for example. There maybe some template magic I can use to fix that, and then
- *          thats probably a better solution!
- *
- *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
- *          should force block allocation, or ONLY block-allocate if size is appropriate to one of our
- *          preformed pools.
- *
- *          The reason for this option is for better use in templates like LinkedList<> - where we might
- *          want to blockallocate for small sizes of T, but not for ALL.
- *
  *  @todo   BlockAllocator<>::Compact ()
  *              o   not sure this is useful, or worth the effort, but since
  *                  Sterl wrote it - leave it in for a while - til I get clearer experience.
@@ -74,8 +46,6 @@
  *              o   I make have broken something in Compact() routine when I transcribed it from Sterl's code.
  *                  never tested (by me).
  */
-
-
 
 
 

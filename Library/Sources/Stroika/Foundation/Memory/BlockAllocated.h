@@ -29,6 +29,26 @@
  *          The reason for this option is for better use in templates like LinkedList<> - where we might
  *          want to blockallocate for small sizes of T, but not for ALL.
  *
+ *  @todo   Fix all the BlockAllocated<T>::fValue_ code - clean it up, put it in INL file, and
+ *          think through more carefully CTORs etc - to make it act more like a "T" type.
+ *
+ *          Sterl thinks its best to just add a generic solution like:
+ *              template <typename T>
+ *              struct  AsObject {
+ *                  AsObject ()    {    }
+ *
+ *                  AsObject (T value) :         fValue (value)    {    }
+ *
+ *                  nonvirtual  operator T () const    {        return fValue;    }
+ *                  nonvirtual  operator T ()    {        return fValue;    }
+ *
+ *                  T fValue;
+ *              };
+ *
+ *          Closely related - document WHY we didn't just have BlockAllocated<T> inherit from T (issue is
+ *          when T = int, for example. There maybe some template magic I can use to fix that, and then
+ *          thats probably a better solution!
+ *
  */
 
 
