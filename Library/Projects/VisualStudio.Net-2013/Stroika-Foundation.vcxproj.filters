@@ -693,6 +693,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1605,6 +1608,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2426,6 +2432,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
 </Project>

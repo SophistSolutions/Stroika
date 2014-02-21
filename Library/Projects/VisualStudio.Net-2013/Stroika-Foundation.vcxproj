@@ -636,6 +636,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
@@ -1005,6 +1006,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h" />
@@ -1305,6 +1307,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />

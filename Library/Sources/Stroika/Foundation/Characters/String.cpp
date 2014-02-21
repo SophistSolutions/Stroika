@@ -1142,6 +1142,6 @@ Execution::ModuleDependency Characters::MakeModuleDependency_String ()
  ********************************************************************************
  */
 String_ModuleInit_::String_ModuleInit_ ()
-    : fBlockAllocationDependency (Memory::MakeModuleDependency_BlockAllocated ())
+    : fBlockAllocationDependency (Memory::MakeModuleDependency_BlockAllocator ())
 {
 }
