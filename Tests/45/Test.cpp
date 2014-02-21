@@ -830,7 +830,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            45.0,
+            65.0,
             &failedTests
         );
         Tester (
