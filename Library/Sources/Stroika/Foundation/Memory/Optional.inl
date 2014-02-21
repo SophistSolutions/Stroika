@@ -199,6 +199,30 @@ namespace   Stroika {
                 return *fValue_->get ();
             }
             template    <typename T, typename TRAITS>
+            inline  Optional<T>&    Optional<T, TRAITS>::operator+= (const T& rhs)
+            {
+                (*fValue_->get ()) += rhs;
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T>&    Optional<T, TRAITS>::operator-= (const T& rhs)
+            {
+                (*fValue_->get ()) -= rhs;
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T>&    Optional<T, TRAITS>::operator*= (const T& rhs)
+            {
+                (*fValue_->get ()) *= rhs;
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T>&    Optional<T, TRAITS>::operator/= (const T& rhs)
+            {
+                (*fValue_->get ()) /= rhs;
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional<T>& rhs) const
             {
                 if (fValue_ == nullptr) {

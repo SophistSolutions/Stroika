@@ -107,7 +107,8 @@ namespace   Stroika {
              *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
-             *
+             *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
+             *          of internal pointers.
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
             class   Optional {
@@ -200,6 +201,17 @@ namespace   Stroika {
                  */
                 nonvirtual  T& operator* ();
                 nonvirtual  const T& operator* () const;
+
+            public:
+                /**
+                 *  \req (IsPresent ())
+                 *
+                 *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
+                 */
+                nonvirtual  Optional<T>&    operator+= (const T& rhs);
+                nonvirtual  Optional<T>&    operator-= (const T& rhs);
+                nonvirtual  Optional<T>&    operator*= (const T& rhs);
+                nonvirtual  Optional<T>&    operator/= (const T& rhs);
 
             public:
                 /**
