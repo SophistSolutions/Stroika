@@ -197,20 +197,44 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test37", "37\Test37.vcxproj
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test38", "38\Test38.vcxproj", "{C1715C37-F52C-4BAF-8D58-B46BA8D2C35D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test39", "39\Test39.vcxproj", "{4EE42515-DA12-4182-83B6-89D0F800C6F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test40", "40\Test40.vcxproj", "{C94FDE34-FE23-4472-873B-AD84F15C1364}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test41", "41\Test41.vcxproj", "{B0E72E44-71B1-4610-A631-78A8BC357CC2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test42", "42\Test42.vcxproj", "{DCF79AE2-864C-4226-9BC5-01767C49DB42}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test43", "43\Test43.vcxproj", "{6B5A2992-F88E-4420-ACA4-84B8B3081664}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test44", "44\Test44.vcxproj", "{633753FB-C045-44FD-BF5F-349CAA14AEB0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test45", "45\Test45.vcxproj", "{53E0B64A-E6AB-4AB1-98AC-A3B03178CA01}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
