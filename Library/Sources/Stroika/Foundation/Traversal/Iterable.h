@@ -451,6 +451,18 @@ namespace   Stroika {
                  */
                 using   SharedByValueRepType_   =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
 
+            protected:
+                /**
+                 *  EXPERIMENTAL -- LGP 2014-02-21
+                 */
+                using _ReadOnlyIterableIRepReference = typename SharedByValueRepType_::ReadOnlyReference;
+
+            protected:
+                /**
+                 *  EXPERIMENTAL -- LGP 2014-02-21
+                 */
+                nonvirtual  _ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
+
             private:
                 SharedByValueRepType_    fRep_;
             };

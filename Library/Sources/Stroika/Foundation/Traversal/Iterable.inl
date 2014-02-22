@@ -305,6 +305,11 @@ namespace   Stroika {
             {
                 return CONTAINER_OF_T (this->begin (), this->end ());
             }
+            template    <typename T>
+            inline  typename Iterable<T>::_ReadOnlyIterableIRepReference   Iterable<T>::_GetReadOnlyIterableIRepReference () const
+            {
+                return _ReadOnlyIterableIRepReference (fRep_);
+            }
 
 
         }
