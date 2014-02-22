@@ -214,6 +214,9 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    unique () const;
 
+            public:
+                struct  ReadOnlyReference;
+
             private:
                 copier_type     fCopier_;
                 shared_ptr_type fSharedImpl_;
@@ -229,6 +232,56 @@ namespace   Stroika {
             private:
                 template    <typename... COPY_ARGS>
                 nonvirtual  void    BreakReferences_ (COPY_ARGS&& ... copyArgs);
+            };
+
+
+            /*
+             *  EXPERIMENTAL PROTOTYPE - SO WE CAN HOLD THE REFCOUNT UP  FOR THREADSATY AND ACCESS RO PTR THROUGH THIS
+             *      --LGP 2014-02-21
+             *
+             *
+             *  ReadOnlyReference is can be used to extract a thread-safe reference copy to SharedByValue rep. Normally, if you
+             *  use SharedByValue<> in a threaded situation, (with no locks on the envelope) - its rep could be deleted
+             *  (refcount goes to zero) while you perform some other readonly operation. That would be bad
+             *
+             *
+             *  (NOTE TODO - making shared_ptr copy part threadsafe)
+             *  (VERY KEY - as of 2014-02-21 - this is still not fully threadsafe but thats (AT LEAST) cuz all
+             *  copies of shared_ptrs are not envelope threadsafe)!!!
+             *
+             *
+             *  This class addresses that problem by allowing you to 'bump the reference count' - and hold onto that bumped reference
+             *  for the context of your call. Note - ReadOnlyReference is NOT (envelope) threadsafe. You must not access a
+             *  particular ReadOnlyReference from more than one thread at a time. But everything it refers to is threadsafe.
+             *
+             *  Note - its important to use its 'GetRep' instead of the one(s) in the underlying SharedByValue because
+             *  that copy could change while you do your read only operation.
+             *
+             *  \em note - the name maybe a bit of a misnomer since it doesnt involve c++ references, but logically its
+             *          like (somewhat) a threadafe 'reference' to an underlying object.
+             */
+            template    <typename TRAITS>
+            struct  SharedByValue<TRAITS>::ReadOnlyReference {
+            public:
+                /**
+                 *  \req sp not null
+                 */
+                ReadOnlyReference (const SharedByValue<TRAITS>& sp);
+
+            public:
+                /**
+                 *  \ensure result not null
+                 */
+                nonvirtual  const element_type* get () const;
+
+            public:
+                /**
+                 *  \ensure result not null
+                 */
+                nonvirtual  const element_type& operator* () const;
+
+            private:
+                shared_ptr_type fSharedPtr_;
             };
 
 

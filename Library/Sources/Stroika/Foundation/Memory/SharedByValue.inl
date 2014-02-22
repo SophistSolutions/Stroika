@@ -251,6 +251,31 @@ namespace   Stroika {
             }
 
 
+            /*
+            ********************************************************************************
+            ***************** SharedByValue<TRAITS>::ReadOnlyReference *********************
+            ********************************************************************************
+            */
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::ReadOnlyReference::ReadOnlyReference (const SharedByValue<TRAITS>& sp)
+                : fSharedPtr_ (sp.fSharedImpl_)
+            {
+                RequireNotNull (fSharedPtr_);
+            }
+            template    <typename TRAITS>
+            inline  const typename SharedByValue<TRAITS>::element_type*     SharedByValue<TRAITS>::ReadOnlyReference::get () const
+            {
+                EnsureNotNull (fSharedPtr_);
+                return fSharedPtr_.get ();
+            }
+            template    <typename TRAITS>
+            const typename SharedByValue<TRAITS>::element_type&     SharedByValue<TRAITS>::ReadOnlyReference::operator* () const
+            {
+                EnsureNotNull (fSharedPtr_);
+                return *fSharedPtr_.get ();
+            }
+
+
         }
     }
 }
