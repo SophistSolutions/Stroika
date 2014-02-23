@@ -372,7 +372,7 @@ namespace   Stroika {
                 using   _IterableSharedPtrIRep  =   Iterable<Character>::_SharedPtrIRep;
 
             protected:
-                using   _SharedPtrIRep          =   shared_ptr<_IRep>;
+                using   _SharedPtrIRep          =   _USING_SHARED_IMPL_<_IRep>;
 
             protected:
                 /**
