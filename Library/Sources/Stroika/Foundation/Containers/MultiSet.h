@@ -143,7 +143,7 @@ namespace   Stroika {
             public:
 #endif
                 class   _IRep;
-                using   _SharedPtrIRep  =   _USING_SHARED_IMPL_<_IRep>;
+                using   _SharedPtrIRep  =   typename inherited::template _USING_SHARED_IMPL_<_IRep>;
 
             public:
                 MultiSet ();
@@ -294,11 +294,9 @@ namespace   Stroika {
             class   MultiSet<T, TRAITS>::_IRep : public Iterable<MultiSetEntry<T>>::_IRep, public enable_shared_from_this<typename MultiSet<T, TRAITS>::_IRep> {
             private:
                 using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
-#if 1
+
             protected:
-                //using   _SharedPtrIRep  =   _USING_SHARED_IMPL_<_IRep>;
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;
-#endif
 
             protected:
                 _IRep ();
