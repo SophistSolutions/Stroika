@@ -151,12 +151,6 @@ static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t mu
 
 namespace   {
     struct  MyEmptyString_ : String {
-#if 0
-        static  shared_ptr<String::_IRep>   Clone_ (const _IRep& rep)
-        {
-            return (rep.Clone ());
-        }
-#endif
         static  _SharedPtrIRep mkEmptyStrRep_ ()
         {
             static  bool                            sInited_    =   false;
