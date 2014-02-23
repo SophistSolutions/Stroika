@@ -970,8 +970,25 @@ namespace   Stroika {
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
             protected:
+                struct  _SafeRepAccessor;
+
+            protected:
+                // @todo - LOSE THISE AS PART OF THREADATYPE UPGRADE (using _SafeRepAccessor instead)
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+            };
+
+
+            /*
+             *   if  this idea works well, do a templated version of this and use more thoroughly...
+             *      --LGP 2014-02-21
+             */
+            struct String::_SafeRepAccessor  {
+                inherited::_ReadOnlyIterableIRepReference    fAccessor;
+
+                _SafeRepAccessor (const String& s);
+
+                nonvirtual  const _IRep&    _GetRep () const;
             };
 
 

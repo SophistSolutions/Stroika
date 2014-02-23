@@ -421,54 +421,55 @@ void    String::Remove (Character c)
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-    Require (startAt <= threadSafeCopy.GetLength ());
-    //TODO: HORRIBLE PERFORMANCE!!!
-    size_t length = threadSafeCopy.GetLength ();
+    //@todo could improve performance with strength reduction
+    _SafeRepAccessor    accessor (*this);
+    Require (startAt <= accessor._GetRep ().GetLength ());
+    size_t length = accessor._GetRep ().GetLength ();
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (threadSafeCopy._GetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
-                        return (i);
+                    if (accessor._GetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
+                        return i;
                     }
                 }
             }
             break;
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (threadSafeCopy._GetRep ().GetAt (i) == c) {
-                        return (i);
+                    if (accessor._GetRep ().GetAt (i) == c) {
+                        return i;
                     }
                 }
             }
             break;
     }
-    return (kBadIndex);
+    return kBadIndex;
 }
 
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-    Require (startAt <= threadSafeCopy.GetLength ());
-    if (subString.GetLength () == 0) {
-        return ((threadSafeCopy.GetLength () == 0) ? kBadIndex : 0);
+    //TODO: FIX HORRIBLE PERFORMANCE!!!
+    _SafeRepAccessor    accessor (*this);
+    Require (startAt <= accessor._GetRep ().GetLength ());
+
+    size_t  subStrLen   =   subString.GetLength ();
+    if (subStrLen == 0) {
+        return (accessor._GetRep ().GetLength () == 0) ? kBadIndex : 0;
     }
-    if (threadSafeCopy.GetLength () < subString.GetLength ()) {
-        return (kBadIndex);   // important test cuz size_t is unsigned
+    if (accessor._GetRep ().GetLength () < subStrLen) {
+        return kBadIndex;   // important test cuz size_t is unsigned
     }
 
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
-    size_t  subStrLen   =   subString.GetLength ();
-    size_t  limit       =   threadSafeCopy.GetLength () - subStrLen;
+    size_t  limit       =   accessor._GetRep ().GetLength () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (threadSafeCopy._GetRep ().GetAt (i + j).ToLowerCase () != subString._GetRep ().GetAt (j).ToLowerCase ()) {
+                        if (accessor._GetRep ().GetAt (i + j).ToLowerCase () != subString[j].ToLowerCase ()) {
                             goto nogood1;
                         }
                     }
-                    return (i);
+                    return i;
 nogood1:
                     ;
                 }
@@ -477,18 +478,18 @@ nogood1:
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (threadSafeCopy._GetRep ().GetAt (i + j) != subString._GetRep ().GetAt (j)) {
+                        if (accessor._GetRep ().GetAt (i + j) != subString[j]) {
                             goto nogood2;
                         }
                     }
-                    return (i);
+                    return i;
 nogood2:
                     ;
                 }
             }
             break;
     }
-    return (kBadIndex);
+    return kBadIndex;
 }
 
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
@@ -569,11 +570,12 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
 #endif
 size_t  String::RFind (Character c) const
 {
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
-    const String  threadSafeCopy  =   *this;
-    size_t length = threadSafeCopy.GetLength ();
+    //@todo: FIX HORRIBLE PERFORMANCE!!!
+    _SafeRepAccessor accessor (*this);
+    const _IRep&    useRep = accessor._GetRep ();
+    size_t length = useRep.GetLength ();
     for (size_t i = length; i > 0; --i) {
-        if (threadSafeCopy._GetRep ().GetAt (i - 1) == c) {
+        if (useRep.GetAt (i - 1) == c) {
             return i - 1;
         }
     }
@@ -583,15 +585,15 @@ size_t  String::RFind (Character c) const
 size_t  String::RFind (const String& subString) const
 {
     const String  threadSafeCopy  =   *this;
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
+    //@todo: FIX HORRIBLE PERFORMANCE!!!
     /*
      * Do quickie implementation, and dont worry about efficiency...
      */
-    if (subString.GetLength () == 0) {
+    size_t  subStrLen   =   subString.GetLength ();
+    if (subStrLen == 0) {
         return ((threadSafeCopy.GetLength () == 0) ? kBadIndex : threadSafeCopy.GetLength () - 1);
     }
 
-    size_t  subStrLen   =   subString.GetLength ();
     size_t  limit       =   threadSafeCopy.GetLength () - subStrLen + 1;
     for (size_t i = limit; i > 0; --i) {
         if (threadSafeCopy.SubString (i - 1, i - 1 + subStrLen) == subString) {
@@ -603,27 +605,25 @@ size_t  String::RFind (const String& subString) const
 
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-    if (threadSafeCopy.empty ()) {
+    _SafeRepAccessor accessor (*this);
+    if (accessor._GetRep ().GetLength () == 0) {
         return false;
     }
-    // @todo fix - slight race!!! Another thread could clear between these two lines (but only on envelope
-    return threadSafeCopy[0].Compare (c, co) == 0;
+    return accessor._GetRep ().GetAt (0).Compare (c, co) == 0;
 }
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-
+    _SafeRepAccessor accessor (*this);
     size_t  subStrLen = subString.GetLength ();
-    if (subStrLen >  threadSafeCopy.GetLength ()) {
+    if (subStrLen >  accessor._GetRep ().GetLength ()) {
         return false;
     }
 #if     qDebug
-    bool    referenceResult = (threadSafeCopy.SubString (0, subString.GetLength ()).Compare (subString, co) == 0);
+    bool    referenceResult = (SubString (0, subString.GetLength ()).Compare (subString, co) == 0); // this check isnt threadsafe - redo
 #endif
     const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = threadSafeCopy._GetRep ().GetData ();
+    pair<const Character*, const Character*> thisData = accessor._GetRep ().GetData ();
     bool    result = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
@@ -631,29 +631,28 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 
 bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-    size_t  thisStrLen = threadSafeCopy.GetLength ();
+    _SafeRepAccessor accessor (*this);
+    const _IRep&    useRep = accessor._GetRep ();
+    size_t  thisStrLen = useRep.GetLength ();
     if (thisStrLen == 0) {
         return false;
     }
-    // @todo fix - slight race!!! Another thread could clear between these two lines (but only on envelope
-    return threadSafeCopy[thisStrLen - 1].Compare (c, co) == 0;
+    return useRep.GetAt (thisStrLen - 1).Compare (c, co) == 0;
 }
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
-    const String  threadSafeCopy  =   *this;
-
-    size_t  thisStrLen = threadSafeCopy.GetLength ();
+    _SafeRepAccessor accessor (*this);
+    size_t  thisStrLen = accessor._GetRep ().GetLength ();
     size_t  subStrLen = subString.GetLength ();
     if (subStrLen >  thisStrLen) {
         return false;
     }
 #if     qDebug
-    bool    referenceResult = (threadSafeCopy.SubString (thisStrLen - subStrLen, thisStrLen).Compare (subString, co) == 0);
+    bool    referenceResult = (SubString (thisStrLen - subStrLen, thisStrLen).Compare (subString, co) == 0);    // this check isnt threadsafe - redo
 #endif
     const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = threadSafeCopy._GetRep ().GetData ();
+    pair<const Character*, const Character*> thisData = accessor._GetRep ().GetData ();
     bool    result = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
@@ -690,12 +689,12 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 
 String  String::SubString (size_t from, size_t to) const
 {
-    const String  threadSafeCopy  =   *this;
+    _SafeRepAccessor accessor (*this);
+    size_t  myLength    =   accessor._GetRep ().GetLength ();
 
     Require ((from <= to) or (to == kBadIndex));
-    Require ((to <= threadSafeCopy.GetLength ()) or (to == kBadIndex));
+    Require ((to <= myLength) or (to == kBadIndex));
 
-    size_t  myLength    =   threadSafeCopy.GetLength ();
     size_t  length  =   (to == kBadIndex) ? (myLength - from) : (to - from);
     if (length == 0) {
         return String ();
@@ -706,7 +705,7 @@ String  String::SubString (size_t from, size_t to) const
 #if     qString_SubStringClassWorks
     return (String (DEBUG_NEW String_Substring_::MyRep_ (threadSafeCopy._fRep, from, length), false));
 #else
-    return (String (threadSafeCopy._GetRep ().Peek () + from, threadSafeCopy._GetRep ().Peek () + from + length));
+    return (String (accessor._GetRep ().Peek () + from, accessor._GetRep ().Peek () + from + length));
 #endif
 }
 
@@ -724,6 +723,7 @@ String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
 
 String  String::Repeat (unsigned int count) const
 {
+    // @todo ineffcient - use StringBuffer
     String  result;
     for (unsigned int i = 0; i < count; ++i) {
         result += *this;
@@ -736,11 +736,15 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     RequireNotNull (shouldBeTrimmmed);
     // @todo - NOT ENVELOPE THREADSAFE
 
+    _SafeRepAccessor accessor (*this);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    size_t length = GetLength ();
+    size_t length = accessor._GetRep ().GetLength ();
     for (size_t i = 0; i < length; ++i) {
-        if (not (*shouldBeTrimmmed) (_GetRep ().GetAt (i))) {
+        if (not (*shouldBeTrimmmed) (accessor._GetRep ().GetAt (i))) {
+
+            // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
+
             if (i == 0) {
                 // no change in string
                 return *this;
@@ -760,16 +764,21 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     RequireNotNull (shouldBeTrimmmed);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    ptrdiff_t length = GetLength ();
+    _SafeRepAccessor accessor (*this);
+
+    ptrdiff_t length = accessor._GetRep ().GetLength ();
     ptrdiff_t endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
-        if ((*shouldBeTrimmmed) (_GetRep ().GetAt (endOfFirstTrim - 1))) {
+        if ((*shouldBeTrimmmed) (accessor._GetRep ().GetAt (endOfFirstTrim - 1))) {
             // keep going backwards
         }
         else {
             break;
         }
     }
+
+    // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
+
     if (endOfFirstTrim == 0) {
         return String ();       // all trimmed
     }
@@ -792,6 +801,7 @@ String  String::Trim (bool (*shouldBeTrimmmed) (Character)) const
 
 String  String::StripAll (bool (*removeCharIf) (Character)) const
 {
+    //@todo - fix - horribly impl..
     RequireNotNull (removeCharIf);
 
     // TODO: optimize special case where removeCharIf is always false
@@ -821,6 +831,9 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const
 String  String::ToLowerCase () const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
+    // use StringBuffer
+    //
+
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
     String  result  =   *this;
     size_t  n   =   result.GetLength ();
@@ -850,20 +863,8 @@ String  String::ToUpperCase () const
 
 bool String::IsWhitespace () const
 {
-#if 1
     // It is all whitespace if the first non-whatspace character is 'EOF'
     return not FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
-#else
-    //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
-    size_t  n   =   GetLength ();
-    for (size_t i = 0; i < n; ++i) {
-        Character   c   =   operator[] (i);
-        if (not c.IsWhitespace ()) {
-            return false;
-        }
-    }
-    return true;
-#endif
 }
 
 String  String::LimitLength (size_t maxLen, bool keepLeft) const
