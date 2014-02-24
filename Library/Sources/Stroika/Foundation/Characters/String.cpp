@@ -228,6 +228,7 @@ namespace {
     {
         wstring r;
         for (auto i : src) {
+            Containers::ReserveSpeedTweekAdd1 (r);
             r.push_back (i.As<wchar_t> ());
         }
         return r;
