@@ -63,6 +63,16 @@ namespace   Stroika {
                             , fCountHolder_ (from.fCountHolder_)
                         {
                         }
+                        struct _DynamicCastTag {};
+                        template <typename T2>
+                        inline  Envelope_ (const Envelope_<T2>& from, _DynamicCastTag)
+                            : fPtr_ (dynamic_cast<T2*> (from.GetPtr ()))
+                            , fCountHolder_ (from.fCountHolder_)
+                        {
+                            if (fPtr_ == nullptr) {
+                                fCountHolder_ = nullptr;
+                            }
+                        }
                         template <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from, T* newP)
                             : fPtr_ (newP)
@@ -219,6 +229,15 @@ namespace   Stroika {
             template <typename T2, typename T2_TRAITS>
             SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
                 : fEnvelope_ (from.fEnvelope_)
+            {
+                if (fEnvelope_.GetPtr () != nullptr) {
+                    fEnvelope_.Increment ();
+                }
+            }
+            template    <typename T, typename T_TRAITS>
+            template <typename T2, typename T2_TRAITS>
+            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from, _DynamicCastTag)
+                : fEnvelope_ (from.fEnvelope_, typename Envelope_<T>::_DynamicCastTag)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
@@ -434,6 +453,12 @@ namespace   Stroika {
         }
 
 
+    }
+}
+namespace std {
+    template    <class TO_TYPE_T,   class FROM_TYPE_T>
+    inline  Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept {
+        return Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> (sp, Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>::_Dynamic_tag ());
     }
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

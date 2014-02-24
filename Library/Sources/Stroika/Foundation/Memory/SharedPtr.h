@@ -205,6 +205,19 @@ namespace   Stroika {
                 */
                 SharedPtr (const SharedPtr<T2, T2_TRAITS>& from);
 
+            protected:
+                struct _DynamicCastTag {
+                };
+                /*
+                @METHOD:        SharedPtr::SharedPtr
+                @DESCRIPTION:   <p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
+                            to the base class. There isn't any way to express this in template requirements, but this template
+                            will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
+                            assign inappropriate pointer combinations.</p>
+                */
+                template <typename T2, typename T2_TRAITS>
+                SharedPtr (const SharedPtr<T2, T2_TRAITS>& from, _DynamicCastTag);
+
             public:
                 nonvirtual      SharedPtr<T, T_TRAITS>& operator= (const SharedPtr<T, T_TRAITS>& rhs);
 
@@ -404,11 +417,14 @@ namespace   Stroika {
 
     }
 }
+namespace   std {
+    /**
+     *  overload the std::dynamic_pointer_cast to work with Stroika SharedPtr<> as well.
+     */
+    template    <class TO_TYPE_T,   class FROM_TYPE_T>
+    Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept;
+}
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_h_*/
-
-
-
-
 
 
 
