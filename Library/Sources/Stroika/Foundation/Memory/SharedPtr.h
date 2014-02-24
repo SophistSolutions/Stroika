@@ -324,6 +324,13 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
 
             public:
+                // NOT SURE WHY THIS NEEDED (windows). Investigate... Maybe compiler bug or my overloading bug
+                nonvirtual  bool    operator!= (nullptr_t) const noexcept
+                {
+                    return get () != nullptr;
+                }
+
+            public:
                 nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const noexcept;
 
             private:
@@ -400,6 +407,8 @@ namespace   Stroika {
 namespace   std {
     /**
      *  overload the std::dynamic_pointer_cast to work with Stroika SharedPtr<> as well.
+     *
+     *  This returns an empty SharedPtr (no throw) if the type cannot be converted with dynamic_cast<>.
      */
     template    <class TO_TYPE_T,   class FROM_TYPE_T>
     Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept;
