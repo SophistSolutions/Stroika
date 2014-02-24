@@ -729,21 +729,21 @@ namespace   Stroika {
 #endif
 
 #if     !qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                /*
+                /**
                  * String LTrim () scans the characters form the left to right, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
                  */
                 nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-                /*
+                /**
                  * String RTrim () scans the characters form the right to left, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-                /*
+                /**
                  * String Trim () is locally equivilent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
                  */
                 nonvirtual  String  Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
@@ -860,8 +860,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 */
+                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                  */
                 nonvirtual  int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
