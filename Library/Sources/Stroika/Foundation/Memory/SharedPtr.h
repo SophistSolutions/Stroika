@@ -190,6 +190,9 @@ namespace   Stroika {
             template    <typename   T, typename T_TRAITS = SharedPtr_Default_Traits<T>>
             class   SharedPtr {
             public:
+                using   element_type    =   T;
+
+            public:
                 SharedPtr () noexcept;
                 explicit SharedPtr (T* from);
                 explicit SharedPtr (const typename T_TRAITS::Envelope& from);

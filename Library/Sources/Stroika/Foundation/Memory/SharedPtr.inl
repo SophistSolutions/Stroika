@@ -458,7 +458,7 @@ namespace   Stroika {
 namespace std {
     template    <class TO_TYPE_T,   class FROM_TYPE_T>
     inline  Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept {
-        return Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> (sp, Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>::_Dynamic_tag ());
+        return Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> (sp, Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>::_DynamicCastTag ());
     }
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/
