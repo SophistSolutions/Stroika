@@ -233,6 +233,7 @@ namespace   Stroika {
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (SharedPtr<T, T_TRAITS>&& from)
                 : fEnvelope_ (move (from.fEnvelope_))
             {
+                // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
             template    <typename T, typename T_TRAITS>
             template <typename T2, typename T2_TRAITS>

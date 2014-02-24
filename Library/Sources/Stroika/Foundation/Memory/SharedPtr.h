@@ -195,7 +195,6 @@ namespace   Stroika {
             public:
                 SharedPtr () noexcept;
                 explicit SharedPtr (T* from);
-                explicit SharedPtr (const typename T_TRAITS::Envelope& from);
                 SharedPtr (const SharedPtr<T, T_TRAITS>& from);
                 SharedPtr (SharedPtr<T, T_TRAITS>&& from);
 
@@ -208,6 +207,9 @@ namespace   Stroika {
                             assign inappropriate pointer combinations.</p>
                 */
                 SharedPtr (const SharedPtr<T2, T2_TRAITS>& from);
+
+            protected:
+                explicit SharedPtr (const typename T_TRAITS::Envelope& from);
 
             public:
                 nonvirtual      SharedPtr<T, T_TRAITS>& operator= (const SharedPtr<T, T_TRAITS>& rhs);
