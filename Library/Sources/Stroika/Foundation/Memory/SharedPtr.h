@@ -330,9 +330,6 @@ namespace   Stroika {
                     return get () != nullptr;
                 }
 
-            public:
-                nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const noexcept;
-
             private:
                 typename    T_TRAITS::Envelope  fEnvelope_;
 

@@ -400,11 +400,6 @@ namespace   Stroika {
             {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
-            template    <typename T, typename T_TRAITS>
-            inline  const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const noexcept
-            {
-                return fEnvelope_;
-            }
 
 
             /*
