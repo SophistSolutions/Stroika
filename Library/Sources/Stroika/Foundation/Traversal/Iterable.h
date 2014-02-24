@@ -447,7 +447,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
+                    inline  static  _USING_SHARED_IMPL_<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
                     {
                         return Iterable<T>::Clone_ (t, forIterableEnvelope);
                     }
