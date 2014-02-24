@@ -252,7 +252,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
                             asserts about it being non-null.</p>
                 */
-                nonvirtual  T*      get () const;
+                nonvirtual  T*      get () const noexcept;
             public:
                 /*
                 @METHOD:        SharedPtr<T,T_TRAITS>::release
@@ -289,7 +289,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
                             thats a reserved word.</p>
                 */
-                nonvirtual  SharedPtr<T2>   Dynamic_Cast ();
+                nonvirtual  SharedPtr<T2>   Dynamic_Cast () const;
 
             public:
                 // Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)

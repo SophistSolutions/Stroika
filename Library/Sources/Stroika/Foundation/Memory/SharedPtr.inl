@@ -57,14 +57,15 @@ namespace   Stroika {
                                 fCountHolder_ = new ReferenceCounterContainerType_ ();
                             }
                         }
-                        Envelope_ (Envelope_&& rhs)
-                            : fPtr_ (rhs.fPtr_)
-                            , fCountHolder_ (rhs.fPtr_)
+                        template    <typename T2>
+                        inline  Envelope_ (Envelope_<T2>&& from)
+                            : fPtr_ (from.GetPtr ())
+                            , fCountHolder_ (from.fCountHolder_)
                         {
-                            rhs.fPtr_ = nullptr;
-                            rhs.fCountHolder_ = nullptr;
+                            from.fPtr_ = nullptr;
+                            from.fCountHolder_ = nullptr;
                         }
-                        template <typename T2>
+                        template    <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from)
                             : fPtr_ (from.GetPtr ())
                             , fCountHolder_ (from.fCountHolder_)
@@ -134,12 +135,13 @@ namespace   Stroika {
                             : fPtr_ (ptr)
                         {
                         }
-                        Envelope_ (Envelope_&& rhs)
-                            : fPtr_ (rhs.fPtr_)
+                        template    <typename T2>
+                        Envelope_ (Envelope_<T2>&& from)
+                            : fPtr_ (from.fPtr_)
                         {
-                            rhs.fPtr_ = nullptr;
+                            from.fPtr_ = nullptr;
                         }
-                        template <typename T2>
+                        template    <typename T2>
                         Envelope_ (const Envelope_<T2>& from)
                             : fPtr_ (from.fPtr_)
                         {
@@ -298,7 +300,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T*  SharedPtr<T, T_TRAITS>::get () const
+            inline  T*  SharedPtr<T, T_TRAITS>::get () const noexcept
             {
                 return fEnvelope_.GetPtr ();
             }
@@ -321,7 +323,7 @@ namespace   Stroika {
             }
             template    <typename T, typename T_TRAITS>
             template    <typename T2>
-            inline  SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
+            inline  SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast () const
             {
                 return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
