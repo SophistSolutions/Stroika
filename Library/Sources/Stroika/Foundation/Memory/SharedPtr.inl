@@ -431,10 +431,8 @@ namespace   Stroika {
                  *
                  *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
-                T*  tStarThis   =   dynamic_cast<T*> (this);
-                //// NOTE - THIS LINE LOOKS WRONG - LOOKS LIKE WE NEED TO CONSTRUCT ENVELOPE AND PASS THAT IN?? BUT IF THIS IS
-                // RIGHT UNCEALR SO DOCUMENT WHY --LGP 2014-02-23
-                return (SharedPtr<T, RESULT_TRAITS> (tStarThis));
+                //T*  tStarThis   =   dynamic_cast<T*> (this);
+                return (SharedPtr<T, RESULT_TRAITS> (typename RESULT_TRAITS::Envelope (this)));
             }
 
 
