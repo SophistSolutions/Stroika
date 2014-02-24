@@ -58,60 +58,60 @@ namespace   Stroika {
                             }
                         }
                         template    <typename T2>
-                        inline  Envelope_ (Envelope_<T2>&& from)
-                            : fPtr_ (from.GetPtr ())
-                            , fCountHolder_ (from.fCountHolder_)
+                        inline  Envelope_ (Envelope_<T2>&& from) noexcept
+                    :
+                        fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                         {
                             from.fPtr_ = nullptr;
                             from.fCountHolder_ = nullptr;
                         }
                         template    <typename T2>
-                        inline  Envelope_ (const Envelope_<T2>& from)
-                            : fPtr_ (from.GetPtr ())
-                            , fCountHolder_ (from.fCountHolder_)
+                        inline  Envelope_ (const Envelope_<T2>& from) noexcept
+                    :
+                        fPtr_ (from.GetPtr ())
+                        , fCountHolder_ (from.fCountHolder_)
                         {
                         }
                         template <typename T2>
-                        inline  Envelope_ (const Envelope_<T2>& from, T* newP)
-                            : fPtr_ (newP)
-                            , fCountHolder_ (from.fCountHolder_)
+                        inline  Envelope_ (const Envelope_<T2>& from, T* newP) noexcept
+                    :
+                        fPtr_ (newP)
+                        , fCountHolder_ (from.fCountHolder_)
                         {
                             // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                             // actual ptr cannot change, and this assert check automatically converts pointers to
                             // a common base pointer type
                             Require (newP == from.GetPtr ());
                         }
-                        inline  T*      GetPtr () const
+                        inline  T*      GetPtr () const noexcept
                         {
                             return fPtr_;
                         }
-                        inline  void    SetPtr (T* p)
-                        {
+                        inline  void    SetPtr (T* p) noexcept {
                             fPtr_ = p;
                         }
-                        inline  ReferenceCountType_ CurrentRefCount () const
+                        inline  ReferenceCountType_ CurrentRefCount () const noexcept
                         {
                             return fCountHolder_ == nullptr ? 0 : fCountHolder_->fCount.load ();
                         }
-                        inline  void    Increment ()
-                        {
+                        inline  void    Increment () noexcept {
                             RequireNotNull (fCountHolder_);
                             fCountHolder_->fCount++;
                         }
-                        inline  bool    Decrement ()
-                        {
+                        inline  bool    Decrement () noexcept {
                             Require (CurrentRefCount () > 0);
-                            if (fCountHolder_->fCount-- == 0) {
+                            if (--fCountHolder_->fCount == 0)
+                            {
                                 return true;
                             }
                             return false;
                         }
-                        inline  void    DoDeleteCounter ()
-                        {
+                        inline  void    DoDeleteCounter () noexcept {
                             delete fCountHolder_;
                             fCountHolder_ = nullptr;
                         }
-                        inline  ReferenceCounterContainerType_* GetCounterPointer () const
+                        inline  ReferenceCounterContainerType_* GetCounterPointer () const noexcept
                         {
                             return fCountHolder_;
                         }
@@ -131,58 +131,59 @@ namespace   Stroika {
                     private:
                         T*      fPtr_;
                     public:
-                        Envelope_ (T* ptr)
-                            : fPtr_ (ptr)
+                        Envelope_ (T* ptr) noexcept
+                    :
+                        fPtr_ (ptr)
                         {
                         }
                         template    <typename T2>
-                        Envelope_ (Envelope_<T2>&& from)
-                            : fPtr_ (from.fPtr_)
+                        Envelope_ (Envelope_<T2>&& from) noexcept
+                    :
+                        fPtr_ (from.fPtr_)
                         {
                             from.fPtr_ = nullptr;
                         }
                         template    <typename T2>
-                        Envelope_ (const Envelope_<T2>& from)
-                            : fPtr_ (from.fPtr_)
+                        Envelope_ (const Envelope_<T2>& from) noexcept
+                    :
+                        fPtr_ (from.fPtr_)
                         {
                         }
                         template <typename T2>
-                        inline  Envelope_ (const Envelope_<T2>& from, T* newP)
-                            : fPtr_ (newP)
+                        inline  Envelope_ (const Envelope_<T2>& from, T* newP) noexcept
+                    :
+                        fPtr_ (newP)
                         {
                             Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                             // actual ptr cannot change, and this assert check automatically converts pointers to
                             // a common base pointer type
                         }
-                        T*  GetPtr () const
+                        T*  GetPtr () const noexcept
                         {
                             return fPtr_;
                         }
-                        void    SetPtr (T* p)
-                        {
+                        void    SetPtr (T* p) noexcept {
                             fPtr_ = p;
                         }
-                        ReferenceCountType_ CurrentRefCount () const
+                        ReferenceCountType_ CurrentRefCount () const noexcept
                         {
                             return fPtr_ == nullptr ? 0 : fPtr_->fCount_.load ();
                         }
-                        void    Increment ()
-                        {
+                        void    Increment () noexcept {
                             RequireNotNull (fPtr_);
                             fPtr_->fCount_++;
                         }
-                        bool    Decrement ()
-                        {
+                        bool    Decrement () noexcept {
                             Require (CurrentRefCount () > 0);
-                            if (fPtr_->fCount_-- == 0) {
+                            if (--fPtr_->fCount_ == 0)
+                            {
                                 return true;
                             }
                             return false;
                         }
-                        inline  void    DoDeleteCounter ()
-                        {
+                        inline  void    DoDeleteCounter () noexcept {
                         }
-                        enable_shared_from_this<T>* GetCounterPointer () const
+                        enable_shared_from_this<T>* GetCounterPointer () const noexcept
                         {
                             return fPtr_;
                         }
@@ -204,6 +205,12 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename T_TRAITS>
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr (nullptr_t) noexcept
+:
+            fEnvelope_ (nullptr)
+            {
+            }
+            template    <typename T, typename T_TRAITS>
             inline  SharedPtr<T, T_TRAITS>::SharedPtr (T* from)
                 : fEnvelope_ (from)
             {
@@ -214,40 +221,44 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::SharedPtr (const typename T_TRAITS::Envelope& from)
-                : fEnvelope_ (from)
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr (const typename T_TRAITS::Envelope& from) noexcept
+:
+            fEnvelope_ (from)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T, T_TRAITS>& from)
-                : fEnvelope_ (from.fEnvelope_)
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T, T_TRAITS>& from) noexcept
+:
+            fEnvelope_ (from.fEnvelope_)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::SharedPtr (SharedPtr<T, T_TRAITS>&& from)
-                : fEnvelope_ (move (from.fEnvelope_))
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr (SharedPtr<T, T_TRAITS>&& from) noexcept
+:
+            fEnvelope_ (move (from.fEnvelope_))
             {
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
             template    <typename T, typename T_TRAITS>
             template <typename T2, typename T2_TRAITS>
-            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
-                : fEnvelope_ (from.fEnvelope_)
+            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from) noexcept
+:
+            fEnvelope_ (from.fEnvelope_)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>& SharedPtr<T, T_TRAITS>::operator= (const SharedPtr<T, T_TRAITS>& rhs)
-            {
-                if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
+            inline  SharedPtr<T, T_TRAITS>& SharedPtr<T, T_TRAITS>::operator= (const SharedPtr<T, T_TRAITS>& rhs) noexcept {
+                if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ())
+                {
                     if (fEnvelope_.GetPtr () != nullptr) {
                         if (fEnvelope_.Decrement ()) {
                             fEnvelope_.DoDeleteCounter ();
@@ -274,29 +285,29 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::IsNull () const
+            inline  bool    SharedPtr<T, T_TRAITS>::IsNull () const noexcept
             {
                 return fEnvelope_.GetPtr () == nullptr;
             }
             template    <typename T, typename T_TRAITS>
-            inline  T&  SharedPtr<T, T_TRAITS>::GetRep () const
+            inline  T&  SharedPtr<T, T_TRAITS>::GetRep () const noexcept
             {
                 RequireNotNull (fEnvelope_.GetPtr ());
                 Assert (fEnvelope_.CurrentRefCount () > 0);
                 return *fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T* SharedPtr<T, T_TRAITS>::operator-> () const
+            inline  T* SharedPtr<T, T_TRAITS>::operator-> () const noexcept
             {
                 return &GetRep ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  T& SharedPtr<T, T_TRAITS>::operator* () const
+            inline  T& SharedPtr<T, T_TRAITS>::operator* () const noexcept
             {
                 return GetRep ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  SharedPtr<T, T_TRAITS>::operator T* () const
+            inline  SharedPtr<T, T_TRAITS>::operator T* () const noexcept
             {
                 return fEnvelope_.GetPtr ();
             }
@@ -306,13 +317,11 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    SharedPtr<T, T_TRAITS>::release ()
-            {
+            inline  void    SharedPtr<T, T_TRAITS>::release () noexcept {
                 *this = SharedPtr<T, T_TRAITS> (nullptr);
             }
             template    <typename T, typename T_TRAITS>
-            inline  void    SharedPtr<T, T_TRAITS>::clear ()
-            {
+            inline  void    SharedPtr<T, T_TRAITS>::clear () noexcept {
                 release ();
             }
             template    <typename T, typename T_TRAITS>
@@ -324,33 +333,33 @@ namespace   Stroika {
             }
             template    <typename T, typename T_TRAITS>
             template    <typename T2>
-            inline  SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast () const
+            inline  SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast () const  noexcept
             {
                 return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
             template    <typename T, typename T_TRAITS>
-            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::CurrentRefCount () const
+            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::CurrentRefCount () const noexcept
             {
                 return fEnvelope_.CurrentRefCount ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::use_count () const
+            inline  typename T_TRAITS::ReferenceCountType   SharedPtr<T, T_TRAITS>::use_count () const noexcept
             {
                 return fEnvelope_.CurrentRefCount ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::IsUnique () const
+            inline  bool    SharedPtr<T, T_TRAITS>::IsUnique () const noexcept
             {
                 return fEnvelope_.CurrentRefCount () == 1;
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::unique () const
+            inline  bool    SharedPtr<T, T_TRAITS>::unique () const noexcept
             {
                 // respect the stl-ish names
                 return IsUnique ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator< (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -358,7 +367,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator<= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -366,7 +375,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator> (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -374,7 +383,7 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator>= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
                 // this does the same thing...
@@ -382,17 +391,17 @@ namespace   Stroika {
                 return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator== (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const
+            inline  bool    SharedPtr<T, T_TRAITS>::operator!= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept
             {
                 return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
             }
             template    <typename T, typename T_TRAITS>
-            inline  const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const
+            inline  const typename T_TRAITS::Envelope& SharedPtr<T, T_TRAITS>::PeekAtEnvelope () const noexcept
             {
                 return fEnvelope_;
             }
@@ -428,6 +437,8 @@ namespace   Stroika {
                  *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
                 T*  tStarThis   =   dynamic_cast<T*> (this);
+                //// NOTE - THIS LINE LOOKS WRONG - LOOKS LIKE WE NEED TO CONSTRUCT ENVELOPE AND PASS THAT IN?? BUT IF THIS IS
+                // RIGHT UNCEALR SO DOCUMENT WHY --LGP 2014-02-23
                 return (SharedPtr<T, RESULT_TRAITS> (tStarThis));
             }
 

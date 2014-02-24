@@ -113,18 +113,15 @@ namespace   Stroika {
              */
             template    <typename   T>
             struct  SharedPtrFromThis_Traits {
-                using   ReferenceCountType  =    Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_ ;
+                using   ReferenceCountType  =    Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_;
                 using   Envelope            =    Private_::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
             };
-
-
 
 
             /**
             *
             * NEW NOTES:
-
-
+            *
             * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
             *
             *       >   Doesnt support weak ptr.
@@ -194,9 +191,10 @@ namespace   Stroika {
 
             public:
                 SharedPtr () noexcept;
+                SharedPtr (nullptr_t) noexcept;
                 explicit SharedPtr (T* from);
-                SharedPtr (const SharedPtr<T, T_TRAITS>& from);
-                SharedPtr (SharedPtr<T, T_TRAITS>&& from);
+                SharedPtr (const SharedPtr<T, T_TRAITS>& from) noexcept;
+                SharedPtr (SharedPtr<T, T_TRAITS>&& from) noexcept;
 
                 template <typename T2, typename T2_TRAITS>
                 /*
@@ -206,19 +204,19 @@ namespace   Stroika {
                             will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
                             assign inappropriate pointer combinations.</p>
                 */
-                SharedPtr (const SharedPtr<T2, T2_TRAITS>& from);
+                SharedPtr (const SharedPtr<T2, T2_TRAITS>& from) noexcept;
 
             protected:
-                explicit SharedPtr (const typename T_TRAITS::Envelope& from);
+                explicit SharedPtr (const typename T_TRAITS::Envelope& from) noexcept;
 
             public:
-                nonvirtual      SharedPtr<T, T_TRAITS>& operator= (const SharedPtr<T, T_TRAITS>& rhs);
+                nonvirtual      SharedPtr<T, T_TRAITS>& operator= (const SharedPtr<T, T_TRAITS>& rhs) noexcept;
 
             public:
                 ~SharedPtr ();
 
             public:
-                nonvirtual  bool        IsNull () const;
+                nonvirtual  bool        IsNull () const noexcept;
 
             public:
                 /*
@@ -226,27 +224,27 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get ()
                     which whill return null without asserting if the pointer is allowed to be null.</p>
                 */
-                nonvirtual  T&          GetRep () const;
+                nonvirtual  T&          GetRep () const noexcept;
 
             public:
                 /**
                  *  \em Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)
                  */
-                nonvirtual  T* operator-> () const;
+                nonvirtual  T* operator-> () const noexcept;
 
             public:
                 /*
                 @METHOD:        SharedPtr<T,T_TRAITS>::operator*
                 @DESCRIPTION:   <p></p>
                 */
-                nonvirtual  T& operator* () const;
+                nonvirtual  T& operator* () const noexcept;
 
             public:
                 /*
                 @METHOD:        SharedPtr<T,T_TRAITS>::operator T*
                 @DESCRIPTION:   <p>Note - this CAN return nullptr</p>
                 */
-                nonvirtual  operator T* () const;
+                nonvirtual  operator T* () const noexcept;
 
             public:
                 /*
@@ -265,7 +263,7 @@ namespace   Stroika {
                             If you want the pointer before release, explicitly call get () first!!!
                             </p>
                 */
-                nonvirtual  void    release ();
+                nonvirtual  void    release () noexcept;
 
             public:
                 /*
@@ -273,7 +271,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Synonymn for SharedPtr<T,T_TRAITS>::release ()
                             </p>
                 */
-                nonvirtual  void    clear ();
+                nonvirtual  void    clear () noexcept;
 
             public:
                 /*
@@ -290,16 +288,19 @@ namespace   Stroika {
                 @METHOD:        SharedPtr::Dynamic_Cast
                 @DESCRIPTION:   <p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
                             thats a reserved word.</p>
+
+
+                            NOTE - THIS RETURNS NULLPTR NOT THROWING - if dynamic_cast<> fails - that is pointer dynamoic_cast not reference
                 */
-                nonvirtual  SharedPtr<T2>   Dynamic_Cast () const;
+                nonvirtual  SharedPtr<T2>   Dynamic_Cast () const noexcept;
 
             public:
                 // Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
-                nonvirtual  bool    IsUnique () const;
+                nonvirtual  bool    IsUnique () const noexcept;
 
             public:
                 // Alias for IsUnique()
-                nonvirtual  bool    unique () const;
+                nonvirtual  bool    unique () const noexcept;
 
             public:
                 /*
@@ -308,22 +309,22 @@ namespace   Stroika {
                 cases where its handy outside the debugging context so not its awlays available (it has
                 no cost to keep available).</p>
                 */
-                typename T_TRAITS::ReferenceCountType   CurrentRefCount () const;
+                typename T_TRAITS::ReferenceCountType   CurrentRefCount () const noexcept;
 
             public:
                 // Alias for CurrentRefCount()
-                typename T_TRAITS::ReferenceCountType   use_count () const;
+                typename T_TRAITS::ReferenceCountType   use_count () const noexcept;
 
             public:
-                nonvirtual  bool    operator< (const SharedPtr<T, T_TRAITS>& rhs) const;
-                nonvirtual  bool    operator<= (const SharedPtr<T, T_TRAITS>& rhs) const;
-                nonvirtual  bool    operator> (const SharedPtr<T, T_TRAITS>& rhs) const;
-                nonvirtual  bool    operator>= (const SharedPtr<T, T_TRAITS>& rhs) const;
-                nonvirtual  bool    operator== (const SharedPtr<T, T_TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const SharedPtr<T, T_TRAITS>& rhs) const;
+                nonvirtual  bool    operator< (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
+                nonvirtual  bool    operator<= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
+                nonvirtual  bool    operator> (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
+                nonvirtual  bool    operator>= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
+                nonvirtual  bool    operator== (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
+                nonvirtual  bool    operator!= (const SharedPtr<T, T_TRAITS>& rhs) const noexcept;
 
             public:
-                nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const;
+                nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const noexcept;
 
             private:
                 typename    T_TRAITS::Envelope  fEnvelope_;
