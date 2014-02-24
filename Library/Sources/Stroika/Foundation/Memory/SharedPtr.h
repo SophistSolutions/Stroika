@@ -197,6 +197,7 @@ namespace   Stroika {
                 explicit SharedPtr (T* from);
                 explicit SharedPtr (const typename T_TRAITS::Envelope& from);
                 SharedPtr (const SharedPtr<T, T_TRAITS>& from);
+                SharedPtr (SharedPtr<T, T_TRAITS>&& from);
 
                 template <typename T2, typename T2_TRAITS>
                 /*
@@ -207,19 +208,6 @@ namespace   Stroika {
                             assign inappropriate pointer combinations.</p>
                 */
                 SharedPtr (const SharedPtr<T2, T2_TRAITS>& from);
-
-            protected:
-                struct _DynamicCastTag {
-                };
-                /*
-                @METHOD:        SharedPtr::SharedPtr
-                @DESCRIPTION:   <p>This CTOR is meant to allow for the semantics of assigning a sub-type pointer to a pointer
-                            to the base class. There isn't any way to express this in template requirements, but this template
-                            will fail to compile (error assigning to its fPtr_ member in the CTOR) if its ever used to
-                            assign inappropriate pointer combinations.</p>
-                */
-                template <typename T2, typename T2_TRAITS>
-                SharedPtr (const SharedPtr<T2, T2_TRAITS>& from, _DynamicCastTag);
 
             public:
                 nonvirtual      SharedPtr<T, T_TRAITS>& operator= (const SharedPtr<T, T_TRAITS>& rhs);
@@ -301,7 +289,7 @@ namespace   Stroika {
                 @DESCRIPTION:   <p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
                             thats a reserved word.</p>
                 */
-                nonvirtual  SharedPtr<T2> Dynamic_Cast ();
+                nonvirtual  SharedPtr<T2>   Dynamic_Cast ();
 
             public:
                 // Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
@@ -332,7 +320,6 @@ namespace   Stroika {
                 nonvirtual  bool    operator== (const SharedPtr<T, T_TRAITS>& rhs) const;
                 nonvirtual  bool    operator!= (const SharedPtr<T, T_TRAITS>& rhs) const;
 
-
             public:
                 nonvirtual  const typename T_TRAITS::Envelope& PeekAtEnvelope () const;
 
@@ -343,14 +330,6 @@ namespace   Stroika {
                 template    <typename T2, typename T2_TRAITS>
                 friend  class   SharedPtr;
             };
-
-
-
-
-
-
-
-
 
 
 
@@ -391,8 +370,6 @@ namespace   Stroika {
             };
 
 
-
-
             /*
              * SO FAR FAILED - attempts at getting partial specialization to work. Reason todo that is so that
              *
@@ -405,10 +382,7 @@ namespace   Stroika {
 #endif
 
 
-
         }
-
-
 
 
         namespace   Execution {

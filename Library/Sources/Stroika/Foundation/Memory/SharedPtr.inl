@@ -57,21 +57,18 @@ namespace   Stroika {
                                 fCountHolder_ = new ReferenceCounterContainerType_ ();
                             }
                         }
+                        Envelope_ (Envelope_&& rhs)
+                            : fPtr_ (rhs.fPtr_)
+                            , fCountHolder_ (rhs.fPtr_)
+                        {
+                            rhs.fPtr_ = nullptr;
+                            rhs.fCountHolder_ = nullptr;
+                        }
                         template <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from)
                             : fPtr_ (from.GetPtr ())
                             , fCountHolder_ (from.fCountHolder_)
                         {
-                        }
-                        struct _DynamicCastTag {};
-                        template <typename T2>
-                        inline  Envelope_ (const Envelope_<T2>& from, _DynamicCastTag)
-                            : fPtr_ (dynamic_cast<T2*> (from.GetPtr ()))
-                            , fCountHolder_ (from.fCountHolder_)
-                        {
-                            if (fPtr_ == nullptr) {
-                                fCountHolder_ = nullptr;
-                            }
                         }
                         template <typename T2>
                         inline  Envelope_ (const Envelope_<T2>& from, T* newP)
@@ -136,6 +133,11 @@ namespace   Stroika {
                         Envelope_ (T* ptr)
                             : fPtr_ (ptr)
                         {
+                        }
+                        Envelope_ (Envelope_&& rhs)
+                            : fPtr_ (rhs.fPtr_)
+                        {
+                            rhs.fPtr_ = nullptr;
                         }
                         template <typename T2>
                         Envelope_ (const Envelope_<T2>& from)
@@ -226,18 +228,14 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename T_TRAITS>
-            template <typename T2, typename T2_TRAITS>
-            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
-                : fEnvelope_ (from.fEnvelope_)
+            inline  SharedPtr<T, T_TRAITS>::SharedPtr (SharedPtr<T, T_TRAITS>&& from)
+                : fEnvelope_ (move (from.fEnvelope_))
             {
-                if (fEnvelope_.GetPtr () != nullptr) {
-                    fEnvelope_.Increment ();
-                }
             }
             template    <typename T, typename T_TRAITS>
             template <typename T2, typename T2_TRAITS>
-            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from, _DynamicCastTag)
-                : fEnvelope_ (from.fEnvelope_, typename Envelope_<T>::_DynamicCastTag)
+            SharedPtr<T, T_TRAITS>::SharedPtr (const SharedPtr<T2, T2_TRAITS>& from)
+                : fEnvelope_ (from.fEnvelope_)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
@@ -323,7 +321,7 @@ namespace   Stroika {
             }
             template    <typename T, typename T_TRAITS>
             template    <typename T2>
-            SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
+            inline  SharedPtr<T2> SharedPtr<T, T_TRAITS>::Dynamic_Cast ()
             {
                 return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
@@ -397,7 +395,6 @@ namespace   Stroika {
             }
 
 
-
             /*
              ********************************************************************************
              ************************* enable_shared_from_this<T> ***************************
@@ -458,7 +455,7 @@ namespace   Stroika {
 namespace std {
     template    <class TO_TYPE_T,   class FROM_TYPE_T>
     inline  Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept {
-        return Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> (sp, Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>::_DynamicCastTag ());
+        return sp.Dynamic_Cast<TO_TYPE_T> ();
     }
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/
