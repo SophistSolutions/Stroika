@@ -20,6 +20,8 @@
  *
  *  TODO:
  *
+ *      @todo   Name TotalMultiSet is horrible. TotalTally() was OK
+ *
  *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
  *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
  *
@@ -291,7 +293,9 @@ namespace   Stroika {
             /**
              */
             template    <typename T, typename TRAITS>
-            class   MultiSet<T, TRAITS>::_IRep : public Iterable<MultiSetEntry<T>>::_IRep, public enable_shared_from_this<typename MultiSet<T, TRAITS>::_IRep> {
+            class   MultiSet<T, TRAITS>::_IRep
+                : public Iterable<MultiSetEntry<T>>::_IRep
+                                                 , public Iterable<MultiSetEntry<T>>::_USING_SHARED_enable_shared_from_this_IMPL_<typename MultiSet<T, TRAITS>::_IRep> {
             private:
                 using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
 

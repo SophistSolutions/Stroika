@@ -145,6 +145,10 @@ namespace   Stroika {
                 using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
                 //using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
 
+                template    <typename SHARED_T>
+                using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
+                //using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+
             protected:
                 /**
                  *  For now, just use the std::shared_ptr<> - but we may want to go back to older Stroika
