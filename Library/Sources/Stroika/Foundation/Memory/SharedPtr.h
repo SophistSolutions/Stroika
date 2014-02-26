@@ -189,7 +189,7 @@ namespace   Stroika {
             template    <typename   T>
             class   enable_shared_from_this {
             private:
-                atomic<SharedPtrBase::ReferenceCountType> fCount;
+                atomic<SharedPtrBase::ReferenceCountType> fCount_;
 
             public:
                 enable_shared_from_this ();

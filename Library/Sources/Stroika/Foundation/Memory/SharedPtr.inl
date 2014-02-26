@@ -187,7 +187,7 @@ namespace   Stroika {
             template    <typename T2>
             inline  SharedPtr<T2> SharedPtr<T>::Dynamic_Cast () const  noexcept
             {
-                return SharedPtr<T2> (typename SharedPtr_Default_Traits<T2>::Envelope (fEnvelope_, dynamic_cast<T2*> (get ())));
+                return SharedPtr<T2> (typename SharedPtr<T2>::Envelope_ (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
             template    <typename T>
             inline  typename SharedPtr<T>::ReferenceCountType   SharedPtr<T>::CurrentRefCount () const noexcept
