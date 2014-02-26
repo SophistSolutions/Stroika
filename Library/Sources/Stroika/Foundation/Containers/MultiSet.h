@@ -297,7 +297,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             class   MultiSet<T, TRAITS>::_IRep
                 : public Iterable<MultiSetEntry<T>>::_IRep
-                                                 , public IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<typename MultiSet<T, TRAITS>::_IRep> {
+                                                 , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<typename MultiSet<T, TRAITS>::_IRep> {
             private:
                 using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
 
