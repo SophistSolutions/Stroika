@@ -38,6 +38,25 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+
+            // experiemnt and see if this helps Mujltiset bug...
+            struct  ITERABLEBASE {
+            protected:
+                /**
+                 *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
+                 *      Experimental, so dont use directly (yet) - til stablized.
+                 *          -- LGP 2014-02-23
+                 */
+                template    <typename SHARED_T>
+                using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
+                //using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+
+                template    <typename SHARED_T>
+                using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
+                //using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+            };
+
+
             /**
              *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
              *          to traverse them.
@@ -124,7 +143,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Iterable {
+            class   Iterable : ITERABLEBASE {
             public:
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
@@ -135,19 +154,6 @@ namespace   Stroika {
             protected:
                 class  _IRep;
 
-            protected:
-                /**
-                 *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
-                 *      Experimental, so dont use directly (yet) - til stablized.
-                 *          -- LGP 2014-02-23
-                 */
-                template    <typename SHARED_T>
-                using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
-                //using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
-
-                template    <typename SHARED_T>
-                using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
-                //using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
 
             protected:
                 /**
