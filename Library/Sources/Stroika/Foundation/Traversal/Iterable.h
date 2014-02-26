@@ -39,8 +39,9 @@ namespace   Stroika {
 
 
 
-            // experiemnt and see if this helps Mujltiset bug...
-            struct  ITERABLEBASE {
+            /**
+             */
+            struct  IterableBase {
             protected:
                 /**
                  *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
@@ -143,7 +144,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Iterable : ITERABLEBASE {
+            class   Iterable : public IterableBase {
             public:
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
@@ -153,7 +154,6 @@ namespace   Stroika {
 
             protected:
                 class  _IRep;
-
 
             protected:
                 /**
