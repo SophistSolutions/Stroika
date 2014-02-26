@@ -20,6 +20,10 @@
  *
  *  TODO:
  *
+ *      @todo   use
+ *              using   CountType = size_t;
+ *              But tricky part is has to be folded into MultiSetEntry<>...
+ *
  *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
  *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
  *
