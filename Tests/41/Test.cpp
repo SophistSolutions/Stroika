@@ -161,6 +161,36 @@ namespace   {
             VerifyTestResult (p.unique ());
             VerifyTestResult (*p == 3);
         }
+        {
+            static int nCreates = 0;
+            static int nDestroys = 0;
+            struct COUNTED_OBJ {
+                COUNTED_OBJ ()
+                {
+                    ++nCreates;
+                }
+                COUNTED_OBJ (const COUNTED_OBJ&)
+                {
+                    ++nCreates;
+                }
+                ~COUNTED_OBJ ()
+                {
+                    ++nDestroys;
+                }
+                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
+            };
+            struct CNT2 : COUNTED_OBJ {
+            };
+            {
+                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
+            }
+            VerifyTestResult (nCreates == nDestroys);
+            {
+                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
+                VerifyTestResult (nCreates == nDestroys + 1);
+            }
+            VerifyTestResult (nCreates == nDestroys);
+        }
     }
 }
 
