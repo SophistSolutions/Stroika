@@ -153,6 +153,27 @@ namespace   {
         }
     }
 
+
+
+    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
+#if 1
+    struct jim : std::enable_shared_from_this<jim> {
+        int field = 1;
+        shared_ptr<jim> doIt ()
+        {
+            return shared_from_this ();
+        }
+    };
+#else
+    struct jim : Memory::enable_shared_from_this<jim> {
+        int field = 1;
+        SharedPtr<jim>  doIt ()
+        {
+            return shared_from_this ();
+        }
+    };
+#endif
+
     void    Test_6_SharedPtr ()
     {
         {
@@ -190,6 +211,17 @@ namespace   {
                 VerifyTestResult (nCreates == nDestroys + 1);
             }
             VerifyTestResult (nCreates == nDestroys);
+        }
+        {
+#if 1
+            shared_ptr<jim> x (new jim ());
+            shared_ptr<jim> y = x->doIt ();
+            VerifyTestResult (x == y);
+#else
+            SharedPtr<jim> x (new jim ());
+            SharedPtr<jim> y = x->doIt ();
+            VerifyTestResult (x == y);
+#endif
         }
     }
 }
