@@ -315,7 +315,7 @@ namespace   Stroika {
                     return false;
                 }
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    if (i->fCount != rhs.MultiSetOf (i->fItem)) {
+                    if (i->fCount != rhs.OccurrencesOf (i->fItem)) {
                         return false;
                     }
                 }
@@ -418,10 +418,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             void   MultiSet<T, TRAITS>::RemoveAll (T item)
             {
-                Remove (item, MultiSetOf (item));
+                Remove (item, OccurrencesOf (item));
             }
             template    <typename T, typename TRAITS>
-            size_t  MultiSet<T, TRAITS>::TotalMultiSet () const
+            size_t  MultiSet<T, TRAITS>::TotalOccurrences () const
             {
                 size_t sum = 0;
                 for (MultiSetEntry<T> i : *this) {
@@ -516,9 +516,9 @@ namespace   Stroika {
                 _GetRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
-            inline  size_t  MultiSet<T, TRAITS>::MultiSetOf (T item) const
+            inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (T item) const
             {
-                return _GetRep ().MultiSetOf (item);
+                return _GetRep ().OccurrencesOf (item);
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (T item)

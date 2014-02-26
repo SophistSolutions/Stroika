@@ -159,12 +159,12 @@ namespace CommonTests {
                 s += three;
                 VerifyTestResult (s.GetLength () == 1);
                 VerifyTestResult (s.Contains (three));
-                VerifyTestResult (s.MultiSetOf (three) == 2);
+                VerifyTestResult (s.OccurrencesOf (three) == 2);
                 s.Remove (three);
                 applyToContainer (s);
                 VerifyTestResult (s.GetLength () == 1);
                 VerifyTestResult (s.Contains (three));
-                VerifyTestResult (s.MultiSetOf (three) == 1);
+                VerifyTestResult (s.OccurrencesOf (three) == 1);
                 s.Remove (three);
                 VerifyTestResult (s.IsEmpty ());
                 s.RemoveAll ();
@@ -250,7 +250,7 @@ namespace CommonTests {
 
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements()) {
-                        if (s.TotalMultiSet () < 25) {
+                        if (s.TotalOccurrences () < 25) {
                             s.Add (1);
                         }
                         applyToContainer (s);
@@ -284,7 +284,7 @@ namespace CommonTests {
                 for (size_t i = 1; i <= K; i++) {
                     s.Add (i);
                     VerifyTestResult (s.Contains (i));
-                    VerifyTestResult (s.MultiSetOf (i) == 1);
+                    VerifyTestResult (s.OccurrencesOf (i) == 1);
                     VerifyTestResult (s.GetLength () == i);
                 }
                 for (size_t i = K; i > 0; i--) {
@@ -296,15 +296,15 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= K / 2; i++) {
                     s += 1;
-                    VerifyTestResult (s.MultiSetOf (1) == i);
+                    VerifyTestResult (s.OccurrencesOf (1) == i);
                 }
                 size_t oldLength = s.GetLength ();
-                size_t oldTotal = s.TotalMultiSet ();
+                size_t oldTotal = s.TotalOccurrences ();
                 applyToContainer (s);
                 s += s;
                 applyToContainer (s);
                 VerifyTestResult (s.GetLength () == oldLength);
-                VerifyTestResult (s.TotalMultiSet () == oldTotal * 2);
+                VerifyTestResult (s.TotalOccurrences () == oldTotal * 2);
             }
 
 
@@ -354,9 +354,9 @@ namespace CommonTests {
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.Elements ().size () == 7);
                     TALLY_ARCHTYPE tmp = TALLY_ARCHTYPE (s.Elements ());
-                    VerifyTestResult (tmp.MultiSetOf (1) == 1);
-                    VerifyTestResult (tmp.MultiSetOf (0) == 0);
-                    VerifyTestResult (tmp.MultiSetOf (4) == 4);
+                    VerifyTestResult (tmp.OccurrencesOf (1) == 1);
+                    VerifyTestResult (tmp.OccurrencesOf (0) == 0);
+                    VerifyTestResult (tmp.OccurrencesOf (4) == 4);
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace CommonTests {
                 }
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
-                        if (s.TotalMultiSet () < 25) {
+                        if (s.TotalOccurrences () < 25) {
                             s.Add (1);
                         }
                         break;
@@ -413,7 +413,7 @@ namespace CommonTests {
                 applyToContainer (s);
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
-                        if (s.TotalMultiSet () < 25) {
+                        if (s.TotalOccurrences () < 25) {
                             s.Add (1);
                         }
                         applyToContainer (s);

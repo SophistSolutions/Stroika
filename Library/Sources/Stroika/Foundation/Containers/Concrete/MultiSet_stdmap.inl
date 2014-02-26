@@ -70,7 +70,7 @@ namespace   Stroika {
                     virtual void                        Remove (T item, size_t count) override;
                     virtual void                        Remove (const Iterator<MultiSetEntry<T>>& i) override;
                     virtual void                        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) override;
-                    virtual size_t                      MultiSetOf (T item) const override;
+                    virtual size_t                      OccurrencesOf (T item) const override;
                     virtual Iterable<T>                 Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                 UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
 #if     qDebug
@@ -238,7 +238,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t  MultiSet_stdmap<T, TRAITS>::Rep_::MultiSetOf (T item) const
+                size_t  MultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (T item) const
                 {
                     MultiSetEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {

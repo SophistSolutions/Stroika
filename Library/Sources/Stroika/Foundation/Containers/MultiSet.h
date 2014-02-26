@@ -20,8 +20,6 @@
  *
  *  TODO:
  *
- *      @todo   Name TotalMultiSet is horrible. TotalTally() was OK
- *
  *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
  *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
  *
@@ -167,7 +165,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Contains (item) is equivilent to MultiSetOf (item) != 0, but maybe faster (since it doesn't need to compute
+                 *  Contains (item) is equivilent to OccurrencesOf (item) != 0, but maybe faster (since it doesn't need to compute
                  *  the fully tally).
                  */
                 nonvirtual  bool    Contains (T item) const;
@@ -213,18 +211,18 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  MultiSetOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
+                 *  OccurrencesOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
                  *
                  *  If there are no copies of item in the MultiSet, 0 is returned.
                  */
-                nonvirtual  size_t  MultiSetOf (T item) const;
+                nonvirtual  size_t  OccurrencesOf (T item) const;
 
             public:
                 /**
                  *  Returns the sum of all tallys of all contained elements. This is equivilent
                  *  to Elements ().size ().
                  */
-                nonvirtual  size_t  TotalMultiSet () const;
+                nonvirtual  size_t  TotalOccurrences () const;
 
             public:
                 /**
@@ -258,7 +256,7 @@ namespace   Stroika {
             public:
                 /*
                  *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
-                 *  with the same count. In short, they are equal if MultiSetOf() each item in the LHS equals the MultiSetOf()
+                 *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
                  *  the same item in the RHS.
                  *
                  *  Equals is commutative.
@@ -313,7 +311,7 @@ namespace   Stroika {
                 virtual void        Remove (T item, size_t count)                                   =   0;
                 virtual void        Remove (const Iterator<MultiSetEntry<T>>& i)                       =   0;
                 virtual void        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) =   0;
-                virtual size_t      MultiSetOf (T item) const                                          =   0;
+                virtual size_t      OccurrencesOf (T item) const                                       =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T> Elements (const _SharedPtrIRep& rep) const                      =   0;
