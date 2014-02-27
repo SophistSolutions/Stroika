@@ -58,9 +58,7 @@ namespace   Stroika {
              */
             struct SharedPtrBase {
                 /**
-                 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines) -
-                 * if we use one smaller than sizeof(void*) we cannot use BlockAllocation<> code -
-                 * which currently requires sizeof (T) >= sizeof (void*)
+                 * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines).
                  */
                 using   ReferenceCountType =    unsigned int;
             };
@@ -159,6 +157,7 @@ namespace   Stroika {
 #endif
                 };
             }
+
 
             namespace Private_ {
                 template    <typename   T>
