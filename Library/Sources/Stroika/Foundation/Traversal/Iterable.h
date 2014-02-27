@@ -38,6 +38,12 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            /**
+             */
+#ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   0
+#endif
+
 
             /**
              */
@@ -48,13 +54,21 @@ namespace   Stroika {
                  *      Experimental, so dont use directly (yet) - til stablized.
                  *          -- LGP 2014-02-23
                  */
+#if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+                template    <typename SHARED_T>
+                using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+#else
                 template    <typename SHARED_T>
                 using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
-                //using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+#endif
 
+#if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+                template    <typename SHARED_T>
+                using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+#else
                 template    <typename SHARED_T>
                 using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
-                //using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+#endif
             };
 
 
