@@ -72,8 +72,15 @@ namespace   Stroika {
                 // This is used to wrap/combine the shared pointer with the counter.
                 struct  ReferenceCounterContainerType_ {
                     atomic<SharedPtrBase::ReferenceCountType> fCount;
+                    bool                            fDeleteCounter_;
                     ReferenceCounterContainerType_ ()
                         : fCount (0)
+                        , fDeleteCounter_ (true)
+                    {
+                    }
+                    ReferenceCounterContainerType_ (bool deleteCounter)
+                        : fCount (0)
+                        , fDeleteCounter_ (deleteCounter)
                     {
                     }
                     //DECLARE_USE_BLOCK_ALLOCATION(ReferenceCounterContainerType_);
@@ -246,7 +253,6 @@ namespace   Stroika {
                 private:
                     T*                              fPtr_;
                     ReferenceCounterContainerType_* fCountHolder_;
-                    bool                            fDeleteCounter_;
                 public:
 #if 0
                     BasicEnvelope_ (T* ptr)
@@ -259,10 +265,9 @@ namespace   Stroika {
                         }
                     }
 #endif
-                    BasicEnvelope_ (T* ptr, ReferenceCounterContainerType_* countHolder, bool deleteCounter )
+                    BasicEnvelope_ (T* ptr, ReferenceCounterContainerType_* countHolder )
                         : fPtr_ (ptr)
                         , fCountHolder_ (countHolder)
-                        , fDeleteCounter_ (deleteCounter)
                     {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
@@ -271,7 +276,6 @@ namespace   Stroika {
                 :
                     fPtr_ (from.GetPtr ())
                     , fCountHolder_ (from.fCountHolder_)
-                    , fDeleteCounter_ (from.fDeleteCounter_)
                     {
                         from.fPtr_ = nullptr;
                         from.fCountHolder_ = nullptr;
@@ -281,7 +285,6 @@ namespace   Stroika {
                 :
                     fPtr_ (from.GetPtr ())
                     , fCountHolder_ (from.fCountHolder_)
-                    , fDeleteCounter_ (from.fDeleteCounter_)
                     {
                     }
                     template <typename T2>
@@ -289,7 +292,6 @@ namespace   Stroika {
                 :
                     fPtr_ (newP)
                     , fCountHolder_ (from.fCountHolder_)
-                    , fDeleteCounter_ (from.fDeleteCounter_)
                     {
                         // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                         // actual ptr cannot change, and this assert check automatically converts pointers to
@@ -320,16 +322,19 @@ namespace   Stroika {
                         return false;
                     }
                     inline  void    DoDeleteCounter () noexcept {
-                        if (fDeleteCounter_)
+                        RequireNotNull (fCountHolder_);
+                        if (fCountHolder_->fDeleteCounter_)
                         {
                             ManuallyBlockAllocated<ReferenceCounterContainerType_>::Delete (fCountHolder_);
                         }
                         fCountHolder_ = nullptr;
                     }
+#if 0
                     inline  ReferenceCounterContainerType_* GetCounterPointer () const noexcept
                     {
                         return fCountHolder_;
                     }
+#endif
 #if 1
                 private:
                     template    <typename T2>

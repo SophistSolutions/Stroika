@@ -47,28 +47,31 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** SharedPtr<T> ***************************
+             ********************************** SharedPtr<T> ********************************
              ********************************************************************************
              */
             template    <typename T>
             inline  SharedPtr<T>::SharedPtr () noexcept
 :
-            fEnvelope_ (nullptr, nullptr, false)
+            fEnvelope_ (nullptr, nullptr)
             {
             }
             template    <typename T>
             inline  SharedPtr<T>::SharedPtr (nullptr_t) noexcept
 :
-            fEnvelope_ (nullptr, nullptr, false)
+            fEnvelope_ (nullptr, nullptr)
             {
             }
             template    <typename T>
             template    <typename CHECK_KEY>
             inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value>::type*)
-                : fEnvelope_ (from, from, false)
+                : fEnvelope_ (from, from)
             {
-                from->fPtr_ = from;
-                if (fEnvelope_.GetPtr () != nullptr) {
+                Assert (fEnvelope_.GetPtr () == from);
+                if (from != nullptr) {
+                    from->fPtr_ = from;
+                }
+                if (from != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
                     // in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
                     fEnvelope_.Increment ();
@@ -77,7 +80,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CHECK_KEY>
             inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value >::type*)
-                : fEnvelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New (), true)
+                : fEnvelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ())
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
@@ -274,9 +277,10 @@ namespace   Stroika {
              */
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
+                : ReferenceCounterContainerType_ (false)
 #if     qDebug
-            // only initialized for assertion in shared_from_this()
-                : fPtr_ (nullptr)
+                // only initialized for assertion in shared_from_this()
+                , fPtr_ (nullptr)
 #endif
             {
             }
@@ -303,7 +307,7 @@ namespace   Stroika {
                 //T*  tStarThis   =   dynamic_cast<T*> (this);
                 //return (SharedPtr<T> (SharedPtr<T>::Envelope_ (tStarThis, this, false)));
                 AssertNotNull (fPtr_);
-                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this, false)));
+                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
                 //return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
             }
 
