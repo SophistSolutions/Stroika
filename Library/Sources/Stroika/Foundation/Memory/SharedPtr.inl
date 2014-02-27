@@ -77,7 +77,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CHECK_KEY>
             inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value >::type*)
-                : fEnvelope_ (from, BlockAllocated2<Private_::ReferenceCounterContainerType_>::New (), true)
+                : fEnvelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New (), true)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
