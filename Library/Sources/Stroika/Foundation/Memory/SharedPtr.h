@@ -8,13 +8,11 @@
 
 #include    <atomic>
 #include    <cstdint>
+#include    <type_traits>
 
 #include    "../Configuration/Common.h"
 
-#if 0
-//tmphack here til we move stuff back to inl file
-#include    "BlockAllocated.h"
-#endif
+
 
 /**
  *  \file
