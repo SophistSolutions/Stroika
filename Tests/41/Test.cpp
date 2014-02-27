@@ -247,10 +247,7 @@ namespace   {
         {
             SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
             SharedPtr<jimMIStkSP_> y = x->doIt ();
-#if 1
-            // DEBUG WHY THIS DOESNT WORK!!!
             SharedPtr<X_>          xx = x;
-#endif
             VerifyTestResult (x == y);
         }
     }
