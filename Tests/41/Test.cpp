@@ -156,23 +156,39 @@ namespace   {
 
 
     // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
-#if 1
-    struct jim : std::enable_shared_from_this<jim> {
-        int field = 1;
-        shared_ptr<jim> doIt ()
-        {
-            return shared_from_this ();
-        }
-    };
-#else
-    struct jim : Memory::enable_shared_from_this<jim> {
-        int field = 1;
-        SharedPtr<jim>  doIt ()
-        {
-            return shared_from_this ();
-        }
-    };
-#endif
+    // SB nested inside function where used...
+    //  --LGP 2014-02-26
+    namespace {
+        struct X_ { int a = 0; };
+        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
+            int field = 1;
+            shared_ptr<jimStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
+            int field = 1;
+            shared_ptr<jimMIXStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
+            int field = 1;
+            SharedPtr<jimStkSP_>  doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
+            int field = 1;
+            SharedPtr<jimMIStkSP_>  doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+    }
 
     void    Test_6_SharedPtr ()
     {
@@ -213,15 +229,29 @@ namespace   {
             VerifyTestResult (nCreates == nDestroys);
         }
         {
-#if 1
-            shared_ptr<jim> x (new jim ());
-            shared_ptr<jim> y = x->doIt ();
+            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
+            shared_ptr<jimStdSP_> y = x->doIt ();
             VerifyTestResult (x == y);
-#else
-            SharedPtr<jim> x (new jim ());
-            SharedPtr<jim> y = x->doIt ();
+        }
+        {
+            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
+            shared_ptr<jimMIXStdSP_> y = x->doIt ();
+            shared_ptr<X_>           xx = x;
             VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
+            SharedPtr<jimStkSP_> y = x->doIt ();
+            VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
+            SharedPtr<jimMIStkSP_> y = x->doIt ();
+#if 0
+            // DEBUG WHY THIS DOESNT WORK!!!
+            SharedPtr<X_>          xx = x;
 #endif
+            VerifyTestResult (x == y);
         }
     }
 }
