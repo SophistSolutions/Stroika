@@ -202,6 +202,46 @@ namespace   Stroika {
             };
 
 
+
+
+
+            /// NEW EXPERIMENTAL POSSIBLE REPLACEMNT FOR BlockAllocated<>
+            // LGP 2014-02-27
+			//
+			// maybe just augoemtn - this is where you must save a T* and return that easil. Maybe existing BlockAllocated best for
+			// when you can afford to hang onto the wrapper BlockAllocated<T>?
+            template    <typename   T>
+            class   BlockAllocated2   {
+            public:
+                // new experimental API -- LGP 2014-02-27
+                // DOCUMENT
+                template    <typename... ARGS>
+                static  T*  New (ARGS&& ... args)
+                {
+#if     qAllowBlockAllocation
+                    return new (BlockAllocator::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
+#else
+                    return new T (forward<ARGS> (args)...);
+#endif
+                }
+
+            public:
+                // new experimental API -- LGP 2014-02-27
+                // DOCUMENT
+                static  void    Delete (T* p)
+                {
+#if     qAllowBlockAllocation
+                    if (p != nullptr) {
+                        (p)->~T ();
+                        BlockAllocator::Deallocate (p);
+                    }
+#else
+                    delete p;
+#endif
+                }
+            };
+
+
         }
     }
 }

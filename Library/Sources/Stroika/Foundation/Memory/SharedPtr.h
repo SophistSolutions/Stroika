@@ -322,11 +322,7 @@ namespace   Stroika {
                     inline  void    DoDeleteCounter () noexcept {
                         if (fDeleteCounter_)
                         {
-#if qAllowBlockAllocation
-                            BlockAllocator<ReferenceCounterContainerType_>::Delete (fCountHolder_);
-#else
-                            delete fCountHolder_;
-#endif
+                            BlockAllocated2<ReferenceCounterContainerType_>::Delete (fCountHolder_);
                         }
                         fCountHolder_ = nullptr;
                     }

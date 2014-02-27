@@ -78,27 +78,6 @@ namespace   Stroika {
                  */
                 static  void    Deallocate (void* p);
 
-
-            public:
-                // new experimental API -- LGP 2014-02-27
-                // DOCUMENT
-                template    <typename... ARGS>
-                static  T*  New (ARGS&& ... args)
-                {
-                    return new (Allocate (sizeof (T))) T (forward<ARGS> (args)...);
-                }
-
-            public:
-                // new experimental API -- LGP 2014-02-27
-                // DOCUMENT
-                static  void    Delete (T* p)
-                {
-                    if (p != nullptr) {
-                        (p)->~T ();
-                        Deallocate (p);
-                    }
-                }
-
             public:
                 /**
                   * Return to the free store all deallocated blocks whcih can be returned.
