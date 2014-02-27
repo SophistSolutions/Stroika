@@ -303,7 +303,7 @@ namespace   Stroika {
                 //T*  tStarThis   =   dynamic_cast<T*> (this);
                 //return (SharedPtr<T> (SharedPtr<T>::Envelope_ (tStarThis, this, false)));
                 AssertNotNull (fPtr_);
-                return (SharedPtr<T> (SharedPtr<T>::Envelope_ (fPtr_, this, false)));
+                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this, false)));
                 //return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
             }
 
