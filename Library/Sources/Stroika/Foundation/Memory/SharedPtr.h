@@ -11,16 +11,15 @@
 
 #include    "../Configuration/Common.h"
 
+#if 0
 //tmphack here til we move stuff back to inl file
 #include    "BlockAllocated.h"
+#endif
 
 /**
  *  \file
  *
  *      TODO:
- *
- *      @todo   Add to regrssion test code somethning to assure enable_shared_from_this<> still works. I'm sure
- *              it used to but who knows now!!!
  *
  *      @todo   See if fDeleteCounter_ can be somehow inferred from other data to save space/copying. It's hard cuz
  *              of the multiple inheritence case (so comparing counter == fPtr not exactly right always).
@@ -71,34 +70,16 @@ namespace   Stroika {
             namespace   Private_ {
                 // This is used to wrap/combine the shared pointer with the counter.
                 struct  ReferenceCounterContainerType_ {
-                    atomic<SharedPtrBase::ReferenceCountType> fCount;
-                    bool                            fDeleteCounter_;
-                    ReferenceCounterContainerType_ ()
-                        : fCount (0)
-                        , fDeleteCounter_ (true)
-                    {
-                    }
-                    ReferenceCounterContainerType_ (bool deleteCounter)
-                        : fCount (0)
-                        , fDeleteCounter_ (deleteCounter)
-                    {
-                    }
-                    //DECLARE_USE_BLOCK_ALLOCATION(ReferenceCounterContainerType_);
+                    atomic<SharedPtrBase::ReferenceCountType>   fCount;
+                    bool                                        fDeleteCounter_;
+
+                    ReferenceCounterContainerType_ ();
+                    ReferenceCounterContainerType_ (bool deleteCounter);
                 };
             }
 
 
-
-#if 0
-
-            namespace Private_ {
-                template    <typename   T>
-                class   SharedFromThis_Envelope_;
-            }
-#endif
-
-
-            template <typename T>
+            template    <typename T>
             class   SharedPtr;
 
 
@@ -125,11 +106,6 @@ namespace   Stroika {
              */
             template    <typename   T>
             class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
-#if 0
-            private:
-                atomic<SharedPtrBase::ReferenceCountType> fCount_;
-#endif
-
             public:
                 enable_shared_from_this ();
                 const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
@@ -140,276 +116,26 @@ namespace   Stroika {
                  */
                 nonvirtual  SharedPtr<T> shared_from_this ();
 
-#if 1
             private:
                 T*  fPtr_;
-#endif
+
             private:
                 friend  class   SharedPtr<T>;
-#if 0
-            private:
-                friend  class   Private_::SharedFromThis_Envelope_<T>;
-#endif
             };
-
-
-#if 0
-
-            namespace Private_ {
-                template    <typename   T>
-                class   SharedFromThis_Envelope_ {
-                private:
-                    T*      fPtr_;
-                public:
-                    SharedFromThis_Envelope_ (T* ptr) noexcept
-                :
-                    fPtr_ (ptr)
-                    {
-                        if (fPtr_ != nullptr) {
-                            fPtr_->fPtr_ = ptr;
-                        }
-                    }
-                    template    <typename T2>
-                    SharedFromThis_Envelope_ (SharedFromThis_Envelope_<T2>&& from) noexcept
-                :
-                    fPtr_ (from.fPtr_)
-                    {
-                        if (fPtr_ != nullptr) {
-                            fPtr_->fPtr_ = fPtr_;
-                        }
-                        from.fPtr_ = nullptr;
-                    }
-                    template    <typename T2>
-                    SharedFromThis_Envelope_ (const SharedFromThis_Envelope_<T2>& from) noexcept
-                :
-                    fPtr_ (from.fPtr_)
-                    {
-                        if (fPtr_ != nullptr) {
-                            fPtr_->fPtr_ = fPtr_;
-                        }
-                    }
-                    template <typename T2>
-                    inline  SharedFromThis_Envelope_ (const SharedFromThis_Envelope_<T2>& from, T* newP) noexcept
-                :
-                    fPtr_ (newP)
-                    {
-                        if (fPtr_ != nullptr) {
-                            fPtr_->fPtr_ = fPtr_;
-                        }
-                        Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
-                        // actual ptr cannot change, and this assert check automatically converts pointers to
-                        // a common base pointer type
-                    }
-                    T*  GetPtr () const noexcept
-                    {
-                        return fPtr_;
-                    }
-                    void    SetPtr (T* p) noexcept {
-                        fPtr_ = p;
-                        if (fPtr_ != nullptr)
-                        {
-                            fPtr_->fPtr_ = fPtr_;
-                        }
-                    }
-                    SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
-                    {
-                        return fPtr_ == nullptr ? 0 : fPtr_->fCount_.load ();
-                    }
-                    void    Increment () noexcept {
-                        RequireNotNull (fPtr_);
-                        fPtr_->fCount_++;
-                    }
-                    bool    Decrement () noexcept {
-                        Require (CurrentRefCount () > 0);
-                        if (--fPtr_->fCount_ == 0)
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                    inline  void    DoDeleteCounter () noexcept {
-                    }
-                    enable_shared_from_this<T>* GetCounterPointer () const noexcept
-                    {
-                        return fPtr_;
-                    }
-
-#if 0
-
-                private:
-                    template    <typename T2>
-                    friend  class   SharedFromThis_Envelope_;
-#endif
-                };
-
-            }
-#endif
-
 
 
             namespace   Private_ {
                 template    <typename   T>
-                class   BasicEnvelope_ {
-                private:
-                    T*                              fPtr_;
-                    ReferenceCounterContainerType_* fCountHolder_;
-                public:
-#if 0
-                    BasicEnvelope_ (T* ptr)
-                        : fPtr_ (ptr)
-                        , fCountHolder_ (nullptr)
-                        , fDeleteCounter_ (true)
-                    {
-                        if (fPtr_ != nullptr) {
-                            fCountHolder_ = new ReferenceCounterContainerType_ ();
-                        }
-                    }
-#endif
-                    BasicEnvelope_ (T* ptr, ReferenceCounterContainerType_* countHolder )
-                        : fPtr_ (ptr)
-                        , fCountHolder_ (countHolder)
-                    {
-                        Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
-                    }
-                    template    <typename T2>
-                    inline  BasicEnvelope_ (BasicEnvelope_<T2>&& from) noexcept
-                :
-                    fPtr_ (from.GetPtr ())
-                    , fCountHolder_ (from.fCountHolder_)
-                    {
-                        from.fPtr_ = nullptr;
-                        from.fCountHolder_ = nullptr;
-                    }
-                    template    <typename T2>
-                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from) noexcept
-                :
-                    fPtr_ (from.GetPtr ())
-                    , fCountHolder_ (from.fCountHolder_)
-                    {
-                    }
-                    template <typename T2>
-                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from, T* newP) noexcept
-                :
-                    fPtr_ (newP)
-                    , fCountHolder_ (from.fCountHolder_)
-                    {
-                        // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
-                        // actual ptr cannot change, and this assert check automatically converts pointers to
-                        // a common base pointer type
-                        Require (newP == from.GetPtr ());
-                    }
-                    inline  T*      GetPtr () const noexcept
-                    {
-                        return fPtr_;
-                    }
-                    inline  void    SetPtr (T* p) noexcept {
-                        fPtr_ = p;
-                    }
-                    inline  SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
-                    {
-                        return fCountHolder_ == nullptr ? 0 : fCountHolder_->fCount.load ();
-                    }
-                    inline  void    Increment () noexcept {
-                        RequireNotNull (fCountHolder_);
-                        fCountHolder_->fCount++;
-                    }
-                    inline  bool    Decrement () noexcept {
-                        Require (CurrentRefCount () > 0);
-                        if (--fCountHolder_->fCount == 0)
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                    inline  void    DoDeleteCounter () noexcept {
-                        RequireNotNull (fCountHolder_);
-                        if (fCountHolder_->fDeleteCounter_)
-                        {
-                            ManuallyBlockAllocated<ReferenceCounterContainerType_>::Delete (fCountHolder_);
-                        }
-                        fCountHolder_ = nullptr;
-                    }
-#if 0
-                    inline  ReferenceCounterContainerType_* GetCounterPointer () const noexcept
-                    {
-                        return fCountHolder_;
-                    }
-#endif
-#if 1
-                private:
-                    template    <typename T2>
-                    friend  class   BasicEnvelope_;
-#endif
-                };
+                class   BasicEnvelope_;
             }
-
 
 
             namespace Private_ {
 
-#if 1
                 template    <typename   T>
                 using  Envelope_ = BasicEnvelope_<T>;
-#else
-                template    <typename   T>
-                using  Envelope_ =
-                    typename conditional <
-                    is_convertible<T*, enable_shared_from_this<T>*>::value,
-                    SharedFromThis_Envelope_<T>,
-                    BasicEnvelope_<T>
-                    >::type;
-#endif
             }
 
-
-#if 0
-            /**
-             * Default 'TRAITS' object controlling how SharedPtr<T,T_TRAITS> works. This typically will
-             * not be used directly, but just part of using @SharedPtr<T>
-             */
-            template    <typename   T>
-            struct  SharedPtr_Default_Traits {
-                using   ReferenceCountType          =   Private_::SharedPtr_Default_Traits_Helpers_::ReferenceCountType_;
-                using   Envelope                    =   Private_::SharedPtr_Default_Traits_Helpers_::Envelope_<T>;
-            };
-
-
-
-            /*
-             * SharedPtrFromThis_Traits is the TRAITS object to use with SharedPtr, and T must already
-             * inherit from SharedPtrBase.
-             *
-             *  Example usage:
-             *
-             *      class   VeryFancyObj : SharedPtrBase {
-             *      };
-             *
-             *      using VeryFancySmartPointer =  SharedPtr<VeryFancyObj,SharedPtrFromThis_TraitsVeryFancyObj>>;
-             *
-             *      THEN - VeryFancySmartPointer will work like a regular smart pointer - EXCEPT THAT IN ADDITION,
-             *      you can ALWAYS safely create a VeryFancySmartPointer from an already existing VeryFancyObj -
-             *      just by wrapping/constructing the smart pointer (because the reference count is already in
-             *      the base wrapped data type).
-             */
-            template    <typename   T>
-            struct  SharedPtrFromThis_Traits {
-                using   ReferenceCountType  =    Private_::enable_shared_from_this_Traits_Helpers_::ReferenceCountType_;
-                using   Envelope            =    Private_::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
-            };
-#endif
-
-            /*
-             * SO FAR FAILED - attempts at getting partial specialization to work. Reason todo that is so that
-             *
-             * then SharedPtr<T> will be the same as SharedPtr<T,SharedPtrFromThis_Traits<T>>
-             */
-#if     0
-            template    <typename   T,
-                         typename ENABLE_IF_TEST = typename enable_if < is_convertible<T*, enable_shared_from_this<T>>::value, void >::type
-                         >
-            struct  SharedPtr_Default_Traits<enable_shared_from_this<T>> :  SharedPtrFromThis_Traits<T> {
-            };
-#endif
 
             /**
             *

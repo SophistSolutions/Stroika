@@ -21,27 +21,98 @@ namespace   Stroika {
 
 
             /*
-             * IMPLEMENTATION NOTES:
-             *
-             *      We have Decrement() return a boolean and if it returns true to delete in the
-             *  caller because otehrwise the PRIVATE stuff (if you use SharedRep<> of a private type) -
-             *  generates errors. At least it causes problems on Visual Studio.Net 2010. I'm not
-             *  sure if this is MY bug or a compiler  bug. Anyhow - this is fine for now...
-             *          -- LGP 2012-05-15
+             ********************************************************************************
+             ************ Private_::ReferenceCounterContainerType_ **************************
+             ********************************************************************************
              */
-
-
-            namespace   Private_ {
-                namespace   SharedPtr_Default_Traits_Helpers_ {
-
-                }
+            inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ ()
+                : fCount (0)
+                , fDeleteCounter_ (true)
+            {
+            }
+            inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ (bool deleteCounter)
+                : fCount (0)
+                , fDeleteCounter_ (deleteCounter)
+            {
             }
 
 
             namespace   Private_ {
-                namespace   enable_shared_from_this_Traits_Helpers_ {
+                template    <typename   T>
+                class   BasicEnvelope_ {
+                private:
+                    T*                              fPtr_;
+                    ReferenceCounterContainerType_* fCountHolder_;
+                public:
+                    BasicEnvelope_ (T* ptr, ReferenceCounterContainerType_* countHolder )
+                        : fPtr_ (ptr)
+                        , fCountHolder_ (countHolder)
+                    {
+                        Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
+                    }
+                    template    <typename T2>
+                    inline  BasicEnvelope_ (BasicEnvelope_<T2>&& from) noexcept
+                :
+                    fPtr_ (from.GetPtr ())
+                    , fCountHolder_ (from.fCountHolder_)
+                    {
+                        from.fPtr_ = nullptr;
+                        from.fCountHolder_ = nullptr;
+                    }
+                    template    <typename T2>
+                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from) noexcept
+                :
+                    fPtr_ (from.GetPtr ())
+                    , fCountHolder_ (from.fCountHolder_)
+                    {
+                    }
+                    template <typename T2>
+                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from, T* newP) noexcept
+                :
+                    fPtr_ (newP)
+                    , fCountHolder_ (from.fCountHolder_)
+                    {
+                        // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
+                        // actual ptr cannot change, and this assert check automatically converts pointers to
+                        // a common base pointer type
+                        Require (newP == from.GetPtr ());
+                    }
+                    inline  T*      GetPtr () const noexcept
+                    {
+                        return fPtr_;
+                    }
+                    inline  void    SetPtr (T* p) noexcept {
+                        fPtr_ = p;
+                    }
+                    inline  SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
+                    {
+                        return fCountHolder_ == nullptr ? 0 : fCountHolder_->fCount.load ();
+                    }
+                    inline  void    Increment () noexcept {
+                        RequireNotNull (fCountHolder_);
+                        fCountHolder_->fCount++;
+                    }
+                    inline  bool    Decrement () noexcept {
+                        Require (CurrentRefCount () > 0);
+                        if (--fCountHolder_->fCount == 0)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                    inline  void    DoDeleteCounter () noexcept {
+                        RequireNotNull (fCountHolder_);
+                        if (fCountHolder_->fDeleteCounter_)
+                        {
+                            ManuallyBlockAllocated<ReferenceCounterContainerType_>::Delete (fCountHolder_);
+                        }
+                        fCountHolder_ = nullptr;
+                    }
 
-                }
+                private:
+                    template    <typename T2>
+                    friend  class   BasicEnvelope_;
+                };
             }
 
 
