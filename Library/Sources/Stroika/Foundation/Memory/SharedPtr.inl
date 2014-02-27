@@ -63,8 +63,21 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  SharedPtr<T>::SharedPtr (T* from)
-                : fEnvelope_ (from)
+            template    <typename CHECK_KEY>
+            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value>::type*)
+                : fEnvelope_ (from, from, false)
+            {
+                from->fPtr_ = from;
+                if (fEnvelope_.GetPtr () != nullptr) {
+                    // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
+                    // in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
+                    fEnvelope_.Increment ();
+                }
+            }
+            template    <typename T>
+            template    <typename CHECK_KEY>
+            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value >::type*)
+                : fEnvelope_ (from, new Private_::ReferenceCounterContainerType_ (), true)
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
@@ -261,14 +274,18 @@ namespace   Stroika {
              */
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
-                : fCount_ (0)
-                , fPtr_ (nullptr)
+#if     qDebug
+            // only initialized for assertion in shared_from_this()
+                : fPtr_ (nullptr)
+#endif
             {
             }
+#if 0
             template    <typename   T>
             inline  enable_shared_from_this<T>::~enable_shared_from_this ()
             {
             }
+#endif
             template    <typename   T>
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
@@ -284,8 +301,10 @@ namespace   Stroika {
                  *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
                 //T*  tStarThis   =   dynamic_cast<T*> (this);
+                //return (SharedPtr<T> (SharedPtr<T>::Envelope_ (tStarThis, this, false)));
                 AssertNotNull (fPtr_);
-                return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
+                return (SharedPtr<T> (SharedPtr<T>::Envelope_ (fPtr_, this, false)));
+                //return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
             }
 
 
