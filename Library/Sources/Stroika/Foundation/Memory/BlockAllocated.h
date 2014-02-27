@@ -154,6 +154,10 @@ namespace   Stroika {
 
 
             /**
+            *
+            *
+            * @todo - I THINK THIS API IS WEAK AND PROBABY NEEDS MAJOR REVISION -- LGP 2014-02-27
+
               * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
               *
               * BlockAllocated<T> is a templated class designed to allow easy use
