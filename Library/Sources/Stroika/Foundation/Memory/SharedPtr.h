@@ -160,6 +160,11 @@ namespace   Stroika {
                 };
             }
 
+            namespace Private_ {
+                template    <typename   T>
+                class   SharedFromThis_Envelope_;
+            }
+
 
             template <typename T>
             class   SharedPtr;
@@ -200,8 +205,8 @@ namespace   Stroika {
                 //  -- LGP 2014-02-23
                 nonvirtual  SharedPtr<T> shared_from_this ();
 
-                //private:
-                //    friend  class   Private_::enable_shared_from_this_Traits_Helpers_::Envelope_<T>;
+            private:
+                friend  class   Private_::SharedFromThis_Envelope_<T>;
             };
 
 
