@@ -206,6 +206,9 @@ namespace   Stroika {
                 nonvirtual  SharedPtr<T> shared_from_this ();
 
             private:
+                T*  fPtr_;
+
+            private:
                 friend  class   Private_::SharedFromThis_Envelope_<T>;
             };
 
@@ -220,12 +223,18 @@ namespace   Stroika {
                 :
                     fPtr_ (ptr)
                     {
+                        if (fPtr_ != nullptr) {
+                            fPtr_->fPtr_ = ptr;
+                        }
                     }
                     template    <typename T2>
                     SharedFromThis_Envelope_ (SharedFromThis_Envelope_<T2>&& from) noexcept
                 :
                     fPtr_ (from.fPtr_)
                     {
+                        if (fPtr_ != nullptr) {
+                            fPtr_->fPtr_ = fPtr_;
+                        }
                         from.fPtr_ = nullptr;
                     }
                     template    <typename T2>
@@ -233,12 +242,18 @@ namespace   Stroika {
                 :
                     fPtr_ (from.fPtr_)
                     {
+                        if (fPtr_ != nullptr) {
+                            fPtr_->fPtr_ = fPtr_;
+                        }
                     }
                     template <typename T2>
                     inline  SharedFromThis_Envelope_ (const SharedFromThis_Envelope_<T2>& from, T* newP) noexcept
                 :
                     fPtr_ (newP)
                     {
+                        if (fPtr_ != nullptr) {
+                            fPtr_->fPtr_ = fPtr_;
+                        }
                         Require (newP == from.GetPtr ());           // reason for this is for dynamic cast. We allow replacing the P with a newP, but the
                         // actual ptr cannot change, and this assert check automatically converts pointers to
                         // a common base pointer type
@@ -249,6 +264,10 @@ namespace   Stroika {
                     }
                     void    SetPtr (T* p) noexcept {
                         fPtr_ = p;
+                        if (fPtr_ != nullptr)
+                        {
+                            fPtr_->fPtr_ = fPtr_;
+                        }
                     }
                     SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
                     {
@@ -560,6 +579,8 @@ namespace   Stroika {
             private:
                 template    <typename T2>
                 friend  class   SharedPtr;
+            private:
+                friend  class   enable_shared_from_this<T>;
             };
 
 

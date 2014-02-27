@@ -262,6 +262,7 @@ namespace   Stroika {
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
                 : fCount_ (0)
+                , fPtr_ (nullptr)
             {
             }
             template    <typename   T>
@@ -283,7 +284,8 @@ namespace   Stroika {
                  *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
                 //T*  tStarThis   =   dynamic_cast<T*> (this);
-                return (SharedPtr<T> (Envelope_ (this)));
+                AssertNotNull (fPtr_);
+                return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
             }
 
 
