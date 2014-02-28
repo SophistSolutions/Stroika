@@ -39,19 +39,19 @@ namespace   Stroika {
 
             namespace   Private_ {
                 template    <typename   T>
-                class   BasicEnvelope_ {
+                class   Envelope_ {
                 private:
                     T*                              fPtr_;
                     ReferenceCounterContainerType_* fCountHolder_;
                 public:
-                    BasicEnvelope_ (T* ptr, ReferenceCounterContainerType_* countHolder )
+                    Envelope_ (T* ptr, ReferenceCounterContainerType_* countHolder )
                         : fPtr_ (ptr)
                         , fCountHolder_ (countHolder)
                     {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
                     template    <typename T2>
-                    inline  BasicEnvelope_ (BasicEnvelope_<T2>&& from) noexcept
+                    inline  Envelope_ (Envelope_<T2>&& from) noexcept
                 :
                     fPtr_ (from.GetPtr ())
                     , fCountHolder_ (from.fCountHolder_)
@@ -60,14 +60,14 @@ namespace   Stroika {
                         from.fCountHolder_ = nullptr;
                     }
                     template    <typename T2>
-                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from) noexcept
+                    inline  Envelope_ (const Envelope_<T2>& from) noexcept
                 :
                     fPtr_ (from.GetPtr ())
                     , fCountHolder_ (from.fCountHolder_)
                     {
                     }
                     template <typename T2>
-                    inline  BasicEnvelope_ (const BasicEnvelope_<T2>& from, T* newP) noexcept
+                    inline  Envelope_ (const Envelope_<T2>& from, T* newP) noexcept
                 :
                     fPtr_ (newP)
                     , fCountHolder_ (from.fCountHolder_)
@@ -111,7 +111,7 @@ namespace   Stroika {
 
                 private:
                     template    <typename T2>
-                    friend  class   BasicEnvelope_;
+                    friend  class   Envelope_;
                 };
             }
 
@@ -355,12 +355,6 @@ namespace   Stroika {
 #endif
             {
             }
-#if 0
-            template    <typename   T>
-            inline  enable_shared_from_this<T>::~enable_shared_from_this ()
-            {
-            }
-#endif
             template    <typename   T>
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
@@ -375,11 +369,8 @@ namespace   Stroika {
                  *
                  *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
-                //T*  tStarThis   =   dynamic_cast<T*> (this);
-                //return (SharedPtr<T> (SharedPtr<T>::Envelope_ (tStarThis, this, false)));
                 AssertNotNull (fPtr_);
                 return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
-                //return (SharedPtr<T> (Private_::SharedFromThis_Envelope_<T> (fPtr_)));
             }
 
 

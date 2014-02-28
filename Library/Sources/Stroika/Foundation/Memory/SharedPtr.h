@@ -26,9 +26,6 @@
  *
  *      @todo   Get rid of legacy crap
  *
- *      @todo   MoveCTORs
- *              supported && move operations!
- *
  *      @todo   See if I can transparently add (optional traits) locker, to make it threadsafe.
  *              (at least copying envelope safe)
  *
@@ -77,81 +74,33 @@ namespace   Stroika {
             }
 
 
-            template    <typename T>
-            class   SharedPtr;
-
-
-///DOCS OUT OF DATE - UPDATE -
-            // An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
-            // from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
-            // This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
-            // a layer of code, and then re-constitute the SharedPtr<> part later.
-
-            /*
-             * To enable the shared_from_this () functionality - and allow recovery of the SharedPtr<T> from the T* itself, its necessary to
-             * combine the T type with the SharedPtr<T> infrastructure.
-             *
-             * To use, just inherit your type from enable_shared_from_this<>:
-             *
-             *      struct  TTT : Memory::enable_shared_from_this<TTT> {
-             *          string x;
-             *      };
-             *      using TTT_SP =  SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>> ;
-             *
-             *  This is like the std::enable_shared_from_this - making your type inherit from it, allows you to recover the
-             *  underlying SharedPtr<> given a plain C++ pointer to T.
-             *
-             */
             template    <typename   T>
-            class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
-            public:
-                enable_shared_from_this ();
-                const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
-                ~enable_shared_from_this () = default;
-
-            public:
-                /**
-                 */
-                nonvirtual  SharedPtr<T> shared_from_this ();
-
-            private:
-                T*  fPtr_;
-
-            private:
-                friend  class   SharedPtr<T>;
-            };
+            class   enable_shared_from_this;
 
 
             namespace   Private_ {
                 template    <typename   T>
-                class   BasicEnvelope_;
-            }
-
-
-            namespace Private_ {
-
-                template    <typename   T>
-                using  Envelope_ = BasicEnvelope_<T>;
+                class   Envelope_;
             }
 
 
             /**
-            *
-            * NEW NOTES:
-            *
-            * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
-            *
-            *       >   Doesnt support weak ptr.
-            *
-            *       >   Emprically appears faster than std::shared_ptr<> (probably due to block allocaiton of envelope and
-            *           not suppoprting weak_ptr)
-            *
-            *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
-            *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
-            *
-            *
-            @CLASS:         SharedPtr<T,T_TRAITS>
-            @DESCRIPTION:
+             *
+             * NEW NOTES:
+             *
+             * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
+             *
+             *       >   Doesnt support weak ptr.
+             *
+             *       >   Emprically appears faster than std::shared_ptr<> (probably due to block allocaiton of envelope and
+             *           not suppoprting weak_ptr)
+             *
+             *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
+             *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
+             *
+             *
+             @CLASS:         SharedPtr<T,T_TRAITS>
+             @DESCRIPTION:
                     <p>This class is for keeping track of a data structure with reference counts,
                 and disposing of that structure when the reference count drops to zero.
                 Copying one of these Shared<T> just increments the referce count,
@@ -199,7 +148,6 @@ namespace   Stroika {
                     neglecting the weak_ptr stuff.</p>
 
                     <p>See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage</p>
-
             */
             template    <typename   T>
             class   SharedPtr final : public SharedPtrBase {
@@ -234,11 +182,10 @@ namespace   Stroika {
                 nonvirtual  bool        IsNull () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::GetRep
-                @DESCRIPTION:   <p>Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get ()
-                    which whill return null without asserting if the pointer is allowed to be null.</p>
-                */
+                /**
+                 *  Requires that the pointer is non-nullptr. You can call SharedPtr<T,T_TRAITS>::get ()
+                 *  which whill return null without asserting if the pointer is allowed to be null.</p>
+                 */
                 nonvirtual  T&          GetRep () const noexcept;
 
             public:
@@ -356,6 +303,46 @@ namespace   Stroika {
                 friend  class   SharedPtr;
             private:
                 friend  class   enable_shared_from_this<T>;
+            };
+
+
+            /**
+             *  An OPTIONAL class you can mix into 'T', and use with SharedPtr<>. If the 'T' used in SharedPtr<T> inherits
+             *  from this, then you can re-constitute a SharedPtr<T> from it's T* (since the count is pulled along-side).
+             *  This is sometimes handy if you wish to take a SharedPtr<> object, and pass the underlying pointer through
+             *  a layer of code, and then re-constitute the SharedPtr<> part later.
+             *
+             * To enable the shared_from_this () functionality - and allow recovery of the SharedPtr<T> from the T* itself, its necessary to
+             * combine the T type with the SharedPtr<T> infrastructure.
+             *
+             * To use, just inherit your type from enable_shared_from_this<>:
+             *
+             *      struct  TTT : Memory::enable_shared_from_this<TTT> {
+             *          string x;
+             *      };
+             *      using TTT_SP =  SharedPtr<TTT,SharedPtrFromThis_Traits<TTT>> ;
+             *
+             *  This is like the std::enable_shared_from_this - making your type inherit from it, allows you to recover the
+             *  underlying SharedPtr<> given a plain C++ pointer to T.
+             *
+             */
+            template    <typename   T>
+            class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
+            public:
+                enable_shared_from_this ();
+                const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
+                ~enable_shared_from_this () = default;
+
+            public:
+                /**
+                 */
+                nonvirtual  SharedPtr<T> shared_from_this ();
+
+            private:
+                T*  fPtr_;
+
+            private:
+                friend  class   SharedPtr<T>;
             };
 
 
