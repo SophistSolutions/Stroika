@@ -21,12 +21,18 @@
 
 
 
-// Private IMPL define - may allow another way to specify eventually, but for now just to test
-#if     !defined (qBlockAllocation_UseSpinLock_)
-#define qBlockAllocation_UseSpinLock_   1
+/*
+ *	qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the 
+ *	performance regression test indicated that this helped considerably).
+ *
+ *	It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
+ *	spinning. And we could reduce this further during mallocs of new blocks.
+ */
+#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   1
 #endif
 
-#if    qBlockAllocation_UseSpinLock_
+#if    qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
 #include    "../Execution/SpinLock.h"
 #endif
 
@@ -45,7 +51,7 @@ namespace   Stroika {
                     ~BlockAllocator_ModuleInit_ ();
                 };
 
-#if    qBlockAllocation_UseSpinLock_
+#if    qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
                 using LockType_ = Execution::SpinLock;
 #else
                 using LockType_ = mutex;
@@ -143,7 +149,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *************** Private_::BlockAllocationPool_<SIZE> ***************************
+             ***************** Private_::BlockAllocationPool_<SIZE> *************************
              ********************************************************************************
              */
             template    <size_t SIZE>

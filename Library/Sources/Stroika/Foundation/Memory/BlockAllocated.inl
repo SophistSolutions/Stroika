@@ -66,16 +66,14 @@ namespace   Stroika {
             }
 
 
-
             /*
              ********************************************************************************
              *************************** ManuallyBlockAllocated<T> **************************
              ********************************************************************************
              */
-
             template    <typename   T>
             template    <typename... ARGS>
-            T*  ManuallyBlockAllocated<T>::New (ARGS&& ... args)
+            inline  T*  ManuallyBlockAllocated<T>::New (ARGS&& ... args)
             {
 #if     qAllowBlockAllocation
                 return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
@@ -84,7 +82,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            void    Delete (T* p)
+            inline  void    ManuallyBlockAllocated<T>::Delete (T* p)
             {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
