@@ -238,7 +238,7 @@ namespace   Stroika {
                  *  (since can use block-allocation - even if type T not block allocated) -
                  *  and no extra count infrastructure, or threadafe locking.
                  */
-                BlockAllocated<T>*  fValue_;
+                AutomaticallyBlockAllocated<T>*  fValue_;
             };
 
 

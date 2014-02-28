@@ -24,6 +24,11 @@
  *          we get multiple results, just patch them into the linked list. That way in case of
  *          multithreading (when we're paging in freepool) - we'll do less busy waiting.
  *
+ *  @todo   Compact() method could be smart enough to move items in free poll that are from
+ *          mostly used up pools to the head of the free list, and move mostly unused blocks
+ *          to the end of the free pool, which over time should probably tend to defragment
+ *          the pools.
+ *
  *  @todo   BlockAllocator<T> could hugely benefit from some optimistic locking
  *          strategy - like in http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
  *
@@ -58,10 +63,16 @@ namespace   Stroika {
              *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
              *  no searching or coalescing ever needed, but at the cost of creating some amount of fragmentation.
              *
-             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
-             *  false (0), this will just default to the global ::new/::delete
-             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
+             *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
+             *
+             *  For easiser use probably the best approach is to see DECLARE_USE_BLOCK_ALLOCATION
+             *
+             *  But also see:
+             *      @see AutomaticallyBlockAllocated
+             *      @see ManuallyBlockAllocated
+             *      @see DECLARE_USE_BLOCK_ALLOCATION
              */
             template    <typename   T>
             class   BlockAllocator  {

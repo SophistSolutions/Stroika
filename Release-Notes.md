@@ -31,6 +31,8 @@ History
 				</ul>
 			</li>
 			<li>New DataExchage::INI file support</li>
+			<li>BlockAllocation-related cleanups - renamed BlockAllocated<> to AutomaticallyBlockAllocated<> and added
+			ManuallyBlockAllocated<>. Other related cleanups.</li>
 			<li>Revived SharedPtr<> template (work in progress; faster, and maybe add threadsafety option)</li>
 			<li>Deprecated String::Remove, and String::RemoveAt - not because really going away, but because changing API to return a new string and
 					this will make it easier to avoid code subtly depending on old behavior. DO switch next release.

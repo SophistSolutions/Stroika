@@ -38,7 +38,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************** Optional<T, TRAITS> *********************************
+             **************************** Optional<T, TRAITS> *******************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -48,17 +48,17 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
-                : fValue_ (new BlockAllocated<T> (from))
+                : fValue_ (new AutomaticallyBlockAllocated<T> (from))
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
-                : fValue_ (new BlockAllocated<T> (std::move (from)))
+                : fValue_ (new AutomaticallyBlockAllocated<T> (std::move (from)))
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS>& from)
-                : fValue_ (from.fValue_ == nullptr ? nullptr : new BlockAllocated<T> (*from))
+                : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
             {
             }
             template    <typename T, typename TRAITS>
@@ -82,7 +82,7 @@ namespace   Stroika {
                 }
                 else {
                     if (fValue_ == nullptr) {
-                        fValue_ = new BlockAllocated<T> (rhs);
+                        fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
                     }
                     else {
                         *fValue_ = rhs;
@@ -100,7 +100,7 @@ namespace   Stroika {
                 }
                 else {
                     if (fValue_ == nullptr) {
-                        fValue_ = new BlockAllocated<T> (std::move (rhs));
+                        fValue_ = new AutomaticallyBlockAllocated<T> (std::move (rhs));
                     }
                     else {
                         *fValue_ = std::move (rhs);
@@ -115,7 +115,7 @@ namespace   Stroika {
                     delete fValue_;
                     fValue_ = nullptr;
                     if (rhs.fValue_ != nullptr) {
-                        fValue_ = new BlockAllocated<T> (*rhs);
+                        fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
                     }
                 }
                 return *this;

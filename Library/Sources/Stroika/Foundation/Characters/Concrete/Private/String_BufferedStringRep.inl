@@ -64,7 +64,7 @@ namespace   Stroika {
                                 if (newCapacity <= BufferedStringRepBlock_::kNElts) {
                                     newCapacity = BufferedStringRepBlock_::kNElts;
                                     static_assert (sizeof (BufferedStringRepBlock_) == sizeof (wchar_t) * BufferedStringRepBlock_::kNElts, "sizes should match");
-                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocated<BufferedStringRepBlock_>::operator new (sizeof (BufferedStringRepBlock_)));
+                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_>::Allocate (sizeof (BufferedStringRepBlock_)));
                                 }
 #endif
                                 if (newBuf == nullptr) {
@@ -76,7 +76,7 @@ namespace   Stroika {
                             }
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                             if (fCapacity_ == BufferedStringRepBlock_::kNElts) {
-                                Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (_PeekStart ());
+                                Memory::BlockAllocator<BufferedStringRepBlock_>::Deallocate (_PeekStart ());
                             }
                             else {
                                 delete[] _PeekStart ();
@@ -138,7 +138,7 @@ namespace   Stroika {
                     {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         if (fCapacity_ == BufferedStringRepBlock_::kNElts) {
-                            Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (_PeekStart ());
+                            Memory::BlockAllocator<BufferedStringRepBlock_>::Deallocate (_PeekStart ());
                             return;
                         }
 #endif

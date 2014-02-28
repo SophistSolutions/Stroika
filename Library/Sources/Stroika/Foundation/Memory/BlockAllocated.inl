@@ -19,50 +19,81 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************* BlockAllocated<T> ******************************
+             ********************** AutomaticallyBlockAllocated<T> **************************
              ********************************************************************************
              */
             template    <typename   T>
-            inline  BlockAllocated<T>::BlockAllocated ()
+            inline  AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated ()
                 : fValue_ ()
             {
             }
             template    <typename   T>
-            inline  BlockAllocated<T>::BlockAllocated (const BlockAllocated<T>& t)
+            inline  AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t)
                 : fValue_ (t)
             {
             }
             template    <typename   T>
-            inline  BlockAllocated<T>::BlockAllocated (const T& t)
+            inline  AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const T& t)
                 : fValue_ (t)
             {
             }
             template    <typename   T>
-            inline  BlockAllocated<T>::BlockAllocated (T&&  t)
+            inline  AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (T&&  t)
                 : fValue_ (std::move (t))
             {
             }
             template    <typename   T>
-            inline   const BlockAllocated<T>& BlockAllocated<T>::operator= (const BlockAllocated<T>& t)
+            inline   const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const AutomaticallyBlockAllocated<T>& t)
             {
                 fValue_ = t.fValue_;
                 return *this;
             }
             template    <typename   T>
-            inline   const BlockAllocated<T>& BlockAllocated<T>::operator= (const T& t)
+            inline   const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const T& t)
             {
                 fValue_ = t;
                 return *this;
             }
             template    <typename   T>
-            inline    BlockAllocated<T>::operator T () const
+            inline    AutomaticallyBlockAllocated<T>::operator T () const
             {
                 return fValue_;
             }
             template    <typename   T>
-            inline    T* BlockAllocated<T>::get ()
+            inline    T* AutomaticallyBlockAllocated<T>::get ()
             {
                 return &fValue_;
+            }
+
+
+
+            /*
+             ********************************************************************************
+             *************************** ManuallyBlockAllocated<T> **************************
+             ********************************************************************************
+             */
+
+            template    <typename   T>
+            template    <typename... ARGS>
+            T*  ManuallyBlockAllocated<T>::New (ARGS&& ... args)
+            {
+#if     qAllowBlockAllocation
+                return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
+#else
+                return new T (forward<ARGS> (args)...);
+#endif
+            }
+            template    <typename   T>
+            void    Delete (T* p)
+            {
+#if     qAllowBlockAllocation
+                if (p != nullptr) {
+                    (p)->~T ();
+                    BlockAllocator<T>::Deallocate (p);
+                }
+#else
+                delete p;
+#endif
             }
 
 

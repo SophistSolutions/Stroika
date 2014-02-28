@@ -100,9 +100,13 @@ namespace   Stroika {
              *  </pre>
              *  </code>
              *
+             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+             *  false (0), this will just default to the global ::new/::delete
+             *
              *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
              *  @see Stroika::Foundation::Memory::BlockAllocator
-             *  @see Stroika::Foundation::Memory::BlockAllocated
+             *  @see Stroika::Foundation::Memory::AutomaticallyBlockAllocated
+             *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
              *
              *  \hideinitializer
              */
@@ -154,26 +158,25 @@ namespace   Stroika {
 
 
             /**
-            *
-            *
-            * @todo - I THINK THIS API IS WEAK AND PROBABY NEEDS MAJOR REVISION -- LGP 2014-02-27
-
-              * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
-              *
-              * BlockAllocated<T> is a templated class designed to allow easy use
-              * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
-              * size blocks (with the only problem being the storage is never - or almost never - returned to the
-              * free store - it doesn't leak - but cannot be used for other things. This is often a useful
-              * tradeoff for things you allocate a great number of.
-              *
-              * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
-              * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
-              *
-              * Note also - you can avoid some of the uglines of the overload declarations by using the
-              * DECLARE_USE_BLOCK_ALLOCATION() macro.
-            */
+             * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
+             *
+             * AutomaticallyBlockAllocated<T> is a templated class designed to allow easy use
+             * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
+             * size blocks (with the only problem being the storage is never - or almost never - returned to the
+             * free store - it doesn't leak - but cannot be used for other things. This is often a useful
+             * tradeoff for things you allocate a great number of.
+             *
+             * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
+             * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
+             *
+             * Note also - you can avoid some of the uglines of the overload declarations by using the
+             * DECLARE_USE_BLOCK_ALLOCATION() macro.
+             *
+             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+             *  false (0), this will just default to the global ::new/::delete
+             */
             template    <typename   T>
-            class   BlockAllocated   {
+            class   AutomaticallyBlockAllocated   {
             public:
                 DECLARE_USE_BLOCK_ALLOCATION(T);
 
@@ -183,13 +186,13 @@ namespace   Stroika {
                  *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
                  *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
                  */
-                BlockAllocated ();
-                BlockAllocated (const BlockAllocated<T>& t);
-                BlockAllocated (const T& t);
-                BlockAllocated (T&&  t);
+                AutomaticallyBlockAllocated ();
+                AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t);
+                AutomaticallyBlockAllocated (const T& t);
+                AutomaticallyBlockAllocated (T&&  t);
             public:
-                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t);
-                nonvirtual const BlockAllocated<T>& operator= (const T& t);
+                nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated<T>& t);
+                nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
 
             public:
                 nonvirtual  operator T () const;
@@ -202,45 +205,31 @@ namespace   Stroika {
             };
 
 
-
-
-
-            /// NEW EXPERIMENTAL POSSIBLE REPLACEMNT FOR BlockAllocated<>
-            // LGP 2014-02-27
-            //
-            // maybe just augoemtn - this is where you must save a T* and return that easil. Maybe existing BlockAllocated best for
-            // when you can afford to hang onto the wrapper BlockAllocated<T>?
-            //
-            // maybe call this ManuallyBlockAllocated, and the other one AutomaticallyBlockAllocated()??
+            /**
+             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store,
+             *  but if qAllowBlockAllocation is false (0), this will just default to the global ::new/::delete
+             *  NEW EXPERIMENTAL POSSIBLE REPLACEMNT FOR BlockAllocated<>
+             *  LGP 2014-02-27
+             *
+             *  @todo CLEANUP THIS DOC SECITON
+             *
+             *  maybe just augoemtn - this is where you must save a T* and return that easil. Maybe existing BlockAllocated best for
+             *  when you can afford to hang onto the wrapper BlockAllocated<T>?
+             *
+             *  maybe call this ManuallyBlockAllocated, and the other one AutomaticallyBlockAllocated()??
+             */
             template    <typename   T>
             class   ManuallyBlockAllocated   {
             public:
-                // new experimental API -- LGP 2014-02-27
-                // DOCUMENT
+                /**
+                 */
                 template    <typename... ARGS>
-                static  T*  New (ARGS&& ... args)
-                {
-#if     qAllowBlockAllocation
-                    return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
-#else
-                    return new T (forward<ARGS> (args)...);
-#endif
-                }
+                static  T*  New (ARGS&& ... args);
 
             public:
-                // new experimental API -- LGP 2014-02-27
-                // DOCUMENT
-                static  void    Delete (T* p)
-                {
-#if     qAllowBlockAllocation
-                    if (p != nullptr) {
-                        (p)->~T ();
-                        BlockAllocator<T>::Deallocate (p);
-                    }
-#else
-                    delete p;
-#endif
-                }
+                /**
+                 */
+                static  void    Delete (T* p);
             };
 
 
