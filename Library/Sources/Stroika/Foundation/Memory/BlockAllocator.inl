@@ -22,11 +22,11 @@
 
 
 /*
- *	qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the 
- *	performance regression test indicated that this helped considerably).
+ *  qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the
+ *  performance regression test indicated that this helped considerably).
  *
- *	It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
- *	spinning. And we could reduce this further during mallocs of new blocks.
+ *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
+ *  spinning. And we could reduce this further during mallocs of new blocks.
  */
 #if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
 #define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   1
