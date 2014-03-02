@@ -135,7 +135,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CHECK_KEY>
-            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value>::type*)
+            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if <is_convertible<T*, enable_shared_from_this<CHECK_KEY>*>::value>::type*)
                 : fEnvelope_ (from, from)
             {
                 Assert (fEnvelope_.GetPtr () == from);
@@ -150,7 +150,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CHECK_KEY>
-            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value >::type*)
+            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<T*, enable_shared_from_this<CHECK_KEY>*>::value >::type*)
                 : fEnvelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ())
             {
                 if (fEnvelope_.GetPtr () != nullptr) {

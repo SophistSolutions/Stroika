@@ -161,9 +161,9 @@ namespace   Stroika {
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
                 template    <typename CHECK_KEY = T>
-                explicit SharedPtr (T* from, typename enable_if < is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value>::type* = 0);
+                explicit SharedPtr (T* from, typename enable_if < is_convertible<T*, enable_shared_from_this<CHECK_KEY>*>::value>::type* = 0);
                 template    <typename CHECK_KEY = T>
-                explicit SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, enable_shared_from_this<CHECK_KEY>*>::value >::type* = 0);
+                explicit SharedPtr (T* from, typename enable_if < !is_convertible<T*, enable_shared_from_this<CHECK_KEY>*>::value >::type* = 0);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
                 SharedPtr (SharedPtr<T>&& from) noexcept;
                 template    <typename T2>
@@ -330,7 +330,11 @@ namespace   Stroika {
             class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
             public:
                 enable_shared_from_this ();
+
+            public:
                 const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
+
+            public:
                 ~enable_shared_from_this () = default;
 
             public:
