@@ -163,7 +163,7 @@ namespace   Stroika {
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
                 template    <typename CHECK_KEY = T>
-                explicit SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0);
+                explicit SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0) noexcept;
                 template    <typename CHECK_KEY = T>
                 explicit SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
                 SharedPtr (const SharedPtr<T>& from) noexcept;

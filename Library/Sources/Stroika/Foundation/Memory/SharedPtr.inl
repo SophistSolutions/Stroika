@@ -135,8 +135,9 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CHECK_KEY>
-            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type*)
-                : fEnvelope_ (from, from)
+            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type*) noexcept
+:
+            fEnvelope_ (from, from)
             {
                 Assert (fEnvelope_.GetPtr () == from);
                 if (from != nullptr) {
