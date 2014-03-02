@@ -158,6 +158,8 @@ namespace   Stroika {
                 using   Envelope_   =   Private_::Envelope_<T>;
 
             public:
+                /**
+                 */
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
                 template    <typename CHECK_KEY = T>
@@ -179,6 +181,8 @@ namespace   Stroika {
                 ~SharedPtr ();
 
             public:
+                /**
+                 */
                 nonvirtual  bool        IsNull () const noexcept;
 
             public:
@@ -202,76 +206,70 @@ namespace   Stroika {
                 nonvirtual  T& operator* () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::operator T*
-                @DESCRIPTION:   <p>Note - this CAN return nullptr</p>
-                */
+                /**
+                 *  Note - this CAN return nullptr
+                 */
                 nonvirtual  operator T* () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::get
-                @DESCRIPTION:   <p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
-                            asserts about it being non-null.</p>
-                */
+                /**
+                 *  Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Just return the pointed to object, with no
+                 *  asserts about it being non-null.</p>
+                 */
                 nonvirtual  T*      get () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::release
-                @DESCRIPTION:   <p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
-                            pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
-                            <br>
-                            NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
-                            If you want the pointer before release, explicitly call get () first!!!
-                            </p>
-                */
+                /**
+                 *  Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer nullptr, but first return the
+                 *  pre-existing pointer value. Note - if there were more than one references to the underlying object, its not destroyed.
+                 *
+                 *  NO - Changed API to NOT return old pointer, since COULD have been destroyed, and leads to buggy coding.
+                 *  If you want the pointer before release, explicitly call get () first!!!
+                 */
                 nonvirtual  void    release () noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::clear
-                @DESCRIPTION:   <p>Synonymn for SharedPtr<T,T_TRAITS>::release ()
-                            </p>
-                */
+                /**
+                 *  Synonymn for SharedPtr<T,T_TRAITS>::release ()
+                 */
                 nonvirtual  void    clear () noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::reset
-                @DESCRIPTION:   <p>Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
-                            pre-existing pointer value. Unreference any previous value. Note - if there were more than one references
-                            to the underlying object, its not destroyed.</p>
-                */
+                /**
+                 *  Mimic the 'get' API of the std::auto_ptr&lt;T&gt; class. Make this pointer 'p', but first return the
+                 *  pre-existing pointer value. Unreference any previous value. Note - if there were more than one references
+                 *  to the underlying object, its not destroyed.
+                 */
                 nonvirtual  void    reset (T* p = nullptr);
 
             public:
                 template <typename T2>
-                /*
-                @METHOD:        SharedPtr::Dynamic_Cast
-                @DESCRIPTION:   <p>Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
-                            thats a reserved word.</p>
-
-
-                            NOTE - THIS RETURNS NULLPTR NOT THROWING - if dynamic_cast<> fails - that is pointer dynamoic_cast not reference
-                */
+                /**
+                 *  Similar to SharedPtr<T2> () CTOR - which does base type. NB couldn't call this dynamic_cast -
+                 *  thats a reserved word.
+                 *
+                 *  NOTE - THIS RETURNS NULLPTR NOT THROWING - if dynamic_cast<> fails - that is pointer dynamoic_cast not reference
+                 */
                 nonvirtual  SharedPtr<T2>   Dynamic_Cast () const noexcept;
 
             public:
-                // Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
+                /**
+                 *  Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
+                 */
                 nonvirtual  bool    IsUnique () const noexcept;
 
             public:
-                // Alias for IsUnique()
+                /**
+                 *  Alias for IsUnique()
+                 */
                 nonvirtual  bool    unique () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::CurrentRefCount
-                @DESCRIPTION:   <p>I used to keep this available only for debugging, but I've found a few
-                cases where its handy outside the debugging context so not its awlays available (it has
-                no cost to keep available).</p>
-                */
+                /**
+                 *  I used to keep this available only for debugging, but I've found a few
+                 *  cases where its handy outside the debugging context so not its awlays available (it has
+                 *  no cost to keep available).</p>
+                 */
                 nonvirtual  ReferenceCountType   CurrentRefCount () const noexcept;
 
             public:
@@ -290,6 +288,7 @@ namespace   Stroika {
 
             public:
                 // NOT SURE WHY THIS NEEDED (windows). Investigate... Maybe compiler bug or my overloading bug
+                // -- LGP 2014-03-01?apx
                 nonvirtual  bool    operator!= (nullptr_t) const noexcept
                 {
                     return get () != nullptr;
@@ -301,8 +300,10 @@ namespace   Stroika {
             private:
                 template    <typename T2>
                 friend  class   SharedPtr;
+
             private:
-                friend  class   enable_shared_from_this<T>;
+                template    <typename T2>
+                friend  class   enable_shared_from_this;
             };
 
 
@@ -340,13 +341,14 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SharedPtr<T> shared_from_this ();
+                nonvirtual  SharedPtr<T>    shared_from_this ();
 
             private:
                 T*  fPtr_;
 
             private:
-                friend  class   SharedPtr<T>;
+                template    <typename T2>
+                friend  class   SharedPtr;
             };
 
 
