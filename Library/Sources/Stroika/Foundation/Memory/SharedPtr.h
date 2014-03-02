@@ -22,16 +22,11 @@
  *      @todo   See if fDeleteCounter_ can be somehow inferred from other data to save space/copying. It's hard cuz
  *              of the multiple inheritence case (so comparing counter == fPtr not exactly right always).
  *
- *      @todo   MASSIVE CLEANUPS SO UPDTATE FOR STROIKA STANDARDS
- *
- *      @todo   Get rid of legacy crap
- *
  *      @todo   See if I can transparently add (optional traits) locker, to make it threadsafe.
  *              (at least copying envelope safe)
  *
  *      @todo   CLEAR DOCS!!! - once we have stuff stable...
- *
- *          (o)     CAREFULLY writeup differences between this class and shared_ptr<>
+ *          o       CAREFULLY writeup differences between this class and shared_ptr<>
  *                  +   I DONT BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
  *                      applications. Maybe I'm missing something. Ask around a bit...
  *                      FOR THE MOST PART.
@@ -39,9 +34,8 @@
  *                      There are specific (rare) cases where weak_ptr IS important, and I wnat to find (TODO)
  *                      SOME way to implemnet athat (e.g. PHRDB:: shared DB stuff).
  *
- *          (o)     BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
- *          (o)     Cleanup documentation, especially about the purpose/point, and how to use.
- *
+ *          o       BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
+ *          o       Cleanup documentation, especially about the purpose/point, and how to use.
  */
 
 
@@ -67,7 +61,6 @@ namespace   Stroika {
                 struct  ReferenceCounterContainerType_ {
                     atomic<SharedPtrBase::ReferenceCountType>   fCount;
                     bool                                        fDeleteCounter_;
-
                     ReferenceCounterContainerType_ ();
                     ReferenceCounterContainerType_ (bool deleteCounter);
                 };
@@ -98,57 +91,51 @@ namespace   Stroika {
              *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
              *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
              *
+             *  <p>This class is for keeping track of a data structure with reference counts,
+             *  and disposing of that structure when the reference count drops to zero.
+             *  Copying one of these Shared<T> just increments the referce count,
+             *  and destroying/overwriting one decrements it.
              *
-             @CLASS:         SharedPtr<T,T_TRAITS>
-             @DESCRIPTION:
-                    <p>This class is for keeping track of a data structure with reference counts,
-                and disposing of that structure when the reference count drops to zero.
-                Copying one of these Shared<T> just increments the referce count,
-                and destroying/overwriting one decrements it.
-                </p>
-
-                    <p>You can have a ptr having a nullptr value, and it can be copied.
-                (Implementation detail - the reference count itself is NEVER nil except upon
-                failure of alloction of memory in ctor and then only valid op on class is
-                destruction). You can access the value with GetPointer () but this is not
-                advised - only if it may be legitimately nullptr do you want to do this.
-                Generaly just use ptr-> to access the data, and this will do the
-                RequireNotNull (POINTER) for you.
-                </p>
-
-                    <p>This class can be enourmously useful in implementing letter/envelope -
-                type data structures - see String, or Shapes, for examples.
-                </p>
-
-                    <p>Example Usage</p>
-
-                <code>
-                    {
-                        SharedPtr<int>  p (new int ());
-                        *p = 3;
-                        // 'when 'p' goes out of scope - the int will be automatically deleted
-                    }
-                </code>
-
-                    <p>SharedPtr<T> is a simple utility class - very much akin to the C++11 class
-                std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
-
-                    <li>There is no std::weak_ptr - or at least if there is - we must document it clearly
-                        how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
-                    <li>There is an extra template T_TRAITS that allows for solving special problems that
-                        come up with shared_ptr<> - namely recovering the
-                        'shared' version of 'T' when only given a plain copy of 'T'
-                    </li>
-
-                    Otherwise, the intention is that they should operate very similarly, and SharedPtr<T>
-                    should work with most classes that expect shared_ptr<T> (so long
-                    as they are templated, and not looking for the particular type name 'shared_ptr').
-
-                    <p>TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
-                    neglecting the weak_ptr stuff.</p>
-
-                    <p>See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage</p>
-            */
+             *       <p>You can have a ptr having a nullptr value, and it can be copied.
+             *  (Implementation detail - the reference count itself is NEVER nil except upon
+             *   failure of alloction of memory in ctor and then only valid op on class is
+             *   destruction). You can access the value with GetPointer () but this is not
+             *   advised - only if it may be legitimately nullptr do you want to do this.
+             *   Generaly just use ptr-> to access the data, and this will do the
+             *   RequireNotNull (POINTER) for you.
+             *
+             *         <p>This class can be enourmously useful in implementing letter/envelope -
+             *    type data structures - see String, or Shapes, for examples.
+             *
+             *
+             *  Example Usage
+             *  <code>
+             *      {
+             *      SharedPtr<int>  p (new int ());
+             *      *p = 3;
+             *      // 'when 'p' goes out of scope - the int will be automatically deleted
+             *      }
+             *  </code>
+             *
+             *  SharedPtr<T> is a simple utility class - very much akin to the C++11 class
+             *  std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
+             *
+             *  <li>There is no std::weak_ptr - or at least if there is - we must document it clearly
+             *  how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
+             *  <li>There is an extra template T_TRAITS that allows for solving special problems that
+             *  come up with shared_ptr<> - namely recovering the
+             *  'shared' version of 'T' when only given a plain copy of 'T'
+             *  </li>
+             *
+             *  Otherwise, the intention is that they should operate very similarly, and SharedPtr<T>
+             *  should work with most classes that expect shared_ptr<T> (so long
+             *  as they are templated, and not looking for the particular type name 'shared_ptr').
+             *
+             *  <p>TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
+             *  neglecting the weak_ptr stuff.</p>
+             *
+             *  See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
+             */
             template    <typename   T>
             class   SharedPtr final : public SharedPtrBase {
             public:
@@ -202,10 +189,8 @@ namespace   Stroika {
                 nonvirtual  T* operator-> () const noexcept;
 
             public:
-                /*
-                @METHOD:        SharedPtr<T,T_TRAITS>::operator*
-                @DESCRIPTION:   <p></p>
-                */
+                /**
+                 */
                 nonvirtual  T& operator* () const noexcept;
 
             public:
