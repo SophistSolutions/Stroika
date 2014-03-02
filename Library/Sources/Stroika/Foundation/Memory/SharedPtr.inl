@@ -261,7 +261,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  void    SharedPtr<T>::release () noexcept {
-                *this = SharedPtr<T> (nullptr);
+                if (fEnvelope_.GetPtr () != nullptr)
+                {
+                    if (fEnvelope_.Decrement ()) {
+                        fEnvelope_.DoDeleteCounter ();
+                        delete fEnvelope_.GetPtr ();
+                        fEnvelope_.SetPtr (nullptr);
+                    }
+                }
             }
             template    <typename T>
             inline  void    SharedPtr<T>::clear () noexcept {
