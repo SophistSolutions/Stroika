@@ -123,7 +123,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * SharedByValue::SharedByValue():
+                 *  SharedByValue::SharedByValue():
                  *  The constructor takes either no/args to nullptr, to construct an empty SharedByValue.
                  *
                  *  It can be copied by another copy of the same kind (including same kind of copier).
