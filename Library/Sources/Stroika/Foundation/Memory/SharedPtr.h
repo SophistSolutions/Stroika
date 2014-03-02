@@ -72,6 +72,9 @@ namespace   Stroika {
 
 
             namespace   Private_ {
+#ifndef qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
+#define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     0
+#endif
                 template    <typename   T>
                 class   Envelope_;
             }
@@ -91,48 +94,51 @@ namespace   Stroika {
              *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
              *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
              *
-             *  <p>This class is for keeping track of a data structure with reference counts,
+             *  This class is for keeping track of a data structure with reference counts,
              *  and disposing of that structure when the reference count drops to zero.
              *  Copying one of these Shared<T> just increments the referce count,
              *  and destroying/overwriting one decrements it.
              *
-             *       <p>You can have a ptr having a nullptr value, and it can be copied.
+             *  You can have a ptr having a nullptr value, and it can be copied.
              *  (Implementation detail - the reference count itself is NEVER nil except upon
-             *   failure of alloction of memory in ctor and then only valid op on class is
-             *   destruction). You can access the value with GetPointer () but this is not
-             *   advised - only if it may be legitimately nullptr do you want to do this.
-             *   Generaly just use ptr-> to access the data, and this will do the
-             *   RequireNotNull (POINTER) for you.
+             *  failure of alloction of memory in ctor and then only valid op on class is
+             *  destruction). You can access the value with GetPointer () but this is not
+             *  advised - only if it may be legitimately nullptr do you want to do this.
+             *  Generaly just use ptr-> to access the data, and this will do the
+             *  RequireNotNull (POINTER) for you.
              *
-             *         <p>This class can be enourmously useful in implementing letter/envelope -
+             *         This class can be enourmously useful in implementing letter/envelope -
              *    type data structures - see String, or Shapes, for examples.
              *
              *
              *  Example Usage
              *  <code>
              *      {
-             *      SharedPtr<int>  p (new int ());
-             *      *p = 3;
-             *      // 'when 'p' goes out of scope - the int will be automatically deleted
+             *          SharedPtr<int>  p (new int ());
+             *          *p = 3;
+             *          // 'when 'p' goes out of scope - the int will be automatically deleted
              *      }
              *  </code>
              *
              *  SharedPtr<T> is a simple utility class - very much akin to the C++11 class
              *  std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
              *
-             *  <li>There is no std::weak_ptr - or at least if there is - we must document it clearly
-             *  how/why via extra sharedPTR tmeplate arg(to be worked out)</li>
-             *  <li>There is an extra template T_TRAITS that allows for solving special problems that
-             *  come up with shared_ptr<> - namely recovering the
-             *  'shared' version of 'T' when only given a plain copy of 'T'
+             *  <li>
+             *      There is no std::weak_ptr - or at least if there is - we must document it clearly
+             *      how/why via extra sharedPTR tmeplate arg(to be worked out)
+             *  </li>
+             *  <li>
+             *      There is an extra template T_TRAITS that allows for solving special problems that
+             *      come up with shared_ptr<> - namely recovering the
+             *      'shared' version of 'T' when only given a plain copy of 'T'
              *  </li>
              *
              *  Otherwise, the intention is that they should operate very similarly, and SharedPtr<T>
              *  should work with most classes that expect shared_ptr<T> (so long
              *  as they are templated, and not looking for the particular type name 'shared_ptr').
              *
-             *  <p>TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
-             *  neglecting the weak_ptr stuff.</p>
+             *  TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
+             *  neglecting the weak_ptr stuff
              *
              *  See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
              */
@@ -331,8 +337,10 @@ namespace   Stroika {
                  */
                 nonvirtual  SharedPtr<T>    shared_from_this ();
 
+#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
             private:
                 T*  fPtr_;
+#endif
 
             private:
                 template    <typename T2>

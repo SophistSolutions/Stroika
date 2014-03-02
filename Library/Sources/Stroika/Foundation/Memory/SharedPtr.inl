@@ -37,6 +37,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             *************************** Private_::Envelope_ ********************************
+             ********************************************************************************
+             */
             namespace   Private_ {
                 template    <typename   T>
                 class   Envelope_ {
@@ -187,8 +192,9 @@ namespace   Stroika {
                     return  Envelope_ (nullptr, nullptr);
                 }
                 else {
+#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
                     from->fPtr_ = from;
-                    //Assert (from == fromCnt);
+#endif
                     return  Envelope_ (from, from);
                 }
             }
@@ -360,7 +366,7 @@ namespace   Stroika {
             template    <typename   T>
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
                 : ReferenceCounterContainerType_ (false)
-#if     qDebug
+#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
                 // only initialized for assertion in shared_from_this()
                 , fPtr_ (nullptr)
 #endif
@@ -369,19 +375,26 @@ namespace   Stroika {
             template    <typename   T>
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
+#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
+                AssertNotNull (fPtr_);
+                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
+#else
                 /*
-                 * The Constructor for SharedPtr<T> expects a T*. However, we don't have a T*. But recall,
-                 * the ONLY legal way to use this enable_shared_from_this is:
+                 *  The Constructor for SharedPtr<T> expects a T*. However, enable_shared_from_this doesn't
+                 *  own a T*. But recall, the ONLY legal way to use this enable_shared_from_this is:
                  *
                  *       struct  TTT : Memory::enable_shared_from_this<TTT> {
                  *           string x;
                  *           ....
                  *       };
                  *
-                 *   and so if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
+                 *  So T must be a subclass of TTT, in this case (or equals T);
+                 *
+                 *  So if we have a legal pointer to enable_shared_from_this<T>, then it MUST also be castable to a pointer to T*!!!
                  */
-                AssertNotNull (fPtr_);
-                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
+                T*      ptr =   static_cast<T*> (this);
+                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (ptr, this)));
+#endif
             }
 
 
