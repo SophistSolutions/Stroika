@@ -134,27 +134,11 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            template    <typename CHECK_KEY>
-            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type*) noexcept
-:
-            fEnvelope_ (from, from)
+            inline  SharedPtr<T>::SharedPtr (T* from)
+                : fEnvelope_ (mkEnvelope_ (from))
             {
                 Assert (fEnvelope_.GetPtr () == from);
                 if (from != nullptr) {
-                    from->fPtr_ = from;
-                }
-                if (from != nullptr) {
-                    // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
-                    // in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
-                    fEnvelope_.Increment ();
-                }
-            }
-            template    <typename T>
-            template    <typename CHECK_KEY>
-            inline  SharedPtr<T>::SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value >::type*)
-                : fEnvelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ())
-            {
-                if (fEnvelope_.GetPtr () != nullptr) {
                     // NB: the fEnvelope_.CurrentRefCount () USUALLY == 0, but not necessarily, if the refcount is stored
                     // in the 'from' - (see SharedPtrBase) - in which case the refcount might already be larger.
                     fEnvelope_.Increment ();
@@ -194,6 +178,25 @@ namespace   Stroika {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     fEnvelope_.Increment ();
                 }
+            }
+            template    <typename T>
+            template    <typename T2>
+            typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)
+            {
+                if (from == nullptr) {
+                    return  Envelope_ (nullptr, nullptr);
+                }
+                else {
+                    from->fPtr_ = from;
+                    //Assert (from == fromCnt);
+                    return  Envelope_ (from, from);
+                }
+            }
+            template    <typename T>
+            template    <typename T2>
+            typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if < !is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)
+            {
+                return  Envelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ());
             }
             template    <typename T>
             inline  SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr<T>& rhs) noexcept {

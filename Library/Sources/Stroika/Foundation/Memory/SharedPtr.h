@@ -162,10 +162,7 @@ namespace   Stroika {
                  */
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
-                template    <typename CHECK_KEY = T>
-                explicit SharedPtr (T* from, typename enable_if <is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0) noexcept;
-                template    <typename CHECK_KEY = T>
-                explicit SharedPtr (T* from, typename enable_if < !is_convertible<CHECK_KEY*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
+                explicit SharedPtr (T* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
                 SharedPtr (SharedPtr<T>&& from) noexcept;
                 template    <typename T2>
@@ -173,6 +170,12 @@ namespace   Stroika {
 
             private:
                 explicit SharedPtr (const Envelope_& from) noexcept;
+
+            private:
+                template    <typename T2>
+                static  Envelope_   mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
+                template    <typename T2>
+                static  Envelope_   mkEnvelope_ (T2* from, typename enable_if < !is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type* = 0);
 
             public:
                 nonvirtual      SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
