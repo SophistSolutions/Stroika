@@ -73,7 +73,7 @@ namespace   Stroika {
 
             namespace   Private_ {
 #ifndef qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
-#define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     0
+#define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     1
 #endif
                 template    <typename   T>
                 class   Envelope_;
