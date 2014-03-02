@@ -525,7 +525,7 @@ namespace   Stroika {
                 using   _APPLYUNTIL_ARGTYPE =   const function<bool(const T& item)>& ;
 
             public:
-                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const              =   0;
+                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const                           =   0;
                 /*
                  *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
                  *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the
