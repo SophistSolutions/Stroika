@@ -260,9 +260,20 @@ namespace   {
 namespace {
     void    Test_7_Bits_ ()
     {
-        Verify (TakeNBitsFrom (0x3, 1, 0) == 1);
-        Verify (TakeNBitsFrom (0x3, 1, 1) == 1);
-        Verify (TakeNBitsFrom (0x3, 1, 2) == 0);
+        {
+            VerifyTestResult (TakeNBitsFrom (0x3, 1, 0) == 1);
+            VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
+            VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
+            VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
+        }
+        {
+            VerifyTestResult (Bit (0) == 0x1);
+            VerifyTestResult (Bit (1) == 0x2);
+            VerifyTestResult (Bit (3) == 0x8);
+            VerifyTestResult (Bit (15) == 0x8000);
+            VerifyTestResult (Bit<int> (1, 2) == 0x6);
+            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
+        }
     }
 }
 

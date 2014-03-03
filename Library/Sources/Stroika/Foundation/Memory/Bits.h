@@ -24,13 +24,20 @@ namespace   Stroika {
         namespace   Memory {
 
 
+            /**
+             *
+             */
+            template    <typename INT_TYPE = unsigned int>
+            INT_TYPE    Bit (unsigned int bitNumber);
+            template    <typename INT_TYPE, typename... BIT_ARGS>
+            INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args);
+
+
+            /**
+             *
+             */
             template    <typename INT_TYPE>
-            inline  INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
-            {
-                // @todo add assertions bitrange in range...
-                return ((bitField) >> (offset)) & ((1 << (nBits)) - 1);
-            }
-//#define TAKE_N_BITS_FROM(b, p, n) ((b) >> (p)) & ((1 << (n)) - 1)
+            INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset);
 
 
         }
