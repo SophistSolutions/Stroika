@@ -88,6 +88,25 @@ namespace   Stroika {
                 : fRep_ (DEBUG_NEW ZeroRep_ ())
             {
             }
+            inline  BLOB::BLOB (const initializer_list<Byte>& data)
+                : fRep_ (DEBUG_NEW BasicRep_ (data.begin (), data.end ()))
+            {
+            }
+            template    <typename CONTAINER_OF_BYTE>
+            inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
+                : fRep_ (DEBUG_NEW BasicRep_ (data.begin (), data.end ()))
+            {
+            }
+            template    <size_t SIZE>
+            inline  BLOB::BLOB (const Byte (&data)[SIZE])
+                : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+            {
+            }
+            template    <size_t SIZE>
+            inline  BLOB::BLOB (const array<Byte, SIZE>& data)
+                : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+            {
+            }
             inline  BLOB::BLOB (const vector<Byte>& data)
                 : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::End (data)))
             {
@@ -111,6 +130,11 @@ namespace   Stroika {
             inline  BLOB    BLOB::AttachApplicationLifetime (const Byte* start, const Byte* end)
             {
                 return BLOB (SharedIRep (DEBUG_NEW AdoptAppLifetimeRep_ (start, end)));
+            }
+            template    <size_t SIZE>
+            inline  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE])
+            {
+                return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
             }
             template    <>
             inline  void    BLOB::As (vector<Byte>* into) const

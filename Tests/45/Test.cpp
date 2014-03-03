@@ -4,6 +4,7 @@
 //  TEST    Foundation::PERFORMANCE
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    <array>
 #include    <iostream>
 #include    <fstream>
 #include    <mutex>
@@ -47,7 +48,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -810,32 +811,39 @@ namespace {
 
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
-        static  Byte kArr_4k_[4 * 1024] = { 0x1, 0x2, 0x3, };
+        //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
+        static  Byte                kCArr_4k_[4 * 1024] = { 0x1, 0x2, 0x3, };
+
         template <typename BLOBISH_IMPL>
-        void    Test_BLOB_Versus_Vector_Byte ()
+        size_t    T1_SIZER_ (BLOBISH_IMPL b)
         {
-            // test NYI
-            {
-                vector<Byte> b = {1, 2, 3, 4, 5 };
-                BLOBISH_IMPL bl = b;
-            }
+            return b.size ();
         }
-        template <>
-        void    Test_BLOB_Versus_Vector_Byte<vector<Byte>> ()
+        template <typename BLOBISH_IMPL>
+        void    T1_ ()
         {
-            // test NYI
-            {
-                vector<Byte> b = {1, 2, 3, 4, 5 };
+            BLOBISH_IMPL    bn;
+            for (int i = 0; i < 100; ++i) {
+                //BLOBISH_IMPL  bl = kArr_4k_;
+                BLOBISH_IMPL    bl = BLOBISH_IMPL (begin (kCArr_4k_), end (kCArr_4k_));
+                BLOBISH_IMPL    b2 = bl;
+                BLOBISH_IMPL    b3 = bl;
+                BLOBISH_IMPL    b4 = bl;
+                bn = b4;
             }
+            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
         }
+
     }
     template <typename BLOBISH_IMPL>
     void    Test_BLOB_Versus_Vector_Byte ()
     {
-        Test_BLOB_Versus_Vector_Byte_DETAILS::Test_BLOB_Versus_Vector_Byte<BLOBISH_IMPL> ();
+        Test_BLOB_Versus_Vector_Byte_DETAILS::T1_<BLOBISH_IMPL> ();
     }
 
 }
+
+
 
 
 
@@ -1020,10 +1028,10 @@ namespace   {
         );
         Tester (
             L"BLOB versus vector<Byte>",
-            Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
-            1349818,
-            0.0,
+            Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
+            6000,
+            70.0,
             &failedTests
         );
 

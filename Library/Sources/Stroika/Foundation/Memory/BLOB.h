@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <array>
 #include    <memory>
 #include    <vector>
 
@@ -25,6 +26,9 @@
  *              to be fixed.
  *
  *              FIX AND DOCUMENT: thresafeaty on assignment!
+ *
+ *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <Byte> and
+ *              only (or handle differntly) random access iterators versus just plain forward iteraotrs.
  *
  *      @todo   Consider the name Attach() and AttachApplicationLifetime (). This was meant to parallel
  *              what we do with Socket::Attach(). Would Adopt() be a better name (in all cases?).
@@ -77,6 +81,8 @@ namespace   Stroika {
              *  \def qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
+             *
+             *      Empirically, this was slightly faster in the performance regression test.
              */
 #ifndef qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
 #define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_   1
@@ -94,14 +100,22 @@ namespace   Stroika {
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
              *  change (except by assignement - being assigned over).
              *
-             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! SAFE CUZ READONLY
+             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! WILL BE SAFE CUZ READONLY (once i fix shared_ptr copy issue)
              */
             class   BLOB {
             public:
                 /**
                  */
                 BLOB ();
+                BLOB (const BLOB& src) = default;
+                template    <size_t SIZE>
+                BLOB (const Byte (&data)[SIZE]);
+                BLOB (const initializer_list<Byte>& data);
+                template    <size_t SIZE>
+                BLOB (const array<Byte, SIZE>& data);
                 BLOB (const vector<Byte>& data);
+                template    <typename CONTAINER_OF_BYTE>
+                explicit BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
 
             protected:
@@ -122,6 +136,9 @@ namespace   Stroika {
                 explicit BLOB (SharedIRep&&  rep);
 
             public:
+                nonvirtual  BLOB& operator= (const BLOB& rhs) = default;
+
+            public:
                 /*
                  *  \brief  Create a BLOB from the given data - without copying the data (dangerous).
                  *
@@ -139,6 +156,8 @@ namespace   Stroika {
                  *  the BLOB takes over ownership of the pointer, and will never delete the data.
                  */
                 static  BLOB    AttachApplicationLifetime (const Byte* start, const Byte* end);
+                template    <size_t SIZE>
+                static  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE]);
 
             public:
                 /**
