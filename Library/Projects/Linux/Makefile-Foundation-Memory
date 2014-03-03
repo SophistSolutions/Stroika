@@ -10,6 +10,7 @@ VPATH = $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AnyVariantValue.o\
+	$(ObjDir)Bits.o\
 	$(ObjDir)BLOB.o\
 	$(ObjDir)BlockAllocated.o\
 	$(ObjDir)BlockAllocator.o\

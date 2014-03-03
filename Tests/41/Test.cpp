@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 
 #include    "Stroika/Foundation/Memory/AnyVariantValue.h"
+#include    "Stroika/Foundation/Memory/Bits.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
 #include    "Stroika/Foundation/Memory/SharedPtr.h"
@@ -254,6 +255,18 @@ namespace   {
 }
 
 
+
+
+namespace {
+    void    Test_7_Bits_ ()
+    {
+        Verify (TakeNBitsFrom (0x3, 1, 0) == 1);
+        Verify (TakeNBitsFrom (0x3, 1, 1) == 1);
+        Verify (TakeNBitsFrom (0x3, 1, 2) == 0);
+    }
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -263,6 +276,7 @@ namespace   {
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
         Test_5_AnyVariantValue_ ();
         Test_6_SharedPtr ();
+        Test_7_Bits_ ();
     }
 }
 
