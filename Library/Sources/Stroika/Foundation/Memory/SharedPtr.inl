@@ -55,6 +55,7 @@ namespace   Stroika {
                     {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                     template    <typename T2>
                     inline  Envelope_ (Envelope_<T2>&& from) noexcept
                 :
@@ -64,6 +65,7 @@ namespace   Stroika {
                         from.fPtr_ = nullptr;
                         from.fCountHolder_ = nullptr;
                     }
+#endif
                     template    <typename T2>
                     inline  Envelope_ (const Envelope_<T2>& from) noexcept
                 :
@@ -168,6 +170,7 @@ namespace   Stroika {
                     fEnvelope_.Increment ();
                 }
             }
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
             template    <typename T>
             inline  SharedPtr<T>::SharedPtr (SharedPtr<T>&& from) noexcept
 :
@@ -175,6 +178,7 @@ namespace   Stroika {
             {
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
+#endif
             template    <typename T>
             template    <typename T2>
             SharedPtr<T>::SharedPtr (const SharedPtr<T2>& from) noexcept

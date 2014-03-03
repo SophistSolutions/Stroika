@@ -96,6 +96,9 @@ namespace   Stroika {
 #ifndef qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
 #define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     1
 #endif
+#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       1
+#endif
                 template    <typename   T>
                 class   Envelope_;
             }
@@ -179,7 +182,9 @@ namespace   Stroika {
                 template    <typename T2>
                 explicit SharedPtr (T2* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 SharedPtr (SharedPtr<T>&& from) noexcept;
+#endif
                 template    <typename T2>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
 
