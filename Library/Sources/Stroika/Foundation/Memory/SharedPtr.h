@@ -97,7 +97,7 @@ namespace   Stroika {
 #define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     1
 #endif
 #ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
-#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       1
+#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       0
 #endif
                 template    <typename   T>
                 class   Envelope_;
