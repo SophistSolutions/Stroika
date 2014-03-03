@@ -31,7 +31,7 @@ check:
 	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= check
 	@(cd Library && perl checkall.pl)
 	@(cd Tools && perl checkall.pl)
-	@(cd Samples && perl checkall.pl)
+	@make --directory Samples --no-print-directory MAKEFLAGS= check
 	@make --directory Tests --no-print-directory MAKEFLAGS= check
 
 
@@ -39,7 +39,7 @@ clean:
 	@make --directory ThirdPartyLibs --no-print-directory clean
 	@(cd Library; perl buildall.pl clean)
 	@(cd Tools; perl buildall.pl clean)
-	@(cd Samples; perl buildall.pl clean)
+	@make --directory Samples --no-print-directory MAKEFLAGS= clean
 	@make --directory Tests --no-print-directory MAKEFLAGS= clean
 
 
@@ -72,9 +72,8 @@ tools:	libraries
 tests:	tools libraries
 	@make --directory Tests --no-print-directory tests
 
-
 samples:	tools libraries
-	@cd Samples; perl buildall.pl build
+	@make --directory Samples --no-print-directory samples
 
 run-tests:	tests
 	@make --directory Tests --no-print-directory run-tests
