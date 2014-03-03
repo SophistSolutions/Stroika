@@ -21,12 +21,9 @@
 #include    "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
-#include    "Stroika/Foundation/Memory/SharedPtr.h"
-#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
@@ -35,7 +32,11 @@
 
 #include    "../TestHarness/TestHarness.h"
 
-
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#include    "Stroika/Foundation/Execution/SpinLock.h"
+#include    "Stroika/Foundation/Memory/SharedPtr.h"
+#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
+#endif
 
 
 using   namespace   Stroika::Foundation;
@@ -343,7 +344,6 @@ namespace {
 
 
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
@@ -397,7 +397,6 @@ namespace {
     }
 
 }
-#endif
 
 
 
@@ -413,6 +412,7 @@ namespace {
 
 
 
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
@@ -471,7 +471,7 @@ namespace {
     }
 
 }
-
+#endif
 
 
 
@@ -973,6 +973,7 @@ namespace   {
             -300.0,
             &failedTests
         );
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
@@ -981,6 +982,7 @@ namespace   {
         -280.0,
         &failedTests
         );
+#endif
         Tester (
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
@@ -989,6 +991,7 @@ namespace   {
             -22.0,
             &failedTests
         );
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
@@ -1037,6 +1040,7 @@ namespace   {
         25.0,
         &failedTests
         );
+#endif
         Tester (
             L"String Chracters::Format ()",
             Test_String_Format_<wstring>, L"sprintf",
@@ -1059,7 +1063,9 @@ namespace   {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
                 Execution::DoThrow (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
+#endif
             }
             else {
                 Execution::DoThrow (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromAscii (kDefaultPerfOutFile_).c_str ())));
