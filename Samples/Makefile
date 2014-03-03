@@ -1,4 +1,4 @@
-.PHONY:	samples all check clobber
+.PHONY:	samples all check clobber skel
 
 UNAME := $(shell uname)
 
@@ -10,6 +10,11 @@ else
 CONFIGRUATIONS=		DefaultConfiguration
 endif
 
+
+SKEL_SRCPROJDIR=WebServer
+SKEL_TRGPROJName=Clone-Of-$(SKEL_SRCPROJDIR)
+
+
 help:
 	@echo "Help for making Stroika"
 	@echo "Targets"
@@ -19,6 +24,7 @@ help:
 	@echo "    clobber:"
 	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    samples:"
+	@echo "    skel:				-	INCOMPLETE-PRELIM - BUT IDEA IS MAKE CLONE OF SAMPLE TO NEW PROJECT"
 
 
 all:		samples 
@@ -34,3 +40,15 @@ clobber:
 
 samples:
 	@perl buildall.pl build
+
+skel:
+	if [ -e "$(SKEL_TRGPROJName)" ]; then\
+	  echo "FAILED cuz $(SKEL_TRGPROJName) already exists";\
+	  exit 1;\
+	else\
+	  cp -r $(SKEL_SRCPROJDIR) $(SKEL_TRGPROJName)\
+	  mkdir -p $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration\
+	  ln -s ../../Projects/Linux/Makefile $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration/Makefile\
+	  cp Makefile.skel $(SKEL_TRGPROJName)/Projects/Linux/Makefile\
+	fi
+
