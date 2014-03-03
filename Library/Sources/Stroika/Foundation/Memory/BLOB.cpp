@@ -19,6 +19,11 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
+/*
+ ********************************************************************************
+ ************************* Memory::BLOB::BasicRep_ ******************************
+ ********************************************************************************
+ */
 Memory::BLOB::BasicRep_::BasicRep_ (const Byte* start, const Byte* end)
     : fData (end - start)
 {
@@ -35,6 +40,11 @@ pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
 
 
 
+/*
+ ********************************************************************************
+ ************************** Memory::BLOB::ZeroRep_ ******************************
+ ********************************************************************************
+ */
 pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
 {
     return pair<const Byte*, const Byte*> (nullptr, nullptr);
@@ -44,6 +54,11 @@ pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
 
 
 
+/*
+ ********************************************************************************
+ ************************* Memory::BLOB::AdoptRep_ ******************************
+ ********************************************************************************
+ */
 Memory::BLOB::AdoptRep_::AdoptRep_ (const Byte* start, const Byte* end)
     : fStart (start)
     , fEnd (end)
@@ -65,6 +80,11 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
 
 
 
+/*
+ ********************************************************************************
+ ******************* Memory::BLOB::AdoptAppLifetimeRep_ *************************
+ ********************************************************************************
+ */
 Memory::BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte* end)
     : fStart (start)
     , fEnd (end)
@@ -81,6 +101,12 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptAppLifetimeRep_::GetBounds (
 
 
 
+
+/*
+ ********************************************************************************
+ ********************************* Memory::BLOB *********************************
+ ********************************************************************************
+ */
 int  Memory::BLOB::Compare (const BLOB& rhs) const
 {
     pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
