@@ -401,6 +401,22 @@ void    String::RemoveAt (size_t from, size_t to)
     }
 }
 
+String        String::RemoveAt_nu (size_t from, size_t to) const
+{
+    Require (from <= to);
+    Require (to <= GetLength ());
+    try {
+        String  tmp =   *this;
+        tmp._GetRep ().RemoveAt (from, to);
+        return tmp;
+    }
+    catch (const _IRep::UnsupportedFeatureException&) {
+        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
+        tmp._GetRep ().RemoveAt (from, to);
+        return tmp;
+    }
+}
+
 void    String::Remove (Character c)
 {
     DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")

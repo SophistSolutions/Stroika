@@ -113,6 +113,10 @@ namespace   Stroika {
             }
             DISABLE_COMPILER_MSC_WARNING_END(4996)
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            inline  String    String::RemoveAt_nu (size_t charAt) const
+            {
+                RemoveAt_nu (charAt, charAt + 1);
+            }
             inline  bool    String::empty () const
             {
                 _SafeRepAccessor accessor (*this);

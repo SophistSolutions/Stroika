@@ -518,6 +518,9 @@ namespace   Stroika {
                  */
                 nonvirtual  void        _Deprecated_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
                 nonvirtual  void        _Deprecated_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                //tmphack - during transition - use RemoveAt_nu
+                nonvirtual  String		RemoveAt_nu (size_t charAt) const;
+                nonvirtual  String      RemoveAt_nu (size_t from, size_t to) const;
 
             public:
                 /**
