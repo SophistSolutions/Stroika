@@ -812,7 +812,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             22500,
-            14.0,
+            10.0,
             &failedTests
         );
 #if 0
@@ -830,7 +830,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            65.0,
+            69.0,
             &failedTests
         );
         Tester (
@@ -838,7 +838,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1172017,
-            -800.0,
+            -400.0,
             &failedTests
         );
         Tester (
@@ -846,7 +846,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -1000.0,
+            -750.0,
             &failedTests
         );
         Tester (
@@ -854,7 +854,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -2500.0,
+            -2000.0,
             &failedTests
         );
         Tester (
@@ -862,7 +862,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -610.0,
+            -450.0,
             &failedTests
         );
         Tester (
@@ -870,7 +870,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -29.0,
+            -20.0,
             &failedTests
         );
         Tester (
@@ -878,7 +878,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -380.0,
+            -300.0,
             &failedTests
         );
         Tester (
@@ -950,7 +950,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -50.0,
+            -42.0,
             &failedTests
         );
 
