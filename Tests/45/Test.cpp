@@ -16,6 +16,7 @@
 #include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
+#include    "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/SpinLock.h"
@@ -325,6 +326,7 @@ namespace {
 
 
 
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
@@ -378,6 +380,7 @@ namespace {
     }
 
 }
+#endif
 
 
 
@@ -476,6 +479,7 @@ namespace {
 
 
 
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
@@ -520,7 +524,7 @@ namespace {
         VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
     }
 }
-
+#endif
 
 
 
@@ -603,6 +607,7 @@ namespace {
 
 
 
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
     template <typename WIDESTRING_IMPL>
     void    Test_OperatorINSERT_ostream_ ()
@@ -618,6 +623,7 @@ namespace {
         VerifyTestResult (out.str ().length () == 18 * 1000);
     }
 }
+#endif
 
 
 
@@ -796,25 +802,29 @@ namespace   {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             15000,
-            -30.0,    // just a warning, fyi
+            -40.0,    // just a warning, fyi
             &failedTests
         );
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             15000,
-            -60.0,
+            -65.0,
             &failedTests
         );
+#endif
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             22500,
-            14.0,
+            10.0,
             &failedTests
         );
+#endif
 #if 0
         Tester (
             L"atomic sharedptr versus sharedptr",
@@ -830,7 +840,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            65.0,
+            69.0,
             &failedTests
         );
         Tester (
@@ -838,7 +848,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1172017,
-            -800.0,
+            -420.0,
             &failedTests
         );
         Tester (
@@ -846,7 +856,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -1000.0,
+            -680.0,
             &failedTests
         );
         Tester (
@@ -854,7 +864,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -2500.0,
+            -1600.0,
             &failedTests
         );
         Tester (
@@ -862,23 +872,25 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -610.0,
+            -440.0,
             &failedTests
         );
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -29.0,
+            -36.0,
             &failedTests
         );
+#endif
         Tester (
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -380.0,
+            -300.0,
             &failedTests
         );
         Tester (
@@ -902,7 +914,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            -460.0,
+            -475.0,
             &failedTests
         );
         Tester (
@@ -926,7 +938,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            27.0,
+            25.0,
             &failedTests
         );
         Tester (
@@ -934,7 +946,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         94862,
-        -510.0,
+        -530.0,
         &failedTests
         );
         Tester (
@@ -950,7 +962,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -50.0,
+            -47.0,
             &failedTests
         );
 
