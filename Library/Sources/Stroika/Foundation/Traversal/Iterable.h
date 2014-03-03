@@ -512,10 +512,10 @@ namespace   Stroika {
             template    <typename T>
             class   Iterable<T>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             protected:
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;

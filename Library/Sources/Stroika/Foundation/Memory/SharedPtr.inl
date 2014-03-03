@@ -15,6 +15,7 @@
 #include    "../Execution/Exceptions.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {

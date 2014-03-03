@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Traversal_Iterable_inl_
 #define _Stroika_Foundation_Traversal_Iterable_inl_
 
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 #include    "../Debug/Assertions.h"
 
 
@@ -18,14 +24,6 @@ namespace   Stroika {
              *************************** Iterable<T>::_IRep *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Iterable<T>::_IRep::_IRep ()
-            {
-            }
-            template    <typename T>
-            inline  Iterable<T>::_IRep::~_IRep ()
-            {
-            }
             template    <typename T>
             inline  bool    Iterable<T>::_IRep::_IsEmpty () const
             {
