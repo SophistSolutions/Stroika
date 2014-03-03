@@ -42,13 +42,13 @@ samples:
 	@perl buildall.pl build
 
 skel:
-	if [ -e "$(SKEL_TRGPROJName)" ]; then\
-	  echo "FAILED cuz $(SKEL_TRGPROJName) already exists";\
+	@if [ -e "$(SKEL_TRGPROJName)" ]; then\
+	  echo "make skel FAILED because directory $(SKEL_TRGPROJName) already exists";\
 	  exit 1;\
 	else\
-	  cp -r $(SKEL_SRCPROJDIR) $(SKEL_TRGPROJName)\
-	  mkdir -p $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration\
-	  ln -s ../../Projects/Linux/Makefile $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration/Makefile\
-	  cp Makefile.skel $(SKEL_TRGPROJName)/Projects/Linux/Makefile\
+	  cp -r $(SKEL_SRCPROJDIR) $(SKEL_TRGPROJName);\
+	  mkdir -p $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration;\
+	  ln -s ../../Projects/Linux/Makefile $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration/Makefile;\
+	  cp Skel/Makefile.skel $(SKEL_TRGPROJName)/Projects/Linux/Makefile;\
 	fi
 
