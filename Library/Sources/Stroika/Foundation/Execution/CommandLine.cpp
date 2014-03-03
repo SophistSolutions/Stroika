@@ -133,6 +133,19 @@ bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, 
 
 bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult)
 {
-    return argList.FindFirstThat ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i = argList.FindFirstThat ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    if (i != argList.end ()) {
+        ++i;
+        if (i == argList.end ()) {
+            Execution::DoThrow (InvalidCommandLineArgument ());
+        }
+        else {
+            if (associatedArgResult != nullptr) {
+                *associatedArgResult = *i;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
