@@ -50,10 +50,7 @@ namespace   Stroika {
 
             struct  BLOB::ZeroRep_ : public _IRep {
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
-
-                inline ZeroRep_ ()
-                {
-                }
+                inline ZeroRep_ () = default;
                 DECLARE_USE_BLOCK_ALLOCATION (ZeroRep_);
             };
 
@@ -68,6 +65,18 @@ namespace   Stroika {
 
                 DECLARE_USE_BLOCK_ALLOCATION (AdoptRep_);
             };
+
+
+            struct  BLOB::AdoptAppLifetimeRep_ : public _IRep {
+                const Byte* fStart;
+                const Byte* fEnd;
+
+                AdoptAppLifetimeRep_ (const Byte* start, const Byte* end);
+                virtual pair<const Byte*, const Byte*>   GetBounds () const override;
+
+                DECLARE_USE_BLOCK_ALLOCATION (AdoptAppLifetimeRep_);
+            };
+
 
 
             /*
@@ -87,10 +96,6 @@ namespace   Stroika {
                 : fRep_ (DEBUG_NEW BasicRep_ (start, end))
             {
             }
-            inline  BLOB::BLOB (const Byte* start, const Byte* end, AdoptFlag adopt)
-                : fRep_ (DEBUG_NEW AdoptRep_ (start, end))
-            {
-            }
             inline  BLOB::BLOB (const SharedIRep& rep)
                 : fRep_ (rep)
             {
@@ -98,6 +103,14 @@ namespace   Stroika {
             inline  BLOB::BLOB (SharedIRep&& rep)
                 : fRep_ (std::move (rep))
             {
+            }
+            inline  BLOB    BLOB::Attach (const Byte* start, const Byte* end)
+            {
+                return BLOB (SharedIRep (DEBUG_NEW AdoptRep_ (start, end)));
+            }
+            inline  BLOB    BLOB::AttachApplicationLifetime (const Byte* start, const Byte* end)
+            {
+                return BLOB (SharedIRep (DEBUG_NEW AdoptAppLifetimeRep_ (start, end)));
             }
             template    <>
             inline  void    BLOB::As (vector<Byte>* into) const

@@ -65,6 +65,22 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
 
 
 
+Memory::BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte* end)
+    : fStart (start)
+    , fEnd (end)
+{
+    Require (start <= end);
+}
+
+pair<const Byte*, const Byte*>   Memory::BLOB::AdoptAppLifetimeRep_::GetBounds () const
+{
+    return pair<const Byte*, const Byte*> (fStart, fEnd);
+}
+
+
+
+
+
 int  Memory::BLOB::Compare (const BLOB& rhs) const
 {
     pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();

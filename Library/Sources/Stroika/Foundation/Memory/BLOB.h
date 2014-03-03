@@ -26,9 +26,8 @@
  *
  *              FIX AND DOCUMENT: thresafeaty on assignment!
  *
- *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
- *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
- *              Or around a static array.
+ *      @todo   Consider the name Attach() and AttachApplicationLifetime (). This was meant to parallel
+ *              what we do with Socket::Attach(). Would Adopt() be a better name (in all cases?).
  *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
@@ -100,15 +99,10 @@ namespace   Stroika {
             class   BLOB {
             public:
                 /**
-                 *  BLOB() overload with AdoptFlag.eAdopt causes 'move semantics' on the pointer - where
-                 *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
-                 *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
                  */
                 BLOB ();
                 BLOB (const vector<Byte>& data);
                 BLOB (const Byte* start, const Byte* end);
-                enum class AdoptFlag { eAdopt };
-                BLOB (const Byte* start, const Byte* end, AdoptFlag adopt);
 
             protected:
                 struct  _IRep;
@@ -121,12 +115,30 @@ namespace   Stroika {
 #endif
 
             protected:
-
                 /**
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
                 explicit BLOB (const SharedIRep& rep);
                 explicit BLOB (SharedIRep&&  rep);
+
+            public:
+                /*
+                 *  \brief  Create a BLOB from the given data - without copying the data (dangerous).
+                 *
+                 *  Attach () causes 'move semantics' on the pointer - where
+                 *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
+                 *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
+                 */
+                static  BLOB    Attach (const Byte* start, const Byte* end);
+
+            public:
+                /*
+                 *  \brief  Create a BLOB from the given data - without copying the data (dangerous), and never deletes
+                 *
+                 *  AttachApplicationLifetime () causes 'move semantics' on the pointer - where
+                 *  the BLOB takes over ownership of the pointer, and will never delete the data.
+                 */
+                static  BLOB    AttachApplicationLifetime (const Byte* start, const Byte* end);
 
             public:
                 /**
@@ -208,6 +220,7 @@ namespace   Stroika {
                 struct  BasicRep_;
                 struct  ZeroRep_ ;
                 struct  AdoptRep_ ;
+                struct  AdoptAppLifetimeRep_ ;
 
             private:
                 SharedIRep   fRep_;

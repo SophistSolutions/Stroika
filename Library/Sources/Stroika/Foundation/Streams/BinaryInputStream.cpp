@@ -38,7 +38,7 @@ Memory::BLOB BinaryInputStream::ReadAll () const
         Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
         size_t n = Read (b, b + sb);
         Assert (n <= sb);
-        return Memory::BLOB (b, b + n, Memory::BLOB::AdoptFlag::eAdopt);
+        return Memory::BLOB::Attach (b, b + n);
     }
     else {
         // Less efficient implementation

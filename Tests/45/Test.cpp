@@ -810,6 +810,7 @@ namespace {
 
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
+        static  Byte kArr_4k_[4 * 1024] = { 0x1, 0x2, 0x3, };
         template <typename BLOBISH_IMPL>
         void    Test_BLOB_Versus_Vector_Byte ()
         {
