@@ -12,6 +12,7 @@
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Set.h"
@@ -48,7 +49,7 @@ using   namespace   Stroika::Foundation::Time;
 
 
 // Turn this on rarely to calibrate so # runs a good test
-#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
 
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
@@ -83,14 +84,28 @@ namespace {
 
 
 namespace {
+#if     !qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64)
+    double  sTimeMultiplier_    =   5.0;    // default larger so on reg-tests we get more consistent percentages
+#else
+    double  sTimeMultiplier_    =   1.0;
+#endif
+}
 
-    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+
+namespace {
+    ostream&    GetOutStream_ ()
     {
         static  shared_ptr<ostream> out2File;
         if (not sShowOutput_ and out2File.get () == nullptr) {
             out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
         ostream&    outTo = (sShowOutput_ ? cout : *out2File);
+        return outTo;
+    }
+
+    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+    {
+        ostream&    outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
         DurationSecondsType totalTime = baselineTime + compareWithTime;
         double ratio = compareWithTime / baselineTime;
@@ -159,7 +174,7 @@ namespace {
                     function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
                    )
     {
-        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, runCount, expectedPercentFaster, printResults)) {
+        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), expectedPercentFaster, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
@@ -857,6 +872,10 @@ namespace {
 namespace   {
     void    RunPerformanceTests_ ()
     {
+        if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
+            GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
+        }
+
         Set<String> failedTests;
         Tester (
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
@@ -942,7 +961,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -36.0,
+            -38.0,
             &failedTests
         );
 #endif
@@ -983,7 +1002,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             8712,
-            27.0,
+            20.0,
             &failedTests
         );
         Tester (
@@ -991,7 +1010,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             135000,
-            -480.0,
+            -500.0,
             &failedTests
         );
         Tester (
@@ -999,7 +1018,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            25.0,
+            14.0,
             &failedTests
         );
         Tester (
@@ -1059,8 +1078,16 @@ namespace   {
 int     main (int argc, const char* argv[])
 {
     // NOTE: run with --show or look for output in PERF-OUT.txt
-    Sequence<String>  cmdLine   =   Execution::ParseCommandLine (argc, argv);
-    sShowOutput_ = Execution::MatchesCommandLineArgument (cmdLine, L"show");
+    Sequence<String>  cmdLine   =   ParseCommandLine (argc, argv);
+    sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
+
+    {
+        String  xArg;
+        if (MatchesCommandLineArgument (cmdLine, L"x", &xArg)) {
+            sTimeMultiplier_ = String2Float<double> (xArg);
+        }
+    }
+
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
     return EXIT_SUCCESS;
