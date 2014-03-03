@@ -11,6 +11,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
+#include    "../Memory/SharedPtr.h"
 
 
 
@@ -73,6 +74,16 @@ namespace   Stroika {
         namespace   Memory {
 
 
+            /**
+             *  \def qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr
+             *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
+             *      internal implementaiton detail, and may go away as an option.
+             */
+#ifndef qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_   1
+#endif
+
+
             using   namespace   std;
 
 
@@ -102,11 +113,20 @@ namespace   Stroika {
             protected:
                 struct  _IRep;
 
+            protected:
+#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+                using   SharedIRep  =   Memory::SharedPtr<_IRep>;
+#else
+                using   SharedIRep  =   shared_ptr<_IRep>;
+#endif
+
+            protected:
+
                 /**
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
-                explicit BLOB (const shared_ptr<_IRep>& rep);
-                explicit BLOB (shared_ptr<_IRep>&&  rep);
+                explicit BLOB (const SharedIRep& rep);
+                explicit BLOB (SharedIRep&&  rep);
 
             public:
                 /**
@@ -190,7 +210,7 @@ namespace   Stroika {
                 struct  AdoptRep_ ;
 
             private:
-                shared_ptr<_IRep>   fRep_;
+                SharedIRep   fRep_;
             };
 
 

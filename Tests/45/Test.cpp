@@ -22,6 +22,7 @@
 #include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/SharedPtr.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
@@ -793,6 +794,57 @@ namespace {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+namespace {
+    namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
+        template <typename BLOBISH_IMPL>
+        void    Test_BLOB_Versus_Vector_Byte ()
+        {
+            // test NYI
+            {
+                vector<Byte> b = {1, 2, 3, 4, 5 };
+                BLOBISH_IMPL bl = b;
+            }
+        }
+        template <>
+        void    Test_BLOB_Versus_Vector_Byte<vector<Byte>> ()
+        {
+            // test NYI
+            {
+                vector<Byte> b = {1, 2, 3, 4, 5 };
+            }
+        }
+    }
+    template <typename BLOBISH_IMPL>
+    void    Test_BLOB_Versus_Vector_Byte ()
+    {
+        Test_BLOB_Versus_Vector_Byte_DETAILS::Test_BLOB_Versus_Vector_Byte<BLOBISH_IMPL> ();
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -965,7 +1017,14 @@ namespace   {
             -47.0,
             &failedTests
         );
-
+        Tester (
+            L"BLOB versus vector<Byte>",
+            Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
+            Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
+            1349818,
+            0.0,
+            &failedTests
+        );
 
 
         if (not failedTests.empty ()) {

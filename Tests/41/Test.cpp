@@ -10,6 +10,7 @@
 
 #include    "Stroika/Foundation/Memory/AnyVariantValue.h"
 #include    "Stroika/Foundation/Memory/Bits.h"
+#include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
 #include    "Stroika/Foundation/Memory/SharedPtr.h"
@@ -278,6 +279,26 @@ namespace {
 }
 
 
+
+
+
+
+namespace {
+    void    Test_8_BLOB_ ()
+    {
+        {
+            vector<Byte> b = {1, 2, 3, 4, 5 };
+            Memory::BLOB bl = b;
+            Verify (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -288,6 +309,7 @@ namespace   {
         Test_5_AnyVariantValue_ ();
         Test_6_SharedPtr ();
         Test_7_Bits_ ();
+        Test_8_BLOB_ ();
     }
 }
 

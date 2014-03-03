@@ -91,11 +91,11 @@ namespace   Stroika {
                 : fRep_ (DEBUG_NEW AdoptRep_ (start, end))
             {
             }
-            inline  BLOB::BLOB (const shared_ptr<_IRep>& rep)
+            inline  BLOB::BLOB (const SharedIRep& rep)
                 : fRep_ (rep)
             {
             }
-            inline  BLOB::BLOB (shared_ptr<_IRep>&& rep)
+            inline  BLOB::BLOB (SharedIRep&& rep)
                 : fRep_ (std::move (rep))
             {
             }
