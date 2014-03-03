@@ -19,6 +19,27 @@
  *
  *      TODO:
  *
+ *      @todo   ResetPTR style used in msvc shared_ptr better:
+ *              #if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
+ *              // If this assertion fails, its almost certainly because... See todo above - I see thy this doesnt fail
+ *              // for std::shared_ptr<>>
+ *
+ *              Issue is that if we create shared_ptr initialy using base type that doesnt have enabled_shared_from_this
+ *              but then copy to SharedPtr<> that does - we need to lose (free maybe) the old counter, or maybe down its
+ *              refcount - not sure?  but thats how std:;shared_ptr solves this problem and my version here
+ *              failed. Pretty subtle, so need to think out carefully.
+ *
+ *              This is why we USED to crash in regtests due to
+ *                     typename MultiSet_Array<T, TRAITS>::Rep_::_SharedPtrIRep    MultiSet_Array<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+ *                      ...
+                        ...return typename inherited::_SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+ *
+ *                      verus ussing just in-class already _SharedPtrIRep =  which is the iterable<...> one - that doesnt have enable_shared_from_this
+ *                      in it!!!
+ *
+ *              I think i can use that to construct a regtest! But tricky.
+ *
+ *
  *      @todo   See if fDeleteCounter_ can be somehow inferred from other data to save space/copying. It's hard cuz
  *              of the multiple inheritence case (so comparing counter == fPtr not exactly right always).
  *
@@ -155,7 +176,8 @@ namespace   Stroika {
                  */
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
-                explicit SharedPtr (T* from);
+                template    <typename T2>
+                explicit SharedPtr (T2* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
                 SharedPtr (SharedPtr<T>&& from) noexcept;
                 template    <typename T2>

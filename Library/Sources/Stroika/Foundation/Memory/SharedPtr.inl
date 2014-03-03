@@ -139,7 +139,8 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  SharedPtr<T>::SharedPtr (T* from)
+            template    <typename T2>
+            inline  SharedPtr<T>::SharedPtr (T2* from)
                 : fEnvelope_ (mkEnvelope_ (from))
             {
                 Assert (fEnvelope_.GetPtr () == from);
@@ -376,6 +377,8 @@ namespace   Stroika {
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
 #if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
+                // If this assertion fails, its almost certainly because... See todo above - I see thy this doesnt fail
+                // for std::shared_ptr<>>
                 AssertNotNull (fPtr_);
                 return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
 #else
