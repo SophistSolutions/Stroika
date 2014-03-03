@@ -854,7 +854,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -2000.0,
+            -1800.0,
             &failedTests
         );
         Tester (
@@ -870,7 +870,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -20.0,
+            -21.0,
             &failedTests
         );
         Tester (
