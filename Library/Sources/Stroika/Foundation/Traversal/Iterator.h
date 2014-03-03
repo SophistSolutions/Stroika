@@ -7,17 +7,22 @@
 #include    "../StroikaPreComp.h"
 
 #include    <iterator>
+#include    <memory>
 
 #include    "../Configuration/Common.h"
 
 #include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
+#include    "../Memory/SharedPtr.h"
 
 
 
 /**
  *
  *  \file
+ *
+ *  @todo   qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr DOESNT WORK -
+ *          probably not too hard to fix.
  *
  *  @todo   Consider if we want to make the promise currently defined below in Equals()
  *          about iterating two originally equal iterators. The trouble is - this doesn
@@ -90,6 +95,13 @@ namespace   Stroika {
 
 
             /**
+             */
+#ifndef qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   0
+#endif
+
+
+            /**
              *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
              *
              *  Though the type is a pointer, its not mean to ever be cast or dereferenced -
@@ -104,6 +116,33 @@ namespace   Stroika {
              *  This is like the SQL-null - meaning no known owner - not that there is no owner.
              */
             constexpr   IteratorOwnerID kUnknownIteratorOwnerID =   nullptr;
+
+
+            /**
+             */
+            struct  IteratorBase {
+            protected:
+                /**
+                 *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
+                 *      Experimental, so dont use directly (yet) - til stablized.
+                 *          -- LGP 2014-02-23
+                 */
+#if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+                template    <typename SHARED_T>
+                using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+#else
+                template    <typename SHARED_T>
+                using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
+#endif
+
+#if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+                template    <typename SHARED_T>
+                using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+#else
+                template    <typename SHARED_T>
+                using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
+#endif
+            };
 
 
             /**
@@ -205,7 +244,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Iterator : public std::iterator<input_iterator_tag, T> {
+            class   Iterator : public std::iterator<input_iterator_tag, T>, public IteratorBase {
             private:
                 using   inherited   =   typename    std::iterator<input_iterator_tag, T>;
 
@@ -218,7 +257,7 @@ namespace   Stroika {
 
             public:
                 class   IRep;
-                using   SharedIRepPtr   =   shared_ptr<IRep>;
+                using   SharedIRepPtr   =   _USING_SHARED_IMPL_<IRep>;
 
             private:
                 struct  Rep_Cloner_ {
