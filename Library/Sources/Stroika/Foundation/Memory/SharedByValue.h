@@ -267,6 +267,10 @@ namespace   Stroika {
                  *  \req sp not null
                  */
                 ReadOnlyReference (const SharedByValue<TRAITS>& sp);
+                ReadOnlyReference (const ReadOnlyReference&) = default;
+
+            public:
+                ReadOnlyReference& operator= (const ReadOnlyReference&) = default;
 
             public:
                 /**

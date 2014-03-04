@@ -90,25 +90,24 @@ namespace   {
         class   MyRep_ : public _Rep {
             using inherited = _Rep;
         public:
-            MyRep_ (const String& savedSP, const wchar_t* start, const wchar_t* end)
+            MyRep_ (const String::_SafeRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
                 : inherited (start, end)
                 , fSaved_ (savedSP)
             {
-                //Assert (reinterpret_cast<const wchar_t*> (fSaved_.get ()->Peek ()) <= _fStart and _fStart <= _fEnd);
-                Assert (fSaved_.c_str () == savedSP.c_str ());
+                Assert (reinterpret_cast<const wchar_t*> (fSaved_._GetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
             MyRep_ (const MyRep_& from)
                 : inherited (from._fStart, from._fEnd)
                 , fSaved_ (from.fSaved_)
             {
-                Assert (fSaved_.c_str () == from.fSaved_.c_str ());
+                Assert (reinterpret_cast<const wchar_t*> (fSaved_._GetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
             virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
                 return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
             }
         private:
-            String  fSaved_;
+            String::_SafeRepAccessor  fSaved_;
         public:
             DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
         };
@@ -698,8 +697,8 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 
 String  String::SubString (size_t from, size_t to) const
 {
-    const String    tmp =   *this;
-    size_t  myLength    =   tmp._ConstGetRep ().GetLength ();
+    _SafeRepAccessor accessor (*this);
+    size_t  myLength    =   accessor._GetRep ().GetLength ();
 
     Require ((from <= to) or (to == kBadIndex));
     Require ((to <= myLength) or (to == kBadIndex));
@@ -712,14 +711,14 @@ String  String::SubString (size_t from, size_t to) const
         return *this;       // just bump reference count
     }
 #if     qString_SubStringClassWorks
-    const wchar_t*  tmpCStr =   tmp.data () + from;
+    const wchar_t*  start =   reinterpret_cast<const wchar_t*> (accessor._GetRep ().Peek ()) + from;
     return String
            (
                String::_SharedPtrIRep (
                    DEBUG_NEW String_Substring_::MyRep_ (
-                       tmp,
-                       tmpCStr,
-                       tmpCStr + length
+                       accessor,
+                       start,
+                       start + length
                    )
                )
            );
