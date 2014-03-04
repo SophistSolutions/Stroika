@@ -80,39 +80,37 @@ namespace   {
 
 
 namespace   {
-    // For now - disable this class cuz its broken - run regression tests to see.
-    // I'm not clear on how this is supposed to work. While read-only, it works FINE. But if anyone ever makes ANY modifications (removall, etc),
-    // we REALLY want to switch to a different REP!!! Like o flength goes zero - we want to return the global kEmptyStringRep (maybe not).
-    // But we more likely want to swithc the the string buffered rep or something. Maybe have virtual methods like InsertAt<>(in rep) return shared_ptr<Rep> so it can be changed?
-    // Or take ref-param of that guy so it can be changed???
-#define qString_SubStringClassWorks 0
+    // THIS SHOULD BE SIMPLER NOW (cuz of immutable string technique! - but what we have here is probably sucky/broken
+    // or at least must be reviewed
+    //      --LGP 2014-03-04
+#define qString_SubStringClassWorks 1
 
 #if     qString_SubStringClassWorks
-    struct String_Substring_ : public String {
-        class   MyRep_ : public String::_IRep {
+    struct String_Substring_ : public Concrete::Private::ReadOnlyRep {
+        class   MyRep_ : public _Rep {
+            using inherited = _Rep;
         public:
-            MyRep_ (const _SharedRepByValuePtr& baseString, size_t from, size_t length);
-
-            virtual     _IRep*   Clone () const override;
-
-            virtual     size_t  GetLength () const override;
-            virtual     void    RemoveAll () override;
-
-            virtual     Character   GetAt (size_t index) const override;
-            virtual     void        SetAt (Character item, size_t index) override;
-            virtual     void        InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-            virtual     void        RemoveAt (size_t index, size_t amountToRemove) override;
-
-            virtual     void    SetLength (size_t newLength) override;
-
-            virtual     const Character*    Peek () const override;
-            virtual int Compare (const _IRep& rhs, CompareOptions co) const override;
-
+            MyRep_ (const String& savedSP, const wchar_t* start, const wchar_t* end)
+                : inherited (start, end)
+                , fSaved_ (savedSP)
+            {
+                //Assert (reinterpret_cast<const wchar_t*> (fSaved_.get ()->Peek ()) <= _fStart and _fStart <= _fEnd);
+                Assert (fSaved_.c_str () == savedSP.c_str ());
+            }
+            MyRep_ (const MyRep_& from)
+                : inherited (from._fStart, from._fEnd)
+                , fSaved_ (from.fSaved_)
+            {
+                Assert (fSaved_.c_str () == from.fSaved_.c_str ());
+            }
+            virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
+            {
+                return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
+            }
         private:
-            _SharedRepByValuePtr fBase;
-
-            size_t  fFrom;
-            size_t  fLength;
+            String  fSaved_;
+        public:
+            DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
         };
     };
 #endif
@@ -700,8 +698,8 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 
 String  String::SubString (size_t from, size_t to) const
 {
-    _SafeRepAccessor accessor (*this);
-    size_t  myLength    =   accessor._GetRep ().GetLength ();
+    const String    tmp =   *this;
+    size_t  myLength    =   tmp._ConstGetRep ().GetLength ();
 
     Require ((from <= to) or (to == kBadIndex));
     Require ((to <= myLength) or (to == kBadIndex));
@@ -714,7 +712,17 @@ String  String::SubString (size_t from, size_t to) const
         return *this;       // just bump reference count
     }
 #if     qString_SubStringClassWorks
-    return (String (DEBUG_NEW String_Substring_::MyRep_ (threadSafeCopy._fRep, from, length), false));
+    const wchar_t*  tmpCStr =   tmp.data () + from;
+    return String
+           (
+               String::_SharedPtrIRep (
+                   DEBUG_NEW String_Substring_::MyRep_ (
+                       tmp,
+                       tmpCStr,
+                       tmpCStr + length
+                   )
+               )
+           );
 #else
     return (String (accessor._GetRep ().Peek () + from, accessor._GetRep ().Peek () + from + length));
 #endif
@@ -1011,7 +1019,7 @@ String      String::substr (size_t from, size_t count) const
 
 
 
-#if     qString_SubStringClassWorks
+#if     qString_SubStringClassWorks && 0
 /*
  ********************************************************************************
  ************************** String_Substring_::MyRep_ ***************************
