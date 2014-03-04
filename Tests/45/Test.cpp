@@ -1088,9 +1088,9 @@ int     main (int argc, const char* argv[])
     sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
 
     {
-        String  xArg;
-        if (MatchesCommandLineArgument (cmdLine, L"x", &xArg)) {
-            sTimeMultiplier_ = String2Float<double> (xArg);
+        Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+        if (arg.IsPresent ()) {
+            sTimeMultiplier_ = String2Float<double> (*arg);
         }
     }
 

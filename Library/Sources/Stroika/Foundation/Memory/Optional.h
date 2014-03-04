@@ -159,6 +159,16 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    IsPresent () const;
 
+#if 0
+            public:
+                /**
+                 */
+                nonvirtual  operator bool () const noexcept
+                {
+                    return IsPresent ();
+                }
+#endif
+
             public:
                 /**
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
