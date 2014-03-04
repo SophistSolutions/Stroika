@@ -115,7 +115,7 @@ namespace   Stroika {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             inline  String    String::RemoveAt_nu (size_t charAt) const
             {
-                RemoveAt_nu (charAt, charAt + 1);
+                return RemoveAt_nu (charAt, charAt + 1);
             }
             inline  bool    String::empty () const
             {
