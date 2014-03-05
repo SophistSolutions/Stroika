@@ -635,24 +635,21 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            *********************************** operator+ **********************************
-            ********************************************************************************
-            */
-            inline  String  operator+ (const wchar_t* lhs, const String& rhs)
-            {
-                // @todo - consider use of Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly()
-                return String (lhs) + rhs;
-            }
-
-
-            /*
-            ********************************************************************************
             ********************************** operator<< **********************************
             ********************************************************************************
             */
             inline  wostream&    operator<< (wostream& out, const String& s)
             {
+                // Tried two impls, but first empirically appears quicker.
+                // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
+#if 0
                 return out << s.c_str ();
+#else
+                String::_SafeRepAccessor    thisAccessor (s);
+                pair<const Character*, const Character*> p   =   thisAccessor._GetRep ().GetData ();
+                out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
+                return out;
+#endif
             }
 
 

@@ -991,6 +991,10 @@ namespace   Stroika {
                 // @todo - LOSE THISE AS PART OF THREADATYPE UPGRADE (using _SafeRepAccessor instead)
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+
+            public:
+                friend  wostream&   operator<< (wostream& out, const String& s);
+                friend  String      operator+ (const wchar_t* lhs, const String& rhs);
             };
 
 

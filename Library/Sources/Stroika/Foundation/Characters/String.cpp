@@ -649,7 +649,7 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
 
 String  String::Repeat (unsigned int count) const
 {
-    // @todo ineffcient - use StringBuffer
+    // @todo inefficient - use StringBuffer
     String  result;
     for (unsigned int i = 0; i < count; ++i) {
         result += *this;
@@ -913,6 +913,23 @@ void    String::erase (size_t from, size_t count)
 
 
 
+
+
+/*
+ ********************************************************************************
+ *********************************** operator+ **********************************
+ ********************************************************************************
+ */
+String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
+{
+    String::_SafeRepAccessor    rhsAccessor (rhs);
+    pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
+    size_t  lhsLen      =   ::wcslen (lhs);
+    size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
+    String::_SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen));
+    sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
+    return String (sRep);
+}
 
 
 
