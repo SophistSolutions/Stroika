@@ -80,9 +80,6 @@ namespace   {
 
 
 namespace   {
-    // THIS SHOULD BE SIMPLER NOW (cuz of immutable string technique! - but what we have here is probably sucky/broken
-    // or at least must be reviewed
-    //      --LGP 2014-03-04
     struct String_Substring_ : public Concrete::Private::ReadOnlyRep {
         class   MyRep_ : public _Rep {
             using inherited = _Rep;
@@ -231,24 +228,6 @@ namespace {
 String::String (const Iterable<Character>& src)
     : String (mkWS_ (src))      // @todo SLOPPY INEFFICIENT IMPLEMENTATION!
 {
-}
-
-String::String (const _SharedPtrIRep& rep) noexcept
-:
-inherited (rep)
-{
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
-String::String (_SharedPtrIRep&& rep) noexcept
-:
-inherited (std::move (rep))
-{
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
 }
 
 String  String::FromUTF8 (const char* from)
@@ -691,18 +670,6 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
         i += with.length ();
     }
     return result;
-}
-
-String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
-{
-    const String  threadSafeCopy  =   *this;
-    size_t  f = from < 0 ? (threadSafeCopy.GetLength () + from) : from;
-    size_t  t = to < 0 ? (threadSafeCopy.GetLength () + to) : to;
-    Require (f != kBadIndex);
-    Require (t != kBadIndex);
-    Require (f <= t);
-    Require (t <= threadSafeCopy.GetLength ());
-    return threadSafeCopy.SubString (f, t);
 }
 
 String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)

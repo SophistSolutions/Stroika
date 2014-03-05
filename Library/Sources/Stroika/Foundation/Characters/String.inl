@@ -76,6 +76,22 @@ namespace   Stroika {
             inherited (std::move (from))
             {
             }
+            inline  String::String (const _SharedPtrIRep& rep) noexcept
+:
+            inherited (rep)
+            {
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
+            inline  String::String (_SharedPtrIRep&& rep) noexcept
+:
+            inherited (std::move (rep))
+            {
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
             inline  const String::_IRep&    String::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), String::_IRep);
@@ -147,6 +163,29 @@ namespace   Stroika {
                                )
                            )
                        );
+#endif
+            }
+            inline  String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
+            {
+#if 1
+                _SafeRepAccessor    accessor (*this);
+                size_t              myLength = accessor._GetRep ().GetLength ();
+                size_t  f = from < 0 ? (myLength + from) : from;
+                size_t  t = to < 0 ? (myLength + to) : to;
+                Require (f != kBadIndex);
+                Require (t != kBadIndex);
+                Require (f <= t);
+                Require (t <= myLength);
+                return SubString_ (accessor, myLength, f, f);
+#else
+                const String  threadSafeCopy  =   *this;
+                size_t  f = from < 0 ? (threadSafeCopy.GetLength () + from) : from;
+                size_t  t = to < 0 ? (threadSafeCopy.GetLength () + to) : to;
+                Require (f != kBadIndex);
+                Require (t != kBadIndex);
+                Require (f <= t);
+                Require (t <= threadSafeCopy.GetLength ());
+                return threadSafeCopy.SubString (f, t);
 #endif
             }
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
