@@ -92,6 +92,47 @@ namespace   Stroika {
                 _GetRep (); // just make sure non-null and right type
 #endif
             }
+            inline  String::String ()
+                : inherited (mkEmpty_ ())
+            {
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
+            inline  String::String (const wchar_t* cString)
+                : inherited (cString[0] == '\0' ? mkEmpty_ () : mk_ (cString, cString + wcslen (cString)))
+            {
+                RequireNotNull (cString);
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
+            inline  String::String (const wchar_t* from, const wchar_t* to)
+                : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+            {
+                Require (from <= to);
+                Require (from != nullptr or from == to);
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
+            inline  String::String (const Character* from, const Character* to)
+                : inherited ((from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)))
+            {
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                Require (from <= to);
+                Require (from != nullptr or from == to);
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
+            inline  String::String (const std::wstring& r)
+                : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+            {
+#if     qDebug
+                _GetRep (); // just make sure non-null and right type
+#endif
+            }
             inline  const String::_IRep&    String::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), String::_IRep);

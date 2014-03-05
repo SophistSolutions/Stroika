@@ -76,9 +76,6 @@ namespace   {
 
 
 
-
-
-
 namespace   {
     struct String_Substring_ : public Concrete::Private::ReadOnlyRep {
         class   MyRep_ : public _Rep {
@@ -139,75 +136,14 @@ namespace   {
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
-namespace   {
-    struct  MyEmptyString_ : String {
-        static  _SharedPtrIRep mkEmptyStrRep_ ()
-        {
-            static  bool                            sInited_    =   false;
-            static  _SharedPtrIRep s_;
-            if (not sInited_) {
-                sInited_ = true;
-                s_ = _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0));
-            }
-            return s_;
-        }
-    };
-}
-
-String::String ()
-    : inherited (MyEmptyString_::mkEmptyStrRep_ ())
-{
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
 String::String (const char16_t* cString)
-    : inherited (MyEmptyString_::mkEmptyStrRep_ ())
+    : inherited (mkEmpty_ ())
 {
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char16_t* i = cString; *i != '\0'; ++i) {
         InsertAt (*i, (i - cString));
     }
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
-String::String (const wchar_t* cString)
-    : inherited (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
-{
-    RequireNotNull (cString);
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
-String::String (const wchar_t* from, const wchar_t* to)
-    : inherited ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (from, to)))
-{
-    Require (from <= to);
-    Require (from != nullptr or from == to);
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
-String::String (const Character* from, const Character* to)
-    : inherited ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))))
-{
-    static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-    Require (from <= to);
-    Require (from != nullptr or from == to);
-#if     qDebug
-    _GetRep (); // just make sure non-null and right type
-#endif
-}
-
-String::String (const std::wstring& r)
-    : inherited (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ())))
-{
 #if     qDebug
     _GetRep (); // just make sure non-null and right type
 #endif
@@ -291,14 +227,45 @@ String  String::FromAscii (const string& from)
     return ASCIIStringToWide (from);
 }
 
+String::_SharedPtrIRep  String::mkEmpty_ ()
+{
+    static  bool                            sInited_    =   false;
+    static  _SharedPtrIRep s_;
+    if (not sInited_) {
+        sInited_ = true;
+        s_ = mk_ (nullptr, nullptr);
+    }
+    return s_;
+}
+
+String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
+{
+    return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end));
+}
+
 String  String::operator+ (const String& rhs) const
 {
-    if (rhs.empty ()) {
+    _SafeRepAccessor    thisAccessor (*this);
+    pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
+    size_t  lhsLen  =   lhsD.second - lhsD.first;
+    if (lhsLen == 0) {
+        return rhs;
+    }
+    _SafeRepAccessor    rhsAccessor (rhs);
+    pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
+    if (rhsD.first == rhsD.second) {
         return *this;
     }
+#if 1
+    size_t  totalLen    =   (lhsD.second - lhsD.first) + (rhsD.second - rhsD.first);
+    _SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), totalLen));
+    sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
+    return String (sRep);
+#else
     Concrete::String_BufferedArray    tmp = Concrete::String_BufferedArray (*this, size () + rhs.size ());
     tmp += rhs;
     return tmp;
+#endif
 }
 
 void    String::SetLength (size_t newLength)

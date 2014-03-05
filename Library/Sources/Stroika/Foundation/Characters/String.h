@@ -420,6 +420,10 @@ namespace   Stroika {
                 static  String  FromAscii (const char* from);
                 static  String  FromAscii (const string& from);
 
+            private:
+                static  _SharedPtrIRep  mkEmpty_ ();
+                static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
+
             public:
                 nonvirtual  String& operator+= (Character appendage);
                 nonvirtual  String& operator+= (const String& appendage);
