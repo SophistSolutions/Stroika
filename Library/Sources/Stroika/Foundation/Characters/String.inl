@@ -217,7 +217,7 @@ namespace   Stroika {
                 Require (t != kBadIndex);
                 Require (f <= t);
                 Require (t <= myLength);
-                return SubString_ (accessor, myLength, f, f);
+                return SubString_ (accessor, myLength, f, t);
 #else
                 const String  threadSafeCopy  =   *this;
                 size_t  f = from < 0 ? (threadSafeCopy.GetLength () + from) : from;
