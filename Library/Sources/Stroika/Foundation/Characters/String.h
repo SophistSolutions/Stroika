@@ -544,9 +544,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Produce a substring of this string, starting at from, and up to to
-                 *  (require from <= to unless to == kBadStingIndex). If to is kBadIndex (default)
-                 *  then return all the way to the end of the string.
+                 *  Produce a substring of this string, starting at 'from', and up to 'to' (or end of string
+                 *  for one-arg overload).
                  *
                  *  *NB* This function treats the second argument differntly than String::substr () -
                  *  which respects the STL basic_string API. This function treats the second argument
@@ -554,10 +553,11 @@ namespace   Stroika {
                  *  very common cases of substr(N) - because second argument is defaulted, and,
                  *  substr (0, N) - because then the count and end are the same.
                  *
-                 *  \req  ((from <= to) or (to == kBadIndex));
-                 *  \req  ((to <= GetLength ()) or (to == kBadIndex));
+                 *  \req  (from <= to);
+                 *  \req  (to <= GetLength ());     // for 2-arg variant
                  *
                  *  @see substr
+                 *  @see CircustlarSubString
                  */
                 nonvirtual  String      SubString (size_t from) const;
                 nonvirtual  String      SubString (size_t from, size_t to) const;
