@@ -34,8 +34,17 @@ History
 			<li>BlockAllocation-related cleanups - renamed BlockAllocated<> to AutomaticallyBlockAllocated<> and added
 			ManuallyBlockAllocated<>. Other related cleanups.</li>
 			<li>Revived SharedPtr<> template (work in progress; faster, and maybe add threadsafety option)</li>
-			<li>Deprecated String::Remove, and String::RemoveAt - not because really going away, but because changing API to return a new string and
+			<li>String class changes
+				<ul>
+					<li>Deprecated String::Remove, and String::RemoveAt - not because really going away, but because changing API to return a new string and
 					this will make it easier to avoid code subtly depending on old behavior. DO switch next release.
+					</li>
+					<li>SubString() used to have default second arg: instead overload of 2 versions. NOT BACKWARD COMPAT if someone
+						passed a value > end of string to second arg - now assert error!
+					</li>
+					<li>tons string classlib improvemnts - maybe fix threadsafty issue</li>
+					<li>Lots of performance improvements on string classlib</li>
+				</ul>
 			</li>
 			<li>Stroika performance measurements tool and regression test. Little done to improve performance, but 
 			at least now we have baseline measurements of some key benchmarks. Motivated by neeed to evaluate costs of
@@ -43,7 +52,6 @@ History
 			<li>Math::ReBin() draft</li>
 			<li>Duration/Time/etc Range () code now fixed for 'startup before main()' races, and todo comments on how to fix more performantly in
 			the future</li>
-			<li>???string classlib improvemnts - maybe fix threadsafty issue</li>
 			<li>SetStandardCrashHandlerSignals() incompatable second argument changes, and improved/factoring</li>
 			<li>Duration::PrettyPrint and Lingustics/Word Pluralize etc all use new String class (instead of std::wstring/string). This isn't backward comptable, but close. (so we can use String_Constant in more places).</li>
 		</ul>
