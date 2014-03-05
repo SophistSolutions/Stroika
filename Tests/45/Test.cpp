@@ -901,7 +901,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             22500,
-            10.0,
+            9.0,
             &failedTests
         );
 #endif
@@ -1021,7 +1021,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            14.0,
+            7.0,
             &failedTests
         );
         Tester (
