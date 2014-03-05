@@ -559,7 +559,8 @@ namespace   Stroika {
                  *
                  *  @see substr
                  */
-                nonvirtual  String      SubString (size_t from, size_t to = kBadIndex) const;
+                nonvirtual  String      SubString (size_t from) const;
+                nonvirtual  String      SubString (size_t from, size_t to) const;
 
             public:
                 /**
@@ -1036,10 +1037,10 @@ namespace   Stroika {
              */
             class   String::_IRep : public Iterable<Character>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             protected:
                 using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;

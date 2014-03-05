@@ -935,23 +935,6 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
 
 
 
-#if 0
-/*
- ********************************************************************************
- ********************************** operator+ ***********************************
- ********************************************************************************
- */
-String  Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
-{
-    Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (lhs, lhs.size () + rhs.size ());
-    tmp.InsertAt (rhs, tmp.GetLength ());
-    return tmp;
-}
-#endif
-
-
-
-
 
 
 /*

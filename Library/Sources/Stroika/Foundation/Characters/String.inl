@@ -23,12 +23,6 @@ namespace   Stroika {
             ********************************* String::_IRep ********************************
             ********************************************************************************
             */
-            inline  String::_IRep::_IRep ()
-            {
-            }
-            inline  String::_IRep::~_IRep ()
-            {
-            }
             inline  void    String::_IRep::CopyTo (Character* bufFrom, Character* bufTo) const
             {
                 RequireNotNull (bufFrom);
@@ -162,15 +156,12 @@ namespace   Stroika {
                 _SafeRepAccessor accessor (*this);
                 return accessor._GetRep ().GetLength ();
             }
-            inline  String  String::SubString (size_t from, size_t to) const
+            inline  String  String::SubString (size_t from) const
             {
-#if 1
                 _SafeRepAccessor    accessor (*this);
                 size_t              myLength = accessor._GetRep ().GetLength ();
-                Require ((from <= to) or (to == kBadIndex));
-                Require ((to <= myLength) or (to == kBadIndex));
-
-                size_t  useLength  =   (to == kBadIndex) ? (myLength - from) : (to - from);
+                Require (from <= myLength);
+                size_t  useLength  =   myLength - from;
                 if (useLength == 0) {
                     return String ();
                 }
@@ -179,36 +170,25 @@ namespace   Stroika {
                     return *this;       // just bump reference count
                 }
                 return SubString_ (accessor, myLength, from, from + useLength);
-#else
-                _SafeRepAccessor accessor (*this);
-                size_t  myLength    =   accessor._GetRep ().GetLength ();
-
-                Require ((from <= to) or (to == kBadIndex));
-                Require ((to <= myLength) or (to == kBadIndex));
-
-                size_t  length  =   (to == kBadIndex) ? (myLength - from) : (to - from);
-                if (length == 0) {
+            }
+            inline  String  String::SubString (size_t from, size_t to) const
+            {
+                _SafeRepAccessor    accessor (*this);
+                size_t              myLength = accessor._GetRep ().GetLength ();
+                Require (from <= to);
+                Require (to <= myLength);
+                size_t  useLength  =   (to - from);
+                if (useLength == 0) {
                     return String ();
                 }
-                if ((from == 0) and (length == myLength)) {
+                if ((from == 0) and (useLength == myLength)) {
+                    ////@TODO - FIX - SHOULD convert _SafeRepAccessor to String instance??? then return that!
                     return *this;       // just bump reference count
                 }
-                const wchar_t*  start =   reinterpret_cast<const wchar_t*> (accessor._GetRep ().Peek ()) + from;
-                return String
-                       (
-                           String::_SharedPtrIRep (
-                               DEBUG_NEW String_Substring_::MyRep_ (
-                                   accessor,
-                                   start,
-                                   start + length
-                               )
-                           )
-                       );
-#endif
+                return SubString_ (accessor, myLength, from, from + useLength);
             }
             inline  String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
             {
-#if 1
                 _SafeRepAccessor    accessor (*this);
                 size_t              myLength = accessor._GetRep ().GetLength ();
                 size_t  f = from < 0 ? (myLength + from) : from;
@@ -218,16 +198,6 @@ namespace   Stroika {
                 Require (f <= t);
                 Require (t <= myLength);
                 return SubString_ (accessor, myLength, f, t);
-#else
-                const String  threadSafeCopy  =   *this;
-                size_t  f = from < 0 ? (threadSafeCopy.GetLength () + from) : from;
-                size_t  t = to < 0 ? (threadSafeCopy.GetLength () + to) : to;
-                Require (f != kBadIndex);
-                Require (t != kBadIndex);
-                Require (f <= t);
-                Require (t <= threadSafeCopy.GetLength ());
-                return threadSafeCopy.SubString (f, t);
-#endif
             }
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START(4996)
@@ -497,20 +467,6 @@ namespace   Stroika {
                 // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
                 size_t  to  =   (count == kBadIndex) ? thisLen : (from + min (thisLen, count));
                 return SubString_ (accessor, thisLen, from, to);
-#if 0
-                // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-                if (count == kBadIndex) {
-                    return SubString (from);
-                }
-                else {
-
-                    String  String::SubString_ (const _SafeRepAccessor & thisAccessor, size_t thisLen, size_t from, size_t to)
-                    const String  threadSafeCopy  =   *this;
-                    size_t  end =   min (from + count, threadSafeCopy.GetLength ());   // really should worry more about overflow (say if count is kBadIndex-1)
-                    Assert (from <= end);
-                    return threadSafeCopy.SubString (from, end);
-                }
-#endif
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
