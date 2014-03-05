@@ -105,6 +105,50 @@ namespace   Stroika {
                 _SafeRepAccessor accessor (*this);
                 return accessor._GetRep ().GetLength ();
             }
+            inline  String  String::SubString (size_t from, size_t to) const
+            {
+#if 1
+                _SafeRepAccessor    accessor (*this);
+                size_t              myLength = accessor._GetRep ().GetLength ();
+                Require ((from <= to) or (to == kBadIndex));
+                Require ((to <= myLength) or (to == kBadIndex));
+
+                size_t  useLength  =   (to == kBadIndex) ? (myLength - from) : (to - from);
+                if (useLength == 0) {
+                    return String ();
+                }
+                if ((from == 0) and (useLength == myLength)) {
+                    ////@TODO - FIX - SHOULD convert _SafeRepAccessor to String instance??? then return that!
+                    return *this;       // just bump reference count
+                }
+                return SubString_ (accessor, myLength, from, from + useLength);
+#else
+                _SafeRepAccessor accessor (*this);
+                size_t  myLength    =   accessor._GetRep ().GetLength ();
+
+                Require ((from <= to) or (to == kBadIndex));
+                Require ((to <= myLength) or (to == kBadIndex));
+
+                size_t  length  =   (to == kBadIndex) ? (myLength - from) : (to - from);
+                if (length == 0) {
+                    return String ();
+                }
+                if ((from == 0) and (length == myLength)) {
+                    return *this;       // just bump reference count
+                }
+                const wchar_t*  start =   reinterpret_cast<const wchar_t*> (accessor._GetRep ().Peek ()) + from;
+                return String
+                       (
+                           String::_SharedPtrIRep (
+                               DEBUG_NEW String_Substring_::MyRep_ (
+                                   accessor,
+                                   start,
+                                   start + length
+                               )
+                           )
+                       );
+#endif
+            }
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START(4996)
             inline  void    String::RemoveAt (size_t charAt)
@@ -361,6 +405,32 @@ namespace   Stroika {
             {
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (c, GetLength ());
+            }
+            inline  String      String::substr (size_t from, size_t count) const
+            {
+                _SafeRepAccessor    accessor (*this);
+                size_t              thisLen = accessor._GetRep ().GetLength ();
+                if (from > thisLen) {
+                    Execution::DoThrow (std::out_of_range ("string index out of range"));
+                }
+                // @todo
+                // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
+                size_t  to  =   (count == kBadIndex) ? thisLen : (from + min (thisLen, count));
+                return SubString_ (accessor, thisLen, from, to);
+#if 0
+                // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
+                if (count == kBadIndex) {
+                    return SubString (from);
+                }
+                else {
+
+                    String  String::SubString_ (const _SafeRepAccessor & thisAccessor, size_t thisLen, size_t from, size_t to)
+                    const String  threadSafeCopy  =   *this;
+                    size_t  end =   min (from + count, threadSafeCopy.GetLength ());   // really should worry more about overflow (say if count is kBadIndex-1)
+                    Assert (from <= end);
+                    return threadSafeCopy.SubString (from, end);
+                }
+#endif
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {

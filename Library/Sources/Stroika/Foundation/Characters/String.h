@@ -375,12 +375,15 @@ namespace   Stroika {
                 using   _SharedPtrIRep          =   _USING_SHARED_IMPL_<_IRep>;
 
             protected:
+                struct  _SafeRepAccessor;
+
+            protected:
                 /**
                  * \req rep MUST be not-null
                  *  However, with move constructor, it maybe null on exit.
                  */
-                String (const _SharedPtrIRep& rep);
-                String (_SharedPtrIRep&& rep);
+                String (const _SharedPtrIRep& rep) noexcept;
+                String (_SharedPtrIRep&& rep) noexcept;
 
             public:
                 nonvirtual  String& operator= (const String& newString) = default;
@@ -567,6 +570,9 @@ namespace   Stroika {
                  *      to mask bugs.
                  */
                 nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
+
+            private:
+                static  String  SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
 
             public:
                 /**
@@ -969,11 +975,13 @@ namespace   Stroika {
                  *  as Stroika::String::SubString (where the second argument is a 'to')
                  *
                  *  @see SubString
+                 *
+                 *  From http://en.cppreference.com/w/cpp/string/basic_string/substr
+                 *      Returns a substring [pos, pos+count). If the requested substring extends
+                 *      past the end of the string, or if count == npos, the returned substring is [pos, size()).
+                 *      std::out_of_range if pos > size()
                  */
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
-
-            protected:
-                struct  _SafeRepAccessor;
 
             protected:
                 // @todo - LOSE THISE AS PART OF THREADATYPE UPGRADE (using _SafeRepAccessor instead)

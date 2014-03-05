@@ -83,14 +83,11 @@ namespace   {
     // THIS SHOULD BE SIMPLER NOW (cuz of immutable string technique! - but what we have here is probably sucky/broken
     // or at least must be reviewed
     //      --LGP 2014-03-04
-#define qString_SubStringClassWorks 1
-
-#if     qString_SubStringClassWorks
     struct String_Substring_ : public Concrete::Private::ReadOnlyRep {
         class   MyRep_ : public _Rep {
             using inherited = _Rep;
         public:
-            MyRep_ (const String::_SafeRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
+            MyRep_ (const _SafeRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
                 : inherited (start, end)
                 , fSaved_ (savedSP)
             {
@@ -107,12 +104,11 @@ namespace   {
                 return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
             }
         private:
-            String::_SafeRepAccessor  fSaved_;
+            _SafeRepAccessor  fSaved_;
         public:
             DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
         };
     };
-#endif
 }
 
 
@@ -237,16 +233,18 @@ String::String (const Iterable<Character>& src)
 {
 }
 
-String::String (const _SharedPtrIRep& rep)
-    : inherited (rep)
+String::String (const _SharedPtrIRep& rep) noexcept
+:
+inherited (rep)
 {
 #if     qDebug
     _GetRep (); // just make sure non-null and right type
 #endif
 }
 
-String::String (_SharedPtrIRep&& rep)
-    : inherited (std::move (rep))
+String::String (_SharedPtrIRep&& rep) noexcept
+:
+inherited (std::move (rep))
 {
 #if     qDebug
     _GetRep (); // just make sure non-null and right type
@@ -695,38 +693,6 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
     return result;
 }
 
-String  String::SubString (size_t from, size_t to) const
-{
-    _SafeRepAccessor accessor (*this);
-    size_t  myLength    =   accessor._GetRep ().GetLength ();
-
-    Require ((from <= to) or (to == kBadIndex));
-    Require ((to <= myLength) or (to == kBadIndex));
-
-    size_t  length  =   (to == kBadIndex) ? (myLength - from) : (to - from);
-    if (length == 0) {
-        return String ();
-    }
-    if ((from == 0) and (length == myLength)) {
-        return *this;       // just bump reference count
-    }
-#if     qString_SubStringClassWorks
-    const wchar_t*  start =   reinterpret_cast<const wchar_t*> (accessor._GetRep ().Peek ()) + from;
-    return String
-           (
-               String::_SharedPtrIRep (
-                   DEBUG_NEW String_Substring_::MyRep_ (
-                       accessor,
-                       start,
-                       start + length
-                   )
-               )
-           );
-#else
-    return (String (accessor._GetRep ().Peek () + from, accessor._GetRep ().Peek () + from + length));
-#endif
-}
-
 String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
 {
     const String  threadSafeCopy  =   *this;
@@ -737,6 +703,14 @@ String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
     Require (f <= t);
     Require (t <= threadSafeCopy.GetLength ());
     return threadSafeCopy.SubString (f, t);
+}
+
+String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)
+{
+    Require (from <= to);
+    Require (to <= thisLen);
+    const wchar_t*  start =   reinterpret_cast<const wchar_t*> (thisAccessor._GetRep ().Peek ()) + from;
+    return String (String::_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, start + (to - from))));
 }
 
 String  String::Repeat (unsigned int count) const
@@ -998,122 +972,10 @@ void    String::erase (size_t from, size_t count)
     DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 }
 
-String      String::substr (size_t from, size_t count) const
-{
-    // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-    if (count == kBadIndex) {
-        return SubString (from);
-    }
-    else {
-        const String  threadSafeCopy  =   *this;
-        size_t  end =   min (from + count, threadSafeCopy.GetLength ());   // really should worry more about overflow (say if count is kBadIndex-1)
-        Assert (from <= end);
-        return threadSafeCopy.SubString (from, end);
-    }
-}
 
 
 
 
-
-
-
-#if     qString_SubStringClassWorks && 0
-/*
- ********************************************************************************
- ************************** String_Substring_::MyRep_ ***************************
- ********************************************************************************
- */
-String_Substring_::MyRep_::MyRep_ (const _SharedRepByValuePtr& baseString, size_t from, size_t length)
-    : fBase (baseString)
-    , fFrom (from)
-    , fLength (length)
-{
-    Require (from >= 0);
-    Require (length >= 0);
-    Require ((from + length) <= fBase->GetLength ());
-}
-
-shared_ptr<String::_IRep>   String_Substring_::MyRep_::Clone () const
-{
-    return (new String_CharArray::MyRep_ (Peek (), GetLength ()));
-}
-
-size_t  String_Substring_::MyRep_::GetLength () const
-{
-    return (fLength);
-}
-
-bool    String_Substring_::MyRep_::Contains (Character item) const
-{
-    for (size_t i = 0; i < fLength; i++) {
-        if (GetAt (i) == item) {
-            return (true);
-        }
-    }
-    return (false);
-}
-
-void    String_Substring_::MyRep_::RemoveAll ()
-{
-    fBase->RemoveAll ();
-    fFrom = 0;
-    fLength = 0;
-}
-
-Character   String_Substring_::MyRep_::GetAt (size_t index) const
-{
-    Require (index < GetLength ());
-    Assert ((fFrom + index) < fBase->GetLength ());
-    return (fBase->GetAt (fFrom + index));
-}
-
-void    String_Substring_::MyRep_::SetAt (Character item, size_t index)
-{
-    Require (index < GetLength ());
-    Assert ((fFrom + index) < fBase->GetLength ());
-    fBase->SetAt (item, (fFrom + index));
-}
-
-void    String_Substring_::MyRep_::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-    Require (index <= GetLength ());
-    Assert ((fFrom + index) <= fBase->GetLength ());
-
-    size_t  lenBeforeInsert =   GetLength();
-
-
-    fBase->InsertAt (srcStart, srcEnd, (fFrom + index));
-    fLength++;
-}
-
-void    String_Substring_::MyRep_::RemoveAt (size_t index, size_t amountToRemove)
-{
-    Require (index < GetLength ());
-    Require ((index + amountToRemove) <= GetLength ());
-
-    Assert ((fFrom + index + amountToRemove) < fBase->GetLength ());
-    fBase->RemoveAt (index, amountToRemove);
-    fLength -= amountToRemove;
-}
-
-void    String_Substring_::MyRep_::SetLength (size_t newLength)
-{
-    size_t delta = newLength - fLength;
-    if (delta != 0) {
-        fBase->SetLength (fBase->GetLength () + delta);
-        fLength += delta;
-    }
-}
-
-const Character*    String_Substring_::MyRep_::Peek () const
-{
-    Assert (fFrom <= fBase->GetLength ());
-
-    const Character* buffer = fBase->Peek ();
-    return (&buffer[fFrom]);
-}
-#endif
 
 
 
