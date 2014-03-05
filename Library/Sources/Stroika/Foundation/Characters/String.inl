@@ -283,13 +283,19 @@ namespace   Stroika {
             inline  String& String::operator+= (Character appendage)
             {
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (appendage, GetLength ());
+                Append (appendage);
                 return *this;
             }
             inline  String& String::operator+= (const String& appendage)
             {
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
+                return *this;
+            }
+            inline  String& String::operator+= (const wchar_t* appendageCStr)
+            {
+                // @todo - FIX - NOT ENVELOPE THREADSAFE
+                Append (appendageCStr, appendageCStr + ::wcslen (appendageCStr));
                 return *this;
             }
             inline  const Character   String::GetCharAt (size_t i) const

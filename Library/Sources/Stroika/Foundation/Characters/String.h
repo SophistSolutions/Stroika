@@ -427,6 +427,7 @@ namespace   Stroika {
             public:
                 nonvirtual  String& operator+= (Character appendage);
                 nonvirtual  String& operator+= (const String& appendage);
+                nonvirtual  String& operator+= (const wchar_t* appendageCStr);
 
             public:
                 nonvirtual  String  operator+ (const String& rhs) const;
