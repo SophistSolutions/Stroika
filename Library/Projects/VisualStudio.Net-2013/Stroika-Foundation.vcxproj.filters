@@ -702,6 +702,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1623,6 +1626,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2453,6 +2459,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>
