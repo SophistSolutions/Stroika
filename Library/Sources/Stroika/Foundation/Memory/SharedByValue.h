@@ -41,7 +41,7 @@ namespace   Stroika {
 
 
 #ifndef qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_
-#define qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_       0
+#define qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_       1
 #endif
             /**
              *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
