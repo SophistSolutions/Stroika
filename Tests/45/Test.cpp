@@ -936,7 +936,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -680.0,
+            -400.0,
             &failedTests
         );
         Tester (
@@ -944,7 +944,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -1600.0,
+            -1100.0,
             &failedTests
         );
         Tester (
@@ -952,7 +952,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -440.0,
+            -130.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -970,7 +970,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3023007 ,
-            -160.0,
+            -150.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -979,7 +979,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
-        -280.0,
+        -270.0,
         &failedTests
         );
 #endif
@@ -997,7 +997,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            -475.0,
+            -490.0,
             &failedTests
         );
         Tester (
