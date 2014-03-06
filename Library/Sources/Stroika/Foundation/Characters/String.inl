@@ -236,66 +236,42 @@ namespace   Stroika {
             {
                 return bool (Find (subString, co) != kBadIndex);
             }
-            inline  void    String::InsertAt (Character c, size_t at)
-            {
-                InsertAt (&c, &c + 1, at);
-            }
-            inline  void    String::InsertAt (const String& s, size_t at)
-            {
-                /// @TODO - REDO / RETHINK THIS COMMENT - OBSOLETE
-                // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
-                // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
-                // another thread could only change that other envelopes copy
-
-                _SafeRepAccessor rhsCopyAccessor (s);
-                pair<const Character*, const Character*> d = rhsCopyAccessor._GetRep ().GetData ();
-                String  thisCopy =  *this;
-                thisCopy.InsertAt (d.first, d.second, at);
-                *this = thisCopy;
-            }
-            inline  void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
-            {
-                InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
-            }
-            inline  void    String::Append (Character c)
-            {
-                String  tmp =   *this;
-                tmp.InsertAt (c, tmp.GetLength ());
-                *this = tmp;
-            }
-            inline  void    String::Append (const String& s)
-            {
-                String  tmp =   *this;
-                tmp.InsertAt (s, tmp.GetLength ());
-                *this = tmp;
-            }
-            inline  void    String::Append (const wchar_t* from, const wchar_t* to)
-            {
-                String  tmp =   *this;
-                tmp.InsertAt (from, to, tmp.GetLength ());
-                *this = tmp;
-            }
-            inline  void    String::Append (const Character* from, const Character* to)
-            {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (from, to, GetLength ());
-            }
             inline  String& String::operator+= (Character appendage)
             {
+                _SafeRepAccessor    thisAccessor (*this);
+                pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
+                *this = String (
+                            mk_ (
+                                reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                                reinterpret_cast<const wchar_t*> (&appendage), reinterpret_cast<const wchar_t*> (&appendage) + 1
+                            )
+                        );
+#if 0
+
+
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 Append (appendage);
+#endif
                 return *this;
             }
             inline  String& String::operator+= (const String& appendage)
             {
+#if 1
+                *this = *this + appendage;
+#else
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 InsertAt (appendage, GetLength ());
+#endif
                 return *this;
             }
             inline  String& String::operator+= (const wchar_t* appendageCStr)
             {
+#if 1
+                *this = *this + appendageCStr;
+#else
                 // @todo - FIX - NOT ENVELOPE THREADSAFE
                 Append (appendageCStr, appendageCStr + ::wcslen (appendageCStr));
+#endif
                 return *this;
             }
             inline  const Character   String::GetCharAt (size_t i) const

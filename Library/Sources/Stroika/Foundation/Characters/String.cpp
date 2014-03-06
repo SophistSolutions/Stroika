@@ -243,6 +243,15 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
     return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end));
 }
 
+String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
+{
+    size_t  len1        =   end1 - start1;
+    size_t  totalLen    =   len1 + (end2 - start2);
+    _SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (start1, end1, totalLen));
+    sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
+    return sRep;
+}
+
 String  String::operator+ (const String& rhs) const
 {
     _SafeRepAccessor    thisAccessor (*this);
@@ -256,16 +265,29 @@ String  String::operator+ (const String& rhs) const
     if (rhsD.first == rhsD.second) {
         return *this;
     }
-#if 1
-    size_t  totalLen    =   (lhsD.second - lhsD.first) + (rhsD.second - rhsD.first);
-    _SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), totalLen));
-    sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
-    return String (sRep);
-#else
-    Concrete::String_BufferedArray    tmp = Concrete::String_BufferedArray (*this, size () + rhs.size ());
-    tmp += rhs;
-    return tmp;
-#endif
+    return String (
+               mk_ (
+                   reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                   reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)
+               )
+           );
+}
+
+String  String::operator+ (const wchar_t* appendageCStr) const
+{
+    RequireNotNull (appendageCStr);
+    _SafeRepAccessor    thisAccessor (*this);
+    pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
+    size_t  lhsLen  =   lhsD.second - lhsD.first;
+    if (lhsLen == 0) {
+        return String (appendageCStr);
+    }
+    return String (
+               mk_ (
+                   reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                   appendageCStr, appendageCStr + ::wcslen (appendageCStr)
+               )
+           );
 }
 
 void    String::SetLength (size_t newLength)
@@ -326,6 +348,52 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         _GetRep ().InsertAt (from, to, at);
     }
 }
+
+void    String::InsertAt (Character c, size_t at)
+{
+    InsertAt (&c, &c + 1, at);
+}
+void    String::InsertAt (const String& s, size_t at)
+{
+    /// @TODO - REDO / RETHINK THIS COMMENT - OBSOLETE
+    // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
+    // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
+    // another thread could only change that other envelopes copy
+
+    _SafeRepAccessor rhsCopyAccessor (s);
+    pair<const Character*, const Character*> d = rhsCopyAccessor._GetRep ().GetData ();
+    String  thisCopy =  *this;
+    thisCopy.InsertAt (d.first, d.second, at);
+    *this = thisCopy;
+}
+void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
+{
+    InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+}
+void    String::Append (Character c)
+{
+    String  tmp =   *this;
+    tmp.InsertAt (c, tmp.GetLength ());
+    *this = tmp;
+}
+void    String::Append (const String& s)
+{
+    String  tmp =   *this;
+    tmp.InsertAt (s, tmp.GetLength ());
+    *this = tmp;
+}
+void    String::Append (const wchar_t* from, const wchar_t* to)
+{
+    String  tmp =   *this;
+    tmp.InsertAt (from, to, tmp.GetLength ());
+    *this = tmp;
+}
+void    String::Append (const Character* from, const Character* to)
+{
+    // @todo - FIX - NOT ENVELOPE THREADSAFE
+    InsertAt (from, to, GetLength ());
+}
+
 
 void    String::RemoveAt (size_t from, size_t to)
 {

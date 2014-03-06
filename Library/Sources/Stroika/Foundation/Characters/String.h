@@ -55,6 +55,8 @@
  *
  * TODO:
  *
+ *      @todo   In the next release, DEPRECATE InsertAt () - and maybe other methods.
+ *
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
  *
@@ -423,6 +425,7 @@ namespace   Stroika {
             private:
                 static  _SharedPtrIRep  mkEmpty_ ();
                 static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
+                static  _SharedPtrIRep  mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
 
             public:
                 nonvirtual  String& operator+= (Character appendage);
@@ -431,6 +434,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  String  operator+ (const String& rhs) const;
+                nonvirtual  String  operator+ (const wchar_t* appendageCStr) const;
 
             public:
                 /**
