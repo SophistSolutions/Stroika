@@ -180,6 +180,9 @@ namespace   Stroika {
 
             public:
                 nonvirtual      SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+                nonvirtual      SharedPtr<T>& operator= (SharedPtr<T> && rhs) noexcept;
+#endif
 
             public:
                 ~SharedPtr ();

@@ -268,9 +268,18 @@ namespace   Stroika {
                  */
                 ReadOnlyReference (const SharedByValue<TRAITS>& sp);
                 ReadOnlyReference (const ReadOnlyReference&) = default;
+                ReadOnlyReference (const ReadOnlyReference&& r)
+                    : fSharedPtr_ (move (r.fSharedPtr_))
+                {
+                }
 
             public:
                 ReadOnlyReference& operator= (const ReadOnlyReference&) = default;
+                ReadOnlyReference& operator= (const ReadOnlyReference && )
+                {
+                    fSharedPtr_ = move (fSharedPtr_);
+                    return *this;
+                }
 
             public:
                 /**

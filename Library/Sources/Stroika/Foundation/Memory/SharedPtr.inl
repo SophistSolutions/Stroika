@@ -85,6 +85,24 @@ namespace   Stroika {
                         // a common base pointer type
                         Require (newP == from.GetPtr ());
                     }
+                    template    <typename T2>
+                    Envelope_& operator= (const Envelope_<T2>& rhs)
+                    {
+                        fPtr_ = rhs.fPtr_;
+                        fCountHolder_ = rhs.fCountHolder_;
+                        return *this;
+                    }
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+                    template    <typename T2>
+                    Envelope_& operator= (Envelope_<T2> && rhs)
+                    {
+                        fPtr_ = rhs.fPtr_;
+                        fCountHolder_ = rhs.fCountHolder_;
+                        rhs.fPtr_ = nullptr;
+                        rhs.fCountHolder_ = nullptr;
+                        return *this;
+                    }
+#endif
                     inline  T*      GetPtr () const noexcept
                     {
                         return fPtr_;
@@ -229,6 +247,13 @@ namespace   Stroika {
                 }
                 return *this;
             }
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+            template    <typename T>
+            inline  SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
+                fEnvelope_ = move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
+                return *this;
+            }
+#endif
             template    <typename T>
             inline  SharedPtr<T>::~SharedPtr ()
             {
