@@ -47,7 +47,7 @@ namespace   Stroika {
             {
                 return str ();
             }
-            String StringBuilder::str () const
+            inline  String StringBuilder::str () const
             {
                 size_t  l   =   fData_.GetSize ();
                 return String (fData_.begin (), fData_.begin () + l);

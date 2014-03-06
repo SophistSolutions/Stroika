@@ -21,7 +21,11 @@
  *
  *
  * TODO:
+ *      @todo   IF DEBUG - add FAKE_LOCKER_ASSERT_NO_CONFLICT
+ *              and lock_guard<FAKE_LOCKER_ASSERT_NO_CONFLICT>;
  *
+ *              Add FAKE_LOCKER_ASSERT_NO_CONFLICT as utility class in Stroika Execution (useful for other things to assure/document
+ *              its extenralyy synchonized).
  *
  */
 
