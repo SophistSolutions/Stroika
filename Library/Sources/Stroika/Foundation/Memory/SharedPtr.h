@@ -77,6 +77,11 @@ namespace   Stroika {
 #ifndef qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
 #define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     0
 #endif
+
+/// See why??? not working for gcc?
+#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       defined (_MSC_VER)
+#endif
 #ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
 #define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       0
 #endif
