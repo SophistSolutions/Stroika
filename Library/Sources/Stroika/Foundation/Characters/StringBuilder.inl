@@ -25,18 +25,22 @@ namespace   Stroika {
              */
             inline  StringBuilder::StringBuilder ()
                 : fData_ (0)
+                , fLength_ (0)
             {
             }
             inline StringBuilder::StringBuilder (const String& initialValue)
                 : fData_ (0)
+                , fLength_ (0)
             {
                 operator+= (initialValue);
             }
             inline  StringBuilder&  StringBuilder::operator+= (const wchar_t* s)
             {
-                size_t  i   =   fData_.GetSize ();
+                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                size_t  i   =   fLength_;
                 size_t  l   =   ::wcslen (s);
                 fData_.GrowToSize (i + l);
+                fLength_ = i + i;
                 memcpy (fData_.begin () + i, s, sizeof (wchar_t) * l);
             }
             inline  StringBuilder&  StringBuilder::operator+= (const String& s)
@@ -47,9 +51,17 @@ namespace   Stroika {
             {
                 return str ();
             }
+            inline  const wchar_t*  StringBuilder::c_str () const
+            {
+                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                fData_.GrowToSize (fLength_ + 1);
+                fData_[fLength_] = '\0';
+                return fData_.begin ();
+            }
             inline  String StringBuilder::str () const
             {
-                size_t  l   =   fData_.GetSize ();
+                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                size_t  l   =   fLength_;
                 return String (fData_.begin (), fData_.begin () + l);
             }
 

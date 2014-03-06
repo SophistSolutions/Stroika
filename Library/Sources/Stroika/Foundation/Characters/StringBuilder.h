@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Execution/ExternallySynchronizedLock.h"
 #include    "../Memory/SmallStackBuffer.h"
 
 #include    "String.h"
@@ -21,11 +22,6 @@
  *
  *
  * TODO:
- *      @todo   IF DEBUG - add FAKE_LOCKER_ASSERT_NO_CONFLICT
- *              and lock_guard<FAKE_LOCKER_ASSERT_NO_CONFLICT>;
- *
- *              Add FAKE_LOCKER_ASSERT_NO_CONFLICT as utility class in Stroika Execution (useful for other things to assure/document
- *              its extenralyy synchonized).
  *
  */
 
@@ -39,10 +35,10 @@ namespace   Stroika {
              *
              *  SUPER ROUGH DRAFT
              *
-             *  NOTE - THIS IS NOT THREADSAFE!!!!!
+             *  \note - THIS IS NOT THREADSAFE!!!!!(DETAILS)
              *
-             *  @todo ADD CODE TO CHECK IN DEBUG MODE FOR DIFF THREAD ACCESS AND ASSERT.
-             *
+             *	\note	Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
+			 *			one thread while being read or updated on another.
              *
              *  @see String
              *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
@@ -67,12 +63,19 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  mimic wstringstteam method
+                 */
+                nonvirtual  const wchar_t* c_str () const;
+
+            public:
+                /**
+                 *  mimic wstringstream method
                  */
                 nonvirtual  String str () const;
 
             private:
-                Memory::SmallStackBuffer<wchar_t>   fData_;
+                mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // keep nul-terminated
+                size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
+                mutable Execution::ExternallySynchronizedLock   fLock_;
             };
 
 
