@@ -27,6 +27,8 @@
  *
  *              Maybe find a way to re-use the stream inserters from iostream (vector to them?)
  *
+ *      @todo   Add Append() and InsertAt() methods - like from String class (before I deprecate them).
+ *
  */
 
 
