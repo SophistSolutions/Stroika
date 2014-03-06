@@ -47,6 +47,14 @@ namespace   Stroika {
             {
                 return operator+= (s.c_str ());
             }
+            inline  StringBuilder&  StringBuilder::operator<< (const String& s)
+            {
+                return operator+= (s.c_str ());
+            }
+            inline  StringBuilder&  StringBuilder::operator<< (const wchar_t* s)
+            {
+                return operator+= (s);
+            }
             inline  StringBuilder::operator String () const
             {
                 return str ();

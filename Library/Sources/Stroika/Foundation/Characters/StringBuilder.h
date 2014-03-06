@@ -22,6 +22,10 @@
  *
  *
  * TODO:
+ *      @todo   Add 'formatting' like wstringstream - so you can append ints, etc. But unclear how to
+ *              format these, so think out carefully
+ *
+ *              Maybe find a way to re-use the stream inserters from iostream (vector to them?)
  *
  */
 
@@ -37,8 +41,8 @@ namespace   Stroika {
              *
              *  \note - THIS IS NOT THREADSAFE!!!!!(DETAILS)
              *
-             *	\note	Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
-			 *			one thread while being read or updated on another.
+             *  \note   Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
+             *          one thread while being read or updated on another.
              *
              *  @see String
              *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
@@ -55,6 +59,13 @@ namespace   Stroika {
                  */
                 nonvirtual  StringBuilder&  operator+= (const wchar_t* s);
                 nonvirtual  StringBuilder&  operator+= (const String& s);
+
+            public:
+                /**
+                 *  Alias for operator+=
+                 */
+                nonvirtual  StringBuilder& operator<< (const String& s);
+                nonvirtual  StringBuilder& operator<< (const wchar_t* s);
 
             public:
                 /**
