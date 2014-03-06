@@ -42,6 +42,7 @@ namespace   Stroika {
                 fData_.GrowToSize (i + l);
                 fLength_ = i + i;
                 memcpy (fData_.begin () + i, s, sizeof (wchar_t) * l);
+                return *this;
             }
             inline  StringBuilder&  StringBuilder::operator+= (const String& s)
             {
