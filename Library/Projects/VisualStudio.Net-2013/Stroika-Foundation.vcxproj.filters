@@ -1629,6 +1629,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2462,6 +2465,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
