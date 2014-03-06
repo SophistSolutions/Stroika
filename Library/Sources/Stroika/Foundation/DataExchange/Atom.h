@@ -110,6 +110,8 @@ namespace   Stroika {
              *      AtomManager_Concepts::Intern () just indirects to AtomManager_Default::Intern () and
              *      them differntly, and Extract() can look at the fields of the concept key and either
              *      algorithmically generate a name or indirect to AtomManager_Default::Extract ();
+             *
+             *  @see Microsoft.net String::Intern () - http://msdn.microsoft.com/en-us/library/system.string.intern(v=vs.110).aspx
              */
             template    <typename   ATOM_MANAGER = AtomManager_Default>
             class   Atom {
