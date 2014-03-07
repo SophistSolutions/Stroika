@@ -75,6 +75,7 @@ namespace   Stroika {
             fRep_ (std::move (from.fRep_))
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (from.fRep_ == nullptr);    // after move
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
@@ -82,6 +83,7 @@ namespace   Stroika {
             fRep_ (std::move (rep))
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (rep == nullptr);   // after move
             }
             template    <typename T>
             inline  Iterable<T>::~Iterable ()
