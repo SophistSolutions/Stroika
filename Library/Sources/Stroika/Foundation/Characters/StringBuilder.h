@@ -43,7 +43,7 @@ namespace   Stroika {
              *
              *  SUPER ROUGH DRAFT
              *
-             *  \note - THIS IS NOT THREADSAFE!!!!!(DETAILS)
+             *  \note - THIS IS NOT THREADSAFE!!!!!(DETAILS) - BY DESIGN
              *
              *  \note   Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
              *          one thread while being read or updated on another.
@@ -74,6 +74,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  void    push_back (Character c);
+
+            public:
+                /**
+                 */
                 nonvirtual  operator String () const;
 
             public:
@@ -88,7 +93,7 @@ namespace   Stroika {
                 nonvirtual  String str () const;
 
             private:
-                mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // keep nul-terminated
+                mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
                 mutable Execution::ExternallySynchronizedLock   fLock_;
             };
