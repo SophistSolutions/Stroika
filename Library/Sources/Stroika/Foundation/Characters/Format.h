@@ -118,7 +118,7 @@ namespace   Stroika {
              *
              *  @todo   Should this be part of String class? Or deleted?
              */
-            String _Deprecated_ (StripTrailingCharIfAny (const String& s, wchar_t c), "Deprecated in v2.0a20 - use s.EndsWith (c)? s.CircularSubString (0, -1): s instead");
+            String _DeprecatedFunction_ (StripTrailingCharIfAny (const String& s, wchar_t c), "Deprecated in v2.0a20 - use s.EndsWith (c)? s.CircularSubString (0, -1): s instead");
 
 
         }

@@ -277,7 +277,7 @@ namespace   Stroika {
                  *      potential confusion/conflicts (esp if we expand arg to ContainsWith() to be templated FUNCTOR instead
                  *      of std::function<>).
                  */
-                nonvirtual  _Deprecated_ (bool ContainsWith (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
+                nonvirtual  _DeprecatedFunction_ (bool ContainsWith (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
 
             public:
                 /**
@@ -367,7 +367,7 @@ namespace   Stroika {
                  *  \pre    doToElement != nullptr
                  */
                 nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
-                nonvirtual  void  _Deprecated_ (ApplyStatic (void(*doToElement)(const T& item)) const, "Obsolete as of Stroika v2.0a19 - use Apply");
+                nonvirtual  void  _DeprecatedFunction_ (ApplyStatic (void(*doToElement)(const T& item)) const, "Obsolete as of Stroika v2.0a19 - use Apply");
 
             public:
                 /**
@@ -398,8 +398,8 @@ namespace   Stroika {
                  *  operator bool () method of Iterator<T>).
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
-                nonvirtual  _Deprecated_ (Iterator<T>   ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
-                nonvirtual  _Deprecated_ (Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
+                nonvirtual  _DeprecatedFunction_ (Iterator<T>   ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
+                nonvirtual  _DeprecatedFunction_ (Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
 
             public:
                 /**

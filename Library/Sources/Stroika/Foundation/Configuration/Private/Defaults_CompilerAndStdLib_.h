@@ -1012,15 +1012,33 @@ EXAMPLE:
 
 /*
  *  Wrap this macro around entire declaration, as in:
- *      nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+ *      nonvirtual  _DeprecatedFunction_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
  */
-#if     !defined (_Deprecated_)
+#if     !defined (_DeprecatedFunction_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
-#define _Deprecated_(func,MESSAGE) func __attribute__ ((deprecated))
+#define _DeprecatedFunction_(func,MESSAGE) func __attribute__ ((deprecated))
 #elif   qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
-#define _Deprecated_(func,MESSAGE) __declspec(deprecated) func
+#define _DeprecatedFunction_(func,MESSAGE) __declspec(deprecated) func
 #else
-#define _Deprecated_(func,MESSAGE) [[deprecated(MESSAGE)]] func
+#define _DeprecatedFunction_(func,MESSAGE) [[deprecated(MESSAGE)]] func
+#endif
+#endif
+
+
+
+
+/*
+ *  Wrap this macro around entire declaration, as in:
+ *      nonvirtual  _DeprecatedFunction_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+ */
+#if     !defined (_DeprecatedClass_)
+#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
+// this doesnt work for gcc pre gcc49 easily, so dont bother - 49 supports real [[deprecated]]
+#define _DeprecatedClass_(func,MESSAGE) func
+#elif   qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
+#define _DeprecatedClass_(func,MESSAGE) __declspec(deprecated) func
+#else
+#define _DeprecatedClass_(func,MESSAGE) [[deprecated(MESSAGE)]] func
 #endif
 #endif
 

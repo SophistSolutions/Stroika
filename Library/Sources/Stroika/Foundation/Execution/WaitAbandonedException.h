@@ -25,7 +25,7 @@ namespace   Stroika {
 
             class   WaitAbandonedException : public StringException {
             public:
-                _Deprecated_ (WaitAbandonedException (), "Not sure what this was for - but its not used");
+                _DeprecatedFunction_ (WaitAbandonedException (), "Not sure what this was for - but its not used");
             };
 
 

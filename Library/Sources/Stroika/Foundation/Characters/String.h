@@ -459,7 +459,7 @@ namespace   Stroika {
                  *  INSTEAD I THINK WE CAN JUST LOSE THIS API
                  *
                  */
-                nonvirtual  void    _Deprecated_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20 - consider using erase() to shorten");
+                nonvirtual  void    _DeprecatedFunction_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20 - consider using erase() to shorten");
 
             public:
                 /**
@@ -528,8 +528,8 @@ namespace   Stroika {
                  *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
                  *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
                  */
-                nonvirtual  void        _Deprecated_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
-                nonvirtual  void        _Deprecated_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                nonvirtual  void        _DeprecatedFunction_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                nonvirtual  void        _DeprecatedFunction_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
                 //tmphack - during transition - use RemoveAt_nu
                 nonvirtual  String      RemoveAt_nu (size_t charAt) const;
                 nonvirtual  String      RemoveAt_nu (size_t from, size_t to) const;
@@ -545,7 +545,7 @@ namespace   Stroika {
                  *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
                  *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
                  */
-                nonvirtual  void        _Deprecated_ (Remove (Character c), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                nonvirtual  void        _DeprecatedFunction_ (Remove (Character c), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
 
             public:
                 /**

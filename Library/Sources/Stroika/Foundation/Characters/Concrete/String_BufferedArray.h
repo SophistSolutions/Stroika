@@ -33,7 +33,7 @@ namespace   Stroika {
                  *  String_BufferedArray is a kind of string which maintains extra buffer space, and
                  *  is more efficient if you are going to resize your string.
                  */
-                class   _Deprecated_ (String_BufferedArray, "Deprecated in v2.0a21 - use String directly or StringBuilder")  : public String {
+                class   _DeprecatedClass_ (String_BufferedArray, "Deprecated in v2.0a21 - use String directly or StringBuilder")  : public String {
                 private:
                     using   inherited   =   String;
 

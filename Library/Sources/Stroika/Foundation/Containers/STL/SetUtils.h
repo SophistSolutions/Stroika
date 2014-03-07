@@ -37,7 +37,7 @@ namespace   Stroika {
                 //DEPREACRED
                 /// @todo - THIS really SB obsolete - not sure why not just use vector<T> () CTOR?
                 template    <typename T, typename FROMCONTAINER>
-                _Deprecated_ (set<T>  mkSfromC (const FROMCONTAINER& rhs), "Use Make<> instead - to be removed in v2.0a12");
+                _DeprecatedFunction_ (set<T>  mkSfromC (const FROMCONTAINER& rhs), "Use Make<> instead - to be removed in v2.0a12");
                 template    <typename T, typename FROMCONTAINER>
                 inline  set<T>  mkSfromC (const FROMCONTAINER& rhs)
                 {

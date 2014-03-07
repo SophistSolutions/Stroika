@@ -50,7 +50,7 @@ namespace   Stroika {
             template    <typename   REAL_MUTUX = recursive_mutex>
             class   CopyableMutex {
             public:
-                _Deprecated_ (CopyableMutex (), "use shared_ptr<> directly - too many features of mutex (and subtypes) to mimic - this is a bad design - obsolete as of v2.0a19");
+                _DeprecatedFunction_ (CopyableMutex (), "use shared_ptr<> directly - too many features of mutex (and subtypes) to mimic - this is a bad design - obsolete as of v2.0a19");
 
             public:
                 nonvirtual  void    lock ();

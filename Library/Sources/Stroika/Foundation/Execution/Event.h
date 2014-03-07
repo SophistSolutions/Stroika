@@ -26,7 +26,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            typedef WaitableEvent   _Deprecated_ (Event, "Deprecated in v2.0a19 - use WaitableEvent");
+            typedef WaitableEvent   _DeprecatedFunction_ (Event, "Deprecated in v2.0a19 - use WaitableEvent");
 
             namespace {
                 Event   file_IsDeprecated_Event;
