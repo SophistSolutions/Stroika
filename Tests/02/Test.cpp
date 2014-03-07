@@ -13,6 +13,7 @@
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/Characters/String2Int.h"
+#include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_BufferedArray.h"
@@ -1057,6 +1058,30 @@ namespace {
 
 
 
+namespace {
+    void    Test32_StringBuilder_ ()
+    {
+        {
+            StringBuilder out;
+            out << L"hi mom";
+            VerifyTestResult (out.str () == L"hi mom");
+            out += L".";
+            VerifyTestResult (out.str () == L"hi mom.");
+            VerifyTestResult (static_cast<String> (out) == L"hi mom.");
+            VerifyTestResult (out.As<String> () == L"hi mom.");
+            VerifyTestResult (out.As<wstring> () == L"hi mom.");
+        }
+        {
+            StringBuilder out { L"x" };
+            VerifyTestResult (static_cast<String> (out) == L"x");
+        }
+    }
+
+}
+
+
+
+
 
 
 namespace   {
@@ -1101,6 +1126,7 @@ namespace   {
         Test29_StringWithSequenceOfCharacter_ ();
         Test30_LimitLength_ ();
         Test31_OperatorINSERT_ostream_ ();
+        Test32_StringBuilder_ ();
     }
 }
 
