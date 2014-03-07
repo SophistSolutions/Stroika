@@ -94,9 +94,15 @@ namespace   Stroika {
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
             {
                 if (empty ()) {
-                    return 0;
+                    return static_cast<typename Traits::UnsignedDifferenceType> (0);
                 }
                 return fEnd_ - fBegin_;
+            }
+            template    <typename T, typename TRAITS>
+            inline  T    Range<T, TRAITS>::GetMidpoint () const
+            {
+                Require (not empty ());
+                return GetLowerBound () + GetDistanceSpanned () / 2;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Contains (const T& r) const

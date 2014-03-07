@@ -206,7 +206,13 @@ namespace   Stroika {
                  *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
                  *  range being empty (if both ends are closed).
                  */
-                nonvirtual  typename TRAITS::UnsignedDifferenceType    GetDistanceSpanned () const;
+                nonvirtual  typename TraitsType::UnsignedDifferenceType    GetDistanceSpanned () const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL v2.0a21
+                 */
+                nonvirtual  T    GetMidpoint () const;
 
             public:
                 /**
