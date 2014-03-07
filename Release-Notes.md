@@ -44,6 +44,8 @@ History
 					</li>
 					<li>tons string classlib improvemnts - maybe fix threadsafty issue</li>
 					<li>Lots of performance improvements on string classlib</li>
+					<li>Deprecated several concrete subclasses (because going to immutable string design), and use
+					StringBuilder instead</li>
 				</ul>
 			</li>
 			<li>New StringBuilder class</li>
