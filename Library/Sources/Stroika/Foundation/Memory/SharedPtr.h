@@ -299,6 +299,10 @@ namespace   Stroika {
             public:
                 // NOT SURE WHY THIS NEEDED (windows). Investigate... Maybe compiler bug or my overloading bug
                 // -- LGP 2014-03-01?apx
+                nonvirtual  bool    operator== (nullptr_t) const noexcept
+                {
+                    return get () == nullptr;
+                }
                 nonvirtual  bool    operator!= (nullptr_t) const noexcept
                 {
                     return get () != nullptr;
