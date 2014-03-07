@@ -263,6 +263,17 @@ namespace   Stroika {
                 RequireNotNull (fSharedPtr_);
             }
             template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>::ReadOnlyReference::ReadOnlyReference (const ReadOnlyReference&& r)
+                : fSharedPtr_ (move (r.fSharedPtr_))
+            {
+            }
+            template    <typename TRAITS>
+            inline  typename SharedByValue<TRAITS>::ReadOnlyReference& SharedByValue<TRAITS>::ReadOnlyReference::operator= (const ReadOnlyReference && rhs)
+            {
+                fSharedPtr_ = move (rhs.fSharedPtr_);
+                return *this;
+            }
+            template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*     SharedByValue<TRAITS>::ReadOnlyReference::get () const
             {
                 EnsureNotNull (fSharedPtr_);

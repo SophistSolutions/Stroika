@@ -40,9 +40,6 @@ namespace   Stroika {
         namespace   Memory {
 
 
-#ifndef qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_
-#define qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_       1
-#endif
             /**
              *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
              *
@@ -271,22 +268,11 @@ namespace   Stroika {
                  */
                 ReadOnlyReference (const SharedByValue<TRAITS>& sp);
                 ReadOnlyReference (const ReadOnlyReference&) = default;
-#if qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_
-                ReadOnlyReference (const ReadOnlyReference&& r)
-                    : fSharedPtr_ (move (r.fSharedPtr_))
-                {
-                }
-#endif
+                ReadOnlyReference (const ReadOnlyReference&& r);
 
             public:
                 ReadOnlyReference& operator= (const ReadOnlyReference&) = default;
-#if qStroika_Foundation_Memory_SharedByValueSupportsRValueReferences_
-                ReadOnlyReference& operator= (const ReadOnlyReference && )
-                {
-                    fSharedPtr_ = move (fSharedPtr_);
-                    return *this;
-                }
-#endif
+                ReadOnlyReference& operator= (const ReadOnlyReference && r);
 
             public:
                 /**
