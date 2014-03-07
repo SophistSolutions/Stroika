@@ -815,7 +815,6 @@ namespace   Stroika {
                 nonvirtual  void    CopyTo (Character* bufFrom, Character* bufTo) const;
                 nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
 
-
             public:
                 /**
                  * Convert String losslessly into a standard C++ type (right now just <wstring>,
