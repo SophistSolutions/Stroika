@@ -46,8 +46,10 @@ namespace   Stroika {
                     auto le = lhs.end ();
                     auto ri = rhs.begin ();
                     auto re = rhs.end ();
-                    int c;      // no need for initialization cuz only used in return at end, but never get there
+                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+                    // no need for c' initialization cuz only used in else return at end, but never get there
                     // unless set at least once
+                    int c;
                     while ((li != le) and (ri != re) and (c = ELEMENT_COMPARER_TYPE::Compare (*li, *ri)) == 0) {
                         ++li;
                         ++ri;
@@ -68,6 +70,7 @@ namespace   Stroika {
                         Assert (c == ELEMENT_COMPARER_TYPE::Compare (*li, *ri));
                         return c;
                     }
+                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
                 }
 
 
