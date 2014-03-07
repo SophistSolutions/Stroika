@@ -124,7 +124,7 @@ String Characters::Format (const wchar_t* format, ...)
     va_start (argsList, format);
     String tmp = FormatV (format, argsList);
     va_end (argsList);
-    return tmp;
+    return move (tmp);
 }
 
 
