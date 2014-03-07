@@ -34,29 +34,52 @@ namespace   Stroika {
             {
                 operator+= (initialValue);
             }
-            inline  StringBuilder&  StringBuilder::operator+= (const wchar_t* s)
+            inline  void    StringBuilder::Append (const wchar_t* s, const wchar_t* e)
             {
-                RequireNotNull (s);
+                Require (s == e or (s != nullptr and e != nullptr));
+                Require (s <= e);
                 lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
                 size_t  i   =   fLength_;
-                size_t  rhsLen  =   ::wcslen (s);
+                size_t  rhsLen  =  e - s;
                 fData_.GrowToSize (i + rhsLen);
                 fLength_ = i + rhsLen;
                 memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
+            }
+            inline  void    StringBuilder::Append (const wchar_t* s)
+            {
+                RequireNotNull (s);
+                Append (s, s + ::wcslen (s));
+            }
+            inline  void    StringBuilder::Append (const wstring& s)
+            {
+                Append (s.c_str (), s.c_str () + s.length ());  // careful about s.end () if empty
+            }
+            inline  void    StringBuilder::Append (const String& s)
+            {
+                pair<const wchar_t*, const wchar_t*>    p   =   s.GetData<wchar_t> ();
+                Append (p.first, p.second);
+            }
+            inline  StringBuilder&  StringBuilder::operator+= (const wchar_t* s)
+            {
+                RequireNotNull (s);
+                Append (s);
                 return *this;
             }
             inline  StringBuilder&  StringBuilder::operator+= (const String& s)
             {
-                return operator+= (s.c_str ());
+                Append (s);
+                return *this;
             }
             inline  StringBuilder&  StringBuilder::operator<< (const String& s)
             {
-                return operator+= (s.c_str ());
+                Append (s);
+                return *this;
             }
             inline  StringBuilder&  StringBuilder::operator<< (const wchar_t* s)
             {
                 RequireNotNull (s);
-                return operator+= (s);
+                Append (s);
+                return *this;
             }
             inline  void  StringBuilder::push_back (Character c)
             {

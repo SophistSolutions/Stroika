@@ -64,14 +64,25 @@ namespace   Stroika {
                 /**
                  *  add overloads
                  */
+                nonvirtual  void    Append (const wchar_t* s, const wchar_t* e);
+                nonvirtual  void    Append (const wchar_t* s);
+                nonvirtual  void    Append (const wstring& s);
+                nonvirtual  void    Append (const String& s);
+
+            public:
+                /**
+                 *  Alias for Append
+                 */
                 nonvirtual  StringBuilder&  operator+= (const wchar_t* s);
+                nonvirtual  StringBuilder&  operator+= (const wstring& s);
                 nonvirtual  StringBuilder&  operator+= (const String& s);
 
             public:
                 /**
-                 *  Alias for operator+=
+                 *  Alias for Append
                  */
                 nonvirtual  StringBuilder& operator<< (const String& s);
+                nonvirtual  StringBuilder& operator<< (const wstring& s);
                 nonvirtual  StringBuilder& operator<< (const wchar_t* s);
 
             public:
