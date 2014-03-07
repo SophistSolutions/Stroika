@@ -13,7 +13,7 @@
 
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
-#include    "../Characters/Concrete/String_BufferedArray.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -107,7 +107,7 @@ namespace   {
         bool    skipSeconds =   seconds == 0;
         bool    skipMinutes =   skipSeconds and minutes == 0 and kFormatStr.find (L"tt") != wstring::npos;  // only do if showing AM/PM, else show 1300 for time - not 13...
 
-        String outBuf   =   Concrete::String_BufferedArray (kFormatStr.length () + 4);
+        StringBuilder outBuf;
         for (auto i = kFormatStr.begin (); i != kFormatStr.end (); ++i) {
             switch (*i) {
                 case 'h': {
