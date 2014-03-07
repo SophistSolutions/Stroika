@@ -19,6 +19,8 @@ namespace   Stroika {
 
 
             /**
+             *  \brief      NOT a real lock - just a debugging infrastrucutre support tool so in debug builds we assure used threadsafe
+             *
              * This class is used as a 'no op' in production builds, as a 'locker' for a class that needs
              *  no thread locking because its externally synchonized.
              *
