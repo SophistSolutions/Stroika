@@ -143,6 +143,7 @@ namespace   {
             cout << "finished Stress testing strings + ... time elapsed = " << t << endl;
 #endif
         }
+#if 0
         void    StressTestBufferedStrings ()
         {
 #if     qPrintTimings
@@ -171,6 +172,7 @@ namespace   {
             cout << "finished stress testing buffered strings + ... at " << t << endl;
 #endif
         }
+#endif
     }
 }
 
@@ -214,15 +216,16 @@ namespace   {
             VerifyTestResult (String (String (L"fred") + String (L"joe")).GetLength () == 7);
 
             VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
+
             {
-                String  s1  =   String_BufferedArray (L"test strings");
-                String  s2  =   String_BufferedArray (L"test strings");
+                String  s1  =   String (L"test strings");
+                String  s2  =   String (L"test strings");
                 Test2_Helper_ (s1, s2);
             }
 
             {
-                String_BufferedArray s1 (L"test strings");
-                String_BufferedArray s2 (L"test strings");
+                String s1 (L"test strings");
+                String s2 (L"test strings");
 
                 VerifyTestResult (Character ('a') == 'a');
 
@@ -240,7 +243,9 @@ namespace   {
     void    Test2_ ()
     {
         Test2Helpers_::StressTestStrings ();
+#if 0
         Test2Helpers_::StressTestBufferedStrings ();
+#endif
     }
 
     void    Test3_ ()
@@ -599,6 +604,7 @@ namespace   {
         }
         VerifyTestResult (::wcscmp (buf, L"fred") == 0);
     }
+#if 0
     void    Test14_String_StackLifetimeReadWrite_ ()
     {
         wchar_t buf[1024]   =   L"fred";
@@ -614,6 +620,7 @@ namespace   {
         }
         VerifyTestResult (::wcscmp (buf, L"fred") == 0);
     }
+#endif
 
 }
 
@@ -914,9 +921,9 @@ namespace {
     void    Test25_RemoveAt_ ()
     {
         String x = L"123";
-        x.RemoveAt (1);
+        x = x.RemoveAt_nu (1);
         VerifyTestResult (x == L"13");
-        x.RemoveAt (0, 2);
+        x = x.RemoveAt_nu (0, 2);
         VerifyTestResult (x.empty ());
     }
 }
@@ -1071,7 +1078,9 @@ namespace   {
         Test12_CodePageConverter_ ();
         Test13_ToLowerUpper_ ();
         Test14_String_StackLifetimeReadOnly_ ();
+#if 0
         Test14_String_StackLifetimeReadWrite_ ();
+#endif
         Test15_StripAll_ ();
         Test16_Format_ ();
         Test17_Find_ ();

@@ -22,6 +22,7 @@ namespace   Stroika {
                 ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite *********
                 ********************************************************************************
                 */
+                DISABLE_COMPILER_MSC_WARNING_START(4996)
                 inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
                     : String (s)
                 {
@@ -31,6 +32,7 @@ namespace   Stroika {
                     String::operator= (s);
                     return (*this);
                 }
+                DISABLE_COMPILER_MSC_WARNING_END(4996)
 
 
             }

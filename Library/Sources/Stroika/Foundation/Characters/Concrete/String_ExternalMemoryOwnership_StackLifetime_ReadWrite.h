@@ -75,7 +75,7 @@ namespace   Stroika {
                  *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
                  *          real optimized implemenation >>
                  */
-                class   String_ExternalMemoryOwnership_StackLifetime_ReadWrite : public String {
+                class   _Deprecated_ (String_ExternalMemoryOwnership_StackLifetime_ReadWrite, "deprecated in v2.0a21") : public String {
                 private:
                     using   inherited   =   String;
 

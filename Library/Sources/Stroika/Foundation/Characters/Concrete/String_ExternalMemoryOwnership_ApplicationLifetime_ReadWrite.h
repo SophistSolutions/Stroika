@@ -61,7 +61,7 @@ namespace   Stroika {
                  * maybe slightly more efficent, but all are equally safe.
                  *
                  */
-                class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite : public String {
+                class   _Deprecated_ (String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite, "Deprecated in v2.0a21 - use string directly") : public String {
                 private:
                     using   inherited   =   String;
 

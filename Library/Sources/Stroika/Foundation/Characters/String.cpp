@@ -292,6 +292,7 @@ String  String::operator+ (const wchar_t* appendageCStr) const
 
 void    String::SetLength (size_t newLength)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     try {
         if (newLength == 0) {
             _GetRep ().RemoveAll ();
@@ -311,12 +312,14 @@ void    String::SetLength (size_t newLength)
             _GetRep ().SetLength (newLength);
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::SetCharAt (Character c, size_t i)
 {
     Require (i >= 0);
     Require (i < GetLength ());
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     try {
         _GetRep ().SetAt (c, i);
     }
@@ -326,6 +329,7 @@ void    String::SetCharAt (Character c, size_t i)
         *this = tmp;
         _GetRep ().SetAt (c, i);
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::InsertAt (const Character* from, const Character* to, size_t at)
@@ -335,6 +339,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     Require (from <= to);
     Require (from != nullptr or from == to);
     Require (to != nullptr or from == to);
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     if (from == to) {
         return;
     }
@@ -347,6 +352,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         *this = tmp;
         _GetRep ().InsertAt (from, to, at);
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::InsertAt (Character c, size_t at)
@@ -394,9 +400,9 @@ void    String::Append (const Character* from, const Character* to)
     InsertAt (from, to, GetLength ());
 }
 
-
 void    String::RemoveAt (size_t from, size_t to)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     Require (from <= to);
     Require (to <= GetLength ());
     try {
@@ -408,10 +414,12 @@ void    String::RemoveAt (size_t from, size_t to)
         *this = tmp;
         _GetRep ().RemoveAt (from, to);
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 String        String::RemoveAt_nu (size_t from, size_t to) const
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     Require (from <= to);
     Require (to <= GetLength ());
     try {
@@ -424,6 +432,7 @@ String        String::RemoveAt_nu (size_t from, size_t to) const
         tmp._GetRep ().RemoveAt (from, to);
         return tmp;
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::Remove (Character c)
@@ -935,6 +944,7 @@ void    String::AsASCII (string* into) const
 
 const wchar_t*  String::c_str () const
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     const   wchar_t*    result = _GetRep ().c_str_peek ();
     if (result == nullptr) {
         // Then we must force it to be NUL-terminated
@@ -955,6 +965,7 @@ const wchar_t*  String::c_str () const
     else {
         return result;
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::erase (size_t from, size_t count)
