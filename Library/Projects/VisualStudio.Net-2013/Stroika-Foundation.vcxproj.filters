@@ -1107,12 +1107,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h">
-      <Filter>Sources\Containers\STL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h">
-      <Filter>Sources\Containers\STL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
@@ -1888,12 +1882,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl">
-      <Filter>Sources\Containers\STL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl">
-      <Filter>Sources\Containers\STL</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.md">
