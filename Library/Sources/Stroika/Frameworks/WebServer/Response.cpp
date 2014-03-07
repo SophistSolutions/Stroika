@@ -11,7 +11,6 @@
 #include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/Containers/STL/SetUtils.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/Debug/Assertions.h"
