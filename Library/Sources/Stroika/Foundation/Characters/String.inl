@@ -408,6 +408,19 @@ namespace   Stroika {
             {
                 AsASCII<std::string> (into);
             }
+            template    <>
+            inline  pair<const Character*, const Character*> String::GetData () const
+            {
+                _SafeRepAccessor    accessor (*this);
+                return accessor._GetRep ().GetData ();
+            }
+            template    <>
+            inline  pair<const wchar_t*, const wchar_t*> String::GetData () const
+            {
+                _SafeRepAccessor    accessor (*this);
+                pair<const Character*, const Character*>    p   = accessor._GetRep ().GetData ();
+                return pair<const wchar_t*, const wchar_t*> (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second));
+            }
             inline  size_t  String::length () const
             {
                 return GetLength ();

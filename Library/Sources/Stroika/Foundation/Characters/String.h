@@ -875,6 +875,19 @@ namespace   Stroika {
                 nonvirtual  std::string AsASCII () const;
                 nonvirtual  void        AsASCII (std::string* into) const;
 
+            public:
+                /*
+                 *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
+                 *
+                 *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
+                 *  That is - if you call this on a String, you better not be updating the string at the same time!
+                 *
+                 *  \note THREAD-SAFETY!
+                 *
+                 *  @see c_str()
+                 */
+                template    <typename CHAR_TYPE>
+                nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
             public:
                 /**
@@ -959,6 +972,13 @@ namespace   Stroika {
                  *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
                  *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
                  *  confusion elsewhere.
+                 *
+                 *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
+                 *  That is - if you call this on a String, you better not be updating the string at the same time!
+                 *
+                 *  \note THREAD-SAFETY!
+                 *
+                 *  @see GetData ()
                  */
                 nonvirtual  const wchar_t*  c_str () const;
 
@@ -1034,6 +1054,11 @@ namespace   Stroika {
             void    String::AsASCII (string* into) const;
             template    <>
             string  String::AsASCII () const;
+
+            template    <>
+            pair<const Character*, const Character*> String::GetData () const;
+            template    <>
+            pair<const wchar_t*, const wchar_t*> String::GetData () const;
 
 
             /**
