@@ -94,7 +94,7 @@ namespace   Stroika {
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
             {
                 if (empty ()) {
-                    return static_cast<typename Traits::UnsignedDifferenceType> (0);
+                    return static_cast<typename TRAITS::UnsignedDifferenceType> (0);
                 }
                 return fEnd_ - fBegin_;
             }
