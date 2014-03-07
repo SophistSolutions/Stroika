@@ -90,10 +90,6 @@ namespace   Stroika {
 #endif
             }
             template    <typename T>
-            inline  Iterable<T>::~Iterable ()
-            {
-            }
-            template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
                 RequireNotNull (rhs.fRep_.get ());

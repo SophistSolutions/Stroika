@@ -204,7 +204,7 @@ namespace   Stroika {
                 explicit Iterable (_SharedPtrIRep&& rep) noexcept;
 
             public:
-                ~Iterable ();
+                ~Iterable () = default;
 
             public:
                 /**
