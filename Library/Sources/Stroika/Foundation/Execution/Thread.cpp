@@ -13,7 +13,6 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
-#include    "../Containers/STL/VectorUtils.h"
 #include    "../Debug/Trace.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Lockable.h"

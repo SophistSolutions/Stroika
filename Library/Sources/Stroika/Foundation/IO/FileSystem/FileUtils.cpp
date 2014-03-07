@@ -30,7 +30,6 @@
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include    "../../Containers/Common.h"
-#include    "../../Containers/STL/SetUtils.h"
 #include    "../../Debug/Trace.h"
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"

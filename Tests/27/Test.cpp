@@ -7,7 +7,6 @@
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
