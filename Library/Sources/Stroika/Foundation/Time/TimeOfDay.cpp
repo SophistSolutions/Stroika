@@ -201,7 +201,7 @@ namespace   {
                     break;
             }
         }
-        return outBuf;
+        return outBuf.str ();
     }
 }
 #endif

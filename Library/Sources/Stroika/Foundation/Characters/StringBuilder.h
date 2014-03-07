@@ -31,6 +31,9 @@
  *
  *      @todo   Use ExternallySynchronizedLock when copying from src.
  *
+ *      @todo   Consider adding operator==, and or other String methods - esp so can compare as a value
+ *              with String. Or maybe add As<> method, and force compare As<String> ()?
+ *
  */
 
 
@@ -78,8 +81,25 @@ namespace   Stroika {
 
             public:
                 /**
+                 * Convert String losslessly into a
+                 *      o   String or
+                 *      o   wstring
                  */
-                nonvirtual  operator String () const;
+                template    <typename   T>
+                nonvirtual  T   As () const;
+                template    <typename   T>
+                nonvirtual  void    As (T* into) const;
+
+            public:
+                /*
+                 *  explicit operator T () provides an alterntive syntax to As<> - depending on user
+                 *  preference or context. Note - its important that this is explicit - to avoid
+                 *  creating overload problems
+                 *
+                 *      EXPERIMENTAL AS OF 2014-02-11 (v2.0a21)
+                 */
+                nonvirtual  explicit operator String () const;
+                nonvirtual  explicit operator wstring () const;
 
             public:
                 /**

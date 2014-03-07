@@ -65,10 +65,6 @@ namespace   Stroika {
                 fData_[fLength_] = c.GetCharacterCode ();
                 fLength_++;
             }
-            inline  StringBuilder::operator String () const
-            {
-                return str ();
-            }
             inline  const wchar_t*  StringBuilder::c_str () const
             {
                 lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
@@ -80,6 +76,57 @@ namespace   Stroika {
             {
                 lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
                 return String (fData_.begin (), fData_.begin () + fLength_);
+            }
+            template    <typename   T>
+            T   StringBuilder::As () const
+            {
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                RequireNotReached ();
+#else
+                static_assert (false, "Only specifically specialized variants are supported");
+#endif
+            }
+            template    <typename   T>
+            void    StringBuilder::As (T* into) const
+            {
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                RequireNotReached ();
+#else
+                static_assert (false, "Only specifically specialized variants are supported");
+#endif
+            }
+            template    <>
+            inline  void    StringBuilder::As (String* into) const
+            {
+                RequireNotNull (into);
+                // @todo could do more efficiently
+                *into = str ();
+            }
+            template    <>
+            inline  String StringBuilder::As () const
+            {
+                return str ();
+            }
+            template    <>
+            inline  void    StringBuilder::As (wstring* into) const
+            {
+                RequireNotNull (into);
+                // @todo could do more efficiently
+                *into = str ().As<wstring> ();
+            }
+            template    <>
+            inline  wstring StringBuilder::As () const
+            {
+                // @todo could do more efficiently
+                return  str ().As<wstring> ();
+            }
+            inline  StringBuilder::operator String () const
+            {
+                return As<String> ();
+            }
+            inline  StringBuilder::operator wstring () const
+            {
+                return As<wstring> ();
             }
 
 
