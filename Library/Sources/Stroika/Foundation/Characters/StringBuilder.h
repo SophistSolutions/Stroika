@@ -34,6 +34,8 @@
  *      @todo   Consider adding operator==, and or other String methods - esp so can compare as a value
  *              with String. Or maybe add As<> method, and force compare As<String> ()?
  *
+ *      @todo   Think about how to add support for STL manipulator/inserters like endl;
+ *
  */
 
 
