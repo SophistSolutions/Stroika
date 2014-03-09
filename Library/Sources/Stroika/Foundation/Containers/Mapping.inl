@@ -1,19 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
+#ifndef _Stroika_Foundation_Containers_Mapping_inl_
+#define _Stroika_Foundation_Containers_Mapping_inl_
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 #include    "../Debug/Assertions.h"
 
 #include    "Concrete/Mapping_Factory.h"
 
-#ifndef _Stroika_Foundation_Containers_Mapping_inl_
-#define _Stroika_Foundation_Containers_Mapping_inl_
 
 namespace   Stroika {
     namespace   Foundation {

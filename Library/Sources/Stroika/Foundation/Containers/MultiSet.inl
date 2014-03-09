@@ -27,7 +27,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****** MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ *****************
+             ********* MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ ***********
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>

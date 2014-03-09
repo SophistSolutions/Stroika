@@ -15,7 +15,6 @@
 #include    "Concrete/Collection_Factory.h"
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
