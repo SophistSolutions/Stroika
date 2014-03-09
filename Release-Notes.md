@@ -48,6 +48,8 @@ History
 					StringBuilder instead</li>
 				</ul>
 			</li>
+			<li>(maybe) fixed long-standing bug with canceling a thread while its starting another. Minor issue but I think
+			that was causing some failures of regtests - especailly test 34/threads/gcc/linux (clang++ issue isanother issue)</li>
 			<li>New StringBuilder class</li>
 			<li>New Execution::ExternallySynchronizedLock class</li>
 			<li>Stroika performance measurements tool and regression test. Little done to improve performance, but 
