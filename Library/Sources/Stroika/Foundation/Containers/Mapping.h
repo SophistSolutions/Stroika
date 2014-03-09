@@ -407,6 +407,9 @@ namespace   Stroika {
                  */
             protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
+
+            protected:
+                nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
             };
 
 

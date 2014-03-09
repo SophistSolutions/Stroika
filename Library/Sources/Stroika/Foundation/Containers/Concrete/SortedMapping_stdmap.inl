@@ -170,8 +170,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterable<KEY_TYPE>    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
                 {
-                    AssertNotImplemented ();
-                    return *(Iterable<KEY_TYPE>*)nullptr;
+                    return this->_Keys_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const

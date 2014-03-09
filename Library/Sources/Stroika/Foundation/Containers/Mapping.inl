@@ -323,6 +323,12 @@ namespace   Stroika {
                 }
                 return true;
             }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
+            {
+                AssertNotImplemented ();
+                return *(Iterable<KEY_TYPE>*)nullptr;
+            }
 
 
         }
