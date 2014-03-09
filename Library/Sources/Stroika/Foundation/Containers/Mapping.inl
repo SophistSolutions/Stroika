@@ -296,14 +296,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_IRep ()
-            {
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::~_IRep ()
-            {
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {

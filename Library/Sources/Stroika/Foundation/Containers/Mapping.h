@@ -379,10 +379,10 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep ()  = default;
 
             public:
                 virtual bool                Equals (const _IRep& rhs) const                                 =   0;
