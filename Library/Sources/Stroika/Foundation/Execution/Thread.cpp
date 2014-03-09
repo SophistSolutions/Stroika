@@ -221,9 +221,16 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
+#if 0
 #if     qPlatform_POSIX
     Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 #endif
+#endif
+    /*
+     *  Once we have constructed the other thread, its critical it be allowed to run at least to the
+     *  point where it's bumped its reference count before we allow aborting this thread.
+     */
+    SuppressAbortInContext  suppressAbortsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
     (*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {
