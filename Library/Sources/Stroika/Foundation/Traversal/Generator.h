@@ -41,7 +41,7 @@ namespace   Stroika {
 
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
-             *  std::function lambda closer (with smart pointers).
+             *  std::function lambda closure (with smart pointers).
              */
             template    <typename T>
             Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T>()>& getNext);
@@ -49,7 +49,7 @@ namespace   Stroika {
 
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
-             *  std::function lambda closer (with smart pointers).
+             *  std::function lambda closure (with smart pointers).
              *
              *  EXAMPLE:
              *      constexpr int kMin = 1;
