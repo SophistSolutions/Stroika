@@ -12,6 +12,7 @@
 #include    "../Debug/Assertions.h"
 
 #include    "Concrete/Mapping_Factory.h"
+#include    "../Traversal/Generator.h"
 
 
 namespace   Stroika {
@@ -318,8 +319,21 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
             {
-                AssertNotImplemented ();
-                return *(Iterable<KEY_TYPE>*)nullptr;
+                // buggy - this creates a single context for the entire iterable. Must backup/clonethat and copy context by value with construction
+                // of each iterable!
+                auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (this->MakeIterator (this));
+                auto getNext = [myContext] () -> Memory::Optional<KEY_TYPE> {
+                    if (myContext->Done ())
+                    {
+                        return Memory::Optional<KEY_TYPE> ();
+                    }
+                    else {
+                        auto result = (*myContext)->fKey;
+                        (*myContext)++;
+                        return result;
+                    }
+                };
+                return Traversal::CreateGenerator<KEY_TYPE> (getNext);
             }
 
 

@@ -201,6 +201,21 @@ namespace CommonTests {
         }
 
 
+        namespace Test7_Keys {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_MAPPING_CONTAINER c;
+                for (int i = 0; i < 100; ++i) {
+                    c.Add (i, i);
+                }
+                VerifyTestResult (c.Keys ().length () == 100);
+            }
+        }
+
+
+
+
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void    SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
@@ -210,6 +225,7 @@ namespace CommonTests {
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test6_AsSTLVector::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+            Test7_Keys::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
