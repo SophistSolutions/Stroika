@@ -39,8 +39,8 @@ namespace   Stroika {
                     , fSaved2Return (saved2Return)
                 {
                 }
-                typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep    fMultiSet;
-                Iterator<MultiSetEntry<T>>                             fMultiSetIterator;
+                typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep fMultiSet;
+                Iterator<MultiSetEntry<T>>                          fMultiSetIterator;
                 size_t                                              fCountMoreTimesToGoBeforeAdvance;
                 Memory::Optional<T>                                 fSaved2Return;
             };
@@ -135,14 +135,14 @@ namespace   Stroika {
                     virtual size_t  GetLength () const override
                     {
                         size_t  n = 0;
-                        for (Iterator<MultiSetEntry<T>> i = this->_fDataBlob.fMultiSet->MakeIterator (this); not i.Done (); ++i) {
+                        for (Iterator<MultiSetEntry<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (this); not i.Done (); ++i) {
                             n += i->fCount;
                         }
                         return n;
                     }
                     virtual bool    IsEmpty () const override
                     {
-                        return this->_fDataBlob.fMultiSet->IsEmpty ();
+                        return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -239,11 +239,11 @@ namespace   Stroika {
                     }
                     virtual size_t  GetLength () const override
                     {
-                        return this->_fDataBlob.fMultiSet->GetLength ();
+                        return this->_fContextForEachIterator.fMultiSet->GetLength ();
                     }
                     virtual bool    IsEmpty () const override
                     {
-                        return this->_fDataBlob.fMultiSet->IsEmpty ();
+                        return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
