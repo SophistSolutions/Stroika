@@ -230,7 +230,7 @@ namespace   Stroika {
 #endif
                 using   MyIteratorRep_              =   typename UniqueElementsIteratorHelper_::Rep;
                 using   MyDataBLOB_                 =   UniqueElementsIteratorHelperContext_;
-                struct  sMyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                struct  MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
                     using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
