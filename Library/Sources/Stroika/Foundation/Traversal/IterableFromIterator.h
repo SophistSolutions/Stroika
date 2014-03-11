@@ -43,6 +43,18 @@ namespace   Stroika {
             /**
              *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
              *
+             *  Template Paraemters:
+             *      T                           is the type of Iterator/Iterable (thing iterated
+             *                                  over). Parameter
+             *      CONTEXT_FOR_EACH_ITERATOR   is an optional context object you can provide in the
+             *                                  constructor for the iterable, a copy of which is
+             *                                  passed to each constructed iterator.
+             *      NEW_ITERATOR_REP_TYPE       is the (OPTIONAL) type of the iterator rep to construct
+             *                                  in the provided Iterable<T>::MakeIterator() method.
+             *                                  Note - if you leave this to the default of void,
+             *                                  then your subclass must explicitly override the
+             *                                  Iterator<T>::IRep_::MakeIterator() method.
+             *
              *  EXAMPLE:
              *      template    <typename T>
              *      struct   MyIterable_ : public Iterable<T> {
@@ -73,7 +85,7 @@ namespace   Stroika {
              *  @see MakeIterableFromIterator
              *
              */
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename DATA_BLOB = void>
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename CONTEXT_FOR_EACH_ITERATOR = void>
             class   IterableFromIterator : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
@@ -83,13 +95,13 @@ namespace   Stroika {
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 protected:
-                    DATA_BLOB   _fDataBlob;
+                    CONTEXT_FOR_EACH_ITERATOR   _fContextForEachIterator;
 #if     qDebug
                 private:
                     mutable Private_::IteratorTracker<T>    fIteratorTracker_;
 #endif
                 protected:
-                    _Rep (const DATA_BLOB& dataBLOB);
+                    _Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator);
                 public:
                     virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t          GetLength () const override;

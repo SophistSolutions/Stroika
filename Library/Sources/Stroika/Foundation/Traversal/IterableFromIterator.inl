@@ -31,28 +31,28 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****** IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep *********
+             * IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep *
              ********************************************************************************
              */
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            inline  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::_Rep (const DATA_BLOB& dataBLOB)
-                : _fDataBlob (dataBLOB)
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            inline  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator)
+                : _fContextForEachIterator (contextForEachIterator)
 #if     qDebug
                 , fIteratorTracker_ ()
 #endif
             {
             }
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator (IteratorOwnerID suggestedOwner) const
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator (IteratorOwnerID suggestedOwner) const
             {
 #if     qDebug
-                return fIteratorTracker_.MakeDelegatedIterator (Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob))));
+                return fIteratorTracker_.MakeDelegatedIterator (Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fContextForEachIterator))));
 #else
-                return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob)));
+                return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fContextForEachIterator)));
 #endif
             }
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            size_t     IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::GetLength () const
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            size_t     IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::GetLength () const
             {
                 size_t  n = 0;
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
@@ -60,21 +60,21 @@ namespace   Stroika {
                 }
                 return n;
             }
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            bool  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::IsEmpty () const
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            bool  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::IsEmpty () const
             {
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     return false;
                 }
                 return true;
             }
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            void  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            void  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
             {
                 this->_Apply (doToElement);
             }
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
             {
                 return this->_FindFirstThat (doToElement, suggestedOwner);
             }
