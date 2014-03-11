@@ -377,7 +377,9 @@ namespace   Stroika {
              *  the Mapping<T> container API.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep
+                : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
+                        , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep> {
             protected:
                 _IRep () = default;
 

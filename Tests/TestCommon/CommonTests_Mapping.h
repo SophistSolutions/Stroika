@@ -214,8 +214,6 @@ namespace CommonTests {
                     // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
                     auto keys = c.Keys ();
                     VerifyTestResult (keys.length () == 100);
-#if 0
-                    // @todo - fix these tests - saving an iterable from keys and using twice doesnt work as of 2014-03-10 (2.0a21x)
                     VerifyTestResult (keys.length () == 100);
                     int a = 0;
                     for (auto i : keys) {
@@ -227,7 +225,6 @@ namespace CommonTests {
                         a++;
                     }
                     VerifyTestResult (a == 100);
-#endif
                 }
             }
         }

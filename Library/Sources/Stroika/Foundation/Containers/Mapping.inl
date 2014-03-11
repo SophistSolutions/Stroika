@@ -319,6 +319,49 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
             {
+#if 1
+                struct  MyIterable_ : Iterable<KEY_TYPE> {
+                    using   MyMapping_      =   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
+                    struct  MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
+                        using   inherited       = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
+                        using   _SharedPtrIRep  = typename Iterable<KEY_TYPE>::_SharedPtrIRep;
+                        MyMapping_  fMapping_;
+                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                        MyIterableRep_ (const MyMapping_& map)
+                            : inherited ()
+                            , fMapping_ (map)
+                        {
+                        }
+                        virtual Iterator<KEY_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        {
+                            auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (fMapping_.MakeIterator ());
+                            auto getNext = [myContext] () -> Memory::Optional<KEY_TYPE> {
+                                if (myContext->Done ())
+                                {
+                                    return Memory::Optional<KEY_TYPE> ();
+                                }
+                                else {
+                                    auto result = (*myContext)->fKey;
+                                    (*myContext)++;
+                                    return result;
+                                }
+                            };
+                            return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
+                        }
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        {
+                            // For now - ignore forIterableEnvelope
+                            return _SharedPtrIRep (new MyIterableRep_ (*this));
+                        }
+                    };
+                    MyIterable_ (const MyMapping_& map)
+                        : Iterable<KEY_TYPE> (typename Iterable<KEY_TYPE>::_SharedPtrIRep (new MyIterableRep_ (map)))
+                    {
+                    }
+                };
+                auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
+                return MyIterable_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (rep));
+#else
                 // buggy - this creates a single context for the entire iterable. Must backup/clonethat and copy context by value with construction
                 // of each iterable!
                 auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (this->MakeIterator (this));
@@ -334,6 +377,7 @@ namespace   Stroika {
                     }
                 };
                 return Traversal::CreateGenerator<KEY_TYPE> (getNext);
+#endif
             }
 
 
