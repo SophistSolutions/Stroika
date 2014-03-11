@@ -60,7 +60,11 @@ namespace   Stroika {
             class   StringBuilder {
             public:
                 StringBuilder ();
+                StringBuilder (const StringBuilder&) = default;
                 explicit StringBuilder (const String& initialValue);
+
+            public:
+                nonvirtual  StringBuilder& operator= (const StringBuilder& rhs) = default;
 
             public:
                 /**
