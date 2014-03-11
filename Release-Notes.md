@@ -36,6 +36,7 @@ History
 			<li>Revived SharedPtr<> template (work in progress; faster, and maybe add threadsafety option)</li>
 			<li>String class changes
 				<ul>
+					<li>Moving to IMMUTABLE backend design - like Java/C#</li>
 					<li>Deprecated String::Remove, and String::RemoveAt - not because really going away, but because changing API to return a new string and
 					this will make it easier to avoid code subtly depending on old behavior. DO switch next release.
 					</li>
@@ -46,11 +47,11 @@ History
 					<li>Lots of performance improvements on string classlib</li>
 					<li>Deprecated several concrete subclasses (because going to immutable string design), and use
 					StringBuilder instead</li>
+					<li>New StringBuilder class</li>
 				</ul>
 			</li>
 			<li>(maybe) fixed long-standing bug with canceling a thread while its starting another. Minor issue but I think
 			that was causing some failures of regtests - especailly test 34/threads/gcc/linux (clang++ issue isanother issue)</li>
-			<li>New StringBuilder class</li>
 			<li>New Execution::ExternallySynchronizedLock class</li>
 			<li>Stroika performance measurements tool and regression test. Little done to improve performance, but 
 			at least now we have baseline measurements of some key benchmarks. Motivated by neeed to evaluate costs of
