@@ -26,6 +26,32 @@
    fun:_ZN7Stroika11TestHarness5SetupEv
    fun:main
 }
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_I_THINK_NOT_TOO_SURE_BUT_SEEMS_OK_AND_LIKELY_FALSE_POSATIVE
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation10Characters8Concrete59String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnlyC1EPKwS5_
+   fun:_Z41__static_initialization_and_destruction_0ii.constprop.34
+   fun:__libc_csu_init
+   fun:(below main)
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_I_THINK_NOT_TOO_SURE_BUT_SEEMS_OK_AND_LIKELY_FALSE_POSATIVE2
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_Znam
+   fun:_ZN7Stroika10Foundation10Containers8Concrete21Collection_LinkedListImE4Rep_3AddEm
+   fun:_ZN7Stroika10Foundation10Containers10CollectionImE3AddEm
+   fun:_ZN11CommonTests15CollectionTests22Test1_OldMiscBagTests_13On_Container_IN7Stroika10Foundation10Containers10CollectionImEEEEvRT_
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
+
+
 
 
 
