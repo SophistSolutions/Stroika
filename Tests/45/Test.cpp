@@ -12,6 +12,7 @@
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
@@ -980,6 +981,16 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
         -271.0,
+        &failedTests
+        );
+#endif
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+        Tester (
+            L"wstringstream versus StringBuilder",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
+        160000 ,
+        82.0,
         &failedTests
         );
 #endif
