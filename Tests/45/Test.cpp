@@ -928,7 +928,7 @@ namespace   {
             L"Simple String append test (+='string object') 10x",
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
-            1172017,
+            1200000,
             -300.0,
             &failedTests
         );
@@ -945,7 +945,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -800.0,
+            -810.0,
             &failedTests
         );
         Tester (
@@ -970,8 +970,8 @@ namespace   {
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
-            3023007 ,
-            -120.0,
+            3200000,
+            -130.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -980,7 +980,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184098 ,
-        -271.0,
+        -275.0,
         &failedTests
         );
 #endif
@@ -998,8 +998,8 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            39001,
-            -22.0,
+            40000,
+            -30.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
