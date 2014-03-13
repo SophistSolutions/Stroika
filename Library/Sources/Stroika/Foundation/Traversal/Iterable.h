@@ -268,19 +268,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \em EXPERIMENTAL API
-                 *
-                 *  Apply the function funciton to each element, and return true if it applies to any of them.
-                 *
-                 *  \em Design Note:
-                 *      Considered overloading this with Contains() - but decided against it since I feared
-                 *      potential confusion/conflicts (esp if we expand arg to ContainsWith() to be templated FUNCTOR instead
-                 *      of std::function<>).
-                 */
-                nonvirtual  _DeprecatedFunction_ (bool ContainsWith (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
-
-            public:
-                /**
                  *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
                  *  each element in the each iterable is contained in the other. They lengths CAN be differnt
                  *  and the two Iterables<> be SetEquals().
@@ -367,7 +354,6 @@ namespace   Stroika {
                  *  \pre    doToElement != nullptr
                  */
                 nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
-                nonvirtual  void  _DeprecatedFunction_ (ApplyStatic (void(*doToElement)(const T& item)) const, "Obsolete as of Stroika v2.0a19 - use Apply");
 
             public:
                 /**
@@ -398,8 +384,6 @@ namespace   Stroika {
                  *  operator bool () method of Iterator<T>).
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
-                nonvirtual  _DeprecatedFunction_ (Iterator<T>   ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
-                nonvirtual  _DeprecatedFunction_ (Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const, "Obsolete as of Stroika v2.0a19 - use FindFirstThat");
 
             public:
                 /**

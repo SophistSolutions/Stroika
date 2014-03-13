@@ -260,44 +260,16 @@ namespace   Stroika {
                 return (Iterator<T>::GetEmptyIterator ());
             }
             template    <typename T>
-            inline  void    Iterable<T>::ApplyStatic (void (*doToElement) (const T& item)) const
-            {
-                RequireNotNull (doToElement);
-                _GetRep ().Apply (doToElement);
-            }
-            template    <typename T>
             inline  void    Iterable<T>::Apply (const function<void(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 _GetRep ().Apply (doToElement);
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (const function<bool(const T& item)>& doToElement) const
-            {
-                RequireNotNull (doToElement);
-                return _GetRep ().FindFirstThat (doToElement, this);
-            }
-            template    <typename T>
-            inline  Iterator<T>    Iterable<T>::ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const
-            {
-                RequireNotNull (doToElement);
-                return _GetRep ().FindFirstThat (doToElement, this);
-            }
-            template    <typename T>
             inline  Iterator<T>    Iterable<T>::FindFirstThat (const function<bool(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 return _GetRep ().FindFirstThat (doToElement, this);
-            }
-            template    <typename T>
-            bool    Iterable<T>::ContainsWith (const function<bool(const T& item)>& doToElement) const
-            {
-                for (T i : *this) {
-                    if (doToElement (i)) {
-                        return true;
-                    }
-                }
-                return false;
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
