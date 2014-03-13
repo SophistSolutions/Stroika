@@ -705,6 +705,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1626,6 +1629,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2455,6 +2461,9 @@
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>

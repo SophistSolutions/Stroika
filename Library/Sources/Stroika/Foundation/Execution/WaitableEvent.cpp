@@ -5,7 +5,7 @@
 
 #include    "../Time/Duration.h"
 
-#include    "WaitTimedOutException.h"
+#include    "TimeOutException.h"
 
 #include    "WaitableEvent.h"
 
@@ -69,9 +69,9 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
     if (timeoutAt <= Time::GetTickCount ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-        DoThrow (WaitTimedOutException ());
+        DoThrow (TimeOutException ());
 #else
-        throw (WaitTimedOutException ());
+        throw (TimeOutException ());
 #endif
     }
 
@@ -90,9 +90,9 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
         if (remaining < 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-            DoThrow (WaitTimedOutException ());
+            DoThrow (TimeOutException ());
 #else
-            throw (WaitTimedOutException ());
+            throw (TimeOutException ());
 #endif
         }
 
@@ -106,7 +106,7 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
              *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
              *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
              *
-             *      DoThrow (WaitTimedOutException ());
+             *      DoThrow (TimeOutException ());
              */
         }
     }

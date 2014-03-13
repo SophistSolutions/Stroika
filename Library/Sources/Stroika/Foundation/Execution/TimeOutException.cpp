@@ -5,7 +5,7 @@
 
 #include    "../Characters/String_Constant.h"
 
-#include    "WaitTimedOutException.h"
+#include    "TimeOutException.h"
 
 
 
@@ -15,17 +15,17 @@ using   namespace   Stroika::Foundation::Execution;
 using   Characters::String_Constant;
 
 
-#if 0
 /*
  ********************************************************************************
- ***************************** WaitTimedOutException ****************************
+ ********************************* TimeOutException *****************************
  ********************************************************************************
  */
-WaitTimedOutException::WaitTimedOutException ()
-    : StringException (String_Constant (L"WAIT timed out"))
+TimeOutException::TimeOutException ()
+    : StringException (String_Constant (L"Timeout Expired"))
 {
 }
 
-#endif
-
-/// OBSOLETE
+TimeOutException::TimeOutException (const Characters::String& message)
+    : StringException (message)
+{
+}

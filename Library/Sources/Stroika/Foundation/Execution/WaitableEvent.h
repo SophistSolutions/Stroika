@@ -141,13 +141,13 @@ namespace   Stroika {
                  *  Simple wait. Can use operator HANDLE() to do fancier waits.
                  *  timeout can be negative (which triggers an immediate exception).
                  *
-                 *  WaitTimedOutException throws if the timeout is exceeeded.
+                 *  TimeOutException throws if the timeout is exceeeded.
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
-                 *  WaitTimedOutException throws if the event is not signaled before timeoutAt is
+                 *  TimeOutException throws if the event is not signaled before timeoutAt is
                  *  exceeeded (includes when reached).
                  */
                 nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);

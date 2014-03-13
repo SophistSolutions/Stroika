@@ -4,38 +4,6 @@
 #ifndef _Stroika_Foundation_Execution_WaitTimedOutException_inl_
 #define _Stroika_Foundation_Execution_WaitTimedOutException_inl_    1
 
+// OBSOLETE
 
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
-
-            //redeclare to avoid having to #include Thread.h
-            void    CheckForThreadAborting ();
-
-
-            /*
-             ********************************************************************************
-             ********************** Execution::WaitTimedOutException ************************
-             ********************************************************************************
-             */
-            inline  void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
-            {
-                if (Time::GetTickCount () > afterTickCount) {
-                    DoThrow (WaitTimedOutException ());
-                }
-                CheckForThreadAborting ();
-            }
-
-
-        }
-    }
-}
 #endif  /*_Stroika_Foundation_Execution_WaitTimedOutException_inl_*/

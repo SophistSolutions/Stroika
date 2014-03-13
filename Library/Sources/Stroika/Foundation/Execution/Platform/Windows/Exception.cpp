@@ -17,7 +17,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Containers/Common.h"
 #include    "../../../Debug/Trace.h"
-#include    "../../../Execution/WaitTimedOutException.h"
+#include    "../../../Execution/TimeOutException.h"
 #if     qPlatform_Windows
 #include    "HRESULTErrorException.h"
 #endif
@@ -155,8 +155,8 @@ void    Execution::Platform::Windows::Exception::DoThrow (DWORD error)
                 throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
             }
         case WAIT_TIMEOUT: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing WaitTimedOutException", error);
-                throw Execution::WaitTimedOutException ();
+                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing TimeOutException", error);
+                throw Execution::TimeOutException ();
             }
         default: {
                 DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing Platform::Windows::Exception", error);

@@ -23,7 +23,7 @@ History
 <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a22">v2.0a22x</a><br/>2014-03-??</td>
 <td>
 <ul>
-<li>STARTING</li>
+<li>Deprecated WaitTimedOutException in place of new improved TimeOutException, and ThrowTimeoutExceptionAfter is now templated</li>
 </ul>
 </td>
 </tr>

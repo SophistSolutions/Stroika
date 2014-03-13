@@ -18,7 +18,7 @@
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
 #include    "DLLSupport.h"
-#include    "WaitTimedOutException.h"
+#include    "TimeOutException.h"
 
 #if     qPlatform_POSIX
 #include    "SignalHandlers.h"
@@ -679,7 +679,7 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
                 WaitForDone (kTimeBetweenAborts_);
                 return;
             }
-            catch (const WaitTimedOutException&) {
+            catch (const TimeOutException&) {
             }
         }
         if (tries <= 1) {
@@ -705,7 +705,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (timeoutAt < Time::GetTickCount ()) {
-        DoThrow (WaitTimedOutException ());
+        DoThrow (TimeOutException ());
     }
     bool    doWait  =   false;
     /*
@@ -736,7 +736,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
     while (GetStatus () != Thread::Status::eCompleted) {
         DurationSecondsType     time2Wait   =   timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
-            DoThrow (WaitTimedOutException ());
+            DoThrow (TimeOutException ());
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, { thread }, time2Wait);
     }

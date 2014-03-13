@@ -6,10 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Time/Realtime.h"
-
-#include    "Exceptions.h"
-#include    "StringException.h"
+#include    "TimeOutException.h"
 
 
 
@@ -18,25 +15,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            class   WaitTimedOutException : public StringException {
-            public:
-                WaitTimedOutException ();
-            };
-
-
-            /*
-             *  Throw WaitTimedOutException if the @Time::GetTickCount () is >= the given value.
-             *
-             *  This function facilitates writing code like:
-             *      Time::DurationSeconds timeoutAfter =   Time::GetTickCount () + 1.0;
-             *      do_someting_dont_know_how_long_it_will_take();
-             *      Execution::ThrowTimeoutExceptionAfter (timeoutAfter);
-             *
-             *  (NOTE - IN THE NEAR FUTURE WE WILL CHANGE EXCEPTION THROWN)
-             *
-             *  \note   This always calls CheckForThreadAborting () at least once, but may not call Sleep() if not needed.
-             */
-            void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount);
+            typedef  TimeOutException   _DeprecatedFunction_ (WaitTimedOutException, "Deprecated as of v2.0a22 - use TimeOutException instead");
 
 
         }
@@ -50,6 +29,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "WaitTimedOutException.inl"
+//#include    "WaitTimedOutException.inl"
 
 #endif  /*_Stroika_Foundation_Execution_WaitTimedOutException_h_*/
