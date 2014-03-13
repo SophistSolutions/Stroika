@@ -148,13 +148,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
-                 *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
-                 */
-                nonvirtual  _DeprecatedFunction_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
-
-            public:
-                /**
                  *  Returns true iff the Optional<T, TRAITS> has a valid value ( not empty ());
                  */
                 nonvirtual  bool    IsPresent () const;
@@ -162,6 +155,7 @@ namespace   Stroika {
 #if 0
             public:
                 /**
+                 *  Unsure if I want this?
                  */
                 nonvirtual  operator bool () const noexcept
                 {

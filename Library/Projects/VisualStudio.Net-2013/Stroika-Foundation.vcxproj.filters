@@ -1563,9 +1563,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>

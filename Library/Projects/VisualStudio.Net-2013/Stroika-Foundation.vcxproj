@@ -888,7 +888,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.h" />
