@@ -18,6 +18,19 @@ History
 
 
 
+<tr>
+<td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a22">v2.0a22x</a><br/>2014-03-??</td>
+<td>
+<ul>
+<li>STARTING</li>
+</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
