@@ -15,7 +15,7 @@
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/ThreadPool.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
-#include    "Stroika/Foundation/Execution/WaitTimedOutException.h"
+#include    "Stroika/Foundation/Execution/TimeOutException.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -216,7 +216,7 @@ namespace   {
             try {
                 sRegTest3Event_T1_.Wait (0.5);  // should timeout
             }
-            catch (const Execution::WaitTimedOutException&) {
+            catch (const Execution::TimeOutException&) {
                 passed = true;
             }
             catch (...) {
@@ -249,7 +249,7 @@ namespace   {
                 try {
                     thread1.WaitForDone (kWaitOnAbortFor);
                 }
-                catch (const Execution::WaitTimedOutException&) {
+                catch (const Execution::TimeOutException&) {
                     caughtExceptAt =  Time::GetTickCount ();
                 }
                 Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
@@ -269,7 +269,7 @@ namespace   {
                 try {
                     thread1.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
-                catch (const Execution::WaitTimedOutException&) {
+                catch (const Execution::TimeOutException&) {
                     VerifyTestResult (false);   // shouldn't fail to wait cuz we did abort
                 }
                 Time::DurationSecondsType   doneAt          =   Time::GetTickCount ();;
@@ -354,7 +354,7 @@ namespace   {
                 thread.WaitForDone (0.3);   // should timeout
                 VerifyTestResult (false);
             }
-            catch (const Execution::WaitTimedOutException&) {
+            catch (const Execution::TimeOutException&) {
                 // GOOD
             }
             catch (...) {
@@ -376,7 +376,7 @@ namespace   {
                 thread.WaitForDone (0.3);   // should timeout
                 VerifyTestResult (false);
             }
-            catch (const Execution::WaitTimedOutException&) {
+            catch (const Execution::TimeOutException&) {
                 // GOOD
             }
             catch (...) {
