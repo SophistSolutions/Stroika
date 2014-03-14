@@ -16,7 +16,6 @@ Objs	=	\
 	$(ObjDir)AbortableMutex.o\
 	$(ObjDir)BlockingQueue.o\
 	$(ObjDir)CommandLine.o\
-	$(ObjDir)CopyableMutex.o\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)ErrNoException.o\
 	$(ObjDir)ExceptionPropagate.o\
@@ -43,7 +42,6 @@ Objs	=	\
 	$(ObjDir)TimeOutException.o\
 	$(ObjDir)UserCanceledException.o\
 	$(ObjDir)Users.o\
-	$(ObjDir)WaitAbandonedException.o\
 	$(ObjDir)WaitableEvent.o\
 	$(ObjDir)WaitTimedOutException.o\
 

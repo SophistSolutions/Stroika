@@ -168,9 +168,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -465,9 +462,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -744,9 +738,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitAbandonedException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1160,9 +1151,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h">
       <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h">
       <Filter>Sources\Execution</Filter>
@@ -1997,9 +1985,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md">
       <Filter>Sources\IO\Network</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl">
       <Filter>Sources\Execution</Filter>
