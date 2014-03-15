@@ -222,10 +222,10 @@ namespace   Stroika {
             template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
             bool    Iterable<T>::ExactEquals (const RHS_CONTAINER_TYPE& rhs) const
             {
-                Iterator<T> li  =   MakeIterator ();
-                Iterator<T> le  =   end ();
-                auto        ri  =   rhs.begin ();
-                auto        re  =   rhs.end ();
+                Iterator<T> li  { MakeIterator () };
+                Iterator<T> le  { end () };
+                auto        ri  = rhs.begin ();
+                auto        re  = rhs.end ();
                 for (; li != le and ri != re; ++ri, ++li) {
                     if (not EQUALS_COMPARER::Equals (*li, *ri)) {
                         return false;

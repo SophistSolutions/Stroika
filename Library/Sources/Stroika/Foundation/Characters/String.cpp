@@ -523,7 +523,7 @@ nogood2:
 
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
 {
-    const String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  { *this };
     Require (startAt <= threadSafeCopy.GetLength ());
     Assert (startAt == 0);  // else NYI
     wstring tmp     =   threadSafeCopy.As<wstring> ();
@@ -538,7 +538,7 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
 vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t>  result;
-    const String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  { *this };
     for (size_t i = threadSafeCopy.Find (string2SearchFor, 0, co); i != String::kBadIndex; i = threadSafeCopy.Find (string2SearchFor, i, co)) {
         result.push_back (i);
         i += string2SearchFor.length ();    // this cannot point past end of this string because we FOUND string2SearchFor
@@ -553,7 +553,7 @@ vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) 
     AssertNotImplemented ();
 #else
     //@TODO - FIX - IF we get back zero length match
-    wstring         tmp = As<wstring> ();
+    wstring         tmp { As<wstring> () };
     std::wsmatch    res;
     regex_search (tmp, res, regEx.GetCompiled ());
     size_t  nMatches = res.size ();
@@ -571,7 +571,7 @@ vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) 
 vector<String>  String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String>  result;
-    wstring tmp     =   As<wstring> ();
+    wstring tmp    { As<wstring> () };
     std::wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     result.reserve (res.size ());
@@ -600,7 +600,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
 size_t  String::RFind (Character c) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor accessor { *this };
     const _IRep&    useRep = accessor._GetRep ();
     size_t length = useRep.GetLength ();
     for (size_t i = length; i > 0; --i) {
@@ -613,7 +613,7 @@ size_t  String::RFind (Character c) const
 
 size_t  String::RFind (const String& subString) const
 {
-    const String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  { *this };
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     /*
      * Do quickie implementation, and dont worry about efficiency...
@@ -634,7 +634,7 @@ size_t  String::RFind (const String& subString) const
 
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     if (accessor._GetRep ().GetLength () == 0) {
         return false;
     }
@@ -643,7 +643,7 @@ bool    String::StartsWith (const Character& c, CompareOptions co) const
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     size_t  subStrLen = subString.GetLength ();
     if (subStrLen >  accessor._GetRep ().GetLength ()) {
         return false;
@@ -660,7 +660,7 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 
 bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     const _IRep&    useRep = accessor._GetRep ();
     size_t  thisStrLen = useRep.GetLength ();
     if (thisStrLen == 0) {
@@ -671,9 +671,9 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
-    _SafeRepAccessor accessor (*this);
-    size_t  thisStrLen = accessor._GetRep ().GetLength ();
-    size_t  subStrLen = subString.GetLength ();
+    _SafeRepAccessor    accessor { *this };
+    size_t      thisStrLen = accessor._GetRep ().GetLength ();
+    size_t      subStrLen = subString.GetLength ();
     if (subStrLen >  thisStrLen) {
         return false;
     }
@@ -689,7 +689,7 @@ bool    String::EndsWith (const String& subString, CompareOptions co) const
 
 bool    String::Match (const RegularExpression& regEx) const
 {
-    wstring tmp =   As<wstring> ();
+    wstring tmp  { As<wstring> () };
     return regex_match (tmp.begin(), tmp.end(), regEx.GetCompiled ());
 }
 
@@ -707,7 +707,7 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 {
     Require (not string2SearchFor.empty ());
     // simplistic quickie impl...
-    String  result = *this;
+    String  result { *this };
     size_t  i   =   0;
     while ((i = result.Find (string2SearchFor, i, co)) != String::npos) {
         result = result.SubString (0, i) + with + result.SubString (i + string2SearchFor.length ());
@@ -739,7 +739,7 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     RequireNotNull (shouldBeTrimmmed);
     // @todo - NOT ENVELOPE THREADSAFE
 
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     size_t length = accessor._GetRep ().GetLength ();
@@ -767,7 +767,7 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     RequireNotNull (shouldBeTrimmmed);
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    _SafeRepAccessor accessor (*this);
+    _SafeRepAccessor    accessor { *this };
 
     ptrdiff_t length = accessor._GetRep ().GetLength ();
     ptrdiff_t endOfFirstTrim = length;
@@ -810,7 +810,7 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const
     // TODO: optimize special case where removeCharIf is always false
     //
     // Walk string and find first character we need to remove
-    String  result  =   *this;
+    String  result  { *this };
     size_t  n   =   result.GetLength ();
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   result[i];
@@ -838,7 +838,7 @@ String  String::ToLowerCase () const
     //
 
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
-    String  result  =   *this;
+    String  result  { *this };
     size_t  n   =   result.GetLength ();
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   result[i];
@@ -853,7 +853,7 @@ String  String::ToUpperCase () const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
-    String  result  =   *this;
+    String  result  { *this };
     size_t  n   =   result.GetLength ();
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   result[i];
@@ -873,9 +873,9 @@ bool String::IsWhitespace () const
 String  String::LimitLength (size_t maxLen, bool keepLeft) const
 {
 #if 1
-    static  const String kELIPSIS_  = String_Constant (L"\u2026");
+    static  const String kELIPSIS_  { String_Constant (L"\u2026") };
 #else
-    static  const String kELIPSIS_  = String_Constant (L"...");
+    static  const String kELIPSIS_  { String_Constant (L"...") };
 #endif
     String  tmp =   Trim ();
     if (tmp.length () <= maxLen) {
@@ -934,7 +934,7 @@ void    String::AsASCII (string* into) const
 {
     RequireNotNull (into);
     into->clear ();
-    const String  threadSafeCopy  =   *this;
+    const String  threadSafeCopy  { *this };
     size_t  len =   threadSafeCopy.GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
@@ -1001,11 +1001,11 @@ void    String::erase (size_t from, size_t count)
  */
 String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
-    String::_SafeRepAccessor    rhsAccessor (rhs);
+    String::_SafeRepAccessor    rhsAccessor { rhs };
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-    String::_SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen));
+    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }

@@ -220,7 +220,7 @@ namespace   Stroika {
             template    <typename... COPY_ARGS>
             void    SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&& ... copyArgs)
             {
-                shared_ptr_type     ptr2Clone   =   fSharedImpl_;       // other thread could change this (if other thread accesses same envelope)
+                shared_ptr_type     ptr2Clone   { fSharedImpl_ };       // other thread could change this (if other thread accesses same envelope)
                 // but this copy prevents the bare ptr from possibly becoming invalidated
                 element_type*  ptr =   ptr2Clone.get ();
                 RequireNotNull (ptr);

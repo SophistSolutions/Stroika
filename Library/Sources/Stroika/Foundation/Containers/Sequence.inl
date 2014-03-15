@@ -217,7 +217,7 @@ namespace   Stroika {
             inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-                    auto tmp = *i;
+                    T tmp = *i;
                     _GetRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
                 }
             }

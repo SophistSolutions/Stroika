@@ -143,7 +143,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
             {
-                Memory::Optional<VALUE_TYPE>   r    =   Lookup (key);
+                Memory::Optional<VALUE_TYPE>   r    { Lookup (key) };
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -319,7 +319,6 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
             {
-#if 1
                 struct  MyIterable_ : Iterable<KEY_TYPE> {
                     using   MyMapping_      =   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
                     struct  MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
@@ -361,23 +360,6 @@ namespace   Stroika {
                 };
                 auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
                 return MyIterable_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (rep));
-#else
-                // buggy - this creates a single context for the entire iterable. Must backup/clonethat and copy context by value with construction
-                // of each iterable!
-                auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (this->MakeIterator (this));
-                auto getNext = [myContext] () -> Memory::Optional<KEY_TYPE> {
-                    if (myContext->Done ())
-                    {
-                        return Memory::Optional<KEY_TYPE> ();
-                    }
-                    else {
-                        auto result = (*myContext)->fKey;
-                        (*myContext)++;
-                        return result;
-                    }
-                };
-                return Traversal::CreateGenerator<KEY_TYPE> (getNext);
-#endif
             }
 
 

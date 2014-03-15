@@ -34,39 +34,39 @@ namespace {
     };
     template    <>
     struct TN_<bool> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eBoolean;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eBoolean };
     };
     template    <>
     struct TN_<IntegerType_> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eInteger;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eInteger };
     };
     template    <>
     struct TN_<UnsignedIntegerType_> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eUnsignedInteger;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eUnsignedInteger };
     };
     template    <>
     struct TN_<FloatType_> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eFloat;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eFloat };
     };
     template    <>
     struct TN_<Date> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eDate;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eDate };
     };
     template    <>
     struct TN_<DateTime> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eDateTime;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eDateTime };
     };
     template    <>
     struct TN_<String> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eString;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eString };
     };
     template    <>
     struct TN_<Sequence<VariantValue>> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eArray;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eArray };
     };
     template    <>
     struct TN_<Mapping<String, VariantValue>> {
-        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eMap;
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eMap };
     };
 }
 
@@ -640,8 +640,8 @@ int      VariantValue::Compare (const VariantValue& rhs) const
                 return Common::ComparerWithWellOrder<Sequence<VariantValue>>::Compare (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
 #endif
                 // same iff all elts same
-                Mapping<String, VariantValue>   lhsM = As<Mapping<String, VariantValue>> ();
-                Mapping<String, VariantValue>   rhsM = rhs.As<Mapping<String, VariantValue>> ();
+                Mapping<String, VariantValue>   lhsM { As<Mapping<String, VariantValue>> () };
+                Mapping<String, VariantValue>   rhsM { rhs.As<Mapping<String, VariantValue>> () };
                 auto li = lhsM.begin ();
                 auto ri = rhsM.begin ();
                 for (; li != lhsM.end (); ++li, ++ri) {

@@ -139,29 +139,29 @@ namespace   Stroika {
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor accessor { *this };
                 RequireNotNull (bufFrom);
                 Require (bufFrom + accessor._GetRep ().GetLength () >= bufTo);
                 accessor._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  void    String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor accessor { *this };
                 RequireNotNull (bufFrom);
                 Require (bufFrom + accessor._GetRep ().GetLength () >= bufTo);
                 accessor._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  size_t  String::GetLength () const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor accessor { *this };
                 return accessor._GetRep ().GetLength ();
             }
             inline  String  String::SubString (size_t from) const
             {
-                _SafeRepAccessor    accessor (*this);
-                size_t              myLength = accessor._GetRep ().GetLength ();
+                _SafeRepAccessor    accessor { *this };
+                size_t              myLength { accessor._GetRep ().GetLength () };
                 Require (from <= myLength);
-                size_t  useLength  =   myLength - from;
+                size_t  useLength  { myLength - from };
                 if (useLength == 0) {
                     return String ();
                 }
@@ -173,8 +173,8 @@ namespace   Stroika {
             }
             inline  String  String::SubString (size_t from, size_t to) const
             {
-                _SafeRepAccessor    accessor (*this);
-                size_t              myLength = accessor._GetRep ().GetLength ();
+                _SafeRepAccessor    accessor { *this };
+                size_t              myLength { accessor._GetRep ().GetLength () };
                 Require (from <= to);
                 Require (to <= myLength);
                 size_t  useLength  =   (to - from);
@@ -189,8 +189,8 @@ namespace   Stroika {
             }
             inline  String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
             {
-                _SafeRepAccessor    accessor (*this);
-                size_t              myLength = accessor._GetRep ().GetLength ();
+                _SafeRepAccessor    accessor { *this };
+                size_t              myLength { accessor._GetRep ().GetLength () };
                 size_t  f = from < 0 ? (myLength + from) : from;
                 size_t  t = to < 0 ? (myLength + to) : to;
                 Require (f != kBadIndex);
@@ -238,7 +238,7 @@ namespace   Stroika {
             }
             inline  String& String::operator+= (Character appendage)
             {
-                _SafeRepAccessor    thisAccessor (*this);
+                _SafeRepAccessor    thisAccessor { *this };
                 pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
                 *this = String (
                             mk_ (
@@ -246,37 +246,21 @@ namespace   Stroika {
                                 reinterpret_cast<const wchar_t*> (&appendage), reinterpret_cast<const wchar_t*> (&appendage) + 1
                             )
                         );
-#if 0
-
-
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                Append (appendage);
-#endif
                 return *this;
             }
             inline  String& String::operator+= (const String& appendage)
             {
-#if 1
                 *this = *this + appendage;
-#else
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (appendage, GetLength ());
-#endif
                 return *this;
             }
             inline  String& String::operator+= (const wchar_t* appendageCStr)
             {
-#if 1
                 *this = *this + appendageCStr;
-#else
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                Append (appendageCStr, appendageCStr + ::wcslen (appendageCStr));
-#endif
                 return *this;
             }
             inline  const Character   String::GetCharAt (size_t i) const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 Require (i >= 0);
                 Require (i < accessor._GetRep ().GetLength ());
                 return accessor._GetRep ().GetAt (i);
@@ -350,8 +334,8 @@ namespace   Stroika {
             inline  void    String::As (wstring* into) const
             {
                 RequireNotNull (into);
-                _SafeRepAccessor accessor (*this);
-                size_t  n   =   accessor._GetRep ().GetLength ();
+                _SafeRepAccessor    accessor { *this };
+                size_t              n       {   accessor._GetRep ().GetLength () };
                 const Character* cp = accessor._GetRep ().Peek ();
                 Assert (sizeof (Character) == sizeof (wchar_t));        // going to want to clean this up!!!    --LGP 2011-09-01
                 const wchar_t* wcp  =   (const wchar_t*)cp;
@@ -367,14 +351,14 @@ namespace   Stroika {
             template    <>
             inline  const wchar_t*  String::As () const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
 // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!   -- LGP 2011-09-01
                 return (const wchar_t*)accessor._GetRep ().Peek ();
             }
             template    <>
             inline  const Character*    String::As () const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
 // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!   -- LGP 2011-09-01
                 return (const Character*)accessor._GetRep ().Peek ();
             }
@@ -411,13 +395,13 @@ namespace   Stroika {
             template    <>
             inline  pair<const Character*, const Character*> String::GetData () const
             {
-                _SafeRepAccessor    accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 return accessor._GetRep ().GetData ();
             }
             template    <>
             inline  pair<const wchar_t*, const wchar_t*> String::GetData () const
             {
-                _SafeRepAccessor    accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*>    p   = accessor._GetRep ().GetData ();
                 return pair<const wchar_t*, const wchar_t*> (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second));
             }
@@ -453,7 +437,7 @@ namespace   Stroika {
             }
             inline  String      String::substr (size_t from, size_t count) const
             {
-                _SafeRepAccessor    accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 size_t              thisLen = accessor._GetRep ().GetLength ();
                 if (from > thisLen) {
                     Execution::DoThrow (std::out_of_range ("string index out of range"));
@@ -465,36 +449,36 @@ namespace   Stroika {
             }
             inline  int String::Compare (const String& rhs, CompareOptions co) const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*> l = accessor._GetRep ().GetData ();
-                _SafeRepAccessor rhsAccessor (rhs);
+                _SafeRepAccessor    rhsAccessor { rhs };
                 pair<const Character*, const Character*> r = rhsAccessor._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, r.first, r.second, co);
             }
             inline  int String::Compare (const Character* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*> l = accessor._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
             }
             inline  int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*> l = accessor._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, rhsStart, rhsEnd, co);
             }
             inline  int String::Compare (const wchar_t* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*> l = accessor._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) +::wcslen (rhs), co);
             }
             inline  int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeRepAccessor accessor (*this);
+                _SafeRepAccessor    accessor { *this };
                 pair<const Character*, const Character*> l = accessor._GetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }
@@ -593,14 +577,10 @@ namespace   Stroika {
             {
                 // Tried two impls, but first empirically appears quicker.
                 // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
-#if 0
-                return out << s.c_str ();
-#else
-                String::_SafeRepAccessor    thisAccessor (s);
+                String::_SafeRepAccessor    thisAccessor { s };
                 pair<const Character*, const Character*> p   =   thisAccessor._GetRep ().GetData ();
                 out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
                 return out;
-#endif
             }
 
 
