@@ -76,7 +76,7 @@ namespace   Stroika {
              *
              *      which argue that its a bad idea, and that it leads to bad programming (bugs).
              *
-             *      To some extent I we may have addressed the reported concerns by having WaitForAny/WaitForAnyUnitl
+             *      To some extent I we may have addressed the reported concerns by having WaitForAny/WaitForAnyUntil
              *      return the full set of events that were signaled (and the issue about races I dont think applies
              *      to WaitForAll).
              *
@@ -85,7 +85,7 @@ namespace   Stroika {
              *              http://stackoverflow.com/questions/788835/waitformultipleobjects-in-java
              *      Stroika supports this sort of BlockingQueue<>
              *
-             *      Note - WaitForAny() takes a templated SET because I dont want to create interdependncy
+             *      Note - WaitForAny() takes a templated SET because I dont want to create interdependency
              *      with Containers and something this low level, and yet we want to make it easy for users of this
              *      to use Stroika Set<> objects.
              *
@@ -190,7 +190,7 @@ namespace   Stroika {
                 /**
                  *  Note - CONTAINER_OF_WAITABLE_EVENTS - must iterate over WaitableEvent*!
                  *
-                 *  \note   WaitForAll IS EXPERIMENTAL
+                 *  \note   WaitForAllUntil IS EXPERIMENTAL
                  */
                 template    <typename CONTAINER_OF_WAITABLE_EVENTS>
                 static  void  WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
