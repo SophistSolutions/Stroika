@@ -41,6 +41,26 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ************************* Execution::TryLockUntil ******************************
+             ********************************************************************************
+             */
+            template    <typename   TIMED_MUTEX, typename   EXCEPTION>
+            inline  void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
+            {
+                if (not m.try_lock_until (afterTickCount)) {
+                    DoThrow (exception2Throw);
+                }
+            }
+            template    <typename   TIMED_MUTEX>
+            void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount)
+            {
+                static  const   TimeOutException    kTO_    =   TimeOutException ();
+                TryLockUntil (m, afterTickCount, kTO_);
+            }
+
+
         }
     }
 }

@@ -45,6 +45,15 @@ namespace   Stroika {
             void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount);
 
 
+            /**
+             *  Translate timed_mutex, or recursive_timed_mutex try_lock_until () calls which fail into TimeOutException exceptions.
+             */
+            template    <typename   TIMED_MUTEX, typename   EXCEPTION>
+            void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw = EXCEPTION ());
+            template    <typename   TIMED_MUTEX>
+            void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount);
+
+
         }
     }
 }
