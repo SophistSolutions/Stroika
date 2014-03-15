@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <condition_variable>
 
 
 namespace   Stroika {
@@ -58,6 +59,25 @@ namespace   Stroika {
             {
                 static  const   TimeOutException    kTO_    =   TimeOutException ();
                 TryLockUntil (m, afterTickCount, kTO_);
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************* Execution::ThrowIfTimeout ******************************
+             ********************************************************************************
+             */
+            template    <typename   EXCEPTION>
+            inline  void    ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw)
+            {
+                if (conditionVariableStatus == cv_status::timeout) {
+                    DoThrow (exception2Throw);
+                }
+            }
+            inline  void    ThrowIfTimeout (cv_status conditionVariableStatus)
+            {
+                static  const   TimeOutException    kTO_    =   TimeOutException ();
+                ThrowIfTimeout (conditionVariableStatus, kTO_);
             }
 
 

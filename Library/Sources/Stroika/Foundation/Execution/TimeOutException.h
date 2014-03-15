@@ -13,6 +13,9 @@
 
 
 
+namespace std {
+    enum class cv_status;
+}
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -52,6 +55,13 @@ namespace   Stroika {
             void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw = EXCEPTION ());
             template    <typename   TIMED_MUTEX>
             void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount);
+
+
+            /**
+             */
+            template    <typename   EXCEPTION>
+            void    ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw = EXCEPTION ());
+            void    ThrowIfTimeout (cv_status conditionVariableStatus);
 
 
         }
