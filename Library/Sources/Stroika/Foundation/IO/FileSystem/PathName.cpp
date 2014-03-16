@@ -245,7 +245,7 @@ String FileSystem::StripFileSuffix (const String& pathName)
 String FileSystem::GetFileDirectory (const String& pathName)
 {
     // could use splitpath, but this maybe better, since works with \\UNCNAMES
-    String	tmp     =   pathName;
+    String  tmp     =   pathName;
     size_t  idx     =   tmp.rfind (kPathComponentSeperator);
     if (idx != String::kBadIndex) {
         tmp.erase (idx + 1);
