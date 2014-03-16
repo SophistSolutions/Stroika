@@ -446,23 +446,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 * NOTE - when you increase the size of a string with SetLength() - the extra characters
-                 * added are not initialized, and will have random values.
-                 *
-                 * OBSOLETE TODO:
-                 *              Redo SetLength() API, so caller must specify fill-character.
-                 *              Or maybe better yet - replace with two APIs
-                 *                  GrowToLength(n, fillChar)
-                 *                  ShriunkToLength(n) - AKA Qt::QString::truncate().
-                 *              Not an error if nothing todo (even if already longer/shorter).
-                 *
-                 *  INSTEAD I THINK WE CAN JUST LOSE THIS API
-                 *
-                 */
-                nonvirtual  void    _DeprecatedFunction_ (SetLength (size_t newLength), "Deprecated in Stroika v2.0a20 - consider using erase() to shorten");
-
-            public:
-                /**
                  */
                 nonvirtual  bool    empty () const;
 
@@ -524,15 +507,8 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                /*
-                 *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
-                 *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
-                 */
-                nonvirtual  void        _DeprecatedFunction_ (RemoveAt (size_t charAt), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
-                nonvirtual  void        _DeprecatedFunction_ (RemoveAt (size_t from, size_t to), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
-                //tmphack - during transition - use RemoveAt_nu
-                nonvirtual  String      RemoveAt_nu (size_t charAt) const;
-                nonvirtual  String      RemoveAt_nu (size_t from, size_t to) const;
+                nonvirtual  String      RemoveAt (size_t charAt) const;
+                nonvirtual  String      RemoveAt (size_t from, size_t to) const;
 
             public:
                 /**
@@ -541,11 +517,7 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                /*
-                 *  NOTE - WHEN I FIX DEPRECAATED ALSO SEARCH FOR:
-                 *          DISABLE_COMPILER_MSC_WARNING_START(4996) - ones related to this RemvoeAt can be lifted.
-                 */
-                nonvirtual  void        _DeprecatedFunction_ (Remove (Character c), "deprecated as of v2.0a21, but will remaing, just with changed api (returing value)");
+                nonvirtual  String      Remove (Character c) const;
 
             public:
                 /**
@@ -983,15 +955,21 @@ namespace   Stroika {
                 nonvirtual  const wchar_t*  c_str () const;
 
             public:
-                // need more overloads
+                /**
+                 * need more overloads
+                 */
                 nonvirtual  size_t find (wchar_t c, size_t startAt = 0) const;
 
             public:
-                // need more overloads
+                /**
+                 * need more overloads
+                 */
                 nonvirtual  size_t rfind (wchar_t c) const;
 
             public:
-                // mimic (much of - need more overloads) STL variant
+                /**
+                 *  mimic (much of - need more overloads) STL variant
+                 */
                 nonvirtual  void erase (size_t from = 0, size_t count = kBadIndex);
 
             public:

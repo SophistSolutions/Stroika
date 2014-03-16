@@ -290,31 +290,6 @@ String  String::operator+ (const wchar_t* appendageCStr) const
            );
 }
 
-void    String::SetLength (size_t newLength)
-{
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    try {
-        if (newLength == 0) {
-            _GetRep ().RemoveAll ();
-        }
-        else {
-            _GetRep ().SetLength (newLength);
-        }
-    }
-    catch (const _IRep::UnsupportedFeatureException&) {
-        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, max (GetLength (), newLength));
-        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
-        *this = tmp;
-        if (newLength == 0) {
-            _GetRep ().RemoveAll ();
-        }
-        else {
-            _GetRep ().SetLength (newLength);
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-}
-
 void    String::SetCharAt (Character c, size_t i)
 {
     Require (i >= 0);
@@ -400,24 +375,7 @@ void    String::Append (const Character* from, const Character* to)
     InsertAt (from, to, GetLength ());
 }
 
-void    String::RemoveAt (size_t from, size_t to)
-{
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    Require (from <= to);
-    Require (to <= GetLength ());
-    try {
-        _GetRep ().RemoveAt (from, to);
-    }
-    catch (const _IRep::UnsupportedFeatureException&) {
-        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
-        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
-        *this = tmp;
-        _GetRep ().RemoveAt (from, to);
-    }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-}
-
-String        String::RemoveAt_nu (size_t from, size_t to) const
+String        String::RemoveAt (size_t from, size_t to) const
 {
     DISABLE_COMPILER_MSC_WARNING_START(4996)
     Require (from <= to);
@@ -435,17 +393,14 @@ String        String::RemoveAt_nu (size_t from, size_t to) const
     DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
-void    String::Remove (Character c)
+String    String::Remove (Character c) const
 {
-    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    // @TODO - NOT THREADSAFE
-    size_t index = Find (c, CompareOptions::eWithCase);
+    String  tmp =   { *this } ;
+    size_t index = tmp.Find (c, CompareOptions::eWithCase);
     if (index != kBadIndex) {
-        RemoveAt (index);
+        return tmp.RemoveAt (index);
     }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    return tmp;
 }
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
@@ -970,19 +925,15 @@ const wchar_t*  String::c_str () const
 
 void    String::erase (size_t from, size_t count)
 {
-    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // @todo - NOT ENVELOPE THREADSAFE
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
     if (count == kBadIndex) {
-        RemoveAt (from, GetLength ());
+        *this = RemoveAt (from, GetLength ());
     }
     else {
-        RemoveAt (from,  from + min (count, max2Erase));
+        *this = RemoveAt (from,  from + min (count, max2Erase));
     }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 }
 
 

@@ -199,17 +199,9 @@ namespace   Stroika {
                 Require (t <= myLength);
                 return SubString_ (accessor, myLength, f, t);
             }
-            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START(4996)
-            inline  void    String::RemoveAt (size_t charAt)
+            inline  String    String::RemoveAt (size_t charAt) const
             {
-                RemoveAt (charAt, charAt + 1);
-            }
-            DISABLE_COMPILER_MSC_WARNING_END(4996)
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            inline  String    String::RemoveAt_nu (size_t charAt) const
-            {
-                return RemoveAt_nu (charAt, charAt + 1);
+                return RemoveAt (charAt, charAt + 1);
             }
             inline  bool    String::empty () const
             {

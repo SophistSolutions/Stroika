@@ -922,9 +922,9 @@ namespace {
     void    Test25_RemoveAt_ ()
     {
         String x = L"123";
-        x = x.RemoveAt_nu (1);
+        x = x.RemoveAt (1);
         VerifyTestResult (x == L"13");
-        x = x.RemoveAt_nu (0, 2);
+        x = x.RemoveAt (0, 2);
         VerifyTestResult (x.empty ());
     }
 }
