@@ -456,6 +456,15 @@ namespace   Stroika {
             {
                 return As<const wchar_t*> ();
             }
+            inline  const wchar_t*  String::c_str () const
+            {
+                if (const wchar_t* result = _GetRep ().c_str_peek ()) {
+                    return result;
+                }
+                else {
+                    return c_str_ ();
+                }
+            }
             inline  size_t String::find (wchar_t c, size_t startAt) const
             {
                 return Find (c, startAt, CompareOptions::eWithCase);

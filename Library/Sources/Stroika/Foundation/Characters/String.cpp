@@ -765,8 +765,13 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
 {
     Require (from <= to);
     Require (to <= thisLen);
-    const wchar_t*  start =   reinterpret_cast<const wchar_t*> (thisAccessor._GetRep ().Peek ()) + from;
-    return String (String::_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, start + (to - from))));
+    const wchar_t*  start   =   reinterpret_cast<const wchar_t*> (thisAccessor._GetRep ().Peek ()) + from;
+    const wchar_t*  end     =   start + (to - from);
+    Assert (start <= end);
+    if (start == end) {
+        return mkEmpty_ ();
+    }
+    return String (_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, end)));
 }
 
 String  String::Repeat (unsigned int count) const
@@ -992,7 +997,7 @@ void    String::AsASCII (string* into) const
     }
 }
 
-const wchar_t*  String::c_str () const
+const wchar_t*  String::c_str_ () const
 {
     const   wchar_t*    result = _GetRep ().c_str_peek ();
     if (result == nullptr) {
