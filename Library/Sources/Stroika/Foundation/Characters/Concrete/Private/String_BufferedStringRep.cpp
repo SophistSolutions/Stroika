@@ -32,7 +32,7 @@ void    BufferedStringRep ::_Rep::InsertAt (const Character* srcStart, const Cha
 
     size_t      origLen     =   _GetLength ();
     size_t      amountToAdd =   (srcEnd - srcStart);
-    SetLength (origLen + amountToAdd);
+    SetLength_ (origLen + amountToAdd);
     size_t      newLen      =   origLen + amountToAdd;
     Assert (newLen == _GetLength ());
     wchar_t*    gapStart    =   _PeekStart () + index;
@@ -47,7 +47,7 @@ void    BufferedStringRep ::_Rep::InsertAt (const Character* srcStart, const Cha
     Ensure (_fStart <= _fEnd);
 }
 
-void        BufferedStringRep ::_Rep::SetLength (size_t newLength)
+void        BufferedStringRep ::_Rep::SetLength_ (size_t newLength)
 {
     if (newLength < capacity ()) {
         // We COULD shrink the capacity at this point, but not critical right now...

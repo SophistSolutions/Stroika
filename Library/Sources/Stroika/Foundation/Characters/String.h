@@ -1072,16 +1072,9 @@ namespace   Stroika {
                  */
                 class   UnsupportedFeatureException {};
 
+
             public:
-                virtual void                RemoveAll ()                            = 0;
-
                 virtual Character           GetAt (size_t index) const              = 0;
-                virtual void                SetAt (Character item, size_t index)    = 0;
-                // This rep is NEVER called with nullptr src/end nor start==end
-                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
-                virtual void                RemoveAt (size_t from, size_t to)       = 0;
-
-                virtual void                SetLength (size_t newLength)            = 0;
 
                 // return nullptr if its not already NUL-terminated
                 virtual const wchar_t*      c_str_peek () const noexcept            = 0;
@@ -1092,6 +1085,21 @@ namespace   Stroika {
                 virtual const Character*    Peek () const                           = 0;
 
                 virtual pair<const Character*, const Character*> GetData () const   = 0;
+
+                // Probably deprecate the methods below (since R/O string rep soon)
+            public:
+#if 0
+                virtual void                RemoveAll ()                            = 0;
+#endif
+
+                virtual void                SetAt (Character item, size_t index)    = 0;
+                // This rep is NEVER called with nullptr src/end nor start==end
+                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
+                virtual void                RemoveAt (size_t from, size_t to)       = 0;
+
+#if 0
+                virtual void                SetLength (size_t newLength)            = 0;
+#endif
 
             public:
                 /*

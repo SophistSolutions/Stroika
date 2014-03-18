@@ -54,13 +54,13 @@ namespace   Stroika {
 
                         public:
                             virtual     void            InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-                            virtual     void            SetLength (size_t newLength) override;
                             virtual     const wchar_t*  c_str_peek () const noexcept override;
                             virtual     const wchar_t*  c_str_change () override;
 
                             // @todo - SB private next few methods - except for use in ReserveAtLeast_()...
                             // size() function defined only so we can use Containers::ReserveSpeedTweekAddN() template
                         private:
+                            nonvirtual     void            SetLength_ (size_t newLength);
                         public:
                             nonvirtual  size_t  size () const;
                             nonvirtual  size_t  capacity () const;

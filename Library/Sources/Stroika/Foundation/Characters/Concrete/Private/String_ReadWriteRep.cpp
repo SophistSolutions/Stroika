@@ -19,11 +19,13 @@ using   namespace   Stroika::Foundation::Characters::Concrete::Private;
  **************************** ReadOnlyRep::_Rep *********************************
  ********************************************************************************
  */
+#if 0
 void    ReadWriteRep::_Rep::RemoveAll ()
 {
     Assert (_fStart <= _fEnd);
     _fEnd = _fStart;
 }
+#endif
 
 void    ReadWriteRep::_Rep::SetAt (Character item, size_t index)
 {

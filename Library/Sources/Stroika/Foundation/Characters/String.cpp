@@ -399,7 +399,7 @@ String        String::RemoveAt (size_t from, size_t to) const
 
 String    String::Remove (Character c) const
 {
-    String  tmp =   { *this } ;
+    String  tmp =   { *this };
     size_t index = tmp.Find (c, CompareOptions::eWithCase);
     if (index != kBadIndex) {
         return tmp.RemoveAt (index);
@@ -410,7 +410,7 @@ String    String::Remove (Character c) const
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
-    _SafeRepAccessor    accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     Require (startAt <= accessor._GetRep ().GetLength ());
     size_t length = accessor._GetRep ().GetLength ();
     switch (co) {
@@ -437,7 +437,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
-    _SafeRepAccessor    accessor (*this);
+    _SafeRepAccessor    accessor { *this };
     Require (startAt <= accessor._GetRep ().GetLength ());
 
     size_t  subStrLen   =   subString.GetLength ();

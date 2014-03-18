@@ -76,10 +76,8 @@ namespace   Stroika {
                             virtual const Character*                            Peek () const override;
                             virtual pair<const Character*, const Character*>    GetData () const override;
                             virtual void                                        InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-                            virtual void                                        RemoveAll () override;
                             virtual void                                        SetAt (Character item, size_t index) override;
                             virtual void                                        RemoveAt (size_t from, size_t to) override;
-                            virtual void                                        SetLength (size_t newLength) override;
                             virtual const wchar_t*                              c_str_peek () const  noexcept override;
                             virtual const wchar_t*                              c_str_change () override;
 

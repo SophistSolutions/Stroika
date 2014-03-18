@@ -56,7 +56,6 @@ namespace   Stroika {
                             nonvirtual  wchar_t*    _PeekStart ();
 
                         public:
-                            virtual void    RemoveAll () override;
                             virtual void    SetAt (Character item, size_t index) override;
                             virtual void    RemoveAt (size_t index, size_t amountToRemove) override;
                         };

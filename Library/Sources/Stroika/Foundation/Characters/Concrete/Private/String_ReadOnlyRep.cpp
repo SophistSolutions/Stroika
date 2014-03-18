@@ -128,10 +128,12 @@ void    ReadOnlyRep::_Rep::InsertAt (const Character* srcStart, const Character*
     Execution::DoThrow (UnsupportedFeatureException ());
 }
 
+#if 0
 void    ReadOnlyRep::_Rep::RemoveAll ()
 {
     Execution::DoThrow (UnsupportedFeatureException ());
 }
+#endif
 
 void    ReadOnlyRep::_Rep::SetAt (Character item, size_t index)
 {
@@ -143,10 +145,12 @@ void    ReadOnlyRep::_Rep::RemoveAt (size_t from, size_t to)
     Execution::DoThrow (UnsupportedFeatureException ());
 }
 
+#if 0
 void    ReadOnlyRep::_Rep::SetLength (size_t newLength)
 {
     Execution::DoThrow (UnsupportedFeatureException ());
 }
+#endif
 
 const wchar_t*  ReadOnlyRep::_Rep::c_str_peek () const  noexcept
 {
