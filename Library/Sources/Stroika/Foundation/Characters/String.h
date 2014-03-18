@@ -849,7 +849,7 @@ namespace   Stroika {
                 nonvirtual  void        AsASCII (std::string* into) const;
 
             public:
-                /*
+                /**
                  *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
                  *
                  *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
@@ -874,9 +874,9 @@ namespace   Stroika {
 
             public:
                 /**
-                * @brief   Return true of the two argument strings are equal. This is equivilent to
-                *              lhs.Compare (rhs, co);
-                */
+                 * @brief   Return true of the two argument strings are equal. This is equivilent to
+                 *              lhs.Compare (rhs, co);
+                 */
                 nonvirtual  bool    Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  bool    Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 

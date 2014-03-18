@@ -45,6 +45,15 @@ namespace   {
     class   String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
     private:
         using   inherited   =   Concrete::Private::BufferedStringRep::_Rep;
+
+    public:
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+        DEFINE_CONSTEXPR_CONSTANT (size_t, kOptimizedForStringsLenLessOrEqualTo, Concrete::Private::BufferedStringRepBlock_::kNElts);
+
+#else
+        DEFINE_CONSTEXPR_CONSTANT (size_t, kOptimizedForStringsLenLessOrEqualTo, 0);
+#endif
+
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
             : inherited (start, end)
@@ -766,11 +775,27 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
     Require (from <= to);
     Require (to <= thisLen);
     const wchar_t*  start   =   reinterpret_cast<const wchar_t*> (thisAccessor._GetRep ().Peek ()) + from;
-    const wchar_t*  end     =   start + (to - from);
+    size_t          len     =   to - from;
+    const wchar_t*  end     =   start + len;
     Assert (start <= end);
+    // Slightly faster to re-use pre-built empty string
     if (start == end) {
         return mkEmpty_ ();
     }
+    if (len == thisLen) {
+        Assert (from == 0);
+#if     0
+        // @todo - FIX - MUST RETURN thisAccessor AS STRING
+#endif
+    }
+#if     0
+    // If we are using kOptimizedForStringsLenLessOrEqualTo - so the string data gets stored in the rep anyhow, thats probably
+    // faster than adding a ref to the original string object? Not too sure of this optimization
+    if (len <= String_BufferedArray_Rep_::kOptimizedForStringsLenLessOrEqualTo) {
+        return mk_ (start, end);
+    }
+#endif
+    // This is mostly a win if it saves a malloc() (and the copy of the start...end char data)
     return String (_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, end)));
 }
 
