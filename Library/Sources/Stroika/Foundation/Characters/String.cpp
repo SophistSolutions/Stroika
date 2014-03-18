@@ -477,6 +477,25 @@ String        String::RemoveAt (size_t from, size_t to) const
     DISABLE_COMPILER_MSC_WARNING_START(4996)
     Require (from <= to);
     Require (to <= GetLength ());
+#if 0
+    _SafeRepAccessor accessor { *this };
+    size_t length = accessor._GetRep ()._GetLength ();
+	if (from == to) {
+		return *this;	// @todo - fix to return accessor.AsString()
+	}
+	else if (from == 0) {
+		return SubString (to);
+	}
+	else if (to == length) {
+		&&&&
+		return SubString (from, length-to);
+	}
+	else {
+        pair<const Character*, const Character*> d = accessor._GetRep ().GetData ();
+		const wchar_t* st = reinterpret_cast<const wchar_t*> (d.first);
+		return String (mk_ (st, st + from, st + to, st + length));
+	}
+#else
     try {
         String  tmp =   *this;
         tmp._GetRep ().RemoveAt (from, to);
@@ -490,6 +509,7 @@ String        String::RemoveAt (size_t from, size_t to) const
         return tmp;
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
+#endif
 }
 
 String    String::Remove (Character c) const
