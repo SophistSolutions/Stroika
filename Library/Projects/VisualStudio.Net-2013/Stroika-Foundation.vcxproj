@@ -80,11 +80,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -725,11 +722,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
@@ -1070,11 +1064,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />

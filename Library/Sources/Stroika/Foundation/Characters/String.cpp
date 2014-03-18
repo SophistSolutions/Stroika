@@ -17,9 +17,9 @@
 #include    "../Memory/BlockAllocated.h"
 
 #include    "RegularExpression.h"
-#include    "Concrete/String_BufferedArray.h"
 #include    "Concrete/Private/String_BufferedStringRep.h"
 #include    "SDKString.h"
+#include    "StringBuilder.h"
 #include    "String_Constant.h"
 
 #include    "String.h"
@@ -229,12 +229,7 @@ String  String::FromAscii (const string& from)
 
 String::_SharedPtrIRep  String::mkEmpty_ ()
 {
-    static  bool                            sInited_    =   false;
-    static  _SharedPtrIRep s_;
-    if (not sInited_) {
-        sInited_ = true;
-        s_ = mk_ (nullptr, nullptr);
-    }
+    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr);
     return s_;
 }
 
@@ -243,11 +238,16 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
     return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end));
 }
 
+String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen)
+{
+    return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end, reserveLen));
+}
+
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
 {
     size_t  len1        =   end1 - start1;
     size_t  totalLen    =   len1 + (end2 - start2);
-    _SharedPtrIRep  sRep (new String_BufferedArray_Rep_ (start1, end1, totalLen));
+    _SharedPtrIRep  sRep { mk_ (start1, end1, totalLen) };
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -299,10 +299,11 @@ void    String::SetCharAt (Character c, size_t i)
         _GetRep ().SetAt (c, i);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
-        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
-        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        _SafeRepAccessor copyAccessor (*this);
+        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second));
+        tmp._GetRep ().SetAt (c, i);
         *this = tmp;
-        _GetRep ().SetAt (c, i);
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
@@ -322,10 +323,11 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         _GetRep ().InsertAt (from, to, at);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
-        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + (to - from));
-        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        _SafeRepAccessor copyAccessor { *this };
+        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+        _SharedPtrIRep  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from));
+        tmp->InsertAt (from, to, at);
         *this = tmp;
-        _GetRep ().InsertAt (from, to, at);
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
@@ -386,7 +388,9 @@ String        String::RemoveAt (size_t from, size_t to) const
         return tmp;
     }
     catch (const _IRep::UnsupportedFeatureException&) {
-        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
+        _SafeRepAccessor copyAccessor (*this);
+        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second));
         tmp._GetRep ().RemoveAt (from, to);
         return tmp;
     }
@@ -788,6 +792,23 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const
 
 String  String::ToLowerCase () const
 {
+#if 1
+    StringBuilder       result;
+    _SafeRepAccessor    accessor { *this };
+    size_t              n   =   accessor._GetRep ().GetLength ();
+    bool    anyChange   =   false;
+    for (size_t i = 0; i < n; ++i) {
+        Character   c   =   accessor._GetRep ().GetAt (i);
+        if (c.IsUpperCase ()) {
+            anyChange = true;
+            result.Append (c.ToLowerCase ());
+        }
+        else {
+            result.Append (c);
+        }
+    }
+    return anyChange ? result.str () : *this;
+#else
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     // use StringBuffer
     //
@@ -802,10 +823,28 @@ String  String::ToLowerCase () const
         }
     }
     return result;
+#endif
 }
 
 String  String::ToUpperCase () const
 {
+#if 1
+    StringBuilder       result;
+    _SafeRepAccessor    accessor { *this };
+    size_t              n   =   accessor._GetRep ().GetLength ();
+    bool    anyChange   =   false;
+    for (size_t i = 0; i < n; ++i) {
+        Character   c   =   accessor._GetRep ().GetAt (i);
+        if (c.IsLowerCase ()) {
+            anyChange = true;
+            result.Append (c.ToUpperCase ());
+        }
+        else {
+            result.Append (c);
+        }
+    }
+    return anyChange ? result.str () : *this;
+#else
     //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
     // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
     String  result  { *this };
@@ -817,6 +856,7 @@ String  String::ToUpperCase () const
         }
     }
     return result;
+#endif
 }
 
 bool String::IsWhitespace () const
@@ -911,7 +951,9 @@ const wchar_t*  String::c_str () const
             return REALTHIS->_GetRep ().c_str_change ();
         }
         catch (const _IRep::UnsupportedFeatureException&) {
-            Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + 1);
+            _SafeRepAccessor copyAccessor (*this);
+            pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+            String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
             // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
             *REALTHIS = tmp;
             return REALTHIS->_GetRep ().c_str_change ();

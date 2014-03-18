@@ -425,6 +425,7 @@ namespace   Stroika {
             private:
                 static  _SharedPtrIRep  mkEmpty_ ();
                 static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
+                static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen);
                 static  _SharedPtrIRep  mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
 
             public:

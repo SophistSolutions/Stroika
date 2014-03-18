@@ -516,19 +516,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.cpp">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.cpp">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.cpp">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
@@ -1296,19 +1287,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.h">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.h">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h">
@@ -2121,19 +2103,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_BufferedArray.inl">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.inl">
       <Filter>Sources\Characters\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.inl">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadOnly.inl">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime_ReadWrite.inl">
       <Filter>Sources\Characters\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl">

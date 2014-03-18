@@ -11,11 +11,8 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)String_BufferedArray.o\
 	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.o\
-	$(ObjDir)String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite.o\
 	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime_ReadOnly.o\
-	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime_ReadWrite.o\
 
 .PHONY:	$(SubDirs)
 
