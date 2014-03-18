@@ -44,46 +44,22 @@ namespace   Stroika {
                         protected:
                             _Rep () = delete;
                             _Rep (const _Rep&) = delete;
-                            _Rep (const wchar_t* start, const wchar_t* end);
+                            _Rep (const wchar_t* start, const wchar_t* end):
+                                _IRep (start, end)
+                            {
+                            }
 
                         public:
                             nonvirtual  const _Rep& operator= (const _Rep&) = delete;
 
-                        protected:
-                            // PROTECTED INLINE UTILITY
-                            nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
-                        protected:
-                            // PROTECTED INLINE UTILITY
-                            nonvirtual     size_t  _GetLength () const;
-                        protected:
-                            // PROTECTED INLINE UTILITY
-                            nonvirtual     Character   _GetAt (size_t index) const;
-                        protected:
-                            // PROTECTED INLINE UTILITY
-                            nonvirtual     const Character*    _Peek () const;
-
-                            // Overrides for Iterable<Character>
-                        public:
-                            virtual Traversal::Iterator<Character>              MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                            virtual size_t                                      GetLength () const override;
-                            virtual bool                                        IsEmpty () const override;
-                            virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                            virtual Traversal::Iterator<Character>              FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const override;
-
                             // Overrides for String::_IRep
                         public:
-                            virtual Character                                   GetAt (size_t index) const override;
-                            virtual const Character*                            Peek () const override;
-                            virtual pair<const Character*, const Character*>    GetData () const override;
                             virtual void                                        InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
                             virtual void                                        SetAt (Character item, size_t index) override;
                             virtual void                                        RemoveAt (size_t from, size_t to) override;
                             virtual const wchar_t*                              c_str_peek () const  noexcept override;
                             virtual const wchar_t*                              c_str_change () override;
 
-                        protected:
-                            const wchar_t*  _fStart;
-                            const wchar_t*  _fEnd;
                         };
                     };
 

@@ -16,39 +16,6 @@ namespace   Stroika {
                 namespace   Private {
 
 
-                    /*
-                     ********************************************************************************
-                     ***************************** ReadOnlyRep::_Rep ********************************
-                     ********************************************************************************
-                     */
-                    inline ReadOnlyRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end)
-                        : _fStart (start)
-                        , _fEnd (end)
-                    {
-                    }
-                    inline  void    ReadOnlyRep::_Rep::_SetData (const wchar_t* start, const wchar_t* end)
-                    {
-                        Require (_fStart <= _fEnd);
-                        _fStart = start;
-                        _fEnd = end;
-                    }
-                    inline     size_t  ReadOnlyRep::_Rep::_GetLength () const
-                    {
-                        Assert (_fStart <= _fEnd);
-                        return _fEnd - _fStart;
-                    }
-                    inline     Character   ReadOnlyRep::_Rep::_GetAt (size_t index) const
-                    {
-                        Assert (_fStart <= _fEnd);
-                        Require (index < _GetLength ());
-                        return _fStart[index];
-                    }
-                    inline     const Character*    ReadOnlyRep::_Rep::_Peek () const
-                    {
-                        Assert (_fStart <= _fEnd);
-                        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                        return ((const Character*)_fStart);
-                    }
 
 
                 }

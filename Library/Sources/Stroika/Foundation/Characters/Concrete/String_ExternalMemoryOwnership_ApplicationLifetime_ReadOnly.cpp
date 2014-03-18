@@ -4,11 +4,8 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <algorithm>
-#include    <cstdarg>
 #include    <climits>
-#include    <istream>
 #include    <string>
-#include    <regex>
 
 #include    "../../Containers/Common.h"
 #include    "../../Execution/Exceptions.h"
@@ -17,7 +14,6 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "Private/String_ReadOnlyRep.h"
-#include    "Private/String_ReadWriteRep.h"
 #include    "Private/String_BufferedStringRep.h"
 
 #include    "String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
@@ -108,7 +104,7 @@ String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemo
     : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (start, end)))
 {
     Require (*end == '\0');
-    Require (end == start + ::wcslen (start));  // require standards C-string
+    Require (end == start + ::wcslen (start));  // require standard C-string
 }
 
 

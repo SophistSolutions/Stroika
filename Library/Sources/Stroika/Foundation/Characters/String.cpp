@@ -33,6 +33,7 @@ using   namespace   Stroika::Foundation::Characters;
 
 
 using   Traversal::IteratorOwnerID;
+using   Traversal::Iterator;
 
 
 
@@ -123,6 +124,90 @@ namespace   {
     }
 }
 
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** String::_IRep ***********************************
+ ********************************************************************************
+ */
+Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID suggestedOwner) const
+{
+    struct MyIterRep_ : Iterator<Character>::IRep {
+        _SharedPtrIRep  fStr;           // effectively RO, since if anyone modifies, our copy will remain unchanged
+        size_t          fCurIdx;
+        MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
+            : fStr (r)
+            , fCurIdx (idx)
+        {
+            Require (fCurIdx <= fStr->_GetLength ());
+        }
+        virtual SharedIRepPtr   Clone () const override
+        {
+            return SharedIRepPtr (new MyIterRep_ (fStr, fCurIdx));
+        }
+        virtual IteratorOwnerID GetOwner () const override
+        {
+            // Simple to enforce Iterator<> compare semantics, but nothing else needed
+            return fStr.get ();
+        }
+        virtual void    More (Memory::Optional<Character>* result, bool advance) override
+        {
+            RequireNotNull (result);
+            if (advance) {
+                Require (fCurIdx <= fStr->_GetLength ());
+                fCurIdx++;
+            }
+            if (fCurIdx < fStr->_GetLength ()) {
+                *result = fStr->GetAt (fCurIdx);
+            }
+            else {
+                result->clear ();
+            }
+        }
+        virtual bool    Equals (const IRep* rhs) const
+        {
+            RequireNotNull (rhs);
+            RequireMember (rhs, MyIterRep_);
+            const MyIterRep_* rrhs =   dynamic_cast<const MyIterRep_*> (rhs);
+            AssertNotNull (rrhs);
+            Require (fStr == rrhs->fStr);   // from same string object
+            return fCurIdx == rrhs->fCurIdx;
+        }
+        DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
+    };
+    // This is a kludge. We are CLONING the Iterator rep (as a way to get a shared_ptr) - but really we should
+    // use 'shared_from_this'.
+    //
+    //
+    // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
+    // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone (nullptr)))));
+}
+
+size_t  String::_IRep::GetLength () const
+{
+    Assert (_fStart <= _fEnd);
+    return _fEnd - _fStart;
+}
+
+bool  String::_IRep::IsEmpty () const
+{
+    Assert (_fStart <= _fEnd);
+    return _fEnd == _fStart;
+}
+
+void  String::_IRep::Apply (_APPLY_ARGTYPE doToElement) const
+{
+    _Apply (doToElement);
+}
+
+Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+{
+    return _FindFirstThat (doToElement, suggestedOwner);
+}
 
 
 
@@ -311,7 +396,7 @@ void    String::SetCharAt (Character c, size_t i)
 void    String::InsertAt (const Character* from, const Character* to, size_t at)
 {
     Require (at >= 0);
-    Require (at <= (GetLength ()));
+    Require (at <= GetLength ());
     Require (from <= to);
     Require (from != nullptr or from == to);
     Require (to != nullptr or from == to);
@@ -353,6 +438,7 @@ void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
 {
     InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
 }
+
 void    String::Append (Character c)
 {
     String  tmp =   *this;
@@ -399,8 +485,8 @@ String        String::RemoveAt (size_t from, size_t to) const
 
 String    String::Remove (Character c) const
 {
-    String  tmp =   { *this };
-    size_t index = tmp.Find (c, CompareOptions::eWithCase);
+    String  tmp     =   { *this };
+    size_t  index   =   tmp.Find (c, CompareOptions::eWithCase);
     if (index != kBadIndex) {
         return tmp.RemoveAt (index);
     }
@@ -411,8 +497,8 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
     _SafeRepAccessor    accessor { *this };
-    Require (startAt <= accessor._GetRep ().GetLength ());
-    size_t length = accessor._GetRep ().GetLength ();
+    Require (startAt <= accessor._GetRep ()._GetLength ());
+    size_t length = accessor._GetRep ()._GetLength ();
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i < length; i++) {
@@ -438,17 +524,17 @@ size_t  String::Find (const String& subString, size_t startAt, CompareOptions co
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     _SafeRepAccessor    accessor { *this };
-    Require (startAt <= accessor._GetRep ().GetLength ());
+    Require (startAt <= accessor._GetRep ()._GetLength ());
 
     size_t  subStrLen   =   subString.GetLength ();
     if (subStrLen == 0) {
-        return (accessor._GetRep ().GetLength () == 0) ? kBadIndex : 0;
+        return (accessor._GetRep ()._GetLength () == 0) ? kBadIndex : 0;
     }
-    if (accessor._GetRep ().GetLength () < subStrLen) {
+    if (accessor._GetRep ()._GetLength () < subStrLen) {
         return kBadIndex;   // important test cuz size_t is unsigned
     }
 
-    size_t  limit       =   accessor._GetRep ().GetLength () - subStrLen;
+    size_t  limit       =   accessor._GetRep ()._GetLength () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i <= limit; i++) {
@@ -561,7 +647,7 @@ size_t  String::RFind (Character c) const
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeRepAccessor accessor { *this };
     const _IRep&    useRep = accessor._GetRep ();
-    size_t length = useRep.GetLength ();
+    size_t length = useRep._GetLength ();
     for (size_t i = length; i > 0; --i) {
         if (useRep.GetAt (i - 1) == c) {
             return i - 1;
@@ -594,7 +680,7 @@ size_t  String::RFind (const String& subString) const
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
-    if (accessor._GetRep ().GetLength () == 0) {
+    if (accessor._GetRep ()._GetLength () == 0) {
         return false;
     }
     return accessor._GetRep ().GetAt (0).Compare (c, co) == 0;
@@ -604,7 +690,7 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
     size_t  subStrLen = subString.GetLength ();
-    if (subStrLen >  accessor._GetRep ().GetLength ()) {
+    if (subStrLen >  accessor._GetRep ()._GetLength ()) {
         return false;
     }
 #if     qDebug
@@ -621,7 +707,7 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
     const _IRep&    useRep = accessor._GetRep ();
-    size_t  thisStrLen = useRep.GetLength ();
+    size_t  thisStrLen = useRep._GetLength ();
     if (thisStrLen == 0) {
         return false;
     }
@@ -631,7 +717,7 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
-    size_t      thisStrLen = accessor._GetRep ().GetLength ();
+    size_t      thisStrLen = accessor._GetRep ()._GetLength ();
     size_t      subStrLen = subString.GetLength ();
     if (subStrLen >  thisStrLen) {
         return false;
@@ -701,7 +787,7 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     _SafeRepAccessor    accessor { *this };
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    size_t length = accessor._GetRep ().GetLength ();
+    size_t length = accessor._GetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
         if (not (*shouldBeTrimmmed) (accessor._GetRep ().GetAt (i))) {
 
@@ -728,7 +814,7 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     _SafeRepAccessor    accessor { *this };
 
-    ptrdiff_t length = accessor._GetRep ().GetLength ();
+    ptrdiff_t length = accessor._GetRep ()._GetLength ();
     ptrdiff_t endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
         if ((*shouldBeTrimmmed) (accessor._GetRep ().GetAt (endOfFirstTrim - 1))) {
@@ -792,10 +878,9 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const
 
 String  String::ToLowerCase () const
 {
-#if 1
     StringBuilder       result;
     _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._GetRep ().GetLength ();
+    size_t              n   =   accessor._GetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   accessor._GetRep ().GetAt (i);
@@ -808,30 +893,13 @@ String  String::ToLowerCase () const
         }
     }
     return anyChange ? result.str () : *this;
-#else
-    //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
-    // use StringBuffer
-    //
-
-    // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
-    String  result  { *this };
-    size_t  n   =   result.GetLength ();
-    for (size_t i = 0; i < n; ++i) {
-        Character   c   =   result[i];
-        if (c.IsUpperCase ()) {
-            result.SetCharAt (c.ToLowerCase (), i);
-        }
-    }
-    return result;
-#endif
 }
 
 String  String::ToUpperCase () const
 {
-#if 1
     StringBuilder       result;
     _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._GetRep ().GetLength ();
+    size_t              n   =   accessor._GetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   accessor._GetRep ().GetAt (i);
@@ -844,19 +912,6 @@ String  String::ToUpperCase () const
         }
     }
     return anyChange ? result.str () : *this;
-#else
-    //TODO: FIX HORRIBLE PERFORMANCE!!! (e.g. access wchar_t* const and do there?
-    // Copy the string first (cheap cuz just refcnt) - but be sure to check if any real change before calling SetAt cuz SetAt will do the actual copy-on-write
-    String  result  { *this };
-    size_t  n   =   result.GetLength ();
-    for (size_t i = 0; i < n; ++i) {
-        Character   c   =   result[i];
-        if (c.IsLowerCase ()) {
-            result.SetCharAt (c.ToUpperCase (), i);
-        }
-    }
-    return result;
-#endif
 }
 
 bool String::IsWhitespace () const
@@ -939,7 +994,6 @@ void    String::AsASCII (string* into) const
 
 const wchar_t*  String::c_str () const
 {
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     const   wchar_t*    result = _GetRep ().c_str_peek ();
     if (result == nullptr) {
         // Then we must force it to be NUL-terminated
@@ -962,7 +1016,6 @@ const wchar_t*  String::c_str () const
     else {
         return result;
     }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    String::erase (size_t from, size_t count)

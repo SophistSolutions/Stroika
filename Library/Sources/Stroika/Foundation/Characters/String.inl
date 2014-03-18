@@ -23,19 +23,66 @@ namespace   Stroika {
             ********************************* String::_IRep ********************************
             ********************************************************************************
             */
+            inline String::_IRep::_IRep (const wchar_t* start, const wchar_t* end)
+                : _fStart (start)
+                , _fEnd (end)
+            {
+            }
+
+            inline   Character   String::_IRep::GetAt (size_t index) const
+            {
+                Assert (_fStart <= _fEnd);
+                Require (index < GetLength ());
+                return _fStart[index];
+            }
+            inline  const Character*    String::_IRep::Peek () const
+            {
+                Assert (_fStart <= _fEnd);
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                return ((const Character*)_fStart);
+            }
+            inline  pair<const Character*, const Character*> String::_IRep::GetData () const
+            {
+                Assert (_fStart <= _fEnd);
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                return pair<const Character*, const Character*> ((const Character*)_fStart, (const Character*)_fEnd);
+            }
             inline  void    String::_IRep::CopyTo (Character* bufFrom, Character* bufTo) const
             {
                 RequireNotNull (bufFrom);
-                Require (bufFrom + GetLength () >= bufTo);
-                size_t  nChars = GetLength ();
+                Require (bufFrom + _GetLength () >= bufTo);
+                size_t  nChars = _GetLength ();
                 (void)::memcpy (bufFrom, Peek (), nChars * sizeof (Character));
             }
             inline  void    String::_IRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
                 RequireNotNull (bufFrom);
-                Require (bufFrom + GetLength () >= bufTo);
-                size_t  nChars = GetLength ();
+                Require (bufFrom + _GetLength () >= bufTo);
+                size_t  nChars = _GetLength ();
                 (void)::memcpy (bufFrom, Peek (), nChars * sizeof (Character));
+            }
+            inline  void    String::_IRep::_SetData (const wchar_t* start, const wchar_t* end)
+            {
+                Require (_fStart <= _fEnd);
+                _fStart = start;
+                _fEnd = end;
+            }
+            inline     size_t  String::_IRep::_GetLength () const
+            {
+                Assert (_fStart <= _fEnd);
+                return _fEnd - _fStart;
+            }
+            inline     Character   String::_IRep::_GetAt (size_t index) const
+            {
+                Assert (_fStart <= _fEnd);
+                Require (index < _GetLength ());
+                return _fStart[index];
+            }
+            inline     const Character*    String::_IRep::_Peek () const
+            {
+                Assert (_fStart <= _fEnd);
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                return ((const Character*)_fStart);
             }
 
 
@@ -141,25 +188,25 @@ namespace   Stroika {
             {
                 _SafeRepAccessor accessor { *this };
                 RequireNotNull (bufFrom);
-                Require (bufFrom + accessor._GetRep ().GetLength () >= bufTo);
+                Require (bufFrom + accessor._GetRep ()._GetLength () >= bufTo);
                 accessor._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  void    String::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
                 _SafeRepAccessor accessor { *this };
                 RequireNotNull (bufFrom);
-                Require (bufFrom + accessor._GetRep ().GetLength () >= bufTo);
+                Require (bufFrom + accessor._GetRep ()._GetLength () >= bufTo);
                 accessor._GetRep ().CopyTo (bufFrom, bufTo);
             }
             inline  size_t  String::GetLength () const
             {
                 _SafeRepAccessor accessor { *this };
-                return accessor._GetRep ().GetLength ();
+                return accessor._GetRep ()._GetLength ();
             }
             inline  String  String::SubString (size_t from) const
             {
                 _SafeRepAccessor    accessor { *this };
-                size_t              myLength { accessor._GetRep ().GetLength () };
+                size_t              myLength { accessor._GetRep ()._GetLength () };
                 Require (from <= myLength);
                 size_t  useLength  { myLength - from };
                 if (useLength == 0) {
@@ -174,7 +221,7 @@ namespace   Stroika {
             inline  String  String::SubString (size_t from, size_t to) const
             {
                 _SafeRepAccessor    accessor { *this };
-                size_t              myLength { accessor._GetRep ().GetLength () };
+                size_t              myLength { accessor._GetRep ()._GetLength () };
                 Require (from <= to);
                 Require (to <= myLength);
                 size_t  useLength  =   (to - from);
@@ -190,7 +237,7 @@ namespace   Stroika {
             inline  String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
             {
                 _SafeRepAccessor    accessor { *this };
-                size_t              myLength { accessor._GetRep ().GetLength () };
+                size_t              myLength { accessor._GetRep ()._GetLength () };
                 size_t  f = from < 0 ? (myLength + from) : from;
                 size_t  t = to < 0 ? (myLength + to) : to;
                 Require (f != kBadIndex);
@@ -206,7 +253,7 @@ namespace   Stroika {
             inline  bool    String::empty () const
             {
                 _SafeRepAccessor accessor (*this);
-                return accessor._GetRep ().GetLength () == 0;
+                return accessor._GetRep ()._GetLength () == 0;
             }
             inline  void    String::clear ()
             {
@@ -254,7 +301,7 @@ namespace   Stroika {
             {
                 _SafeRepAccessor    accessor { *this };
                 Require (i >= 0);
-                Require (i < accessor._GetRep ().GetLength ());
+                Require (i < accessor._GetRep ()._GetLength ());
                 return accessor._GetRep ().GetAt (i);
             }
             inline  const Character   String::operator[] (size_t i) const
@@ -327,7 +374,7 @@ namespace   Stroika {
             {
                 RequireNotNull (into);
                 _SafeRepAccessor    accessor { *this };
-                size_t              n       {   accessor._GetRep ().GetLength () };
+                size_t              n       {   accessor._GetRep ()._GetLength () };
                 const Character* cp = accessor._GetRep ().Peek ();
                 Assert (sizeof (Character) == sizeof (wchar_t));        // going to want to clean this up!!!    --LGP 2011-09-01
                 const wchar_t* wcp  =   (const wchar_t*)cp;
@@ -430,7 +477,7 @@ namespace   Stroika {
             inline  String      String::substr (size_t from, size_t count) const
             {
                 _SafeRepAccessor    accessor { *this };
-                size_t              thisLen = accessor._GetRep ().GetLength ();
+                size_t              thisLen = accessor._GetRep ()._GetLength ();
                 if (from > thisLen) {
                     Execution::DoThrow (std::out_of_range ("string index out of range"));
                 }

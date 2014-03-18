@@ -12,6 +12,16 @@
 /**
  *  \file
  *
+ *      @todo   PROBABLY DEPRECATE - 2014-03-18. This IS a good idea as optimization (e.g. for stuff like
+ *              callbacks from xerces/sax parser) - but issue is the strings if copied to another thread - you cannot
+ *              replace out the rep safely if in the middle of access in another thread.
+ *
+ *              DOCUMENT idea (in todo section) in case I someday come up with a better way, but I think as of
+ *              2014-03-18 we must deprecate this.
+ *
+ *              String_ExternalMemoryOwnership_StackLifetime_ReadOnly
+ *
+ *
  *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
  *
  *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite

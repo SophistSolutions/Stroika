@@ -1045,16 +1045,32 @@ namespace   Stroika {
              */
             class   String::_IRep : public Iterable<Character>::_IRep {
             protected:
+                using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;
+
+            protected:
+                using   _SharedPtrIRep      =   String::_SharedPtrIRep;
+
+            protected:
                 _IRep () = default;
+
+            protected:
+                _IRep (const wchar_t* start, const wchar_t* end);
 
             public:
                 virtual ~_IRep () = default;
 
             protected:
-                using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;
-
+                // PROTECTED INLINE UTILITY
+                nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
             protected:
-                using   _SharedPtrIRep      =   String::_SharedPtrIRep;
+                // PROTECTED INLINE UTILITY
+                nonvirtual     size_t  _GetLength () const;
+            protected:
+                // PROTECTED INLINE UTILITY
+                nonvirtual     Character   _GetAt (size_t index) const;
+            protected:
+                // PROTECTED INLINE UTILITY
+                nonvirtual     const Character*    _Peek () const;
 
             public:
                 /*
@@ -1073,33 +1089,37 @@ namespace   Stroika {
                 class   UnsupportedFeatureException {};
 
 
+                // Overrides for Iterable<Character>
             public:
-                virtual Character           GetAt (size_t index) const              = 0;
+                virtual Traversal::Iterator<Character>              MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
+                virtual size_t                                      GetLength () const override;
+                virtual bool                                        IsEmpty () const override;
+                virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                virtual Traversal::Iterator<Character>              FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
 
+            public:
+                nonvirtual  Character   GetAt (size_t index) const;
+
+            public:
+                nonvirtual  const Character*    Peek () const;
+
+            public:
+                nonvirtual  pair<const Character*, const Character*> GetData () const;
+
+            public:
                 // return nullptr if its not already NUL-terminated
                 virtual const wchar_t*      c_str_peek () const noexcept            = 0;
 
+            public:
                 // change rep so its NUL-termainted
                 virtual const wchar_t*      c_str_change ()                         = 0;
 
-                virtual const Character*    Peek () const                           = 0;
-
-                virtual pair<const Character*, const Character*> GetData () const   = 0;
-
                 // Probably deprecate the methods below (since R/O string rep soon)
             public:
-#if 0
-                virtual void                RemoveAll ()                            = 0;
-#endif
-
                 virtual void                SetAt (Character item, size_t index)    = 0;
                 // This rep is NEVER called with nullptr src/end nor start==end
                 virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
                 virtual void                RemoveAt (size_t from, size_t to)       = 0;
-
-#if 0
-                virtual void                SetLength (size_t newLength)            = 0;
-#endif
 
             public:
                 /*
@@ -1108,6 +1128,13 @@ namespace   Stroika {
                  */
                 nonvirtual  void    CopyTo (Character* bufFrom, Character* bufTo) const;
                 nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+
+            protected:
+                const wchar_t*  _fStart;
+                const wchar_t*  _fEnd;
+
+            private:
+                friend  class   String;
             };
 
 
