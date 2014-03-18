@@ -74,6 +74,8 @@ namespace   Stroika {
                 nonvirtual  void    Append (const wchar_t* s);
                 nonvirtual  void    Append (const wstring& s);
                 nonvirtual  void    Append (const String& s);
+                nonvirtual  void    Append (wchar_t c);
+                nonvirtual  void    Append (Character c);
 
             public:
                 /**

@@ -59,6 +59,14 @@ namespace   Stroika {
                 pair<const wchar_t*, const wchar_t*>    p   =   s.GetData<wchar_t> ();
                 Append (p.first, p.second);
             }
+            inline  void    StringBuilder::Append (wchar_t c)
+            {
+                Append (&c, &c + 1);
+            }
+            inline  void    StringBuilder::Append (Character c)
+            {
+                Append (c.GetCharacterCode ());
+            }
             inline  StringBuilder&  StringBuilder::operator+= (const wchar_t* s)
             {
                 RequireNotNull (s);
