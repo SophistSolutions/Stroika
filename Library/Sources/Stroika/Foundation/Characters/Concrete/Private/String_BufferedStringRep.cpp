@@ -59,12 +59,14 @@ void        BufferedStringRep ::_Rep::SetLength_ (size_t newLength)
     Ensure (_GetLength () == newLength);
 }
 
+#if 0
 void    BufferedStringRep::_Rep::SetAt (Character item, size_t index)
 {
     Assert (_fStart <= _fEnd);
     Require (index < GetLength ());
     _PeekStart ()[index] = item.As<wchar_t> ();
 }
+#endif
 
 const wchar_t*  BufferedStringRep ::_Rep::c_str_peek () const noexcept
 {

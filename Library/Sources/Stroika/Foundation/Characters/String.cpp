@@ -228,10 +228,12 @@ void    String::_IRep::InsertAt (const Character* srcStart, const Character* src
     Execution::DoThrow (UnsupportedFeatureException ());
 }
 
+#if 0
 void    String::_IRep::SetAt (Character item, size_t index)
 {
     Execution::DoThrow (UnsupportedFeatureException ());
 }
+#endif
 
 const wchar_t*  String::_IRep::c_str_peek () const  noexcept
 {
@@ -424,6 +426,13 @@ void    String::SetCharAt (Character c, size_t i)
 {
     Require (i >= 0);
     Require (i < GetLength ());
+#if 1
+    // Expensive, but you can use StringBuilder directly to avoid the performance costs
+    StringBuilder sb { *this };
+    Require (i < GetLength ());
+    sb.SetAt (c, i);
+    *this = sb.str ();
+#else
     DISABLE_COMPILER_MSC_WARNING_START(4996)
     try {
         _GetRep ().SetAt (c, i);
@@ -436,6 +445,7 @@ void    String::SetCharAt (Character c, size_t i)
         *this = tmp;
     }
     DISABLE_COMPILER_MSC_WARNING_END(4996)
+#endif
 }
 
 void    String::InsertAt (const Character* from, const Character* to, size_t at)

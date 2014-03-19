@@ -926,12 +926,17 @@ namespace   Stroika {
                 nonvirtual  size_t          length () const;
 
             public:
+                /**
                 // As with STL, the return value of the data () function should NOT be assumed to be
                 // NUL-terminated
                 //
                 // The lifetime of the pointer returned is gauranteed until the next call to this String
                 // envelope class (that is if other reps change, or are acceessed this data will not
                 // be modified)
+                 *
+                 *  \note THREAD-SAFETY!
+                 *
+                 */
                 nonvirtual  const wchar_t*  data () const;
 
             public:
@@ -1119,7 +1124,7 @@ namespace   Stroika {
 
                 // Probably deprecate the methods below (since R/O string rep soon)
             public:
-                virtual void                SetAt (Character item, size_t index);
+//                virtual void                SetAt (Character item, size_t index);
                 // This rep is NEVER called with nullptr src/end nor start==end
                 virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
 
