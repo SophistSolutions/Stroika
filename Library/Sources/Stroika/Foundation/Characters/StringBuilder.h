@@ -99,6 +99,12 @@ namespace   Stroika {
                 nonvirtual  void    push_back (Character c);
 
             public:
+                nonvirtual  size_t  GetLength () const;
+
+            public:
+                nonvirtual  void    SetAt (Character item, size_t index);
+
+            public:
                 /**
                  * Convert String losslessly into a
                  *      o   String or

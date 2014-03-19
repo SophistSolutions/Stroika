@@ -96,6 +96,15 @@ namespace   Stroika {
                 fData_[fLength_] = c.GetCharacterCode ();
                 fLength_++;
             }
+            inline  size_t StringBuilder::GetLength () const
+            {
+                return fLength_;
+            }
+            inline  void    StringBuilder::SetAt (Character item, size_t index)
+            {
+                Require (index < fLength_);
+                fData_[index] = item.GetCharacterCode ();
+            }
             inline  const wchar_t*  StringBuilder::c_str () const
             {
                 lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
