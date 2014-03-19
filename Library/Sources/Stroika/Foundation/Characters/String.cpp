@@ -424,28 +424,15 @@ String  String::operator+ (const wchar_t* appendageCStr) const
 
 void    String::SetCharAt (Character c, size_t i)
 {
+    // @Todo - redo with check if char is acttually chanigng and if so use
+    // mk/4 4 arg string maker instead.??? Or some such...
     Require (i >= 0);
     Require (i < GetLength ());
-#if 1
     // Expensive, but you can use StringBuilder directly to avoid the performance costs
     StringBuilder sb { *this };
     Require (i < GetLength ());
     sb.SetAt (c, i);
     *this = sb.str ();
-#else
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    try {
-        _GetRep ().SetAt (c, i);
-    }
-    catch (const _IRep::UnsupportedFeatureException&) {
-        _SafeRepAccessor copyAccessor (*this);
-        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
-        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second));
-        tmp._GetRep ().SetAt (c, i);
-        *this = tmp;
-    }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-#endif
 }
 
 void    String::InsertAt (const Character* from, const Character* to, size_t at)
