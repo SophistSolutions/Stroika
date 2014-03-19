@@ -458,6 +458,8 @@ namespace   Stroika {
             }
             inline  const wchar_t*  String::c_str () const
             {
+                // Since this is intrinsically un-threadsafe anyhow, dont bother making a threadsafe
+                // copy (_SafeRepAccessor) of the shared_ptr
                 if (const wchar_t* result = _GetRep ().c_str_peek ()) {
                     return result;
                 }

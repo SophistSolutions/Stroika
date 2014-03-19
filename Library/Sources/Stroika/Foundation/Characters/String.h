@@ -954,7 +954,7 @@ namespace   Stroika {
                  *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
                  *  That is - if you call this on a String, you better not be updating the string at the same time!
                  *
-                 *  \note THREAD-SAFETY!
+                 *  \note THREAD-SAFETY! - NOT threadsafe
                  *
                  *  @see GetData ()
                  */
@@ -1080,23 +1080,6 @@ namespace   Stroika {
                 // PROTECTED INLINE UTILITY
                 nonvirtual     const Character*    _Peek () const;
 
-            public:
-                /*
-                 *  UnsupportedFeatureException
-                 *
-                 *          Some 'reps' - don't support some features. For exmaple - a READONLY char* rep won't support
-                 *      any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
-                 *      that supports everything todo that.
-                 *
-                 *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before
-                 *      each all, or have an extra return value about if it succeeded. But - that would be alot of
-                 *      overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
-                 *      to change a string that happened to come from a 'readonly' source. We can handle that internally,
-                 *      and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
-                 */
-                class   UnsupportedFeatureException {};
-
-
                 // Overrides for Iterable<Character>
             public:
                 virtual Traversal::Iterator<Character>              MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
@@ -1117,10 +1100,6 @@ namespace   Stroika {
             public:
                 // return nullptr if its not already NUL-terminated
                 virtual const wchar_t*      c_str_peek () const noexcept;
-
-            public:
-                // change rep so its NUL-termainted
-                virtual const wchar_t*      c_str_change ();
 
             public:
                 /*

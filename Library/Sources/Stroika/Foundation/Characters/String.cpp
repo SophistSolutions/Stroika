@@ -218,34 +218,10 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
     return _FindFirstThat (doToElement, suggestedOwner);
 }
 
-#if 0
-
-
-
-
-void    String::_IRep::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
-{
-    Execution::DoThrow (UnsupportedFeatureException ());
-}
-#endif
-
-#if 0
-void    String::_IRep::SetAt (Character item, size_t index)
-{
-    Execution::DoThrow (UnsupportedFeatureException ());
-}
-#endif
-
 const wchar_t*  String::_IRep::c_str_peek () const  noexcept
 {
     return nullptr;
 }
-
-const wchar_t*      String::_IRep::c_str_change ()
-{
-    Execution::DoThrow (UnsupportedFeatureException ());
-}
-
 
 
 
@@ -446,24 +422,11 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     if (from == to) {
         return;
     }
-#if 1
     _SafeRepAccessor copyAccessor { *this };
     pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
     Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
     *this = String (sRep);
-#else
-    try {
-        _GetRep ().InsertAt (from, to, at);
-    }
-    catch (const _IRep::UnsupportedFeatureException&) {
-        _SafeRepAccessor copyAccessor { *this };
-        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
-        _SharedPtrIRep  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from));
-        tmp->InsertAt (from, to, at);
-        *this = tmp;
-    }
-#endif
 }
 
 void    String::InsertAt (Character c, size_t at)
@@ -1066,28 +1029,24 @@ void    String::AsASCII (string* into) const
 
 const wchar_t*  String::c_str_ () const
 {
+    /*
+     *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
+     *  Access to this envelope MUST be externally synchonized or the returned bare pointer is doo-doo.
+     */
     const   wchar_t*    result = _GetRep ().c_str_peek ();
     if (result == nullptr) {
-        // Then we must force it to be NUL-terminated
-        //
+        pair<const Character*, const Character*> d = _GetRep ().GetData ();
+        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
+        Assert (tmp. _GetRep ().c_str_peek () != nullptr);
+
         // We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
         // fRep cloning stuff to work right, we must access it through a non-cost pointer
         String* REALTHIS    =   const_cast<String*> (this);
-        try {
-            return REALTHIS->_GetRep ().c_str_change ();
-        }
-        catch (const _IRep::UnsupportedFeatureException&) {
-            _SafeRepAccessor copyAccessor (*this);
-            pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
-            String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
-            // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
-            *REALTHIS = tmp;
-            return REALTHIS->_GetRep ().c_str_change ();
-        }
+        *REALTHIS = tmp;
+        result = _GetRep ().c_str_peek ();
     }
-    else {
-        return result;
-    }
+    Ensure (result != nullptr);
+    return result;
 }
 
 void    String::erase (size_t from, size_t count)

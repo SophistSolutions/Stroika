@@ -59,7 +59,6 @@ namespace   Stroika {
 
                         public:
                             virtual     const wchar_t*  c_str_peek () const noexcept override;
-                            virtual     const wchar_t*  c_str_change () override;
 
                         protected:
                             //Presume fStart is really a WRITABLE pointer

@@ -68,9 +68,3 @@ const wchar_t*  BufferedStringRep ::_Rep::c_str_peek () const noexcept
     }
     return nullptr;
 }
-
-const wchar_t*      BufferedStringRep ::_Rep::c_str_change ()
-{
-    ReserveAtLeast_ (_GetLength () + 1);
-    return c_str_peek ();
-}
