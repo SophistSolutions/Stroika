@@ -9,8 +9,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)String_BufferedStringRep.o\
-	$(ObjDir)String_ReadOnlyRep.o\
-	$(ObjDir)String_ReadWriteRep.o\
 
 all:	$(Objs)
 
