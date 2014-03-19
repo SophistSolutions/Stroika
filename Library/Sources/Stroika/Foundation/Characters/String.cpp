@@ -218,7 +218,7 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
     return _FindFirstThat (doToElement, suggestedOwner);
 }
 
-
+#if 0
 
 
 
@@ -227,6 +227,7 @@ void    String::_IRep::InsertAt (const Character* srcStart, const Character* src
 {
     Execution::DoThrow (UnsupportedFeatureException ());
 }
+#endif
 
 #if 0
 void    String::_IRep::SetAt (Character item, size_t index)
@@ -379,7 +380,7 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 {
     size_t  len1        =   end1 - start1;
     size_t  totalLen    =   len1 + (end2 - start2);
-    _SharedPtrIRep  sRep { mk_ (start1, end1, totalLen) };
+    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (start1, end1, totalLen) };
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -442,10 +443,16 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     Require (from <= to);
     Require (from != nullptr or from == to);
     Require (to != nullptr or from == to);
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     if (from == to) {
         return;
     }
+#if 1
+    _SafeRepAccessor copyAccessor { *this };
+    pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    sRep->InsertAt (from, to, at);
+    *this = String (sRep);
+#else
     try {
         _GetRep ().InsertAt (from, to, at);
     }
@@ -456,7 +463,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         tmp->InsertAt (from, to, at);
         *this = tmp;
     }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
+#endif
 }
 
 void    String::InsertAt (Character c, size_t at)
@@ -1116,13 +1123,11 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+//    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }
-
-
-
 
 
 

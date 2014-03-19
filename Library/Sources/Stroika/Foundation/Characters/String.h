@@ -1122,12 +1122,6 @@ namespace   Stroika {
                 // change rep so its NUL-termainted
                 virtual const wchar_t*      c_str_change ();
 
-                // Probably deprecate the methods below (since R/O string rep soon)
-            public:
-//                virtual void                SetAt (Character item, size_t index);
-                // This rep is NEVER called with nullptr src/end nor start==end
-                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
-
             public:
                 /*
                  *  CopyTo () copies the contents of this string to the target buffer.

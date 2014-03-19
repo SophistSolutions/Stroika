@@ -30,10 +30,11 @@ namespace   Stroika {
 
 
                     /**
-                     * This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
-                     * since we don't know in general we can (thats left to subtypes)
+                     *  This is a utility class to implement most of the basic String::_IRep functionality.
+                     *  This implements functions that change the string, but dont GROW it,
+                     *  since we don't know in general we can (thats left to subtypes)
                      *
-                     *  explain queer wrapper class cuz protected
+                     *  @todo Explain queer wrapper class cuz protected
                      */
                     struct  BufferedStringRep : String {
                         struct  _Rep : public _IRep {
@@ -47,14 +48,15 @@ namespace   Stroika {
                         public:
                             nonvirtual  const _Rep& operator= (const _Rep&) = delete;
 
-                        public:
+                        protected:
                             _Rep (const wchar_t* start, const wchar_t* end);
                             _Rep (const wchar_t* start, const wchar_t* end, size_t reserve);
+                        public:
                             ~_Rep ();
 
                         public:
-                            virtual     void            InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
-                            //nonvirtual     void            SetAt (Character item, size_t index);
+                            nonvirtual     void            InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
+
                         public:
                             virtual     const wchar_t*  c_str_peek () const noexcept override;
                             virtual     const wchar_t*  c_str_change () override;
