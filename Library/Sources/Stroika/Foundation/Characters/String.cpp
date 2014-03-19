@@ -87,9 +87,9 @@ namespace   {
 
 
 namespace   {
-    struct String_Substring_ : public Concrete::Private::ReadOnlyRep {
-        class   MyRep_ : public _Rep {
-            using inherited = _Rep;
+    struct String_Substring_ : public String {
+        class   MyRep_ : public _IRep {
+            using inherited = _IRep;
         public:
             MyRep_ (const _SafeRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
                 : inherited (start, end)
@@ -217,6 +217,42 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
 {
     return _FindFirstThat (doToElement, suggestedOwner);
 }
+
+
+
+
+
+
+void    String::_IRep::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
+{
+    Execution::DoThrow (UnsupportedFeatureException ());
+}
+
+void    String::_IRep::SetAt (Character item, size_t index)
+{
+    Execution::DoThrow (UnsupportedFeatureException ());
+}
+
+const wchar_t*  String::_IRep::c_str_peek () const  noexcept
+{
+    return nullptr;
+}
+
+const wchar_t*      String::_IRep::c_str_change ()
+{
+    Execution::DoThrow (UnsupportedFeatureException ());
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -474,42 +510,24 @@ void    String::Append (const Character* from, const Character* to)
 
 String        String::RemoveAt (size_t from, size_t to) const
 {
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     Require (from <= to);
     Require (to <= GetLength ());
-#if 0
     _SafeRepAccessor accessor { *this };
     size_t length = accessor._GetRep ()._GetLength ();
-	if (from == to) {
-		return *this;	// @todo - fix to return accessor.AsString()
-	}
-	else if (from == 0) {
-		return SubString (to);
-	}
-	else if (to == length) {
-		&&&&
-		return SubString (from, length-to);
-	}
-	else {
+    if (from == to) {
+        return *this;   // @todo - fix to return accessor.AsString()
+    }
+    else if (from == 0) {
+        return SubString (to);
+    }
+    else if (to == length) {
+        return SubString (0, from);
+    }
+    else {
         pair<const Character*, const Character*> d = accessor._GetRep ().GetData ();
-		const wchar_t* st = reinterpret_cast<const wchar_t*> (d.first);
-		return String (mk_ (st, st + from, st + to, st + length));
-	}
-#else
-    try {
-        String  tmp =   *this;
-        tmp._GetRep ().RemoveAt (from, to);
-        return tmp;
+        const wchar_t* p = reinterpret_cast<const wchar_t*> (d.first);
+        return String (mk_ (p, p + from, p + to, p + length));
     }
-    catch (const _IRep::UnsupportedFeatureException&) {
-        _SafeRepAccessor copyAccessor (*this);
-        pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
-        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second));
-        tmp._GetRep ().RemoveAt (from, to);
-        return tmp;
-    }
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-#endif
 }
 
 String    String::Remove (Character c) const

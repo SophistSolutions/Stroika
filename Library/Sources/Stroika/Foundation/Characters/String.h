@@ -1111,18 +1111,17 @@ namespace   Stroika {
 
             public:
                 // return nullptr if its not already NUL-terminated
-                virtual const wchar_t*      c_str_peek () const noexcept            = 0;
+                virtual const wchar_t*      c_str_peek () const noexcept;
 
             public:
                 // change rep so its NUL-termainted
-                virtual const wchar_t*      c_str_change ()                         = 0;
+                virtual const wchar_t*      c_str_change ();
 
                 // Probably deprecate the methods below (since R/O string rep soon)
             public:
-                virtual void                SetAt (Character item, size_t index)    = 0;
+                virtual void                SetAt (Character item, size_t index);
                 // This rep is NEVER called with nullptr src/end nor start==end
-                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
-                virtual void                RemoveAt (size_t from, size_t to)       = 0;
+                virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
 
             public:
                 /*

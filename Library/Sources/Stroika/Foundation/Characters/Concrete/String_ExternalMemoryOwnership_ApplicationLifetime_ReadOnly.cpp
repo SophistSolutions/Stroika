@@ -13,7 +13,6 @@
 #include    "../../Memory/Common.h"
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "Private/String_ReadOnlyRep.h"
 #include    "Private/String_BufferedStringRep.h"
 
 #include    "String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
@@ -60,9 +59,9 @@ namespace   {
 
 
 
-class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public Concrete::Private::ReadOnlyRep::_Rep {
+class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public String::_IRep {
 private:
-    using   inherited   =   Concrete::Private::ReadOnlyRep::_Rep;
+    using   inherited   =   String::_IRep;
 public:
     MyRep_ (const wchar_t* start, const wchar_t* end)
         : inherited (start, end)

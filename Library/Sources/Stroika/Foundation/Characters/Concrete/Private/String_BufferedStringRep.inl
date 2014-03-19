@@ -42,6 +42,10 @@ namespace   Stroika {
                      *********************** BufferedStringRep::_Rep ********************************
                      ********************************************************************************
                      */
+                    inline  wchar_t*    BufferedStringRep::_Rep::_PeekStart ()
+                    {
+                        return const_cast<wchar_t*> (_fStart);
+                    }
                     inline size_t  BufferedStringRep::_Rep::size () const
                     {
                         return _GetLength ();

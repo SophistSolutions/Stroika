@@ -6,7 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    "String_ReadWriteRep.h"
+#include    "../../String.h"
 
 
 
@@ -36,9 +36,9 @@ namespace   Stroika {
                      *  explain queer wrapper class cuz protected
                      */
                     struct  BufferedStringRep : String {
-                        struct  _Rep : public ReadWriteRep::_Rep {
+                        struct  _Rep : public _IRep {
                         private:
-                            using   inherited   =   ReadWriteRep::_Rep;
+                            using   inherited   =   String::_IRep;
 
                         protected:
                             _Rep () = delete;
@@ -54,13 +54,20 @@ namespace   Stroika {
 
                         public:
                             virtual     void            InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
+                            virtual     void            SetAt (Character item, size_t index) override;
+                        public:
                             virtual     const wchar_t*  c_str_peek () const noexcept override;
                             virtual     const wchar_t*  c_str_change () override;
+
+                        protected:
+                            //Presume fStart is really a WRITABLE pointer
+                            nonvirtual  wchar_t*    _PeekStart ();
 
                             // @todo - SB private next few methods - except for use in ReserveAtLeast_()...
                             // size() function defined only so we can use Containers::ReserveSpeedTweekAddN() template
                         private:
                             nonvirtual     void            SetLength_ (size_t newLength);
+
                         public:
                             nonvirtual  size_t  size () const;
                             nonvirtual  size_t  capacity () const;

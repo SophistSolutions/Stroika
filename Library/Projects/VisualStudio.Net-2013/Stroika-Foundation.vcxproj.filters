@@ -582,12 +582,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.cpp">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
       <Filter>Sources\Traversal</Filter>
     </ClCompile>
@@ -1393,12 +1387,6 @@
       <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.h">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
@@ -2215,12 +2203,6 @@
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.inl">
-      <Filter>Sources\Characters\Concrete\Private</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
