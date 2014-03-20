@@ -95,13 +95,13 @@ namespace   {
                 : inherited (start, end)
                 , fSaved_ (savedSP)
             {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._GetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
+                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
             MyRep_ (const MyRep_& from)
                 : inherited (from._fStart, from._fEnd)
                 , fSaved_ (from.fSaved_)
             {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._GetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
+                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
             virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
@@ -254,7 +254,7 @@ String::String (const char16_t* cString)
         InsertAt (*i, (i - cString));
     }
 #if     qDebug
-    _GetRep (); // just make sure non-null and right type
+    _ConstGetRep (); // just make sure non-null and right type
 #endif
 }
 
@@ -364,13 +364,13 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 String  String::operator+ (const String& rhs) const
 {
     _SafeRepAccessor    thisAccessor (*this);
-    pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen  =   lhsD.second - lhsD.first;
     if (lhsLen == 0) {
         return rhs;
     }
     _SafeRepAccessor    rhsAccessor (rhs);
-    pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     if (rhsD.first == rhsD.second) {
         return *this;
     }
@@ -386,7 +386,7 @@ String  String::operator+ (const wchar_t* appendageCStr) const
 {
     RequireNotNull (appendageCStr);
     _SafeRepAccessor    thisAccessor (*this);
-    pair<const Character*, const Character*> lhsD   =   thisAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen  =   lhsD.second - lhsD.first;
     if (lhsLen == 0) {
         return String (appendageCStr);
@@ -423,7 +423,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         return;
     }
     _SafeRepAccessor copyAccessor { *this };
-    pair<const Character*, const Character*> d = copyAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
     Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
     *this = String (sRep);
@@ -441,7 +441,7 @@ void    String::InsertAt (const String& s, size_t at)
     // another thread could only change that other envelopes copy
 
     _SafeRepAccessor rhsCopyAccessor (s);
-    pair<const Character*, const Character*> d = rhsCopyAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> d = rhsCopyAccessor._ConstGetRep ().GetData ();
     String  thisCopy =  *this;
     thisCopy.InsertAt (d.first, d.second, at);
     *this = thisCopy;
@@ -480,7 +480,7 @@ String        String::RemoveAt (size_t from, size_t to) const
     Require (from <= to);
     Require (to <= GetLength ());
     _SafeRepAccessor accessor { *this };
-    size_t length = accessor._GetRep ()._GetLength ();
+    size_t length = accessor._ConstGetRep ()._GetLength ();
     if (from == to) {
         return *this;   // @todo - fix to return accessor.AsString()
     }
@@ -491,7 +491,7 @@ String        String::RemoveAt (size_t from, size_t to) const
         return SubString (0, from);
     }
     else {
-        pair<const Character*, const Character*> d = accessor._GetRep ().GetData ();
+        pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         const wchar_t* p = reinterpret_cast<const wchar_t*> (d.first);
         return String (mk_ (p, p + from, p + to, p + length));
     }
@@ -511,12 +511,12 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
     _SafeRepAccessor    accessor { *this };
-    Require (startAt <= accessor._GetRep ()._GetLength ());
-    size_t length = accessor._GetRep ()._GetLength ();
+    Require (startAt <= accessor._ConstGetRep ()._GetLength ());
+    size_t length = accessor._ConstGetRep ()._GetLength ();
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (accessor._GetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
+                    if (accessor._ConstGetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
                         return i;
                     }
                 }
@@ -524,7 +524,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
             break;
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (accessor._GetRep ().GetAt (i) == c) {
+                    if (accessor._ConstGetRep ().GetAt (i) == c) {
                         return i;
                     }
                 }
@@ -538,22 +538,22 @@ size_t  String::Find (const String& subString, size_t startAt, CompareOptions co
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     _SafeRepAccessor    accessor { *this };
-    Require (startAt <= accessor._GetRep ()._GetLength ());
+    Require (startAt <= accessor._ConstGetRep ()._GetLength ());
 
     size_t  subStrLen   =   subString.GetLength ();
     if (subStrLen == 0) {
-        return (accessor._GetRep ()._GetLength () == 0) ? kBadIndex : 0;
+        return (accessor._ConstGetRep ()._GetLength () == 0) ? kBadIndex : 0;
     }
-    if (accessor._GetRep ()._GetLength () < subStrLen) {
+    if (accessor._ConstGetRep ()._GetLength () < subStrLen) {
         return kBadIndex;   // important test cuz size_t is unsigned
     }
 
-    size_t  limit       =   accessor._GetRep ()._GetLength () - subStrLen;
+    size_t  limit       =   accessor._ConstGetRep ()._GetLength () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (accessor._GetRep ().GetAt (i + j).ToLowerCase () != subString[j].ToLowerCase ()) {
+                        if (accessor._ConstGetRep ().GetAt (i + j).ToLowerCase () != subString[j].ToLowerCase ()) {
                             goto nogood1;
                         }
                     }
@@ -566,7 +566,7 @@ nogood1:
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (accessor._GetRep ().GetAt (i + j) != subString[j]) {
+                        if (accessor._ConstGetRep ().GetAt (i + j) != subString[j]) {
                             goto nogood2;
                         }
                     }
@@ -660,7 +660,7 @@ size_t  String::RFind (Character c) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeRepAccessor accessor { *this };
-    const _IRep&    useRep = accessor._GetRep ();
+    const _IRep&    useRep = accessor._ConstGetRep ();
     size_t length = useRep._GetLength ();
     for (size_t i = length; i > 0; --i) {
         if (useRep.GetAt (i - 1) == c) {
@@ -694,24 +694,24 @@ size_t  String::RFind (const String& subString) const
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
-    if (accessor._GetRep ()._GetLength () == 0) {
+    if (accessor._ConstGetRep ()._GetLength () == 0) {
         return false;
     }
-    return accessor._GetRep ().GetAt (0).Compare (c, co) == 0;
+    return accessor._ConstGetRep ().GetAt (0).Compare (c, co) == 0;
 }
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
     size_t  subStrLen = subString.GetLength ();
-    if (subStrLen >  accessor._GetRep ()._GetLength ()) {
+    if (subStrLen >  accessor._ConstGetRep ()._GetLength ()) {
         return false;
     }
 #if     qDebug
     bool    referenceResult = (SubString (0, subString.GetLength ()).Compare (subString, co) == 0); // this check isnt threadsafe - redo
 #endif
     const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = accessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> thisData = accessor._ConstGetRep ().GetData ();
     bool    result = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
@@ -720,7 +720,7 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
-    const _IRep&    useRep = accessor._GetRep ();
+    const _IRep&    useRep = accessor._ConstGetRep ();
     size_t  thisStrLen = useRep._GetLength ();
     if (thisStrLen == 0) {
         return false;
@@ -731,7 +731,7 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
     _SafeRepAccessor    accessor { *this };
-    size_t      thisStrLen = accessor._GetRep ()._GetLength ();
+    size_t      thisStrLen = accessor._ConstGetRep ()._GetLength ();
     size_t      subStrLen = subString.GetLength ();
     if (subStrLen >  thisStrLen) {
         return false;
@@ -740,7 +740,7 @@ bool    String::EndsWith (const String& subString, CompareOptions co) const
     bool    referenceResult = (SubString (thisStrLen - subStrLen, thisStrLen).Compare (subString, co) == 0);    // this check isnt threadsafe - redo
 #endif
     const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = accessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> thisData = accessor._ConstGetRep ().GetData ();
     bool    result = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
@@ -779,7 +779,7 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
 {
     Require (from <= to);
     Require (to <= thisLen);
-    const wchar_t*  start   =   reinterpret_cast<const wchar_t*> (thisAccessor._GetRep ().Peek ()) + from;
+    const wchar_t*  start   =   reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ().Peek ()) + from;
     size_t          len     =   to - from;
     const wchar_t*  end     =   start + len;
     Assert (start <= end);
@@ -822,9 +822,9 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     _SafeRepAccessor    accessor { *this };
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
-    size_t length = accessor._GetRep ()._GetLength ();
+    size_t length = accessor._ConstGetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
-        if (not (*shouldBeTrimmmed) (accessor._GetRep ().GetAt (i))) {
+        if (not (*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (i))) {
 
             // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
 
@@ -849,10 +849,10 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     _SafeRepAccessor    accessor { *this };
 
-    ptrdiff_t length = accessor._GetRep ()._GetLength ();
+    ptrdiff_t length = accessor._ConstGetRep ()._GetLength ();
     ptrdiff_t endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
-        if ((*shouldBeTrimmmed) (accessor._GetRep ().GetAt (endOfFirstTrim - 1))) {
+        if ((*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
             // keep going backwards
         }
         else {
@@ -915,10 +915,10 @@ String  String::ToLowerCase () const
 {
     StringBuilder       result;
     _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._GetRep ()._GetLength ();
+    size_t              n   =   accessor._ConstGetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
-        Character   c   =   accessor._GetRep ().GetAt (i);
+        Character   c   =   accessor._ConstGetRep ().GetAt (i);
         if (c.IsUpperCase ()) {
             anyChange = true;
             result.Append (c.ToLowerCase ());
@@ -934,10 +934,10 @@ String  String::ToUpperCase () const
 {
     StringBuilder       result;
     _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._GetRep ()._GetLength ();
+    size_t              n   =   accessor._ConstGetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
-        Character   c   =   accessor._GetRep ().GetAt (i);
+        Character   c   =   accessor._ConstGetRep ().GetAt (i);
         if (c.IsLowerCase ()) {
             anyChange = true;
             result.Append (c.ToUpperCase ());
@@ -1033,17 +1033,17 @@ const wchar_t*  String::c_str_ () const
      *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
      *  Access to this envelope MUST be externally synchonized or the returned bare pointer is doo-doo.
      */
-    const   wchar_t*    result = _GetRep ().c_str_peek ();
+    const   wchar_t*    result = _ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        pair<const Character*, const Character*> d = _GetRep ().GetData ();
+        pair<const Character*, const Character*> d = _ConstGetRep ().GetData ();
         String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
-        Assert (tmp. _GetRep ().c_str_peek () != nullptr);
+        Assert (tmp. _ConstGetRep ().c_str_peek () != nullptr);
 
         // We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
         // fRep cloning stuff to work right, we must access it through a non-cost pointer
         String* REALTHIS    =   const_cast<String*> (this);
         *REALTHIS = tmp;
-        result = _GetRep ().c_str_peek ();
+        result = _ConstGetRep ().c_str_peek ();
     }
     Ensure (result != nullptr);
     return result;
@@ -1079,7 +1079,7 @@ void    String::erase (size_t from, size_t count)
 String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
     String::_SafeRepAccessor    rhsAccessor { rhs };
-    pair<const Character*, const Character*> rhsD   =   rhsAccessor._GetRep ().GetData ();
+    pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
 //    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };

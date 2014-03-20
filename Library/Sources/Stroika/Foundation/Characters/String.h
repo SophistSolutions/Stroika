@@ -999,10 +999,16 @@ namespace   Stroika {
                  */
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
+
+            protected:
+                // @todo - LOSE THISE AS PART OF THREADATYPE UPGRADE (using _SafeRepAccessor instead)
+                nonvirtual  const _IRep&    _ConstGetRep () const;
+#if 0
             protected:
                 // @todo - LOSE THISE AS PART OF THREADATYPE UPGRADE (using _SafeRepAccessor instead)
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+#endif
 
             public:
                 friend  wostream&   operator<< (wostream& out, const String& s);
@@ -1019,7 +1025,7 @@ namespace   Stroika {
 
                 _SafeRepAccessor (const String& s);
 
-                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  const _IRep&    _ConstGetRep () const;
             };
 
 
