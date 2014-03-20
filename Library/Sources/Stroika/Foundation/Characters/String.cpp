@@ -351,7 +351,7 @@ String  String::FromAscii (const string& from)
 
 String::_SharedPtrIRep  String::mkEmpty_ ()
 {
-    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr);
+    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr, 1);  /// so room for NUL-char
     return s_;
 }
 
@@ -1049,13 +1049,9 @@ const wchar_t*  String::c_str_ () const
     const   wchar_t*    result = _ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
         pair<const Character*, const Character*> d = _ConstGetRep ().GetData ();
-        String  tmp = mk_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
-        Assert (tmp. _ConstGetRep ().c_str_peek () != nullptr);
-
-        // We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
-        // fRep cloning stuff to work right, we must access it through a non-cost pointer
+        _SharedPtrIRep tmp = mk_(reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
         String* REALTHIS    =   const_cast<String*> (this);
-        *REALTHIS = tmp;
+        *REALTHIS = String (move (tmp));
         result = _ConstGetRep ().c_str_peek ();
     }
     Ensure (result != nullptr);
