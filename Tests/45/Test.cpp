@@ -929,7 +929,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1200000,
-            -300.0,
+            -270.0,
             &failedTests
         );
         Tester (
@@ -945,7 +945,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -810.0,
+            -815.0,
             &failedTests
         );
         Tester (
@@ -953,7 +953,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -120.0,
+            -110.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -971,7 +971,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3200000,
-            -130.0,
+            -120.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -999,7 +999,7 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             40000,
-            -30.0,
+            -10.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1057,7 +1057,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -47.0,
+            -43.0,
             &failedTests
         );
         Tester (
