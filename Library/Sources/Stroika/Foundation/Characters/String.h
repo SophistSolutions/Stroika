@@ -356,6 +356,7 @@ namespace   Stroika {
                  */
                 String ();
                 String (const char16_t* cString);
+                String (const char32_t* cString);
                 String (const wchar_t* cString);
                 String (const wchar_t* from, const wchar_t* to);
                 String (const Character* from, const Character* to);

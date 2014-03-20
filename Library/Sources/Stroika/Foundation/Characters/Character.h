@@ -17,7 +17,7 @@
  *              implementation based on UTF-8, to minimize the performance costs...
  *
  *      @todo       KEY ISSUES TO DECIDE:
- *          o   Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
+ *          o   Can we use a class with no loss of performance (or must we use typdef wchar_t Character)
  *
  *          o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
  *              handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING
@@ -29,7 +29,7 @@
  *
  *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
  *              We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
- *              the right thing for queer cases like this, and use this API for hte most common cases.
+ *              the right thing for queer cases like this, and use this API for the most common cases.
  */
 
 
@@ -69,7 +69,7 @@ namespace   Stroika {
                 Character ();
                 Character (char c);
                 Character (char16_t c);
-                //Character (char32_t c);   // not for now til we decide how to handle surrogates
+                Character (char32_t c);   // @todo decide how to handle surrogates
                 Character (wchar_t wc);
 
             public:

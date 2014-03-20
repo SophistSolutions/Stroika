@@ -251,7 +251,20 @@ String::String (const char16_t* cString)
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char16_t* i = cString; *i != '\0'; ++i) {
-        InsertAt (*i, (i - cString));
+        InsertAt (*i, i - cString);
+    }
+#if     qDebug
+    _ConstGetRep (); // just make sure non-null and right type
+#endif
+}
+
+String::String (const char32_t* cString)
+    : inherited (mkEmpty_ ())
+{
+    RequireNotNull (cString);
+    // Horrible, but temporarily OK impl
+    for (const char32_t* i = cString; *i != '\0'; ++i) {
+        InsertAt (*i, i - cString);
     }
 #if     qDebug
     _ConstGetRep (); // just make sure non-null and right type
