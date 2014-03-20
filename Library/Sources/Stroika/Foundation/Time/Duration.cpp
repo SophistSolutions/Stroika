@@ -150,6 +150,18 @@ Duration::Duration (const std::chrono::nanoseconds& d)
 {
 }
 
+Duration    Duration::operator+ (const Duration& rhs) const
+{
+    // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
+    return Duration (As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
+}
+
+Duration&   Duration::operator+= (const Duration& rhs)
+{
+    *this = *this + rhs;
+    return *this;
+}
+
 void    Duration::clear ()
 {
     fDurationRep_.clear ();

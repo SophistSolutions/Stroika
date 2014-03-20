@@ -522,6 +522,11 @@ namespace   {
         VerifyTestResult (Duration::kMin < Duration::kMax);
         VerifyTestResult (Duration::kMin != Duration::kMax);
         VerifyTestResult (Duration::kMin < Duration (L"P30S") and Duration (L"P30S") < Duration::kMax);
+        {
+            Duration    d      =   Duration (L"PT0.1S");
+            d += chrono::milliseconds (30);
+            VerifyTestResult (Math::NearlyEquals (d.As<Time::DurationSecondsType> (), .130));
+        }
     }
 
 }

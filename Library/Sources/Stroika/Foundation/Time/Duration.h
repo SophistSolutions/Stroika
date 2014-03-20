@@ -142,6 +142,19 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    empty () const;
 
+
+            public:
+                /**
+                 *  Return the sum of the two durations.
+                 */
+                nonvirtual  Duration    operator+ (const Duration& rhs) const;
+
+            public:
+                /**
+                 *  Add the given duration to this (equivilent to *this = *this + rhs;).
+                 */
+                nonvirtual  Duration&   operator+= (const Duration& rhs);
+
             public:
                 /**
                  * Defined for
