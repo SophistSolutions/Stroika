@@ -16,8 +16,16 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
 
-
-            struct  VariantValue::IRep_ {
+            /*
+             *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
+             */
+            struct  VariantValue::IRep_
+#if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+                    : public Memory::enable_shared_from_this<VariantValue::IRep_>
+#else
+                    : public std::enable_shared_from_this<VariantValue::IRep_>
+#endif
+            {
                 virtual ~IRep_ () {}
                 virtual Type    GetType () const    =   0;
             };

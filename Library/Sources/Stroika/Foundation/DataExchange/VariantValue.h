@@ -14,6 +14,7 @@
 #include    "../Configuration/Enumeration.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
+#include    "../Memory/SharedPtr.h"
 #include    "../Time/DateTime.h"
 
 
@@ -72,6 +73,18 @@ namespace   Stroika {
             using   Containers::Sequence;
             using   Time::Date;
             using   Time::DateTime;
+
+
+            /**
+             *  \def qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+             *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
+             *      internal implementaiton detail, and may go away as an option.
+             *
+             *      Empirically, this was slightly faster in the performance regression test.
+             */
+#ifndef qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   1
+#endif
 
 
             /**
@@ -257,7 +270,12 @@ namespace   Stroika {
                 struct  IRep_;
 
             private:
+#if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+                Memory::SharedPtr<IRep_>   fVal_;
+
+#else
                 shared_ptr<IRep_>   fVal_;
+#endif
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
