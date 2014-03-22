@@ -379,7 +379,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep
                 : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                         , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep>
 #endif
             {
