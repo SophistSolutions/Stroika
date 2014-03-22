@@ -271,8 +271,8 @@ namespace   Stroika {
                 ReadOnlyReference (const ReadOnlyReference&& r);
 
             public:
-                ReadOnlyReference& operator= (const ReadOnlyReference&) = default;
-                ReadOnlyReference& operator= (const ReadOnlyReference && r);
+                nonvirtual	ReadOnlyReference& operator= (const ReadOnlyReference&) = default;
+                nonvirtual	ReadOnlyReference& operator= (const ReadOnlyReference && r);
 
             public:
                 /**
