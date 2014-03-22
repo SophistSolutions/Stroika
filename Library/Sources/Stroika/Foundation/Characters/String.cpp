@@ -187,13 +187,9 @@ Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID sug
         }
         DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
-    // This is a kludge. We are CLONING the Iterator rep (as a way to get a shared_ptr) - but really we should
-    // use 'shared_from_this'.
-    //
-    //
     // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
     // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone (nullptr)))));
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (const_cast<String::_IRep*> (this)->shared_from_this ())));
 }
 
 size_t  String::_IRep::GetLength () const

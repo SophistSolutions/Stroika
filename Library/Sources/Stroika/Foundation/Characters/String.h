@@ -1059,7 +1059,9 @@ namespace   Stroika {
             /**
              * Protected helper Rep class.
              */
-            class   String::_IRep : public Iterable<Character>::_IRep {
+            class   String::_IRep
+                : public Iterable<Character>::_IRep
+                , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<String::_IRep> {
             protected:
                 using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;
 
