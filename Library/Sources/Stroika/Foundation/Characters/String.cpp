@@ -65,6 +65,7 @@ namespace   {
         }
         virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            AssertNotReached ();    // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
             return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
@@ -105,6 +106,7 @@ namespace   {
             }
             virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
+                AssertNotReached ();    // Since Strings now immutable, this should never be called
                 return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
             }
         private:
