@@ -270,26 +270,37 @@ namespace   Stroika {
             {
                 return bool (Find (subString, co) != kBadIndex);
             }
+            inline  void    String::Append (Character c)
+            {
+                Append (&c, &c + 1);
+            }
+            inline  void    String::Append (const String& s)
+            {
+                _SafeRepAccessor    rhsAccessor { s };
+                pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
+                Append (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second));
+            }
+            inline  void    String::Append (const wchar_t* s)
+            {
+                Append (s, s + ::wcslen (s));
+            }
+            inline  void    String::Append (const Character* from, const Character* to)
+            {
+                Append (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
+            }
             inline  String& String::operator+= (Character appendage)
             {
-                _SafeRepAccessor    thisAccessor { *this };
-                pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
-                *this = String (
-                            mk_ (
-                                reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                                reinterpret_cast<const wchar_t*> (&appendage), reinterpret_cast<const wchar_t*> (&appendage) + 1
-                            )
-                        );
+                Append (appendage);
                 return *this;
             }
             inline  String& String::operator+= (const String& appendage)
             {
-                *this = *this + appendage;
+                Append (appendage);
                 return *this;
             }
             inline  String& String::operator+= (const wchar_t* appendageCStr)
             {
-                *this = *this + appendageCStr;
+                Append (appendageCStr);
                 return *this;
             }
             inline  const Character   String::GetCharAt (size_t i) const

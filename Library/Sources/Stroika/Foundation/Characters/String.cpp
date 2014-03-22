@@ -464,28 +464,16 @@ void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
     InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
 }
 
-void    String::Append (Character c)
-{
-    String  tmp =   *this;
-    tmp.InsertAt (c, tmp.GetLength ());
-    *this = tmp;
-}
-void    String::Append (const String& s)
-{
-    String  tmp =   *this;
-    tmp.InsertAt (s, tmp.GetLength ());
-    *this = tmp;
-}
 void    String::Append (const wchar_t* from, const wchar_t* to)
 {
-    String  tmp =   *this;
-    tmp.InsertAt (from, to, tmp.GetLength ());
-    *this = tmp;
-}
-void    String::Append (const Character* from, const Character* to)
-{
-    // @todo - FIX - NOT ENVELOPE THREADSAFE
-    InsertAt (from, to, GetLength ());
+    _SafeRepAccessor    thisAccessor { *this };
+    pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
+    *this = String (
+                mk_ (
+                    reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                    from, to
+                )
+            );
 }
 
 String        String::RemoveAt (size_t from, size_t to) const

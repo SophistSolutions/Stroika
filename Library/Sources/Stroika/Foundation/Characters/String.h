@@ -490,6 +490,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
+                nonvirtual  void        Append (const wchar_t* s);
                 nonvirtual  void        Append (const wchar_t* from, const wchar_t* to);
                 nonvirtual  void        Append (const Character* from, const Character* to);
 
