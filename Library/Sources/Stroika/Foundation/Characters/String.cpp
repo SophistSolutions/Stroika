@@ -251,7 +251,7 @@ String::String (const char16_t* cString)
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char16_t* i = cString; *i != '\0'; ++i) {
-        InsertAt (*i, i - cString);
+        Append (*i);
     }
 #if     qDebug
     _ConstGetRep (); // just make sure non-null and right type
@@ -264,7 +264,7 @@ String::String (const char32_t* cString)
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char32_t* i = cString; *i != '\0'; ++i) {
-        InsertAt (*i, i - cString);
+        Append (*i);
     }
 #if     qDebug
     _ConstGetRep (); // just make sure non-null and right type
@@ -427,6 +427,8 @@ void    String::SetCharAt (Character c, size_t i)
 
 void    String::InsertAt (const Character* from, const Character* to, size_t at)
 {
+    // DEPRECATED
+
     Require (at >= 0);
     Require (at <= GetLength ());
     Require (from <= to);
@@ -444,10 +446,17 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
 
 void    String::InsertAt (Character c, size_t at)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
+    // DEPRECATED
+
     InsertAt (&c, &c + 1, at);
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 void    String::InsertAt (const String& s, size_t at)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
+    // DEPRECATED
+
     /// @TODO - REDO / RETHINK THIS COMMENT - OBSOLETE
     // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
     // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
@@ -458,22 +467,46 @@ void    String::InsertAt (const String& s, size_t at)
     String  thisCopy =  *this;
     thisCopy.InsertAt (d.first, d.second, at);
     *this = thisCopy;
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
+    // DEPRECATED
     InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
+}
+
+String    String::InsertAt_nu (const Character* from, const Character* to, size_t at) const
+{
+    Require (at >= 0);
+    Require (at <= GetLength ());
+    Require (from <= to);
+    Require (from != nullptr or from == to);
+    Require (to != nullptr or from == to);
+    if (from == to) {
+        return *this;
+    }
+    _SafeRepAccessor copyAccessor { *this };
+    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
+    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    sRep->InsertAt (from, to, at);
+    return String (sRep);
 }
 
 void    String::Append (const wchar_t* from, const wchar_t* to)
 {
-    _SafeRepAccessor    thisAccessor { *this };
-    pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
-    *this = String (
-                mk_ (
-                    reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                    from, to
-                )
-            );
+    Require (from <= to);
+    if (from != to) {
+        _SafeRepAccessor    thisAccessor { *this };
+        pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
+        *this = String (
+                    mk_ (
+                        reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                        from, to
+                    )
+                );
+    }
 }
 
 String        String::RemoveAt (size_t from, size_t to) const

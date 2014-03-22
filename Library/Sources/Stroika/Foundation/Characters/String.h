@@ -53,8 +53,6 @@
  *
  * TODO:
  *
- *      @todo   In the next release, DEPRECATE InsertAt () - and maybe other methods.
- *
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
  *
@@ -477,10 +475,16 @@ namespace   Stroika {
                  *
                  *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
                  */
-                nonvirtual  void        InsertAt (Character c, size_t at);
-                nonvirtual  void        InsertAt (const String& s, size_t at);
-                nonvirtual  void        InsertAt (const wchar_t* from, const wchar_t* to, size_t at);
-                nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
+                nonvirtual  void        _DeprecatedFunction_ (InsertAt (Character c, size_t at), "Deprecated as of v2.0a22 - use StringBuilder or InsertAt_nu instead");
+                nonvirtual  void        _DeprecatedFunction_ (InsertAt (const String& s, size_t at), "Deprecated as of v2.0a22 - use StringBuilder or InsertAt_nu instead");
+                nonvirtual  void        _DeprecatedFunction_ (InsertAt (const wchar_t* from, const wchar_t* to, size_t at), "Deprecated as of v2.0a22 - use StringBuilder or InsertAt_nu instead");
+                nonvirtual  void        _DeprecatedFunction_ (InsertAt (const Character* from, const Character* to, size_t at), "Deprecated as of v2.0a22 - use StringBuilder or InsertAt_nu instead");
+
+                // Next rev lose old InsertAt and add rename InsertAt_nu to InsertAt
+                nonvirtual  String      InsertAt_nu (Character c, size_t at) const;
+                nonvirtual  String      InsertAt_nu (const String& s, size_t at) const;
+                nonvirtual  String      InsertAt_nu (const wchar_t* from, const wchar_t* to, size_t at) const;
+                nonvirtual  String      InsertAt_nu (const Character* from, const Character* to, size_t at) const;
 
             public:
                 /**

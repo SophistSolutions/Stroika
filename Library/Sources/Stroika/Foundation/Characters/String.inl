@@ -270,6 +270,20 @@ namespace   Stroika {
             {
                 return bool (Find (subString, co) != kBadIndex);
             }
+            inline  String    String::InsertAt_nu (Character c, size_t at) const
+            {
+                return InsertAt_nu (&c, &c + 1, at);
+            }
+            inline  String    String::InsertAt_nu (const String& s, size_t at) const
+            {
+                _SafeRepAccessor copyAccessor { *this };
+                pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
+                return InsertAt_nu (d.first, d.second, at);
+            }
+            inline  String    String::InsertAt_nu (const wchar_t* from, const wchar_t* to, size_t at) const
+            {
+                return InsertAt_nu (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+            }
             inline  void    String::Append (Character c)
             {
                 Append (&c, &c + 1);
@@ -483,13 +497,11 @@ namespace   Stroika {
             }
             inline  void    String::push_back (wchar_t c)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (c, GetLength ());
+                Append (Character (c));
             }
             inline  void    String::push_back (Character c)
             {
-                // @todo - FIX - NOT ENVELOPE THREADSAFE
-                InsertAt (c, GetLength ());
+                Append (c);
             }
             inline  String      String::substr (size_t from, size_t count) const
             {
