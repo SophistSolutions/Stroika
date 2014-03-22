@@ -284,6 +284,20 @@ namespace   Stroika {
             {
                 return InsertAt_nu (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
             }
+            inline  void    String::Append (const wchar_t* from, const wchar_t* to)
+            {
+                Require (from <= to);
+                if (from != to) {
+                    _SafeRepAccessor    thisAccessor { *this };
+                    pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
+                    *this = String (
+                                mk_ (
+                                    reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                                    from, to
+                                )
+                            );
+                }
+            }
             inline  void    String::Append (Character c)
             {
                 Append (&c, &c + 1);
