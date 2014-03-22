@@ -478,22 +478,22 @@ namespace   {
         VerifyTestResult (s.GetLength () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
-        s.InsertAt ('x', 2);
+        s = s.InsertAt_nu ('x', 2);
         VerifyTestResult (s == L"frxex");
         {
             wchar_t kZero[] =   L"";
-            s.InsertAt (std::begin (kZero), std::begin (kZero), 0);
+            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 0);
             VerifyTestResult (s == L"frxex");
-            s.InsertAt (std::begin (kZero), std::begin (kZero), 1);
+            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 1);
             VerifyTestResult (s == L"frxex");
-            s.InsertAt (std::begin (kZero), std::begin (kZero), 5);
+            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 5);
             VerifyTestResult (s == L"frxex");
         }
     }
 
     void    Test8_ExternalMemoryOwnershipStrings_ ()
     {
-        String_ExternalMemoryOwnership_ApplicationLifetime s (L"fred");
+        String s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -502,7 +502,7 @@ namespace   {
         VerifyTestResult (s.GetLength () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
-        s.InsertAt ('x', 2);
+        s = s.InsertAt_nu ('x', 2);
         VerifyTestResult (s == L"frxex");
     }
 
