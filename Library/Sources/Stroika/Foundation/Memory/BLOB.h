@@ -122,7 +122,7 @@ namespace   Stroika {
                 struct  _IRep;
 
             protected:
-#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+#if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
                 using   SharedIRep  =   Memory::SharedPtr<_IRep>;
 #else
                 using   SharedIRep  =   shared_ptr<_IRep>;
@@ -254,8 +254,17 @@ namespace   Stroika {
 
             /**
              * This abstract interface defines the behavior of a BLOB.
+             *
+             *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
+             *
              */
-            struct  BLOB::_IRep {
+            struct  BLOB::_IRep
+#if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+                    : public Memory::enable_shared_from_this<BLOB::_IRep>
+#else
+                    : public std::enable_shared_from_this<BLOB::_IRep>
+#endif
+            {
                 _IRep ();
                 _IRep (const _IRep&) = delete;
                 virtual ~_IRep ();
