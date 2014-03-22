@@ -444,22 +444,19 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
 
 void    String::InsertAt (Character c, size_t at)
 {
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // DEPRECATED
-
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     InsertAt (&c, &c + 1, at);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 void    String::InsertAt (const String& s, size_t at)
 {
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // DEPRECATED
-
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     /// @TODO - REDO / RETHINK THIS COMMENT - OBSOLETE
     // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
     // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
     // another thread could only change that other envelopes copy
-
     _SafeRepAccessor rhsCopyAccessor (s);
     pair<const Character*, const Character*> d = rhsCopyAccessor._ConstGetRep ().GetData ();
     String  thisCopy =  *this;
@@ -469,8 +466,8 @@ void    String::InsertAt (const String& s, size_t at)
 }
 void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
 {
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
     // DEPRECATED
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
@@ -805,7 +802,7 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
         return mkEmpty_ ();
     }
     if (len == thisLen) {
-        Assert (from == 0);
+        Assert (from == 0);     // because we require from/to subrange of thisLen, so if equal, must be full range
 #if     0
         // @todo - FIX - MUST RETURN thisAccessor AS STRING
 #endif
@@ -1096,7 +1093,8 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
 //    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
-    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+//    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+    String::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }
