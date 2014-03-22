@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
 
 
 
@@ -28,11 +28,11 @@ namespace   Stroika {
              *  The resulting String is a perfectly compliant Stroika String, and can be modified. It's just
              *  that the initial copy is nearly free.
              *
-             *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly - so be
+             *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime - so be
              *      sure arguments have application lifetime.
              *
              */
-            using       String_Constant     =    Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
+            using       String_Constant     =    Concrete::String_ExternalMemoryOwnership_ApplicationLifetime;
 
 
         }

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly_inl_
-#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly_inl_
+#ifndef _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_inl_
+#define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_inl_
 
 /*
  ********************************************************************************
@@ -17,12 +17,12 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly **********
+                ************* String_ExternalMemoryOwnership_ApplicationLifetime ***************
                 ********************************************************************************
                 */
                 template    <size_t SIZE>
-                inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t (&cString)[SIZE])
-                    : String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (&cString[0], &cString[SIZE - 1])
+                inline  String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE])
+                    : String_ExternalMemoryOwnership_ApplicationLifetime (&cString[0], &cString[SIZE - 1])
                 {
                 }
 
@@ -31,4 +31,4 @@ namespace   Stroika {
         }
     }
 }
-#endif // _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly_inl_
+#endif // _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_ApplicationLifetime_inl_

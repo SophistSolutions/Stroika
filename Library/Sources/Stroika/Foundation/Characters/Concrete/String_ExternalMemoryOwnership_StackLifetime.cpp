@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    "String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h"
+#include    "String_ExternalMemoryOwnership_StackLifetime.h"
 
 
 
@@ -18,10 +18,10 @@ using   namespace   Stroika::Foundation::Characters::Concrete;
 
 /*
  ********************************************************************************
- ********* String_ExternalMemoryOwnership_StackLifetime_ReadOnly ****************
+ ************** String_ExternalMemoryOwnership_StackLifetime ********************
  ********************************************************************************
  */
-String_ExternalMemoryOwnership_StackLifetime_ReadOnly::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString)
+String_ExternalMemoryOwnership_StackLifetime::String_ExternalMemoryOwnership_StackLifetime (const wchar_t* cString)
     : String (cString)
 {
     /* TODO: FIX PERFORMANCE!!!

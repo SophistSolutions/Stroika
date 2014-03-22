@@ -43,10 +43,8 @@
  *      which act EXACTLY like a String, but offer different performance behaviors.
  *
  *              o   String_BufferedArray
- *              o   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)
- *              o   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
- *              o   String_ExternalMemoryOwnership_StackLifetime_ReadOnly
- *              o   String_ExternalMemoryOwnership_StackLifetime_ReadWrite
+ *              o   String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
+ *              o   String_ExternalMemoryOwnership_StackLifetime
  *              o   String_wstring
  *
  *      Possible future additions
@@ -292,10 +290,8 @@ namespace   Stroika {
              *
              *
              *      @see   Concrete::String_BufferedArray
-             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)
-             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
-             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly
-             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
+             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
+             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
              *      @see   Concrete::String_Common
              *
              *  \note   Design Choice - Iterable<T> / Iterator<T> behavior

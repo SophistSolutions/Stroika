@@ -16,8 +16,8 @@
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h"
-#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/STL/Utilities.h"
@@ -85,7 +85,7 @@ namespace   {
         void    StressTest1_ (String big)
         {
             for (int j = 1; j <= kLoopEnd / 50; j++) {
-                String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly a (L"a");
+                String_ExternalMemoryOwnership_ApplicationLifetime a (L"a");
                 for (int i = 0; i <= kLoopEnd; i++) {
                     big += a;
                     VerifyTestResult ((big.GetLength () - 1) == i);
@@ -232,8 +232,8 @@ namespace   {
             }
 
             {
-                String  s1  =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"test strings");
-                String  s2  =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"test strings");
+                String  s1  =   String_ExternalMemoryOwnership_ApplicationLifetime (L"test strings");
+                String  s2  =   String_ExternalMemoryOwnership_ApplicationLifetime (L"test strings");
                 Test2_Helper_ (s1, s2);
             }
         }
@@ -467,8 +467,8 @@ namespace   {
     void    Test8_ReadOnlyStrings_ ()
     {
         // NOTE - THIS TESTS String_Constant
-        //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly;
-        String s    =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"fred");
+        //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
+        String s    =   String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -493,7 +493,7 @@ namespace   {
 
     void    Test8_ExternalMemoryOwnershipStrings_ ()
     {
-        String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
+        String_ExternalMemoryOwnership_ApplicationLifetime s (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -592,7 +592,7 @@ namespace   {
     {
         wchar_t buf[1024]   =   L"fred";
         {
-            String_ExternalMemoryOwnership_StackLifetime_ReadOnly s (buf);
+            String_ExternalMemoryOwnership_StackLifetime s (buf);
             VerifyTestResult (s[0] == 'f');
             s.erase (3);
             VerifyTestResult (s[0] == 'f');

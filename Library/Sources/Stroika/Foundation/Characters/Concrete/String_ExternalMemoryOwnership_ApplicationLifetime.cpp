@@ -15,7 +15,7 @@
 
 #include    "Private/String_BufferedStringRep.h"
 
-#include    "String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "String_ExternalMemoryOwnership_ApplicationLifetime.h"
 
 
 
@@ -59,7 +59,7 @@ namespace   {
 
 
 
-class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public String::_IRep {
+class   String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep {
 private:
     using   inherited   =   String::_IRep;
 public:
@@ -78,7 +78,7 @@ public:
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override
     {
-        // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
+        // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
         Assert (_fStart + ::wcslen (_fStart) == _fEnd);
         return _fStart;
     }
@@ -96,10 +96,10 @@ public:
 
 /*
  ********************************************************************************
- ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly *********
+ ************** String_ExternalMemoryOwnership_ApplicationLifetime **************
  ********************************************************************************
  */
-String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* start, const wchar_t* end)
+String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
     : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (start, end)))
 {
     Require (*end == '\0');
