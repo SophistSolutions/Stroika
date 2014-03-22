@@ -921,7 +921,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            69.0,
+            70.0,
             &failedTests
         );
         Tester (
@@ -929,7 +929,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1200000,
-            -280.0,
+            -250.0,
             &failedTests
         );
         Tester (
@@ -937,7 +937,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1312506,
-            -280.0,
+            -220.0,
             &failedTests
         );
         Tester (
@@ -945,7 +945,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -815.0,
+            -700.0,
             &failedTests
         );
         Tester (
@@ -953,7 +953,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2038815,
-            -110.0,
+            -90.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -962,7 +962,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -38.0,
+            -30.0,
             &failedTests
         );
 #endif
@@ -971,7 +971,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3200000,
-            -120.0,
+            -90.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
