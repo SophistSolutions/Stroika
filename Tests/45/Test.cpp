@@ -1057,7 +1057,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -33.0,
+            -35.0,
             &failedTests
         );
         Tester (
