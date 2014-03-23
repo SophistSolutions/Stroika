@@ -488,11 +488,11 @@ namespace std {
         return sp.template Dynamic_Cast<TO_TYPE_T> ();
     }
     template    <typename T>
-    inline  Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* p, memory_order)
+    inline  Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom, memory_order)
     {
-        RequireNotNull (p);
+        RequireNotNull (copyFrom);
         lock_gaurd<Execution::SpinLock> critSec (sSharedPtrCopyLock_);
-        Stroika::Foundation::Memory::SharedPtr<_Ty> result = *p;
+        Stroika::Foundation::Memory::SharedPtr<_Ty> result = *copyFrom;
         return result;
     }
     template    <typename T>
@@ -502,15 +502,15 @@ namespace std {
         return atomic_load_explicit (p, memory_order_seq_cst);
     }
     template    <typename T>
-    inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
+    inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
         lock_gaurd<Execution::SpinLock> critSec (sSharedPtrCopyLock_);
-        p->swap (o);
+        storeTo->swap (o);
     }
     template    <typename T>
-    inline  void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o)
+    inline  void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o)
     {
-        atomic_store_explicit (p, o, memory_order_seq_cst);
+        atomic_store_explicit (storeTo, o, memory_order_seq_cst);
     }
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

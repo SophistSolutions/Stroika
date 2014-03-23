@@ -401,18 +401,18 @@ namespace   std {
      *  overload the std::atomic_load_explicit/atomic_load to work with Stroika SharedPtr<> as well.
      */
     template    <typename T>
-    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* p);
+    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom);
     template    <typename T>
-    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* p, memory_order);
+    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom, memory_order);
 
 
     /**
      *  overload the std::atomic_store_explicit/atomic_store to work with Stroika SharedPtr<> as well.
      */
     template    <typename T>
-    void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o);
+    void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o);
     template    <typename T>
-    void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
+    void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_h_*/
 
