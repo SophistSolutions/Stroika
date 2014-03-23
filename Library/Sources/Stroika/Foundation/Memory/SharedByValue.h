@@ -17,6 +17,9 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *  @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
+ *          ENVELOPE THREAD SAFETY FIX).
+ *
  *  @todo   DOCUMENT (and debug if needed) the new experiemental variadic template
  *          COPY code.
  *
@@ -73,16 +76,43 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
+             *
+             *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
+             *  copy-by-value (COW) envelope thread safety.
+             */
+            template    <typename   T, typename SHARED_IMLP>
+            struct  SharedByValue_CopySharedPtrExternallySynchonized {
+                static  SHARED_IMLP     Load (const SHARED_IMLP* copyFrom);
+                static  void            Store (SHARED_IMLP* storeTo, SHARED_IMLP o);
+            };
+
+
+            /**
+             *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
+             *
+             *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
+             *  copy-by-value (COW) envelope thread safety.
+             */
+            template    <typename   T, typename SHARED_IMLP>
+            struct  SharedByValue_CopySharedPtrAtomicSynchonized {
+                static  SHARED_IMLP     Load (const SHARED_IMLP* copyFrom);
+                static  void            Store (SHARED_IMLP* storeTo, SHARED_IMLP o);
+            };
+
+
+            /**
              *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
              *          for SharedByValue<>
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>>
             struct   SharedByValue_Traits {
-                using   element_type    =   T;
-                using   copier_type     =   COPIER;
-                using   shared_ptr_type =   SHARED_IMLP;
+                using   element_type                =   T;
+                using   element_copier_type         =   COPIER;
+                using   shared_impl_copier_type     =   SHARED_IMPL_COPIER;
+                using   shared_ptr_type             =   SHARED_IMLP;
             };
 
 
@@ -117,9 +147,10 @@ namespace   Stroika {
             template    <typename TRAITS>
             class   SharedByValue {
             public:
-                using   element_type    =   typename TRAITS::element_type;
-                using   copier_type     =   typename TRAITS::copier_type;
-                using   shared_ptr_type =   typename TRAITS::shared_ptr_type;
+                using   element_type            =   typename TRAITS::element_type;
+                using   element_copier_type     =   typename TRAITS::element_copier_type;
+                using   shared_ptr_type         =   typename TRAITS::shared_ptr_type;
+                using   shared_impl_copier_type =   typename TRAITS::shared_impl_copier_type;
 
             public:
                 /**
@@ -137,9 +168,9 @@ namespace   Stroika {
                 SharedByValue (nullptr_t n) noexcept;
                 SharedByValue (const SharedByValue<TRAITS>& from) noexcept;
                 SharedByValue (SharedByValue<TRAITS>&& from) noexcept;
-                explicit SharedByValue (const shared_ptr_type& from, const copier_type& copier = copier_type ()) noexcept;
-                explicit SharedByValue (shared_ptr_type&&  from, const copier_type&& copier = copier_type ()) noexcept;
-                explicit SharedByValue (element_type* from, const copier_type& copier = copier_type ());
+                explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
+                explicit SharedByValue (shared_ptr_type&&  from, const element_copier_type&& copier = element_copier_type ()) noexcept;
+                explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type ());
 
             public:
                 nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
@@ -151,7 +182,7 @@ namespace   Stroika {
                  * the ptr could legitimately be nil.
                  *
                  *  Note that the COPY_ARGS in the non-const overload of get () MUST match the parameters passed
-                 *  to the copier_type::Copy () function specified in the SharedByValue traits object.
+                 *  to the element_copier_type::Copy () function specified in the SharedByValue traits object.
                  *
                  *  This defaults to no parameters.
                  */
@@ -218,8 +249,8 @@ namespace   Stroika {
                 struct  ReadOnlyReference;
 
             private:
-                copier_type     fCopier_;
-                shared_ptr_type fSharedImpl_;
+                element_copier_type     fCopier_;
+                shared_ptr_type         fSharedImpl_;
 
             public:
                 /**
