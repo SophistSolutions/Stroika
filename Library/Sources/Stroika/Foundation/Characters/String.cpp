@@ -128,10 +128,9 @@ namespace   {
 
 
 namespace   {
-    inline  regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
+    inline  constexpr   regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
     {
-        regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
-        return f;
+        return (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
     }
 }
 
@@ -292,6 +291,7 @@ String::String (const Iterable<Character>& src)
 
 String  String::FromUTF8 (const char* from)
 {
+    RequireNotNull (from);
     // @todo FIX PERFORMANCE
     return String (UTF8StringToWide (from));
 }
@@ -312,6 +312,7 @@ String  String::FromUTF8 (const std::string& from)
 
 String  String::FromSDKString (const SDKChar* from)
 {
+    RequireNotNull (from);
     // @todo FIX PERFORMANCE
     return String (SDKString2Wide (from));
 }
@@ -353,6 +354,7 @@ String  String::FromNarrowSDKString (const string& from)
 
 String  String::FromAscii (const char* from)
 {
+    RequireNotNull (from);
     // @todo FIX PERFORMANCE
 #if     qDebug
     for (auto i = from; i != from; ++i) {
@@ -452,7 +454,6 @@ void    String::SetCharAt (Character c, size_t i)
 void    String::InsertAt (const Character* from, const Character* to, size_t at)
 {
     // DEPRECATED
-
     Require (at >= 0);
     Require (at <= GetLength ());
     Require (from <= to);
