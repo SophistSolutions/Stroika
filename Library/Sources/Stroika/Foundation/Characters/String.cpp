@@ -191,7 +191,11 @@ Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID sug
     };
     // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
     // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ()))));
+#else
     return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (const_cast<String::_IRep*> (this)->shared_from_this ())));
+#endif
 }
 
 size_t  String::_IRep::GetLength () const

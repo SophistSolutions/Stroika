@@ -432,14 +432,22 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   MultiSet<T, TRAITS>::Elements () const
             {
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
+#else
                 _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+#endif
                 AssertNotNull (ss.get ());
                 return ss->Elements (ss);
             }
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   MultiSet<T, TRAITS>::UniqueElements () const
             {
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
+#else
                 _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+#endif
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);
             }
