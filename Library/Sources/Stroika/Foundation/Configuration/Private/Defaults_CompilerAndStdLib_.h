@@ -202,6 +202,32 @@
 #endif
 
 
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_threadYield_Buggy
+*/
+#ifndef qCompilerAndStdLib_threadYield_Buggy
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_threadYield_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#else
+#define qCompilerAndStdLib_threadYield_Buggy   0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point

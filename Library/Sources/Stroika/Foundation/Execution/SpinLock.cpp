@@ -19,5 +19,9 @@ using   namespace   Stroika::Foundation::Execution;
  */
 void    SpinLock::Yield_ ()
 {
+#if     qCompilerAndStdLib_threadYield_Buggy
+    sleep (0);
+#else
     std::this_thread::yield ();
+#endif
 }
