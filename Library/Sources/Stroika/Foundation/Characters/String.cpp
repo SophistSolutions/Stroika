@@ -292,47 +292,66 @@ String::String (const Iterable<Character>& src)
 
 String  String::FromUTF8 (const char* from)
 {
-    return UTF8StringToWide (from);
+    // @todo FIX PERFORMANCE
+    return String (UTF8StringToWide (from));
 }
 
 String  String::FromUTF8 (const char* from, const char* to)
 {
-    return UTF8StringToWide (string (from, to));
+    // @todo FIX PERFORMANCE
+    wstring tmp;
+    NarrowStringToWide (from, to, kCodePage_UTF8, &tmp);
+    return String (move (tmp));
 }
 
 String  String::FromUTF8 (const std::string& from)
 {
-    return UTF8StringToWide (from);
+    // @todo FIX PERFORMANCE
+    return String (UTF8StringToWide (from));
 }
 
 String  String::FromSDKString (const SDKChar* from)
 {
-    return SDKString2Wide (from);
+    // @todo FIX PERFORMANCE
+    return String (SDKString2Wide (from));
 }
 
 String  String::FromSDKString (const SDKChar* from, const SDKChar* to)
 {
-    return SDKString2Wide (SDKString (from, to));
+    // @todo FIX PERFORMANCE
+#if     qTargetPlatformSDKUseswchar_t
+    return String (from, to);
+#else
+    return String (NarrowStringToWide (from, to, GetDefaultSDKCodePage ()));
+#endif
 }
 
 String  String::FromSDKString (const basic_string<SDKChar>& from)
 {
-    return SDKString2Wide (from);
+    // @todo FIX PERFORMANCE
+#if     qTargetPlatformSDKUseswchar_t
+    return String (from);
+#else
+    return String (NarrowStringToWide (from, GetDefaultSDKCodePage ()));
+#endif
 }
 
 String  String::FromNarrowSDKString (const char* from)
 {
     RequireNotNull (from);
+    // @todo FIX PERFORMANCE
     return NarrowSDKStringToWide (from);
 }
 
 String  String::FromNarrowSDKString (const string& from)
 {
+    // @todo FIX PERFORMANCE
     return NarrowSDKStringToWide (from);
 }
 
 String  String::FromAscii (const char* from)
 {
+    // @todo FIX PERFORMANCE
 #if     qDebug
     for (auto i = from; i != from; ++i) {
         Require (isascii (*i));
@@ -343,6 +362,7 @@ String  String::FromAscii (const char* from)
 
 String  String::FromAscii (const string& from)
 {
+    // @todo FIX PERFORMANCE
 #if     qDebug
     for (auto i = from.begin (); i != from.end (); ++i) {
         Require (isascii (*i));
