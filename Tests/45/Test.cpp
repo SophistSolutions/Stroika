@@ -929,7 +929,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1200000,
-            -250.0,
+            -260.0,
             &failedTests
         );
         Tester (
