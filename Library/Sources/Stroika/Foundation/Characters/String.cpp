@@ -1003,33 +1003,29 @@ template    <>
 void    String::AsUTF8 (string* into) const
 {
     RequireNotNull (into);
-    *into = WideStringToUTF8 (As<wstring> ());  //tmphack impl (but shoudl work)
-}
-
-SDKString String::AsSDKString () const
-{
-    SDKString result;
-    AsSDKString (&result);
-    return result;
+    _SafeRepAccessor    accessor { *this };
+    pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
+    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), kCodePage_UTF8, into);
 }
 
 void    String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
-    *into = Wide2SDKString (As<wstring> ());  // poor inefficient implementation
-}
-
-string  String::AsNarrowSDKString () const
-{
-    string result;
-    AsNarrowSDKString (&result);
-    return result;
+    _SafeRepAccessor    accessor { *this };
+    pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
+#if     qTargetPlatformSDKUseswchar_t
+    into->assign (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second));
+#else
+    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
+#endif
 }
 
 void    String::AsNarrowSDKString (string* into) const
 {
     RequireNotNull (into);
-    *into = Characters::WideStringToNarrowSDKString (As<wstring> ());  // poor inefficient implementation
+    _SafeRepAccessor    accessor { *this };
+    pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
+    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
 }
 
 template    <>
@@ -1037,11 +1033,12 @@ void    String::AsASCII (string* into) const
 {
     RequireNotNull (into);
     into->clear ();
-    const String  threadSafeCopy  { *this };
-    size_t  len =   threadSafeCopy.GetLength ();
+    _SafeRepAccessor    accessor { *this };
+    size_t  len =   accessor._ConstGetRep ().GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
-        into->push_back (threadSafeCopy[i].GetAsciiCode ());
+        Assert (accessor._ConstGetRep ().GetAt (i).IsAscii ());
+        into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
     }
 }
 

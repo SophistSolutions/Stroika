@@ -28,7 +28,6 @@ namespace   Stroika {
                 , _fEnd (end)
             {
             }
-
             inline   Character   String::_IRep::GetAt (size_t index) const
             {
                 Assert (_fStart <= _fEnd);
@@ -464,6 +463,18 @@ namespace   Stroika {
             inline  void    String::AsASCII (std::string* into) const
             {
                 AsASCII<std::string> (into);
+            }
+            inline  SDKString String::AsSDKString () const
+            {
+                SDKString result;
+                AsSDKString (&result);
+                return result;
+            }
+            inline  string  String::AsNarrowSDKString () const
+            {
+                string result;
+                AsNarrowSDKString (&result);
+                return result;
             }
             template    <>
             inline  pair<const Character*, const Character*> String::GetData () const
