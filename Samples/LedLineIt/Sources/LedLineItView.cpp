@@ -664,7 +664,9 @@ void    LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
                         if (not IsPredefinedFontSize (pointSize)) {
                             Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (" ("));
                             TCHAR   nBuf[100];
+                            DISABLE_COMPILER_MSC_WARNING_START(4996)
                             _stprintf (nBuf, _T ("%d"), GetDefaultFont ().GetPointSize ());
+                            DISABLE_COMPILER_MSC_WARNING_END(4996)
                             Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), nBuf);
                             Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (")"));
                             pCmdUI->SetCheck (true);

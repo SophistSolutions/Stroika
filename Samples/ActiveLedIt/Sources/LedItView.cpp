@@ -1299,12 +1299,14 @@ void    LedItView::DoPrintHelper (bool showPrintDlg)
                     // StartPage now resets the device attributes.
                     BOOL    bMarked4    =   false;
                     {
+                        DISABLE_COMPILER_MSC_WARNING_START(4996)
                         DWORD   dwVersion = ::GetVersion();
                         BOOL    bWin4 = (BYTE)dwVersion >= 4;
                         // determine various metrics based on EXE subsystem version mark
                         if (bWin4) {
                             bMarked4 = (GetProcessVersion(0) >= 0x00040000);
                         }
+                        DISABLE_COMPILER_MSC_WARNING_END(4996)
                     }
                     if (bMarked4)
                         OnPrepareDC(&dcPrint, &printInfo);

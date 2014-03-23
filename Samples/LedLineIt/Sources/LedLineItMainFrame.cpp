@@ -6,6 +6,8 @@
 
 #include    <stdio.h>
 
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
+
 #include    "FontMenu.h"
 #include    "Resource.h"
 #include    "LedLineItView.h"
@@ -108,6 +110,7 @@ void    StatusBar::TrackInGotoLineField ()
 
 void    StatusBar::OnMagicEdited ()
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     CString wt;
     fGotoEdit.GetWindowText (wt);
     int lines   =   0;
@@ -120,6 +123,7 @@ void    StatusBar::OnMagicEdited ()
     else {
         Led_BeepNotify ();
     }
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 void    StatusBar::OnMagicLoseFocus ()
@@ -231,10 +235,12 @@ void    LedLineItMainFrame::OnUpdateLineIndicator (CCmdUI* pCmdUI)
         LedLineItView*  v   =   GetActiveLedItView ();
         if (v == NULL) {
             // can happen, for example, during PrintPreview
-            (void)::_tcscpy (buf, _T ("N/A"));
+            Characters::CString::Copy (buf, NEltsOf(buf), _T ("N/A"));
         }
         else {
+            DISABLE_COMPILER_MSC_WARNING_START(4996)
             (void)::_stprintf (buf, _T ("%d"), v->GetCurUserLine ());
+            DISABLE_COMPILER_MSC_WARNING_END(4996)
         }
         pCmdUI->SetText (buf);
     }

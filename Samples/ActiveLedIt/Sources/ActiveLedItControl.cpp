@@ -1110,7 +1110,9 @@ Led_FileFormat  ActiveLedItControl::GuessFormatFromName (LPCTSTR name)
 
 void    ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size)
 {
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     int fd  =   ::_topen (filename, O_RDONLY | O_BINARY, _S_IREAD);
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
     try {
         if (fd < 0) {
             AfxThrowFileException (CFileException::fileNotFound, -1, filename);
@@ -1141,7 +1143,9 @@ void    ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::SmallStackBuff
 void    ActiveLedItControl::WriteBytesToFile (LPCTSTR filename, const void* buffer, size_t size)
 {
     (void)::_tunlink (filename);
+    DISABLE_COMPILER_MSC_WARNING_START(4996)
     int fd  =   ::_topen (filename, O_CREAT | O_RDWR | O_TRUNC | O_BINARY, _S_IREAD | _S_IWRITE);
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
     try {
         if (fd < 0) {
             AfxThrowFileException (CFileException::fileNotFound, -1, filename);

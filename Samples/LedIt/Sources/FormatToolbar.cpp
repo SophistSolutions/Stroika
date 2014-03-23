@@ -474,10 +474,12 @@ void    SizeComboBox::TwipsToPointString (LPTSTR lpszBuf, int nTwips)
     if (nTwips >= 0) {
         // round to nearest half point
         nTwips = (nTwips + 5) / 10;
+        DISABLE_COMPILER_MSC_WARNING_START(4996)
         if ((nTwips % 2) == 0)
             _stprintf(lpszBuf, _T("%ld"), nTwips / 2);
         else
             _stprintf(lpszBuf, _T("%.1f"), (float)nTwips / 2.F);
+        DISABLE_COMPILER_MSC_WARNING_END(4996)
     }
 }
 
