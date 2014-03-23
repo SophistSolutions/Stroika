@@ -13,12 +13,20 @@
 #include    "BlockAllocated.h"
 
 #include    "../Execution/Exceptions.h"
+#include    "../Execution/SpinLock.h"
 
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
+
+
+            namespace   Private_ {
+                // OK to declare this way because we cannot have threads before main, and since declared this way till be
+                // properly zero initialized
+                extern  Execution::SpinLock sSharedPtrCopyLock_;
+            }
 
 
             /*
@@ -478,6 +486,31 @@ namespace std {
     template    <class TO_TYPE_T,   class FROM_TYPE_T>
     inline  Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept {
         return sp.template Dynamic_Cast<TO_TYPE_T> ();
+    }
+    template    <typename T>
+    inline  Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* p, memory_order)
+    {
+        RequireNotNull (p);
+        lock_gaurd<Execution::SpinLock> critSec (sSharedPtrCopyLock_);
+        Stroika::Foundation::Memory::SharedPtr<_Ty> result = *p;
+        return result;
+    }
+    template    <typename T>
+    inline  Stroika::Foundation::Memory::SharedPtr<T>   atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* p)
+    {
+        RequireNotNull (p);
+        return atomic_load_explicit (p, memory_order_seq_cst);
+    }
+    template    <typename T>
+    inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
+    {
+        lock_gaurd<Execution::SpinLock> critSec (sSharedPtrCopyLock_);
+        p->swap (o);
+    }
+    template    <typename T>
+    inline  void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o)
+    {
+        atomic_store_explicit (p, o, memory_order_seq_cst);
     }
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

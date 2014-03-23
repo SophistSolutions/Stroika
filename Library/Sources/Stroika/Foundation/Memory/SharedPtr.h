@@ -393,8 +393,26 @@ namespace   std {
      *
      *  This returns an empty SharedPtr (no throw) if the type cannot be converted with dynamic_cast<>.
      */
-    template    <class TO_TYPE_T,   class FROM_TYPE_T>
+    template    <typename TO_TYPE_T,   typename FROM_TYPE_T>
     Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T>   dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept;
+
+
+    /**
+     *  overload the std::atomic_load_explicit/atomic_load to work with Stroika SharedPtr<> as well.
+     */
+    template    <typename T>
+    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load (const Stroika::Foundation::Memory::SharedPtr<T>* p);
+    template    <typename T>
+    Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* p, memory_order);
+
+
+    /**
+     *  overload the std::atomic_store_explicit/atomic_store to work with Stroika SharedPtr<> as well.
+     */
+    template    <typename T>
+    void    atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o);
+    template    <typename T>
+    void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* p, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_h_*/
 
