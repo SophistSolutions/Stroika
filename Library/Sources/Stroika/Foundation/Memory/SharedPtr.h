@@ -61,9 +61,9 @@ namespace   Stroika {
                 struct  ReferenceCounterContainerType_ {
                     atomic<SharedPtrBase::ReferenceCountType>   fCount;
                     bool                                        fDeleteCounter_;
-                    ReferenceCounterContainerType_ ();
+                    constexpr ReferenceCounterContainerType_ ();
                     ReferenceCounterContainerType_ (const ReferenceCounterContainerType_&) = delete;
-                    ReferenceCounterContainerType_ (bool deleteCounter);
+                    constexpr ReferenceCounterContainerType_ (bool deleteCounter);
                     ReferenceCounterContainerType_& operator= (const ReferenceCounterContainerType_&) = delete;
                 };
             }
@@ -346,8 +346,8 @@ namespace   Stroika {
             template    <typename   T>
             class   enable_shared_from_this : public Private_::ReferenceCounterContainerType_ {
             public:
-                enable_shared_from_this ();
-                enable_shared_from_this (const enable_shared_from_this& src);
+                constexpr enable_shared_from_this ();
+                constexpr enable_shared_from_this (const enable_shared_from_this& src);
 
             public:
                 const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
