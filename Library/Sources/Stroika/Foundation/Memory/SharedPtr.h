@@ -155,7 +155,7 @@ namespace   Stroika {
              *  See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
              */
             template    <typename   T>
-            class   SharedPtr final : public SharedPtrBase {
+            class   SharedPtr : public SharedPtrBase {
             public:
                 using   element_type    =   T;
 
