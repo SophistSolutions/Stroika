@@ -853,28 +853,32 @@ String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen
 
 String  String::Repeat (unsigned int count) const
 {
-    // @todo inefficient - use StringBuffer
-    String  result;
-    for (unsigned int i = 0; i < count; ++i) {
-        result += *this;
+    switch (count) {
+        case 0:
+            return String ();
+        case 1:
+            return *this;
+        case 2:
+            return *this + *this;
+        default: {
+                StringBuilder   result
+                for (unsigned int i = 0; i < count; ++i) {
+                    result += *this;
+                }
+                return result.str ();
+            }
+            break;
     }
-    return result;
 }
 
 String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
     // @todo - NOT ENVELOPE THREADSAFE
-
     _SafeRepAccessor    accessor { *this };
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
-    // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     size_t length = accessor._ConstGetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
         if (not (*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (i))) {
-
-            // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
-
             if (i == 0) {
                 // no change in string
                 return *this;
@@ -890,12 +894,10 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 
 String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
+    // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
     // @todo - NOT ENVELOPE THREADSAFE
     RequireNotNull (shouldBeTrimmmed);
-    //TODO: FIX HORRIBLE PERFORMANCE!!!
-    // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     _SafeRepAccessor    accessor { *this };
-
     ptrdiff_t length = accessor._ConstGetRep ()._GetLength ();
     ptrdiff_t endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
@@ -906,9 +908,6 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
             break;
         }
     }
-
-    // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
-
     if (endOfFirstTrim == 0) {
         return String ();       // all trimmed
     }
@@ -1122,8 +1121,6 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-//    String::_SharedPtrIRep  sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
-//    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     String::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
