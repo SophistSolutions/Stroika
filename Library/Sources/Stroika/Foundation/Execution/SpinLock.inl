@@ -27,7 +27,7 @@ namespace   Stroika {
                 : fLock_ (ATOMIC_FLAG_INIT)
 #endif
             {
-#if     !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+#if     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
                 fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
 #endif
             }
