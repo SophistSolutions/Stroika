@@ -504,7 +504,11 @@ namespace   Stroika {
             template    <typename T>
             class   Iterable<T>::_IRep
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+#if     qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug
                 : public Iterable<T>::_USING_SHARED_enable_shared_from_this_IMPL_<Iterable<T>::_IRep>
+#else
+                : public IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<Iterable<T>::_IRep>
+#endif
 #endif
             {
             protected:
