@@ -213,7 +213,7 @@ namespace {
             Containers::Sequence<int> s =   { 1, 2, 3 };
             {
                 shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
-                int answer =
+                size_t answer =
                     FunctionalApplicationContext<int>(s).
                     Filter<int> ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
                 Map<int> ([] (int s) { return s + 5; }).
@@ -224,7 +224,7 @@ namespace {
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                int answer =
+                size_t answer =
                     FunctionalApplicationContext<int>(s).
                     Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<int> ([] (int s) { return s + 5; }).
@@ -266,7 +266,7 @@ namespace {
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                int answer =
+                size_t answer =
                     FunctionalApplicationContext<String>(s).
                     Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<String> ([] (String s) { return s + L" hello"; }).
