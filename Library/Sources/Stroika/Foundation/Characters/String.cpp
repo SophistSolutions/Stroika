@@ -322,7 +322,9 @@ String  String::FromSDKString (const SDKChar* from, const SDKChar* to)
 #if     qTargetPlatformSDKUseswchar_t
     return String (from, to);
 #else
-    return String (NarrowStringToWide (from, to, GetDefaultSDKCodePage ()));
+    wstring tmp;
+    NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
+    return String (tmp);
 #endif
 }
 
