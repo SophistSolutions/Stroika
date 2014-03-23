@@ -10,7 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <thread>
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -23,17 +23,16 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  SpinLock::SpinLock ()
-                : fLock_ ( /*ATOMIC_FLAG_INIT*/)
+                : fLock_ (/*ATOMIC_FLAG_INIT*/)
             {
                 // unclear we need to set???
-                fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with falg_init not working?
+                fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
             }
             inline  void    SpinLock::lock ()
             {
-                // spin
-                // acquire lock
+                // Acquire lock. If / when fails, yield processor to avoid too much busy waiting.
                 while (fLock_.test_and_set (std::memory_order_acquire)) {
-                    std::this_thread::yield ();
+                    Yield_ ();
                 }
             }
             inline  void    SpinLock::unlock ()

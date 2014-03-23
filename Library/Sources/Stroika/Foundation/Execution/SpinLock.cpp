@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <thread>
+
 #include    "SpinLock.h"
 
 
@@ -15,3 +17,7 @@ using   namespace   Stroika::Foundation::Execution;
  ************************** Execution::SpinLock *********************************
  ********************************************************************************
  */
+void    SpinLock::Yield_ ()
+{
+    std::this_thread::yield ();
+}
