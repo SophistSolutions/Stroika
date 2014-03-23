@@ -187,6 +187,21 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+*/
+#ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
+#endif
+
+#endif
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
