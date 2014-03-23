@@ -266,6 +266,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  void    swap (SharedPtr<T>& rhs);
+
+            public:
+                /**
                  *  Returns true iff reference count of owned pointer is 1 (false if 0 or > 1)
                  */
                 nonvirtual  bool    IsUnique () const noexcept;

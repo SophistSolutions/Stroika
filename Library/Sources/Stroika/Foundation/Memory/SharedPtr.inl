@@ -331,6 +331,12 @@ namespace   Stroika {
                 return SharedPtr<T2> (typename SharedPtr<T2>::Envelope_ (fEnvelope_, dynamic_cast<T2*> (get ())));
             }
             template    <typename T>
+            inline  void    SharedPtr<T>::swap (SharedPtr<T>& rhs)
+            {
+                swap (fEnvelope_.fPtr_, rhs.fEnvelope_.fPtr_);
+                swap (fEnvelope_.fCountHolder_, rhs.fEnvelope_.fCountHolder_);
+            }
+            template    <typename T>
             inline  typename SharedPtr<T>::ReferenceCountType   SharedPtr<T>::CurrentRefCount () const noexcept
             {
                 return fEnvelope_.CurrentRefCount ();
