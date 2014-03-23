@@ -404,6 +404,15 @@ namespace   Stroika {
             {
             }
             template    <typename   T>
+            inline  enable_shared_from_this<T>::enable_shared_from_this (const enable_shared_from_this& /*src*/)
+                : ReferenceCounterContainerType_ (false)
+#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
+                // only initialized for assertion in shared_from_this()
+                , fPtr_ (nullptr)
+#endif
+            {
+            }
+            template    <typename   T>
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
 #if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
