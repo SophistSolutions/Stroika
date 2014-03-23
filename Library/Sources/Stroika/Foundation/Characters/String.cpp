@@ -861,7 +861,7 @@ String  String::Repeat (unsigned int count) const
         case 2:
             return *this + *this;
         default: {
-                StringBuilder   result
+                StringBuilder   result;
                 for (unsigned int i = 0; i < count; ++i) {
                     result += *this;
                 }
