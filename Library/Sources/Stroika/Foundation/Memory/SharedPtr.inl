@@ -492,9 +492,10 @@ namespace std {
     template    <typename T>
     inline  Stroika::Foundation::Memory::SharedPtr<T>   atomic_load_explicit (const Stroika::Foundation::Memory::SharedPtr<T>* copyFrom, memory_order)
     {
+        using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
-        lock_guard<Execution::SpinLock> critSec (Private_::sSharedPtrCopyLock_);
-        Stroika::Foundation::Memory::SharedPtr<_Ty> result = *copyFrom;
+        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
         return result;
     }
     template    <typename T>
@@ -506,7 +507,8 @@ namespace std {
     template    <typename T>
     inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
-        lock_guard<Execution::SpinLock> critSec (Private_::sSharedPtrCopyLock_);
+        using namespace     Stroika::Foundation;
+        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
         storeTo->swap (o);
     }
     template    <typename T>
