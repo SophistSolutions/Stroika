@@ -26,11 +26,17 @@ namespace   Stroika {
              ************ Private_::ReferenceCounterContainerType_ **************************
              ********************************************************************************
              */
-            inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ ()
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            inline      Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ ()
                 : fCount (0)
                 , fDeleteCounter_ (true)
             {
             }
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
             inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ (bool deleteCounter)
                 : fCount (0)
                 , fDeleteCounter_ (deleteCounter)
@@ -395,6 +401,9 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T>
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
             inline  enable_shared_from_this<T>::enable_shared_from_this ()
                 : ReferenceCounterContainerType_ (false)
 #if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
@@ -404,6 +413,9 @@ namespace   Stroika {
             {
             }
             template    <typename   T>
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
             inline  enable_shared_from_this<T>::enable_shared_from_this (const enable_shared_from_this& /*src*/)
                 : ReferenceCounterContainerType_ (false)
 #if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
