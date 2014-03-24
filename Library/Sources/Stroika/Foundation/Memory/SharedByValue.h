@@ -48,7 +48,7 @@ namespace   Stroika {
              *  EXPERIMENTAL -- LGP 2014-03-23 (v2.0a22x)
              */
 #ifndef qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
-#define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_       0
+#define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_       1
 #endif
 
 
