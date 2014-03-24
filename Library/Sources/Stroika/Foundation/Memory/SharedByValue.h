@@ -6,9 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-
 #include    <memory>
+
+#include    "../Configuration/Common.h"
 
 
 
@@ -36,6 +36,16 @@
  *          I THINK I maybe able to fix/workaround this with enable_if(sizeof(C) ==1???).
  *
  */
+
+
+
+#if     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
+// NEEDED FOR GCC/CLANG - NOT SURE WHY - - but probably - qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy -
+// I THINK MY BUG WITH HOW TODO CALL TO atomic_load/atomic_store
+// below - soemthing like template atomic_load()... etc... but didnt quite work....
+// --LGP 2014-03-24
+#include    "../Memory/SharedPtr.h"
+#endif
 
 
 
