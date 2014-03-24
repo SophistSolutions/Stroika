@@ -295,6 +295,12 @@ namespace   Stroika {
                 nonvirtual  void    erase (T item);
 
             protected:
+                /**
+                 */
+                template    <typename T2>
+                using _SafeReadRepAccessor = Iterable<T>::_SafeReadRepAccessor<T2>;
+
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
