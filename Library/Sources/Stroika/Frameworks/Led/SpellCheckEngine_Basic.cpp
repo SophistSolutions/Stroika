@@ -383,6 +383,18 @@ bool    SpellCheckEngine_Basic::OtherStringToIgnore_Number (const Led_tString& c
     return true;
 }
 
+namespace {
+    // do this to avoid MSFT annoying _SCL_INSECURE_DEPRECATE warning I cannot seem to suppress
+    // with #praga (and dont want to use #define cuz makes it hard to work as a library)
+    // --LGP 2014-03-23
+    template<class BidirectionalIterator1, class BidirectionalIterator2>
+    BidirectionalIterator2 My_copy_backward_ ( BidirectionalIterator1 first, BidirectionalIterator1 last, BidirectionalIterator2 result )
+    {
+        while (last != first) *(--result) = *(--last);
+        return result;
+    }
+}
+
 namespace   {
     void    AddToListsHelper (const size_t kMaxSug, Led_tString topSugs[], float topSugScores[], float* scoreCutOff, float s, const Led_tString& w)
     {
@@ -391,8 +403,8 @@ namespace   {
             // find where it fits in the array, and then adjust array
             for (size_t ii = 0; ii < kMaxSug; ++ii) {
                 if (s > topSugScores[ii]) {
-                    copy_backward (topSugs + ii, topSugs + kMaxSug - 1, topSugs + kMaxSug);
-                    copy_backward (topSugScores + ii, topSugScores + kMaxSug - 1, topSugScores + kMaxSug);
+                    My_copy_backward_ (topSugs + ii, topSugs + kMaxSug - 1, topSugs + kMaxSug);
+                    My_copy_backward_ (topSugScores + ii, topSugScores + kMaxSug - 1, topSugScores + kMaxSug);
                     topSugs[ii] = w;
                     topSugScores[ii] = s;
                     break;
@@ -912,6 +924,22 @@ vector<Led_tChar>   SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () 
     return vector<Led_tChar> (static_cast<Led_tChar*> (buf), static_cast<Led_tChar*> (buf) + totalBufSizeSoFar);
 }
 
+namespace {
+    // do this to avoid MSFT annoying _SCL_INSECURE_DEPRECATE warning I cannot seem to suppress
+    // with #praga (and dont want to use #define cuz makes it hard to work as a library)
+    // --LGP 2014-03-23
+    template<class InputIterator, class OutputIterator>
+    OutputIterator my_copy_ (InputIterator first, InputIterator last, OutputIterator result)
+    {
+        while (first != last) {
+            *result = *first;
+            ++result;
+            ++first;
+        }
+        return result;
+    }
+}
+
 void    SpellCheckEngine_Basic::EditableDictionary::ConstructInfoBlocksEtcFromWordList ()
 {
     // Clear old buffer values
@@ -936,7 +964,7 @@ void    SpellCheckEngine_Basic::EditableDictionary::ConstructInfoBlocksEtcFromWo
      */
     Led_tChar*  intoBufPtr  =   fDictBufStart;
     for (auto i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
-        copy ((*i).begin (), (*i).end (), intoBufPtr);
+        my_copy_ ((*i).begin (), (*i).end (), intoBufPtr);
 
         InfoBlock   iB;
         (void)::memset (&iB, 0, sizeof (iB));
