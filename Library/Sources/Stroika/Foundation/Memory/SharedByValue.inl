@@ -63,10 +63,9 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP* copyFrom)
+            inline  SHARED_IMLP     SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
-                RequireNotNull (copyFrom);
-                return *copyFrom;
+                return copyFrom;
             }
             template    <typename   T, typename SHARED_IMLP>
             inline  void            SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, SHARED_IMLP o)
@@ -82,10 +81,9 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP* copyFrom)
+            inline  SHARED_IMLP     SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
-                RequireNotNull (copyFrom);
-                return atomic_load (copyFrom);
+                return atomic_load (&copyFrom);
             }
             template    <typename   T, typename SHARED_IMLP>
             inline  void            SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, SHARED_IMLP o)
@@ -118,7 +116,7 @@ namespace   Stroika {
             inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>& from) noexcept
 :
             fCopier_ (from.fCopier_)
-            , fSharedImpl_ (from.fSharedImpl_)
+            , fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
             {
             }
             template    <typename TRAITS>
@@ -132,7 +130,7 @@ namespace   Stroika {
             inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
 :
             fCopier_ (copier)
-            , fSharedImpl_ (from)
+            , fSharedImpl_ (shared_impl_copier_type::Load (from))
             {
             }
             template    <typename TRAITS>
@@ -153,7 +151,7 @@ namespace   Stroika {
             {
                 if (this != &src) {
                     fCopier_ = src.fCopier_;
-                    fSharedImpl_ = src.fSharedImpl_;
+                    shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (src.fSharedImpl_));
                 }
                 return *this;
             }
@@ -258,7 +256,7 @@ namespace   Stroika {
             template    <typename... COPY_ARGS>
             void    SharedByValue<TRAITS>::BreakReferences_ (COPY_ARGS&& ... copyArgs)
             {
-                shared_ptr_type     ptr2Clone   { fSharedImpl_ };       // other thread could change this (if other thread accesses same envelope)
+                shared_ptr_type     ptr2Clone   { shared_impl_copier_type::Load (fSharedImpl_) };       // other thread could change this (if other thread accesses same envelope)
                 // but this copy prevents the bare ptr from possibly becoming invalidated
                 element_type*  ptr =   ptr2Clone.get ();
                 RequireNotNull (ptr);
