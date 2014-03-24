@@ -520,5 +520,34 @@ namespace std {
     {
         atomic_store_explicit (storeTo, o, memory_order_seq_cst);
     }
+#if     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
+    template    <typename T>
+    inline  shared_ptr<T>   atomic_load_explicit (const shared_ptr<T>* copyFrom, memory_order)
+    {
+        using namespace     Stroika::Foundation;
+        RequireNotNull (copyFrom);
+        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        shared_ptr<T> result = *copyFrom;
+        return result;
+    }
+    template    <typename T>
+    inline  shared_ptr<T>   atomic_load (const shared_ptr<T>* p)
+    {
+        RequireNotNull (p);
+        return atomic_load_explicit (p, memory_order_seq_cst);
+    }
+    template    <typename T>
+    inline  void    atomic_store_explicit (shared_ptr<T>* storeTo, shared_ptr<T> o, memory_order)
+    {
+        using namespace     Stroika::Foundation;
+        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        storeTo->swap (o);
+    }
+    template    <typename T>
+    inline  void    atomic_store (shared_ptr<T>* storeTo, shared_ptr<T> o)
+    {
+        atomic_store_explicit (storeTo, o, memory_order_seq_cst);
+    }
+#endif
 }
 #endif  /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

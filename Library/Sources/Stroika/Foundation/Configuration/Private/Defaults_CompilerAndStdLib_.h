@@ -229,6 +229,28 @@
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
+*/
+#ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#else
+#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
 *               numbers produces nan/#IND... Workraround is to just do bogus early use.
