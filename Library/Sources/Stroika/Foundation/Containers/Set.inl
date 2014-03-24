@@ -98,12 +98,22 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
+                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Contains (item);
+#else
                 return _GetRep ().Contains (item);
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
+                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Lookup (item);
+#else
                 return _GetRep ().Lookup (item);
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
@@ -159,7 +169,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
+                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Equals (rhs._GetRep ());
+#else
                 return (_GetRep ().Equals (rhs._GetRep ()));
+#endif
             }
             template    <typename T, typename TRAITS>
             Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(const T& item)>& doToElement) const
@@ -234,7 +249,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::operator!= (const Set<T, TRAITS>& rhs) const
             {
-                return (not Equals (rhs));
+                return not Equals (rhs);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (T item)

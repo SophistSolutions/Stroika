@@ -131,17 +131,32 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT
+                return _GetReadOnlyIterableIRepReference ().get ()->MakeIterator (this);
+#else
                 return _GetRep ().MakeIterator (this);
+#endif
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT
+                return _GetReadOnlyIterableIRepReference ().get ()->GetLength ();
+#else
                 return _GetRep ().GetLength ();
+#endif
             }
             template    <typename T>
             inline  bool    Iterable<T>::IsEmpty () const
             {
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT
+                return _GetReadOnlyIterableIRepReference ().get ()->IsEmpty ();
+#else
                 return _GetRep ().IsEmpty ();
+#endif
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
@@ -263,13 +278,23 @@ namespace   Stroika {
             inline  void    Iterable<T>::Apply (const function<void(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT
+                _GetReadOnlyIterableIRepReference ().get ()->Apply (doToElement);
+#else
                 _GetRep ().Apply (doToElement);
+#endif
             }
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::FindFirstThat (const function<bool(const T& item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
+#if 1
+                // EXPERIMENTAL THREAD SAFETY SUPPORT
+                return _GetReadOnlyIterableIRepReference ().get ()->FindFirstThat (doToElement, this);;
+#else
                 return _GetRep ().FindFirstThat (doToElement, this);
+#endif
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>

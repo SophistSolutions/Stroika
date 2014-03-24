@@ -35,6 +35,8 @@ History
 <li>SpinLock does yield</li>
 <li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
 ther classes like BLOB - as a performance tweak</li>
+<li>qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ - even though now is big performance sink, probably best in the
+long run</li>
 </ul>
 </td>
 </tr>
