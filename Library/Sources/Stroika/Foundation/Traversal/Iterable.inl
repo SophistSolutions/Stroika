@@ -52,6 +52,26 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             *************** Iterable<T>::_SafeReadRepAccessor ******************************
+             ********************************************************************************
+             */
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>& s)
+                : fAccessor (s._GetReadOnlyIterableIRepReference ())
+            {
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
+            {
+                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+            }
+
+
+            /*
+             ********************************************************************************
              ********************************** Iterable<T> *********************************
              ********************************************************************************
              */
@@ -133,7 +153,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _GetReadOnlyIterableIRepReference ().get ()->MakeIterator (this);
+                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().MakeIterator (this);
 #else
                 return _GetRep ().MakeIterator (this);
 #endif
@@ -143,7 +163,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _GetReadOnlyIterableIRepReference ().get ()->GetLength ();
+                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().GetLength ();
 #else
                 return _GetRep ().GetLength ();
 #endif
@@ -153,7 +173,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _GetReadOnlyIterableIRepReference ().get ()->IsEmpty ();
+                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().IsEmpty ();
 #else
                 return _GetRep ().IsEmpty ();
 #endif

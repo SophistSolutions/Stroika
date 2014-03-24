@@ -490,9 +490,64 @@ namespace   Stroika {
                  */
                 nonvirtual  _ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
 
+            protected:
+                /**
+                 *  EXPERIMENTAL -- LGP 2014-02-21
+                 */
+                template <typename REP_SUB_TYPE = _IRep>
+                class   _SafeReadRepAccessor;
+
+            protected:
+                /**
+                 *  EXPERIMENTAL -- LGP 2014-02-21
+                 */
+                template <typename REP_SUB_TYPE>
+                class   _SafeReadWriteRepAccessor;
+
             private:
                 SharedByValueRepType_    fRep_;
             };
+
+
+
+
+            /**
+             *  EXPERIMENTAL -- LGP 2014-02-21
+             */
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            class Iterable<T>::_SafeReadRepAccessor  {
+            public:
+                _ReadOnlyIterableIRepReference    fAccessor;
+
+                _SafeReadRepAccessor (const Iterable<T>& s);
+
+                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+            };
+
+
+            /**
+             *  EXPERIMENTAL -- LGP 2014-02-21
+             *
+             *          ***NYI***
+             */
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            class Iterable<T>::_SafeReadWriteRepAccessor  {
+            public:
+                _ReadOnlyIterableIRepReference    fAccessor;
+
+                _SafeReadWriteRepAccessor (const Iterable<T>& s);
+
+                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+
+                // for now - hack?? NO - DONT SUPPORT THIS YET - cuz must use differnt
+                // re fAccessor - must actually copy-by-value and if this changed on DTOR
+                // write back?
+                // enter in IFDEFS til weve worked  this out
+                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep () const;
+            };
+
 
 
             /**

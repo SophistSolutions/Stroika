@@ -100,7 +100,8 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Contains (item);
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
+                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Contains (item);
 #else
                 return _GetRep ().Contains (item);
 #endif
@@ -110,7 +111,8 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Lookup (item);
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
+                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Lookup (item);
 #else
                 return _GetRep ().Lookup (item);
 #endif
@@ -171,7 +173,8 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Equals (rhs._GetRep ());
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
+                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Equals (rhs._GetRep ());
 #else
                 return (_GetRep ().Equals (rhs._GetRep ()));
 #endif
