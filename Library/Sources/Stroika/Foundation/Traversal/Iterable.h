@@ -39,6 +39,8 @@ namespace   Stroika {
 
 
             /**
+             *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
+             *  can be configured (at compile time) to use one or the other, but not both.
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
@@ -95,6 +97,18 @@ namespace   Stroika {
              *  exceedingly simplistic pattern of access.
              *
              *  *Important Design Note*:
+             *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less
+             *      than the creating Iterable's lifetime.
+             *
+             *      This may not be enforced by implementations (but generally will be in debug builds). But
+             *      it is a rule!
+             *
+             *      The reason for this is that the underlying memory referenced by the iterator may be going away.
+             *      We could avoid this by adding a shared_ptr<> reference count into each iterator, but that
+             *      would make iterator objects significantly more expensive, and with little apparent value added.
+             *      Similarly for weak_ptr<> references.
+             *
+             *  *Important Design Note*:
              *      We have no:
              *          nonvirtual  void    _SetRep (SharedIRepPtr rep);
              *
@@ -102,6 +116,9 @@ namespace   Stroika {
              *      to assure that the underlying type is of the appropriate subtype.
              *
              *      For example - see Bag_Array<T>::GetRep_().
+             *
+             *      Note - instead - you can 'assign' (operator=) to replace the value (and dynamic type) of
+             *      an Iterable<> (or subclass) instance.
              *
              *  *Design Note*:
              *      Why does Iterable<T> contain a GetLength () method?
@@ -135,24 +152,12 @@ namespace   Stroika {
              *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
              *      their values were the same.
              *
-             *      ((REVISION - 2013-12-21 - SEE NEW SETEUQALS/TALLYEQUALS/EXACTEUALS methods below)
+             *      ((REVISION - 2013-12-21 - SEE NEW SetEquals/MultiSetEquals/ExactEquals methods below)
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,
              *      so ??? think through - what this implies- but probably soemthing about not
              *      threading stuff and ???
-             *
-             *  *Important Design Note*:
-             *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less
-             *      than the creating Iterable's lifetime.
-             *
-             *      This may not be enforced by implementations (but generally will be in debug builds). But
-             *      it is a rule!
-             *
-             *      The reason for this is that the underlying memory referenced by the iterator may be going away.
-             *      We could avoid this by adding a shared_ptr<> reference count into each iterator, but that
-             *      would make iterator objects significantly more expensive, and with little apparent value added.
-             *      Similarly for weak_ptr<> references.
              *
              *  *Design Note*:
              *      Rejected idea:
@@ -509,8 +514,6 @@ namespace   Stroika {
             };
 
 
-
-
             /**
              *  EXPERIMENTAL -- LGP 2014-02-21
              */
@@ -520,8 +523,10 @@ namespace   Stroika {
             public:
                 _ReadOnlyIterableIRepReference    fAccessor;
 
+            public:
                 _SafeReadRepAccessor (const Iterable<T>& s);
 
+            public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
             };
 
@@ -530,12 +535,15 @@ namespace   Stroika {
              *  EXPERIMENTAL -- LGP 2014-02-21
              *
              *          ***NYI***
+             *          *** instea d of storing
+             *          MAYBE what this does is operate on the given coy but whne the DTOR happens, assign overwriting the original container!
+             *      (on dtor *this - fAccessor) - maybe only if there is a change in ptr).
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
             class Iterable<T>::_SafeReadWriteRepAccessor  {
             public:
-                _ReadOnlyIterableIRepReference    fAccessor;
+                SharedByValueRepType_    fAccessor;
 
                 _SafeReadWriteRepAccessor (const Iterable<T>& s);
 
@@ -547,7 +555,6 @@ namespace   Stroika {
                 // enter in IFDEFS til weve worked  this out
                 nonvirtual  REP_SUB_TYPE&    _GetWriteableRep () const;
             };
-
 
 
             /**
