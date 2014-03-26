@@ -32,7 +32,7 @@
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 4))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.4")
 #endif
-#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ >= 5))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ >= 6))
 #pragma message ("Info: Stroika untested with this version of clang++")
 #endif
 
@@ -288,7 +288,7 @@
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 4)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #else
@@ -562,7 +562,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 6))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
 #else
@@ -906,7 +906,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_deprecatedFeatureMissing
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_deprecatedFeatureMissing             ((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#define qCompilerAndStdLib_deprecatedFeatureMissing             ((__clang_major__ == 3) && (__clang_minor__ <= 5))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
@@ -926,7 +926,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_string_conversions_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 5))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
