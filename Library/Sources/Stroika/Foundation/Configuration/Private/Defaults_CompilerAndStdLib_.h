@@ -899,6 +899,26 @@ EXAMPLE:
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+
+#if     defined (__clang__)
+// Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
+#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 6))
+#else
+#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy       0
+#endif
+
+#endif
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
 @DESCRIPTION:

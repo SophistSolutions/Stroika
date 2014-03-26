@@ -98,7 +98,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
-#if 1
+#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
                 //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Contains (item);
@@ -109,7 +109,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
-#if 1
+#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
                 //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Lookup (item);
@@ -171,7 +171,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
-#if 1
+#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
                 //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Equals (rhs._GetRep ());
