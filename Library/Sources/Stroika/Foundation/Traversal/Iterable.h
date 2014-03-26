@@ -490,6 +490,9 @@ namespace   Stroika {
                 using _ReadOnlyIterableIRepReference = typename SharedByValueRepType_::ReadOnlyReference;
 
             protected:
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+            public:
+#endif
                 /**
                  *  EXPERIMENTAL -- LGP 2014-02-21
                  */

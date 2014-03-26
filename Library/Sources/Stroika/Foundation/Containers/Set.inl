@@ -98,7 +98,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy && 0
                 return _GetRep ().Contains (item);
 #else
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
