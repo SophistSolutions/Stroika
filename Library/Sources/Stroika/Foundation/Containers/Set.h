@@ -297,13 +297,8 @@ namespace   Stroika {
             protected:
                 /**
                  */
-#if defined (__clang__)
                 template    <typename T2>
-                using   _SafeReadRepAccessor = template Iterable<T>::_SafeReadRepAccessor<T2>;
-#else
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<T>::_SafeReadRepAccessor<T2>;
-#endif
+                using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
