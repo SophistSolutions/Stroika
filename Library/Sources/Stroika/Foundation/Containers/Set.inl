@@ -98,23 +98,19 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
-#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
-                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Contains (item);
-#else
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 return _GetRep ().Contains (item);
+#else
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
 #endif
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
-#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
-                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Lookup (item);
-#else
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 return _GetRep ().Lookup (item);
+#else
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
 #endif
             }
             template    <typename T, typename TRAITS>
@@ -171,12 +167,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
-#if		!qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                // EXPERIMENTAL THREAD SAFETY SUPPORT -- @todo need subtype cast wrapper like with string
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
-                //return static_cast<const _IRep*> (_GetReadOnlyIterableIRepReference ().get ())->Equals (rhs._GetRep ());
-#else
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 return (_GetRep ().Equals (rhs._GetRep ()));
+#else
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
 #endif
             }
             template    <typename T, typename TRAITS>
