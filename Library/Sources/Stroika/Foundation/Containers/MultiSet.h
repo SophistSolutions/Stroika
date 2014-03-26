@@ -287,7 +287,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 template    <typename REP_SUB_TYPE>
                 struct  _SafeReadRepAccessor  {
-                    typename Iterable<T>::_ReadOnlyIterableIRepReference    fAccessor;
+                    typename Iterable<MultiSetEntry<T>>::_ReadOnlyIterableIRepReference    fAccessor;
                     _SafeReadRepAccessor (const Iterable<T>& s)
                         : fAccessor (s._GetReadOnlyIterableIRepReference ())
                     {
@@ -302,7 +302,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
+                using   _SafeReadRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadRepAccessor<T2>;
 
 #endif
 
