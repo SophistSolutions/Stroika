@@ -284,6 +284,29 @@ namespace   Stroika {
                 nonvirtual  MultiSet<T, TRAITS>&   operator+= (const MultiSet<T, TRAITS>& t);
 
             protected:
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+                template    <typename REP_SUB_TYPE>
+                struct  _SafeReadRepAccessor  {
+                    typename Iterable<T>::_ReadOnlyIterableIRepReference    fAccessor;
+                    _SafeReadRepAccessor (const Iterable<T>& s)
+                        : fAccessor (s._GetReadOnlyIterableIRepReference ())
+                    {
+                    }
+                    nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
+                    {
+                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                    }
+                };
+#else
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
+
+#endif
+
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };

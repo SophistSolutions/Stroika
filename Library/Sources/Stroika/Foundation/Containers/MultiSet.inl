@@ -454,12 +454,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool  MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const
             {
-                return _GetRep ().Equals (rhs._GetRep ());
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (rhs._SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
             inline  bool    MultiSet<T, TRAITS>::Contains (T item) const
             {
-                return _GetRep ().Contains (item);
+                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::RemoveAll ()

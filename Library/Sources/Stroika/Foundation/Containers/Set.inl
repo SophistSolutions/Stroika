@@ -98,20 +98,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy && 0
-                return _GetRep ().Contains (item);
-#else
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
-#endif
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                return _GetRep ().Lookup (item);
-#else
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
-#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
@@ -167,11 +159,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                return (_GetRep ().Equals (rhs._GetRep ()));
-#else
                 return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
-#endif
             }
             template    <typename T, typename TRAITS>
             Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(const T& item)>& doToElement) const

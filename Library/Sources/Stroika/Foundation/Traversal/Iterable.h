@@ -519,6 +519,12 @@ namespace   Stroika {
 
             /**
              *  EXPERIMENTAL -- LGP 2014-02-21
+             *
+             *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the 'this' object, and makes a copy
+             *  incrementing the reference count, and the caller accesses the rep through the copied/bumped reference.
+             *
+             *  This assures that if another thread assigns to *this, that has no corruption effect on this operation/method running
+             *  on the prior '*this' object.
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>

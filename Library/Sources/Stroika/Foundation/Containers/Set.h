@@ -316,6 +316,7 @@ namespace   Stroika {
                 using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
 
 #endif
+
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
