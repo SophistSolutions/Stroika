@@ -24,7 +24,7 @@
  *          we get multiple results, just patch them into the linked list. That way in case of
  *          multithreading (when we're paging in freepool) - we'll do less busy waiting.
  *
- *  @todo   Compact() method could be smart enough to move items in free poll that are from
+ *  @todo   Compact() method could be smart enough to move items in free pool that are from
  *          mostly used up pools to the head of the free list, and move mostly unused blocks
  *          to the end of the free pool, which over time should probably tend to defragment
  *          the pools.
@@ -35,7 +35,7 @@
  *          Make sure when we experiment with that - we include it here as one of our first
  *          optimization points!
  *
- *  @todo   And maybe use TRAITS on BlockAllocator to define some stuff
+ *  @todo   Maybe use TRAITS on BlockAllocator to define some stuff
  *          about strategies (options) - like how to share pools?
  *
  *  @todo   Comments generally need a thorough review. Many VERY VERY old - from Led days.
@@ -93,12 +93,14 @@ namespace   Stroika {
                 /**
                   * Return to the free store all deallocated blocks whcih can be returned.
                   *
-                  * This takes oN, where N is the total amount of operator new for this size.
+                  * This takes O (N), where N is the total number of extant operator new allocations for this size.
                   *
                   * It also currently uses a large block of contiguous memory, which could fail.
                   *
                   * But it might sometimes return memory from a particular data structure (fixed element size pool) to
                   * the general free store.
+                  *
+                  * Also - beware - this locks out other threads during execution.
                   */
                 static  void    Compact ();
             };

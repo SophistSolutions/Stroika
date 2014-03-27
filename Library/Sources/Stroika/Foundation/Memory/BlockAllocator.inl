@@ -38,6 +38,22 @@
 
 
 
+/*
+ *  qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_ is currently experimental as
+ *  a test to see if its faster than calling operator new (for blocks of RAM).
+ *
+ *  operator new[] does very little for us, and could in principle have call overhead and
+ *  overhead to track the number of entries in the array (which would be pointless).
+ */
+#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_   1
+#endif
+
+#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+#include    "../Execution/Exceptions.h"
+#endif
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -108,7 +124,12 @@ namespace   Stroika {
                      * Led FAQ question#29 - "Does Led have any memory leaks?
                      * How does qAllowBlockAllocation affect memory leaks?"
                      */
+#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+                    void**  newLinks    =   (void**)malloc (kChunks * sz);
+                    Execution::ThrowIfNull (newLinks);
+#else
                     void**  newLinks    =   (void**)DEBUG_NEW char [kChunks * sz];
+#endif
                     void**  curLink     =   newLinks;
                     for (size_t i = 1; i < kChunks; i++) {
                         *curLink = &(((char*)newLinks)[i * sz]);
@@ -234,7 +255,11 @@ namespace   Stroika {
                     }
                     if (canDelete) {
                         links.erase (links.begin () + index, links.begin () + index + kChunks);
+#if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
+                        free ((void*)deleteCandidate);
+#else
                         delete static_cast<Byte*> ((void*)deleteCandidate);
+#endif
                     }
                     else {
                         index += i;
