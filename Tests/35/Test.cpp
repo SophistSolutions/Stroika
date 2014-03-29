@@ -4,19 +4,12 @@
 //  TEST    Foundation::Execution::ThreadSafetyBuiltinObject
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
 #include    <mutex>
 
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Set.h"
-#include    "Stroika/Foundation/Execution/ExternallySynchronizedLock.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
-#include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
-#include    "Stroika/Foundation/Execution/ThreadPool.h"
-#include    "Stroika/Foundation/Execution/WaitableEvent.h"
-#include    "Stroika/Foundation/Execution/TimeOutException.h"
 #include    "Stroika/Foundation/Math/Common.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -26,7 +19,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Characters;
 using   namespace   Containers;
 
-using   Execution::ExternallySynchronizedLock;
 using   Execution::Thread;
 using   Execution::WaitableEvent;
 
