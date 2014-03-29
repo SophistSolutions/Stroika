@@ -1,19 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::Memory
+//  TEST    Foundation::Math
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
-#include    "Stroika/Foundation/Memory/AnyVariantValue.h"
-#include    "Stroika/Foundation/Memory/Bits.h"
-#include    "Stroika/Foundation/Memory/BLOB.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/Memory/SharedByValue.h"
-#include    "Stroika/Foundation/Memory/SharedPtr.h"
+#include    "Stroika/Foundation/Math/Angle.h"
+#include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Math/Overlap.h"
+#include    "Stroika/Foundation/Math/ReBin.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -23,260 +20,8 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Math;
 
-
-//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
-
-namespace   {
-    void    Test1_Optional ()
-    {
-        {
-            Optional<int>   x;
-            VerifyTestResult (x.IsMissing ());
-            x = 1;
-            VerifyTestResult (not x.IsMissing ());
-            VerifyTestResult (x.IsPresent ());
-            VerifyTestResult (*x == 1);
-        }
-        {
-            // Careful about self-assignment
-            Optional<int>   x;
-            x = 3;
-            x = max (*x, 1);
-            VerifyTestResult (x == 3);
-        }
-        auto testOptionalOfThingNotCopyable = [] () {
-            struct NotCopyable {
-                NotCopyable () {}
-                NotCopyable (const NotCopyable&&) {}    // but is moveable!
-                NotCopyable (const NotCopyable&) = delete;
-                const NotCopyable& operator= (const NotCopyable&) = delete;
-            };
-            Optional<NotCopyable>   n1;
-            VerifyTestResult (n1.IsMissing ());
-            Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
-            VerifyTestResult (n2.IsPresent ());
-        };
-        testOptionalOfThingNotCopyable ();
-    }
-    void    Test2_SharedByValue ()
-    {
-    }
-    void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
-    {
-        using   namespace   Stroika::Foundation::Memory;
-        using   namespace   Stroika::Foundation::Containers;
-        Mapping<int, float>  ml1, ml2;
-        ml1 = ml2;
-
-        Optional<Mapping<int, float>>  ol1, ol2;
-        if (ol2.IsPresent ()) {
-            ml1 = *ol2;
-        }
-        ol1 = ml1;
-        Optional<Mapping<int, float>>  xxxx2 (ml1);
-
-        // fails to compile prior to 2013-09-09
-        Optional<Mapping<int, float>>  xxxx1 (ol1);
-        // fails to compile prior to 2013-09-09
-        ol1 = ol2;
-    }
-    void    Test_5_AnyVariantValue_ ()
-    {
-        {
-            VerifyTestResult (AnyVariantValue ().empty ());
-            VerifyTestResult (not AnyVariantValue (1).empty ());
-            VerifyTestResult (not AnyVariantValue ("1").empty ());
-            //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
-            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
-        }
-        {
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (1);
-            VerifyTestResult (not v.empty ());
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-            v = AnyVariantValue (L"a");
-            //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
-            VerifyTestResult (not v.empty ());
-            v.clear ();
-            VerifyTestResult (v.empty ());
-            VerifyTestResult (v.GetType () == typeid (void));
-        }
-        {
-            struct JIM {
-                int a;
-            };
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (JIM ());
-            VerifyTestResult (v.GetType () == typeid (JIM));
-        }
-        {
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (1);
-            v = v;
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-            v = AnyVariantValue (v);
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-        }
-        {
-            static int nCopies = 0;
-            struct Copyable {
-                Copyable ()
-                {
-                    ++nCopies;
-                }
-                Copyable (const Copyable&)
-                {
-                    ++nCopies;
-                }
-                ~Copyable ()
-                {
-                    --nCopies;
-                }
-                const Copyable& operator= (const Copyable&) = delete;
-            };
-            {
-                AnyVariantValue v;
-                VerifyTestResult (v.empty ());
-                v = AnyVariantValue (Copyable ());
-                v = v;
-                v = AnyVariantValue (AnyVariantValue (v));
-                v = AnyVariantValue (AnyVariantValue (Copyable ()));
-                VerifyTestResult (v.GetType () == typeid (Copyable));
-            }
-            VerifyTestResult (0 == nCopies);
-        }
-    }
-
-
-
-    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
-    // SB nested inside function where used...
-    //  --LGP 2014-02-26
-    namespace {
-        struct X_ { int a = 0; };
-        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
-            int field = 1;
-            shared_ptr<jimStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
-            int field = 1;
-            shared_ptr<jimMIXStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
-            int field = 1;
-            SharedPtr<jimStkSP_>  doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
-            int field = 1;
-            SharedPtr<jimMIStkSP_>  doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-    }
-
-    void    Test_6_SharedPtr ()
-    {
-        {
-            SharedPtr<int> p (new int (3));
-            VerifyTestResult (p.use_count () == 1);
-            VerifyTestResult (p.unique ());
-            VerifyTestResult (*p == 3);
-        }
-        {
-            static int nCreates = 0;
-            static int nDestroys = 0;
-            struct COUNTED_OBJ {
-                COUNTED_OBJ ()
-                {
-                    ++nCreates;
-                }
-                COUNTED_OBJ (const COUNTED_OBJ&)
-                {
-                    ++nCreates;
-                }
-                ~COUNTED_OBJ ()
-                {
-                    ++nDestroys;
-                }
-                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
-            };
-            struct CNT2 : COUNTED_OBJ {
-            };
-            {
-                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
-            }
-            VerifyTestResult (nCreates == nDestroys);
-            {
-                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
-                VerifyTestResult (nCreates == nDestroys + 1);
-            }
-            VerifyTestResult (nCreates == nDestroys);
-        }
-        {
-            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
-            shared_ptr<jimStdSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
-            shared_ptr<jimMIXStdSP_> y = x->doIt ();
-            shared_ptr<X_>           xx = x;
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
-            SharedPtr<jimStkSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
-            SharedPtr<jimMIStkSP_> y = x->doIt ();
-            SharedPtr<X_>          xx = x;
-            VerifyTestResult (x == y);
-        }
-    }
-}
-
-
-
-
-namespace {
-    void    Test_7_Bits_ ()
-    {
-        {
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 0) == 1);
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
-            VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
-        }
-        {
-            VerifyTestResult (Bit (0) == 0x1);
-            VerifyTestResult (Bit (1) == 0x2);
-            VerifyTestResult (Bit (3) == 0x8);
-            VerifyTestResult (Bit (15) == 0x8000);
-            VerifyTestResult (Bit<int> (1, 2) == 0x6);
-            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
-        }
-    }
-}
 
 
 
@@ -284,32 +29,110 @@ namespace {
 
 
 namespace {
-    void    Test_8_BLOB_ ()
+    // test helper to assure answer for (A,B) is same as (B,A) - commutative
+    template    <typename T>
+    bool    VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
     {
-        {
-            vector<Byte> b = {1, 2, 3, 4, 5 };
-            Memory::BLOB bl = b;
-            Verify (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+        bool r  = Overlaps<T> (p1, p2);
+        VerifyTestResult (r == Overlaps<T> (p2, p1));
+        return r;
+    }
+}
+
+
+namespace   {
+    void    Test1_Overlap_ ()
+    {
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
+        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
+        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (0, 1)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (1, 1)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 4)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 3)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
+    }
+    void    Test2_Round_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (RoundUpTo (2, 10) == 10);
+        VerifyTestResult (RoundDownTo (2, 10) == 0);
+        VerifyTestResult (RoundUpTo (2, 2) == 2);
+        VerifyTestResult (RoundDownTo (2, 2) == 2);
+    }
+    void    Test3_Angle_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (360, Angle::AngleFormat::eDegrees));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
+    }
+    void    Test4_OddEvenPrime_ ()
+    {
+        VerifyTestResult (IsPrime (2));
+        VerifyTestResult (IsOdd (3));
+        VerifyTestResult (IsEven (4));
+        VerifyTestResult (IsPrime (5));
+        for (int i = 1; i < 1000; ++i) {
+            VerifyTestResult (IsOdd (i) != IsEven (i));
+            if (IsPrime (i)) {
+                VerifyTestResult (i == 2 or IsOdd (i));
+            }
+            if (IsEven (i)) {
+                VerifyTestResult (i == 2 or not IsPrime (i));
+            }
         }
     }
 }
 
 
-
-
+namespace {
+    void    Test5_ReBin_ ()
+    {
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            for (int i = 0; i < NEltsOf(srcBinData); ++i) {
+                VerifyTestResult (srcBinData[i] == resultData[i]);
+            }
+        }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[2];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (8 == resultData[0]);
+            VerifyTestResult (21 == resultData[1]);
+        }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
+            double  resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
+            VerifyTestResult (0 == resultData[3]);
+        }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[8];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (NearlyEquals (1.5, resultData[0]));
+            VerifyTestResult (NearlyEquals (1.5, resultData[1]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[2]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[3]));
+        }
+    }
+}
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
-        Test1_Optional ();
-        Test2_SharedByValue ();
-        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
-        Test_5_AnyVariantValue_ ();
-        Test_6_SharedPtr ();
-        Test_7_Bits_ ();
-        Test_8_BLOB_ ();
+        Test1_Overlap_ ();
+        Test2_Round_ ();
+        Test3_Angle_ ();
+        Test4_OddEvenPrime_ ();
+        Test5_ReBin_ ();
     }
 }
 

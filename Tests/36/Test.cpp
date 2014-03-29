@@ -1,13 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::IO::Network
+//  TEST    Foundation::Execution::Other
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/IO/Network/URL.h"
+#include    "Stroika/Foundation/Execution/Function.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -15,20 +14,33 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::IO::Network;
+using   namespace   Stroika::Foundation::Execution;
+
+
 
 
 namespace   {
-    void    Test1_URL_ ()
+    void    Test1_Function_()
     {
+        // Make sure Function<> works as well as std::function
         {
-            const   wchar_t kTestURL_[] = L"http://www.x.com/foo?bar=3";
-            VerifyTestResult (URL (kTestURL_).GetFullURL () == kTestURL_);
-            VerifyTestResult (URL (kTestURL_).GetHost () == L"www.x.com");
-            VerifyTestResult (URL (kTestURL_).GetHostRelativePath () == L"foo");
-            VerifyTestResult (URL (kTestURL_).GetQueryString () == L"bar=3");
-            VerifyTestResult (URL (kTestURL_) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
+            Function<int(bool)> f = [] (bool b) -> int { return 3;};
+            VerifyTestResult (f(true) == 3);
+            function<int(bool)> ff = f;
+            VerifyTestResult (ff(true) == 3);
         }
+        // Make sure Function<> serves its one purpose - being comparable
+        {
+            Function<int(bool)> f1 = [] (bool b) -> int { return 3;};
+            Function<int(bool)> f2 = [] (bool b) -> int { return 3;};
+
+            VerifyTestResult (f1 != f2);
+            VerifyTestResult (f1 < f2 or f2 < f1);
+            Function<int(bool)> f3 = f1;
+            VerifyTestResult (f3 == f1);
+            VerifyTestResult (f3 != f2);
+        }
+
     }
 }
 
@@ -36,7 +48,7 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test1_URL_ ();
+        Test1_Function_ ();
     }
 }
 

@@ -1,31 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::PERFORMANCE
+//  TEST    Foundation::Traveral
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <array>
-#include    <iostream>
-#include    <fstream>
-#include    <mutex>
-#include    <sstream>
-
-#include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Characters/StringBuilder.h"
-#include    "Stroika/Foundation/Characters/String2Float.h"
-#include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
-#include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
-#include    "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/Execution/StringException.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Memory/BLOB.h"
-#include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
@@ -33,745 +16,172 @@
 
 #include    "../TestHarness/TestHarness.h"
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-#include    "Stroika/Foundation/Execution/SpinLock.h"
-#include    "Stroika/Foundation/Memory/SharedPtr.h"
-#include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
-#endif
+
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::Math;
-using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Time;
+using   namespace   Stroika::Foundation::Traversal;
 
 
-// Turn this on rarely to calibrate so # runs a good test
-//#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
+namespace   {
 
-
-// My performance expectation numbers are calibrated for MSVC (2k13.net)
-// Dont print when they differ on other platforms.
-// This is only intended to alert me when something changes GROSSLY.
-#define   qPrintOutIfFailsToMeetPerformanceExpectations (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
-
-
-// Use this so when running #if qDebug case - we dont waste a ton of time with this test
-#define   qDebugCaseRuncountRatio (.01)
-
-
-
-
-namespace {
-    string  pctFaster2String_ (double pct)
+    void    Test_1_BasicRange_ ()
     {
-        if (pct < 0) {
-            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
+        {
+            Range<int> r (3, 5);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.Contains (3));
         }
-        else {
-            return Format (L"%.2f%% faster", pct).AsNarrowSDKString ();
+        {
+            Range<double> r (3, 5);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.Contains (3));
         }
-    }
-}
-
-
-namespace {
-    const char kDefaultPerfOutFile_[]   =   "PerformanceDump.txt";
-    bool    sShowOutput_    =   false;
-}
-
-
-namespace {
-#if     !qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64)
-    double  sTimeMultiplier_    =   5.0;    // default larger so on reg-tests we get more consistent percentages
-#else
-    double  sTimeMultiplier_    =   1.0;
+        {
+#if 0
+            ////// MAYBE GET RID OF THIS???
+            Range<int> r1 (3, 5);
+            Range<int> r2 (5, 6);
+            VerifyTestResult (not r1.Overlaps (r2));
+            VerifyTestResult (not r2.Overlaps (r1));
+            Range<int> r3  = r1;
+            VerifyTestResult (r1.Overlaps (r3));
+            VerifyTestResult (r3.Overlaps (r1));
 #endif
-}
-
-
-namespace {
-    ostream&    GetOutStream_ ()
-    {
-        static  shared_ptr<ostream> out2File;
-        if (not sShowOutput_ and out2File.get () == nullptr) {
-            out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
-        ostream&    outTo = (sShowOutput_ ? cout : *out2File);
-        return outTo;
-    }
-
-    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
-    {
-        ostream&    outTo = GetOutStream_ ();
-        outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
-        DurationSecondsType totalTime = baselineTime + compareWithTime;
-        double ratio = compareWithTime / baselineTime;
-        double  changePct   =   (1 - ratio) * 100.0;
-        if (changePct >= 0) {
-            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
-        }
-        else {
-            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
-        }
-        outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
-        if (changePct < expectedPercentFaster) {
-            outTo << "      {{{WARNING - expected no worse than " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
-        }
-#endif
-        outTo << endl;
-    }
-
-
-    DurationSecondsType RunTest_(function<void()> t, unsigned int runCount)
-    {
-        DurationSecondsType start = Time::GetTickCount ();
-        // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
-        for (volatile unsigned int i = 0; i < runCount; ++i) {
-            t();
-        }
-        return Time::GetTickCount () - start;
-    }
-
-    // return true if test failed (slower than expected)
-    bool    Tester (String testName,
-                    function<void()> baselineT, String baselineTName,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double expectedPercentFaster,
-                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
-    {
-#if     qDebug
-        runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
-#endif
-        DurationSecondsType baselineTime = RunTest_ (baselineT, runCount);
-        DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
-#if     qPrintOutIfBaselineOffFromOneSecond
-        if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
-        }
-#endif
-        printResults (testName, baselineTName, compareWithTName, expectedPercentFaster, baselineTime, compareWithTime);
-#if     qPrintOutIfFailsToMeetPerformanceExpectations
-        double ratio = compareWithTime / baselineTime;
-        double  changePct   =   (1 - ratio) * 100.0;
-        return changePct < expectedPercentFaster;
-#else
-        return false;
-#endif
-    }
-
-    void    Tester (String testName,
-                    function<void()> baselineT, String baselineTName,
-                    function<void()> compareWithT, String compareWithTName,
-                    unsigned int runCount,
-                    double expectedPercentFaster,
-                    Set<String>* failedTestAccumulator,
-                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
-                   )
-    {
-        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), expectedPercentFaster, printResults)) {
-            failedTestAccumulator->Add (testName);
+        {
+            using   RT  =   RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int >;
+            Range<int, RT> x    =   Range<int, RT>::FullRange ();
+            VerifyTestResult (x.GetLowerBound () == -3);
+            VerifyTestResult (x.GetUpperBound () == 100);
         }
     }
-}
 
-
-
-
-
-
-
-
-namespace {
-
-    template <typename WIDESTRING_IMPL>
-    void    Test_StructWithStringsFillingAndCopying()
+    void    Test_2_BasicDiscreteRangeIteration_ ()
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        struct  S {
-            WIDESTRING_IMPL fS1;
-            WIDESTRING_IMPL fS2;
-            WIDESTRING_IMPL fS3;
-            WIDESTRING_IMPL fS4;
-            S() {}
-            S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
-                : fS1(w1)
-                , fS2(w2)
-                , fS3(w3)
-                , fS4(w4)
-            {
+        {
+            DiscreteRange<int> r (3, 5);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.Contains (3));
+        }
+        {
+            DiscreteRange<int> r;
+            VerifyTestResult (r.empty ());
+        }
+        {
+            DiscreteRange<int> r (3, 3);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.size () == 1);
+        }
+        {
+            int nItemsHit = 0;
+            int lastItemHit = 0;
+            for (auto i : DiscreteRange<int> (3, 5)) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit < i);
+                lastItemHit = i;
             }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == 5);    /// IN DISCUSSION - OPEN ENDED RHS?
+        }
+    }
+
+}
+
+
+
+namespace {
+    void    Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
+    {
+        enum    class   Color {
+            red, blue, green,
+
+            Stroika_Define_Enum_Bounds (red, green)
         };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
-        S   s1;
-        S   s2 (L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144");
-        s1 = s2;
-        vector<S>   v;
-        for (size_t i = 1; i < 10; ++i) {
-            v.push_back (s2);
-        }
-        sort (v.begin (), v.end (), [](S a, S b) {
-            return b.fS1 < a.fS1;
-        });
-        VerifyTestResult (v[0].fS1 == v[1].fS1);
-    }
 
-}
+        using   Memory::Optional;
 
-
-
-
-
-
-
-
-
-namespace {
-
-    template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends1_()
-    {
-        const WIDESTRING_IMPL KBase = L"1234568321";
-        WIDESTRING_IMPL w;
-        for (int i = 0; i < 10; ++i) {
-            w += KBase;
-        }
-        VerifyTestResult (w.length () == KBase.length () * 10);
-    }
-
-}
-
-
-
-
-
-namespace {
-
-    template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends2_()
-    {
-        const wchar_t KBase[] = L"1234568321";
-        WIDESTRING_IMPL w;
-        for (int i = 0; i < 10; ++i) {
-            w += KBase;
-        }
-        VerifyTestResult (w.length () == wcslen(KBase) * 10);
-    }
-
-}
-
-
-
-
-
-namespace {
-
-    template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringAppends3_()
-    {
-        const wchar_t KBase[] = L"1234568321";
-        WIDESTRING_IMPL w;
-        for (int i = 0; i < 100; ++i) {
-            w += KBase;
-        }
-        VerifyTestResult (w.length () == wcslen(KBase) * 100);
-    }
-
-}
-
-
-
-
-
-
-namespace {
-    namespace {
-        template <typename WIDESTRING_IMPL>
-        void    Test_SimpleStringConCat1_T1_(const WIDESTRING_IMPL& src)
         {
-            WIDESTRING_IMPL tmp = src + src;
-            tmp = tmp + src;
-            tmp = src + tmp;
-            VerifyTestResult (tmp.length () == src.length () * 4);
+            Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kLowerBound;
+            Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kUpperBound;
+            Color min2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
+            Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
+            Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kLowerBound;
+            Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kUpperBound;
+            Color min4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
+            Color max4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
+            VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
+            VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
+            VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
+            VerifyTestResult (min3 == Color::eSTART and max3 == Color::eLAST);
+            VerifyTestResult (min4 == Color::eSTART and max4 == Color::eLAST);
         }
-    }
-    template <typename WIDESTRING_IMPL>
-    void    Test_SimpleStringConCat1_()
-    {
-        const WIDESTRING_IMPL KBase = L"1234568321";
-        Test_SimpleStringConCat1_T1_ (KBase);
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-namespace {
-    namespace {
-        template <typename WIDESTRING_IMPL>
-        void    Test_StringSubStr_T1_ (const WIDESTRING_IMPL& src)
         {
-            WIDESTRING_IMPL tmp = src.substr (5, 20);
-            VerifyTestResult (tmp.length () == 20);
-            VerifyTestResult (src.substr (5, 20).length () == 20);
-            VerifyTestResult (src.substr (5, 20).substr (3, 3).length () == 3);
-        }
-    }
-    template <typename WIDESTRING_IMPL>
-    void    Test_StringSubStr_()
-    {
-        static  const WIDESTRING_IMPL KBase = L"01234567890123456789012345678901234567890123456789";
-        Test_StringSubStr_T1_ (KBase);
-    }
-}
-
-
-
-
-
-
-
-namespace {
-
-    namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
-        mutex   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
-        int     Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
-        void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK(function<void(int*)> doInsideLock)
-        {
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I dont care about the (much rarer) write case where we really need to modify
-            lock_guard<mutex> critSec (Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex);
-            doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
-        }
-        shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int (1));
-        void    Test_MutexVersusSharedPtrCopy_SharedPtrCopy(function<void(int*)> doInsideLock)
-        {
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I dont care about the (much rarer) write case where we really need to modify
-            shared_ptr<int> tmp = Test_MutexVersusSharedPtrCopy_sharedPtrCase;
-            doInsideLock (tmp.get ());
-        }
-
-        int s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT;
-        void    Test_MutexVersusSharedPtrCopy_COUNTEST (int* i)
-        {
-            s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT += *i;
-        }
-
-    }
-
-    void    Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK()
-    {
-        using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
-        s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (Test_MutexVersusSharedPtrCopy_COUNTEST);
-        }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
-    }
-    void    Test_MutexVersusSharedPtrCopy_shared_ptr_copy()
-    {
-        using namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_;
-        s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MutexVersusSharedPtrCopy_SharedPtrCopy (Test_MutexVersusSharedPtrCopy_COUNTEST);
-        }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000);   // so nothing optimized away
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-namespace {
-
-    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
-        int     COUNTER = 1;
-        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
-        void    Test_stdsharedptr_use_(function<void(int*)> doInsideLock)
-        {
-            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void    Test_stdsharedptr_alloc_()
-        {
-            s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
-        }
-        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
-        void    Test_MemorySharedPtr_use_(function<void(int*)> doInsideLock)
-        {
-            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void    Test_MemorySharedPtr_alloc_()
-        {
-            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
-        }
-        void    Test_ACCUM (int* i)
-        {
-            COUNTER += *i;
-        }
-    }
-
-    void    Test_stdsharedptrBaseline()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_stdsharedptr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_stdsharedptr_alloc_ ();
-        }
-    }
-    void    Test_MemorySharedPtr()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MemorySharedPtr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000);   // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_MemorySharedPtr_alloc_ ();
-        }
-    }
-
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-namespace {
-
-    namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
-        mutex   s_Mutex_;
-        int     sCnt2Add_ = 1;
-        void    Test_MutexVersusSpinLock_MUTEXT_LOCK(function<void(int*)> doInsideLock)
-        {
-            lock_guard<mutex> critSec (s_Mutex_);
-            doInsideLock (&sCnt2Add_);
-        }
-        SpinLock   s_SpinLock_;
-        void    Test_MutexVersusSpinLock_SPINLOCK_LOCK(function<void(int*)> doInsideLock)
-        {
-            lock_guard<SpinLock> critSec (s_SpinLock_);
-            doInsideLock (&sCnt2Add_);
-        }
-        int sRunningCnt_;
-        void    Test_MutexVersusSpinLock_COUNTEST (int* i)
-        {
-            sRunningCnt_ += *i;
-        }
-    }
-
-
-
-    void    Test_MutexVersusSpinLock_MUTEXT_LOCK()
-    {
-        using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
-        sRunningCnt_ = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MutexVersusSpinLock_MUTEXT_LOCK (Test_MutexVersusSpinLock_COUNTEST);
-        }
-        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
-    }
-    void    Test_MutexVersusSpinLock_SPIN_LOCK()
-    {
-        using namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_;
-        sRunningCnt_ = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MutexVersusSpinLock_SPINLOCK_LOCK (Test_MutexVersusSpinLock_COUNTEST);
-        }
-        VerifyTestResult (sRunningCnt_ == 1000);   // so nothing optimized away
-    }
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-namespace {
-
-    namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_ {
-        shared_ptr<int> s_SharedPtrCase = shared_ptr<int> (new int (1));
-        void    Test_SharedPtrCopy(function<void(int*)> doInsideLock)
-        {
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I dont care about the (much rarer) write case where we really need to modify
-            shared_ptr<int> tmp = s_SharedPtrCase;
-            doInsideLock (tmp.get ());
-        }
-
-        atomic<shared_ptr<int>> s_AtomicSharedPtrCase (shared_ptr<int> (new int (1)));
-        void    Test_AtomicSharedPtrCopy(function<void(int*)> doInsideLock)
-        {
-            //Assert (s_AtomicSharedPtrCase.load ().use_count () == 2);
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I dont care about the (much rarer) write case where we really need to modify
-            atomic<shared_ptr<int>> tmp = s_AtomicSharedPtrCase.load ();
-            doInsideLock (tmp.load ().get ());
-        }
-
-        int CNT = 0;
-        void    COUNTEST_ (int* i)
-        {
-            CNT += *i;
-        }
-
-    }
-
-    void    Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE()
-    {
-        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
-        CNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_SharedPtrCopy (COUNTEST_);
-        }
-        VerifyTestResult (CNT == 1000);   // so nothing optimized away
-    }
-    void    Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE()
-    {
-        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
-        CNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_AtomicSharedPtrCopy (COUNTEST_);
-        }
-        VerifyTestResult (CNT == 1000);   // so nothing optimized away
-    }
-
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-namespace {
-    template <typename WIDESTRING_IMPL>
-    void    Test_OperatorINSERT_ostream_ ()
-    {
-        using namespace std;
-        static  WIDESTRING_IMPL kT1 =   L"abc";
-        static  WIDESTRING_IMPL kT2 =   L"123";
-        static  WIDESTRING_IMPL kT3 =   L"abc123abc123";
-        wstringstream   out;
-        for (int i = 0; i < 1000; ++i) {
-            out << kT1 << kT2 << kT3;
-        }
-        VerifyTestResult (out.str ().length () == 18 * 1000);
-    }
-}
-#endif
-
-
-
-
-
-
-
-
-namespace   {
-
-    template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_EXTRACTOR>
-    void    Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
-    {
-        STREAMISH_STRINGBUILDERIMPL    out;
-        for (int i = 0; i < 20; ++i) {
-            out << L"0123456789";
-            out << L" ";
-            out << L"01234567890123456789";
-        }
-        VerifyTestResult (extractor (out).length () == 31 * 20);
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-namespace   {
-    template <typename WIDESTRING_IMPL>
-    void    Test_String_cstr_call_ ()
-    {
-        static  WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
-        static  WIDESTRING_IMPL s2 = L"o3424";
-        static  WIDESTRING_IMPL s3 = L"o3424";
-        static  WIDESTRING_IMPL s4 = L"o3424";
-        static  WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
-        size_t s1len    =   s1.length ();
-        size_t s2len    =   s2.length ();
-        size_t s3len    =   s3.length ();
-        size_t s4len    =   s4.length ();
-        size_t s5len    =   s5.length ();
-        for (volatile int i = 0; i < 200; ++i) {
-            VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
-            VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
-            VerifyTestResult (s3len == ::wcslen (s3.c_str ()));
-            VerifyTestResult (s4len == ::wcslen (s4.c_str ()));
-            VerifyTestResult (s5len == ::wcslen (s5.c_str ()));
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-namespace   {
-    namespace Private_ {
-        template <typename CONTAINER>
-        void    Test_SequenceVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
-        {
-            if (recCalls > 0) {
-                Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color>::FullRange ()) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
+                lastItemHit = i;
             }
-            VerifyTestResult (c.size () == 500);
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
         }
-    }
-    template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
-    void    Test_SequenceVectorAdditionsAndCopies_ ()
-    {
-        ELEMENTTYPE addEachTime = ELEMENTTYPE ();
-        CONTAINER c;
-        for (int i = 0; i < 500; ++i) {
-            c.push_back (addEachTime);
-        }
-        Private_::Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, 20);
-    }
-}
-
-
-
-
-
-
-
-
-namespace   {
-    namespace Private_ {
-        template <typename CONTAINER>
-        void    Test_CollectionVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
         {
-            if (recCalls > 0) {
-                Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ()) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
+                lastItemHit = i;
             }
-            VerifyTestResult (c.size () == 500);
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
         }
-    }
-    template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
-    void    Test_CollectionVectorAdditionsAndCopies_ (function<void(CONTAINER* c)> f2Add)
-    {
-        CONTAINER c;
-        for (int i = 0; i < 500; ++i) {
-            f2Add (&c);
+        {
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
+                lastItemHit = i;
+            }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
         }
-        Private_::Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, 20);
+        {
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color i) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
+                lastItemHit = i;
+            });
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
+        }
     }
 }
 
 
 
 
-
-
-
-
-
-
+namespace {
+    void    Test4_MapTest_ ()
+    {
+        {
+            Containers::Sequence<int>   n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+            Containers::Sequence<int>   n1 = Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1;}));
+            VerifyTestResult (n1.size () == 3);
+            VerifyTestResult (n1[0] == 2);
+            VerifyTestResult (n1[1] == 3);
+            VerifyTestResult (n1[2] == 4);
+        }
+    }
+}
 
 
 
@@ -780,306 +190,99 @@ namespace   {
 
 
 namespace {
-    template <typename WIDESTRING_IMPL>
-    void    Test_String_Format_ ()
-    {
-        VerifyTestResult (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
-        VerifyTestResult (Format (L"0x%x", 0x20) == L"0x20");
-    }
-    template <>
-    void    Test_String_Format_<wstring> ()
+    void    Test5_ReduceTest_ ()
     {
         {
-            wchar_t buf[1024];
-#if     qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", L"xxx", 33) == 10);
-#else
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %s, %d", "xxx", 33) == 10);     // not with swprintf %s means narrow string unlike Format()
-#endif
-            VerifyTestResult (wstring (buf) == L"a, xxx, 33");
-        }
-        {
-            wchar_t buf[1024];
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
-            VerifyTestResult (wstring (buf) == L"0x20");
+            Containers::Sequence<int>   n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+            int sum = FunctionalApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
+            VerifyTestResult (sum == 6);
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 namespace {
-    namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
-        //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
-        static  Byte                kCArr_4k_[4 * 1024] = { 0x1, 0x2, 0x3, };
-
-        template <typename BLOBISH_IMPL>
-        size_t    T1_SIZER_ (BLOBISH_IMPL b)
-        {
-            return b.size ();
-        }
-        template <typename BLOBISH_IMPL>
-        void    T1_ ()
-        {
-            BLOBISH_IMPL    bn;
-            for (int i = 0; i < 100; ++i) {
-                //BLOBISH_IMPL  bl = kArr_4k_;
-                BLOBISH_IMPL    bl = BLOBISH_IMPL (begin (kCArr_4k_), end (kCArr_4k_));
-                BLOBISH_IMPL    b2 = bl;
-                BLOBISH_IMPL    b3 = bl;
-                BLOBISH_IMPL    b4 = bl;
-                bn = b4;
-            }
-            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
-        }
-
-    }
-    template <typename BLOBISH_IMPL>
-    void    Test_BLOB_Versus_Vector_Byte ()
+    void    Test6_FunctionApplicationContext_ ()
     {
-        Test_BLOB_Versus_Vector_Byte_DETAILS::T1_<BLOBISH_IMPL> ();
-    }
+        using Containers::Sequence;
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-namespace   {
-    void    RunPerformanceTests_ ()
-    {
-        if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
-            GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
+        {
+            Containers::Sequence<int> s =   { 1, 2, 3 };
+            {
+                shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
+                size_t answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
+                Map<int> ([] (int s) { return s + 5; }).
+                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
+                ;
+                VerifyTestResult (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                size_t answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<int> ([] (int s) { return s + 5; }).
+                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
+                VerifyTestResult (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                Containers::Sequence<int> r = Containers::Sequence<int> (
+                                                  FunctionalApplicationContext<int>(s).
+                                                  Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<int> ([] (int s) { return s + 5; })
+                                              );
+                VerifyTestResult (r.length () == 2);
+                VerifyTestResult (r[0] == 6 and r[1] == 8);
+            }
+            {
+                Memory::Optional<int> answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
+                    Find<int> ([] (int i) -> bool { return i == 1 ; })
+                    ;
+                VerifyTestResult (*answer == 1);
+            }
+            {
+                Memory::Optional<int> answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
+                    Find<int> ([] (int i) -> bool { return i == 8 ; })
+                    ;
+                VerifyTestResult (answer.IsMissing ());
+            }
         }
 
-        Set<String> failedTests;
-        Tester (
-            L"Test of simple locking strategies (mutex v shared_ptr copy)",
-            Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-            Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-            15000,
-            -40.0,    // just a warning, fyi
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"Test of simple locking strategies (mutex v SpinLock)",
-            Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
-            Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
-            15000,
-            -65.0,
-            &failedTests
-        );
-#endif
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"std::shared_ptr versus Memory::SharedPtr",
-            Test_stdsharedptrBaseline, L"shared_ptr",
-            Test_MemorySharedPtr, L"SharedPtr",
-            22500,
-            8.0,
-            &failedTests
-        );
-#endif
-#if 0
-        Tester (
-            L"atomic sharedptr versus sharedptr",
-            Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE, L"shared_ptr",
-            Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE, L"atomic<shared_ptr<>>",
-            15000,
-            -30.0,    // just a warning, fyi
-            &failedTests
-        );
-#endif
-        Tester (
-            L"Simple Struct With Strings Filling And Copying",
-            Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-            Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-            40000,
-            40.0,
-            &failedTests
-        );
-        Tester (
-            L"Simple String append test (+='string object') 10x",
-            Test_SimpleStringAppends1_<wstring>, L"wstring",
-            Test_SimpleStringAppends1_<String>, L"Charactes::String",
-            1200000,
-            -340.0,
-            &failedTests
-        );
-        Tester (
-            L"Simple String append test (+=wchar_t[]) 10x",
-            Test_SimpleStringAppends2_<wstring>, L"wstring",
-            Test_SimpleStringAppends2_<String>, L"Charactes::String",
-            1312506,
-            -310.0,
-            &failedTests
-        );
-        Tester (
-            L"Simple String append test (+=wchar_t[]) 100x",
-            Test_SimpleStringAppends3_<wstring>, L"wstring",
-            Test_SimpleStringAppends3_<String>, L"Charactes::String",
-            272170,
-            -880.0,
-            &failedTests
-        );
-        Tester (
-            L"String a + b",
-            Test_SimpleStringConCat1_<wstring>, L"wstring",
-            Test_SimpleStringConCat1_<String>, L"String",
-            2038815,
-            -120.0,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"wstringstream << test",
-            Test_OperatorINSERT_ostream_<wstring>, L"wstring",
-            Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-            5438 ,
-            -30.0,
-            &failedTests
-        );
-#endif
-        Tester (
-            L"String::substr()",
-            Test_StringSubStr_<wstring>, L"wstring",
-            Test_StringSubStr_<String>, L"Charactes::String",
-            3200000,
-            -75.0,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"wstringstream versus BasicTextOutputStream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
-        184098 ,
-        -275.0,
-        &failedTests
-        );
-#endif
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"wstringstream versus StringBuilder",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
-        160000 ,
-        82.0,
-        &failedTests
-        );
-#endif
-        Tester (
-            L"Simple c_str() test",
-            Test_String_cstr_call_<wstring>, L"wstring",
-            Test_String_cstr_call_<String>, L"Charactes::String",
-            40000,
-            -13.0,
-            &failedTests
-        );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-        Tester (
-            L"Sequence<int> basics",
-            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
-            135365,
-            -490.0,
-            &failedTests
-        );
-        Tester (
-            L"Sequence<string> basics",
-            Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
-            8712,
-            20.0,
-            &failedTests
-        );
-        Tester (
-            L"Sequence_DoublyLinkedList<int> basics",
-            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
-            135000,
-            -520.0,
-            &failedTests
-        );
-        Tester (
-            L"Sequence_DoublyLinkedList<string> basics",
-            Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
-            Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
-            8712,
-            7.0,
-            &failedTests
-        );
-        Tester (
-            L"Collection<int> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
-        94862,
-        -530.0,
-        &failedTests
-        );
-        Tester (
-            L"Collection<string> basics",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
-        [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
-        8712,
-        25.0,
-        &failedTests
-        );
-#endif
-        Tester (
-            L"String Chracters::Format ()",
-            Test_String_Format_<wstring>, L"sprintf",
-            Test_String_Format_<String>, L"String Characters::Format",
-            1349818,
-            -35.0,
-            &failedTests
-        );
-        Tester (
-            L"BLOB versus vector<Byte>",
-            Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
-            Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
-            6000,
-            75.0,
-            &failedTests
-        );
-
-
-        if (not failedTests.empty ()) {
-            String listAsMsg;
-            failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
-            if (sShowOutput_) {
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-                Execution::DoThrow (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
-#endif
+        {
+            using   Characters::String;
+            Sequence<String> s = { L"alpha", L"beta", L"gamma" };
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                size_t answer =
+                    FunctionalApplicationContext<String>(s).
+                    Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<String> ([] (String s) { return s + L" hello"; }).
+                Reduce<size_t> ([] (String s, size_t memo) { return memo + 1; });
+                VerifyTestResult (answer == 2);
             }
-            else {
-                Execution::DoThrow (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromAscii (kDefaultPerfOutFile_).c_str ())));
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                Containers::Sequence<String> r = Containers::Sequence<String> (
+                                                     FunctionalApplicationContext<String>(s).
+                                                     Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<String> ([] (String s) { return s + L" hello"; })
+                                                 );
+                VerifyTestResult (r.length () == 2);
+                VerifyTestResult (r[0] == L"alpha hello" and r[1] == L"gamma hello");
             }
         }
     }
@@ -1088,25 +291,113 @@ namespace   {
 
 
 
+namespace {
+    void    Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
+    {
+        using   Containers::Sequence;
+        {
+            const uint32_t  kRefCheck_[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+            auto isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
+            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck)) {
+                VerifyTestResult (Math::IsPrime (i));
+            }
+            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck));
+            VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
+            VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck).GetLength ());
+        }
+    }
+}
+
+
+namespace {
+    void    Test8_DiscreteRangeTestFromDocs_ ()
+    {
+        // From Docs in DiscreteRange<> class
+        vector<int> v = DiscreteRange<int> (1, 10).As<vector<int>> ();
+        VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+        for (auto i : DiscreteRange<int> (1, 10)) {
+            VerifyTestResult (1 <= i and i <= 10);  // rough verification
+        }
+    }
+}
+
+
+
+
+namespace {
+    void    Test9_Generators_ ()
+    {
+        {
+            constexpr int kMin = 1;
+            constexpr int kMax = 10;
+            auto myContext = shared_ptr<int> (new int (kMin - 1));
+            auto getNext = [myContext] () -> Memory::Optional<int> {
+                (*myContext)++;
+                if (*myContext > 10)
+                {
+                    return Memory::Optional<int> ();
+                }
+                return *myContext;
+            };
+
+            int sum = 0;
+            for (auto i : CreateGenerator<int> (getNext)) {
+                VerifyTestResult (1 <= i and i <= 10);
+                sum += i;
+            }
+            VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
+        }
+
+    }
+}
+
+
+
+
+namespace {
+    void    Test10_MakeIterableFromIterator_ ()
+    {
+        {
+            Containers::Sequence<int>   a = {1, 3, 5, 7, 9};
+            Iterator<int>   iter = a.MakeIterator ();
+
+            int sum = 0;
+            for (auto i : MakeIterableFromIterator (iter)) {
+                sum += i;
+            }
+            VerifyTestResult (sum == 25);
+        }
+
+    }
+}
+
+
+
+
+namespace   {
+
+    void    DoRegressionTests_ ()
+    {
+        Test_1_BasicRange_ ();
+        Test_2_BasicDiscreteRangeIteration_ ();
+        Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
+        Test4_MapTest_ ();
+        Test5_ReduceTest_ ();
+        Test6_FunctionApplicationContext_ ();
+        Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
+        Test8_DiscreteRangeTestFromDocs_ ();
+        Test9_Generators_ ();
+        Test10_MakeIterableFromIterator_ ();
+    }
+}
 
 
 
 
 int     main (int argc, const char* argv[])
 {
-    // NOTE: run with --show or look for output in PERF-OUT.txt
-    Sequence<String>  cmdLine   =   ParseCommandLine (argc, argv);
-    sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
-
-    {
-        Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
-        if (arg.IsPresent ()) {
-            sTimeMultiplier_ = String2Float<double> (*arg);
-        }
-    }
-
     Stroika::TestHarness::Setup ();
-    Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
+    Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
 

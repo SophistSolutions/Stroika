@@ -1,18 +1,25 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::Traveral
+//  TEST    Foundation::Time
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Containers/Sequence.h"
-#include    "Stroika/Foundation/Containers/Mapping.h"
-#include    "Stroika/Foundation/Configuration/Enumeration.h"
+#include    <chrono>
+#include    <iostream>
+#include    <sstream>
+
+#include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Traversal/DiscreteRange.h"
-#include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
-#include    "Stroika/Foundation/Traversal/Generator.h"
-#include    "Stroika/Foundation/Traversal/Range.h"
+#include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Time/Date.h"
+#include    "Stroika/Foundation/Time/DateRange.h"
+#include    "Stroika/Foundation/Time/DateTime.h"
+#include    "Stroika/Foundation/Time/DateTimeRange.h"
+#include    "Stroika/Foundation/Time/Duration.h"
+#include    "Stroika/Foundation/Time/DurationRange.h"
+#include    "Stroika/Foundation/Time/Realtime.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -20,69 +27,390 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Traversal;
+using   namespace   Stroika::Foundation::Time;
+
+using   Stroika::Foundation::Debug::TraceContextBumper;
+
+
+
+
+
+
+namespace {
+    template    <typename DATEORTIME>
+    void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime, const locale& l)
+    {
+        // disable for now cuz fails SO OFTEN
+        String      formatByLocale = startDateOrTime.Format (l);
+        DATEORTIME  andBack = DATEORTIME::Parse (formatByLocale, l);
+        VerifyTestResult (startDateOrTime == andBack);
+    }
+    template    <typename DATEORTIME>
+    void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
+    {
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
+
+        // should add test like this...
+        //Verify (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
+    }
+}
+
+
+// Skip some locale tests cuz so little works
+#define qTestLocaleCode_    0
+
+
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_    0
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_Date_         0
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_     0
+
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (TimeOfDay startDateOrTime)
+    {
+    }
+}
+#endif
+
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_Date_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (Date startDateOrTime)
+    {
+    }
+}
+#endif
+
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (DateTime startDateOrTime)
+    {
+    }
+}
+#endif
+
+
+
+
+
+
+namespace   {
+    void    Test_0_Test_VarDateFromStrOnFirstTry_()
+    {
+        // TEST MUST BE FIRST - OR VERY NEAR START OF APP!
+        //
+        // Before any calls to VarDateFromStr ()...
+        //
+        // CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+        //
+#if     defined (_MSC_VER)
+        VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", Time::DateTime::ParseFormat::eCurrentLocale).empty ());
+#endif
+    }
+}
+
 
 
 namespace   {
 
-    void    Test_1_BasicRange_ ()
+    void    Test_1_TestTickCountGrowsMonotonically_ ()
+    {
+        DurationSecondsType start   =   Time::GetTickCount ();
+        Execution::Sleep (0.1);
+        VerifyTestResult (start <= Time::GetTickCount ());
+    }
+
+}
+
+
+namespace   {
+
+    void    Test_2_TestTimeOfDay_ ()
     {
         {
-            Range<int> r (3, 5);
-            VerifyTestResult (not r.empty ());
-            VerifyTestResult (r.Contains (3));
+            TimeOfDay   t;
+            VerifyTestResult (t.empty ());
+            TimeOfDay   t2 (2);
+            VerifyTestResult (t < t2);
+            VerifyTestResult (t.GetAsSecondsCount () == 0);
+            VerifyTestResult (not t2.empty ());
+            VerifyTestResult (t.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
+            VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
+            VerifyTestResult (t2.GetHours () == 0);
+            VerifyTestResult (t2.GetMinutes () == 0);
+            VerifyTestResult (t2.GetSeconds () == 2);
+            TestRoundTripFormatThenParseNoChange_ (t);
+            TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            Range<double> r (3, 5);
-            VerifyTestResult (not r.empty ());
-            VerifyTestResult (r.Contains (3));
+            TimeOfDay   t2 (5 * 60 * 60 + 3 * 60 + 49);
+            VerifyTestResult (t2.GetHours () == 5);
+            VerifyTestResult (t2.GetMinutes () == 3);
+            VerifyTestResult (t2.GetSeconds () == 49);
+            TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-#if 0
-            ////// MAYBE GET RID OF THIS???
-            Range<int> r1 (3, 5);
-            Range<int> r2 (5, 6);
-            VerifyTestResult (not r1.Overlaps (r2));
-            VerifyTestResult (not r2.Overlaps (r1));
-            Range<int> r3  = r1;
-            VerifyTestResult (r1.Overlaps (r3));
-            VerifyTestResult (r3.Overlaps (r1));
+            TimeOfDay   t2 (25 * 60 * 60);
+            VerifyTestResult (t2.GetHours () == 23);
+            VerifyTestResult (t2.GetMinutes () == 59);
+            VerifyTestResult (t2.GetSeconds () == 59);
+            VerifyTestResult (t2 == TimeOfDay::kMax);
+            TestRoundTripFormatThenParseNoChange_ (t2);
+        }
+        {
+            VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
+        }
+        {
+            // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
+            //      -- LGP 2011-10-08
+            VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
+        }
+        {
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
+            locale::global (prevLocale);
+        }
+        {
+            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:00");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
+            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
+        }
+        {
+#if     qPlatform_Windows
+            const   LCID    kUS_ENGLISH_LOCALE  =   MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
+#endif
+            TimeOfDay   threePM =   TimeOfDay::Parse (L"3pm", locale::classic ());
+#if     qPlatform_Windows
+            VerifyTestResult (threePM.Format (kUS_ENGLISH_LOCALE) == L"3 PM");
+#endif
+            //VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
+            VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00");  // UGH!!!
+            TestRoundTripFormatThenParseNoChange_ (threePM);
+        }
+
+    }
+
+}
+
+
+namespace   {
+    void    VERIFY_ROUNDTRIP_XML_ (const Date& d)
+    {
+        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eXML), Date::ParseFormat::eXML) == d);
+    }
+
+    void    Test_3_TestDate_ ()
+    {
+        {
+            Date    d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+            TestRoundTripFormatThenParseNoChange_ (d);
+            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
+            VERIFY_ROUNDTRIP_XML_ (d);
+            d = d.AddDays (4);
+            VERIFY_ROUNDTRIP_XML_ (d);
+            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-08");
+            d = d.AddDays (-4);
+            VERIFY_ROUNDTRIP_XML_ (d);
+            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            Date    d   =   Date::Parse (L"09/14/1752", locale::classic ());
+            VerifyTestResult (not d.empty ());
+            VerifyTestResult (d == Date::kMin);
+            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            Date    d;
+            VerifyTestResult (d.empty ());
+            VerifyTestResult (d < DateTime::GetToday ());
+            VerifyTestResult (DateTime::GetToday () > d);
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            Date    d   =   Date::kMin;
+            VerifyTestResult (not d.empty ());
+            VerifyTestResult (d < DateTime::Now ().GetDate ());
+            VerifyTestResult (not (DateTime::Now ().GetDate () < d));
+            VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+#if     qPlatform_Windows
+        {
+            wstring testCase    =   L"6/1/2005";
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+        }
+        {
+            wstring testCase    =   L"4/20/1964";
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+        }
+        {
+            wstring testCase    =   L"7/4/1776";
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::kMax);
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::kMin);
+        }
+        {
+            wstring testCase    =   L"7/4/2076";
+            //  TODO:
+            //      Fails - debug soon -- LGP 2011-10-08
+            //VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
+        }
+#endif
+        {
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
+        }
+        {
+            VerifyTestResult (Date::kMin < Date::kMax);
+            VerifyTestResult (Date::kMin <= Date::kMax);
+            VerifyTestResult (not (Date::kMin > Date::kMax));
+            VerifyTestResult (not (Date::kMin >= Date::kMax));
+            TestRoundTripFormatThenParseNoChange_ (Date::kMin);
+            TestRoundTripFormatThenParseNoChange_ (Date::kMax);
+        }
+        {
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            TestRoundTripFormatThenParseNoChange_ (d);
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
+            locale::global (prevLocale);
+        }
+        {
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903"  or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/03");
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/03");
+        }
+
+        {
+            Date d  =   Date (Date::JulianRepType (2455213));
+            VerifyTestResult (d.Format () == L"1/16/10");
+        }
+    }
+
+}
+
+
+namespace   {
+
+    void    Test_4_TestDateTime_ ()
+    {
+        {
+            DateTime    d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+            VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1903-04-04");
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            DateTime    d;
+            VerifyTestResult (d.empty ());
+            VerifyTestResult (d < DateTime::Now ());
+            VerifyTestResult (DateTime::Now () > d);
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            DateTime    d   =   DateTime::kMin;
+            VerifyTestResult (not d.empty ());
+            VerifyTestResult (d < DateTime::Now ());
+            VerifyTestResult (DateTime::Now () > d);
+            d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::Timezone::eUTC);   // so that compare works - cuz we dont know timezone we'll run test with...
+            VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1752-09-14T00:00:00Z");   // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+#if     qPlatform_Windows
+        {
+            const   LCID    kUS_ENGLISH_LOCALE  =   MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
+            wstring testCase    =   L"2010-01-01";
+            //TODO: FIX SO THIS WORKS... (or come up with better test)
+            //VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
+        }
+#endif
+
+        //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
+        {
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            DateTime    dt (d, TimeOfDay (101));
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM" or dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/05/1903 12:01:41 AM");
+            DateTime    dt2 (d, TimeOfDay (60));
+            //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            locale::global (prevLocale);
+        }
+        {
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
+            TestRoundTripFormatThenParseNoChange_ (d);
+            DateTime    dt (d, TimeOfDay (101));
+            TestRoundTripFormatThenParseNoChange_ (dt);
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/06/03 00:01:41");
+            DateTime    dt2 (d, TimeOfDay (60));
+            TestRoundTripFormatThenParseNoChange_ (dt2);
+            // want a variant that does this formatting!
+            //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+        }
+        {
+            //VerifyTestResult(DateTime::Parse(L"2010-01-01", DateTime::ParseFormat::eCurrentLocale).GetDate().GetYear() == Time::Year(2010));
+            DateTime    now = DateTime::Now ();
+            TestRoundTripFormatThenParseNoChange_ (now);
+#if     qTestLocaleCode_ && (_MSC_VER >= _MS_VS_2k13_VER_)
+            Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
 #endif
         }
-        {
-            using   RT  =   RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int >;
-            Range<int, RT> x    =   Range<int, RT>::FullRange ();
-            VerifyTestResult (x.GetLowerBound () == -3);
-            VerifyTestResult (x.GetUpperBound () == 100);
-        }
     }
 
-    void    Test_2_BasicDiscreteRangeIteration_ ()
+}
+
+
+
+namespace   {
+
+    void    Test_5_DateTimeTimeT_ ()
     {
         {
-            DiscreteRange<int> r (3, 5);
-            VerifyTestResult (not r.empty ());
-            VerifyTestResult (r.Contains (3));
+            DateTime    d   =   Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20));
+            VerifyTestResult (d.As<time_t> () == 956188800);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DiscreteRange<int> r;
-            VerifyTestResult (r.empty ());
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", locale ()));
+            VerifyTestResult (d.As<time_t> () == 802278000);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DiscreteRange<int> r (3, 3);
-            VerifyTestResult (not r.empty ());
-            VerifyTestResult (r.size () == 1);
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale));
+            VerifyTestResult (d.As<time_t> () == 802278000);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            int nItemsHit = 0;
-            int lastItemHit = 0;
-            for (auto i : DiscreteRange<int> (3, 5)) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit < i);
-                lastItemHit = i;
-            }
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == 5);    /// IN DISCUSSION - OPEN ENDED RHS?
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale));
+            VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
+        }
+        {
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
+            VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
+        }
+        {
+            const   time_t  kTEST   =   802234800;
+            DateTime    d   =   DateTime (kTEST);
+            VerifyTestResult (d.As<time_t> () == kTEST);    // source - http://www.onlineconversion.com/unix_time.htm
         }
     }
 
@@ -90,97 +418,31 @@ namespace   {
 
 
 
-namespace {
-    void    Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
-    {
-        enum    class   Color {
-            red, blue, green,
-
-            Stroika_Define_Enum_Bounds (red, green)
-        };
-
-        using   Memory::Optional;
-
-        {
-            Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kLowerBound;
-            Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kUpperBound;
-            Color min2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
-            Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
-            Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kLowerBound;
-            Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kUpperBound;
-            Color min4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
-            Color max4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
-            VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
-            VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
-            VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
-            VerifyTestResult (min3 == Color::eSTART and max3 == Color::eLAST);
-            VerifyTestResult (min4 == Color::eSTART and max4 == Color::eLAST);
-        }
-        {
-            int nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color>::FullRange ()) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
-                lastItemHit = i;
-            }
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == Color::green);
-        }
-        {
-            int nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ()) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
-                lastItemHit = i;
-            }
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == Color::green);
-        }
-        {
-            int nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
-                lastItemHit = i;
-            }
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == Color::green);
-        }
-        {
-            int nItemsHit = 0;
-            Optional<Color> lastItemHit;
-            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color i) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
-                lastItemHit = i;
-            });
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == Color::green);
-        }
-    }
-}
 
 
 
+namespace   {
 
-namespace {
-    void    Test4_MapTest_ ()
+    void    Test_6_DateTimeStructTM_ ()
     {
         {
-            Containers::Sequence<int>   n;
-            n.Append (1);
-            n.Append (2);
-            n.Append (3);
-            Containers::Sequence<int>   n1 = Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1;}));
-            VerifyTestResult (n1.size () == 3);
-            VerifyTestResult (n1[0] == 2);
-            VerifyTestResult (n1[1] == 3);
-            VerifyTestResult (n1[2] == 4);
+            struct  tm  x;
+            memset (&x, 0, sizeof (x));
+            x.tm_hour = 3;
+            x.tm_min = 30;
+            x.tm_year = 80;
+            x.tm_mon = 3;
+            x.tm_mday = 15;
+            DateTime    d   =   DateTime (x);
+            struct  tm  x2  =   d.As<struct tm> ();
+            VerifyTestResult (x.tm_hour == x2.tm_hour);
+            VerifyTestResult (x.tm_min == x2.tm_min);
+            VerifyTestResult (x.tm_sec == x2.tm_sec);
+            VerifyTestResult (x.tm_year == x2.tm_year);
+            VerifyTestResult (x.tm_mday == x2.tm_mday);
         }
     }
+
 }
 
 
@@ -188,210 +450,226 @@ namespace {
 
 
 
+namespace   {
 
-namespace {
-    void    Test5_ReduceTest_ ()
+    void    Test_7_Duration_ ()
     {
         {
-            Containers::Sequence<int>   n;
-            n.Append (1);
-            n.Append (2);
-            n.Append (3);
-            int sum = FunctionalApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
-            VerifyTestResult (sum == 6);
+            VerifyTestResult (Duration (0).As<time_t> () == 0);
+            VerifyTestResult (Duration (0).As<String> () == L"PT0S");
+        }
+        const   int kSecondsPerDay      =   TimeOfDay::kMaxSecondsPerDay;
+        {
+            const   Duration    k30Days     =   Duration (L"P30D");
+            VerifyTestResult (k30Days.As<time_t> () == 30 * kSecondsPerDay);
+        }
+        {
+            const   Duration    k6Months        =   Duration (L"P6M");
+            VerifyTestResult (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
+        }
+        {
+            const   Duration    kP1Y        =   Duration (L"P1Y");
+            VerifyTestResult (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
+        }
+        {
+            const   Duration    kP2Y        =   Duration (L"P2Y");
+            VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
+            VerifyTestResult (Duration (2 * 365 * kSecondsPerDay).As<wstring> () == L"P2Y");
+        }
+        {
+            const   Duration    kHalfMinute     =   Duration (L"PT0.5M");
+            VerifyTestResult (kHalfMinute.As<time_t> () == 30);
+        }
+        {
+            const   Duration    kD      =   Duration (L"PT0.1S");
+            VerifyTestResult (kD.As<time_t> () == 0);
+            VerifyTestResult (kD.As<double> () == 0.1);
+        }
+        {
+            const   Duration    kHalfMinute     =   Duration (L"PT0.5M");
+            VerifyTestResult (kHalfMinute.PrettyPrint () == L"30 seconds");
+        }
+        {
+            const   Duration    k3MS        =   Duration (L"PT0.003S");
+            VerifyTestResult (k3MS.PrettyPrint () == L"3 ms");
+        }
+        {
+            const   Duration    kD      =   Duration (L"PT1.003S");
+            VerifyTestResult (kD.PrettyPrint () == L"1.003 seconds");
+        }
+        {
+            const   Duration    kD      =   Duration (L"PT0.000045S");
+            VerifyTestResult (kD.PrettyPrint () == L"45 µs");
+        }
+        {
+            const   Duration    kD      =   Duration (L"PT0.000045S");
+            VerifyTestResult (kD.PrettyPrint () == L"45 µs");
+            VerifyTestResult ((-kD).PrettyPrint () == L"-45 µs");
+            VerifyTestResult ((-kD).As<wstring> () == L"-PT0.000045S");
+        }
+        VerifyTestResult (Duration (L"P30S").As<time_t> () == 30);
+        VerifyTestResult (Duration (L"PT30S").As<time_t> () == 30);
+        VerifyTestResult (Duration (60).As<wstring> () == L"PT1M");
+        VerifyTestResult (Duration (L"-PT1H1S").As<time_t> () == -3601);
+        VerifyTestResult (-Duration (L"-PT1H1S").As<time_t> () == 3601);
+
+        for (time_t i = -45; i < 60 * 3 * 60 + 99; ++i) {
+            VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+        }
+        for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += 263) {
+            VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+        }
+        VerifyTestResult (Duration::kMin < Duration::kMax);
+        VerifyTestResult (Duration::kMin != Duration::kMax);
+        VerifyTestResult (Duration::kMin < Duration (L"P30S") and Duration (L"P30S") < Duration::kMax);
+        {
+            Duration    d      =   Duration (L"PT0.1S");
+            d += chrono::milliseconds (30);
+            VerifyTestResult (Math::NearlyEquals (d.As<Time::DurationSecondsType> (), .130));
         }
     }
-}
 
-
-namespace {
-    void    Test6_FunctionApplicationContext_ ()
-    {
-        using Containers::Sequence;
-
-        {
-            Containers::Sequence<int> s =   { 1, 2, 3 };
-            {
-                shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
-                size_t answer =
-                    FunctionalApplicationContext<int>(s).
-                    Filter<int> ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
-                Map<int> ([] (int s) { return s + 5; }).
-                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
-                ;
-                VerifyTestResult (answer == 2);
-            }
-            {
-                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
-                // out of scope before this does
-                size_t answer =
-                    FunctionalApplicationContext<int>(s).
-                    Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
-                Map<int> ([] (int s) { return s + 5; }).
-                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
-                VerifyTestResult (answer == 2);
-            }
-            {
-                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
-                // out of scope before this does
-                Containers::Sequence<int> r = Containers::Sequence<int> (
-                                                  FunctionalApplicationContext<int>(s).
-                                                  Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
-                Map<int> ([] (int s) { return s + 5; })
-                                              );
-                VerifyTestResult (r.length () == 2);
-                VerifyTestResult (r[0] == 6 and r[1] == 8);
-            }
-            {
-                Memory::Optional<int> answer =
-                    FunctionalApplicationContext<int>(s).
-                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
-                    Find<int> ([] (int i) -> bool { return i == 1 ; })
-                    ;
-                VerifyTestResult (*answer == 1);
-            }
-            {
-                Memory::Optional<int> answer =
-                    FunctionalApplicationContext<int>(s).
-                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
-                    Find<int> ([] (int i) -> bool { return i == 8 ; })
-                    ;
-                VerifyTestResult (answer.IsMissing ());
-            }
-        }
-
-        {
-            using   Characters::String;
-            Sequence<String> s = { L"alpha", L"beta", L"gamma" };
-            {
-                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
-                // out of scope before this does
-                size_t answer =
-                    FunctionalApplicationContext<String>(s).
-                    Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
-                Map<String> ([] (String s) { return s + L" hello"; }).
-                Reduce<size_t> ([] (String s, size_t memo) { return memo + 1; });
-                VerifyTestResult (answer == 2);
-            }
-            {
-                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
-                // out of scope before this does
-                Containers::Sequence<String> r = Containers::Sequence<String> (
-                                                     FunctionalApplicationContext<String>(s).
-                                                     Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
-                Map<String> ([] (String s) { return s + L" hello"; })
-                                                 );
-                VerifyTestResult (r.length () == 2);
-                VerifyTestResult (r[0] == L"alpha hello" and r[1] == L"gamma hello");
-            }
-        }
-    }
 }
 
 
 
+namespace   {
 
-namespace {
-    void    Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
+    void    Test_8_DateTimeWithDuration_ ()
     {
-        using   Containers::Sequence;
         {
-            const uint32_t  kRefCheck_[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
-            auto isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
-            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck)) {
-                VerifyTestResult (Math::IsPrime (i));
-            }
-            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck));
-            VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
-            VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck).GetLength ());
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
+            VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
+            const   Duration    k30Days     =   Duration (L"P30D");
+            DateTime    d2  =   d + k30Days;
+            VerifyTestResult (d2.GetDate ().GetYear () == Year (1995));
+            VerifyTestResult (d2.GetDate ().GetMonth () == MonthOfYear::eJuly);
+            VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
+            VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
     }
-}
 
-
-namespace {
-    void    Test8_DiscreteRangeTestFromDocs_ ()
-    {
-        // From Docs in DiscreteRange<> class
-        vector<int> v = DiscreteRange<int> (1, 10).As<vector<int>> ();
-        VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
-        for (auto i : DiscreteRange<int> (1, 10)) {
-            VerifyTestResult (1 <= i and i <= 10);  // rough verification
-        }
-    }
 }
 
 
 
 
-namespace {
-    void    Test9_Generators_ ()
+
+
+
+namespace   {
+
+    void    Test_9_TZOffsetAndDaylightSavingsTime_ ()
     {
+        /*
+         * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
+         * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
+         *
+         * This test wont always work, but at least for now seems to work on the systems i test on.
+         */
         {
-            constexpr int kMin = 1;
-            constexpr int kMax = 10;
-            auto myContext = shared_ptr<int> (new int (kMin - 1));
-            auto getNext = [myContext] () -> Memory::Optional<int> {
-                (*myContext)++;
-                if (*myContext > 10)
-                {
-                    return Memory::Optional<int> ();
-                }
-                return *myContext;
-            };
-
-            int sum = 0;
-            for (auto i : CreateGenerator<int> (getNext)) {
-                VerifyTestResult (1 <= i and i <= 10);
-                sum += i;
+            DateTime    n   =   DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
+            bool        isDst   =   IsDaylightSavingsTime (n);
+            DateTime    n2  =   n.AddDays (180);
+            // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
+            //VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
+            if (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2)) {
+                int breakhere = 1;
             }
-            VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
         }
+        {
+            DateTime    n   =   DateTime::Now ();
+            bool        isDst   =   IsDaylightSavingsTime (n);
+            DateTime    n2  =   n.AddDays (60);
+            if (IsDaylightSavingsTime (n) == IsDaylightSavingsTime (n2)) {
+                int breakhere = 1;
+            }
+        }
+    }
 
+}
+
+
+
+namespace   {
+    void    Test_10_std_duration_ ()
+    {
+        const   Duration    k30Seconds      =   Duration (30.0);
+        VerifyTestResult (k30Seconds.As<time_t> () == 30);
+        VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
+        VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
+        VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::milliseconds (50)).As <Time::DurationSecondsType> (), 0.050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::microseconds (50)).As <Time::DurationSecondsType> (), 0.000050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (50)).As <Time::DurationSecondsType> (), 0.000000050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (1)).As <Time::DurationSecondsType> (), 0.000000001));
+        VerifyTestResult (Duration (5.0).As<std::chrono::milliseconds> () == chrono::milliseconds (5000));
+        VerifyTestResult (Duration (-5.0).As<std::chrono::milliseconds> () == chrono::milliseconds  (-5000));
+        VerifyTestResult (Duration (1.0).As<std::chrono::nanoseconds> () == chrono::nanoseconds (1000 * 1000 * 1000));
     }
 }
 
 
 
-
-namespace {
-    void    Test10_MakeIterableFromIterator_ ()
+namespace   {
+    void    Test_11_DurationRange_ ()
     {
-        {
-            Containers::Sequence<int>   a = {1, 3, 5, 7, 9};
-            Iterator<int>   iter = a.MakeIterator ();
-
-            int sum = 0;
-            for (auto i : MakeIterableFromIterator (iter)) {
-                sum += i;
-            }
-            VerifyTestResult (sum == 25);
-        }
-
+        DurationRange d1;
+        DurationRange d2    =   DurationRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.GetLowerBound () == Duration::kMin);
+        VerifyTestResult (d2.GetUpperBound () == Duration::kMax);
     }
 }
 
 
+namespace   {
+    void    Test_12_DateRange_ ()
+    {
+        DateRange d1;
+        DateRange d2    =   DateRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.GetLowerBound () == Date::kMin);
+        VerifyTestResult (d2.GetUpperBound () == Date::kMax);
+    }
+}
+
+
+namespace   {
+    void    Test_13_DateTimeRange_ ()
+    {
+        DateTimeRange d1;
+        DateTimeRange d2    =   DateTimeRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.GetLowerBound () == DateTime::kMin);
+        VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
+    }
+}
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test_1_BasicRange_ ();
-        Test_2_BasicDiscreteRangeIteration_ ();
-        Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
-        Test4_MapTest_ ();
-        Test5_ReduceTest_ ();
-        Test6_FunctionApplicationContext_ ();
-        Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
-        Test8_DiscreteRangeTestFromDocs_ ();
-        Test9_Generators_ ();
-        Test10_MakeIterableFromIterator_ ();
+        Test_0_Test_VarDateFromStrOnFirstTry_();
+        Test_1_TestTickCountGrowsMonotonically_ ();
+        Test_2_TestTimeOfDay_ ();
+        Test_3_TestDate_ ();
+        Test_4_TestDateTime_ ();
+        Test_5_DateTimeTimeT_ ();
+        Test_6_DateTimeStructTM_ ();
+        Test_7_Duration_ ();
+        Test_8_DateTimeWithDuration_ ();
+        Test_9_TZOffsetAndDaylightSavingsTime_ ();
+        Test_10_std_duration_ ();
+        Test_11_DurationRange_ ();
+        Test_12_DateRange_ ();
+        Test_13_DateTimeRange_ ();
     }
 }
-
-
 
 
 int     main (int argc, const char* argv[])
