@@ -1,2 +1,4 @@
 TODO
-	o	
+	o	Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps
+
+	o	Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add operations to assure safe at same time
