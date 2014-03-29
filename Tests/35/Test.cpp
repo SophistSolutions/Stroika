@@ -45,7 +45,11 @@ namespace   {
              *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
              *  without worrying about races, just use mutex.
              */
-            //ExternallySynchronizedLock lock;
+			struct no_lock_ {
+				void lock () {}
+				void unlock () {}
+			};
+            //no_lock_ lock ;
             mutex lock;
 
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
@@ -85,7 +89,7 @@ namespace   {
         Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
         AssignAndIterateAtSameTimeTest_::DoIt_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 500);
         AssignAndIterateAtSameTimeTest_::DoIt_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 500);
-        AssignAndIterateAtSameTimeTest_::DoIt_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 500);
+		AssignAndIterateAtSameTimeTest_::DoIt_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 500);
     }
 }
 
