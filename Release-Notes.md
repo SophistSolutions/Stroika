@@ -23,20 +23,22 @@ History
 <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a22">v2.0a22x</a><br/>2014-03-??</td>
 <td>
 <ul>
-<li>Deprecated WaitTimedOutException in place of new improved TimeOutException, and ThrowTimeoutExceptionAfter is now templated</li>
-<li>
-	Tons of further string performance/threading cleanups
-	<ul>
-		<li>Renamed String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly to String_ExternalMemoryOwnership_ApplicationLifetime and 
-		String_ExternalMemoryOwnership_StackLifetime_ReadOnly to String_ExternalMemoryOwnership_StackLifetime</li>
-		<li>String::InsertAt() deprecated, and new (temporary) String::InsertAt_nu which returns String object.</li>
-	</ul>
-</li>
-<li>SpinLock does yield</li>
-<li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
-ther classes like BLOB - as a performance tweak</li>
-<li>qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ - even though now is big performance sink, probably best in the
-long run</li>
+	<li>Deprecated WaitTimedOutException in place of new improved TimeOutException, and ThrowTimeoutExceptionAfter is now templated</li>
+	<li>
+		Tons of further string performance/threading cleanups
+		<ul>
+			<li>Renamed String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly to String_ExternalMemoryOwnership_ApplicationLifetime and 
+			String_ExternalMemoryOwnership_StackLifetime_ReadOnly to String_ExternalMemoryOwnership_StackLifetime</li>
+			<li>String::InsertAt() deprecated, and new (temporary) String::InsertAt_nu which returns String object.</li>
+		</ul>
+	</li>
+	<li>SpinLock does yield</li>
+	<li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
+	ther classes like BLOB - as a performance tweak</li>
+	<li>qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ - even though now is big performance sink, probably best in the
+	long run
+	</li>
+	<li>Renamed Execution::ExternallySynchronizedLock to Debug::AssertExternallySynchronizedLock</li>
 </ul>
 </td>
 </tr>

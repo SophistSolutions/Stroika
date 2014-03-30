@@ -866,6 +866,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
@@ -877,7 +878,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h" />
@@ -1191,6 +1191,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
@@ -1201,7 +1202,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.inl" />

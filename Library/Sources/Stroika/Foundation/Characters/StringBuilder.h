@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Execution/ExternallySynchronizedLock.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Memory/SmallStackBuffer.h"
 
 #include    "String.h"
@@ -140,7 +140,7 @@ namespace   Stroika {
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
-                mutable Execution::ExternallySynchronizedLock   fLock_;
+                mutable Debug::AssertExternallySynchronizedLock	fLock_;
             };
 
 

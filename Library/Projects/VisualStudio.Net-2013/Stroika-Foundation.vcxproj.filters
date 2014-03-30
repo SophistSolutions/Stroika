@@ -1575,9 +1575,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1586,6 +1583,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h">
       <Filter>Sources\Characters\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2391,9 +2391,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExternallySynchronizedLock.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -2402,6 +2399,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.inl">
       <Filter>Sources\Characters\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
 </Project>

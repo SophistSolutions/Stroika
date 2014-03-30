@@ -38,7 +38,7 @@ namespace   Stroika {
             {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
-                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                lock_guard<Debug::AssertExternallySynchronizedLock> critSec (fLock_);
                 size_t  i   =   fLength_;
                 size_t  rhsLen  =  e - s;
                 fData_.GrowToSize (i + rhsLen);
@@ -91,7 +91,7 @@ namespace   Stroika {
             }
             inline  void  StringBuilder::push_back (Character c)
             {
-                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                lock_guard<Debug::AssertExternallySynchronizedLock> critSec (fLock_);
                 fData_.GrowToSize (fLength_ + 1);
                 fData_[fLength_] = c.GetCharacterCode ();
                 fLength_++;
@@ -107,14 +107,14 @@ namespace   Stroika {
             }
             inline  const wchar_t*  StringBuilder::c_str () const
             {
-                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                lock_guard<Debug::AssertExternallySynchronizedLock> critSec (fLock_);
                 fData_.GrowToSize (fLength_ + 1);
                 fData_[fLength_] = '\0';
                 return fData_.begin ();
             }
             inline  String StringBuilder::str () const
             {
-                lock_guard<Execution::ExternallySynchronizedLock> critSec (fLock_);
+                lock_guard<Debug::AssertExternallySynchronizedLock> critSec (fLock_);
                 return String (fData_.begin (), fData_.begin () + fLength_);
             }
             template    <typename   T>

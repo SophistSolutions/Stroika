@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_ExternallySynchronizedLock_inl_
-#define _Stroika_Foundation_Execution_ExternallySynchronizedLock_inl_    1
+#ifndef _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_inl_
+#define _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_inl_    1
 
 
 /*
@@ -13,21 +13,24 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Execution {
+        namespace   Debug {
 
 
             /*
              ********************************************************************************
-             *************** Execution::ExternallySynchronizedLock **************************
+             *************** Debug::AssertExternallySynchronizedLock ************************
              ********************************************************************************
              */
-            inline  ExternallySynchronizedLock::ExternallySynchronizedLock ()
-#if     qDebug
-                : fLock_ ( /*ATOMIC_FLAG_INIT*/)
+            inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ()
+#if     qDebug && !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+                : fLock_ (ATOMIC_FLAG_INIT)
 #endif
             {
+#if     qDebug && qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+                fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
+#endif
             }
-            inline  void    ExternallySynchronizedLock::lock ()
+            inline  void    AssertExternallySynchronizedLock::lock ()
             {
 #if     qDebug
                 if (fLock_.test_and_set (std::memory_order_acquire)) {
@@ -35,7 +38,7 @@ namespace   Stroika {
                 }
 #endif
             }
-            inline  void    ExternallySynchronizedLock::unlock ()
+            inline  void    AssertExternallySynchronizedLock::unlock ()
             {
 #if     qDebug
                 fLock_.clear (std::memory_order_release);
@@ -46,4 +49,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ExternallySynchronizedLock_inl_*/
+#endif  /*_Stroika_Foundation_Debug_AssertExternallySynchronizedLock_inl_*/

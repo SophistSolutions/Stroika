@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_ExternallySynchronizedLock_h_
-#define _Stroika_Foundation_Execution_ExternallySynchronizedLock_h_  1
+#ifndef _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_
+#define _Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -15,7 +15,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Execution {
+        namespace   Debug {
 
 
             /**
@@ -29,13 +29,13 @@ namespace   Stroika {
              *
              *  In debug builds, it enforces this fact through assertions.
              */
-            class   ExternallySynchronizedLock {
+            class   AssertExternallySynchronizedLock {
             public:
-                ExternallySynchronizedLock ();
-                ExternallySynchronizedLock (const ExternallySynchronizedLock&) = delete;
+                AssertExternallySynchronizedLock ();
+                AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock&) = delete;
 
             public:
-                const ExternallySynchronizedLock& operator= (const ExternallySynchronizedLock&) = delete;
+                const AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock&) = delete;
 
             public:
                 nonvirtual  void    lock ();
@@ -61,6 +61,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "ExternallySynchronizedLock.inl"
+#include    "AssertExternallySynchronizedLock.inl"
 
-#endif  /*_Stroika_Foundation_Execution_ExternallySynchronizedLock_h_*/
+#endif  /*_Stroika_Foundation_Debug_AssertExternallySynchronizedLock_h_*/
