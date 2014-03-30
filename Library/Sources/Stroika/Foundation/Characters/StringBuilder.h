@@ -140,7 +140,7 @@ namespace   Stroika {
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
-                mutable Debug::AssertExternallySynchronizedLock	fLock_;
+                mutable Debug::AssertExternallySynchronizedLock fLock_;
             };
 
 
