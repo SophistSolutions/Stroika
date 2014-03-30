@@ -2,53 +2,79 @@
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation
    Memcheck:Leak
    fun:malloc
-   fun:_Znwm
-   fun:_Znam
    fun:_ZN7Stroika10Foundation6Memory8Private_12GetMem_Util_Em
 }
 {
-   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_1
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation2
    Memcheck:Leak
    fun:malloc
-   fun:_Znwm
-   fun:_Znam
    fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_ILm*EE8AllocateEm.isra.*
 }
 {
-   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_OptimizerSometimesSkips_GetMem_Util_HARD_TO_SEE_HOW_TODO_GOOD_MATCHER_FOR_THIS
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
    Memcheck:Leak
    fun:malloc
-   fun:_Znwm
-   fun:_Znam
+   fun:_ZN7Stroika10Foundation10Characters6String3mk_EPKwS4_
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation10Containers8Concrete18Mapping_LinkedListImmNS1_*Rep_3AddEmm
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation10Containers8Concrete25Sequence_DoublyLinkedList*
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation10Characters6String10SubString_ERKNS2_16_SafeRepAccessorEmmm
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation9Traversal15CreateGeneratorINS0_10Characters6StringEEENS1_8IterableIT_EERKSt8functionIFNS0_6Memory8OptionalIS6_NS9_22Optional_DefaultTraitsIS6_EEEEvEE
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation7Streams8iostream35BinaryInputStreamFromIStreamAdapterC1ERSi
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
    fun:_ZN7Stroika10Foundation10Containers8Concrete10Set_stdsetIiNS2_24Set_stdset_DefaultTraitsIiNS0_6Common18ComparerWithEqualsIiEENS5_21ComparerWithWellOrderIiEEEEEC1Ev
-   fun:_ZN7Stroika10Foundation10Containers8Concrete11Set_FactoryIiNS1_17Set_DefaultTraitsIiNS0_6Common18ComparerWithEqualsIiEEEEE8Default_Ev
-   fun:_ZN7Stroika10Foundation9Execution21SignalHandlerRegistry23GetStandardCrashSignalsEv
-   fun:_ZN7Stroika11TestHarness5SetupEv
-   fun:main
 }
 {
-   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_I_THINK_NOT_TOO_SURE_BUT_SEEMS_OK_AND_LIKELY_FALSE_POSATIVE
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
    Memcheck:Leak
    fun:malloc
-   fun:_Znwm
-   fun:_Znam
-   fun:_ZN7Stroika10Foundation10Characters8Concrete59String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnlyC1EPKwS5_
-   fun:_Z41__static_initialization_and_destruction_0ii.constprop.34
-   fun:__libc_csu_init
-   fun:(below main)
+   fun:_ZN7Stroika10Foundation10Containers7Private22PatchingDataStructures24PatchableContainerHelperINS2_14DataStructures*
 }
 {
-   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_I_THINK_NOT_TOO_SURE_BUT_SEEMS_OK_AND_LIKELY_FALSE_POSATIVE2
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
    Memcheck:Leak
    fun:malloc
-   fun:_Znwm
-   fun:_Znam
-   fun:_ZN7Stroika10Foundation10Containers8Concrete21Collection_LinkedListImE4Rep_3AddEm
-   fun:_ZN7Stroika10Foundation10Containers10CollectionImE3AddEm
-   fun:_ZN11CommonTests15CollectionTests22Test1_OldMiscBagTests_13On_Container_IN7Stroika10Foundation10Containers10CollectionImEEEEvRT_
    fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
-   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
-   fun:main
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation9Execution14mkIRunnablePtrERKSt8functionIFvvEE
+}
+{
+   This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN7Stroika10Foundation10Containers7Private19IteratorImplHelper_*ContainerRepLockDataSupport_*
 }
 
 
