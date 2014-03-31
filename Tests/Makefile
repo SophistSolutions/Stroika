@@ -21,6 +21,7 @@ RUNTEST_EXE_RUN=ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 else ifneq (,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
+#VALGRIND_OPTIONS=-q --tool=helgrind --suppressions=DefaultValgrindSuppressions.supp $(EXTRA_VALGRIND_OPTIONS)
 VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=DefaultValgrindSuppressions.supp $(EXTRA_VALGRIND_OPTIONS)
 RUNTEST_REMOTECOPYSETUP=:
 RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
