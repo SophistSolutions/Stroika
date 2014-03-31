@@ -295,7 +295,7 @@ namespace   Stroika {
             */
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>::ReadOnlyReference::ReadOnlyReference (const SharedByValue<TRAITS>& sp)
-                : fSharedPtr_ (sp.fSharedImpl_)
+                : fSharedPtr_ (shared_impl_copier_type::Load (sp.fSharedImpl_))
             {
                 RequireNotNull (fSharedPtr_);
             }
