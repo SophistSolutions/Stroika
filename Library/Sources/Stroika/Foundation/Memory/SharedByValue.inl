@@ -69,7 +69,7 @@ namespace   Stroika {
                 return copyFrom;
             }
             template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, SHARED_IMLP o)
+            inline  void            SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 *storeTo = o;
@@ -87,7 +87,7 @@ namespace   Stroika {
                 return atomic_load (&copyFrom);
             }
             template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, SHARED_IMLP o)
+            inline  void            SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 atomic_store (storeTo, o);

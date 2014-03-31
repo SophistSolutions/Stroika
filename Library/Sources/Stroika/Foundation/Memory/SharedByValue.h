@@ -103,7 +103,7 @@ namespace   Stroika {
             template    <typename   T, typename SHARED_IMLP>
             struct  SharedByValue_CopySharedPtrExternallySynchonized {
                 static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
-                static  void            Store (SHARED_IMLP* storeTo, SHARED_IMLP o);
+                static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
 
 
@@ -116,7 +116,7 @@ namespace   Stroika {
             template    <typename   T, typename SHARED_IMLP>
             struct  SharedByValue_CopySharedPtrAtomicSynchonized {
                 static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
-                static  void            Store (SHARED_IMLP* storeTo, SHARED_IMLP o);
+                static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
 
 
