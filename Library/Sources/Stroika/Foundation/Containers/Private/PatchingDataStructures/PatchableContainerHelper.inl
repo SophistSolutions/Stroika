@@ -49,7 +49,7 @@ Again:
                         return static_cast<ACTUAL_ITERATOR_TYPE*> (fActiveIteratorsListHead);
                     }
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
-                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                    inline  void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                     {
 #if     qDebug
                         AssertNoIteratorsReferenceOwner_ (oBeingDeleted);
@@ -62,7 +62,7 @@ Again:
                     }
 #if     qDebug
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
-                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted)
+                    void    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
                     {
                         for (auto v = fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             Assert (v->fOwnerID != oBeingDeleted);

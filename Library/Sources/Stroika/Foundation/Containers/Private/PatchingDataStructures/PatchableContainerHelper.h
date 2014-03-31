@@ -83,7 +83,7 @@ namespace   Stroika {
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator () const;
 
                     public:
-                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted);
+                        nonvirtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const;
 
                     public:
                         //  are there any iterators to be patched?
@@ -91,7 +91,7 @@ namespace   Stroika {
 
 #if     qDebug
                     public:
-                        virtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted);
+                        virtual  void    AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const;
 #endif
                     };
 
