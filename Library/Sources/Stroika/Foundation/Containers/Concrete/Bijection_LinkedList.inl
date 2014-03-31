@@ -70,7 +70,7 @@ namespace   Stroika {
                     virtual void                    RemoveRangeElement (RANGE_TYPE r) override;
                     virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
 #if     qDebug
-                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)    override;
+                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 public:
@@ -291,7 +291,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

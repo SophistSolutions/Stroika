@@ -332,7 +332,7 @@ namespace   Stroika {
                 virtual  void               Remove (KeyType key)                                            =   0;
                 virtual  void               Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)         =   0;
 #if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
 
                 /*

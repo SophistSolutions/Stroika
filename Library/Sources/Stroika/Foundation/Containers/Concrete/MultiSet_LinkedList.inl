@@ -70,7 +70,7 @@ namespace   Stroika {
                     virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
 #if     qDebug
-                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 private:
@@ -300,7 +300,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                void    MultiSet_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

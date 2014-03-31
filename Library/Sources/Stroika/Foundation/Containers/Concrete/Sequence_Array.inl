@@ -67,7 +67,7 @@ namespace   Stroika {
                     virtual void    Insert (size_t at, const T* from, const T* to) override;
                     virtual void    Remove (size_t from, size_t to) override;
 #if     qDebug
-                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 private:
@@ -248,7 +248,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename T>
-                void    Sequence_Array<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                void    Sequence_Array<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

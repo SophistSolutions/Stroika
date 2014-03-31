@@ -160,13 +160,13 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void        Enqueue (T item, Priority priority)                                 =   0;
-                virtual T           Dequeue ()                                                          =   0;
-                virtual T           Head () const                                                       =   0;
-                virtual void        RemoveAll ()                                                        =   0;
-                virtual Iterable<T> Elements () const                                                   =   0;
+                virtual void        Enqueue (T item, Priority priority)                                     =   0;
+                virtual T           Dequeue ()                                                              =   0;
+                virtual T           Head () const                                                           =   0;
+                virtual void        RemoveAll ()                                                            =   0;
+                virtual Iterable<T> Elements () const                                                       =   0;
 #if     qDebug
-                virtual void        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)     =   0;
+                virtual void        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
             };
 

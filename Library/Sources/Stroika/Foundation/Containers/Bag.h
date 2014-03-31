@@ -199,7 +199,7 @@ namespace   Stroika {
                 virtual void    Remove (const Iterator<T>& i)                                       =   0;
                 virtual void    RemoveAll ()                                                        =   0;
 #if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)     =   0;
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
             };
 

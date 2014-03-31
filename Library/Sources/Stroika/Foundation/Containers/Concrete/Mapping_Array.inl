@@ -66,7 +66,7 @@ namespace   Stroika {
                     virtual void                Remove (KEY_TYPE key) override;
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 #if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 public:
@@ -247,7 +247,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

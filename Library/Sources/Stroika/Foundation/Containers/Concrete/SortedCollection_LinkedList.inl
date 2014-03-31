@@ -65,7 +65,7 @@ namespace   Stroika {
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    RemoveAll () override;
 #if     qDebug
-                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) override;
+                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                     // SortedCollection<T>::_IRep overrides
@@ -243,7 +243,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);

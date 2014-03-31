@@ -448,7 +448,7 @@ namespace   Stroika {
                 virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                          =   0;
 
 #if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted)                             =   0;
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const                       =   0;
 #endif
 
                 /*

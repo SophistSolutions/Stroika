@@ -318,6 +318,9 @@ namespace   Stroika {
 #endif
 
             protected:
+                nonvirtual  const _IRep&    _ConstGetRep () const;
+
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
@@ -341,15 +344,15 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool                Equals (const _IRep& rhs) const                                 =   0;
-                virtual bool                Contains (T item) const                                         =   0;
-                virtual Memory::Optional<T> Lookup (T item) const                                           =   0;
-                virtual void                RemoveAll ()                                                    =   0;
-                virtual void                Add (T item)                                                    =   0;
-                virtual void                Remove (T item)                                                 =   0;
-                virtual void                Remove (const Iterator<T>& i)                                   =   0;
+                virtual bool                Equals (const _IRep& rhs) const                                         =   0;
+                virtual bool                Contains (T item) const                                                 =   0;
+                virtual Memory::Optional<T> Lookup (T item) const                                                   =   0;
+                virtual void                RemoveAll ()                                                            =   0;
+                virtual void                Add (T item)                                                            =   0;
+                virtual void                Remove (T item)                                                         =   0;
+                virtual void                Remove (const Iterator<T>& i)                                           =   0;
 #if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) =   0;
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
 
                 /*

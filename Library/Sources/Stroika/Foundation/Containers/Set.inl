@@ -23,26 +23,26 @@ namespace   Stroika {
             inline  Set<T, TRAITS>::Set ()
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const std::initializer_list<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const std::set<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
@@ -50,14 +50,14 @@ namespace   Stroika {
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -65,7 +65,7 @@ namespace   Stroika {
             inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (start, end);
             }
 #if     qDebug
@@ -73,7 +73,7 @@ namespace   Stroika {
             Set<T, TRAITS>::~Set ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -82,6 +82,12 @@ namespace   Stroika {
             {
                 inherited::operator= (rhs);
                 return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  const typename  Set<T, TRAITS>::_IRep&    Set<T, TRAITS>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
             inline  const typename  Set<T, TRAITS>::_IRep&    Set<T, TRAITS>::_GetRep () const
