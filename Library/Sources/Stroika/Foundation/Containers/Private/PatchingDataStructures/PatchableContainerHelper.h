@@ -79,7 +79,7 @@ namespace   Stroika {
                         nonvirtual  void    RemoveIterator (PatchableIteratorMixIn* pi);
 
                     public:
-                        template <typename ACTUAL_ITERATOR_TYPE>
+                        template    <typename ACTUAL_ITERATOR_TYPE>
                         nonvirtual  ACTUAL_ITERATOR_TYPE*   GetFirstActiveIterator () const;
 
                     public:
@@ -96,6 +96,15 @@ namespace   Stroika {
                     };
 
 
+                    /*
+                     *  When converting a non-patchable container backend (like DataStructures::Array) to a
+                     *  PatchableDataStructues (like PatchableDataStructues::Array) you must mix something into
+                     *  each associated iterator class (
+                     *      eg. Array<T...>::_ArrayIteratorBase
+                     *          : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
+                     *          , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn
+                     *
+                     */
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     struct  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn {
                         PatchableContainerHelper*   fPatchableContainer;
