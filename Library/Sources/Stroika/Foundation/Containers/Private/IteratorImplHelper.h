@@ -60,10 +60,14 @@ namespace   Stroika {
 
                 public:
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
+#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::IterableSharedPtr& savedIteratorRep);
+#endif
 
+#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
                 public:
                     virtual ~IteratorImplHelper_ ();
+#endif
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
@@ -88,10 +92,12 @@ namespace   Stroika {
                 public:
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
 
+#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
                 public:
                     // This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
                     // iterator stays alive for the life of the iterator.
                     typename Iterable<T>::IterableSharedPtr    fSavedIterableSharedPtrRep;
+#endif
                 };
 
 
