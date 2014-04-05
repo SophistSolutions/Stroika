@@ -87,7 +87,11 @@ namespace   Stroika {
 
                 public:
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
-                    typename Iterable<T>::_SharedPtrIRep	fSavedIterableSharedPtrRep;
+
+                public:
+                    // This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
+                    // iterator stays alive for the life of the iterator.
+                    typename Iterable<T>::_SharedPtrIRep    fSavedIterableSharedPtrRep;
                 };
 
 
