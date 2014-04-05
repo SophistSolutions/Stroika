@@ -116,9 +116,9 @@ namespace   Stroika {
                         ~PatchableIteratorMixIn ();
 
                         template    <typename ACTUAL_ITERATOR_TYPE>
-                        ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
+                        nonvirtual  ACTUAL_ITERATOR_TYPE*   GetNextActiveIterator () const;
 
-                        IteratorOwnerID GetOwner () const;
+                        nonvirtual  IteratorOwnerID GetOwner () const;
                     };
 
 
