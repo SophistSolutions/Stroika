@@ -51,7 +51,7 @@ namespace   Stroika {
              *  EXPERIMENTAL AS OF v2.0a22x
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-#define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_   1
+#define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_    1
 #endif
 
 
@@ -59,7 +59,7 @@ namespace   Stroika {
              *  EXPERIMENTAL AS OF v2.0a22x
              */
 #ifndef qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
-#define qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_   1
+#define qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_        0
 #endif
 
 
