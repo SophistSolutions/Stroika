@@ -85,8 +85,8 @@ namespace   {
                 void lock () {}
                 void unlock () {}
             };
-            //no_lock_ lock ;
-            mutex lock;
+            no_lock_ lock ;
+            //mutex lock;
 
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
