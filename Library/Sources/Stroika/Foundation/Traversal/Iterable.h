@@ -183,15 +183,38 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
-            public: //tmphack
                 /**
                  *  For now, just use the std::shared_ptr<> - but we may want to go back to older Stroika
                  *  SharedPtr<> code - which I believe is more performant (but lacks the weak_ptr feature).
                  *
                  *  To support that possability, be sure to refernece _SharedPtrIRep instead of using shared_ptr<>
                  *  directly.
+				 *
+				 *	@todo - USE _IterableSharedPtr INSTEAD
+				 *	@todo PROBABLY DEPRECATED/DEPRECATE
                  */
                 using   _SharedPtrIRep  =   _USING_SHARED_IMPL_<_IRep>;
+
+            protected:
+                /**
+                 *  _IterableSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
+				 *	so use this type to assure compatability with the approppriate shared ptr implementation.
+                 */
+                using   _IterableSharedPtr  =   _USING_SHARED_IMPL_<_IRep>;
+
+            public:
+                /**
+                 *  UNSURE if we need this to be public or not, but leave this around for a while ...
+				 *		-- LGP 2014-04-05
+                 */
+                using   IterableSharedPtr  =   _IterableSharedPtr;
+
+            protected:
+                /**
+                 *  _IteratorSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
+				 *	so use this type to assure compatability with the approppriate shared ptr implementation.
+                 */
+                using   _IteratorSharedPtr  =   typename Iterator<T>::SharedIRepPtr;
 
             public:
                 /**

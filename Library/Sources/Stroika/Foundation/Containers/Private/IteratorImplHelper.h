@@ -60,7 +60,7 @@ namespace   Stroika {
 
                 public:
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
-                    explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::_SharedPtrIRep& savedIteratorRep);
+                    explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::IterableSharedPtr& savedIteratorRep);
 
                 public:
                     virtual ~IteratorImplHelper_ ();
@@ -91,7 +91,7 @@ namespace   Stroika {
                 public:
                     // This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
                     // iterator stays alive for the life of the iterator.
-                    typename Iterable<T>::_SharedPtrIRep    fSavedIterableSharedPtrRep;
+                    typename Iterable<T>::IterableSharedPtr    fSavedIterableSharedPtrRep;
                 };
 
 
