@@ -116,7 +116,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS = const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if 1
-						typename Set_stdset<T, TRAITS>::Rep_* XXX = const_cast<Set_stdset<T, TRAITS>::Rep_*> (this);
+                        typename Set_stdset<T, TRAITS>::Rep_* XXX = const_cast<Set_stdset<T, TRAITS>::Rep_*> (this);
                         tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, XXX->shared_from_this ()));
 #else
                         tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));

@@ -183,7 +183,7 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
-			public:	//tmphack
+            public: //tmphack
                 /**
                  *  For now, just use the std::shared_ptr<> - but we may want to go back to older Stroika
                  *  SharedPtr<> code - which I believe is more performant (but lacks the weak_ptr feature).

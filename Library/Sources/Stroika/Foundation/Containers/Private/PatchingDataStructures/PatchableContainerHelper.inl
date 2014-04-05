@@ -147,17 +147,17 @@ Again:
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
 #if 1
-						if (fPatchableContainer != nullptr) {
-							AssertNotNull (fPatchableContainer);
-							fPatchableContainer->RemoveIterator (this);
-						}
+                        if (fPatchableContainer != nullptr) {
+                            AssertNotNull (fPatchableContainer);
+                            fPatchableContainer->RemoveIterator (this);
+                        }
 #else
                         AssertNotNull (fPatchableContainer);
                         fPatchableContainer->RemoveIterator (this);
                         // could assert owner  - fPatchableContainer - doenst contian us in list
 #endif
-						Assert (fNextActiveIterator == nullptr);
-						Assert (fPatchableContainer == nullptr);
+                        Assert (fNextActiveIterator == nullptr);
+                        Assert (fPatchableContainer == nullptr);
                     }
 
 

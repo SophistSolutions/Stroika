@@ -21,7 +21,7 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
                     : inherited ()
                     , fIterator (owner, data)
-					, fSavedIterableSharedPtrRep ()
+                    , fSavedIterableSharedPtrRep ()
                 {
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
@@ -30,7 +30,7 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::_SharedPtrIRep& savedIteratorRep)
                     : inherited ()
                     , fIterator (owner, data)
-					, fSavedIterableSharedPtrRep (savedIteratorRep)
+                    , fSavedIterableSharedPtrRep (savedIteratorRep)
                 {
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
@@ -40,7 +40,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
                     CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
-						// must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
+                        // must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
                         fIterator.fPatchableContainer->RemoveIterator (&fIterator);
                         Assert (fIterator.fPatchableContainer == nullptr);
                         Assert (fIterator.fNextActiveIterator == nullptr);
