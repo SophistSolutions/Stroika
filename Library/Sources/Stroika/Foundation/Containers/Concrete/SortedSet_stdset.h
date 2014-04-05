@@ -59,10 +59,6 @@ namespace   Stroika {
                 public:
 #endif
                     class   Rep_;
-
-                private:
-                    nonvirtual  const Rep_&  GetRep_ () const;
-                    nonvirtual  Rep_&        GetRep_ ();
                 };
 
 

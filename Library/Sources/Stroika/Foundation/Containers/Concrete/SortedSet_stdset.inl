@@ -236,19 +236,19 @@ namespace   Stroika {
                 SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
@@ -256,35 +256,15 @@ namespace   Stroika {
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedSet_stdset<T, TRAITS>&   SortedSet_stdset<T, TRAITS>::operator= (const SortedSet_stdset<T, TRAITS>& m)
                 {
                     inherited::operator= (m);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     return *this;
-                }
-                template    <typename T, typename TRAITS>
-                inline  const typename SortedSet_stdset<T, TRAITS>::Rep_&  SortedSet_stdset<T, TRAITS>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SortedSetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename T, typename TRAITS>
-                inline  typename SortedSet_stdset<T, TRAITS>::Rep_&    SortedSet_stdset<T, TRAITS>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SortedSetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
 
 

@@ -23,7 +23,7 @@ namespace   Stroika {
             inline  SortedSet<T, TRAITS>::SortedSet ()
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const SortedSet<T, TRAITS>& src)
@@ -35,13 +35,13 @@ namespace   Stroika {
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const std::initializer_list<T>& s)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (s);
             }
             template    <typename T, typename TRAITS>
@@ -49,14 +49,14 @@ namespace   Stroika {
             inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& s)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (s);
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>&   SortedSet<T, TRAITS>::operator= (const SortedSet<T, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
                 return *this;
             }
 

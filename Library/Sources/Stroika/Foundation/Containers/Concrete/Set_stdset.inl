@@ -130,7 +130,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
-                        return (fData_.size ());
+                        return fData_.size ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -139,7 +139,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
-                        return (fData_.empty ());
+                        return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -241,19 +241,19 @@ namespace   Stroika {
                 Set_stdset<T, TRAITS>::Set_stdset ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 Set_stdset<T, TRAITS>::Set_stdset (const Set_stdset<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
@@ -261,15 +261,15 @@ namespace   Stroika {
                 inline  Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_stdset<T, TRAITS>&   Set_stdset<T, TRAITS>::operator= (const Set_stdset<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&this->_ConstGetRep (), Rep_);
                     return *this;
                 }
 
