@@ -60,6 +60,13 @@ namespace   Stroika {
 
                 public:
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
+                    explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::_SharedPtrIRep& savedIteratorRep);
+
+				public:
+					typename Iterable<T>::_SharedPtrIRep fSavedIterableSharedPtrRep;
+
+				public:
+                    virtual ~IteratorImplHelper_ ();
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);

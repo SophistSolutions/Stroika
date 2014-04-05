@@ -21,9 +21,32 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
                     : inherited ()
                     , fIterator (owner, data)
+					, fSavedIterableSharedPtrRep ()
                 {
                     RequireNotNull (data);
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
+                inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::_SharedPtrIRep& savedIteratorRep)
+                    : inherited ()
+                    , fIterator (owner, data)
+					, fSavedIterableSharedPtrRep (savedIteratorRep)
+                {
+                    RequireNotNull (data);
+                    fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
+                inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::~IteratorImplHelper_ ()
+                {
+                    AssertNotNull (fIterator.fPatchableContainer);
+                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
+						// must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
+                        fIterator.fPatchableContainer->RemoveIterator (&fIterator);
+                        Assert (fIterator.fPatchableContainer == nullptr);
+                        Assert (fIterator.fNextActiveIterator == nullptr);
+                        // could assert owner  - fPatchableContainer - doenst contian us in list
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const

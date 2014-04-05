@@ -85,8 +85,8 @@ namespace   {
                 void lock () {}
                 void unlock () {}
             };
-            //no_lock_ lock ;
-            mutex lock;
+            no_lock_ lock ;
+            //mutex lock;
 
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
@@ -102,8 +102,8 @@ namespace   {
     void    AssignAndIterateAtSameTimeTest_1_ ()
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
-        AssignAndIterateAtSameTimeTest_::DoIt_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 500);
-        AssignAndIterateAtSameTimeTest_::DoIt_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 500);
+        //AssignAndIterateAtSameTimeTest_::DoIt_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 500);
+        //AssignAndIterateAtSameTimeTest_::DoIt_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 500);
         AssignAndIterateAtSameTimeTest_::DoIt_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 500);
     }
 }
