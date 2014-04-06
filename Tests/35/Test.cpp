@@ -44,7 +44,7 @@ namespace {
 
 
 namespace {
-    void    RunThreads (const initializer_list<Thread>& threads)
+    void    RunThreads_ (const initializer_list<Thread>& threads)
     {
         for (Thread i : threads) {
             i.Start ();
@@ -110,28 +110,36 @@ namespace {
 
 
 namespace   {
-    namespace AssignAndIterateAtSameTimeTest_ {
+    namespace AssignAndIterateAtSameTimeTest_1_ {
         template    <typename ITERABLE_TYPE>
-        void    DoIt_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
+        void    DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
             no_lock_ lock ;
             //mutex lock;
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
             Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
-            RunThreads ({iterateThread, overwriteThread});
+            RunThreads_ ({iterateThread, overwriteThread});
+        }
+        void    DoIt ()
+        {
+            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
+            DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
+            //DoItOnce_<Collection<int>> (Collection<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Collection<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
+            DoItOnce_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
+            DoItOnce_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
+            DoItOnce_<SortedSet<int>> (SortedSet<int> ({1, 3, 4, 5, 6, 33, 12, 13}), SortedSet<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
         }
     }
-    void    AssignAndIterateAtSameTimeTest_1_ ()
-    {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
-        AssignAndIterateAtSameTimeTest_::DoIt_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
-        //AssignAndIterateAtSameTimeTest_::DoIt_<Collection<int>> (Collection<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Collection<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
-        AssignAndIterateAtSameTimeTest_::DoIt_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
-        AssignAndIterateAtSameTimeTest_::DoIt_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
-        AssignAndIterateAtSameTimeTest_::DoIt_<SortedSet<int>> (SortedSet<int> ({1, 3, 4, 5, 6, 33, 12, 13}), SortedSet<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
-    }
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -147,7 +155,7 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        AssignAndIterateAtSameTimeTest_1_ ();
+        AssignAndIterateAtSameTimeTest_1_::DoIt ();
     }
 }
 
