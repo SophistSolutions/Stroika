@@ -123,7 +123,7 @@ namespace   {
         }
         void    DoIt ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
+            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
             DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
             //DoItOnce_<Collection<int>> (Collection<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Collection<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
             DoItOnce_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
@@ -142,6 +142,50 @@ namespace   {
 
 
 
+namespace   {
+    namespace IterateWhileMutatingContainer_Test_2_ {
+        template    <typename ITERABLE_TYPE, typename LOCK, typename MUTATE_FUNCTION>
+        void    DoItOnce_ (LOCK* lock, ITERABLE_TYPE elt1, unsigned int repeatCount, MUTATE_FUNCTION baseMutateFunction)
+        {
+            ITERABLE_TYPE   oneToKeepOverwriting = elt1;
+            auto mutateFunction =               [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction] () {
+                for (unsigned int i = 0; i < repeatCount; ++i) {
+                    baseMutateFunction (&oneToKeepOverwriting);
+                }
+            };
+            Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount);
+            Thread  mutateThread =   mutateFunction;
+            RunThreads_ ({iterateThread, mutateThread});
+        }
+        void    DoIt ()
+        {
+            // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+            Debug::TraceContextBumper traceCtx (SDKSTR ("IterateWhileMutatingContainer_Test_2_::DoIt ()"));
+
+            // @TODO - DEBUG!!!!
+
+            //no_lock_ lock;
+            mutex lock;
+            DoItOnce_<Set<int>> (
+                                 &lock,
+                                 Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}),
+                                 1000,
+            [&lock] (Set<int>* oneToKeepOverwriting) {
+                for (int ii = 0; ii <= 100; ++ii) {
+                    if (Math::IsOdd (ii)) {
+                        lock_guard<decltype(lock)> critSec (lock);
+                        (*oneToKeepOverwriting) = Set<int> {3, 5};
+                    }
+                    else {
+                        lock_guard<decltype(lock)> critSec (lock);
+                        (*oneToKeepOverwriting) = Set<int> {3, 5};
+                    }
+                }
+            });
+        }
+    }
+}
+
 
 
 
@@ -156,6 +200,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
+        IterateWhileMutatingContainer_Test_2_::DoIt ();
     }
 }
 
