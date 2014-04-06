@@ -325,7 +325,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)
-                    : inherited (s)
+                    : inherited (static_cast<const inherited&> (s))
                 {
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
