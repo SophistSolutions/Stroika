@@ -147,7 +147,7 @@ namespace   Stroika {
             public:
 #endif
                 class   _IRep;
-                using   _SharedPtrIRep  =   typename inherited::template _USING_SHARED_IMPL_<_IRep>;
+                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 MultiSet ();
@@ -186,7 +186,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    AddAll (const T* start, const T* end);
                 nonvirtual  void    AddAll (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& src);
 
             public:

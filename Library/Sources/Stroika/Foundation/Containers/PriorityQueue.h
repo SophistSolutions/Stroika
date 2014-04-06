@@ -88,7 +88,7 @@ namespace   Stroika {
             class   PriorityQueue : public Iterable<pair<T, Priority>> {
             protected:
                 class   _IRep;
-                using   _SharedPtrIRep  =   typename inherited::template _USING_SHARED_IMPL_<_IRep>;
+                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**

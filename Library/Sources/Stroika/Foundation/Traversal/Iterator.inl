@@ -19,7 +19,7 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename T>
-            inline  typename IteratorBase::_USING_SHARED_IMPL_<typename Iterator<T>::IRep>  Iterator<T>::Rep_Cloner_::Copy (const IRep& t)
+            inline  typename IteratorBase::SharedPtrImplementationTemplate<typename Iterator<T>::IRep>  Iterator<T>::Rep_Cloner_::Copy (const IRep& t)
             {
                 return Iterator<T>::Clone_ (t);
             }

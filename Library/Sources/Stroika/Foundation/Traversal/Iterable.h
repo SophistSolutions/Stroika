@@ -74,10 +74,10 @@ namespace   Stroika {
                  */
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template    <typename SHARED_T>
-                using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+                using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
 #else
                 template    <typename SHARED_T>
-                using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
+                using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
 #endif
 
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
@@ -201,14 +201,14 @@ namespace   Stroika {
                  *  @todo - USE _IterableSharedPtr INSTEAD
                  *  @todo PROBABLY DEPRECATED/DEPRECATE
                  */
-                using   _SharedPtrIRep  =   _USING_SHARED_IMPL_<_IRep>;
+                using   _SharedPtrIRep  =   SharedPtrImplementationTemplate<_IRep>;
 
             protected:
                 /**
                  *  _IterableSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
                  */
-                using   _IterableSharedPtr  =   _USING_SHARED_IMPL_<_IRep>;
+                using   _IterableSharedPtr  =   SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
@@ -500,7 +500,7 @@ namespace   Stroika {
 
             private:
                 struct  Rep_Cloner_ {
-                    inline  static  _USING_SHARED_IMPL_<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
+                    inline  static  SharedPtrImplementationTemplate<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
                     {
                         return Iterable<T>::Clone_ (t, forIterableEnvelope);
                     }

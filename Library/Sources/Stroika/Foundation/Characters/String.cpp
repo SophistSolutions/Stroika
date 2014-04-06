@@ -395,7 +395,7 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 {
     size_t  len1        =   end1 - start1;
     size_t  totalLen    =   len1 + (end2 - start2);
-    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (start1, end1, totalLen) };
+    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (start1, end1, totalLen) };
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -464,7 +464,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     }
     _SafeRepAccessor copyAccessor { *this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
     *this = String (sRep);
 }
@@ -517,7 +517,7 @@ String    String::InsertAt_nu (const Character* from, const Character* to, size_
     }
     _SafeRepAccessor copyAccessor { *this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    Traversal::IterableBase::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
     return String (sRep);
 }
@@ -1121,7 +1121,7 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-    String::_USING_SHARED_IMPL_<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+    String::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }

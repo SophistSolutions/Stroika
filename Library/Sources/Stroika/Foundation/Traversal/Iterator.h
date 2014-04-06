@@ -129,10 +129,10 @@ namespace   Stroika {
                  */
 #if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
                 template    <typename SHARED_T>
-                using _USING_SHARED_IMPL_ =   Memory::SharedPtr<SHARED_T>;
+                using SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
 #else
                 template    <typename SHARED_T>
-                using   _USING_SHARED_IMPL_ =   shared_ptr<SHARED_T>;
+                using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
 #endif
 
 #if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
@@ -257,7 +257,7 @@ namespace   Stroika {
 
             public:
                 class   IRep;
-                using   SharedIRepPtr   =   _USING_SHARED_IMPL_<IRep>;
+                using   SharedIRepPtr   =   SharedPtrImplementationTemplate<IRep>;
 
             private:
                 struct  Rep_Cloner_ {
