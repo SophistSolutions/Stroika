@@ -110,7 +110,11 @@ namespace   Stroika {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
+#else
                         tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
+#endif
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
