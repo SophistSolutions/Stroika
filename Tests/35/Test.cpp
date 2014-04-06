@@ -123,12 +123,14 @@ namespace   {
         }
         void    DoIt ()
         {
+            static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+            static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
             Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
             DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
-            DoItOnce_<Collection<int>> (Collection<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Collection<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
-            DoItOnce_<Sequence<int>> (Sequence<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Sequence<int> ({4, 5, 6, 33, 12, 13, 1, 3, 99, 33, 4, 5}), 1000);
-            DoItOnce_<Set<int>> (Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}), Set<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
-            DoItOnce_<SortedSet<int>> (SortedSet<int> ({1, 3, 4, 5, 6, 33, 12, 13}), SortedSet<int> ({4, 5, 6, 33, 12, 13, 34, 388, 3, 99, 33, 4, 5}), 1000);
+            DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), 1000);
+            DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), 1000);
+            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), 1000);
+            DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), 1000);
         }
     }
 }
