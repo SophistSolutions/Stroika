@@ -318,20 +318,20 @@ namespace   Stroika {
                 Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 inline  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& m)
                     : inherited (static_cast<const inherited&> (m))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (cp);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -339,14 +339,14 @@ namespace   Stroika {
                 Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 inline  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
                 {
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

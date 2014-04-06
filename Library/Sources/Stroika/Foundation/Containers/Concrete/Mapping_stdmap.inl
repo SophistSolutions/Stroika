@@ -257,25 +257,28 @@ namespace   Stroika {
                 Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>&   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (rhs);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

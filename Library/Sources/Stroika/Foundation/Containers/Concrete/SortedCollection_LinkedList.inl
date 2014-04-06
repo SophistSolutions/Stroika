@@ -274,36 +274,43 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******************* SortedCollection_LinkedList<T, TRAITS> ****************************
+                ***************** SortedCollection_LinkedList<T, TRAITS> ***********************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src)
                     : SortedCollection<T, TRAITS> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (src);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedCollection_LinkedList<T, TRAITS>& SortedCollection_LinkedList<T, TRAITS>::operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (rhs));
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

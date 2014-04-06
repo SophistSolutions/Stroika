@@ -276,20 +276,20 @@ namespace   Stroika {
                 Sequence_stdvector<T>::Sequence_stdvector ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (s);
                 }
                 template    <typename T>
@@ -297,14 +297,15 @@ namespace   Stroika {
                 inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& s)
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T>

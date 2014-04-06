@@ -274,20 +274,20 @@ namespace   Stroika {
                 Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (cp);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -295,14 +295,14 @@ namespace   Stroika {
                 Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>&   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
                 {
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

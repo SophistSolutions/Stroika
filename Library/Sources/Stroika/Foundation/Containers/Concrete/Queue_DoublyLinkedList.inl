@@ -251,17 +251,20 @@ namespace   Stroika {
                 Queue_DoublyLinkedList<T, TRAITS>::Queue_DoublyLinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Queue_DoublyLinkedList<T, TRAITS>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Queue_DoublyLinkedList<T, TRAITS>::Queue_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
                 }
@@ -270,12 +273,16 @@ namespace   Stroika {
                 inline Queue_DoublyLinkedList<T, TRAITS>::Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     Append (start, end);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Queue_DoublyLinkedList<T, TRAITS>&   Queue_DoublyLinkedList<T, TRAITS>::operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (rhs));
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

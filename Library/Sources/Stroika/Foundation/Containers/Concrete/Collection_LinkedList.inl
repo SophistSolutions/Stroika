@@ -233,34 +233,34 @@ namespace   Stroika {
                 Collection_LinkedList<T>::Collection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T>
                 inline  Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Collection_LinkedList<T>& Collection_LinkedList<T>::operator= (const Collection_LinkedList<T>& rhs)
                 {
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

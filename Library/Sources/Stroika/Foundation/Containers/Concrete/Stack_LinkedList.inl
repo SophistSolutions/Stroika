@@ -216,19 +216,20 @@ namespace   Stroika {
                 Stack_LinkedList<T, TRAITS>::Stack_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>::Stack_LinkedList (const Stack_LinkedList<T, TRAITS>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>&   Stack_LinkedList<T, TRAITS>::operator= (const Stack_LinkedList<T, TRAITS>& rhs)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

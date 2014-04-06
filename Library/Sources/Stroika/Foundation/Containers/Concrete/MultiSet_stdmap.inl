@@ -285,42 +285,42 @@ namespace   Stroika {
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_stdmap<T, TRAITS>&   MultiSet_stdmap<T, TRAITS>::operator= (const MultiSet_stdmap<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

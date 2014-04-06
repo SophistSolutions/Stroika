@@ -278,56 +278,59 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ SortedMultiSet_stdmap<T, TRAITS> *************************
+                 ************************ SortedMultiSet_stdmap<T, TRAITS> **********************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (start, end);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src) :
                     inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedMultiSet_stdmap<T, TRAITS>& SortedMultiSet_stdmap<T, TRAITS>::operator= (const SortedMultiSet_stdmap<T, TRAITS>& src)
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (src));
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T, typename TRAITS>

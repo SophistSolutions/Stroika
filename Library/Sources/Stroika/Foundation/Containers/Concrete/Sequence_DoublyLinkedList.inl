@@ -304,42 +304,54 @@ namespace   Stroika {
                 Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const vector<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AppendAll (start, end);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>&   Sequence_DoublyLinkedList<T>::operator= (const Sequence_DoublyLinkedList<T>& s)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (s);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 

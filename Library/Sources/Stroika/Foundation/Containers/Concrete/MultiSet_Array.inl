@@ -346,13 +346,13 @@ namespace   Stroika {
                 MultiSet_Array<T, TRAITS>::MultiSet_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     SetCapacity (end - start);
                     this->AddAll (start, end);
                 }
@@ -360,13 +360,13 @@ namespace   Stroika {
                 inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet_Array<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
                 }
@@ -374,20 +374,22 @@ namespace   Stroika {
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<MultiSetEntry<T>>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_Array<T, TRAITS>& MultiSet_Array<T, TRAITS>::operator= (const MultiSet_Array<T, TRAITS>& rhs)
                 {
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (rhs));
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T, typename TRAITS>
