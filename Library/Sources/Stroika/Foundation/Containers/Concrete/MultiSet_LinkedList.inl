@@ -153,7 +153,11 @@ namespace   Stroika {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
+#else
                         resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
+#endif
                         resultRep->fIterator.SetCurrentLink (iLink);
                     }
                     CONTAINER_LOCK_HELPER_END ();
