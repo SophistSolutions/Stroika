@@ -82,7 +82,7 @@ namespace   Stroika {
 
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template    <typename SHARED_T>
-                using	enable_shared_from_this_SharedPtrImplementationTemplate	=   Memory::enable_shared_from_this<SHARED_T>;
+                using   enable_shared_from_this_SharedPtrImplementationTemplate =   Memory::enable_shared_from_this<SHARED_T>;
 #else
                 template    <typename SHARED_T>
                 using   enable_shared_from_this_SharedPtrImplementationTemplate =   std::enable_shared_from_this<SHARED_T>;
