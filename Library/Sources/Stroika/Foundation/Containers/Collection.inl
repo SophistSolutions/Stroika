@@ -71,6 +71,12 @@ namespace   Stroika {
             }
 #endif
             template    <typename T>
+            inline  const typename  Collection<T>::_IRep&    Collection<T>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
+            }
+            template    <typename T>
             inline  const typename  Collection<T>::_IRep&    Collection<T>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe

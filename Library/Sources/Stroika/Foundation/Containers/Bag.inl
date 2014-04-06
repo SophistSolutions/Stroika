@@ -23,7 +23,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** Bag<T> *********************************
+             ************************************ Bag<T> ************************************
              ********************************************************************************
              */
             template    <typename T>
@@ -71,6 +71,12 @@ namespace   Stroika {
                 }
             }
 #endif
+            template    <typename T>
+            inline  const typename  Bag<T>::_IRep&    Bag<T>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
+            }
             template    <typename T>
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {

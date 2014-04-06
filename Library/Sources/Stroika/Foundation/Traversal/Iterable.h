@@ -482,6 +482,13 @@ namespace   Stroika {
 
             protected:
                 /**
+                 *  Use this in preference to _GetRep () as visual documentation that the caller is expecting to
+                 *  get a constant refererence. This is otherwise equivilent to the const overload of _GetRep()
+                 */
+                nonvirtual  const typename Iterable<T>::_IRep&   _ConstGetRep () const;
+
+            protected:
+                /**
                  *  _GetRep() is overloaded on const this. If you access the non-const overload, it will
                  *  assure you have a unique refernece to the given underlying rep (and with the const overload
                  *  no breakreferences will be called).
@@ -490,13 +497,6 @@ namespace   Stroika {
                  */
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
-
-            protected:
-                /**
-                 *  Use this in preference to _GetRep () as visual documentation that the caller is expecting to
-                 *  get a constant refererence. This is otherwise equivilent to the const overload of _GetRep()
-                 */
-                nonvirtual  const typename Iterable<T>::_IRep&   _ConstGetRep () const;
 
             private:
                 struct  Rep_Cloner_ {

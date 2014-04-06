@@ -62,6 +62,12 @@ namespace   Stroika {
                 this->AddAllToTail (start, end);
             }
             template    <typename T, typename TRAITS>
+            inline  const typename  Deque<T, TRAITS>::_IRep&    Deque<T, TRAITS>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
+            }
+            template    <typename T, typename TRAITS>
             inline  const typename  Deque<T, TRAITS>::_IRep&    Deque<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion

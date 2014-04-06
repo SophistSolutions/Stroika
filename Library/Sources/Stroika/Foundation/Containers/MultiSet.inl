@@ -404,6 +404,12 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
+            inline  const typename  MultiSet<T, TRAITS>::_IRep&    MultiSet<T, TRAITS>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
+            }
+            template    <typename T, typename TRAITS>
             inline  const typename MultiSet<T, TRAITS>::_IRep&  MultiSet<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion

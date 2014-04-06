@@ -408,6 +408,9 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
             protected:
+                nonvirtual  const _IRep&    _ConstGetRep () const;
+
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };

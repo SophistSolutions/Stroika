@@ -140,6 +140,9 @@ namespace   Stroika {
                 nonvirtual  PriorityQueue<T>&   operator-- ();
 
             protected:
+                nonvirtual  const _IRep&    _ConstGetRep () const;
+
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };

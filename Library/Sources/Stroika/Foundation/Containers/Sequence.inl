@@ -78,6 +78,12 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
+            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_ConstGetRep () const
+            {
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
+            }
+            template    <typename T>
             inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
