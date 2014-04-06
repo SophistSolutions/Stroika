@@ -344,40 +344,40 @@ namespace   Stroika {
             MultiSet<T, TRAITS>::MultiSet ()
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<T>& s)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (s);
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (s);
             }
             template    <typename T, typename TRAITS>
@@ -385,21 +385,21 @@ namespace   Stroika {
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
                 AddAll (start, end);
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
                 AddAll (start, end);
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
 #if     qDebug
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::~MultiSet ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -532,7 +532,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (T item) const
             {
-                return _GetRep ().OccurrencesOf (item);
+                return _ConstGetRep ().OccurrencesOf (item);
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (T item)

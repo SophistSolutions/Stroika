@@ -16,33 +16,33 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************** SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> *********************
+             ************ SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation ()
                 : inherited (static_cast < const inherited&& > (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -50,7 +50,7 @@ namespace   Stroika {
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -58,7 +58,7 @@ namespace   Stroika {
             SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (static_cast<const inherited&> (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAll (start, end);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -66,13 +66,13 @@ namespace   Stroika {
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
                 return *this;
             }
 

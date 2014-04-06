@@ -25,20 +25,20 @@ namespace   Stroika {
             inline  Stack<T, TRAITS>::Stack ()
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Stack<T, TRAITS>::Stack (const Stack<T, TRAITS>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Stack<T, TRAITS>::Stack (const CONTAINER_OF_T& s)
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AssertNotImplemented ();
 //                AddAll (s);
             }
@@ -46,7 +46,7 @@ namespace   Stroika {
             inline  Stack<T, TRAITS>::Stack (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -54,7 +54,7 @@ namespace   Stroika {
             inline Stack<T, TRAITS>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AssertNotImplemented ();
 //                AddAll (start, end);
             }
@@ -89,7 +89,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T       Stack<T, TRAITS>::Top () const
             {
-                return _GetRep ().Top ();
+                return _ConstGetRep ().Top ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Stack<T, TRAITS>::RemoveAll ()

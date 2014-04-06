@@ -23,19 +23,19 @@ namespace   Stroika {
             inline  Deque<T, TRAITS>::Deque ()
                 : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const Deque<T, TRAITS>& src)
                 : inherited (static_cast < const inherited&& > (src))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const std::initializer_list<T>& d)
                 : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAllToTail (d);
             }
             template    <typename T, typename TRAITS>
@@ -43,14 +43,14 @@ namespace   Stroika {
             inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAllToTail (src);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -58,7 +58,7 @@ namespace   Stroika {
             inline Deque<T, TRAITS>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 this->AddAllToTail (start, end);
             }
             template    <typename T, typename TRAITS>
@@ -92,7 +92,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T       Deque<T, TRAITS>::Tail () const
             {
-                return _GetRep ().Tail ();
+                return _ConstGetRep ().Tail ();
             }
 
 

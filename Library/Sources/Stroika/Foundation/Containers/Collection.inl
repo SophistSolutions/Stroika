@@ -29,44 +29,44 @@ namespace   Stroika {
             inline  Collection<T>::Collection ()
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Collection<T>::Collection (const Collection<T>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Collection<T>::Collection (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Collection<T>::Collection (const std::initializer_list<T>& src)
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
 #if     qDebug
             template    <typename T>
             Collection<T>::~Collection ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif

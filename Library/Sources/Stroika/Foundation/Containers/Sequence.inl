@@ -24,50 +24,61 @@ namespace   Stroika {
             inline  Sequence<T>::Sequence ()
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const initializer_list<T>& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AppendAll (s);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const vector<T>& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AppendAll (s);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AppendAll (s);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AppendAll (start, end);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
 #if     qDebug
             template    <typename T>
             Sequence<T>::~Sequence ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -163,7 +174,7 @@ namespace   Stroika {
             template    <typename IGNORED>
             inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
             {
-                return _GetRep ().IndexOf (i);
+                return _ConstGetRep ().IndexOf (i);
             }
             template    <typename T>
             inline  void    Sequence<T>::Insert (size_t i, T item)
@@ -273,7 +284,7 @@ namespace   Stroika {
             {
                 Require (not this->IsEmpty ());
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
-                return _GetRep ().GetAt (kBadSequenceIndex);
+                return _ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
             inline  void    Sequence<T>::push_back (T item)

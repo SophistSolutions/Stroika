@@ -25,19 +25,19 @@ namespace   Stroika {
             inline  Queue<T, TRAITS>::Queue ()
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const Queue<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const std::initializer_list<T>& q)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAllToTail (q);
             }
             template    <typename T, typename TRAITS>
@@ -45,7 +45,7 @@ namespace   Stroika {
             inline  Queue<T, TRAITS>::Queue (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AssertNotImplemented ();
                 AddAllToTail (src);
             }
@@ -53,7 +53,7 @@ namespace   Stroika {
             inline  Queue<T, TRAITS>::Queue (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -61,7 +61,7 @@ namespace   Stroika {
             inline Queue<T, TRAITS>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAllToTail (start, end);
             }
 #if     qDebug
@@ -69,7 +69,7 @@ namespace   Stroika {
             Queue<T, TRAITS>::~Queue ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -99,12 +99,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::Head () const
             {
-                return _GetRep ().Head ();
+                return _ConstGetRep ().Head ();
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>       Queue<T, TRAITS>::HeadIf () const
             {
-                return _GetRep ().HeadIf ();
+                return _ConstGetRep ().HeadIf ();
             }
             template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::RemoveHead ()

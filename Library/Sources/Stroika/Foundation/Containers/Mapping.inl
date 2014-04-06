@@ -29,7 +29,7 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
@@ -40,21 +40,21 @@ namespace   Stroika {
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& m)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (m);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -62,7 +62,7 @@ namespace   Stroika {
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -70,7 +70,7 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (start, end);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -84,7 +84,7 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::~Mapping ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -111,17 +111,17 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Keys () const
             {
-                return _GetRep ().Keys ();
+                return _ConstGetRep ().Keys ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
             {
                 if (item == nullptr) {
-                    return _GetRep ().Lookup (key, nullptr);
+                    return _ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<ValueType> tmp;
-                    if (_GetRep ().Lookup (key, &tmp)) {
+                    if (_ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
@@ -131,20 +131,20 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
             {
-                return _GetRep ().Lookup (key, item);
+                return _ConstGetRep ().Lookup (key, item);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
             {
                 Memory::Optional<VALUE_TYPE>   r;
-                bool    result = _GetRep ().Lookup (key, &r);
+                bool    result = _ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
             {
-                return _GetRep ().Lookup (key, nullptr);
+                return _ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
@@ -160,7 +160,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
             {
-                return _GetRep ().Lookup (key, nullptr);
+                return _ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
@@ -264,7 +264,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
-                return (_GetRep ().Equals (rhs._GetRep ()));
+                return (_ConstGetRep ().Equals (rhs._ConstGetRep ()));
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
