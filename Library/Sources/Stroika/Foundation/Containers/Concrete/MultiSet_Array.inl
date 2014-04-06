@@ -40,7 +40,7 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ();
+                    Rep_ () = default;
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
 
@@ -101,12 +101,6 @@ namespace   Stroika {
                  *********************** MultiSet_Array<T, TRAITS>::Rep_ ************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_Array<T, TRAITS>::Rep_::Rep_ ()
-                    : inherited ()
-                    , fData_ ()
-                {
-                }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_Array<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()

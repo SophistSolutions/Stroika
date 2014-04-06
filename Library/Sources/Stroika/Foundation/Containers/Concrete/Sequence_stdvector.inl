@@ -36,7 +36,7 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ();
+                    Rep_ () = default;
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
 
@@ -82,12 +82,6 @@ namespace   Stroika {
                 ************************* Sequence_stdvector<T>::Rep_ **************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                inline  Sequence_stdvector<T>::Rep_::Rep_ ()
-                    : inherited ()
-                    , fData_ ()
-                {
-                }
                 template    <typename T>
                 inline  Sequence_stdvector<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
