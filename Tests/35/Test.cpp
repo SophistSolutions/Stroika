@@ -29,6 +29,38 @@ using   Execution::WaitableEvent;
 
 namespace {
 
+    /*
+     *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
+     *  without worrying about races, just use mutex.
+     */
+    struct  no_lock_ {
+        void lock () {}
+        void unlock () {}
+    };
+
+}
+
+
+
+
+namespace {
+    void    RunThreads (const initializer_list<Thread>& threads)
+    {
+        for (Thread i : threads) {
+            i.Start ();
+        }
+        for (Thread i : threads) {
+            i.WaitForDone ();
+        }
+    }
+}
+
+
+
+
+
+namespace {
+
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
     Thread  mkIterateOverThread_ (ITERABLE_TYPE* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
@@ -73,34 +105,23 @@ namespace {
 
 
 
+
+
+
+
 namespace   {
     namespace AssignAndIterateAtSameTimeTest_ {
-
         template    <typename ITERABLE_TYPE>
         void    DoIt_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
-            /*
-             *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
-             *  without worrying about races, just use mutex.
-             */
-            struct no_lock_ {
-                void lock () {}
-                void unlock () {}
-            };
             no_lock_ lock ;
             //mutex lock;
-
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
             Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
-            iterateThread.Start ();
-            overwriteThread.Start ();
-            iterateThread.WaitForDone ();
-            overwriteThread.WaitForDone ();
+            RunThreads ({iterateThread, overwriteThread});
         }
     }
-
-
     void    AssignAndIterateAtSameTimeTest_1_ ()
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_"));
@@ -118,12 +139,19 @@ namespace   {
 
 
 
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         AssignAndIterateAtSameTimeTest_1_ ();
     }
 }
+
+
 
 
 
