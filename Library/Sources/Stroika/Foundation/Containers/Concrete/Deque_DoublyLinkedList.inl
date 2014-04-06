@@ -280,38 +280,38 @@ namespace   Stroika {
                 Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     InsertAll (0, s);
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     Append (start, end);
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Deque_DoublyLinkedList<T, TRAITS>&   Deque_DoublyLinkedList<T, TRAITS>::operator= (const Deque_DoublyLinkedList<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::__ConstGetRep (), Rep_);
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
                     return *this;
                 }
 
