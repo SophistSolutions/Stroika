@@ -82,10 +82,10 @@ namespace   Stroika {
 
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template    <typename SHARED_T>
-                using _USING_SHARED_enable_shared_from_this_IMPL_ =   Memory::enable_shared_from_this<SHARED_T>;
+                using	enable_shared_from_this_SharedPtrImplementationTemplate	=   Memory::enable_shared_from_this<SHARED_T>;
 #else
                 template    <typename SHARED_T>
-                using   _USING_SHARED_enable_shared_from_this_IMPL_ =   std::enable_shared_from_this<SHARED_T>;
+                using   enable_shared_from_this_SharedPtrImplementationTemplate =   std::enable_shared_from_this<SHARED_T>;
 #endif
             };
 
@@ -608,9 +608,9 @@ namespace   Stroika {
             class   Iterable<T>::_IRep
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
 #if     qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug
-                : public Iterable<T>::_USING_SHARED_enable_shared_from_this_IMPL_<Iterable<T>::_IRep>
+                : public Iterable<T>::enable_shared_from_this_SharedPtrImplementationTemplate<Iterable<T>::_IRep>
 #else
-                : public IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<Iterable<T>::_IRep>
+                : public IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<Iterable<T>::_IRep>
 #endif
 #endif
             {

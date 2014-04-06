@@ -1,6 +1,8 @@
 TODO (Foundation::Containers)
 
 
+	(o)		Get qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr working (value=true)
+
 	(o)		In PatchingDataStructures - we do more or less the same thing on top of each basic
 			cotnainer. Especially code to track iterators.
 

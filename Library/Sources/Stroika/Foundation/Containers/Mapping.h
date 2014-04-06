@@ -406,7 +406,7 @@ namespace   Stroika {
             class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep
                 : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                        , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep>
+                        , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep>
 #endif
             {
             protected:

@@ -1055,7 +1055,7 @@ namespace   Stroika {
             class   String::_IRep
                 : public Iterable<Character>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                , public Traversal::IterableBase::_USING_SHARED_enable_shared_from_this_IMPL_<String::_IRep>
+                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
 #endif
             {
             protected:
