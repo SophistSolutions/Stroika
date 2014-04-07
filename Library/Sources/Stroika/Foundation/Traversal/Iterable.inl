@@ -77,18 +77,20 @@ namespace   Stroika {
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>* s)
-                : fAccessor (s->fRep_)
-                , fUserOwner (s)
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
+                : fAccessor (iterableEnvelope->fRep_)
+                , fIterableEnvelope (iterableEnvelope)
             {
-                RequireNotNull (s);
+                RequireNotNull (iterableEnvelope);
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>& s, IteratorOwnerID itOwner)
-                : fAccessor (s.fRep_)
-                , fUserOwner (itOwner)
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::~_SafeReadWriteRepAccessor ()
             {
+                // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
+                //
+                // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
+                fIterableEnvelope->fRep_ = fAccessor;
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
@@ -101,7 +103,8 @@ namespace   Stroika {
             template <typename REP_SUB_TYPE>
             inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
             {
-                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor.get (fUserOwner));   // static cast for performance sake - dynamic cast in Ensure
+                // NOT QUITE RIGHT - THIS COPIES TOO AGGRESSIVELY. DONT COPY IF NO NEED!!!
+                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
                 EnsureMember (r, REP_SUB_TYPE);
                 return *r;
             }

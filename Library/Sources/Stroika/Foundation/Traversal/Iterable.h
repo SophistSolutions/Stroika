@@ -585,10 +585,10 @@ namespace   Stroika {
             class Iterable<T>::_SafeReadWriteRepAccessor  {
             public:
                 SharedByValueRepType_   fAccessor;
-                IteratorOwnerID         fUserOwner;
+                Iterable<T>*            fIterableEnvelope;
 
-                _SafeReadWriteRepAccessor (const Iterable<T>* s);
-                _SafeReadWriteRepAccessor (const Iterable<T>& s, IteratorOwnerID itOwner);
+                _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
+                ~_SafeReadWriteRepAccessor ();
 
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
 
