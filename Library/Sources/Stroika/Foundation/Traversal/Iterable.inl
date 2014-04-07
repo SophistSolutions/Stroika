@@ -77,8 +77,17 @@ namespace   Stroika {
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>& s)
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>* s)
+                : fAccessor (s->fRep_)
+                , fUserOwner (s)
+            {
+                RequireNotNull (s);
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>& s, IteratorOwnerID itOwner)
                 : fAccessor (s.fRep_)
+                , fUserOwner (itOwner)
             {
             }
             template    <typename T>
@@ -92,8 +101,9 @@ namespace   Stroika {
             template <typename REP_SUB_TYPE>
             inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
             {
-                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                return static_cast<REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor.get (fUserOwner));   // static cast for performance sake - dynamic cast in Ensure
+                EnsureMember (r, REP_SUB_TYPE);
+                return *r;
             }
 
 
