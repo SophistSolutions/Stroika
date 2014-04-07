@@ -29,53 +29,53 @@ namespace   Stroika {
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                RequireMember (&inherited::_GetRep (), _IRep);
+                RequireMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_GetRep (), _IRep);
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (start, end);
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                RequireMember (&inherited::_GetRep (), _IRep);
+                RequireMember (&inherited::_ConstGetRep (), _IRep);
             }
 #if     qDebug
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::~Bijection ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
@@ -102,22 +102,22 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Preimage () const
             {
-                return _GetRep ().Preimage ();
+                return _ConstGetRep ().Preimage ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Iterable<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Image () const
             {
-                return _GetRep ().Image ();
+                return _ConstGetRep ().Image ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, RangeType* item) const
             {
                 if (item == nullptr) {
-                    return _GetRep ().Lookup (key, nullptr);
+                    return _ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<RangeType> tmp;
-                    if (_GetRep ().Lookup (key, &tmp)) {
+                    if (_ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
@@ -127,20 +127,20 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, Memory::Optional<RangeType>* item) const
             {
-                return _GetRep ().Lookup (key, item);
+                return _ConstGetRep ().Lookup (key, item);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key) const
             {
                 Memory::Optional<RANGE_TYPE>   r;
-                bool    result = _GetRep ().Lookup (key, &r);
+                bool    result = _ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, nullptr_t) const
             {
-                return _GetRep ().Lookup (key, nullptr);
+                return _ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (DomainType key, RangeType defaultValue) const
@@ -152,11 +152,11 @@ namespace   Stroika {
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, DomainType* item) const
             {
                 if (item == nullptr) {
-                    return _GetRep ().InverseLookup (key, nullptr);
+                    return _ConstGetRep ().InverseLookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<DomainType> tmp;
-                    if (_GetRep ().InverseLookup (key, &tmp)) {
+                    if (_ConstGetRep ().InverseLookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
@@ -166,20 +166,20 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const
             {
-                return _GetRep ().InverseLookup (key, item);
+                return _ConstGetRep ().InverseLookup (key, item);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Memory::Optional<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key) const
             {
                 Memory::Optional<DOMAIN_TYPE>   r;
-                bool    result = _GetRep ().InverseLookup (key, &r);
+                bool    result = _ConstGetRep ().InverseLookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, nullptr_t) const
             {
-                return _GetRep ().InverseLookup (key, nullptr);
+                return _ConstGetRep ().InverseLookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  DOMAIN_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (RangeType key, DomainType defaultValue) const
@@ -190,7 +190,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (DomainType key) const
             {
-                return _GetRep ().Lookup (key, nullptr);
+                return _ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (RangeType v) const
@@ -278,7 +278,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
             {
-                return (_GetRep ().Equals (rhs._GetRep ()));
+                return (_ConstGetRep ().Equals (rhs._ConstGetRep ()));
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::clear ()
