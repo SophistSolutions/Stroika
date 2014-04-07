@@ -7,10 +7,14 @@
 #include    <mutex>
 
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Containers/Bijection.h"
 #include    "Stroika/Foundation/Containers/Collection.h"
+#include    "Stroika/Foundation/Containers/Deque.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Set.h"
+#include    "Stroika/Foundation/Containers/Stack.h"
 #include    "Stroika/Foundation/Containers/SortedSet.h"
+#include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Math/Common.h"
 
@@ -125,9 +129,14 @@ namespace   {
         {
             static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
+            static const initializer_list<pair<int,int>>  kOrigPairValueInit_ = {pair<int,int> (1, 3), pair<int,int> (4, 5), pair<int,int> (6, 33), pair<int,int> (12, 13)};
+            static const initializer_list<pair<int,int>>  kUPairpdateValueInit_ = {pair<int,int> (4, 5), pair<int,int> (6, 33), pair<int,int> (12, 34), pair<int,int> (596, 13), pair<int,int> (1, 3), pair<int,int> (99, 33), pair<int,int> (4, 5)};
             Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
             DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
+			DoItOnce_<Bijection<int,int>> (Bijection<int,int> (kOrigPairValueInit_), Bijection<int,int> (kUPairpdateValueInit_), 1000);
             DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), 1000);
+            //DoItOnce_<Deque<int>> (Deque<int> (kOrigValueInit_), Deque<int> (kUpdateValueInit_), 1000);
+			DoItOnce_<Mapping<int,int>> (Mapping<int,int> (kOrigPairValueInit_), Mapping<int,int> (kUPairpdateValueInit_), 1000);
             DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), 1000);
             DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), 1000);
             DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), 1000);
