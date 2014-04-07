@@ -114,7 +114,11 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
             {
+#if 0
+                return _SafeReadWriteRepAccessor<_IRep> (*this)._GetWriteableRep ().Add (item);
+#else
                 _GetRep ().Add (item);
+#endif
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>

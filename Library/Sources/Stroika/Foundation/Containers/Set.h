@@ -318,6 +318,14 @@ namespace   Stroika {
 #endif
 
             protected:
+                // see qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy if this fails on clang
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+
+
+            protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
 
             protected:
