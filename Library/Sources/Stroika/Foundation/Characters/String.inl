@@ -120,41 +120,31 @@ namespace   Stroika {
 :
             inherited (rep)
             {
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String (_SharedPtrIRep&& rep) noexcept
 :
             inherited (std::move (rep))
             {
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String ()
                 : inherited (mkEmpty_ ())
             {
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String (const wchar_t* cString)
                 : inherited (cString[0] == '\0' ? mkEmpty_ () : mk_ (cString, cString + wcslen (cString)))
             {
                 RequireNotNull (cString);
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String (const wchar_t* from, const wchar_t* to)
                 : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
             {
                 Require (from <= to);
                 Require (from != nullptr or from == to);
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String (const Character* from, const Character* to)
                 : inherited ((from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)))
@@ -162,21 +152,23 @@ namespace   Stroika {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 Require (from <= to);
                 Require (from != nullptr or from == to);
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
             inline  String::String (const std::wstring& r)
                 : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
             {
-#if     qDebug
-                _ConstGetRep (); // just make sure non-null and right type
-#endif
+                _AssertRepValidType ();
             }
-            inline  const String::_IRep&    String::_ConstGetRep () const
+            inline  const String::_IRep&    String::ConstGetRep_ () const
             {
                 EnsureMember (&inherited::_ConstGetRep (), String::_IRep);
                 return static_cast<const String::_IRep&> (inherited::_ConstGetRep ());   // static cast for performance sake - dynamic cast in Ensure
+            }
+            inline  void    String::_AssertRepValidType () const
+            {
+#if     qDebug
+                EnsureMember (&inherited::_ConstGetRep (), String::_IRep);
+#endif
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
@@ -505,7 +497,7 @@ namespace   Stroika {
             {
                 // Since this is intrinsically un-threadsafe anyhow, dont bother making a threadsafe
                 // copy (_SafeRepAccessor) of the shared_ptr
-                if (const wchar_t* result = _ConstGetRep ().c_str_peek ()) {
+                if (const wchar_t* result = ConstGetRep_ ().c_str_peek ()) {
                     return result;
                 }
                 else {

@@ -1076,13 +1076,13 @@ const wchar_t*  String::c_str_ () const
      *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
      *  Access to this envelope MUST be externally synchonized or the returned bare pointer is doo-doo.
      */
-    const   wchar_t*    result = _ConstGetRep ().c_str_peek ();
+    const   wchar_t*    result = ConstGetRep_ ().c_str_peek ();
     if (result == nullptr) {
-        pair<const Character*, const Character*> d = _ConstGetRep ().GetData ();
+        pair<const Character*, const Character*> d = ConstGetRep_ ().GetData ();
         _SharedPtrIRep tmp = mk_(reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
         String* REALTHIS    =   const_cast<String*> (this);
         *REALTHIS = String (move (tmp));
-        result = _ConstGetRep ().c_str_peek ();
+        result = ConstGetRep_ ().c_str_peek ();
     }
     Ensure (result != nullptr);
     return result;
