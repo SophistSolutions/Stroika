@@ -72,6 +72,33 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             *************** Iterable<T>::_SafeReadWriteRepAccessor *************************
+             ********************************************************************************
+             */
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (const Iterable<T>& s)
+                : fAccessor (s.fRep_)
+            {
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
+            {
+                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
+            {
+                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
+                return static_cast<REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+            }
+
+
+            /*
+             ********************************************************************************
              ********************************** Iterable<T> *********************************
              ********************************************************************************
              */

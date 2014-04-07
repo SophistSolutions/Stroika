@@ -201,7 +201,7 @@ namespace   Stroika {
                  *  @todo - USE _IterableSharedPtr INSTEAD
                  *  @todo PROBABLY DEPRECATED/DEPRECATE
                  */
-                using   _SharedPtrIRep		=   SharedPtrImplementationTemplate<_IRep>;
+                using   _SharedPtrIRep      =   SharedPtrImplementationTemplate<_IRep>;
 
             protected:
                 /**
@@ -215,7 +215,7 @@ namespace   Stroika {
                  *  UNSURE if we need this to be public or not, but leave this around for a while ...
                  *      -- LGP 2014-04-05
                  */
-                using   IterableSharedPtr	=   _IterableSharedPtr;
+                using   IterableSharedPtr   =   _IterableSharedPtr;
 
             protected:
                 /**
@@ -519,7 +519,7 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL -- LGP 2014-02-21
                  */
-                using	_ReadOnlyIterableIRepReference = typename SharedByValueRepType_::ReadOnlyReference;
+                using   _ReadOnlyIterableIRepReference = typename SharedByValueRepType_::ReadOnlyReference;
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
@@ -528,7 +528,7 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL -- LGP 2014-02-21
                  */
-                nonvirtual	_ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
+                nonvirtual  _ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
 
             protected:
                 /**
@@ -594,7 +594,7 @@ namespace   Stroika {
                 // re fAccessor - must actually copy-by-value and if this changed on DTOR
                 // write back?
                 // enter in IFDEFS til weve worked  this out
-                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep () const;
+                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
             };
 
 
