@@ -90,15 +90,24 @@ namespace   Stroika {
                     template    <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
                     nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
 
-                public:
-                    mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
 
 #if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
                 public:
-                    // This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
-                    // iterator stays alive for the life of the iterator.
+                    /*
+					 *	This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
+                     *	iterator stays alive for the life of the iterator.
+					 *
+					 *	NB: This is a very SUBTLE and CRITICAL point: IterableSharedPtr MUST COME BEFORE the PATCHABLE_CONTAINER_ITERATOR!!!
+					 *
+					 *	This order means that the ITERATOR is destroyed first, and the container (its iterating over) is destroyed second.
+					 *
+					 *	VERY SUBTLE MULTITHREADING BUG!!!) -- LGP 2014-04-08
+					 */
                     typename Iterable<T>::IterableSharedPtr    fSavedIterableSharedPtrRep;
 #endif
+
+				public:
+                    mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 
 
