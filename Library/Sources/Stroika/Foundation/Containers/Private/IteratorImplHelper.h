@@ -94,19 +94,19 @@ namespace   Stroika {
 #if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
                 public:
                     /*
-					 *	This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
-                     *	iterator stays alive for the life of the iterator.
-					 *
-					 *	NB: This is a very SUBTLE and CRITICAL point: IterableSharedPtr MUST COME BEFORE the PATCHABLE_CONTAINER_ITERATOR!!!
-					 *
-					 *	This order means that the ITERATOR is destroyed first, and the container (its iterating over) is destroyed second.
-					 *
-					 *	VERY SUBTLE MULTITHREADING BUG!!!) -- LGP 2014-04-08
-					 */
+                     *  This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the
+                     *  iterator stays alive for the life of the iterator.
+                     *
+                     *  NB: This is a very SUBTLE and CRITICAL point: IterableSharedPtr MUST COME BEFORE the PATCHABLE_CONTAINER_ITERATOR!!!
+                     *
+                     *  This order means that the ITERATOR is destroyed first, and the container (its iterating over) is destroyed second.
+                     *
+                     *  VERY SUBTLE MULTITHREADING BUG!!!) -- LGP 2014-04-08
+                     */
                     typename Iterable<T>::IterableSharedPtr    fSavedIterableSharedPtrRep;
 #endif
 
-				public:
+                public:
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 
