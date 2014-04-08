@@ -76,7 +76,9 @@ namespace {
     {
         using ElementType   =   typename ITERABLE_TYPE::ElementType;
         return Thread ([iterable, lock, repeatCount] () {
+            Debug::TraceContextBumper traceCtx (SDKSTR ("{}IterateOverThread::MAIN..."));
             for (unsigned int i = 0; i < repeatCount; ++i) {
+                //DbgTrace ("Iterate thread loop %d", i);
                 lock_guard<decltype(*lock)> critSec (*lock);
                 for (ElementType e :  *iterable) {
                     ElementType e2 = e; // do something
@@ -95,6 +97,7 @@ namespace {
     Thread  mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         return Thread ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
+            Debug::TraceContextBumper traceCtx (SDKSTR ("{}OverwriteThread::MAIN..."));
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
@@ -124,6 +127,7 @@ namespace   {
         template    <typename ITERABLE_TYPE>
         void    DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
+            Debug::TraceContextBumper traceCtx (SDKSTR ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"));
             no_lock_ lock ;
             //mutex lock;
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
@@ -133,26 +137,28 @@ namespace   {
         }
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
+            const unsigned int kRepeatCount_ = 500;
+            //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
             static const initializer_list<pair<int, int>>  kOrigPairValueInit_ = {pair<int, int> (1, 3), pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 13)};
             static const initializer_list<pair<int, int>>  kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 33), pair<int, int> (4, 5)};
-            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
-            DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), 1000);
-            DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int> (kUPairpdateValueInit_), 1000);
-            DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), 1000);
+            DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), kRepeatCount_);
+            DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int> (kUPairpdateValueInit_), kRepeatCount_);
+            DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), kRepeatCount_);
             // Queue/Deque NYI here cuz of assign from initializer
-            //DoItOnce_<Deque<int>> (Deque<int> (kOrigValueInit_), Deque<int> (kUpdateValueInit_), 1000);
-            //DoItOnce_<Queue<int>> (Queue<int> (kOrigValueInit_), Queue<int> (kUpdateValueInit_), 1000);
-            DoItOnce_<MultiSet<int>> (MultiSet<int> (kOrigValueInit_), MultiSet<int> (kUpdateValueInit_), 1000);
-            DoItOnce_<Mapping<int, int>> (Mapping<int, int> (kOrigPairValueInit_), Mapping<int, int> (kUPairpdateValueInit_), 1000);
-            DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), 1000);
-            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), 1000);
-            DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int> (kOrigPairValueInit_), SortedMapping<int, int> (kUPairpdateValueInit_), 1000);
-            DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int> (kOrigValueInit_), SortedMultiSet<int> (kUpdateValueInit_), 1000);
-            DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), 1000);
+            //DoItOnce_<Deque<int>> (Deque<int> (kOrigValueInit_), Deque<int> (kUpdateValueInit_), kRepeatCount_);
+            //DoItOnce_<Queue<int>> (Queue<int> (kOrigValueInit_), Queue<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<MultiSet<int>> (MultiSet<int> (kOrigValueInit_), MultiSet<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<Mapping<int, int>> (Mapping<int, int> (kOrigPairValueInit_), Mapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
+            DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int> (kOrigPairValueInit_), SortedMapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
+            DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int> (kOrigValueInit_), SortedMultiSet<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), kRepeatCount_);
             // Stack NYI cuz not enough of stack implemented (op=)
-            //DoItOnce_<Stack<int>> (Stack<int> (kOrigValueInit_), Stack<int> (kUpdateValueInit_), 1000);
+            //DoItOnce_<Stack<int>> (Stack<int> (kOrigValueInit_), Stack<int> (kUpdateValueInit_), kRepeatCount_);
         }
     }
 }
@@ -173,6 +179,8 @@ namespace   {
         {
             ITERABLE_TYPE   oneToKeepOverwriting = elt1;
             auto mutateFunction =               [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction] () {
+                Debug::TraceContextBumper traceCtx (SDKSTR ("{}::MutateFunction ()"));
+                DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name());
                 for (unsigned int i = 0; i < repeatCount; ++i) {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
@@ -186,34 +194,53 @@ namespace   {
             // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
             Debug::TraceContextBumper traceCtx (SDKSTR ("IterateWhileMutatingContainer_Test_2_::DoIt ()"));
 
-            // @TODO - DEBUG!!!!
+            const unsigned int kRepeatCount_ = 250;
+
+            static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+            static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
             no_lock_ lock;
             //mutex lock;
-#if 0
-            // doesnt work with 'no_lock' but does with mutext lock
-            // @todo - FIX - cuz of RACE CONDITION STILL
+
             DoItOnce_<Set<int>> (
                                  &lock,
-                                 Set<int> ({1, 3, 4, 5, 6, 33, 12, 13}),
-                                 1000,
+                                 Set<int> (kOrigValueInit_),
+                                 kRepeatCount_,
             [&lock] (Set<int>* oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
+                    //DbgTrace ("doing update loop %d", ii);
                     if (Math::IsOdd (ii)) {
                         lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Set<int> {3, 5};
+                        (*oneToKeepOverwriting) = Set<int> { kUpdateValueInit_ };
                     }
                     else {
                         lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Set<int> {3, 5};
+                        (*oneToKeepOverwriting) = Set<int> { kUpdateValueInit_ };
                     }
                 }
             });
-#endif
+
+            DoItOnce_<Sequence<int>> (
+                                      &lock,
+                                      Sequence<int> (kOrigValueInit_),
+                                      kRepeatCount_,
+            [&lock] (Sequence<int>* oneToKeepOverwriting) {
+                for (int ii = 0; ii <= 100; ++ii) {
+                    if (Math::IsOdd (ii)) {
+                        lock_guard<decltype(lock)> critSec (lock);
+                        (*oneToKeepOverwriting) = Sequence<int> { kUpdateValueInit_ };
+                    }
+                    else {
+                        lock_guard<decltype(lock)> critSec (lock);
+                        (*oneToKeepOverwriting) = Sequence<int> { kUpdateValueInit_ };
+                    }
+                }
+            });
+
             DoItOnce_<String> (
                 &lock,
                 String (L"123456789"),
-                1000,
+                kRepeatCount_,
             [&lock] (String * oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
