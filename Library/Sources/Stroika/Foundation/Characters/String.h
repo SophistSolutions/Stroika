@@ -372,7 +372,14 @@ namespace   Stroika {
                 using   _SharedPtrIRep          =   SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                struct  _SafeRepAccessor;
+                /**
+                 */
+                using   _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
+
+            protected:
+                /**
+                 */
+                using   _SafeReadWriteRepAccessor = Iterable<Character>::_SafeReadWriteRepAccessor<_IRep>;
 
             protected:
                 /**
@@ -557,7 +564,7 @@ namespace   Stroika {
                 nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
 
             private:
-                static  String  SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
+                static  String  SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
 
             public:
                 /**
@@ -1002,7 +1009,7 @@ namespace   Stroika {
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
             private:
-                // Use _SafeRepAccessor instead
+                // Use _SafeReadRepAccessor instead
                 nonvirtual  const _IRep&    ConstGetRep_ () const;
 
             protected:
@@ -1013,7 +1020,7 @@ namespace   Stroika {
                 friend  String      operator+ (const wchar_t* lhs, const String& rhs);
             };
 
-
+#if 0
             /*
              *   if  this idea works well, do a templated version of this and use more thoroughly...
              *      --LGP 2014-02-21
@@ -1025,6 +1032,7 @@ namespace   Stroika {
 
                 nonvirtual  const _IRep&    _ConstGetRep () const;
             };
+#endif
 
 
             template    <>

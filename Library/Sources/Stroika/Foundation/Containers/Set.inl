@@ -32,14 +32,14 @@ namespace   Stroika {
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (const std::initializer_list<T>& src)
+            inline  Set<T, TRAITS>::Set (const initializer_list<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (const std::set<T>& src)
+            inline  Set<T, TRAITS>::Set (const set<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
@@ -140,12 +140,20 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (T item)
             {
+#if 1
+                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (item);
+#else
                 _GetRep ().Remove (item);
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (const Iterator<T>& i)
             {
+#if 1
+                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (i);
+#else
                 _GetRep ().Remove (i);
+#endif
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -164,7 +172,11 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::RemoveAll ()
             {
+#if 1
+                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().RemoveAll ();
+#else
                 _GetRep ().RemoveAll ();
+#endif
             }
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const

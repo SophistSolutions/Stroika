@@ -92,7 +92,7 @@ namespace   {
         class   MyRep_ : public _IRep {
             using inherited = _IRep;
         public:
-            MyRep_ (const _SafeRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
+            MyRep_ (const _SafeReadRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
                 : inherited (start, end)
                 , fSaved_ (savedSP)
             {
@@ -110,7 +110,7 @@ namespace   {
                 return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
             }
         private:
-            _SafeRepAccessor  fSaved_;
+            _SafeReadRepAccessor  fSaved_;
         public:
             DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
         };
@@ -402,13 +402,13 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 
 String  String::operator+ (const String& rhs) const
 {
-    _SafeRepAccessor    thisAccessor (*this);
+    _SafeReadRepAccessor    thisAccessor (*this);
     pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen  =   lhsD.second - lhsD.first;
     if (lhsLen == 0) {
         return rhs;
     }
-    _SafeRepAccessor    rhsAccessor (rhs);
+    _SafeReadRepAccessor    rhsAccessor (rhs);
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     if (rhsD.first == rhsD.second) {
         return *this;
@@ -424,7 +424,7 @@ String  String::operator+ (const String& rhs) const
 String  String::operator+ (const wchar_t* appendageCStr) const
 {
     RequireNotNull (appendageCStr);
-    _SafeRepAccessor    thisAccessor (*this);
+    _SafeReadRepAccessor    thisAccessor (*this);
     pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen  =   lhsD.second - lhsD.first;
     if (lhsLen == 0) {
@@ -462,7 +462,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     if (from == to) {
         return;
     }
-    _SafeRepAccessor copyAccessor { *this };
+    _SafeReadRepAccessor copyAccessor { *this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
     Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
@@ -487,7 +487,7 @@ void    String::InsertAt (const String& s, size_t at)
     // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
     // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
     // another thread could only change that other envelopes copy
-    _SafeRepAccessor rhsCopyAccessor (s);
+    _SafeReadRepAccessor rhsCopyAccessor (s);
     pair<const Character*, const Character*> d = rhsCopyAccessor._ConstGetRep ().GetData ();
     String  thisCopy =  *this;
     thisCopy.InsertAt (d.first, d.second, at);
@@ -515,7 +515,7 @@ String    String::InsertAt_nu (const Character* from, const Character* to, size_
     if (from == to) {
         return *this;
     }
-    _SafeRepAccessor copyAccessor { *this };
+    _SafeReadRepAccessor copyAccessor { *this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
     Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
@@ -526,7 +526,7 @@ String        String::RemoveAt (size_t from, size_t to) const
 {
     Require (from <= to);
     Require (to <= GetLength ());
-    _SafeRepAccessor accessor { *this };
+    _SafeReadRepAccessor accessor { *this };
     size_t length = accessor._ConstGetRep ()._GetLength ();
     if (from == to) {
         return *this;   // @todo - fix to return accessor.AsString()
@@ -557,7 +557,7 @@ String    String::Remove (Character c) const
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     Require (startAt <= accessor._ConstGetRep ()._GetLength ());
     size_t length = accessor._ConstGetRep ()._GetLength ();
     switch (co) {
@@ -584,7 +584,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     Require (startAt <= accessor._ConstGetRep ()._GetLength ());
 
     size_t  subStrLen   =   subString.GetLength ();
@@ -706,7 +706,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
 size_t  String::RFind (Character c) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
-    _SafeRepAccessor accessor { *this };
+    _SafeReadRepAccessor accessor { *this };
     const _IRep&    useRep = accessor._ConstGetRep ();
     size_t length = useRep._GetLength ();
     for (size_t i = length; i > 0; --i) {
@@ -740,7 +740,7 @@ size_t  String::RFind (const String& subString) const
 
 bool    String::StartsWith (const Character& c, CompareOptions co) const
 {
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     if (accessor._ConstGetRep ()._GetLength () == 0) {
         return false;
     }
@@ -749,7 +749,7 @@ bool    String::StartsWith (const Character& c, CompareOptions co) const
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     size_t  subStrLen = subString.GetLength ();
     if (subStrLen >  accessor._ConstGetRep ()._GetLength ()) {
         return false;
@@ -766,7 +766,7 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 
 bool    String::EndsWith (const Character& c, CompareOptions co) const
 {
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     const _IRep&    useRep = accessor._ConstGetRep ();
     size_t  thisStrLen = useRep._GetLength ();
     if (thisStrLen == 0) {
@@ -777,7 +777,7 @@ bool    String::EndsWith (const Character& c, CompareOptions co) const
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     size_t      thisStrLen = accessor._ConstGetRep ()._GetLength ();
     size_t      subStrLen = subString.GetLength ();
     if (subStrLen >  thisStrLen) {
@@ -822,7 +822,7 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
     return result;
 }
 
-String  String::SubString_ (const _SafeRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)
+String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)
 {
     Require (from <= to);
     Require (to <= thisLen);
@@ -875,7 +875,7 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
     // @todo - NOT ENVELOPE THREADSAFE
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     size_t length = accessor._ConstGetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
         if (not (*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (i))) {
@@ -897,7 +897,7 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
     // @todo - NOT ENVELOPE THREADSAFE
     RequireNotNull (shouldBeTrimmmed);
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     ptrdiff_t length = accessor._ConstGetRep ()._GetLength ();
     ptrdiff_t endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
@@ -959,9 +959,9 @@ String  String::StripAll (bool (*removeCharIf) (Character)) const
 
 String  String::ToLowerCase () const
 {
-    StringBuilder       result;
-    _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._ConstGetRep ()._GetLength ();
+    StringBuilder           result;
+    _SafeReadRepAccessor    accessor { *this };
+    size_t                  n   =   accessor._ConstGetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   accessor._ConstGetRep ().GetAt (i);
@@ -978,9 +978,9 @@ String  String::ToLowerCase () const
 
 String  String::ToUpperCase () const
 {
-    StringBuilder       result;
-    _SafeRepAccessor    accessor { *this };
-    size_t              n   =   accessor._ConstGetRep ()._GetLength ();
+    StringBuilder           result;
+    _SafeReadRepAccessor    accessor { *this };
+    size_t                  n   =   accessor._ConstGetRep ()._GetLength ();
     bool    anyChange   =   false;
     for (size_t i = 0; i < n; ++i) {
         Character   c   =   accessor._ConstGetRep ().GetAt (i);
@@ -1031,7 +1031,7 @@ template    <>
 void    String::AsUTF8 (string* into) const
 {
     RequireNotNull (into);
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
     WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), kCodePage_UTF8, into);
 }
@@ -1039,7 +1039,7 @@ void    String::AsUTF8 (string* into) const
 void    String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
 #if     qTargetPlatformSDKUseswchar_t
     into->assign (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second));
@@ -1051,7 +1051,7 @@ void    String::AsSDKString (SDKString* into) const
 void    String::AsNarrowSDKString (string* into) const
 {
     RequireNotNull (into);
-    _SafeRepAccessor    accessor { *this };
+    _SafeReadRepAccessor    accessor { *this };
     pair<const Character*, const Character*> lhsD   =   accessor._ConstGetRep ().GetData ();
     WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
 }
@@ -1061,8 +1061,8 @@ void    String::AsASCII (string* into) const
 {
     RequireNotNull (into);
     into->clear ();
-    _SafeRepAccessor    accessor { *this };
-    size_t  len =   accessor._ConstGetRep ().GetLength ();
+    _SafeReadRepAccessor    accessor { *this };
+    size_t                  len =   accessor._ConstGetRep ().GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
         Assert (accessor._ConstGetRep ().GetAt (i).IsAscii ());
@@ -1117,7 +1117,7 @@ void    String::erase (size_t from, size_t count)
  */
 String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
-    String::_SafeRepAccessor    rhsAccessor { rhs };
+    String::_SafeReadRepAccessor    rhsAccessor { rhs };
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);

@@ -133,8 +133,8 @@ namespace   Stroika {
                  */
                 Set ();
                 Set (const Set<T, TRAITS>& s);
-                Set (const std::initializer_list<T>& s);
-                Set (const std::set<T>& s);
+                Set (const initializer_list<T>& s);
+                Set (const set<T>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Set (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
