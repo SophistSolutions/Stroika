@@ -62,6 +62,14 @@ namespace   Stroika {
 #define qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_        1
 #endif
 
+            /**
+             *  EXPERIMENTAL AS OF v2.0a22x
+             *  WILL ALMOST CERTAINLY leave this true, but make an option so I can test performance impact
+             */
+#ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_        1
+#endif
+
 
             /**
              */
@@ -550,22 +558,29 @@ namespace   Stroika {
 
 
             /**
-             *  EXPERIMENTAL -- LGP 2014-02-21
+             *  EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
              *
-             *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the 'this' object, and makes a copy
-             *  incrementing the reference count, and the caller accesses the rep through the copied/bumped reference.
+             *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+             *  'this' object, and makes a copy incrementing the reference count, and the caller accesses the
+             *  rep through the copied/bumped reference.
              *
-             *  This assures that if another thread assigns to *this, that has no corruption effect on this operation/method running
-             *  on the prior '*this' object.
+             *  This assures that if another thread assigns to *this, that has no corruption effect on this
+             *  operation/method running on the prior '*this' object.
+             *
+             *  @see _SafeReadWriteRepAccessor
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             class Iterable<T>::_SafeReadRepAccessor  {
-            public:
-                _ReadOnlyIterableIRepReference    fAccessor;
+            private:
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                _ReadOnlyIterableIRepReference    fAccessor_;
+#else
+                const REP_SUB_TYPE& fConstRef_;
+#endif
 
             public:
-                _SafeReadRepAccessor (const Iterable<T>& s);
+                _SafeReadRepAccessor (const Iterable<T>& it);
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
@@ -573,27 +588,34 @@ namespace   Stroika {
 
 
             /**
-             *  EXPERIMENTAL -- LGP 2014-02-21
+             *  EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
              *
-             *          ***NYI***
-             *          *** instea d of storing
-             *          MAYBE what this does is operate on the given coy but whne the DTOR happens, assign overwriting the original container!
-             *      (on dtor *this - fAccessor) - maybe only if there is a change in ptr).
+             *  _SafeReadWriteRepAccessor is like _SafeReadRepAccessor, but allows for modifying the underlying Rep,
+             *  and handles the 'break references' as needed.
+             *
+             *  @see _SafeReadRepAccessor
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
             class Iterable<T>::_SafeReadWriteRepAccessor  {
-            public:
-                SharedByValueRepType_   fAccessor;
+            private:
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                SharedByValueRepType_   fAccessor_;
                 Iterable<T>*            fIterableEnvelope;
+#else
+                const REP_SUB_TYPE& fRef_;
+#endif
 
+            public:
                 _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
                 ~_SafeReadWriteRepAccessor ();
 
+            public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
 
+            public:
                 // for now - hack?? NO - DONT SUPPORT THIS YET - cuz must use differnt
-                // re fAccessor - must actually copy-by-value and if this changed on DTOR
+                // re fAccessor_ - must actually copy-by-value and if this changed on DTOR
                 // write back?
                 // enter in IFDEFS til weve worked  this out
                 nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();

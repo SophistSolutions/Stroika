@@ -57,16 +57,28 @@ namespace   Stroika {
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>& s)
-                : fAccessor (s._GetReadOnlyIterableIRepReference ())
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>& it)
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                : fAccessor_ (it._GetReadOnlyIterableIRepReference ())
+#else
+                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (*it.cget ())))
+#endif
             {
+#if     !qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                EnsureMember (&fConstRef_, REP_SUB_TYPE);
+#endif
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
-                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                EnsureMember (fAccessor_.get (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.get ());   // static cast for performance sake - dynamic cast in Ensure
+#else
+                EnsureMember (&fConstRef_, REP_SUB_TYPE);
+                return fConstRef_;
+#endif
             }
 
 
@@ -78,8 +90,12 @@ namespace   Stroika {
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
-                : fAccessor (iterableEnvelope->fRep_)
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                : fAccessor_ (iterableEnvelope->fRep_)
                 , fIterableEnvelope (iterableEnvelope)
+#else
+                : fRef_ (*static_cast<REP_SUB_TYPE*> (*iterableEnvelope->fRep_.get ())))
+#endif
             {
                 RequireNotNull (iterableEnvelope);
             }
@@ -87,26 +103,36 @@ namespace   Stroika {
             template <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::~_SafeReadWriteRepAccessor ()
             {
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
                 //
                 // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
-                fIterableEnvelope->fRep_ = fAccessor;
+                fIterableEnvelope->fRep_ = fAccessor_;
+#endif
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
-                EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
+                EnsureMember (fAccessor_.get (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.get ());   // static cast for performance sake - dynamic cast in Ensure
+#else
+                return fRef_;
+#endif
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
             {
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 // NOT QUITE RIGHT - THIS COPIES TOO AGGRESSIVELY. DONT COPY IF NO NEED!!!
-                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
                 EnsureMember (r, REP_SUB_TYPE);
                 return *r;
+#else
+                return fRef_;
+#endif
             }
 
 
