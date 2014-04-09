@@ -61,7 +61,7 @@ namespace   Stroika {
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 : fAccessor_ (it._GetReadOnlyIterableIRepReference ())
 #else
-                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (*it.cget ())))
+                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it.fRep_.cget ()))
 #endif
             {
 #if     !qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
@@ -94,7 +94,7 @@ namespace   Stroika {
                 : fAccessor_ (iterableEnvelope->fRep_)
                 , fIterableEnvelope (iterableEnvelope)
 #else
-                : fRef_ (*static_cast<REP_SUB_TYPE*> (*iterableEnvelope->fRep_.get ())))
+                : fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))
 #endif
             {
                 RequireNotNull (iterableEnvelope);

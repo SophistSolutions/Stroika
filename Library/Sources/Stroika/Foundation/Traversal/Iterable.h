@@ -62,12 +62,13 @@ namespace   Stroika {
 #define qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_        1
 #endif
 
+
             /**
              *  EXPERIMENTAL AS OF v2.0a22x
              *  WILL ALMOST CERTAINLY leave this true, but make an option so I can test performance impact
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_        1
+#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_	1
 #endif
 
 
@@ -603,7 +604,7 @@ namespace   Stroika {
                 SharedByValueRepType_   fAccessor_;
                 Iterable<T>*            fIterableEnvelope;
 #else
-                const REP_SUB_TYPE& fRef_;
+                REP_SUB_TYPE& fRef_;
 #endif
 
             public:
