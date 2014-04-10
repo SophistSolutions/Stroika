@@ -178,13 +178,6 @@ namespace   Stroika {
                 size_t                  myLength { accessor._ConstGetRep ()._GetLength () };
                 Require (from <= myLength);
                 size_t  useLength  { myLength - from };
-                if (useLength == 0) {
-                    return String ();
-                }
-                if ((from == 0) and (useLength == myLength)) {
-                    ////@TODO - FIX - SHOULD convert _SafeReadRepAccessor to String instance??? then return that!
-                    return *this;       // just bump reference count
-                }
                 return SubString_ (accessor, myLength, from, from + useLength);
             }
             inline  String  String::SubString (size_t from, size_t to) const

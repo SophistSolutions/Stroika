@@ -377,7 +377,7 @@ String  String::FromAscii (const string& from)
 
 String::_SharedPtrIRep  String::mkEmpty_ ()
 {
-    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr, 1);  /// so room for NUL-char
+    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr, 1);  // so room for NUL-char
     return s_;
 }
 
@@ -837,6 +837,7 @@ String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thi
     if (len == thisLen) {
         Assert (from == 0);     // because we require from/to subrange of thisLen, so if equal, must be full range
 #if     0
+        // @todo SEE TODO in String.h
         // @todo - FIX - MUST RETURN thisAccessor AS STRING
 #endif
     }

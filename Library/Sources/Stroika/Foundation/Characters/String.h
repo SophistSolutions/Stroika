@@ -53,6 +53,10 @@
  *
  * TODO:
  *
+ *      @todo   WRITEUP THREAD SAFETY:
+ *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
+ *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ *
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
  *
@@ -67,6 +71,15 @@
  *                      the way to go (lisp/functional programming).
  *
  *              That may mean the CopyOnWrite stuff is useless here?
+ *
+ *      @todo   Cleanup SubString (), and String::SubString_ use of SharedByValue<TRAITS>::ReadOnlyReference for
+ *              performance. At some level - in String::SubString_ - we have a (hidden) sharedPtr and it would
+ *              be safe and performant in that case to re-use that shared_ptr to make a new String envelope.
+ *
+ *              However, I'm not sure its safe in general to have SharedByValue<TRAITS>::ReadOnlyReference expose
+ *              its shared_ptr, which appears needed to make this happen.
+ *
+ *              Not a biggie opportunity, so we can delay this -- LGP 2014-04-10
  *
  *      @todo   Change APIs that return vector to return Iterable<> using CreateGenerator (). Tried once and worked
  *              very nicely.
@@ -146,16 +159,6 @@
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
- *      @todo   At this stage - for our one trivial test - performance is now about 5% faster than
- *              visual studio.net 2010, but
- *              about a factor of 2 SLOWER than GCC (as of 2011-12-04).
- *
- *              I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
- *
- *      @todo   Fix const   Memory::SharedByValue<String::String::Rep>  String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
- *              to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
- *              just in CPP file
- *
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
  *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
@@ -171,10 +174,6 @@
  *              OR better document why its OK (unexpected throw stuff may make it OK).
  *
  *              Maybe also add GetRepSupportedFeatures() API? Maybe not worth it. If no - dumcument why someplace!
- *
- *      @todo   WRITEUP THREAD SAFETY:
- *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
- *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API. See/maybe use new
  *              Stroika Range type?
