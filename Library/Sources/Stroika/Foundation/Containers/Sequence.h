@@ -513,10 +513,10 @@ namespace   Stroika {
             template    <typename T>
             class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             public:
                 // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element

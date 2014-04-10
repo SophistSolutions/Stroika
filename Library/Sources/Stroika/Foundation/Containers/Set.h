@@ -346,10 +346,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             class   Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             public:
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;

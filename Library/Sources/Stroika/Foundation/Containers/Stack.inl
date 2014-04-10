@@ -110,22 +110,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Stack<T, TRAITS>::operator!= (const Stack<T, TRAITS>& rhs) const
             {
-                return (not Equals (rhs));
-            }
-
-
-            /*
-             ********************************************************************************
-             ********************* Stack<T, TRAITS>::_IRep **********************************
-             ********************************************************************************
-             */
-            template    <typename T, typename TRAITS>
-            inline  Stack<T, TRAITS>::_IRep::_IRep ()
-            {
-            }
-            template    <typename T, typename TRAITS>
-            inline  Stack<T, TRAITS>::_IRep::~_IRep ()
-            {
+                return not Equals (rhs);
             }
 
 

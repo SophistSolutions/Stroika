@@ -262,10 +262,10 @@ namespace   Stroika {
             template    <typename T>
             class   Collection<T>::_IRep : public Iterable<T>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             public:
                 virtual void    Add (T item)                                                            =   0;

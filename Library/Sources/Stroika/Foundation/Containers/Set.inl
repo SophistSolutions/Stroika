@@ -305,14 +305,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::_IRep::_IRep ()
-            {
-            }
-            template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::_IRep::~_IRep ()
-            {
-            }
-            template    <typename T, typename TRAITS>
             bool    Set<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {

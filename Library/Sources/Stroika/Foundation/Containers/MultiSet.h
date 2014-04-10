@@ -334,7 +334,7 @@ namespace   Stroika {
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;
 
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
                 virtual bool        Equals (const _IRep& rhs) const                                         =   0;

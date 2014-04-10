@@ -203,10 +203,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             class   Stack<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
 
             public:
                 virtual void                Push (T item)                           =   0;
