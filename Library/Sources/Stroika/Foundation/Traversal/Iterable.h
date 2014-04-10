@@ -581,7 +581,12 @@ namespace   Stroika {
 #endif
 
             public:
+                _SafeReadRepAccessor () = delete;
+                _SafeReadRepAccessor (const _SafeReadRepAccessor&) = delete;
                 _SafeReadRepAccessor (const Iterable<T>* it);
+
+            public:
+                const _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = delete;
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
@@ -608,17 +613,20 @@ namespace   Stroika {
 #endif
 
             public:
+                _SafeReadWriteRepAccessor () = delete;
+                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = delete;
                 _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
+
+            public:
                 ~_SafeReadWriteRepAccessor ();
+
+            public:
+                const _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
 
             public:
-                // for now - hack?? NO - DONT SUPPORT THIS YET - cuz must use differnt
-                // re fAccessor_ - must actually copy-by-value and if this changed on DTOR
-                // write back?
-                // enter in IFDEFS til weve worked  this out
                 nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
             };
 
