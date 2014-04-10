@@ -847,8 +847,13 @@ String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thi
         return mk_ (start, end);
     }
 #endif
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
     // This is mostly a win if it saves a malloc() (and the copy of the start...end char data)
     return String (_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, end)));
+#else
+    // really just to test - if qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_ not true, it doesnt bump refcount so really unsafe todo this way
+    return mk_ (start, end);
+#endif
 }
 
 String  String::Repeat (unsigned int count) const
