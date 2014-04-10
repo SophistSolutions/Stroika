@@ -1020,20 +1020,6 @@ namespace   Stroika {
                 friend  String      operator+ (const wchar_t* lhs, const String& rhs);
             };
 
-#if 0
-            /*
-             *   if  this idea works well, do a templated version of this and use more thoroughly...
-             *      --LGP 2014-02-21
-             */
-            struct String::_SafeRepAccessor  {
-                inherited::_ReadOnlyIterableIRepReference    fAccessor;
-
-                _SafeRepAccessor (const String& s);
-
-                nonvirtual  const _IRep&    _ConstGetRep () const;
-            };
-#endif
-
 
             template    <>
             void    String::As (wstring* into) const;

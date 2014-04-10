@@ -57,13 +57,14 @@ namespace   Stroika {
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>& it)
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                : fAccessor_ (it._GetReadOnlyIterableIRepReference ())
+                : fAccessor_ (it->_GetReadOnlyIterableIRepReference ())
 #else
-                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it.fRep_.cget ()))
+                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it->fRep_.cget ()))
 #endif
             {
+                RequireNotNull (it);
 #if     !qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 EnsureMember (&fConstRef_, REP_SUB_TYPE);
 #endif
@@ -219,7 +220,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().MakeIterator (this);
+                return _SafeReadRepAccessor<> { this } ._ConstGetRep ().MakeIterator (this);
 #else
                 return _GetRep ().MakeIterator (this);
 #endif
@@ -229,7 +230,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().GetLength ();
+                return _SafeReadRepAccessor<> { this } ._ConstGetRep ().GetLength ();
 #else
                 return _GetRep ().GetLength ();
 #endif
@@ -239,7 +240,7 @@ namespace   Stroika {
             {
 #if 1
                 // EXPERIMENTAL THREAD SAFETY SUPPORT
-                return _SafeReadRepAccessor<> (*this)._ConstGetRep ().IsEmpty ();
+                return _SafeReadRepAccessor<> { this } ._ConstGetRep ().IsEmpty ();
 #else
                 return _GetRep ().IsEmpty ();
 #endif

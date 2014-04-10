@@ -104,12 +104,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Contains (item);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Contains (item);
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Lookup (item);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (item);
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
@@ -173,7 +173,7 @@ namespace   Stroika {
             inline  void    Set<T, TRAITS>::RemoveAll ()
             {
 #if 1
-                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
 #else
                 _GetRep ().RemoveAll ();
 #endif
@@ -181,7 +181,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> (rhs)._ConstGetRep ());
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
             Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(const T& item)>& doToElement) const

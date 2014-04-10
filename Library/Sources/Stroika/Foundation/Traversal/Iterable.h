@@ -68,7 +68,7 @@ namespace   Stroika {
              *  WILL ALMOST CERTAINLY leave this true, but make an option so I can test performance impact
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_	1
+#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_    1
 #endif
 
 
@@ -581,7 +581,7 @@ namespace   Stroika {
 #endif
 
             public:
-                _SafeReadRepAccessor (const Iterable<T>& it);
+                _SafeReadRepAccessor (const Iterable<T>* it);
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;

@@ -288,8 +288,8 @@ namespace   Stroika {
                 template    <typename REP_SUB_TYPE>
                 struct  _SafeReadRepAccessor  {
                     typename Iterable<MultiSetEntry<T>>::_ReadOnlyIterableIRepReference    fAccessor;
-                    _SafeReadRepAccessor (const Iterable<MultiSetEntry<T>>& s)
-                        : fAccessor (s._GetReadOnlyIterableIRepReference ())
+                    _SafeReadRepAccessor (const Iterable<MultiSetEntry<T>>* s)
+                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
                     {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const

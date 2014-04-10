@@ -144,7 +144,7 @@ namespace   Stroika {
             inline  T    Sequence<T>::GetAt (size_t i) const
             {
                 Require (i < this->GetLength ());
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().GetAt (i);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (i);
             }
             template    <typename T>
             inline  void    Sequence<T>::SetAt (size_t i, T item)
@@ -156,7 +156,7 @@ namespace   Stroika {
             inline  T    Sequence<T>::operator[] (size_t i) const
             {
                 Require (i < this->GetLength ());
-                return _SafeReadRepAccessor<_IRep> (*this)._ConstGetRep ().GetAt (i);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (i);
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>

@@ -366,8 +366,8 @@ namespace   Stroika {
                 template    <typename REP_SUB_TYPE>
                 struct  _SafeReadRepAccessor  {
                     typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_ReadOnlyIterableIRepReference    fAccessor;
-                    _SafeReadRepAccessor (const Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& s)
-                        : fAccessor (s._GetReadOnlyIterableIRepReference ())
+                    _SafeReadRepAccessor (const Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* s)
+                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
                     {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
