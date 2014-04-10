@@ -59,13 +59,13 @@ namespace   Stroika {
                     using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::IterableSharedPtr& savedIteratorRep);
 #else
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 #endif
 
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                 public:
                     virtual ~IteratorImplHelper_ ();
 #endif
@@ -91,7 +91,7 @@ namespace   Stroika {
                     nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
 
 
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                 public:
                     /*
                      *  This is an optional (but perhaps eventually required) atrifice to assure the data being accessed by the

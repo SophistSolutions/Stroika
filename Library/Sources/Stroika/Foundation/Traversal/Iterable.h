@@ -49,6 +49,10 @@ namespace   Stroika {
 
             /**
              *  EXPERIMENTAL AS OF v2.0a22x
+             *
+             *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
+             *          especailly if NOT using qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, because of the single
+             *          memory allocation (like make_shared<>?).
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
 #define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_    1
@@ -57,9 +61,15 @@ namespace   Stroika {
 
             /**
              *  EXPERIMENTAL AS OF v2.0a22x
+             *
+             *  This has a moderate performance cost (overhead starting iteration). However, it assures bug-free
+             *  behavior if iterating when the container (still exists so owner OK) - but its rep gets replaced
+             *  due to assignment. Key to envelope thread safety.
+             *
+             *  Probably just always leave on.
              */
-#ifndef qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
-#define qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_        1
+#ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
+#define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        1
 #endif
 
 

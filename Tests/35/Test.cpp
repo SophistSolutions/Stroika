@@ -191,7 +191,7 @@ namespace   {
         }
         void    DoIt ()
         {
-            // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+            // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
             Debug::TraceContextBumper traceCtx (SDKSTR ("IterateWhileMutatingContainer_Test_2_::DoIt ()"));
 
             const unsigned int kRepeatCount_ = 250;

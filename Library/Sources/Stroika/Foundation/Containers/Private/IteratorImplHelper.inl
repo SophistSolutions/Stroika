@@ -17,7 +17,7 @@ namespace   Stroika {
                  *IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR,PATCHABLE_CONTAINER_VALUE> *
                  ********************************************************************************
                  */
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::IterableSharedPtr& savedIteratorRep)
                     : inherited ()
@@ -37,7 +37,7 @@ namespace   Stroika {
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
 #endif
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::~IteratorImplHelper_ ()
                 {

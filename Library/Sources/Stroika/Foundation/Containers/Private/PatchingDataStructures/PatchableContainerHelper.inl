@@ -146,7 +146,7 @@ Again:
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
-#if     qStroika_Foundation_Traveral_IteratorHoldsSharedPtr_
+#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                         if (fPatchableContainer != nullptr) {
                             AssertNotNull (fPatchableContainer);
                             fPatchableContainer->RemoveIterator (this);
