@@ -84,23 +84,6 @@ namespace   Stroika {
                 return ((const Character*)_fStart);
             }
 
-#if 0
-            /*
-            ********************************************************************************
-            *********************** String::_SafeRepAccessor *******************************
-            ********************************************************************************
-            */
-            inline   String::_SafeRepAccessor::_SafeRepAccessor (const String& s)
-                : fAccessor (s._GetReadOnlyIterableIRepReference ())
-            {
-            }
-            inline  const String::_IRep&    String::_SafeRepAccessor::_ConstGetRep () const
-            {
-                EnsureMember (fAccessor.get (), String::_IRep);
-                return static_cast<const String::_IRep&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
-            }
-#endif
-
 
             /*
             ********************************************************************************
@@ -187,8 +170,7 @@ namespace   Stroika {
             }
             inline  size_t  String::GetLength () const
             {
-                _SafeReadRepAccessor accessor { this };
-                return accessor._ConstGetRep ()._GetLength ();
+                return _SafeReadRepAccessor { this } ._ConstGetRep ()._GetLength ();
             }
             inline  String  String::SubString (size_t from) const
             {
