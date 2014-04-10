@@ -582,11 +582,11 @@ namespace   Stroika {
 
             public:
                 _SafeReadRepAccessor () = delete;
-                _SafeReadRepAccessor (const _SafeReadRepAccessor&) = delete;
+                _SafeReadRepAccessor (const _SafeReadRepAccessor&) = default;
                 _SafeReadRepAccessor (const Iterable<T>* it);
 
             public:
-                const _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = delete;
+                nonvirtual  _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = default;
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
@@ -621,7 +621,7 @@ namespace   Stroika {
                 ~_SafeReadWriteRepAccessor ();
 
             public:
-                const _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
+                nonvirtual  _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
