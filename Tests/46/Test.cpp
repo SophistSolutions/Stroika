@@ -11,6 +11,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Characters/Format.h"
+#include    "Stroika/Foundation/Characters/Float2String.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/String2Float.h"
@@ -104,24 +105,38 @@ namespace {
         ostream&    outTo = (sShowOutput_ ? cout : *out2File);
         return outTo;
     }
+}
 
-    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+
+namespace {
+
+    void    DEFAULT_TEST_PRINTER (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
     {
         ostream&    outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
         DurationSecondsType totalTime = baselineTime + compareWithTime;
         double ratio = compareWithTime / baselineTime;
-        double  changePct   =   (1 - ratio) * 100.0;
-        if (changePct >= 0) {
-            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+		double performanceScore = ratio;
+		//const char	kOneTab_[]	=	"      ";
+		const char	kOneTab_[]	=	"\t";
+		{
+			Float2StringOptions	fo	= Float2StringOptions::Precision (2);
+			fo.fTrimTrailingZeros = false;
+			outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_<< Float2String (performanceScore, fo).AsNarrowSDKString () << endl;
+		}
+		outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
+		outTo << "[baseline test " << baselineTime << " secs, and comparison " << compareWithTime << " sec, and warnIfPerfScore> = " << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
+        outTo << kOneTab_ << "                     " << kOneTab_;
+        if (performanceScore < 1) {
+            outTo << compareWithTName.AsNarrowSDKString () << " is FASTER" << endl;
         }
-        else {
-            outTo << "      " << compareWithTName.AsNarrowSDKString () << " is " << pctFaster2String_ (changePct);
+        else if (performanceScore > 1) {
+            outTo << compareWithTName.AsNarrowSDKString () << " is ***SLOWER***" << endl;
         }
-        outTo << " [baseline test " << baselineTime << " seconds, and comparison " << compareWithTime << " seconds, and failThreshold = " << pctFaster2String_ (expectedPercentFaster) << "]" << endl;
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
-        if (changePct < expectedPercentFaster) {
-            outTo << "      {{{WARNING - expected no worse than " << pctFaster2String_ (expectedPercentFaster) << "}}}" << endl;
+        if (performanceScore > warnIfPerformanceScoreHigherThan) {
+			outTo << kOneTab_ << "                 " << kOneTab_;
+            outTo << "{{{WARNING - expected performance score less than " << warnIfPerformanceScoreHigherThan << " and got " << performanceScore << "}}}" << endl;
         }
 #endif
         outTo << endl;
@@ -143,8 +158,8 @@ namespace {
                     function<void()> baselineT, String baselineTName,
                     function<void()> compareWithT, String compareWithTName,
                     unsigned int runCount,
-                    double expectedPercentFaster,
-                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
+                    double warnIfPerformanceScoreHigherThan,
+                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
                    )
     {
 #if     qDebug
@@ -157,11 +172,10 @@ namespace {
             cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
         }
 #endif
-        printResults (testName, baselineTName, compareWithTName, expectedPercentFaster, baselineTime, compareWithTime);
+        printResults (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
 #if     qPrintOutIfFailsToMeetPerformanceExpectations
         double ratio = compareWithTime / baselineTime;
-        double  changePct   =   (1 - ratio) * 100.0;
-        return changePct < expectedPercentFaster;
+        return ratio > warnIfPerformanceScoreHigherThan;
 #else
         return false;
 #endif
@@ -171,16 +185,18 @@ namespace {
                     function<void()> baselineT, String baselineTName,
                     function<void()> compareWithT, String compareWithTName,
                     unsigned int runCount,
-                    double expectedPercentFaster,
+                    double warnIfPerformanceScoreHigherThan,
                     Set<String>* failedTestAccumulator,
-                    function<void(String testName, String baselineTName, String compareWithTName, double expectedPercentFaster, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
+                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
                    )
     {
-        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), expectedPercentFaster, printResults)) {
+        if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
     }
 }
+
+
 
 
 
@@ -930,7 +946,7 @@ namespace   {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             15000,
-            -40.0,    // just a warning, fyi
+            .5,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -939,7 +955,7 @@ namespace   {
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             15000,
-            -65.0,
+            .4,
             &failedTests
         );
 #endif
@@ -948,8 +964,8 @@ namespace   {
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
-            22500,
-            8.0,
+            22000,
+            .8,
             &failedTests
         );
 #endif
@@ -959,7 +975,7 @@ namespace   {
             Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE, L"shared_ptr",
             Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE, L"atomic<shared_ptr<>>",
             15000,
-            -30.0,    // just a warning, fyi
+            .8,
             &failedTests
         );
 #endif
@@ -968,47 +984,47 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            45.0,
+            0.6,
             &failedTests
         );
         Tester (
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
-            46000,
-            30.0,
+            50000,
+            0.8,
             &failedTests
         );
         Tester (
             L"Simple String append test (+='string object') 10x",
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
-            1200000,
-            -360.0,
+            1250000,
+            4.6,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
-            1312506,
-            -320.0,
+            1300000,
+            4.3,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
-            272170,
-            -870.0,
+            270000,
+            10.2,
             &failedTests
         );
         Tester (
             L"String a + b",
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
-            2038815,
-            -140.0,
+            2000000,
+            2.3,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1017,7 +1033,7 @@ namespace   {
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
             5438 ,
-            -50.0,
+            1.6,
             &failedTests
         );
 #endif
@@ -1025,8 +1041,8 @@ namespace   {
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
-            3200000,
-            -100.0,
+            3100000,
+            2.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1034,8 +1050,8 @@ namespace   {
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
-        184098 ,
-        -275.0,
+        180000,
+        3.7,
         &failedTests
         );
 #endif
@@ -1044,8 +1060,8 @@ namespace   {
             L"wstringstream versus StringBuilder",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
-        160000 ,
-        82.0,
+        175000 ,
+        .14,
         &failedTests
         );
 #endif
@@ -1053,8 +1069,8 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            40000,
-            -13.0,
+            39000,
+            1.1,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1063,15 +1079,15 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            -490.0,
+            5.9,
             &failedTests
         );
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
-            8712,
-            20.0,
+            10000,
+            0.8,
             &failedTests
         );
         Tester (
@@ -1079,7 +1095,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             135000,
-            -520.0,
+            5.6,
             &failedTests
         );
         Tester (
@@ -1087,7 +1103,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             8712,
-            7.0,
+            .9,
             &failedTests
         );
         Tester (
@@ -1095,7 +1111,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         94862,
-        -530.0,
+        5.8,
         &failedTests
         );
         Tester (
@@ -1103,7 +1119,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
         8712,
-        25.0,
+        0.8,
         &failedTests
         );
 #endif
@@ -1112,7 +1128,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1349818,
-            -35.0,
+            1.4,
             &failedTests
         );
         Tester (
@@ -1120,7 +1136,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             6000,
-            75.0,
+            0.25,
             &failedTests
         );
 
