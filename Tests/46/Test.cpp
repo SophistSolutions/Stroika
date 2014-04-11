@@ -228,6 +228,53 @@ namespace {
 
 
 
+namespace {
+
+    template <typename WIDESTRING_IMPL>
+    void    Test_StructWithStringsFillingAndCopying2()
+    {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
+        struct  S {
+            WIDESTRING_IMPL fS1;
+            WIDESTRING_IMPL fS2;
+            WIDESTRING_IMPL fS3;
+            WIDESTRING_IMPL fS4;
+            WIDESTRING_IMPL fS5;
+            WIDESTRING_IMPL fS6;
+            S() {}
+            S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
+                : fS1(w1)
+                , fS2(w2)
+                , fS3(w3)
+                , fS4(w4)
+                , fS5()
+                , fS6()
+            {
+            }
+        };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wreorder\"");  // clang appears confused
+        S   s1;
+        S   s2 { L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
+        s1 = s2;
+        vector<S>   v;
+        v.reserve (10);
+        for (size_t i = 1; i < 10; ++i) {
+            v.push_back (s2);
+        }
+        sort (v.begin (), v.end (), [](S a, S b) {
+            return b.fS1 < a.fS1;
+        });
+        VerifyTestResult (v[0].fS1 == v[1].fS1);
+    }
+
+}
+
+
+
+
+
+
+
 
 
 
@@ -921,7 +968,15 @@ namespace   {
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
             40000,
-            40.0,
+            45.0,
+            &failedTests
+        );
+        Tester (
+            L"Simple Struct With Strings Filling And Copying2",
+            Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
+            Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
+            46000,
+            30.0,
             &failedTests
         );
         Tester (
@@ -929,7 +984,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1200000,
-            -370.0,
+            -360.0,
             &failedTests
         );
         Tester (
@@ -945,7 +1000,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             272170,
-            -900.0,
+            -840.0,
             &failedTests
         );
         Tester (
@@ -971,7 +1026,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3200000,
-            -110.0,
+            -100.0,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
