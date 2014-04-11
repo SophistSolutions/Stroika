@@ -1051,6 +1051,19 @@ EXAMPLE:
 
 
 
+// doesnt seem any portable way todo this, and not defined in C++ language
+#if     defined (__GNUC__)
+#define dont_inline    __attribute__((noinline))
+#else
+#define dont_inline    __declspec(noinline)
+#endif
+
+
+
+
+
+
+
 #if     qCompilerAndStdLib_thread_local_keyword_Buggy
 #if     defined (__GNUC__)
 #define thread_local    __thread
