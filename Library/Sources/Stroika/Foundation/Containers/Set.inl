@@ -174,21 +174,21 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            bool    Set<T, TRAITS>::Intersects (const Set<T, TRAITS>& rhs) const
+            bool    Set<T, TRAITS>::Intersects (const Iterable<T>& rhs) const
             {
-                for (T i : *this) {
-                    if (rhs.Contains (i)) {
+                for (T i : rhs) {
+                    if (Contains (i)) {
                         return true;
                     }
                 }
                 return false;
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   Set<T, TRAITS>::Intersection (const Set<T, TRAITS>& rhs) const
+            Set<T, TRAITS>   Set<T, TRAITS>::Intersection (const Iterable<T>& rhs) const
             {
                 Set<T, TRAITS>  result;
-                for (T i : *this) {
-                    if (rhs.Contains (i)) {
+                for (T i : rhs) {
+                    if (Contains (i)) {
                         result.Add (i);
                     }
                 }
@@ -223,7 +223,7 @@ namespace   Stroika {
                 return Difference (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator^ (const Set<T, TRAITS>& rhs) const
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator^ (const Iterable<T>& rhs) const
             {
                 return Intersection (rhs);
             }

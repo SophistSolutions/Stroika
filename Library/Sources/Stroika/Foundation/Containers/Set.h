@@ -154,7 +154,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool Contains (T item) const;
+                nonvirtual  bool    Contains (T item) const;
 
             public:
                 /**
@@ -211,12 +211,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool    Intersects (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  bool    Intersects (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>   Intersection (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  Set<T, TRAITS>   Intersection (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -244,7 +244,7 @@ namespace   Stroika {
                 /**
                  *   Alias for Intersection.
                  */
-                nonvirtual  Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  Set<T, TRAITS>   operator^ (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -318,7 +318,6 @@ namespace   Stroika {
 #endif
 
             protected:
-                // see qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy if this fails on clang
                 /**
                  */
                 template    <typename T2>
