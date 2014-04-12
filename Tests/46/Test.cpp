@@ -51,6 +51,18 @@ using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Time;
 
 
+
+/*
+ *  TODO:
+ *
+ *      @todo   PERFORAMNCE SCORES/PERFORAMNCE REGTEST
+ *              (add todo - could use multiple samples and take median)
+ *              (once we have new median code) *
+ *              (create todo)
+ *
+ */
+
+
 // Turn this on rarely to calibrate so # runs a good test
 //#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
