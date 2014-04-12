@@ -10,10 +10,14 @@
 #include    <mutex>
 #include    <sstream>
 
+#include    "Stroika/Foundation/Configuration/StroikaVersion.h"
+
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/Float2String.h"
 #include    "Stroika/Foundation/Characters/String.h"
+#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
+#endif
 #include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
