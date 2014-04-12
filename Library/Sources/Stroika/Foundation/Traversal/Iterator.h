@@ -241,8 +241,18 @@ namespace   Stroika {
              *
              *  @see Iterable<T>
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety
              *
+             *          Iterator<T> instances are \em not thread-safe. That is - they cannot be read and
+             *          or written from multiple threads at a time.
+             *
+             *          However, given how Iterators are meant to be, and are typically, used, this presents
+             *          no problem.
+             *
+             *          They can be safely transfered across threads, and the underlying things being iterated over
+             *          can be safely and transparently read/written from other threads
+             *
+             *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              */
             template    <typename T>
             class   Iterator : public std::iterator<input_iterator_tag, T>, public IteratorBase {

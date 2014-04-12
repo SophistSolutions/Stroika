@@ -283,7 +283,7 @@ namespace   Stroika {
                  * Create an iterator object which can be used to traverse the 'Iterable' - this object -
                  * and visit each element.
                  */
-                nonvirtual Iterator<T>      MakeIterator () const;
+                nonvirtual  Iterator<T>      MakeIterator () const;
 
             public:
                 /**
@@ -409,13 +409,15 @@ namespace   Stroika {
                  *          (doToElement) (*i);
                  *      }
                  *
-                 *  However, in threading scenarios, this maybe preferable, since it counts as an atomic
-                 *  operation that will happen to each element without other
-                 *  threads intervening to modify the container.
+                 *  However, Apply () MAY perform the entire iteration atomicly (depending on the
+                 *  kind of the container).
                  *
-                 *  Also, note that this function does NOT change any elements of the Iterable.
+                 *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
+                 *              directly or indirectly access the Iterable<> being iterated over.
                  *
-                 *  \pre    doToElement != nullptr
+                 *              Doing so MAY result in a deadlock.
+                 *
+                 *              If there is a need to do this, just use explicit iteration instead.
                  */
                 nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
 
@@ -434,10 +436,6 @@ namespace   Stroika {
                  *      }
                  *      return end();
                  *
-                 *  However, in threading scenarios, this maybe preferable, since it counts as an atomic
-                 *  operation that will happen to each element without other
-                 *  threads intervening to modify the container.
-                 *
                  *  This function returns an iteartor pointing to the element that triggered the abrupt loop
                  *  end (for example the element you were searching for?). It returns the special iterator
                  *  end() to indicate no doToElement() functions returned true.
@@ -446,6 +444,15 @@ namespace   Stroika {
                  *
                  *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
                  *  operator bool () method of Iterator<T>).
+                 *
+                 *  @see Apply
+                 *
+                 *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
+                 *              directly or indirectly access the Iterable<> being iterated over.
+                 *
+                 *              Doing so MAY result in a deadlock.
+                 *
+                 *              If there is a need to do this, just use explicit iteration instead.
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
 
@@ -582,7 +589,7 @@ namespace   Stroika {
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
-            class Iterable<T>::_SafeReadRepAccessor  {
+            class   Iterable<T>::_SafeReadRepAccessor  {
             private:
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 _ReadOnlyIterableIRepReference    fAccessor_;
@@ -613,7 +620,7 @@ namespace   Stroika {
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            class Iterable<T>::_SafeReadWriteRepAccessor  {
+            class   Iterable<T>::_SafeReadWriteRepAccessor  {
             private:
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 SharedByValueRepType_   fAccessor_;
