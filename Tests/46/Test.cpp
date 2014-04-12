@@ -965,7 +965,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             22000,
-            .8,
+            .9,
             &failedTests
         );
 #endif
@@ -1070,7 +1070,7 @@ namespace   {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             39000,
-            1.1,
+            1.2,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1079,7 +1079,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             135365,
-            5.9,
+            6.1,
             &failedTests
         );
         Tester (
@@ -1111,7 +1111,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         94862,
-        5.8,
+        5.9,
         &failedTests
         );
         Tester (
