@@ -23,50 +23,55 @@ namespace   Stroika {
             inline  Set<T, TRAITS>::Set ()
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const initializer_list<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const set<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 RequireNotNull (rep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (start, end);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename T, typename TRAITS>
@@ -80,7 +85,9 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>& Set<T, TRAITS>::operator= (const Set<T, TRAITS>& rhs)
             {
+                _AssertRepValidType ();
                 inherited::operator= (rhs);
+                _AssertRepValidType ();
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -88,18 +95,6 @@ namespace   Stroika {
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  const typename  Set<T, TRAITS>::_IRep&    Set<T, TRAITS>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  typename    Set<T, TRAITS>::_IRep&  Set<T, TRAITS>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T, typename TRAITS>
             inline  bool    Set<T, TRAITS>::Contains (T item) const
@@ -114,11 +109,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
             {
-#if 1
                 _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Add (item);
-#else
-                _GetRep ().Add (item);
-#endif
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -140,20 +131,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (T item)
             {
-#if 1
                 _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (item);
-#else
-                _GetRep ().Remove (item);
-#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (const Iterator<T>& i)
             {
-#if 1
                 _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (i);
-#else
-                _GetRep ().Remove (i);
-#endif
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -172,11 +155,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::RemoveAll ()
             {
-#if 1
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
-#else
-                _GetRep ().RemoveAll ();
-#endif
             }
             template    <typename T, typename TRAITS>
             bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
@@ -296,6 +275,13 @@ namespace   Stroika {
             inline  void    Set<T, TRAITS>::erase (T item)
             {
                 Remove (item);
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 

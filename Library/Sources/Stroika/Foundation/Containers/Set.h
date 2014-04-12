@@ -242,8 +242,8 @@ namespace   Stroika {
 
             public:
                 /**
-                *   Alias for Intersection.
-                */
+                 *   Alias for Intersection.
+                 */
                 nonvirtual  Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& rhs) const;
 
             public:
@@ -329,8 +329,7 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _ConstGetRep () const;
 
             protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 

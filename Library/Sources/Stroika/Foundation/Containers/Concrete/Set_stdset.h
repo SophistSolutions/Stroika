@@ -90,8 +90,7 @@ namespace   Stroika {
                     class   Rep_;
 
                 private:
-                    nonvirtual  const Rep_&  GetRep_ () const;
-                    nonvirtual  Rep_&        GetRep_ ();
+                    nonvirtual  void    AssertRepValidType_ () const;
                 };
 
 

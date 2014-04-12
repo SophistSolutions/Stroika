@@ -100,6 +100,9 @@ namespace   Stroika {
 
             protected:
                 explicit SortedSet (const _SharedPtrIRep& rep);
+
+            protected:
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 

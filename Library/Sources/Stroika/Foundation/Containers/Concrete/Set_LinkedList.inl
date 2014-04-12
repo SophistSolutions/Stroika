@@ -260,67 +260,54 @@ namespace   Stroika {
                 Set_LinkedList<T, TRAITS>::Set_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const Set_LinkedList<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const std::initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (src);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (src);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     AddAll (start, end);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>&   Set_LinkedList<T, TRAITS>::operator= (const Set_LinkedList<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
                 }
                 template    <typename T, typename TRAITS>
-                inline  const typename Set_LinkedList<T, TRAITS>::Rep_&  Set_LinkedList<T, TRAITS>::GetRep_ () const
+                inline  void    Set_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename T, typename TRAITS>
-                inline  typename Set_LinkedList<T, TRAITS>::Rep_&    Set_LinkedList<T, TRAITS>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 
