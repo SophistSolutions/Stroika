@@ -993,6 +993,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
@@ -1291,6 +1292,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Statistics.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl" />

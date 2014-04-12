@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Math/Overlap.h"
 #include    "Stroika/Foundation/Math/ReBin.h"
+#include    "Stroika/Foundation/Math/Statistics.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -125,6 +126,18 @@ namespace {
 }
 
 
+namespace {
+    void    Test6_Statistics_ ()
+    {
+        VerifyTestResult (Math::Mean (vector<int> ({1, 3, 5})) == 3);
+        VerifyTestResult (Math::Mean (vector<int> ({5, 3, 1})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({1, 3, 5})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
+    }
+
+}
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -133,6 +146,7 @@ namespace   {
         Test3_Angle_ ();
         Test4_OddEvenPrime_ ();
         Test5_ReBin_ ();
+        Test6_Statistics_ ();
     }
 }
 

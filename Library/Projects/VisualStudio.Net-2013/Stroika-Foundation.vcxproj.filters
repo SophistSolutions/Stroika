@@ -1587,6 +1587,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2402,6 +2405,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Statistics.inl">
+      <Filter>Sources\Math</Filter>
     </None>
   </ItemGroup>
 </Project>
