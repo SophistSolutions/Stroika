@@ -19,6 +19,14 @@
  *
  *      TODO:
  *
+ *      @todo   I THINK should be able todo SharedPtr::Envolpe<> template specialization for
+ *              enabled_shared_from_this, which stores and copies only ONE POINTER> That could
+ *              make for much faster atomic copies etc (maybe losing the spinlock).
+ *
+ *              Not totally sure how do this safely, but add to list of things todo cuz it
+ *              would probably greatly improvement many important benchmarks, like the
+ *              “Test Simple Struct With Strings Filling And Copying”
+ *
  *      @todo   See if fDeleteCounter_ can be somehow inferred from other data to save space/copying. It's hard cuz
  *              of the multiple inheritence case (so comparing counter == fPtr not exactly right always).
  *
@@ -98,13 +106,14 @@ namespace   Stroika {
              *
              * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
              *
-             *       >   Doesnt support weak ptr.
+             *       >  Doesnt support weak ptr.
              *
-             *       >   Emprically appears faster than std::shared_ptr<> (probably due to block allocaiton of envelope and
-             *           not suppoprting weak_ptr)
+             *       >  Emprically appears faster than std::shared_ptr<> (probably due to block
+             *          allocation of envelope and
+             *          not suppoprting weak_ptr)
              *
-             *       >   SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
-             *           (STILL MSUST THINK THROUGH IF MAKES SENSE)
+             *       >  SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
+             *          (STILL MSUST THINK THROUGH IF MAKES SENSE)
              *
              *  This class is for keeping track of a data structure with reference counts,
              *  and disposing of that structure when the reference count drops to zero.
