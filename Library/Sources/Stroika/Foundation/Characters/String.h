@@ -315,20 +315,9 @@ namespace   Stroika {
              *      For now - stick to simple impl - of just copy on start of iteration.
              *          -- LGP 2013-12-17
              *
-             *  \note   Implementation Details - Thread Safety
-             *      This reason this class is threadsafe, is because of using a shared_ptr<> rep strategy, and
-             *      COW (copy on write). Basically - we only modify the data inside the rep if we have
-             *      the only reference count. That protects the REPs - which is crucial, since the semantics
-             *      of String are copy by value, but internally - we just copy pointers (mostly).
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *          Uses immutable string rep pattern.
              *
-             *      But how do we achieve envelope thread safety? For code implemented in the envelope, there
-             *      is no obvious way without locks! But then there is! Just leverage the above trick.
-             *
-             *      Any method that requires consistency across sub-actions -and doesnt do that work in the rep,
-             *      just COPIES the string object, and does its action on the COPY. The COST of this is that
-             *      we must do an extra shared_ptr<> copy (refcount++/-- and ptr copy). But the gain is we get
-             *      otherwise lock free consistent action on the data, even if other methods operate
-             *      on our envelope (because we arent - we're using the copy).
              */
             class   String : public Traversal::Iterable<Character> {
             private:
@@ -710,15 +699,16 @@ namespace   Stroika {
                 /*
                  * Apply the given regular expression, with 'with' and replace each match. This doesn't
                  * modify this string, but returns the replacement string.
-
+                 *
                  * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
-                * See regex_replace () for definition of the regEx language
-                *
-                *   Require (not string2SearchFor.empty ());
-                *       TODO: GIVE EXAMPLES
-                *
-                * Note - it IS legal to have with contain the original search for string, or even to have it 'created' as part of where it gets
-                * inserted. The implementation will only replace those that pre-existed.
+                 * See regex_replace () for definition of the regEx language
+                 *
+                 *   Require (not string2SearchFor.empty ());
+                 *       TODO: GIVE EXAMPLES
+                 *
+                 *  Note - it IS legal to have with contain the original search for string, or even
+                 *  to have it 'created' as part of where it gets
+                 *  inserted. The implementation will only replace those that pre-existed.
                  */
                 nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
@@ -754,7 +744,7 @@ namespace   Stroika {
 #endif
 
             public:
-                /*
+                /**
                  * Walk the entire string, and produce a new string consisting of all characters for which
                  * the predicate 'removeCharIf' returned false.
                  */
@@ -935,15 +925,14 @@ namespace   Stroika {
 
             public:
                 /**
-                // As with STL, the return value of the data () function should NOT be assumed to be
-                // NUL-terminated
-                //
-                // The lifetime of the pointer returned is gauranteed until the next call to this String
-                // envelope class (that is if other reps change, or are acceessed this data will not
-                // be modified)
+                 *  As with STL, the return value of the data () function should NOT be assumed to be
+                 *  NUL-terminated
                  *
-                 *  \note THREAD-SAFETY!
+                 *  The lifetime of the pointer returned is gauranteed until the next call to this String
+                 *  envelope class (that is if other reps change, or are acceessed this data will not
+                 *  be modified)
                  *
+                 *  \note THREAD-SAFETY! - NOT THREADSAFE
                  */
                 nonvirtual  const wchar_t*  data () const;
 
@@ -990,6 +979,8 @@ namespace   Stroika {
                 nonvirtual  void erase (size_t from = 0, size_t count = kBadIndex);
 
             public:
+                /**
+                 */
                 nonvirtual  void    push_back (wchar_t c);
                 nonvirtual  void    push_back (Character c);
 

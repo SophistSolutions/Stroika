@@ -880,7 +880,7 @@ String  String::Repeat (unsigned int count) const
 String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
-    // @todo - NOT ENVELOPE THREADSAFE
+    // @todo - NOT ENVELOPE THREADSAFE (BUT MOSTLY OK)
     _SafeReadRepAccessor    accessor { this };
     size_t length = accessor._ConstGetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
@@ -901,7 +901,7 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
-    // @todo - NOT ENVELOPE THREADSAFE
+    // @todo - NOT ENVELOPE THREADSAFE (BUT MOSTLY OK)
     RequireNotNull (shouldBeTrimmmed);
     _SafeReadRepAccessor    accessor { this };
     ptrdiff_t length = accessor._ConstGetRep ()._GetLength ();

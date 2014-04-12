@@ -187,6 +187,7 @@ namespace   Stroika {
                 Require (from <= to);
                 Require (to <= myLength);
                 size_t  useLength  =   (to - from);
+#if 0
                 if (useLength == 0) {
                     return String ();
                 }
@@ -194,6 +195,7 @@ namespace   Stroika {
                     ////@TODO - FIX - SHOULD convert _SafeReadRepAccessor to String instance??? then return that!
                     return *this;       // just bump reference count
                 }
+#endif
                 return SubString_ (accessor, myLength, from, from + useLength);
             }
             inline  String      String::CircularSubString (ptrdiff_t from, ptrdiff_t to) const
