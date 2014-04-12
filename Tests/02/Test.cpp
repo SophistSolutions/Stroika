@@ -912,6 +912,7 @@ namespace   {
         VerifyTestResult (Float2String (3000.500) == L"3000.5");
         VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
         VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
+        VerifyTestResult (Float2String (31.234, Characters::Float2StringOptions::Precision (3)) == L"31.2");
     }
 }
 
