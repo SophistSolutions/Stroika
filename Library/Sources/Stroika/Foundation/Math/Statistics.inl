@@ -53,7 +53,7 @@ namespace   Stroika {
                 Require (start != end);
                 // sloppy impl, but workable
                 using T =   typename    remove_reference<typename remove_cv<decltype (*start)>::type>::type;
-                vector<T>   tmp;
+                typename vector<T>   tmp;
                 for (ITERATOR_OF_T i = start; i != end; ++i)
                 {
                     tmp.push_back (*i);
