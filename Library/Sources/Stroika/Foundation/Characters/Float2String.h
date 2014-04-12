@@ -24,12 +24,11 @@
  *
  *          using PrecisionType = uint16_t;
  *
- *  @todo   Document meaning with examples 1.01 prec1=1, prec2=1.0, prec3=1.01, prec4=1.010
+ *  @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
+ *          which is the number of decimals after the decimal point.
  *
- *  @todo   Notion of fPrecision in this module should probably be called something else (precisionAfterDecimalPoint?)
- *
- *  @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
- *          notion of precision. Not sure how to add unobtrusively.
+ *  @todo   Consider more Float2StringOptions CTOR overloads (e.g. to specify precision and fTrimTrailingZeros
+ *          at the same time).
  *
  */
 
@@ -44,7 +43,7 @@ namespace   Stroika {
              *  Note - Float2String uses the locale specified by Float2StringOptions, but defaults to
              *  the "C" locale.
              *
-             *  Precision (here) is defined to be the number of digits after the decimal point.
+             *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
              *
              *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
              *  by deafult.
