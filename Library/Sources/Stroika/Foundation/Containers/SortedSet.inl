@@ -58,9 +58,9 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>&   SortedSet<T, TRAITS>::operator= (const SortedSet<T, TRAITS>& src)
             {
-                AssertRepValidType_ ();
+                _AssertRepValidType ();
                 inherited::operator= (static_cast<const inherited&> (src));
-                AssertRepValidType_ ();
+                _AssertRepValidType ();
                 return *this;
             }
             template    <typename T, typename TRAITS>
