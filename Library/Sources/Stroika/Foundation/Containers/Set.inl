@@ -256,7 +256,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const Set<T, TRAITS>& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const Iterable<T>& items)
             {
                 RemoveAll (items);
                 return *this;
