@@ -54,8 +54,7 @@ namespace   Stroika {
                 // sloppy impl, but workable
                 using T =   typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
                 size_t  size    =   distance (start, end);
-                //Memory::SmallStackBuffer<T>   tmp (size);
-                Memory::SmallStackBuffer<T>   tmp (size);
+                Memory::SmallStackBuffer<T>   tmp (0);
                 for (ITERATOR_OF_T i = start; i != end; ++i)
                 {
                     tmp.push_back (*i);
