@@ -288,7 +288,7 @@ namespace   Stroika {
             {
                 Require (not this->IsEmpty ());
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
-                return _SafeReadRepAccessor { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
             inline  void    Sequence<T>::push_back (T item)
