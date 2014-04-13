@@ -24,54 +24,54 @@ namespace   Stroika {
             inline  Sequence<T>::Sequence ()
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const initializer_list<T>& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AppendAll (s);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const vector<T>& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AppendAll (s);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AppendAll (s);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AppendAll (start, end);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename T>
@@ -85,7 +85,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Sequence<T>& Sequence<T>::operator= (const Sequence<T>& rhs)
             {
+                _AssertRepValidType ();
                 inherited::operator= (rhs);
+                _AssertRepValidType ();
                 return *this;
             }
             template    <typename T>
@@ -138,7 +140,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()
             {
-                _GetRep ().Remove (0, this->GetLength ());
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (0, this->GetLength ());
             }
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t i) const
@@ -150,7 +152,7 @@ namespace   Stroika {
             inline  void    Sequence<T>::SetAt (size_t i, T item)
             {
                 Require (i < this->GetLength ());
-                _GetRep ().SetAt (i, item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().SetAt (i, item);
             }
             template    <typename T>
             inline  T    Sequence<T>::operator[] (size_t i) const
@@ -174,13 +176,13 @@ namespace   Stroika {
             template    <typename IGNORED>
             inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
             {
-                return _ConstGetRep ().IndexOf (i);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().IndexOf (i);
             }
             template    <typename T>
             inline  void    Sequence<T>::Insert (size_t i, T item)
             {
                 Require (i <= this->GetLength ());
-                return _GetRep ().Insert (i, &item, &item + 1);
+                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -219,46 +221,48 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::Append (T item)
             {
-                _GetRep ().Insert (kBadSequenceIndex, &item, &item + 1);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Insert (kBadSequenceIndex, &item, &item + 1);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
+                _SafeReadWriteRepAccessor<_IRep> tmp = { this };
                 for (auto i : s) {
-                    _GetRep ().Insert (kBadSequenceIndex, &i, &i + 1);
+                    tmp._GetWriteableRep ().Insert (kBadSequenceIndex, &i, &i + 1);
                 }
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
+                _SafeReadWriteRepAccessor<_IRep> accessor = { this };
                 for (auto i = start; i != end; ++i) {
                     T tmp = *i;
-                    _GetRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
+                    accessor._GetWriteableRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
                 }
             }
             template    <typename T>
             inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
             {
-                _GetRep ().Update (i, newValue);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Update (i, newValue);
             }
             template    <typename T>
             inline  void    Sequence<T>::Remove (size_t i)
             {
                 Require (i < this->GetLength ());
-                _GetRep ().Remove (i, i + 1);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i, i + 1);
             }
             template    <typename T>
             inline  void    Sequence<T>::Remove (size_t start, size_t end)
             {
                 Require (start <= end and end <= this->GetLength ());
-                _GetRep ().Remove (start, end);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (start, end);
             }
             template    <typename T>
             inline  void    Sequence<T>::Remove (const Iterator<T>& i)
             {
-                _GetRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T>
             template    <typename   CONTAINER_OF_T>
@@ -284,7 +288,7 @@ namespace   Stroika {
             {
                 Require (not this->IsEmpty ());
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
-                return _ConstGetRep ().GetAt (kBadSequenceIndex);
+                return _SafeReadRepAccessor { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
             inline  void    Sequence<T>::push_back (T item)
@@ -307,46 +311,53 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
-            inline  Sequence<T>& Sequence<T>::operator+= (T item)
+            inline  Sequence<T>&    Sequence<T>::operator+= (T item)
             {
                 Append (item);
                 return *this;
             }
             template    <typename T>
-            inline  Sequence<T>& Sequence<T>::operator+= (const Sequence<T>& items)
+            inline  Sequence<T>&    Sequence<T>::operator+= (const Sequence<T>& items)
             {
                 AppendAll (items);
                 return *this;
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator< (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator< (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) < 0;
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator<= (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator<= (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator> (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator> (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) > 0;
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator>= (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator>= (const Sequence<T>& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator== (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator== (const Sequence<T>& rhs) const
             {
                 return Equals (rhs);
             }
             template    <typename T>
-            inline  bool Sequence<T>::operator!= (const Sequence<T>& rhs) const
+            inline  bool    Sequence<T>::operator!= (const Sequence<T>& rhs) const
             {
                 return not Equals (rhs);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 
