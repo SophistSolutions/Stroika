@@ -145,20 +145,23 @@ namespace   Stroika {
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t i) const
             {
-                Require (i < this->GetLength ());
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (i);
+                _SafeReadRepAccessor<_IRep> accessor { this };
+                Require (i < accessor._ConstGetRep ().GetLength ());
+                return accessor ._ConstGetRep ().GetAt (i);
             }
             template    <typename T>
             inline  void    Sequence<T>::SetAt (size_t i, T item)
             {
-                Require (i < this->GetLength ());
+                _SafeReadWriteRepAccessor<_IRep> accessor { this };
+                Require (i < accessor._ConstGetRep ().GetLength ());
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().SetAt (i, item);
             }
             template    <typename T>
             inline  T    Sequence<T>::operator[] (size_t i) const
             {
-                Require (i < this->GetLength ());
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (i);
+                _SafeReadRepAccessor<_IRep> accessor { this };
+                Require (i < accessor._ConstGetRep ().GetLength ());
+                return accessor ._ConstGetRep ().GetAt (i);
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
@@ -181,8 +184,9 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::Insert (size_t i, T item)
             {
-                Require (i <= this->GetLength ());
-                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Insert (i, &item, &item + 1);
+                _SafeReadWriteRepAccessor<_IRep> accessor { this };
+                Require (i < accessor._ConstGetRep ().GetLength ());
+                return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
