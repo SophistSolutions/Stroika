@@ -109,7 +109,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Add (T item)
             {
-                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Add (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item);
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -131,12 +131,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (T item)
             {
-                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item);
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::Remove (const Iterator<T>& i)
             {
-                _SafeReadWriteRepAccessor<_IRep> (this)._GetWriteableRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
