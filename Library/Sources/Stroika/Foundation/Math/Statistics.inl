@@ -10,8 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <vector>
 #include    "../Debug/Assertions.h"
+#include    "../Memory/SmallStackBuffer.h"
 #include    "Common.h"
 
 namespace   Stroika {
@@ -25,7 +25,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ITERATOR_OF_T>
-            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename   remove_reference<typename remove_cv<decltype (*start)>::type>::type {
+            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type {
                 Require (start != end);
                 using T =   typename    remove_reference<typename remove_cv<decltype (*start)>::type>::type;
                 unsigned int        cnt     =   1;
@@ -38,7 +38,7 @@ namespace   Stroika {
                 return result / cnt;
             }
             template    <typename   CONTAINER_OF_T>
-            auto    Mean (const CONTAINER_OF_T& container) -> typename  remove_reference<typename remove_cv<decltype (*container.begin ())>::type>::type {
+            auto    Mean (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type {
                 return Mean (begin (container), end (container));
             }
 
@@ -49,20 +49,22 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ITERATOR_OF_T>
-            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_reference<typename remove_cv<decltype (*start)>::type>::type {
+            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type {
                 Require (start != end);
                 // sloppy impl, but workable
-                using T =   typename    remove_reference<typename remove_cv<decltype (*start)>::type>::type;
-                typename vector<T>   tmp;
+                using T =   typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
+                size_t  size    =   distance (start, end);
+                //Memory::SmallStackBuffer<T>   tmp (size);
+                Memory::SmallStackBuffer<T>   tmp (size);
                 for (ITERATOR_OF_T i = start; i != end; ++i)
                 {
                     tmp.push_back (*i);
                 }
-                nth_element (tmp.begin(), tmp.begin() + tmp.size() / 2, tmp.end());
-                return tmp[tmp.size() / 2];
+                nth_element (tmp.begin(), tmp.begin() + size / 2, tmp.end());
+                return tmp[size / 2];
             }
             template    <typename   CONTAINER_OF_T>
-            auto    Median (const CONTAINER_OF_T& container) -> typename    remove_reference<typename remove_cv<decltype (*container.begin ())>::type>::type {
+            auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type {
                 return Median (begin (container), end (container));
             }
 

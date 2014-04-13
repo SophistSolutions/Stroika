@@ -49,9 +49,9 @@ namespace   Stroika {
              *  \req not empty
              */
             template    <typename   ITERATOR_OF_T>
-            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename   remove_reference<typename remove_cv<decltype (*start)>::type>::type;
+            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
             template    <typename   CONTAINER_OF_T>
-            auto    Mean (const CONTAINER_OF_T& container) -> typename  remove_reference<typename remove_cv<decltype (*container.begin ())>::type>::type;
+            auto    Mean (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type;
 
 
             /**
@@ -59,9 +59,9 @@ namespace   Stroika {
              *  \req not empty
              */
             template    <typename   ITERATOR_OF_T>
-            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_reference<typename remove_cv<decltype (*start)>::type>::type;
+            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
             template    <typename   CONTAINER_OF_T>
-            auto    Median (const CONTAINER_OF_T& container) -> typename    remove_reference<typename remove_cv<decltype (*container.begin ())>::type>::type;
+            auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type;
 
 
 
