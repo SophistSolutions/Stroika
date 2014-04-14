@@ -333,6 +333,7 @@ namespace   Stroika {
                 inline  size_t  Sequence_Array<T>::GetCapacity () const
                 {
                     using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    _SafeReadRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         return (accessor._ConstGetRep ().fData_.GetCapacity ());
                     }
