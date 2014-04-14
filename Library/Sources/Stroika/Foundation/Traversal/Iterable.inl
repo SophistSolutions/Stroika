@@ -130,16 +130,23 @@ namespace   Stroika {
                 auto            uc  =   fAccessor_.use_count ();
                 REP_SUB_TYPE*   r;
                 if (uc == 1 or uc == 2) {
-                    r = const_cast<REP_SUB_TYPE*> (static_cast<const REP_SUB_TYPE*> (fAccessor_.cget ()));   // static cast for performance sake - dynamic cast in Ensure
+                    // static cast for performance sake - dynamic cast in Ensure() to be sure it was OK
+                    r = const_cast<REP_SUB_TYPE*> (static_cast<const REP_SUB_TYPE*> (fAccessor_.cget ()));
                     if (uc == 2) {
-                        // TRICKY - EXPLAIN...
+                        /*
+                         *  Not 100% sure this is right (explain bettter, think out more carefully)
+                         *      -- LGP 2014-04-13
+                         *
+                         *  If base copy overwritten (that might give false positive and we might ‘add’
+                         *  to other object but there was intrinsic race anyhow, and not exactly a bug on classlib part).
+                         */
                         if (r != fIterableEnvelope->fRep_.cget ()) {
-                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));
                         }
                     }
                 }
                 else {
-                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));
                 }
                 EnsureMember (r, REP_SUB_TYPE);
                 return *r;
