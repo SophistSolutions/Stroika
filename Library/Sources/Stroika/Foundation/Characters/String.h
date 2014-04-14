@@ -696,7 +696,7 @@ namespace   Stroika {
                 nonvirtual  size_t  RFind (const String& subString) const;
 
             public:
-                /*
+                /**
                  * Apply the given regular expression, with 'with' and replace each match. This doesn't
                  * modify this string, but returns the replacement string.
                  *
