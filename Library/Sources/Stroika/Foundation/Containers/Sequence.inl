@@ -154,7 +154,7 @@ namespace   Stroika {
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor { this };
                 Require (i < accessor._ConstGetRep ().GetLength ());
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().SetAt (i, item);
+                accessor._GetWriteableRep ().SetAt (i, item);
             }
             template    <typename T>
             inline  T    Sequence<T>::operator[] (size_t i) const
@@ -185,7 +185,7 @@ namespace   Stroika {
             inline  void    Sequence<T>::Insert (size_t i, T item)
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor { this };
-                Require (i < accessor._ConstGetRep ().GetLength ());
+                Require (i <= accessor._ConstGetRep ().GetLength ());
                 return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
