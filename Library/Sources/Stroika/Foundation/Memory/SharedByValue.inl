@@ -246,6 +246,11 @@ namespace   Stroika {
                 return fSharedImpl_.unique ();
             }
             template    <typename TRAITS>
+            inline  unsigned int    SharedByValue<TRAITS>::use_count () const
+            {
+                return fSharedImpl_.use_count ();
+            }
+            template    <typename TRAITS>
             template    <typename... COPY_ARGS>
             inline  void    SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&& ... copyArgs)
             {

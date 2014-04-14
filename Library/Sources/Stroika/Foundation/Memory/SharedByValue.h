@@ -276,6 +276,14 @@ namespace   Stroika {
                 nonvirtual  bool    unique () const;
 
             public:
+                /**
+                 *  Returns the number of references to the underlying shared pointer.
+                 *
+                 *  @see SharedByValue_State
+                 */
+                nonvirtual  unsigned int    use_count () const;
+
+            public:
                 struct  ReadOnlyReference;
 
             private:
