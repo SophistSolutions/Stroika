@@ -127,8 +127,20 @@ namespace   Stroika {
             inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
             {
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                // NOT QUITE RIGHT - THIS COPIES TOO AGGRESSIVELY. DONT COPY IF NO NEED!!!
-                REP_SUB_TYPE*   r   =   static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                auto            uc  =   fAccessor_.use_count ();
+                REP_SUB_TYPE*   r;
+                if (uc == 1 or uc == 2) {
+                    r = const_cast<REP_SUB_TYPE*> (static_cast<const REP_SUB_TYPE*> (fAccessor_.cget ()));   // static cast for performance sake - dynamic cast in Ensure
+                    if (uc == 2) {
+                        // TRICKY - EXPLAIN...
+                        if (r != fIterableEnvelope->fRep_.cget ()) {
+                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                        }
+                    }
+                }
+                else {
+                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));   // static cast for performance sake - dynamic cast in Ensure
+                }
                 EnsureMember (r, REP_SUB_TYPE);
                 return *r;
 #else
