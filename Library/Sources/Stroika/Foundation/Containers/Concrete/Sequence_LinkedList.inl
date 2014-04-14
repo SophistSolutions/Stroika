@@ -297,39 +297,46 @@ namespace   Stroika {
                 Sequence_LinkedList<T>::Sequence_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AppendAll (s);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AppendAll (start, end);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>&   Sequence_LinkedList<T>::operator= (const Sequence_LinkedList<T>& s)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (s);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
+                }
+                template    <typename T>
+                inline  void    Sequence_LinkedList<T>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 

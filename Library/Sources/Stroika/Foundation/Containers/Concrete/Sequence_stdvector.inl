@@ -270,62 +270,46 @@ namespace   Stroika {
                 Sequence_stdvector<T>::Sequence_stdvector ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AppendAll (s);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AppendAll (start, end);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& s)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (s);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
-                }
-                template    <typename T>
-                inline  const typename Sequence_stdvector<T>::Rep_&  Sequence_stdvector<T>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename T>
-                inline  typename Sequence_stdvector<T>::Rep_&    Sequence_stdvector<T>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::Compact ()
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         GetRep_ ().fData_.reserve (GetRep_ ().fData_.size ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -333,18 +317,28 @@ namespace   Stroika {
                 template    <typename T>
                 inline  size_t  Sequence_stdvector<T>::GetCapacity () const
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        return (GetRep_ ().fData_.capacity ());
+                    using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        return accessor._ConstGetRep ().fData_.capacity ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.reserve (slotsAlloced);
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T>
+                inline  void    Sequence_stdvector<T>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 

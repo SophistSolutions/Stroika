@@ -57,6 +57,9 @@ namespace   Stroika {
                 public:
 #endif
                     class   Rep_;
+
+                private:
+                    nonvirtual  void    AssertRepValidType_ () const;
                 };
 
 
