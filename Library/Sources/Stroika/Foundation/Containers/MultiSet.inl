@@ -340,55 +340,60 @@ namespace   Stroika {
             MultiSet<T, TRAITS>::MultiSet ()
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const MultiSet<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<T>& s)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (s);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (s);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
+                _AssertRepValidType ();
                 AddAll (start, end);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
                 : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
             {
+                _AssertRepValidType ();
                 AddAll (start, end);
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename T, typename TRAITS>
@@ -404,18 +409,6 @@ namespace   Stroika {
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  const typename MultiSet<T, TRAITS>::_IRep&  MultiSet<T, TRAITS>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  typename MultiSet<T, TRAITS>::_IRep&        MultiSet<T, TRAITS>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T, typename TRAITS>
             void   MultiSet<T, TRAITS>::RemoveAll (T item)
@@ -434,6 +427,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   MultiSet<T, TRAITS>::Elements () const
             {
+                _SafeReadRepAccessor<_IRep> accessor { this };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
 #else
@@ -445,6 +439,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   MultiSet<T, TRAITS>::UniqueElements () const
             {
+                _SafeReadRepAccessor<_IRep> accessor { this };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
 #else
@@ -466,22 +461,22 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::RemoveAll ()
             {
-                _GetRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Add (T item)
             {
-                _GetRep ().Add (item, 1);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Add (T item, size_t count)
             {
-                _GetRep ().Add (item, count);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, count);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Add (const MultiSetEntry<T>& item)
             {
-                _GetRep ().Add (item.fItem, item.fCount);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item.fItem, item.fCount);
             }
             template    <typename T, typename TRAITS>
             void   MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
@@ -494,7 +489,7 @@ namespace   Stroika {
             inline  void    MultiSet<T, TRAITS>::AddAll (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
             {
                 for (auto i = start; i != end; ++i) {
-                    _GetRep ().Add (i->fItem, i->fEnd);
+                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (i->fItem, i->fEnd);
                 }
             }
             template    <typename T, typename TRAITS>
@@ -508,32 +503,32 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Remove (T item)
             {
-                _GetRep ().Remove (item, 1);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, 1);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Remove (T item, size_t count)
             {
-                _GetRep ().Remove (item, count);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, count);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Remove (const Iterator<MultiSetEntry<T>>& i)
             {
-                _GetRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)
             {
-                _GetRep ().UpdateCount (i, newCount);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
             inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (T item) const
             {
-                return _ConstGetRep ().OccurrencesOf (item);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().OccurrencesOf (item);
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (T item)
             {
-                _GetRep ().Add (item, 1);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -553,6 +548,13 @@ namespace   Stroika {
                     Add (i->fItem, i->fCount);
                 }
                 return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    MultiSet<T, TRAITS>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 
