@@ -97,18 +97,6 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T>
-            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T>
-            inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T>
             template    <typename EQUALS_COMPARER>
             inline  bool    Sequence<T>::Contains (T item) const
             {
