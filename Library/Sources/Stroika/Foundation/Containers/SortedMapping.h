@@ -107,6 +107,9 @@ namespace   Stroika {
                 /**
                  */
                 using   KeyWellOrderCompareFunctionType     =   typename TraitsType::KeyWellOrderCompareFunctionType;
+
+            protected:
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 

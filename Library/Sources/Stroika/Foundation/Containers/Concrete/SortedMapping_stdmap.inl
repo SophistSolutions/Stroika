@@ -130,7 +130,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
-                        return (fData_.size ());
+                        return fData_.size ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -139,7 +139,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
-                        return (fData_.empty ());
+                        return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -257,49 +257,37 @@ namespace   Stroika {
                 SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
                     : inherited (static_cast<const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (src);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>&   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
                 {
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  const typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_&  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::GetRep_ () const
+                inline  void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_&    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 
