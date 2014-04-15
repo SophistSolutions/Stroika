@@ -25,35 +25,37 @@ namespace   Stroika {
             inline  Queue<T, TRAITS>::Queue ()
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const Queue<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const std::initializer_list<T>& q)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAllToTail (q);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Queue<T, TRAITS>::Queue (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AssertNotImplemented ();
                 AddAllToTail (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -61,8 +63,9 @@ namespace   Stroika {
             inline Queue<T, TRAITS>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAllToTail (start, end);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename T, typename TRAITS>
@@ -80,58 +83,46 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  const typename  Queue<T, TRAITS>::_IRep&    Queue<T, TRAITS>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  typename    Queue<T, TRAITS>::_IRep&  Queue<T, TRAITS>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
             inline  void    Queue<T, TRAITS>::AddTail (T item)
             {
-                _GetRep ().AddTail (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (item);
             }
             template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::Head () const
             {
-                return _ConstGetRep ().Head ();
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Head ();
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>       Queue<T, TRAITS>::HeadIf () const
             {
-                return _ConstGetRep ().HeadIf ();
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().HeadIf ();
             }
             template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::RemoveHead ()
             {
-                return _GetRep ().RemoveHead ();
+                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveHead ();
             }
             template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>       Queue<T, TRAITS>::RemoveHeadIf ()
             {
-                return _GetRep ().RemoveHeadIf ();
+                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveHeadIf ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Queue<T, TRAITS>::Enqueue (T item)
             {
-                _GetRep ().AddTail (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (item);
             }
             template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::Dequeue ()
             {
-                return _GetRep ().RemoveHead ();
+                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveHead ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  void    Queue<T, TRAITS>::AddAllToTail (const CONTAINER_OF_T& s)
             {
                 for (auto i : s) {
-                    _GetRep ().AddTail ( &i, &i + 1);
+                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail ( &i, &i + 1);
                 }
             }
             template    <typename T, typename TRAITS>
@@ -139,13 +130,13 @@ namespace   Stroika {
             inline void Queue<T, TRAITS>::AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-                    _GetRep ().AddTail (&*i, (&*i) + 1);
+                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (&*i, (&*i) + 1);
                 }
             }
             template    <typename T, typename TRAITS>
             inline  void    Queue<T, TRAITS>::RemoveAll ()
             {
-                _GetRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename T, typename TRAITS>
             bool    Queue<T, TRAITS>::Equals (const Queue<T, TRAITS>& rhs) const
@@ -163,20 +154,12 @@ namespace   Stroika {
             {
                 return not Equals (rhs);
             }
-
-
-            /*
-             ********************************************************************************
-             ************************ Queue<T, TRAITS>::_IRep *******************************
-             ********************************************************************************
-             */
             template    <typename T, typename TRAITS>
-            inline  Queue<T, TRAITS>::_IRep::_IRep ()
+            inline  void    Queue<T, TRAITS>::_AssertRepValidType () const
             {
-            }
-            template    <typename T, typename TRAITS>
-            inline  Queue<T, TRAITS>::_IRep::~_IRep ()
-            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 

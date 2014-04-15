@@ -118,7 +118,7 @@ namespace   Stroika {
                 size_t  Queue_Array<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -126,7 +126,7 @@ namespace   Stroika {
                 bool  Queue_Array<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength () == 0);
+                        return fData_.GetLength () == 0;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -245,20 +245,20 @@ namespace   Stroika {
                 Queue_Array<T, TRAITS>::Queue_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Queue_Array<T, TRAITS>::Queue_Array (const Queue_Array<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Queue_Array<T, TRAITS>::Queue_Array (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
                 }
@@ -267,61 +267,54 @@ namespace   Stroika {
                 inline Queue_Array<T, TRAITS>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     Append (start, end);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Queue_Array<T, TRAITS>&   Queue_Array<T, TRAITS>::operator= (const Queue_Array<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
-                }
-                template    <typename T, typename TRAITS>
-                inline  const typename Queue_Array<T, TRAITS>::Rep_&  Queue_Array<T, TRAITS>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename T, typename TRAITS>
-                inline  typename Queue_Array<T, TRAITS>::Rep_&    Queue_Array<T, TRAITS>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    Queue_Array<T, TRAITS>::Compact ()
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.Compact ();
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.Compact ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  size_t  Queue_Array<T, TRAITS>::GetCapacity () const
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        return (GetRep_ ().fData_.GetCapacity ());
+                    using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    _SafeReadRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        return accessor._ConstGetRep ().fData_.GetCapacity ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    Queue_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
+                inline  void    Queue_Array<T, TRAITS>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 
