@@ -29,55 +29,62 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
                 : inherited (static_cast < const inherited&& > (src))
             {
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& m)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (m);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (start, end);
+                _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -95,33 +102,19 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  const typename  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep () const
-            {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), _IRep);
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  typename    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep ()
-            {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), _IRep);
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Keys () const
             {
-                return _ConstGetRep ().Keys ();
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Keys ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
             {
                 if (item == nullptr) {
-                    return _ConstGetRep ().Lookup (key, nullptr);
+                    return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
                     Memory::Optional<ValueType> tmp;
-                    if (_ConstGetRep ().Lookup (key, &tmp)) {
+                    if (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
                     }
@@ -131,20 +124,20 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
             {
-                return _ConstGetRep ().Lookup (key, item);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
             {
                 Memory::Optional<VALUE_TYPE>   r;
-                bool    result = _ConstGetRep ().Lookup (key, &r);
+                bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
             {
-                return _ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
@@ -160,7 +153,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
             {
-                return _ConstGetRep ().Lookup (key, nullptr);
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
@@ -176,12 +169,12 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
             {
-                _GetRep ().Add (key, newElt);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (key, newElt);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
             {
-                _GetRep ().Add (p.fKey, p.fValue);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.fKey, p.fValue);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEYVALUE>
@@ -205,17 +198,17 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
             {
-                _GetRep ().Remove (key);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (key);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
             {
-                _GetRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll ()
             {
-                _GetRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
@@ -264,12 +257,13 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
-                return (_ConstGetRep ().Equals (rhs._ConstGetRep ()));
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
             {
-                _GetRep ().RemoveAll ();
+                // @todo probably better to just make new one, but must maintain original rep-type!
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
@@ -294,6 +288,13 @@ namespace   Stroika {
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
                 return not Equals (rhs);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 
