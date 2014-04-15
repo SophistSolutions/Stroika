@@ -29,37 +29,37 @@ namespace   Stroika {
             inline  Collection<T>::Collection ()
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const Collection<T>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const std::initializer_list<T>& src)
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AddAll (src);
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
 #if     qDebug
             template    <typename T>
@@ -75,18 +75,6 @@ namespace   Stroika {
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
-            template    <typename T>
-            inline  const typename  Collection<T>::_IRep&    Collection<T>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T>
-            inline  typename    Collection<T>::_IRep&  Collection<T>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
@@ -126,13 +114,13 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Collection<T>::Add (T item)
             {
-                _GetRep ().Add (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item);
                 Ensure (not this->IsEmpty ());
             }
             template    <typename T>
             inline  void    Collection<T>::Update (const Iterator<T>& i, T newValue)
             {
-                _GetRep ().Update (i, newValue);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Update (i, newValue);
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
@@ -140,7 +128,7 @@ namespace   Stroika {
             {
                 for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
                     if (EQUALS_COMPARER::Equals (*i, item)) {
-                        _GetRep ().Remove (i);
+                        _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
                         return;
                     }
                 }
@@ -148,7 +136,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Collection<T>::RemoveAll ()
             {
-                _GetRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>
@@ -172,7 +160,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Collection<T>::Remove (const Iterator<T>& i)
             {
-                _GetRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T>
             inline  void    Collection<T>::clear ()
@@ -212,6 +200,13 @@ namespace   Stroika {
             {
                 AddAll (items);
                 return *this;
+            }
+            template    <typename T>
+            inline  void    Collection<T>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 

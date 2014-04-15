@@ -227,35 +227,45 @@ namespace   Stroika {
                 Collection_LinkedList<T>::Collection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (start, end);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (src);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Collection_LinkedList<T>& Collection_LinkedList<T>::operator= (const Collection_LinkedList<T>& rhs)
                 {
+                    AssertRepValidType_ ();
                     inherited::operator= (rhs);
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
+                }
+                template    <typename T>
+                inline  void    Collection_LinkedList<T>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 

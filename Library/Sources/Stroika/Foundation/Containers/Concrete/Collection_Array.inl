@@ -117,7 +117,7 @@ namespace   Stroika {
                 size_t  Collection_Array<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -125,7 +125,7 @@ namespace   Stroika {
                 bool  Collection_Array<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength () == 0);
+                        return fData_.GetLength () == 0;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -225,83 +225,79 @@ namespace   Stroika {
                 Collection_Array<T>::Collection_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     if (start != end) {
                         SetCapacity (end - start);
                         this->AddAll (start, end);
                     }
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Collection_Array<T>::Collection_Array (const Collection_Array<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Collection_Array<T>&   Collection_Array<T>::operator= (const Collection_Array<T>& rhs)
                 {
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
-                }
-                template    <typename T>
-                inline  const typename Collection_Array<T>::Rep_&  Collection_Array<T>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
-                }
-                template    <typename T>
-                inline  typename Collection_Array<T>::Rep_&    Collection_Array<T>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Collection_Array<T>::Compact ()
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.Compact ();
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.Compact ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  size_t  Collection_Array<T>::GetCapacity () const
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        return (GetRep_ ().fData_.GetCapacity ());
+                    using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    _SafeReadRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        return accessor._ConstGetRep ().fData_.GetCapacity ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Collection_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T>
+                inline  void    Collection_Array<T>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 
