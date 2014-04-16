@@ -22,6 +22,8 @@
  *
  *  TODO:
  *
+ *      @todo   See below qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_ fix.
+ *
  *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
  *              default parameter?
  *
@@ -96,6 +98,10 @@ namespace   Stroika {
              *  Note - without this 'hack'/fix, we get a failure with the blocking queue regest.
              *
              *  RegressionTest10_BlockingQueue_ ();
+             *
+             *  @todo - I THINK one fix is to move this writelock support OUT of Iterable and into utility
+             *          between Iterable and all our containers. Maybe introduce an in-between class? That intoruces
+             *          the mutex and the write helper!
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
 #define qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_    1
