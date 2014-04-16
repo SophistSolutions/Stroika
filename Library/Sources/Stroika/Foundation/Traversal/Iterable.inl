@@ -91,11 +91,14 @@ namespace   Stroika {
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+                : fEnvelopeWriteLock_ (iterableEnvelope->fWriteMutex_)
+#endif
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                : fAccessor_ (iterableEnvelope->fRep_)
+                , fAccessor_ (iterableEnvelope->fRep_)
                 , fIterableEnvelope (iterableEnvelope)
 #else
-                : fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))
+                , fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))
 #endif
             {
                 RequireNotNull (iterableEnvelope);
@@ -165,6 +168,9 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep) noexcept
 :
             fRep_ (rep)
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            , fWriteMutex_ ()
+#endif
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
@@ -172,6 +178,9 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (const Iterable<T>& from) noexcept
 :
             fRep_ (from.fRep_)
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            , fWriteMutex_ ()
+#endif
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
@@ -179,6 +188,9 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (Iterable<T>&& from) noexcept
 :
             fRep_ (std::move (from.fRep_))
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            , fWriteMutex_ ()
+#endif
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
@@ -189,6 +201,9 @@ namespace   Stroika {
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
 :
             fRep_ (std::move (rep))
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            , fWriteMutex_ ()
+#endif
             {
                 Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_

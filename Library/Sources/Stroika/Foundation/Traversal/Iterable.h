@@ -83,6 +83,26 @@ namespace   Stroika {
 
 
             /**
+             *  EXPERIMENTAL AS OF v2.0a22x
+             *
+             *  NOT really CORRECT.
+             *  @todo FIND BETTER WAY/AND OR AT LEAST REVIEW
+             *
+             *  Not sure this does the right thing in the presence of simulatinous access by safe readers and writers. Maybe OK
+             *  for most, but what about Iterators?
+             *
+             *  Also - this maybe needlessly costly for String class (which doesnt use WriteUpdater).
+             *
+             *  Note - without this 'hack'/fix, we get a failure with the blocking queue regest.
+             *
+             *  RegressionTest10_BlockingQueue_ ();
+             */
+#ifndef qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+#define qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_    1
+#endif
+
+
+            /**
              */
             struct  IterableBase {
             protected:
@@ -572,6 +592,11 @@ namespace   Stroika {
 
             private:
                 SharedByValueRepType_    fRep_;
+
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            private:
+                mutex   fWriteMutex_;
+#endif
             };
 
 
@@ -621,6 +646,10 @@ namespace   Stroika {
             template    <typename T>
             template <typename REP_SUB_TYPE>
             class   Iterable<T>::_SafeReadWriteRepAccessor  {
+#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
+            private:
+                lock_guard<mutex>       fEnvelopeWriteLock_;
+#endif
             private:
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 SharedByValueRepType_   fAccessor_;
