@@ -349,9 +349,7 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 inline  void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

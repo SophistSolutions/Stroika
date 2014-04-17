@@ -56,7 +56,7 @@ namespace   Stroika {
                 public:
                     /**
                     */
-                    nonvirtual  SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& src);
+                    nonvirtual  SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

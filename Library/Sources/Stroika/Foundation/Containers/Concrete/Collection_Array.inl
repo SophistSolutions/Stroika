@@ -295,9 +295,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Collection_Array<T>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

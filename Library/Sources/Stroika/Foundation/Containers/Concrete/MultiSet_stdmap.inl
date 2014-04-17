@@ -297,35 +297,25 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const std::initializer_list<T>& s)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
-                }
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_stdmap<T, TRAITS>&   MultiSet_stdmap<T, TRAITS>::operator= (const MultiSet_stdmap<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

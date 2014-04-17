@@ -272,19 +272,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  Queue_DoublyLinkedList<T, TRAITS>&   Queue_DoublyLinkedList<T, TRAITS>::operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T, typename TRAITS>
                 inline  void    Queue_DoublyLinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

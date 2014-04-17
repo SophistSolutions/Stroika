@@ -51,13 +51,17 @@ namespace   Stroika {
                     SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& sb);
                     SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& sb);
 
-                    nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs);
+                public:
+                    nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   Rep_;
+
+                private:
+                    nonvirtual  void    AssertRepValidType_ () const;
                 };
 
 

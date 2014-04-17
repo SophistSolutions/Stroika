@@ -337,9 +337,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

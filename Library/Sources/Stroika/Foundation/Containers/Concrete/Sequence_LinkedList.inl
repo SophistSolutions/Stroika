@@ -324,19 +324,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_LinkedList<T>&   Sequence_LinkedList<T>::operator= (const Sequence_LinkedList<T>& s)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (s);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T>
                 inline  void    Sequence_LinkedList<T>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

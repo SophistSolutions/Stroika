@@ -255,7 +255,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
-                inline  Queue_Array<T, TRAITS>::Queue_Array (const CONTAINER_OF_T& s)
+                inline  Queue_Array<T, TRAITS>::Queue_Array (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
@@ -270,14 +270,6 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                     Append (start, end);
                     AssertRepValidType_ ();
-                }
-                template    <typename T, typename TRAITS>
-                inline  Queue_Array<T, TRAITS>&   Queue_Array<T, TRAITS>::operator= (const Queue_Array<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    Queue_Array<T, TRAITS>::Compact ()
@@ -312,9 +304,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    Queue_Array<T, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

@@ -58,9 +58,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    SortedSet<T, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
-#endif
             }
 
 

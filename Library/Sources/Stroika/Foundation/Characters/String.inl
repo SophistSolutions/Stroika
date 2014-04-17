@@ -150,9 +150,7 @@ namespace   Stroika {
             }
             inline  void    String::_AssertRepValidType () const
             {
-#if     qDebug
                 EnsureMember (&inherited::_ConstGetRep (), String::_IRep);
-#endif
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {

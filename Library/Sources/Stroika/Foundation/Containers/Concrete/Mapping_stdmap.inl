@@ -275,19 +275,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>&   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

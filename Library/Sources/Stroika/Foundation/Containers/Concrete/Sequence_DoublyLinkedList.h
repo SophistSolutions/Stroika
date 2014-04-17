@@ -43,15 +43,16 @@ namespace   Stroika {
 
                 public:
                     Sequence_DoublyLinkedList ();
-                    Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& s);
-                    Sequence_DoublyLinkedList (const initializer_list<T>& s);
-                    Sequence_DoublyLinkedList (const vector<T>& s);
+                    Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& src);
+                    Sequence_DoublyLinkedList (const initializer_list<T>& src);
+                    Sequence_DoublyLinkedList (const vector<T>& src);
                     template <typename CONTAINER_OF_T>
-                    explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& s);
+                    explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                    nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& s);
+                public:
+                    nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

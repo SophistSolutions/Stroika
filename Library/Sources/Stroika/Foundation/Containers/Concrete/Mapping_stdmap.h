@@ -82,7 +82,7 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+                    nonvirtual  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

@@ -292,9 +292,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_AssertRepValidType () const
             {
-#if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
-#endif
             }
 
 

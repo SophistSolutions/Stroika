@@ -50,7 +50,7 @@ namespace   Stroika {
                     explicit Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s);
+                    nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

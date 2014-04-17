@@ -321,19 +321,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedMultiSet_stdmap<T, TRAITS>& SortedMultiSet_stdmap<T, TRAITS>::operator= (const SortedMultiSet_stdmap<T, TRAITS>& src)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (src));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T, typename TRAITS>
                 inline  void    SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

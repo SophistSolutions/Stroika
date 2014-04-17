@@ -301,34 +301,34 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& s)
-                    : inherited (static_cast<const inherited&> (s))
+                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const initializer_list<T>& s)
+                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const vector<T>& s)
+                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const vector<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& s)
+                inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
@@ -341,19 +341,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_DoublyLinkedList<T>&   Sequence_DoublyLinkedList<T>::operator= (const Sequence_DoublyLinkedList<T>& s)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (s);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T>
                 inline  void    Sequence_DoublyLinkedList<T>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

@@ -66,12 +66,12 @@ namespace   Stroika {
                     template    <typename CONTAINER_OF_T>
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
                     MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src);
-                    MultiSet_stdmap (const std::initializer_list<T>& s);
-                    MultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s);
+                    MultiSet_stdmap (const initializer_list<T>& src);
+                    MultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src);
                     MultiSet_stdmap (const T* start, const T* end);
 
                 public:
-                    nonvirtual  MultiSet_stdmap<T, TRAITS>& operator= (const MultiSet_stdmap<T, TRAITS>& rhs);
+                    nonvirtual  MultiSet_stdmap<T, TRAITS>& operator= (const MultiSet_stdmap<T, TRAITS>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

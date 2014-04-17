@@ -253,19 +253,9 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Collection_LinkedList<T>& Collection_LinkedList<T>::operator= (const Collection_LinkedList<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T>
                 inline  void    Collection_LinkedList<T>::AssertRepValidType_ () const
                 {
-#if     qDebug
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
-#endif
                 }
 
 

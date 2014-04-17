@@ -50,7 +50,7 @@ namespace   Stroika {
                     explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Queue_DoublyLinkedList<T, TRAITS>& operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs);
+                    nonvirtual  Queue_DoublyLinkedList<T, TRAITS>& operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

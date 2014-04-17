@@ -49,14 +49,14 @@ namespace   Stroika {
 
                 public:
                     Queue_Array ();
-                    Queue_Array (const Queue_Array<T, TRAITS>& q);
+                    Queue_Array (const Queue_Array<T, TRAITS>& src);
                     template <typename CONTAINER_OF_T>
-                    explicit Queue_Array (const CONTAINER_OF_T& q);
+                    explicit Queue_Array (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Queue_Array<T, TRAITS>& operator= (const Queue_Array<T, TRAITS>& rhs);
+                    nonvirtual  Queue_Array<T, TRAITS>& operator= (const Queue_Array<T, TRAITS>& rhs) = default;
 
                 public:
                     /**

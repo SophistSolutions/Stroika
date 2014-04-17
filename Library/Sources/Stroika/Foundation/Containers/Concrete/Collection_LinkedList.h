@@ -45,10 +45,10 @@ namespace   Stroika {
                 public:
                     Collection_LinkedList ();
                     Collection_LinkedList (const T* start, const T* end);
-                    Collection_LinkedList (const Collection<T>& collection);
-                    Collection_LinkedList (const Collection_LinkedList<T>& collection);
+                    Collection_LinkedList (const Collection<T>& src);
+                    Collection_LinkedList (const Collection_LinkedList<T>& src);
 
-                    nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs);
+                    nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
