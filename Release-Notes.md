@@ -32,6 +32,10 @@ History
 			<li>String::InsertAt() deprecated, and new (temporary) String::InsertAt_nu which returns String object.</li>
 		</ul>
 	</li>
+	<li>Tons of Iterable/Container thread safety fixes. These currently have a good deal of
+		overhead (performance), and we need to fix that. But better they be correct, and then fast.
+		Still alot more work todo just DOCUMENTING the thread-safety issues.
+	</li>
 	<li>SpinLock does yield</li>
 	<li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
 	ther classes like BLOB - as a performance tweak</li>
