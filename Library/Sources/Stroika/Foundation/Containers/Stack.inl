@@ -25,20 +25,20 @@ namespace   Stroika {
             inline  Stack<T, TRAITS>::Stack ()
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Stack<T, TRAITS>::Stack (const Stack<T, TRAITS>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Stack<T, TRAITS>::Stack (const CONTAINER_OF_T& s)
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (s);
             }
@@ -46,7 +46,7 @@ namespace   Stroika {
             inline  Stack<T, TRAITS>::Stack (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T, typename TRAITS>
@@ -54,7 +54,7 @@ namespace   Stroika {
             inline Stack<T, TRAITS>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (start, end);
             }
@@ -65,36 +65,24 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  const typename  Stack<T, TRAITS>::_IRep&    Stack<T, TRAITS>::_GetRep () const
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
-            inline  typename    Stack<T, TRAITS>::_IRep&  Stack<T, TRAITS>::_GetRep ()
-            {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
-            }
-            template    <typename T, typename TRAITS>
             inline  void    Stack<T, TRAITS>::Push (T item)
             {
-                _GetRep ().Push (item);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Push (item);
             }
             template    <typename T, typename TRAITS>
             inline  T       Stack<T, TRAITS>::Pop ()
             {
-                return _GetRep ().Pop ();
+                return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Pop ();
             }
             template    <typename T, typename TRAITS>
             inline  T       Stack<T, TRAITS>::Top () const
             {
-                return _ConstGetRep ().Top ();
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Top ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Stack<T, TRAITS>::RemoveAll ()
             {
-                _GetRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
             template    <typename T, typename TRAITS>
             bool    Stack<T, TRAITS>::Equals (const Stack<T, TRAITS>& rhs) const
@@ -111,6 +99,13 @@ namespace   Stroika {
             inline  bool    Stack<T, TRAITS>::operator!= (const Stack<T, TRAITS>& rhs) const
             {
                 return not Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    Stack<T, TRAITS>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 

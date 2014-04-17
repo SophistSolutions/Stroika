@@ -116,7 +116,7 @@ namespace   Stroika {
                 size_t  Stack_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -124,7 +124,7 @@ namespace   Stroika {
                 bool  Stack_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.IsEmpty ());
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -210,21 +210,28 @@ namespace   Stroika {
                 Stack_LinkedList<T, TRAITS>::Stack_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>::Stack_LinkedList (const Stack_LinkedList<T, TRAITS>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  Stack_LinkedList<T, TRAITS>&   Stack_LinkedList<T, TRAITS>::operator= (const Stack_LinkedList<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
+                }
+                template    <typename T, typename TRAITS>
+                inline  void    Stack_LinkedList<T, TRAITS>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 

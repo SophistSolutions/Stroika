@@ -186,11 +186,39 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const Stack<T, TRAITS>& rhs) const;
 
             protected:
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+                template    <typename REP_SUB_TYPE>
+                struct  _SafeReadRepAccessor  {
+                    typename Iterable<T>::_ReadOnlyIterableIRepReference    fAccessor;
+                    _SafeReadRepAccessor (const Iterable<T>* s)
+                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
+                    {
+                    }
+                    nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
+                    {
+                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                    }
+                };
+#else
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
+
+#endif
+
+            protected:
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+
+            protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
 
             protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 
