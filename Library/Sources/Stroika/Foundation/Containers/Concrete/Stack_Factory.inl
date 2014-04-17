@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************** Stack_Factory<T, TRAITS> ****************************
+                 ********************************** Stack_Factory<T> ****************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<Stack<T, TRAITS> (*) ()>     Stack_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template    <typename T, typename TRAITS>
-                inline  Stack<T, TRAITS>  Stack_Factory<T, TRAITS>::mk ()
+                template    <typename T>
+                atomic<Stack<T> (*) ()>     Stack_Factory<T>::sFactory_ (nullptr);
+                template    <typename T>
+                inline  Stack<T>  Stack_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,15 +42,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Stack_Factory<T, TRAITS>::Register (Stack<T, TRAITS> (*factory) ())
+                template    <typename T>
+                void    Stack_Factory<T>::Register (Stack<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                Stack<T, TRAITS>  Stack_Factory<T, TRAITS>::Default_ ()
+                template    <typename T>
+                Stack<T>  Stack_Factory<T>::Default_ ()
                 {
-                    return Stack_LinkedList<T, TRAITS> ();
+                    return Stack_LinkedList<T> ();
                 }
 
 

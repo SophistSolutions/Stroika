@@ -50,27 +50,6 @@ namespace   Stroika {
 
 
             /**
-             *  NOTE - Traits for Stack<T> don't NEED an EQUALS_COMPARER, and the default one should
-             *  should be fine (never called if never used).
-             *
-             *  It will only be invoked if you call
-             *      o   Stack<T,TRAITS>::Equals ()
-             *
-             *  This means that
-             *      Stack<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
-             *      // works FINE, UNTIL you try to call Equals - and at that point you must adjust
-             *      // the traits to specify the Equals() compare function.
-             *
-             */
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
-            struct   Stack_DefaultTraits {
-                /**
-                 */
-                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
-            };
-
-
-            /**
              *      Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31.
              *      Iteration proceeds from the top to the bottom of the stack. Top
              *      is the FIRST IN (also first out).
@@ -84,7 +63,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T, typename TRAITS = Stack_DefaultTraits<T>>
+            template    <typename T>
             class   Stack : public Iterable<T> {
             private:
                 using   inherited   =   Iterable<T>;
@@ -97,24 +76,7 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Stack<T, TRAITS>;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Stack<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                using   TraitsType                  =   TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 *
-                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
-                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
-                 */
-                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
+                using   ArchetypeContainerType      =   Stack<T>;
 
             public:
                 /**
@@ -122,7 +84,7 @@ namespace   Stroika {
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
-                Stack (const Stack<T, TRAITS>& s);
+                Stack (const Stack<T>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Stack (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -132,7 +94,7 @@ namespace   Stroika {
                 explicit Stack (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Stack<T, TRAITS>& operator= (const Stack<T, TRAITS>& src);
+                nonvirtual  Stack<T>& operator= (const Stack<T>& src);
 
             public:
                 /**
@@ -155,17 +117,21 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
-                /*
+                /**
                  *  Two Stacks are considered equal if they contain the same elements (by comparing them with operator==)
                  *  in exactly the same order.
                  *
                  *  Equals is commutative().
                  *
-                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 *  A Stack<T> doesnt generally require a comparison for individual elements
+                 *  be be defined, but obviously to compare if the containers are equal, you must
+                 *  compare the individual elements (at least sometimes).
                  *
-                 *  Computational Complexity: O(N)
+                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+                 *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
-                nonvirtual  bool    Equals (const Stack<T, TRAITS>& rhs) const;
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    Equals (const Stack<T>& rhs) const;
 
             public:
                 /**
@@ -177,13 +143,13 @@ namespace   Stroika {
                 /**
                  *      Syntactic sugar for Equals()
                  */
-                nonvirtual  bool    operator== (const Stack<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const Stack<T>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for not Equals()
                  */
-                nonvirtual  bool    operator!= (const Stack<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Stack<T>& rhs) const;
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
@@ -223,13 +189,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Stack<T, TRAITS> implementors.
+             *  \brief  Implementation detail for Stack<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Stack<T, TRAITS> container API.
+             *  the Stack<T> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Stack<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T>
+            class   Stack<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep () = default;
 

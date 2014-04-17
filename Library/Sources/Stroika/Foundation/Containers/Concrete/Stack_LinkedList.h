@@ -32,19 +32,19 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Stack_LinkedList<T, TRAITS> is an LinkedList-based concrete implementation of the Stack<T, TRAITS> container pattern.
+                 *  \brief   Stack_LinkedList<T> is an LinkedList-based concrete implementation of the Stack<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Stack_DefaultTraits<T>>
-                class   Stack_LinkedList : public Stack<T, TRAITS> {
+                template    <typename T>
+                class   Stack_LinkedList : public Stack<T> {
                 private:
-                    using   inherited   =     Stack<T, TRAITS>;
+                    using   inherited   =     Stack<T>;
 
                 public:
                     Stack_LinkedList ();
-                    Stack_LinkedList (const Stack_LinkedList<T, TRAITS>& m);
+                    Stack_LinkedList (const Stack_LinkedList<T>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Stack_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -52,7 +52,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  Stack_LinkedList<T, TRAITS>& operator= (const Stack_LinkedList<T, TRAITS>& rhs);
+                    nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

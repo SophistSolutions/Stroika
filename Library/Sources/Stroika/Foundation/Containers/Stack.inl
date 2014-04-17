@@ -18,90 +18,90 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** Stack<T, TRAITS> *********************************
+             ************************************* Stack<T> *********************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            inline  Stack<T, TRAITS>::Stack ()
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Stack<T>::Stack ()
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Stack<T, TRAITS>::Stack (const Stack<T, TRAITS>& s)
+            template    <typename T>
+            inline  Stack<T>::Stack (const Stack<T>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Stack<T, TRAITS>::Stack (const CONTAINER_OF_T& s)
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+            inline  Stack<T>::Stack (const CONTAINER_OF_T& s)
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (s);
             }
-            template    <typename T, typename TRAITS>
-            inline  Stack<T, TRAITS>::Stack (const _SharedPtrIRep& rep)
+            template    <typename T>
+            inline  Stack<T>::Stack (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Stack<T, TRAITS>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T, TRAITS>::mk ()))
+            inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
 //                AddAll (start, end);
             }
-            template    <typename T, typename TRAITS>
-            inline  const typename  Stack<T, TRAITS>::_IRep&    Stack<T, TRAITS>::_ConstGetRep () const
+            template    <typename T>
+            inline  const typename  Stack<T>::_IRep&    Stack<T>::_ConstGetRep () const
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Stack<T, TRAITS>::Push (T item)
+            template    <typename T>
+            inline  void    Stack<T>::Push (T item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Push (item);
             }
-            template    <typename T, typename TRAITS>
-            inline  T       Stack<T, TRAITS>::Pop ()
+            template    <typename T>
+            inline  T       Stack<T>::Pop ()
             {
                 return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Pop ();
             }
-            template    <typename T, typename TRAITS>
-            inline  T       Stack<T, TRAITS>::Top () const
+            template    <typename T>
+            inline  T       Stack<T>::Top () const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Top ();
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Stack<T, TRAITS>::RemoveAll ()
+            template    <typename T>
+            inline  void    Stack<T>::RemoveAll ()
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
             }
-            template    <typename T, typename TRAITS>
-            bool    Stack<T, TRAITS>::Equals (const Stack<T, TRAITS>& rhs) const
+            template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            bool    Stack<T>::Equals (const Stack<T>& rhs) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
-                return Private::Equals_<T, typename TRAITS::EqualsCompareFunctionType> (*this, rhs);
+                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  bool  Stack<T, TRAITS>::operator== (const Stack<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  bool    Stack<T, TRAITS>::operator!= (const Stack<T, TRAITS>& rhs) const
+            template    <typename T>
+            inline  bool    Stack<T>::operator!= (const Stack<T>& rhs) const
             {
                 return not Equals (rhs);
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Stack<T, TRAITS>::_AssertRepValidType () const
+            template    <typename T>
+            inline  void    Stack<T>::_AssertRepValidType () const
             {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
