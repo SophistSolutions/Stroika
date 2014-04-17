@@ -429,9 +429,9 @@ namespace   Stroika {
             {
                 _SafeReadRepAccessor<_IRep> accessor { this };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-                _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+                _SharedPtrIRep  ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
                 AssertNotNull (ss.get ());
                 return ss->Elements (ss);
@@ -441,9 +441,9 @@ namespace   Stroika {
             {
                 _SafeReadRepAccessor<_IRep> accessor { this };
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ());
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-                _SharedPtrIRep  ss = const_cast<MultiSet<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
+                _SharedPtrIRep  ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);

@@ -385,7 +385,6 @@ namespace   Stroika {
 #endif
                 struct  _ElementsIterableHelper;
 
-
             private:
                 struct  UniqueElementsIteratorHelperContext_;
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
