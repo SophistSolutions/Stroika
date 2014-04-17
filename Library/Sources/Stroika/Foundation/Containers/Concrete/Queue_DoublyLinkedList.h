@@ -31,26 +31,26 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Queue_DoublyLinkedList<T, TRAITS> is an Array-based concrete implementation of the Queue<T, TRAITS> container pattern.
+                 *  \brief   Queue_DoublyLinkedList<T> is an Array-based concrete implementation of the Queue<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
-                class   Queue_DoublyLinkedList : public Queue<T, TRAITS> {
+                template    <typename T>
+                class   Queue_DoublyLinkedList : public Queue<T> {
                 private:
-                    using   inherited   =     Queue<T, TRAITS>;
+                    using   inherited   =     Queue<T>;
 
                 public:
                     Queue_DoublyLinkedList ();
-                    Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T, TRAITS>& q);
+                    Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src);
                     template <typename CONTAINER_OF_T>
-                    explicit Queue_DoublyLinkedList (const CONTAINER_OF_T& q);
+                    explicit Queue_DoublyLinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Queue_DoublyLinkedList<T, TRAITS>& operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs) = default;
+                    nonvirtual  Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

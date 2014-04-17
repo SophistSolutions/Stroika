@@ -35,24 +35,6 @@ namespace   Stroika {
 
 
             /**
-             *  NOTE - Traits for Queue<T, TRAITS> don't NEED an EQUALS_COMPARER, and the default one should
-             *  should be fine (never called if never used).
-             *
-             *  It will only be invoked if you call
-             *      o   Queue<T,TRAITS>::Equals ()
-             *
-             *  This means that
-             *      Queue<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
-             *      // works FINE, UNTIL you try to call Equals - and at that point you must adjust
-             *      // the traits to specify the Equals() compare function.
-             *
-             */
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
-            struct   Deque_DefaultTraits : Queue_DefaultTraits<T, EQUALS_COMPARER> {
-            };
-
-
-            /**
              * Description:
              *
              *      A Deque is a Queue that allows additions and removals at either end.
@@ -70,16 +52,16 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T, typename TRAITS = Deque_DefaultTraits<T>>
-            class   Deque : public Queue<T, TRAITS> {
+            template    <typename T>
+            class   Deque : public Queue<T> {
             private:
-                using   inherited   =   Queue<T, TRAITS>;
+                using   inherited   =   Queue<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType  =   Deque<T, TRAITS>;
+                using   ArchetypeContainerType  =   Deque<T>;
 
             protected:
                 class   _IRep;
@@ -89,7 +71,7 @@ namespace   Stroika {
                 /**
                  */
                 Deque ();
-                Deque (const Deque<T, TRAITS>& src);
+                Deque (const Deque<T>& src);
                 Deque (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Deque (const CONTAINER_OF_T& src);
@@ -104,7 +86,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Deque<T, TRAITS>&   operator= (const Deque<T, TRAITS>& rhs) = default;
+                nonvirtual  Deque<T>&   operator= (const Deque<T>& rhs) = default;
 
             public:
                 /**
@@ -156,13 +138,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Deque<T, TRAITS> implementors.
+             *  \brief  Implementation detail for Deque<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Deque<T, TRAITS> container API.
+             *  the Deque<T> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Deque<T, TRAITS>::_IRep : public Queue<T, TRAITS>::_IRep {
+            template    <typename T>
+            class   Deque<T>::_IRep : public Queue<T>::_IRep {
             public:
                 virtual void        AddHead (T item)                        =   0;
                 virtual T           RemoveTail ()                           =   0;

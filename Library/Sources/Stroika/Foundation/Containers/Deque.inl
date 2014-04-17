@@ -16,71 +16,71 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************************** Deque<T, TRAITS> **********************************
+             *********************************** Deque<T> ***********************************
              ********************************************************************************
              */
-            template    <typename T, typename TRAITS>
-            inline  Deque<T, TRAITS>::Deque ()
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Deque<T>::Deque ()
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Deque<T, TRAITS>::Deque (const Deque<T, TRAITS>& src)
+            template    <typename T>
+            inline  Deque<T>::Deque (const Deque<T>& src)
                 : inherited (static_cast < const inherited&& > (src))
             {
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Deque<T, TRAITS>::Deque (const initializer_list<T>& d)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+            template    <typename T>
+            inline  Deque<T>::Deque (const initializer_list<T>& d)
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (d);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& src)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+            inline  Deque<T>::Deque (const CONTAINER_OF_T& src)
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (src);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  Deque<T, TRAITS>::Deque (const _SharedPtrIRep& rep)
+            template    <typename T>
+            inline  Deque<T>::Deque (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Deque<T, TRAITS>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (start, end);
                 _AssertRepValidType ();
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Deque<T, TRAITS>::AddHead (T item)
+            template    <typename T>
+            inline  void    Deque<T>::AddHead (T item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddHead (item);
             }
-            template    <typename T, typename TRAITS>
-            inline  T    Deque<T, TRAITS>::RemoveTail ()
+            template    <typename T>
+            inline  T    Deque<T>::RemoveTail ()
             {
                 return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveTail ();
             }
-            template    <typename T, typename TRAITS>
-            inline  T       Deque<T, TRAITS>::Tail () const
+            template    <typename T>
+            inline  T       Deque<T>::Tail () const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Tail ();
             }
-            template    <typename T, typename TRAITS>
-            inline  void    Deque<T, TRAITS>::_AssertRepValidType () const
+            template    <typename T>
+            inline  void    Deque<T>::_AssertRepValidType () const
             {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);

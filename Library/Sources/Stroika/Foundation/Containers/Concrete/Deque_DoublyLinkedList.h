@@ -36,20 +36,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Deque_DefaultTraits<T>>
-                class   Deque_DoublyLinkedList : public Deque<T, TRAITS> {
+                template    <typename T>
+                class   Deque_DoublyLinkedList : public Deque<T> {
                 private:
-                    using   inherited   =     Deque<T, TRAITS>;
+                    using   inherited   =     Deque<T>;
 
                 public:
                     Deque_DoublyLinkedList ();
-                    Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T, TRAITS>& s);
+                    Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src);
                     template <typename CONTAINER_OF_T>
-                    explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& s);
+                    explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                    nonvirtual  Deque_DoublyLinkedList<T, TRAITS>&  operator= (const Deque_DoublyLinkedList<T, TRAITS>& src);
+                public:
+                    nonvirtual  Deque_DoublyLinkedList<T>&  operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

@@ -61,27 +61,6 @@ namespace   Stroika {
 
 
             /**
-             *  NOTE - Traits for Queue<T, TRAITS> don't NEED an EQUALS_COMPARER, and the default one should
-             *  should be fine (never called if never used).
-             *
-             *  It will only be invoked if you call
-             *      o   Queue<T,TRAITS>::Equals ()
-             *
-             *  This means that
-             *      Queue<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
-             *      // works FINE, UNTIL you try to call Equals - and at that point you must adjust
-             *      // the traits to specify the Equals() compare function.
-             *
-             */
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
-            struct   Queue_DefaultTraits {
-                /**
-                 */
-                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
-            };
-
-
-            /**
              *  A Queue is a first-in-first-out (FIFO) data structure, where elements are arranged
              *  n well-ordered fashion, from HEAD to TAIL.
              *
@@ -117,7 +96,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
+            template    <typename T>
             class   Queue : public Iterable<T> {
             private:
                 using   inherited   =   Iterable<T>;
@@ -126,7 +105,7 @@ namespace   Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using   ArchetypeContainerType      =   Queue<T, TRAITS>;
+                using   ArchetypeContainerType      =   Queue<T>;
 
             protected:
                 class   _IRep;
@@ -137,7 +116,7 @@ namespace   Stroika {
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
                  */
                 Queue ();
-                Queue (const Queue<T, TRAITS>& src);
+                Queue (const Queue<T>& src);
                 Queue (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& src);
@@ -153,7 +132,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  Queue<T, TRAITS>& operator= (const Queue<T, TRAITS>& rhs) = default;
+                nonvirtual  Queue<T>& operator= (const Queue<T>& rhs) = default;
 
             public:
                 /**
@@ -220,45 +199,30 @@ namespace   Stroika {
             public:
                 /**
                  *  Two Queues are considered equal if they contain the same elements (by comparing them
-                 *  with EqualsCompareFunctionType from the TRAITS object, which defaults to operator== (T,T))
+                 *  with EQUALS_COMPARER (which defaults to operator== (T,T))
                  *  in exactly the same order (iteration).
+                 *
+                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+                 *  to compare with an alternative comparer, just pass it as a template parameter.
                  *
                  *  Equals is commutative().
                  *
-                 *  \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-                 *
                  *  Computational Complexity: O(N)
                  */
-                nonvirtual  bool    Equals (const Queue<T, TRAITS>& rhs) const;
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    Equals (const Queue<T>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for Equals()
                  */
-                nonvirtual  bool    operator== (const Queue<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const Queue<T>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for not Equals()
                  */
-                nonvirtual  bool    operator!= (const Queue<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Queue<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                using   TraitsType  =   TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 *
-                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
-                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
-                 */
-                using   EqualsCompareFunctionType   =   typename TraitsType::EqualsCompareFunctionType;
+                nonvirtual  bool    operator!= (const Queue<T>& rhs) const;
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
@@ -301,13 +265,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Queue<T, TRAITS> implementors.
+             *  \brief  Implementation detail for Queue<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Queue<T, TRAITS> container API.
+             *  the Queue<T> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Queue<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T>
+            class   Queue<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep () = default;
 

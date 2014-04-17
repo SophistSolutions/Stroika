@@ -43,6 +43,10 @@ History
 	long run
 	</li>
 	<li>Renamed Execution::ExternallySynchronizedLock to Debug::AssertExternallySynchronizedLock</li>
+	<li>
+		Lose TRAITS support from Stack<>, Queue<>, and Deque<>, since simpler, and only needed for equals(). Instead, use Equals
+		tempalte param on Equals<> method
+	</li>
 </ul>
 </td>
 </tr>

@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************************** Deque_Factory<T, TRAITS> ***************************
+                 ******************************* Deque_Factory<T> *******************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<Deque<T, TRAITS> (*) ()>     Deque_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template    <typename T, typename TRAITS>
-                inline  Deque<T, TRAITS>  Deque_Factory<T, TRAITS>::mk ()
+                template    <typename T>
+                atomic<Deque<T> (*) ()>     Deque_Factory<T>::sFactory_ (nullptr);
+                template    <typename T>
+                inline  Deque<T>  Deque_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,15 +42,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Deque_Factory<T, TRAITS>::Register (Deque<T, TRAITS> (*factory) ())
+                template    <typename T>
+                void    Deque_Factory<T>::Register (Deque<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                Deque<T, TRAITS>  Deque_Factory<T, TRAITS>::Default_ ()
+                template    <typename T>
+                Deque<T>  Deque_Factory<T>::Default_ ()
                 {
-                    return Deque_DoublyLinkedList<T, TRAITS> ();
+                    return Deque_DoublyLinkedList<T> ();
                 }
 
 

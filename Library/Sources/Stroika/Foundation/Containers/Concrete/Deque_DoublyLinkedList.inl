@@ -24,10 +24,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T, typename TRAITS>
-                class   Deque_DoublyLinkedList<T, TRAITS>::Rep_ : public Deque<T, TRAITS>::_IRep {
+                template    <typename T>
+                class   Deque_DoublyLinkedList<T>::Rep_ : public Deque<T>::_IRep {
                 private:
-                    using   inherited   =   typename    Deque<T, TRAITS>::_IRep;
+                    using   inherited   =   typename    Deque<T>::_IRep;
 
                 public:
                     using   _SharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>       FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
-                    // Queue<T, TRAITS>::_IRep overrides
+                    // Queue<T>::_IRep overrides
                 public:
                     virtual void                AddTail (T item) override;
                     virtual T                   RemoveHead () override;
@@ -66,7 +66,7 @@ namespace   Stroika {
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
-                    // Deque<T, TRAITS>::_IRep overrides
+                    // Deque<T>::_IRep overrides
                 public:
                     virtual void        AddHead (T item) override;
                     virtual T           RemoveTail () override;
@@ -83,18 +83,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************** Deque_DoublyLinkedList<T, TRAITS>::Rep_ *********************
+                ************************ Deque_DoublyLinkedList<T>::Rep_ ***********************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                inline  Deque_DoublyLinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+                template    <typename T>
+                inline  Deque_DoublyLinkedList<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
                 }
-                template    <typename T, typename TRAITS>
-                typename Deque_DoublyLinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  Deque_DoublyLinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                template    <typename T>
+                typename Deque_DoublyLinkedList<T>::Rep_::_SharedPtrIRep  Deque_DoublyLinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -102,8 +102,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  Deque_DoublyLinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>  Deque_DoublyLinkedList<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -117,24 +117,24 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
                 }
-                template    <typename T, typename TRAITS>
-                size_t  Deque_DoublyLinkedList<T, TRAITS>::Rep_::GetLength () const
+                template    <typename T>
+                size_t  Deque_DoublyLinkedList<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                bool  Deque_DoublyLinkedList<T, TRAITS>::Rep_::IsEmpty () const
+                template    <typename T>
+                bool  Deque_DoublyLinkedList<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void      Deque_DoublyLinkedList<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                template    <typename T>
+                void      Deque_DoublyLinkedList<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -143,8 +143,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     Deque_DoublyLinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>     Deque_DoublyLinkedList<T>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<T>;
                     shared_ptr<IteratorRep_> resultRep;
@@ -169,16 +169,16 @@ namespace   Stroika {
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
 #endif
                 }
-                template    <typename T, typename TRAITS>
-                void    Deque_DoublyLinkedList<T, TRAITS>::Rep_::AddTail (T item)
+                template    <typename T>
+                void    Deque_DoublyLinkedList<T>::Rep_::AddTail (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Append (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Deque_DoublyLinkedList<T, TRAITS>::Rep_::RemoveHead ()
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::RemoveHead ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         T   item =  fData_.GetFirst ();
@@ -187,8 +187,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Memory::Optional<T>    Deque_DoublyLinkedList<T, TRAITS>::Rep_::RemoveHeadIf ()
+                template    <typename T>
+                Memory::Optional<T>    Deque_DoublyLinkedList<T>::Rep_::RemoveHeadIf ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (fData_.IsEmpty ()) {
@@ -200,16 +200,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Deque_DoublyLinkedList<T, TRAITS>::Rep_::Head () const
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::Head () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetFirst ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Memory::Optional<T>    Deque_DoublyLinkedList<T, TRAITS>::Rep_::HeadIf () const
+                template    <typename T>
+                Memory::Optional<T>    Deque_DoublyLinkedList<T>::Rep_::HeadIf () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (fData_.IsEmpty ()) {
@@ -219,8 +219,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Deque_DoublyLinkedList<T, TRAITS>::Rep_::RemoveAll ()
+                template    <typename T>
+                void    Deque_DoublyLinkedList<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAll ();
@@ -228,8 +228,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #if     qDebug
-                template    <typename T, typename TRAITS>
-                void    Deque_DoublyLinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
+                template    <typename T>
+                void    Deque_DoublyLinkedList<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
@@ -237,16 +237,16 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #endif
-                template    <typename T, typename TRAITS>
-                void    Deque_DoublyLinkedList<T, TRAITS>::Rep_::AddHead (T item)
+                template    <typename T>
+                void    Deque_DoublyLinkedList<T>::Rep_::AddHead (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Append (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Deque_DoublyLinkedList<T, TRAITS>::Rep_::RemoveTail ()
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::RemoveTail ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         T   item =  fData_.GetFirst ();
@@ -255,8 +255,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Deque_DoublyLinkedList<T, TRAITS>::Rep_::Tail () const
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::Tail () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetLast ();
@@ -267,49 +267,41 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************ Deque_DoublyLinkedList<T, TRAITS> *********************
+                *************************** Deque_DoublyLinkedList<T> **************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList ()
+                template    <typename T>
+                Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T, TRAITS>& src)
+                template    <typename T>
+                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (const CONTAINER_OF_T& s)
+                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                     this->InsertAll (0, s);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Deque_DoublyLinkedList<T, TRAITS>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                     this->Append (start, end);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  Deque_DoublyLinkedList<T, TRAITS>&   Deque_DoublyLinkedList<T, TRAITS>::operator= (const Deque_DoublyLinkedList<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template    <typename T, typename TRAITS>
-                inline  void    Deque_DoublyLinkedList<T, TRAITS>::AssertRepValidType_ () const
+                template    <typename T>
+                inline  void    Deque_DoublyLinkedList<T>::AssertRepValidType_ () const
                 {
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }

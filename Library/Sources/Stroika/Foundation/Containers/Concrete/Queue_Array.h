@@ -37,30 +37,30 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Queue_Array<T, TRAITS> is an Array-based concrete implementation of the Queue<T, TRAITS> container pattern.
+                 *  \brief   Queue_Array<T> is an Array-based concrete implementation of the Queue<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
-                class   Queue_Array : public Queue<T, TRAITS> {
+                template    <typename T>
+                class   Queue_Array : public Queue<T> {
                 private:
-                    using   inherited   =   Queue<T, TRAITS>;
+                    using   inherited   =   Queue<T>;
 
                 public:
                     Queue_Array ();
-                    Queue_Array (const Queue_Array<T, TRAITS>& src);
+                    Queue_Array (const Queue_Array<T>& src);
                     template <typename CONTAINER_OF_T>
                     explicit Queue_Array (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
-                    nonvirtual  Queue_Array<T, TRAITS>& operator= (const Queue_Array<T, TRAITS>& rhs) = default;
+                    nonvirtual  Queue_Array<T>& operator= (const Queue_Array<T>& rhs) = default;
 
                 public:
                     /**
-                     *  \brief  Reduce the space used to store the Sequence<T, TRAITS> contents.
+                     *  \brief  Reduce the space used to store the Queue<T> contents.
                      *
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete sequence, calling this may save memory.

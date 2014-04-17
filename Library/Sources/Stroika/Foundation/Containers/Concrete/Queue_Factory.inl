@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************************** Queue_Factory<T, TRAITS> ***************************
+                 ******************************* Queue_Factory<T> *******************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<Queue<T, TRAITS> (*) ()>     Queue_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template    <typename T, typename TRAITS>
-                inline  Queue<T, TRAITS>  Queue_Factory<T, TRAITS>::mk ()
+                template    <typename T>
+                atomic<Queue<T> (*) ()>     Queue_Factory<T>::sFactory_ (nullptr);
+                template    <typename T>
+                inline  Queue<T>  Queue_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,15 +42,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Queue_Factory<T, TRAITS>::Register (Queue<T, TRAITS> (*factory) ())
+                template    <typename T>
+                void    Queue_Factory<T>::Register (Queue<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                Queue<T, TRAITS>  Queue_Factory<T, TRAITS>::Default_ ()
+                template    <typename T>
+                Queue<T>  Queue_Factory<T>::Default_ ()
                 {
-                    return Queue_DoublyLinkedList<T, TRAITS> ();
+                    return Queue_DoublyLinkedList<T> ();
                 }
 
 

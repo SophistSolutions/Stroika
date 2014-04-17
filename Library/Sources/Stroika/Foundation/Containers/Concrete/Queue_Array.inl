@@ -24,10 +24,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T, typename TRAITS>
-                class   Queue_Array<T, TRAITS>::Rep_ : public Queue<T, TRAITS>::_IRep {
+                template    <typename T>
+                class   Queue_Array<T>::Rep_ : public Queue<T>::_IRep {
                 private:
-                    using   inherited   =   typename    Queue<T, TRAITS>::_IRep;
+                    using   inherited   =   typename    Queue<T>::_IRep;
 
                 public:
                     using   _SharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
-                    // Queue<T, TRAITS>::_IRep overrides
+                    // Queue<T>::_IRep overrides
                 public:
                     virtual void                AddTail (T item) override;
                     virtual T                   RemoveHead () override;
@@ -80,18 +80,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************* Queue_Array<T, TRAITS>::Rep_ *************************
+                ******************************* Queue_Array<T>::Rep_ ***************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                inline  Queue_Array<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+                template    <typename T>
+                inline  Queue_Array<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
                 }
-                template    <typename T, typename TRAITS>
-                typename Queue_Array<T, TRAITS>::Rep_::_SharedPtrIRep  Queue_Array<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                template    <typename T>
+                typename Queue_Array<T>::Rep_::_SharedPtrIRep  Queue_Array<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
@@ -99,8 +99,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  Queue_Array<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>  Queue_Array<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -114,24 +114,24 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
                 }
-                template    <typename T, typename TRAITS>
-                size_t  Queue_Array<T, TRAITS>::Rep_::GetLength () const
+                template    <typename T>
+                size_t  Queue_Array<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                bool  Queue_Array<T, TRAITS>::Rep_::IsEmpty () const
+                template    <typename T>
+                bool  Queue_Array<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.GetLength () == 0;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void      Queue_Array<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                template    <typename T>
+                void      Queue_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -140,8 +140,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     Queue_Array<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                template    <typename T>
+                Iterator<T>     Queue_Array<T>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<T>;
                     shared_ptr<IteratorRep_> resultRep;
@@ -166,16 +166,16 @@ namespace   Stroika {
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
 #endif
                 }
-                template    <typename T, typename TRAITS>
-                void    Queue_Array<T, TRAITS>::Rep_::AddTail (T item)
+                template    <typename T>
+                void    Queue_Array<T>::Rep_::AddTail (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.InsertAt (fData_.GetLength (), item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Queue_Array<T, TRAITS>::Rep_::RemoveHead ()
+                template    <typename T>
+                T    Queue_Array<T>::Rep_::RemoveHead ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         T   item =  fData_.GetAt (0);
@@ -184,8 +184,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Memory::Optional<T>    Queue_Array<T, TRAITS>::Rep_::RemoveHeadIf ()
+                template    <typename T>
+                Memory::Optional<T>    Queue_Array<T>::Rep_::RemoveHeadIf ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (fData_.GetLength () == 0) {
@@ -197,16 +197,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                T    Queue_Array<T, TRAITS>::Rep_::Head () const
+                template    <typename T>
+                T    Queue_Array<T>::Rep_::Head () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetAt (0));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                Memory::Optional<T>    Queue_Array<T, TRAITS>::Rep_::HeadIf () const
+                template    <typename T>
+                Memory::Optional<T>    Queue_Array<T>::Rep_::HeadIf () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (fData_.GetLength () == 0) {
@@ -216,8 +216,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Queue_Array<T, TRAITS>::Rep_::RemoveAll ()
+                template    <typename T>
+                void    Queue_Array<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAll ();
@@ -225,8 +225,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #if     qDebug
-                template    <typename T, typename TRAITS>
-                void    Queue_Array<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
+                template    <typename T>
+                void    Queue_Array<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
@@ -238,41 +238,41 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ***************************** Queue_Array<T, TRAITS> ***************************
+                ********************************** Queue_Array<T> ******************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                Queue_Array<T, TRAITS>::Queue_Array ()
+                template    <typename T>
+                Queue_Array<T>::Queue_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  Queue_Array<T, TRAITS>::Queue_Array (const Queue_Array<T, TRAITS>& src)
+                template    <typename T>
+                inline  Queue_Array<T>::Queue_Array (const Queue_Array<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Queue_Array<T, TRAITS>::Queue_Array (const CONTAINER_OF_T& src)
+                inline  Queue_Array<T>::Queue_Array (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
                 }
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Queue_Array<T, TRAITS>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
                     Append (start, end);
                     AssertRepValidType_ ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    Queue_Array<T, TRAITS>::Compact ()
+                template    <typename T>
+                inline  void    Queue_Array<T>::Compact ()
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
@@ -281,8 +281,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  size_t  Queue_Array<T, TRAITS>::GetCapacity () const
+                template    <typename T>
+                inline  size_t  Queue_Array<T>::GetCapacity () const
                 {
                     using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
                     _SafeReadRepAccessor accessor { this };
@@ -291,8 +291,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    Queue_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
+                template    <typename T>
+                inline  void    Queue_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
@@ -301,8 +301,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    Queue_Array<T, TRAITS>::AssertRepValidType_ () const
+                template    <typename T>
+                inline  void    Queue_Array<T>::AssertRepValidType_ () const
                 {
                     AssertMember (&inherited::_ConstGetRep (), Rep_);
                 }

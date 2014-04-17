@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             class   Deque;
 
 
@@ -37,30 +37,30 @@ namespace   Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Deque<> container
                  *
-                 *  Note - you can override the underlying factory dynamically by calling Deque_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing Deque_Factory<T,TRAITS>::mk () - though the later is trickier.
+                 *  Note - you can override the underlying factory dynamically by calling Deque_Factory<T>::Register (), or
+                 *  replace it statically by template-specailizing Deque_Factory<T>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 class   Deque_Factory {
                 private:
-                    static  atomic<Deque<T, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Deque<T> (*) ()>   sFactory_;
 
                 public:
                     /**
-                     *  You can call this directly, but there is no need, as the Deque<T,TRAITS> CTOR does so automatically.
+                     *  You can call this directly, but there is no need, as the Deque<T> CTOR does so automatically.
                      */
-                    static  Deque<T, TRAITS>  mk ();
+                    static  Deque<T>  mk ();
 
                 public:
                     /**
-                     *  Register a replacement creator/factory for the given Deque<T,TRAITS>. Note this is a global change.
+                     *  Register a replacement creator/factory for the given Deque<T>. Note this is a global change.
                      */
-                    static  void    Register (Deque<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Deque<T> (*factory) () = nullptr);
 
                 private:
-                    static  Deque<T, TRAITS>  Default_ ();
+                    static  Deque<T>  Default_ ();
                 };
 
 
