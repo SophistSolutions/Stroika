@@ -39,7 +39,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet (const std::initializer_list<T>& s)
+            inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -48,20 +48,12 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& s)
+            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (s);
                 _AssertRepValidType ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>&   SortedSet<T, TRAITS>::operator= (const SortedSet<T, TRAITS>& src)
-            {
-                _AssertRepValidType ();
-                inherited::operator= (static_cast<const inherited&> (src));
-                _AssertRepValidType ();
-                return *this;
             }
             template    <typename T, typename TRAITS>
             inline  void    SortedSet<T, TRAITS>::_AssertRepValidType () const

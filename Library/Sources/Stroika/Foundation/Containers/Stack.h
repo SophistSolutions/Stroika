@@ -84,9 +84,9 @@ namespace   Stroika {
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
-                Stack (const Stack<T>& s);
+                Stack (const Stack<T>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Stack (const CONTAINER_OF_T& s);
+                explicit Stack (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -94,7 +94,7 @@ namespace   Stroika {
                 explicit Stack (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Stack<T>& operator= (const Stack<T>& src);
+                nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;
 
             public:
                 /**

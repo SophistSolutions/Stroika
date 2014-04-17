@@ -132,11 +132,11 @@ namespace   Stroika {
                 /**
                  */
                 Set ();
-                Set (const Set<T, TRAITS>& s);
-                Set (const initializer_list<T>& s);
-                Set (const set<T>& s);
+                Set (const Set<T, TRAITS>& src);
+                Set (const initializer_list<T>& src);
+                Set (const set<T>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Set (const CONTAINER_OF_T& s);
+                explicit Set (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -149,7 +149,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs);
+                nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs) = default;
 
             public:
                 /**

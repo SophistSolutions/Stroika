@@ -138,7 +138,7 @@ namespace   Stroika {
                  */
                 Queue ();
                 Queue (const Queue<T, TRAITS>& src);
-                Queue (const std::initializer_list<T>& q);
+                Queue (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -153,7 +153,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  Queue<T, TRAITS>& operator= (const Queue<T, TRAITS>& rhs);
+                nonvirtual  Queue<T, TRAITS>& operator= (const Queue<T, TRAITS>& rhs) = default;
 
             public:
                 /**

@@ -152,8 +152,8 @@ namespace   Stroika {
             public:
                 MultiSet ();
                 MultiSet (const MultiSet<T, TRAITS>& src);
-                MultiSet (const std::initializer_list<T>& s);
-                MultiSet (const std::initializer_list<MultiSetEntry<T>>& s);
+                MultiSet (const initializer_list<T>& src);
+                MultiSet (const initializer_list<MultiSetEntry<T>>& src);
                 template    <typename CONTAINER_OF_T>
                 explicit MultiSet (const CONTAINER_OF_T& src);
                 MultiSet (const T* start, const T* end);
@@ -166,6 +166,9 @@ namespace   Stroika {
             public:
                 ~MultiSet ();
 #endif
+
+            public:
+                nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
 
             public:
                 /**

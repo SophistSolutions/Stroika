@@ -84,11 +84,11 @@ namespace   Stroika {
                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                 */
                 SortedMapping ();
-                SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                SortedMapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
-                SortedMapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
+                SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
+                SortedMapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                explicit SortedMapping (const CONTAINER_OF_PAIR_KEY_T& cp);
+                explicit SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
@@ -96,7 +96,7 @@ namespace   Stroika {
                 explicit SortedMapping (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
             public:
                 /**

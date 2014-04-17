@@ -90,7 +90,7 @@ namespace   Stroika {
                  */
                 Deque ();
                 Deque (const Deque<T, TRAITS>& src);
-                Deque (const std::initializer_list<T>& d);
+                Deque (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Deque (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -104,7 +104,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Deque<T, TRAITS>&   operator= (const Deque<T, TRAITS>& rhs);
+                nonvirtual  Deque<T, TRAITS>&   operator= (const Deque<T, TRAITS>& rhs) = default;
 
             public:
                 /**

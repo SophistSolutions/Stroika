@@ -83,14 +83,6 @@ namespace   Stroika {
             }
 #endif
             template    <typename T>
-            inline  Sequence<T>& Sequence<T>::operator= (const Sequence<T>& rhs)
-            {
-                _AssertRepValidType ();
-                inherited::operator= (rhs);
-                _AssertRepValidType ();
-                return *this;
-            }
-            template    <typename T>
             inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_ConstGetRep () const
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion

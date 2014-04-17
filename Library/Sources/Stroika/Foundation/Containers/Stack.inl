@@ -28,14 +28,14 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Stack<T>::Stack (const Stack<T>& s)
-                : inherited (static_cast<const inherited&> (s))
+            inline  Stack<T>::Stack (const Stack<T>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Stack<T>::Stack (const CONTAINER_OF_T& s)
+            inline  Stack<T>::Stack (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();

@@ -229,7 +229,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs);
+                nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs) = default;
 
             public:
                 /**

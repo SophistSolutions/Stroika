@@ -173,12 +173,12 @@ namespace   Stroika {
                  *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                  */
                 Mapping ();
-                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
-                Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
-                Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& m);
+                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
+                Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
+                Mapping (const map<KEY_TYPE, VALUE_TYPE>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
+                explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
@@ -190,7 +190,7 @@ namespace   Stroika {
                 ~Mapping ();
 #endif
             public:
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) =   default;
 
             public:
                 /**
