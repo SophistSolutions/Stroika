@@ -38,7 +38,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -46,7 +46,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -54,11 +54,11 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const map<KEY_TYPE, VALUE_TYPE>& src)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
-                AddAll (m);
+                AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

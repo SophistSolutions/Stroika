@@ -43,7 +43,7 @@ namespace   Stroika {
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
-                this->AddAll (s);
+                this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
@@ -52,7 +52,7 @@ namespace   Stroika {
                 : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
-                this->AddAll (s);
+                this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
