@@ -137,6 +137,9 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  SortedCollection<T, TRAITS>& operator= (const SortedCollection<T, TRAITS>& rhs);
+
+            protected:
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 

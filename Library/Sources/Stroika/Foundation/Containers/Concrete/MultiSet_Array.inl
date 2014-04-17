@@ -340,85 +340,92 @@ namespace   Stroika {
                 MultiSet_Array<T, TRAITS>::MultiSet_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     SetCapacity (end - start);
                     this->AddAll (start, end);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet_Array<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (s);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<MultiSetEntry<T>>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     this->AddAll (s);
+                    AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_Array<T, TRAITS>& MultiSet_Array<T, TRAITS>::operator= (const MultiSet_Array<T, TRAITS>& rhs)
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertRepValidType_ ();
                     return *this;
-                }
-                template    <typename T, typename TRAITS>
-                inline  const typename MultiSet_Array<T, TRAITS>::Rep_&    MultiSet_Array<T, TRAITS>::GetRep_ () const
-                {
-                    return reinterpret_cast<const MultiSet_Array<T, TRAITS>::Rep_&> (this->_GetRep ());
-                }
-                template    <typename T, typename TRAITS>
-                inline  typename MultiSet_Array<T, TRAITS>::Rep_&  MultiSet_Array<T, TRAITS>::GetRep_ ()
-                {
-                    return reinterpret_cast<MultiSet_Array<T, TRAITS>::Rep_&> (this->_GetRep ());
                 }
                 template    <typename T, typename TRAITS>
                 inline  size_t  MultiSet_Array<T, TRAITS>::GetCapacity () const
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        return (GetRep_ ().fData_.GetCapacity ());
+                    using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    _SafeReadRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        return accessor._ConstGetRep ().fData_.GetCapacity ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    using   _SafeReadWriteRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::Compact ()
                 {
-                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fData_.fLockSupport) {
-                        GetRep_ ().Compact ();
+                    using   _SafeReadWriteRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    _SafeReadWriteRepAccessor accessor { this };
+                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
+                        accessor._GetWriteableRep ().Compact ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
+                inline  void    MultiSet_Array<T, TRAITS>::AssertRepValidType_ () const
+                {
+#if     qDebug
+                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+#endif
                 }
 
 

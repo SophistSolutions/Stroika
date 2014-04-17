@@ -73,8 +73,8 @@ namespace   Stroika {
             public:
                 SortedMultiSet ();
                 SortedMultiSet (const SortedMultiSet<T, TRAITS>& src);
-                SortedMultiSet (const std::initializer_list<T>& s);
-                SortedMultiSet (const std::initializer_list<MultiSetEntry<T>>& s);
+                SortedMultiSet (const initializer_list<T>& s);
+                SortedMultiSet (const initializer_list<MultiSetEntry<T>>& s);
                 template <typename CONTAINER_OF_T>
                 explicit SortedMultiSet (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -102,6 +102,9 @@ namespace   Stroika {
 
             public:
                 RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+
+            protected:
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 

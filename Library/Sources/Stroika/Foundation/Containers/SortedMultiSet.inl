@@ -23,49 +23,61 @@ namespace   Stroika {
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet ()
                 : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const SortedMultiSet<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
+                _AssertRepValidType ();
                 RequireNotNull (rep);
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const std::initializer_list<T>& s)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& s)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 this->AddAll (s);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<MultiSetEntry<T>>& s)
                 : inherited (static_cast < const inherited&& > (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 this->AddAll (s);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 this->AddAll (src);
+                _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedMultiSet<T, TRAITS>&   SortedMultiSet<T, TRAITS>::operator= (const SortedMultiSet<T, TRAITS>& src)
             {
+                _AssertRepValidType ();
                 inherited::operator= (static_cast<const inherited&> (src));
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);
+                _AssertRepValidType ();
                 return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    SortedMultiSet <T, TRAITS>::_AssertRepValidType () const
+            {
+#if     qDebug
+                AssertMember (&inherited::_ConstGetRep (), _IRep);
+#endif
             }
 
 
