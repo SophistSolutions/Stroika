@@ -534,21 +534,12 @@ namespace   Stroika {
 
             protected:
                 /**
-                 *  Use this in preference to _GetRep () as visual documentation that the caller is expecting to
-                 *  get a constant refererence. This is otherwise equivilent to the const overload of _GetRep()
+                 *  Return a const reference to owned rep pointer. This ensures result non-null before dereferencing.
+                 *
+                 *  Note - this is NOT thread safe, so use care (like only use in CTOR/DTOR cuz then we know
+                 *  we dont need to be threadsafe).
                  */
                 nonvirtual  const typename Iterable<T>::_IRep&   _ConstGetRep () const;
-
-            protected:
-                /**
-                 *  _GetRep() is overloaded on const this. If you access the non-const overload, it will
-                 *  assure you have a unique refernece to the given underlying rep (and with the const overload
-                 *  no breakreferences will be called).
-                 *
-                 *  In either case, this Ensures the returned pointer is non-null and valid.
-                 */
-                nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
-                nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             private:
                 struct  Rep_Cloner_ {

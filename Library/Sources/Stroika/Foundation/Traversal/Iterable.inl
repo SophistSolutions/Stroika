@@ -228,22 +228,6 @@ namespace   Stroika {
                 return fRep_.GetSharingState ();
             }
             template    <typename T>
-            inline  typename Iterable<T>::_IRep&         Iterable<T>::_GetRep ()
-            {
-                //EnsureNotNull (fRep_.get ());
-                // subtle - but we must use the get () overload that allows passing in our Copy forward parameters
-                // instead of using operator* (which doesnt allow passsing in the copy forward paramters).
-                //
-                // Note - our copy forward paramters are the container envelope pointer
-                return *(fRep_.get (this));
-            }
-            template    <typename T>
-            inline  const typename Iterable<T>::_IRep&   Iterable<T>::_GetRep () const
-            {
-                EnsureNotNull (fRep_.get ());
-                return *fRep_;
-            }
-            template    <typename T>
             inline  const typename Iterable<T>::_IRep&   Iterable<T>::_ConstGetRep () const
             {
                 EnsureNotNull (fRep_.get ());
