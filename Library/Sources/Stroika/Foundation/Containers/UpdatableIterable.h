@@ -113,7 +113,7 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL -- LGP 2014-03-18
                  */
-                template    <typename T>
+                template    <typename REP_SUB_TYPE>
                 class   _SafeReadWriteRepAccessor;
             };
 
