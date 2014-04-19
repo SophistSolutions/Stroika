@@ -322,7 +322,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Sequence_Array<T>::Compact ()
                 {
-                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().fData_.Compact ();
@@ -342,7 +342,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Sequence_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);

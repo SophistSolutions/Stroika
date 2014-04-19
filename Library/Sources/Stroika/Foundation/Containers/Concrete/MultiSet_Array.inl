@@ -403,7 +403,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
-                    using   _SafeReadWriteRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
@@ -413,7 +413,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_Array<T, TRAITS>::Compact ()
                 {
-                    using   _SafeReadWriteRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().Compact ();

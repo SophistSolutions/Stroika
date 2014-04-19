@@ -22,8 +22,6 @@
  *
  *  TODO:
  *
- *      @todo   See below qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_ fix.
- *
  *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
  *              default parameter?
  *
@@ -81,30 +79,6 @@ namespace   Stroika {
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
 #define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_    1
-#endif
-
-
-            /**
-             *  EXPERIMENTAL AS OF v2.0a22x
-             *
-             *  NOT really CORRECT.
-             *  @todo FIND BETTER WAY/AND OR AT LEAST REVIEW
-             *
-             *  Not sure this does the right thing in the presence of simulatinous access by safe readers and writers. Maybe OK
-             *  for most, but what about Iterators?
-             *
-             *  Also - this maybe needlessly costly for String class (which doesnt use WriteUpdater).
-             *
-             *  Note - without this 'hack'/fix, we get a failure with the blocking queue regest.
-             *
-             *  RegressionTest10_BlockingQueue_ ();
-             *
-             *  @todo - I THINK one fix is to move this writelock support OUT of Iterable and into utility
-             *          between Iterable and all our containers. Maybe introduce an in-between class? That intoruces
-             *          the mutex and the write helper!
-             */
-#ifndef qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
-#define qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_    0
 #endif
 
 
@@ -581,21 +555,9 @@ namespace   Stroika {
                 template <typename REP_SUB_TYPE = _IRep>
                 class   _SafeReadRepAccessor;
 
-            protected:
-                /**
-                 *  EXPERIMENTAL -- LGP 2014-02-21
-                 */
-                template <typename REP_SUB_TYPE>
-                class   _SafeReadWriteRepAccessor;
-
             private:
             protected:
                 SharedByValueRepType_    fRep_;
-
-#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
-            private:
-                mutex   fWriteMutex_;
-#endif
             };
 
 
@@ -608,8 +570,6 @@ namespace   Stroika {
              *
              *  This assures that if another thread assigns to *this, that has no corruption effect on this
              *  operation/method running on the prior '*this' object.
-             *
-             *  @see _SafeReadWriteRepAccessor
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
@@ -631,48 +591,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
-            };
-
-
-            /**
-             *  EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
-             *
-             *  _SafeReadWriteRepAccessor is like _SafeReadRepAccessor, but allows for modifying the underlying Rep,
-             *  and handles the 'break references' as needed.
-             *
-             *  @see _SafeReadRepAccessor
-             */
-            template    <typename T>
-            template <typename REP_SUB_TYPE>
-            class   Iterable<T>::_SafeReadWriteRepAccessor  {
-#if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
-            private:
-                lock_guard<mutex>       fEnvelopeWriteLock_;
-#endif
-            private:
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                SharedByValueRepType_   fAccessor_;
-                Iterable<T>*            fIterableEnvelope;
-#else
-                REP_SUB_TYPE& fRef_;
-#endif
-
-            public:
-                _SafeReadWriteRepAccessor () = delete;
-                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = delete;
-                _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
-
-            public:
-                ~_SafeReadWriteRepAccessor ();
-
-            public:
-                nonvirtual  _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
-
-            public:
-                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
-
-            public:
-                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
             };
 
 

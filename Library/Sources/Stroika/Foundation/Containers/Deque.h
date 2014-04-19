@@ -129,7 +129,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  void    _AssertRepValidType () const;
