@@ -30,14 +30,10 @@ namespace   Stroika {
                 namespace   Windows {
 
 
-
                     /**
                      *  (reason is to test if perofrmance better than msvc mutex)
                      */
-                    class CriticalSectionMutex {
-                    private:
-                        CRITICAL_SECTION    fCritSec_;
-
+                    class   CriticalSectionMutex {
                     public:
                         CriticalSectionMutex ();
                         CriticalSectionMutex (const CriticalSectionMutex&) = delete;
@@ -51,8 +47,10 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    lock ();
                         nonvirtual  void    unlock ();
-                    };
 
+                    private:
+                        CRITICAL_SECTION    fCritSec_;
+                    };
 
 
                 }
