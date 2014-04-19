@@ -929,6 +929,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionMutex.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h" />
@@ -1234,6 +1235,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionMutex.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
