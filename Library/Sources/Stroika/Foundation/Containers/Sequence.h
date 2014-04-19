@@ -16,6 +16,8 @@
 #include    "../Traversal/Iterable.h"
 #include    "../Traversal/Iterator.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /*
@@ -190,9 +192,9 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Sequence : public Iterable<T> {
+            class   Sequence : public UpdatableIterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using   inherited   =   UpdatableIterable<T>;
 
             protected:
                 class   _IRep;
@@ -489,14 +491,13 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;

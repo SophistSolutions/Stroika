@@ -831,6 +831,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.h" />
@@ -1164,6 +1165,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl" />

@@ -12,6 +12,8 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 /**
  *  \file
@@ -111,9 +113,9 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
-            class   MultiSet : public Iterable<MultiSetEntry<T>> {
+            class   MultiSet : public UpdatableIterable<MultiSetEntry<T>> {
             private:
-                using   inherited   =   Iterable<MultiSetEntry<T>>;
+                using   inherited   =   UpdatableIterable<MultiSetEntry<T>>;
 
             public:
                 /**
@@ -306,14 +308,13 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
@@ -330,13 +331,13 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   MultiSet<T, TRAITS>::_IRep
-                : public Iterable<MultiSetEntry<T>>::_IRep
+                : public UpdatableIterable<MultiSetEntry<T>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                                                 , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
+                        , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
 #endif
             {
             private:
-                using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
+                using   inherited   =   typename UpdatableIterable<MultiSetEntry<T>>::_IRep;
 
             protected:
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;

@@ -123,7 +123,6 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:

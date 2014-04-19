@@ -104,7 +104,7 @@ namespace   Stroika {
              *          the mutex and the write helper!
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_
-#define qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_    1
+#define qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_    0
 #endif
 
 
@@ -553,6 +553,7 @@ namespace   Stroika {
                 static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
             private:
+            protected:
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  */
@@ -588,6 +589,7 @@ namespace   Stroika {
                 class   _SafeReadWriteRepAccessor;
 
             private:
+            protected:
                 SharedByValueRepType_    fRep_;
 
 #if     qStroika_Foundation_Traveral_Iterator_WriteUpdateEnvelopeMutex_

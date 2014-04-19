@@ -10,6 +10,8 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /**

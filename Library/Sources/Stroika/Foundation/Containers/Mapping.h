@@ -15,6 +15,8 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /*
@@ -120,9 +122,9 @@ namespace   Stroika {
              *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
+            class   Mapping : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                using   inherited       =   UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
             protected:
                 class   _IRep;
@@ -381,14 +383,13 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
@@ -409,7 +410,7 @@ namespace   Stroika {
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep
-                : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
+                : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                         , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep>
 #endif

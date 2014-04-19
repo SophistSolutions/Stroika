@@ -11,6 +11,8 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /**
@@ -85,9 +87,9 @@ namespace   Stroika {
              *      mean to Shake/change its ordering?
              */
             template    <typename T>
-            class   Collection : public Iterable<T> {
+            class   Collection : public UpdatableIterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using   inherited   =   UpdatableIterable<T>;
 
             public:
                 /**
@@ -237,8 +239,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
-
+                using   _SafeReadRepAccessor = typename UpdatableIterable<T>::template _SafeReadRepAccessor<T2>;
 #endif
 
             protected:
@@ -265,7 +266,7 @@ namespace   Stroika {
              *  the Collection<T> container API.
              */
             template    <typename T>
-            class   Collection<T>::_IRep : public Iterable<T>::_IRep {
+            class   Collection<T>::_IRep : public UpdatableIterable<T>::_IRep {
             protected:
                 _IRep () = default;
 

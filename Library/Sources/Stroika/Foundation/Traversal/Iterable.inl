@@ -95,7 +95,7 @@ namespace   Stroika {
                 : fEnvelopeWriteLock_ (iterableEnvelope->fWriteMutex_)
 #endif
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                , fAccessor_ (iterableEnvelope->fRep_)
+                : fAccessor_ (iterableEnvelope->fRep_)
                 , fIterableEnvelope (iterableEnvelope)
 #else
                 , fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))

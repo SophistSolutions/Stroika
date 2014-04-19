@@ -15,6 +15,8 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /**
@@ -100,9 +102,9 @@ namespace   Stroika {
              *      Similarly for std::initalizer_list.
              */
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
-            class   Set : public Iterable<T> {
+            class   Set : public UpdatableIterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using   inherited   =   UpdatableIterable<T>;
 
             protected:
                 class   _IRep;
@@ -314,14 +316,13 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
@@ -341,7 +342,7 @@ namespace   Stroika {
              *  the Set<T, TRAITS> container API.
              */
             template    <typename T, typename TRAITS>
-            class   Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            class   Set<T, TRAITS>::_IRep : public UpdatableIterable<T>::_IRep {
             protected:
                 _IRep () = default;
 

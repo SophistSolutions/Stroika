@@ -10,6 +10,8 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /**
@@ -97,9 +99,9 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Queue : public Iterable<T> {
+            class   Queue : public UpdatableIterable<T> {
             private:
-                using   inherited   =   Iterable<T>;
+                using   inherited   =   UpdatableIterable<T>;
 
             public:
                 /**
@@ -244,14 +246,13 @@ namespace   Stroika {
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<T2>;
-
 #endif
 
             protected:
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename Iterable<T>::template _SafeReadWriteRepAccessor<T2>;
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
