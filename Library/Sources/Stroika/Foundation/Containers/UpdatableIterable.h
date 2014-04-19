@@ -10,6 +10,9 @@
 
 #include    "../Traversal/Iterable.h"
 
+#if     qPlatform_Windows
+#include    "../Execution/Platform/Windows/CriticalSectionMutex.h"
+#endif
 
 
 /*
@@ -55,7 +58,30 @@ namespace   Stroika {
 #endif
 
 
-            /*
+#if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
+            /**
+             *  This appears slightly faster on performance regtests for windows, so go for it...
+             *          --LGP 2014-04-19
+             */
+#ifndef qStroika_Foundation_Containers_UpdatableIterator_UseWinCritSecMutext_
+#define qStroika_Foundation_Containers_UpdatableIterator_UseWinCritSecMutext_    qPlatform_Windows
+#endif
+#endif
+
+
+            /**
+             *
+             */
+#if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
+#if     qStroika_Foundation_Containers_UpdatableIterator_UseWinCritSecMutext_
+            using   UpdatableIterator_Mutex_ = Execution::Platform::Windows::CriticalSectionMutex;
+#else
+            using   UpdatableIterator_Mutex_ = std::mutex;
+#endif
+#endif
+
+
+            /**
              *  @todo DESCRIBE
              *
              *  Basic motivator was to have mutex code in containers and not effect string (qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_)
@@ -70,7 +96,7 @@ namespace   Stroika {
 
 #if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
             private:
-                mutex   fWriteMutex_;
+                UpdatableIterator_Mutex_   fWriteMutex_;
 #endif
 
             protected:
@@ -117,19 +143,22 @@ namespace   Stroika {
             };
 
 
+            /**
+             *
+             */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             class   UpdatableIterable<T>::_SafeReadWriteRepAccessor  {
 #if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
             private:
-                lock_guard<mutex>       fEnvelopeWriteLock_;
+                lock_guard<UpdatableIterator_Mutex_>       fEnvelopeWriteLock_;
 #endif
             private:
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 _SharedByValueRepType   fAccessor_;
                 UpdatableIterable<T>*   fIterableEnvelope;
 #else
-                REP_SUB_TYPE& fRef_;
+                REP_SUB_TYPE&           fRef_;
 #endif
 
             public:
@@ -149,7 +178,6 @@ namespace   Stroika {
             public:
                 nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
             };
-
 
 
         }
