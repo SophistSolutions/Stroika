@@ -79,7 +79,7 @@ namespace   Stroika {
                 : fEnvelopeWriteLock_ (iterableEnvelope->fWriteMutex_)
 #endif
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                , fAccessor_ (iterableEnvelope->fRep_)
+                , fAccessor_ (iterableEnvelope->_fRep)
                 , fIterableEnvelope (iterableEnvelope)
 #else
                 , fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))
@@ -95,7 +95,7 @@ namespace   Stroika {
                 // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
                 //
                 // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
-                fIterableEnvelope->fRep_ = fAccessor_;
+                fIterableEnvelope->_fRep = fAccessor_;
 #endif
             }
             template    <typename T>
@@ -103,8 +103,8 @@ namespace   Stroika {
             inline  const REP_SUB_TYPE&    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                EnsureMember (fAccessor_.get (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.get ());   // static cast for performance sake - dynamic cast in Ensure
+                EnsureMember (fAccessor_.cget (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.cget ());   // static cast for performance sake - dynamic cast in Ensure
 #else
                 return fRef_;
 #endif
@@ -127,7 +127,7 @@ namespace   Stroika {
                          *  If base copy overwritten (that might give false positive and we might ‘add’
                          *  to other object but there was intrinsic race anyhow, and not exactly a bug on classlib part).
                          */
-                        if (r != fIterableEnvelope->fRep_.cget ()) {
+                        if (r != fIterableEnvelope->_fRep.cget ()) {
                             r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));
                         }
                     }

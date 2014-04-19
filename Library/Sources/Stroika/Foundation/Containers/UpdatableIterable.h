@@ -14,7 +14,6 @@
 
 /*
  *  \file
- *              ****VERY ROUGH UNUSABLE DRAFT
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
@@ -77,7 +76,7 @@ namespace   Stroika {
             protected:
                 using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
-                using SharedByValueRepType_ = typename Iterable<T>::SharedByValueRepType_;
+                using _SharedByValueRepType = typename Iterable<T>::_SharedByValueRepType;
 
             public:
                 /**
@@ -127,7 +126,7 @@ namespace   Stroika {
 #endif
             private:
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                SharedByValueRepType_   fAccessor_;
+                _SharedByValueRepType   fAccessor_;
                 UpdatableIterable<T>*   fIterableEnvelope;
 #else
                 REP_SUB_TYPE& fRef_;

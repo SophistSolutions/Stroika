@@ -61,7 +61,7 @@ namespace   Stroika {
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 : fAccessor_ (it->_GetReadOnlyIterableIRepReference ())
 #else
-                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it->fRep_.cget ()))
+                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
 #endif
             {
                 RequireNotNull (it);
@@ -91,33 +91,33 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep) noexcept
 :
-            fRep_ (rep)
+            _fRep (rep)
             {
-                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from) noexcept
 :
-            fRep_ (from.fRep_)
+            _fRep (from._fRep)
             {
-                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (Iterable<T>&& from) noexcept
 :
-            fRep_ (std::move (from.fRep_))
+            _fRep (std::move (from._fRep))
             {
-                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
-                Require (from.fRep_ == nullptr);    // after move
+                Require (from._fRep == nullptr);    // after move
 #endif
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
 :
-            fRep_ (std::move (rep))
+            _fRep (std::move (rep))
             {
-                Require (fRep_.GetSharingState () != Memory::SharedByValue_State::eNull);
+                Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 Require (rep == nullptr);   // after move
 #endif
@@ -125,8 +125,8 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
-                RequireNotNull (rhs.fRep_.get ());
-                fRep_ = rhs.fRep_;
+                RequireNotNull (rhs._fRep.get ());
+                _fRep = rhs._fRep;
                 return *this;
             }
             template    <typename T>
@@ -137,13 +137,13 @@ namespace   Stroika {
             template    <typename T>
             inline  Memory::SharedByValue_State     Iterable<T>::_GetSharingState () const
             {
-                return fRep_.GetSharingState ();
+                return _fRep.GetSharingState ();
             }
             template    <typename T>
             inline  const typename Iterable<T>::_IRep&   Iterable<T>::_ConstGetRep () const
             {
-                EnsureNotNull (fRep_.get ());
-                return *fRep_;
+                EnsureNotNull (_fRep.get ());
+                return *_fRep;
             }
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
@@ -297,7 +297,7 @@ namespace   Stroika {
             template    <typename T>
             inline  typename Iterable<T>::_ReadOnlyIterableIRepReference   Iterable<T>::_GetReadOnlyIterableIRepReference () const
             {
-                return _ReadOnlyIterableIRepReference (fRep_);
+                return _ReadOnlyIterableIRepReference (_fRep);
             }
 
 

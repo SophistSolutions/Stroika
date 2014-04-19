@@ -41,6 +41,9 @@ namespace   Stroika {
             /**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  can be configured (at compile time) to use one or the other, but not both.
+             *
+             *  Note - main reasion Stroika SharedPtr<> faster is that we aren't using make_shared. It's possible
+             *  that might be a better strategy? -- LGP 2014-04-19
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
@@ -526,18 +529,18 @@ namespace   Stroika {
             private:
                 static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
-            private:
             protected:
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+                 *  However, protected because manipulation needed in some subclasses (rarely) - like UpdatableIteratable.
                  */
-                using   SharedByValueRepType_   =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
+                using   _SharedByValueRepType =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
 
             protected:
                 /**
                  *  EXPERIMENTAL -- LGP 2014-02-21
                  */
-                using   _ReadOnlyIterableIRepReference = typename SharedByValueRepType_::ReadOnlyReference;
+                using   _ReadOnlyIterableIRepReference = typename _SharedByValueRepType::ReadOnlyReference;
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
@@ -555,9 +558,11 @@ namespace   Stroika {
                 template <typename REP_SUB_TYPE = _IRep>
                 class   _SafeReadRepAccessor;
 
-            private:
             protected:
-                SharedByValueRepType_    fRep_;
+                /**
+                 *  Rarely access in subclasses, but its occasionally needed, like in UpdatableIterator<T>
+                 */
+                _SharedByValueRepType    _fRep;
             };
 
 
