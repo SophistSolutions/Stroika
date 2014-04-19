@@ -1,7 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-
 #ifndef _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 #define _Stroika_Foundation_Containers_Private_IteratorImplHelper_h_
 
