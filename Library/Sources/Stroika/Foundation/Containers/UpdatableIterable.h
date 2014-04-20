@@ -102,6 +102,7 @@ namespace   Stroika {
             protected:
                 using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
+            protected:
                 using _SharedByValueRepType = typename Iterable<T>::_SharedByValueRepType;
 
             public:
