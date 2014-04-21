@@ -204,6 +204,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
+                nonvirtual  SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS> && src);
 
             public:
                 /**

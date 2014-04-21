@@ -95,7 +95,7 @@ namespace   Stroika {
                 // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
                 //
                 // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
-                fIterableEnvelope->_fRep = fAccessor_;
+                fIterableEnvelope->_fRep = move (fAccessor_);
 #endif
             }
             template    <typename T>

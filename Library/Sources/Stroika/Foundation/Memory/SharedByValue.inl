@@ -148,11 +148,22 @@ namespace   Stroika {
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& src)
+            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& rhs)
             {
-                if (this != &src) {
-                    fCopier_ = src.fCopier_;
-                    shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (src.fSharedImpl_));
+                if (this != &rhs) {
+                    fCopier_ = rhs.fCopier_;
+                    shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (rhs.fSharedImpl_));
+                }
+                return *this;
+            }
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS> && rhs)
+            {
+                if (this != &rhs) {
+                    fCopier_ = rhs.fCopier_;
+                    // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
+                    // if its a temporary, you cannot have mulitple peopel referring to me
+                    shared_impl_copier_type::Store (&fSharedImpl_, rhs.fSharedImpl_);
                 }
                 return *this;
             }
