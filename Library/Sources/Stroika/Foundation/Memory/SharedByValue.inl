@@ -150,7 +150,9 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& rhs)
             {
-                if (this != &rhs) {
+                // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
+                // and we can avoid the (common) and costly memory barrier
+                if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) {
                     fCopier_ = rhs.fCopier_;
                     shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (rhs.fSharedImpl_));
                 }
@@ -159,7 +161,9 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (SharedByValue<TRAITS> && rhs)
             {
-                if (this != &rhs) {
+                // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
+                // and we can avoid the (common) and costly memory barrier
+                if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) {
                     fCopier_ = rhs.fCopier_;
                     // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
                     // if its a temporary, you cannot have mulitple peopel referring to me
