@@ -364,13 +364,6 @@ namespace   Stroika {
                  */
                 using   _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
 
-#if 0
-            protected:
-                /**
-                 */
-                using   _SafeReadWriteRepAccessor = Iterable<Character>::_SafeReadWriteRepAccessor<_IRep>;
-#endif
-
             protected:
                 /**
                  * \req rep MUST be not-null
