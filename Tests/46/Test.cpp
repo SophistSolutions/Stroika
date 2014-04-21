@@ -961,7 +961,7 @@ namespace   {
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-            15000,
+            14600,
             .5,
             &failedTests
         );
@@ -970,7 +970,7 @@ namespace   {
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
-            15000,
+            14600,
             .4,
             &failedTests
         );
@@ -980,7 +980,7 @@ namespace   {
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
-            22000,
+            22950,
             .9,
             &failedTests
         );
@@ -999,7 +999,7 @@ namespace   {
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-            40000,
+            38700,
             0.6,
             &failedTests
         );
@@ -1007,7 +1007,7 @@ namespace   {
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
-            50000,
+            35600,
             0.8,
             &failedTests
         );
@@ -1015,31 +1015,31 @@ namespace   {
             L"Simple String append test (+='string object') 10x",
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
-            1250000,
-            4.6,
+            1210000,
+            4.8,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
-            1300000,
-            4.3,
+            1270000,
+            4.4,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
-            270000,
-            10.2,
+            267000,
+            10.0,
             &failedTests
         );
         Tester (
             L"String a + b",
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
-            2000000,
+            1990000,
             2.3,
             &failedTests
         );
@@ -1048,8 +1048,8 @@ namespace   {
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-            5438 ,
-            1.6,
+            5400 ,
+            1.5,
             &failedTests
         );
 #endif
@@ -1057,8 +1057,8 @@ namespace   {
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
-            3100000,
-            2.0,
+            3060000,
+            2.1,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1066,7 +1066,7 @@ namespace   {
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
-        180000,
+        184000,
         3.7,
         &failedTests
         );
@@ -1076,7 +1076,7 @@ namespace   {
             L"wstringstream versus StringBuilder",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
-        175000 ,
+        181000 ,
         .14,
         &failedTests
         );
@@ -1085,7 +1085,7 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            39000,
+            37700,
             1.2,
             &failedTests
         );
@@ -1094,48 +1094,48 @@ namespace   {
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
-            135365,
-            6.1,
+            136000,
+            11.0,
             &failedTests
         );
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
-            10000,
-            0.8,
+            9760,
+            1.1,
             &failedTests
         );
         Tester (
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
-            135000,
-            5.6,
+            136000,
+            11.0,
             &failedTests
         );
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
-            8712,
-            .9,
+            9310,
+            1.2,
             &failedTests
         );
         Tester (
             L"Collection<int> basics",
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
-        94862,
-        5.9,
+        95700,
+        9.5,
         &failedTests
         );
         Tester (
             L"Collection<string> basics",
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
-        8712,
-        0.8,
+        9100,
+        1.1,
         &failedTests
         );
 #endif
@@ -1143,7 +1143,7 @@ namespace   {
             L"String Chracters::Format ()",
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
-            1349818,
+            1390000,
             1.4,
             &failedTests
         );
@@ -1151,7 +1151,7 @@ namespace   {
             L"BLOB versus vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
-            6000,
+            6440,
             0.25,
             &failedTests
         );
