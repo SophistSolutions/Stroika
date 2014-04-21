@@ -19,7 +19,7 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     ****************************** CriticalSectionRecursiveMutex ****************************
+                     ************************ CriticalSectionRecursiveMutex *************************
                      ********************************************************************************
                      */
                     inline  CriticalSectionRecursiveMutex::CriticalSectionRecursiveMutex ()
