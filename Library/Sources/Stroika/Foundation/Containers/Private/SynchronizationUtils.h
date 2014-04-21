@@ -27,19 +27,27 @@
 
 
 
-#define qContainersPrivateSyncrhonizationPolicy_StdMutex_   1
+#define qContainersPrivateSyncrhonizationPolicy_StdMutex_                   1
 
 //http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
-#define qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_  1
+#define qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_              2
+
+#define qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_    3
 
 
 #ifndef qContainersPrivateSyncrhonizationPolicy_
+#if     qPlatform_Windows
+#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
+#else
 #define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_StdMutex_
+#endif
 #endif
 
 
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
 #include    <mutex>
+#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
+#include    "../../Execution/Platform/Windows/CriticalSectionMutex.h"
 #endif
 
 
@@ -56,6 +64,11 @@ namespace   Stroika {
                     // simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
                     // if its helpful for some containers
                     mutable std::mutex  fMutex_;
+#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
+                    // NB: using std::mutex instead of std::recursive_mutex for performance reasons and because our use is
+                    // simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
+                    // if its helpful for some containers
+                    mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () = default;
                     ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
@@ -68,6 +81,14 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         std::lock_guard<std::mutex> lg (CRLDS.fMutex_);\
+        {
+#define CONTAINER_LOCK_HELPER_END()\
+}\
+}
+#elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
+#define CONTAINER_LOCK_HELPER_START(CRLDS)\
+    {\
+        std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
