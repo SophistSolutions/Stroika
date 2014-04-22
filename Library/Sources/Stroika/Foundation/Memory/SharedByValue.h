@@ -205,6 +205,8 @@ namespace   Stroika {
             public:
                 nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
                 nonvirtual  SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS> && src);
+                nonvirtual  SharedByValue<TRAITS>& operator= (const shared_ptr_type& from);
+                nonvirtual  SharedByValue<TRAITS>& operator= (shared_ptr_type && from);
 
             public:
                 /**
@@ -263,6 +265,11 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  bool operator!= (const SharedByValue<TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  element_copier_type GetCopier () const;
 
             public:
                 /**

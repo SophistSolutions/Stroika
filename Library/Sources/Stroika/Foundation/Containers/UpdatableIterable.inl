@@ -141,6 +141,12 @@ namespace   Stroika {
                 return fRef_;
 #endif
             }
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  void    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
+            {
+                fAccessor_ = sp;
+            }
 
 
 

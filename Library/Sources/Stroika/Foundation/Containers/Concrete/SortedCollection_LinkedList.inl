@@ -34,7 +34,7 @@ namespace   Stroika {
                     using   inherited   =   typename    SortedCollection<T, TRAITS>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -51,21 +51,22 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t              GetLength () const override;
-                    virtual bool                IsEmpty () const override;
-                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t                      GetLength () const override;
+                    virtual bool                        IsEmpty () const override;
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Collection<T>::_IRep overrides
                 public:
-                    virtual void    Add (T item) override;
-                    virtual void    Update (const Iterator<T>& i, T newValue) override;
-                    virtual void    Remove (const Iterator<T>& i) override;
-                    virtual void    RemoveAll () override;
+                    virtual typename Collection<T>::_SharedPtrIRep  CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual void                                    Add (T item) override;
+                    virtual void                                    Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                                    Remove (const Iterator<T>& i) override;
+                    virtual void                                    RemoveAll () override;
 #if     qDebug
-                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                     // SortedCollection<T>::_IRep overrides
@@ -99,11 +100,11 @@ namespace   Stroika {
                     RequireNotNull (from);
                 }
                 template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename SortedCollection_LinkedList<T, TRAITS>::Rep_::_IterableSharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -188,6 +189,22 @@ namespace   Stroika {
                         return fData_.Lookup (item) != nullptr;
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
+                typename Collection<T>::_SharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                {
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->RemoveAll ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    else {
+                        return _SharedPtrIRep (new Rep_ ());
+                    }
                 }
                 template    <typename T, typename TRAITS>
                 void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Add (T item)

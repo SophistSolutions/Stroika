@@ -136,7 +136,10 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Collection<T>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                if (tmp._ConstGetRep ().GetLength () != 0) {
+                    tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+                }
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>

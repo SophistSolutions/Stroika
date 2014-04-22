@@ -273,13 +273,17 @@ namespace   Stroika {
             public:
                 virtual ~_IRep () = default;
 
+            protected:
+                using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
+
             public:
-                virtual void    Add (T item)                                                            =   0;
-                virtual void    Update (const Iterator<T>& i, T newValue)                               =   0;
-                virtual void    Remove (const Iterator<T>& i)                                           =   0;
-                virtual void    RemoveAll ()                                                            =   0;
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
+                virtual void                Add (T item)                                                            =   0;
+                virtual void                Update (const Iterator<T>& i, T newValue)                               =   0;
+                virtual void                Remove (const Iterator<T>& i)                                           =   0;
+                virtual void                RemoveAll ()                                                            =   0;
 #if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
             };
 

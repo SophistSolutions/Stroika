@@ -45,6 +45,7 @@ namespace CommonTests {
 
                     VerifyTestResult(s.GetLength() == kTestSize);
                     s.RemoveAll ();
+                    VerifyTestResult (s.size () == 0);
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T(i));
                     }

@@ -172,6 +172,28 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const shared_ptr_type& from)
+            {
+                // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
+                // and we can avoid the (common) and costly memory barrier
+                if (fSharedImpl_.get () != from.get ()) {
+                    shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (from));
+                }
+                return *this;
+            }
+            template    <typename TRAITS>
+            inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (shared_ptr_type && from)
+            {
+                // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
+                // and we can avoid the (common) and costly memory barrier
+                if (fSharedImpl_.get () != from.get ()) {
+                    // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
+                    // if its a temporary, you cannot have mulitple peopel referring to me
+                    shared_impl_copier_type::Store (&fSharedImpl_, from);
+                }
+                return *this;
+            }
+            template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::get () const
             {
                 return fSharedImpl_.get ();
@@ -237,6 +259,11 @@ namespace   Stroika {
             inline  bool    SharedByValue<TRAITS>::operator!= (const SharedByValue<TRAITS>& rhs) const
             {
                 return fSharedImpl_ != rhs.fSharedImpl_;
+            }
+            template    <typename TRAITS>
+            inline  typename SharedByValue<TRAITS>::element_copier_type SharedByValue<TRAITS>::GetCopier () const
+            {
+                return fCopier_;
             }
             template    <typename TRAITS>
             inline  SharedByValue_State    SharedByValue<TRAITS>::GetSharingState () const

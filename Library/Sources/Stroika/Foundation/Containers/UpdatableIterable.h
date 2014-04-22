@@ -178,6 +178,9 @@ namespace   Stroika {
 
             public:
                 nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
+
+            public:
+                nonvirtual  void    _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
             };
 
 

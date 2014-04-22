@@ -35,6 +35,10 @@ History
 	<li>Tons of Iterable/Container thread safety fixes. These currently have a good deal of
 		overhead (performance), and we need to fix that. But better they be correct, and then fast.
 		Still alot more work todo just DOCUMENTING the thread-safety issues.
+		And I did a ton to ameliorate/counter-act the performance overhead of the memory barriers.
+		Containers and strings are Slightly slower than with v2.0a21, but only slightly. 
+		And I've docuemented quite a few more things which I hope will further improve performance,
+		while retaining thread safety.
 	</li>
 	<li>SpinLock does yield</li>
 	<li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
