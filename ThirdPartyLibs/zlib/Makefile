@@ -11,8 +11,8 @@ EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
-#FETCHURL=http://zlib.net/$(BASENAME).tar.gz
-FETCHURL=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
+FETCHURL=http://zlib.net/$(BASENAME).tar.gz
+#FETCHURL=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
 
 UNAME := $(shell uname)
 
