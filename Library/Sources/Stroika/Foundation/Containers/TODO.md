@@ -1,6 +1,13 @@
 TODO (Foundation::Containers)
 
 
+	(o)		Consider migrating Private/Concrete (non-patchable) data strucutres to new top-level Stroika module paralel
+			to Containers, called "DataStructures" or maybe ContainerDataStructures. These are all NON-thread-safe, and have
+			no patching.
+
+			These CAN then be used (maybe even with Move CTORs into and out of Stroika containers.) This may address some
+			perforamnce issues.
+
 	(o)		Get qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr working (value=true)
 
 	(o)		Either normalize the new UpdatableIterable code, or remove it. Its currently marked alpha
@@ -19,12 +26,12 @@ TODO (Foundation::Containers)
 			Do that BEFORE trying to incorporate SkipLists and other sterl stuff, as it will make doing
 			so easier.
 
-	(o)		Performance issue - Sequence<T>::RemoveAll() and or any other container RemoveAll() has 
-			the effect of FIRST cloning (if refcount != 1) and THEN clearing all the copied data. This is a waste.
-			If the refcount is non-zero, its more efficeint to just make a new instance of the appropriate type without copying the data.
+	(o)		Rep_::CloneEmpty () - is needlessly inefficient, for each concrete type, but only for the case of during iteration.
+			Not a biggie, but probably worth fixing. Issue is our existing code to do the move of running iterators
+			ALSO does copy of data.
 
 	(o)		IMPORTANT to do with Comparers - like EqualsComparer. We need to be able to pass in 
-			object (so they work with lambdas - with closers), and store no space when there is
+			object (so they work with lambdas - with closures), and store no space when there is
 			no space used (what we do now).
 
 			Implement with SFINAE
@@ -32,7 +39,7 @@ TODO (Foundation::Containers)
 	(o)		Should we have a SortedBijection<> template? If not - document why not. I think
 			yes.
 
-	(o)		Should Map<> have mehtods Domain() and Range () - like Bijection?
+	(o)		Should Mapping<> have mehtods Domain() and Range () - like Bijection?
 
 	(o)		Mapping<> really is more like math function, and Association<> is really more
 			like math mapping.
@@ -65,8 +72,7 @@ TODO (Foundation::Containers)
 
 			Iterable<T> AsIterable<T> ()
 
-	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
-			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
+	(o)		Fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 
 	(o)		Seriously consider implementing all of Container code using
 			http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
@@ -83,12 +89,6 @@ TODO (Foundation::Containers)
 				Do this. See design spec for CONCEPTS (rejected for C++11 but probably in C++next).
 				Maybe just do as DOCS. OR maybe real classes. Note - looking at the gcc 4.5.x implementation 
 				of libstdc++, it appears they already do something similar.
-
-	(o)		When this code matures (when we have most containers implemented to first draft level),
-			plan is to OBSOLETE/DELETE the Collection code. Make sure the appropraite APIs from
-			that code are migrated into the appropriate containers, and see if any additional
-			abstractions (like Iterable<T>) are appropriate to extract from Colleciton<T> to
-			make shared/common bases.
 
 	(o)		Suggestion from kdj (around 2013-01-15)
 			http://google-opensource.blogspot.com/2013/01/c-containers-that-save-memory-and-time.html 
