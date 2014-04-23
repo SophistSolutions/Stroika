@@ -130,7 +130,7 @@ namespace   Stroika {
                 bool  Collection_stdforward_list<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.empty ());
+                        return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

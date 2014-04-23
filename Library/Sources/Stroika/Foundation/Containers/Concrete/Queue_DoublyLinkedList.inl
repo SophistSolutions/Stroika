@@ -197,7 +197,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         T   item =  fData_.GetFirst ();
                         fData_.RemoveFirst ();
-                        return (item);
+                        return item;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
