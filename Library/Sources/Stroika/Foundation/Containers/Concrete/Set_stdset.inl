@@ -36,7 +36,8 @@ namespace   Stroika {
                     using   inherited   =   typename    Set<T, typename TRAITS::SetTraitsType>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -53,19 +54,19 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t              GetLength () const override;
-                    virtual bool                IsEmpty () const override;
-                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t                  GetLength () const override;
+                    virtual bool                    IsEmpty () const override;
+                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Set<T, TRAITS>::_IRep overrides
                 public:
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override;
                     virtual bool                Contains (T item) const override;
                     virtual Memory::Optional<T> Lookup (T item) const override;
-                    virtual void                RemoveAll () override;
                     virtual void                Add (T item) override;
                     virtual void                Remove (T item) override;
                     virtual void                Remove (const Iterator<T>& i) override;
@@ -95,11 +96,11 @@ namespace   Stroika {
                     RequireNotNull (from);
                 }
                 template    <typename T, typename TRAITS>
-                typename Set_stdset<T, TRAITS>::Rep_::_SharedPtrIRep  Set_stdset<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename Set_stdset<T, TRAITS>::Rep_::_IterableSharedPtrIRep  Set_stdset<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -152,6 +153,22 @@ namespace   Stroika {
                     return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
+                typename Set_stdset<T, TRAITS>::Rep_::_SharedPtrIRep  Set_stdset<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                {
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Traversal::IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.clear_WithPatching ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    else {
+                        return _SharedPtrIRep (new Rep_ ());
+                    }
+                }
+                template    <typename T, typename TRAITS>
                 bool    Set_stdset<T, TRAITS>::Rep_::Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
@@ -170,14 +187,6 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto    i = fData_.find (item);
                         return (i == fData_.end ()) ? Memory::Optional<T> () : Memory::Optional<T> (*i);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    Set_stdset<T, TRAITS>::Rep_::RemoveAll ()
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

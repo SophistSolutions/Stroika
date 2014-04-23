@@ -349,11 +349,14 @@ namespace   Stroika {
             public:
                 virtual ~_IRep () = default;
 
+            protected:
+                using   _SharedPtrIRep = typename Set<T, TRAITS>::_SharedPtrIRep;
+
             public:
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;
                 virtual bool                Contains (T item) const                                                 =   0;
                 virtual Memory::Optional<T> Lookup (T item) const                                                   =   0;
-                virtual void                RemoveAll ()                                                            =   0;
                 virtual void                Add (T item)                                                            =   0;
                 virtual void                Remove (T item)                                                         =   0;
                 virtual void                Remove (const Iterator<T>& i)                                           =   0;
