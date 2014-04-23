@@ -82,7 +82,10 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Stack<T>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                if (not tmp._ConstGetRep ().IsEmpty ()) {
+                    tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+                }
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>

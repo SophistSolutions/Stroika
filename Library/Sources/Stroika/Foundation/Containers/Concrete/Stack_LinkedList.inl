@@ -36,7 +36,8 @@ namespace   Stroika {
                     using   inherited   =   typename    Stack<T>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -53,19 +54,19 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep    Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>       MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t            GetLength () const override;
-                    virtual bool              IsEmpty () const override;
-                    virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>       FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterator<T>                 MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t                      GetLength () const override;
+                    virtual bool                        IsEmpty () const override;
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Stack<T>::_IRep overrides
                 public:
-                    virtual void    Push (T item) override;
-                    virtual T       Pop () override;
-                    virtual T       Top () const override;
-                    virtual void    RemoveAll () override;
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual void                Push (T item) override;
+                    virtual T                   Pop () override;
+                    virtual T                   Top () const override;
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList<T, Private::ContainerRepLockDataSupport_>;
@@ -89,11 +90,11 @@ namespace   Stroika {
                     RequireNotNull (from);
                 }
                 template    <typename T>
-                typename Stack_LinkedList<T>::Rep_::_SharedPtrIRep  Stack_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename Stack_LinkedList<T>::Rep_::_IterableSharedPtrIRep  Stack_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -165,12 +166,20 @@ namespace   Stroika {
 #endif
                 }
                 template    <typename T>
-                void    Stack_LinkedList<T>::Rep_::RemoveAll ()
+                typename Stack_LinkedList<T>::Rep_::_SharedPtrIRep  Stack_LinkedList<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.RemoveAll ();
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Traversal::IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.RemoveAll ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    else {
+                        return _SharedPtrIRep (new Rep_ ());
+                    }
                 }
                 template    <typename T>
                 void    Stack_LinkedList<T>::Rep_::Push (T item)

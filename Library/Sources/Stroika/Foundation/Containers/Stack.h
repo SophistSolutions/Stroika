@@ -189,6 +189,9 @@ namespace   Stroika {
             };
 
 
+            using   Traversal::IteratorOwnerID;
+
+
             /**
              *  \brief  Implementation detail for Stack<T> implementors.
              *
@@ -203,11 +206,14 @@ namespace   Stroika {
             public:
                 virtual ~_IRep () = default;
 
+            protected:
+                using   _SharedPtrIRep = typename Stack<T>::_SharedPtrIRep;
+
             public:
-                virtual void                Push (T item)                           =   0;
-                virtual T                   Pop ()                                  =   0;
-                virtual T                   Top () const                            =   0;
-                virtual void                RemoveAll ()                            =   0;
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const  =   0;
+                virtual void                Push (T item)                                           =   0;
+                virtual T                   Pop ()                                                  =   0;
+                virtual T                   Top () const                                            =   0;
             };
 
 
