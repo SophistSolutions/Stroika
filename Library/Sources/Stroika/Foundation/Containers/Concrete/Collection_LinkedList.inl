@@ -67,7 +67,6 @@ namespace   Stroika {
                     virtual void                Add (T item) override;
                     virtual void                Update (const Iterator<T>& i, T newValue) override;
                     virtual void                Remove (const Iterator<T>& i) override;
-                    virtual void                RemoveAll () override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
@@ -176,8 +175,8 @@ namespace   Stroika {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
-                            r->RemoveAll ();
+                            auto r = IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.RemoveAll ();
                             return r;
                         }
                         CONTAINER_LOCK_HELPER_END ();
@@ -213,14 +212,6 @@ namespace   Stroika {
                     auto      mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAt (mir.fIterator);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                void    Collection_LinkedList<T>::Rep_::RemoveAll ()
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
