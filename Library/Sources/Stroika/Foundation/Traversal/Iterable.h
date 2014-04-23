@@ -281,7 +281,7 @@ namespace   Stroika {
                  *  at the time of move.
                  */
                 nonvirtual  Iterable<T>&    operator= (const Iterable<T>& rhs);
-                nonvirtual  Iterable<T>&    operator= (Iterable<T> && rhs) noexcept;
+                nonvirtual  Iterable<T>&    operator= (Iterable<T> && rhs);
 
             public:
                 /**
