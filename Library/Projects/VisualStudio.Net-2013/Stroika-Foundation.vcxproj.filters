@@ -687,6 +687,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1599,6 +1602,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2426,6 +2432,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
 </Project>
