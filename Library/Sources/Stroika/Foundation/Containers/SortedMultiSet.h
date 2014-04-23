@@ -56,9 +56,9 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = SortedMultiSet_DefaultTraits<T>>
-            class   SortedMultiSet : public MultiSet<T, TRAITS> {
+            class   SortedMultiSet : public MultiSet<T, typename TRAITS::MultisetTraitsType> {
             private:
-                using   inherited   =   MultiSet<T, TRAITS>;
+                using   inherited   =   MultiSet<T, typename TRAITS::MultisetTraitsType>;
 
             public:
                 /**
@@ -118,7 +118,7 @@ namespace   Stroika {
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T, typename TRAITS>
-            class   SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
+            class   SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, typename TRAITS::MultisetTraitsType>::_IRep {
             };
 
 

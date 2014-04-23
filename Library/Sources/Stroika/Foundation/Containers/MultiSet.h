@@ -73,6 +73,12 @@ namespace   Stroika {
                 using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+
+                /**
+                 *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
+                 *  underlying Mapping's TRAITS objects.
+                 */
+                using   MultisetTraitsType               =    MultiSet_DefaultTraits<T, EQUALS_COMPARER>;
             };
 
 
@@ -346,22 +352,22 @@ namespace   Stroika {
                 _IRep () = default;
 
             public:
-                virtual bool        Equals (const _IRep& rhs) const                                         =   0;
-                virtual bool        Contains (T item) const                                                 =   0;
-                virtual void        RemoveAll ()                                                            =   0;
-                virtual void        Add (T item, size_t count)                                              =   0;
-                virtual void        Remove (T item, size_t count)                                           =   0;
-                virtual void        Remove (const Iterator<MultiSetEntry<T>>& i)                            =   0;
-                virtual void        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)      =   0;
-                virtual size_t      OccurrencesOf (T item) const                                            =   0;
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
+                virtual bool                Equals (const _IRep& rhs) const                                         =   0;
+                virtual bool                Contains (T item) const                                                 =   0;
+                virtual void                Add (T item, size_t count)                                              =   0;
+                virtual void                Remove (T item, size_t count)                                           =   0;
+                virtual void                Remove (const Iterator<MultiSetEntry<T>>& i)                            =   0;
+                virtual void                UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)      =   0;
+                virtual size_t              OccurrencesOf (T item) const                                            =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
-                virtual Iterable<T> Elements (const _SharedPtrIRep& rep) const                              =   0;
+                virtual Iterable<T>         Elements (const _SharedPtrIRep& rep) const                              =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
-                virtual Iterable<T> UniqueElements (const _SharedPtrIRep& rep) const                        =   0;
+                virtual Iterable<T>         UniqueElements (const _SharedPtrIRep& rep) const                        =   0;
 #if     qDebug
-                virtual void        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
 
                 /*

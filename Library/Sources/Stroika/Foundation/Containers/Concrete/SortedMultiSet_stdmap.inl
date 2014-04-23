@@ -37,7 +37,9 @@ namespace   Stroika {
                     using   inherited   =   typename    SortedMultiSet<T, TRAITS>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep;
+                    using   MultiSetType = MultiSet<T, typename TRAITS::MultisetTraitsType>;
+                    using   _IterableSharedPtrIRep = typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep;
+                    using   _MultisetSharedPtrIRep = typename MultiSetType::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -54,7 +56,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual size_t                      GetLength () const override;
                     virtual bool                        IsEmpty () const override;
                     virtual Iterator<MultiSetEntry<T>>  MakeIterator (IteratorOwnerID suggestedOwner) const override;
@@ -63,16 +65,16 @@ namespace   Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool                        Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override;
+                    virtual _MultisetSharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual bool                        Equals (const typename MultiSetType::_IRep& rhs) const override;
                     virtual bool                        Contains (T item) const override;
-                    virtual void                        RemoveAll () override;
                     virtual void                        Add (T item, size_t count) override;
                     virtual void                        Remove (T item, size_t count) override;
                     virtual void                        Remove (const Iterator<MultiSetEntry<T>>& i) override;
                     virtual void                        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) override;
                     virtual size_t                      OccurrencesOf (T item) const override;
-                    virtual Iterable<T>                 Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
-                    virtual Iterable<T>                 UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
+                    virtual Iterable<T>                 Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
+                    virtual Iterable<T>                 UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
 #if     qDebug
                     virtual void                        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
@@ -140,7 +142,23 @@ namespace   Stroika {
                     return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const
+                typename SortedMultiSet_stdmap<T, TRAITS>::Rep_::_MultisetSharedPtrIRep  SortedMultiSet_stdmap<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                {
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Traversal::IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.clear_WithPatching ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    else {
+                        return _MultisetSharedPtrIRep (new Rep_ ());
+                    }
+                }
+                template    <typename T, typename TRAITS>
+                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Equals (const typename MultiSetType::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
@@ -154,11 +172,11 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                typename SortedMultiSet_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename SortedMultiSet_stdmap<T, TRAITS>::Rep_::_IterableSharedPtrIRep    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -211,14 +229,6 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::RemoveAll ()
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.clear_WithPatching ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
                 void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)
                 {
                     const typename Iterator<MultiSetEntry<T>>::IRep&    ir  =   i.GetRep ();
@@ -249,12 +259,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const
+                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Elements (const typename MultiSetType::_SharedPtrIRep& rep) const
                 {
                     return this->_Elements_Reference_Implementation (rep);
                 }
                 template    <typename T, typename TRAITS>
-                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const
+                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const
                 {
                     return this->_UniqueElements_Reference_Implementation (rep);
                 }
