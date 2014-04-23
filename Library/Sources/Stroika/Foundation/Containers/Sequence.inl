@@ -33,6 +33,12 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
+            inline  Sequence<T>::Sequence (Sequence<T>&& s)
+                : inherited (static_cast<inherited&&> (s))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename T>
             inline  Sequence<T>::Sequence (const initializer_list<T>& s)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {

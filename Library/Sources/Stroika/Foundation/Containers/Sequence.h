@@ -218,6 +218,7 @@ namespace   Stroika {
                  */
                 Sequence ();
                 Sequence (const Sequence<T>& s);
+                Sequence (Sequence<T>&& s);
                 Sequence (const initializer_list<T>& s);
                 Sequence (const vector<T>& s);
                 template <typename CONTAINER_OF_T>
