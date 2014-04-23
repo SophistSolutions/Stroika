@@ -1016,7 +1016,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1210000,
-            4.4,
+            4.2,
             &failedTests
         );
         Tester (
@@ -1024,7 +1024,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1270000,
-            4.1,
+            3.8,
             &failedTests
         );
         Tester (
@@ -1032,7 +1032,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             267000,
-            9.9,
+            9.1,
             &failedTests
         );
         Tester (
@@ -1040,7 +1040,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             1990000,
-            2.5,
+            2.4,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1085,7 +1085,7 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            37700,
+            38200,
             1.2,
             &failedTests
         );
@@ -1127,7 +1127,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         95700,
-        7.2,
+        7.3,
         &failedTests
         );
         Tester (
