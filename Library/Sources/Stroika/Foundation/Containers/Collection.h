@@ -109,7 +109,7 @@ namespace   Stroika {
             public:
                 Collection ();
                 Collection (const Collection<T>& src);
-                Collection (const std::initializer_list<T>& src);
+                Collection (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Collection (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -117,6 +117,7 @@ namespace   Stroika {
 
             protected:
                 explicit Collection (const _SharedPtrIRep& rep);
+                explicit Collection (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
@@ -124,6 +125,15 @@ namespace   Stroika {
 #endif
             public:
                 nonvirtual  Collection<T>& operator= (const Collection<T>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Collection<T>& operator= (Collection<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Collection<T>& operator= (Collection<T> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -236,8 +246,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

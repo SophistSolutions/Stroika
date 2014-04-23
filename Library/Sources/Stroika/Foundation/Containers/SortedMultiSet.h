@@ -85,11 +85,21 @@ namespace   Stroika {
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-            public:
-                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;
-
             protected:
                 explicit SortedMultiSet (const _SharedPtrIRep& rep);
+                explicit SortedMultiSet (_SharedPtrIRep&& rep);
+
+            public:
+                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**

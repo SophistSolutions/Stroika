@@ -425,8 +425,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping ()
-                : inherited (static_cast < const inherited&& > (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -32,16 +32,16 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
+                : inherited (move (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
+                : inherited (move (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -50,7 +50,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -59,7 +59,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (start, end);
@@ -67,7 +67,14 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            {
+                RequireNotNull (rep);
+                _AssertRepValidType ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (_SharedPtrIRep&& rep)
+                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();

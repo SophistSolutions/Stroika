@@ -189,6 +189,7 @@ namespace   Stroika {
 
             protected:
                 explicit Mapping (const _SharedPtrIRep& rep);
+                explicit Mapping (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
@@ -196,6 +197,15 @@ namespace   Stroika {
 #endif
             public:
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) =   default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -377,8 +387,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

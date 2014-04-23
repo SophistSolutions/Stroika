@@ -23,7 +23,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Stack<T>::Stack ()
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -36,7 +36,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Stack<T>::Stack (const CONTAINER_OF_T& src)
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
@@ -44,7 +44,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Stack<T>::Stack (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            {
+                _AssertRepValidType ();
+                RequireNotNull (rep);
+            }
+            template    <typename T>
+            inline  Stack<T>::Stack (_SharedPtrIRep&& rep)
+                : inherited (move (rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
@@ -52,7 +59,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast < const inherited&& > (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();

@@ -134,6 +134,15 @@ namespace   Stroika {
                  *  \brief  Iterable are safely copyable (by value).
                  */
                 nonvirtual  UpdatableIterable<T>&    operator= (const UpdatableIterable<T>& rhs);
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  UpdatableIterable<T>& operator= (UpdatableIterable<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  UpdatableIterable<T>&    operator= (UpdatableIterable<T> && rhs);
+#endif
 
             protected:
                 /**

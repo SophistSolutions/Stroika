@@ -359,12 +359,18 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  MultiSet<T, TRAITS>::MultiSet (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<T>& s)
+            inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep)
+                : inherited (move (rep))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& s)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -372,8 +378,8 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const std::initializer_list<MultiSetEntry<T>>& s)
-                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<MultiSetEntry<T>>& s)
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (s);
@@ -381,7 +387,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
-                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (start, end);
@@ -389,7 +395,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end)
-                : inherited (Concrete::MultiSet_Factory<T, TRAITS>::mk ())
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (start, end);
@@ -418,7 +424,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             size_t  MultiSet<T, TRAITS>::TotalOccurrences () const
             {
-                size_t sum = 0;
+                size_t  sum = 0;
                 for (MultiSetEntry<T> i : *this) {
                     sum += i.fCount;
                 }

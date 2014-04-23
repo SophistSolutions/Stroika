@@ -137,11 +137,21 @@ namespace   Stroika {
 
             protected:
                 explicit SortedCollection (const _SharedPtrIRep& rep);
+                explicit SortedCollection (_SharedPtrIRep&& rep);
 
             public:
                 /**
                  */
                 nonvirtual  SortedCollection<T, TRAITS>& operator= (const SortedCollection<T, TRAITS>& rhs);
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  SortedCollection<T, TRAITS>& operator= (SortedCollection<T, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  SortedCollection<T, TRAITS>& operator= (SortedCollection<T, TRAITS> && rhs) = default;
+#endif
 
             protected:
                 nonvirtual  void    _AssertRepValidType () const;

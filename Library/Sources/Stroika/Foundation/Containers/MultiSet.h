@@ -174,6 +174,7 @@ namespace   Stroika {
 
             protected:
                 explicit MultiSet (const _SharedPtrIRep& rep);
+                explicit MultiSet (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
@@ -182,6 +183,15 @@ namespace   Stroika {
 
             public:
                 nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  MultiSet& operator= (MultiSet && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  MultiSet& operator= (MultiSet && rhs) = default;
+#endif
 
             public:
                 /**
@@ -310,8 +320,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

@@ -27,7 +27,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Collection<T>::Collection ()
-                : inherited (Concrete::Collection_Factory<T>::mk ())
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -39,14 +39,21 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Collection<T>::Collection (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Collection<T>::Collection (const std::initializer_list<T>& src)
-                : inherited (Concrete::Collection_Factory<T>::mk ())
+            inline  Collection<T>::Collection (_SharedPtrIRep&& rep)
+                : inherited (move (rep))
+            {
+                RequireNotNull (rep);
+                _AssertRepValidType ();
+            }
+            template    <typename T>
+            inline  Collection<T>::Collection (const initializer_list<T>& src)
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -55,7 +62,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
-                : inherited (Concrete::Collection_Factory<T>::mk ())
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);

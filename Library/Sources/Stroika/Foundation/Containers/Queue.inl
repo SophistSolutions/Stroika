@@ -23,7 +23,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Queue<T>::Queue ()
-                : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -34,8 +34,8 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Queue<T>::Queue (const std::initializer_list<T>& q)
-                : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T>::mk ()))
+            inline  Queue<T>::Queue (const initializer_list<T>& q)
+                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAllToTail (q);
@@ -44,7 +44,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Queue<T>::Queue (const CONTAINER_OF_T& src)
-                : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
@@ -53,7 +53,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            {
+                _AssertRepValidType ();
+                RequireNotNull (rep);
+            }
+            template    <typename T>
+            inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
+                : inherited (move (rep))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
@@ -121,16 +128,18 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Queue<T>::AddAllToTail (const CONTAINER_OF_T& s)
             {
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
                 for (auto i : s) {
-                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail ( &i, &i + 1);
+                    tmp._GetWriteableRep ().AddTail ( &i, &i + 1);
                 }
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline void Queue<T>::AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
                 for (auto i = start; i != end; ++i) {
-                    _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (&*i, (&*i) + 1);
+                    tmp._GetWriteableRep ().AddTail (&*i, (&*i) + 1);
                 }
             }
             template    <typename T>

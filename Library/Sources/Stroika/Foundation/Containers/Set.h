@@ -149,6 +149,7 @@ namespace   Stroika {
 
             protected:
                 explicit Set (const _SharedPtrIRep& rep);
+                explicit Set (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
@@ -157,6 +158,15 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -312,8 +322,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

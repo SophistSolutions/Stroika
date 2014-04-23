@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet ()
-                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
@@ -33,14 +33,21 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            {
+                RequireNotNull (rep);
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>::SortedSet (_SharedPtrIRep&& rep)
+                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -49,7 +56,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
-                : inherited (static_cast < const inherited&& > (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);

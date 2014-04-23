@@ -227,6 +227,7 @@ namespace   Stroika {
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);
+                explicit Sequence (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
@@ -237,6 +238,15 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Sequence<T>& operator= (Sequence<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Sequence<T>& operator= (Sequence<T> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -487,8 +497,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

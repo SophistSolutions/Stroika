@@ -100,11 +100,21 @@ namespace   Stroika {
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-            public:
-                nonvirtual  SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs) = default;
-
             protected:
                 explicit SortedSet (const _SharedPtrIRep& rep);
+                explicit SortedSet (_SharedPtrIRep&& rep);
+
+            public:
+                nonvirtual  SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  SortedSet<T, TRAITS>& operator= (SortedSet<T, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  SortedSet<T, TRAITS>& operator= (SortedSet<T, TRAITS> && rhs) = default;
+#endif
 
             protected:
                 nonvirtual  void    _AssertRepValidType () const;

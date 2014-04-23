@@ -99,9 +99,19 @@ namespace   Stroika {
 
             protected:
                 explicit Stack (const _SharedPtrIRep& rep);
+                explicit Stack (_SharedPtrIRep&& rep);
 
             public:
                 nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Stack<T>& operator= (Stack<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Stack<T>& operator= (Stack<T> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -169,8 +179,8 @@ namespace   Stroika {
                     }
                     nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
                     {
-                        EnsureMember (fAccessor.get (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.get ());   // static cast for performance sake - dynamic cast in Ensure
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
                     }
                 };
 #else

@@ -21,26 +21,33 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedCollection<T, TRAITS>::SortedCollection ()
-                : inherited (static_cast < const inherited&& > (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedCollection<T, TRAITS>::SortedCollection (const SortedCollection<T, TRAITS>& src)
-                : inherited (static_cast < const inherited&& > (src))
+                : inherited (static_cast <const inherited&> (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedCollection<T, TRAITS>::SortedCollection (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedPtrIRep (rep))
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedCollection<T, TRAITS>::SortedCollection (const std::initializer_list<T>& src)
-                : inherited (static_cast<const inherited&> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
+            inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& rep)
+                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+            {
+                RequireNotNull (rep);
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  SortedCollection<T, TRAITS>::SortedCollection (const initializer_list<T>& src)
+                : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -49,7 +56,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertMember (&inherited::_ConstGetRep (), _IRep);

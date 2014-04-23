@@ -87,19 +87,29 @@ namespace   Stroika {
                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                 */
                 SortedAssociation ();
-                SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                SortedAssociation (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
-                SortedAssociation (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
+                SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
+                SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                explicit SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& cp);
+                explicit SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit SortedAssociation (const _SharedPtrIRep& rep);
+                explicit SortedAssociation (const _SharedPtrIRep& src);
+                explicit SortedAssociation (_SharedPtrIRep&& src);
 
             public:
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**
