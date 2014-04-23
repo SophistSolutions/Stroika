@@ -120,7 +120,10 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (0, this->GetLength ());
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                if (not tmp._ConstGetRep ().IsEmpty ()) {
+                    tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+                }
             }
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t i) const

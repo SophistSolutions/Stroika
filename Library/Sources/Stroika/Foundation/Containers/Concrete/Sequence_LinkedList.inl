@@ -30,7 +30,8 @@ namespace   Stroika {
                     using   inherited   =   typename    Sequence<T>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
+                    using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -47,24 +48,25 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t              GetLength () const override;
-                    virtual bool                IsEmpty () const override;
-                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t                  GetLength () const override;
+                    virtual bool                    IsEmpty () const override;
+                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // Sequence<T>::_IRep overrides
                 public:
-                    virtual T       GetAt (size_t i) const override;
-                    virtual void    SetAt (size_t i, const T& item) override;
-                    virtual size_t  IndexOf (const Iterator<T>& i) const override;
-                    virtual void    Remove (const Iterator<T>& i) override;
-                    virtual void    Update (const Iterator<T>& i, T newValue) override;
-                    virtual void    Insert (size_t at, const T* from, const T* to) override;
-                    virtual void    Remove (size_t from, size_t to) override;
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual T                   GetAt (size_t i) const override;
+                    virtual void                SetAt (size_t i, const T& item) override;
+                    virtual size_t              IndexOf (const Iterator<T>& i) const override;
+                    virtual void                Remove (const Iterator<T>& i) override;
+                    virtual void                Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                Insert (size_t at, const T* from, const T* to) override;
+                    virtual void                Remove (size_t from, size_t to) override;
 #if     qDebug
-                    virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 private:
@@ -89,11 +91,11 @@ namespace   Stroika {
                     RequireNotNull (from);
                 }
                 template    <typename T>
-                typename Iterable<T>::_SharedPtrIRep  Sequence_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename Sequence_LinkedList<T>::Rep_::_IterableSharedPtrIRep  Sequence_LinkedList<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -163,6 +165,22 @@ namespace   Stroika {
 #else
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
 #endif
+                }
+                template    <typename T>
+                typename Sequence_LinkedList<T>::Rep_::_SharedPtrIRep  Sequence_LinkedList<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                {
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Traversal::IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.RemoveAll ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    else {
+                        return _SharedPtrIRep (new Rep_ ());
+                    }
                 }
                 template    <typename T>
                 T    Sequence_LinkedList<T>::Rep_::GetAt (size_t i) const
