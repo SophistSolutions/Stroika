@@ -109,13 +109,13 @@ namespace   Stroika {
                 /**
                  *  \brief  Iterable are safely copyable (by value).
                  */
-                UpdatableIterable (const UpdatableIterable<T>& from) noexcept;
+                UpdatableIterable (const UpdatableIterable<T>& from);
 
             public:
                 /**
                  *  \brief  move CTOR - clears source
                  */
-                explicit UpdatableIterable (UpdatableIterable<T>&& from) noexcept;
+                explicit UpdatableIterable (UpdatableIterable<T>&& from);
 
             protected:
                 /**

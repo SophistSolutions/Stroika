@@ -140,6 +140,7 @@ namespace   Stroika {
                  */
                 Set ();
                 Set (const Set<T, TRAITS>& src);
+                Set (Set<T, TRAITS>&& src);
                 Set (const initializer_list<T>& src);
                 Set (const set<T>& src);
                 template <typename CONTAINER_OF_T>

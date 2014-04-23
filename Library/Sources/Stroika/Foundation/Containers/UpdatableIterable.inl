@@ -33,20 +33,20 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  UpdatableIterable<T>::UpdatableIterable (const UpdatableIterable<T>& from) noexcept
-:
-            inherited (from)
+            inline  UpdatableIterable<T>::UpdatableIterable (const UpdatableIterable<T>& from)
+                :
+                inherited (from)
 #if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
-            , fWriteMutex_ ()
+                , fWriteMutex_ ()
 #endif
             {
             }
             template    <typename T>
-            inline  UpdatableIterable<T>::UpdatableIterable (UpdatableIterable<T>&& from) noexcept
-:
-            inherited (std::move (from))
+            inline  UpdatableIterable<T>::UpdatableIterable (UpdatableIterable<T>&& from)
+                :
+                inherited (std::move (from))
 #if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
-            , fWriteMutex_ ()
+                , fWriteMutex_ ()
 #endif
             {
             }
