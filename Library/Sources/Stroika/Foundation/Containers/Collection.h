@@ -109,6 +109,7 @@ namespace   Stroika {
             public:
                 Collection ();
                 Collection (const Collection<T>& src);
+                Collection (Collection<T>&& src);
                 Collection (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
                 explicit Collection (const CONTAINER_OF_T& src);

@@ -27,13 +27,19 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Collection<T>::Collection ()
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const Collection<T>& src)
                 : inherited (static_cast<const inherited&> (src))
+            {
+                _AssertRepValidType ();
+            }
+            template    <typename T>
+            inline  Collection<T>::Collection (Collection<T>&& src)
+                : inherited (static_cast < inherited&& > (src))
             {
                 _AssertRepValidType ();
             }
@@ -46,14 +52,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Collection<T>::Collection (_SharedPtrIRep&& rep)
-                : inherited (move (rep))
+                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const initializer_list<T>& src)
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -62,7 +68,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
