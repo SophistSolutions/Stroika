@@ -171,7 +171,7 @@ namespace   Stroika {
 #endif
                 }
                 template    <typename T>
-                typename Deque_DoublyLinkedList<T>::Rep_::_SharedPtrIRep  Deque_DoublyLinkedList<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                typename Deque_DoublyLinkedList<T>::Rep_::_QueueSharedPtrIRep  Deque_DoublyLinkedList<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -183,7 +183,7 @@ namespace   Stroika {
                         CONTAINER_LOCK_HELPER_END ();
                     }
                     else {
-                        return _SharedPtrIRep (new Rep_ ());
+                        return _QueueSharedPtrIRep (new Rep_ ());
                     }
                 }
                 template    <typename T>
