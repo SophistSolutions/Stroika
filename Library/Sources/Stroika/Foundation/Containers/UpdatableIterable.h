@@ -141,7 +141,7 @@ namespace   Stroika {
                     return *this;
                 }
 #else
-                nonvirtual  UpdatableIterable<T>&    operator= (UpdatableIterable<T> && rhs);
+                nonvirtual  UpdatableIterable<T>&    operator= (UpdatableIterable<T> && rhs) = default;
 #endif
 
             protected:
