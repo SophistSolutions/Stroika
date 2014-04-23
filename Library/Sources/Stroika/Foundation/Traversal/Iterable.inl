@@ -130,7 +130,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T>&& rhs)
+            inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T> && rhs)
             {
                 RequireNotNull (rhs._fRep.get ());
                 _fRep = move (rhs._fRep);
