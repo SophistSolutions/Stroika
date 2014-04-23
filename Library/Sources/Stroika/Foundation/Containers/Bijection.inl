@@ -243,7 +243,10 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll ()
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
+                _SafeReadWriteRepAccessor<_IRep> tmp { this };
+                if (tmp._ConstGetRep ().GetLength () != 0) {
+                    tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+                }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename   TARGET_CONTAINER>
@@ -269,7 +272,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::clear ()
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveAll ();
+                RemoveAll ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>

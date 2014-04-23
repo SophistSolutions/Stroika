@@ -460,14 +460,17 @@ namespace   Stroika {
                 using   inherited   =   typename UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
             protected:
+                using   _SharedPtrIRep = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_SharedPtrIRep;
+
+            protected:
                 _IRep () = default;
 
             public:
                 virtual ~_IRep () = default;
 
             public:
+                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                      =   0;
                 virtual bool                    Equals (const _IRep& rhs) const                                             =   0;
-                virtual void                    RemoveAll ()                                                                =   0;
                 virtual  Iterable<DomainType>   Preimage () const                                                           =   0;
                 virtual  Iterable<RangeType>    Image () const                                                              =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
