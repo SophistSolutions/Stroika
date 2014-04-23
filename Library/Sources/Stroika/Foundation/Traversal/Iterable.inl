@@ -125,14 +125,14 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
-                RequireNotNull (rhs._fRep.get ());
+                RequireNotNull (rhs._fRep.cget ());
                 _fRep = rhs._fRep;
                 return *this;
             }
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T> && rhs)
             {
-                RequireNotNull (rhs._fRep.get ());
+                RequireNotNull (rhs._fRep.cget ());
                 _fRep = move (rhs._fRep);
                 return *this;
             }
@@ -149,7 +149,7 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename Iterable<T>::_IRep&   Iterable<T>::_ConstGetRep () const
             {
-                EnsureNotNull (_fRep.get ());
+                EnsureNotNull (_fRep.cget ());
                 return *_fRep;
             }
             template    <typename T>
@@ -299,7 +299,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             CONTAINER_OF_T    Iterable<T>::As () const
             {
-                return CONTAINER_OF_T (this->begin (), this->end ());
+                return CONTAINER_OF_T (begin (), end ());
             }
             template    <typename T>
             inline  typename Iterable<T>::_ReadOnlyIterableIRepReference   Iterable<T>::_GetReadOnlyIterableIRepReference () const
