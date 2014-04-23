@@ -114,6 +114,8 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
+
+            protected:
                 using   _BijectionSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:

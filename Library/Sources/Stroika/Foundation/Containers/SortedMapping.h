@@ -68,6 +68,8 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
+
+            protected:
                 using   _SortedMappingSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:

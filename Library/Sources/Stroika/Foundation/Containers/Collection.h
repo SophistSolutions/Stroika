@@ -99,6 +99,8 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
+
+            protected:
                 using   _CollectionSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:

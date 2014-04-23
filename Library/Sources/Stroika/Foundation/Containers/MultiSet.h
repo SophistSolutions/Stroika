@@ -155,6 +155,8 @@ namespace   Stroika {
             public:
 #endif
                 class   _IRep;
+
+            protected:
                 using   _MultisetSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
