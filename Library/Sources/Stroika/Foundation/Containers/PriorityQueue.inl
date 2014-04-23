@@ -8,9 +8,6 @@
 
 /*
  *
- *  TODO:
- *
- *      (o)         PriorityQueue<T> probably Iterable<T,PRIORITYI>.
  *
  */
 
