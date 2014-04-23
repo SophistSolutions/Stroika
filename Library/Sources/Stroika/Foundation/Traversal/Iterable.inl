@@ -74,8 +74,8 @@ namespace   Stroika {
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                EnsureMember (fAccessor_.get (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.get ());   // static cast for performance sake - dynamic cast in Ensure
+                EnsureMember (fAccessor_.cget (), REP_SUB_TYPE);
+                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.cget ());   // static cast for performance sake - dynamic cast in Ensure
 #else
                 EnsureMember (&fConstRef_, REP_SUB_TYPE);
                 return fConstRef_;

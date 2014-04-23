@@ -355,7 +355,7 @@ namespace   Stroika {
                 /**
                  *  \ensure result not null
                  */
-                nonvirtual  const element_type* get () const;
+                nonvirtual  const element_type* cget () const;
 
             public:
                 /**

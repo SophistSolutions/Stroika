@@ -358,7 +358,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type*     SharedByValue<TRAITS>::ReadOnlyReference::get () const
+            inline  const typename SharedByValue<TRAITS>::element_type*     SharedByValue<TRAITS>::ReadOnlyReference::cget () const
             {
                 EnsureNotNull (fSharedPtr_);
                 return fSharedPtr_.get ();
