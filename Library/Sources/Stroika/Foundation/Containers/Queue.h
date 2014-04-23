@@ -276,16 +276,19 @@ namespace   Stroika {
             protected:
                 _IRep () = default;
 
+            protected:
+                using   _SharedPtrIRep = typename Queue<T>::_SharedPtrIRep;
+
             public:
                 virtual ~_IRep () = default;
 
             public:
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual void                AddTail (T item)                                                        =   0;
                 virtual T                   RemoveHead ()                                                           =   0;
                 virtual Memory::Optional<T> RemoveHeadIf ()                                                         =   0;
                 virtual T                   Head () const                                                           =   0;
                 virtual Memory::Optional<T> HeadIf () const                                                         =   0;
-                virtual void                RemoveAll ()                                                            =   0;
 #if     qDebug
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
