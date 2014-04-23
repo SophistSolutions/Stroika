@@ -137,7 +137,7 @@ namespace   Stroika {
             inline  void    Collection<T>::RemoveAll ()
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp { this };
-                if (tmp._ConstGetRep ().GetLength () != 0) {
+                if (not tmp._ConstGetRep ().IsEmpty ()) {
                     tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
                 }
             }
