@@ -421,9 +421,12 @@ namespace   Stroika {
             public:
                 virtual ~_IRep ()  = default;
 
+            protected:
+                using   _SharedPtrIRep = typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
+
             public:
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;
-                virtual void                RemoveAll ()                                                            =   0;
                 virtual  Iterable<KeyType>  Keys () const                                                           =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr

@@ -36,7 +36,8 @@ namespace   Stroika {
                     using   inherited   =   typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep;
 
                 public:
-                    using   _SharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep;
+                    using   _MappingSharedPtrIRep = typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -53,7 +54,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep                                      Clone (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual _IterableSharedPtrIRep                              Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
@@ -62,15 +63,15 @@ namespace   Stroika {
 
                     // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
                 public:
-                    virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const override;
-                    virtual void                RemoveAll () override;
-                    virtual Iterable<KEY_TYPE>  Keys () const override;
-                    virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
-                    virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual void                Remove (KEY_TYPE key) override;
-                    virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual _MappingSharedPtrIRep   CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual bool                    Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const override;
+                    virtual Iterable<KEY_TYPE>      Keys () const override;
+                    virtual bool                    Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                    Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual void                    Remove (KEY_TYPE key) override;
+                    virtual void                    Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 #if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 private:
@@ -102,11 +103,11 @@ namespace   Stroika {
                     RequireNotNull (from);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_IterableSharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _SharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -159,17 +160,25 @@ namespace   Stroika {
                     return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_MappingSharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                {
+                    if (fData_.HasActiveIterators ()) {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            auto r = Traversal::IterableBase::SharedPtrImplementationTemplate<Rep_> (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                            r->fData_.clear_WithPatching ();
+                            return r;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    else {
+                        return _MappingSharedPtrIRep (new Rep_ ());
+                    }
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
-                }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::RemoveAll ()
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.clear_WithPatching ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterable<KEY_TYPE>    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
