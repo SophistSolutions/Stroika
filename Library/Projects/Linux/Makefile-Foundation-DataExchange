@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)CheckedConverter.o\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
+	$(ObjDir)OptionsFile.o\
 	$(ObjDir)Reader.o\
 	$(ObjDir)VariantValue.o\
 	$(ObjDir)Writer.o\
