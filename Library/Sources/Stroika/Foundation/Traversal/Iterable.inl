@@ -130,6 +130,13 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
+            inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T>&& rhs)
+            {
+                RequireNotNull (rhs._fRep.get ());
+                _fRep = move (rhs._fRep);
+                return *this;
+            }
+            template    <typename T>
             inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
             {
                 return rep.Clone (forIterableEnvelope);
