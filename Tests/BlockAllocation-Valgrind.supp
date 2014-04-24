@@ -78,5 +78,53 @@
 }
 
 
-
+{
+   BlockAllocation_clang++
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN7Stroika10Foundation10Characters8Concrete7Private17BufferedStringRep4_Rep7reserveEm
+}
+{
+   BlockAllocation_clang++
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN12_GLOBAL__N_125String_BufferedArray_Rep_nwEm
+}
+{
+   BlockAllocation_clang++
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_ILm*8AllocateEm
+}
+{
+   BlockAllocation_clang++
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN7Stroika10Foundation6Memory27AutomaticallyBlockAllocated*
+}
+{
+   BlockAllocation_clang++_optimizer...
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+  fun:_ZN7Stroika10Foundation10Containers7Private14DataStructures10LinkedList*
+}
+{
+   BlockAllocation_clang++_optimizer...
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN12_GLOBAL__N_117String_Substring_6MyRep_nwEm
+}
+{
+   BlockAllocation_clang++_optimizer...
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZZN7Stroika10Foundation9Traversal15CreateGenerator*6Memory8Optional*MyIterableRep*
+}
 
