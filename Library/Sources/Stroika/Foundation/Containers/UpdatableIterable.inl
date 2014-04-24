@@ -63,7 +63,15 @@ namespace   Stroika {
             template    <typename T>
             inline  UpdatableIterable<T>&    UpdatableIterable<T>::operator= (const UpdatableIterable<T>& rhs)
             {
-                inherited::operator = (rhs);
+                inherited::operator= (rhs);
+                // intentionally don't copy the fWriteMutex_
+                return *this;
+            }
+            template    <typename T>
+            inline  UpdatableIterable<T>&    UpdatableIterable<T>::operator= (UpdatableIterable<T> && rhs)
+            {
+                inherited::operator= (move (rhs));
+                // intentionally don't move the fWriteMutex_
                 return *this;
             }
 
@@ -148,7 +156,6 @@ namespace   Stroika {
             {
                 fAccessor_ = sp;
             }
-
 
 
         }

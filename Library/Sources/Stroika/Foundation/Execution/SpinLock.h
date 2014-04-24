@@ -31,7 +31,7 @@ namespace   Stroika {
                 SpinLock (const SpinLock&) = delete;
 
             public:
-                nonvirtual	SpinLock& operator= (const SpinLock&) = delete;
+                nonvirtual  SpinLock& operator= (const SpinLock&) = delete;
 
             public:
                 nonvirtual  void    lock ();
