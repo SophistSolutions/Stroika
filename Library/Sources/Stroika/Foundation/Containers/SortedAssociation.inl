@@ -72,7 +72,7 @@ namespace   Stroika {
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& rep)
                 : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
-                RequireNotNull (rep);
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

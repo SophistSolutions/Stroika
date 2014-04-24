@@ -229,6 +229,16 @@ namespace   Stroika {
                     fEnvelope_.Increment ();
                 }
             }
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+            template    <typename T>
+            template    <typename T2>
+            SharedPtr<T>::SharedPtr (SharedPtr<T2>&& from) noexcept
+:
+            fEnvelope_ (move (from.fEnvelope_))
+            {
+                // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
+            }
+#endif
             template    <typename T>
             template    <typename T2>
             typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)

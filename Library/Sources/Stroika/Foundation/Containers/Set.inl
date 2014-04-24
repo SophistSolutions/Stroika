@@ -72,6 +72,7 @@ namespace   Stroika {
             inline  Set<T, TRAITS>::Set (_SharedPtrIRep&& rep)
                 : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>

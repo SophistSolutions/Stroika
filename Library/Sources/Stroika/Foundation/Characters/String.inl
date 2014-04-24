@@ -110,6 +110,7 @@ namespace   Stroika {
 :
             inherited (std::move (rep))
             {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             inline  String::String ()

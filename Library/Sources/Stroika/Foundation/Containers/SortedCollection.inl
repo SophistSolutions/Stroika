@@ -42,7 +42,7 @@ namespace   Stroika {
             inline  SortedCollection<T, TRAITS>::SortedCollection (_SharedPtrIRep&& rep)
                 : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
-                RequireNotNull (rep);
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>

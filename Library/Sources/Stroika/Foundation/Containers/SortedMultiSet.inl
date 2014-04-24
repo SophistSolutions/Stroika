@@ -43,8 +43,7 @@ namespace   Stroika {
             inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (_SharedPtrIRep&& rep)
                 : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
-                _AssertRepValidType ();
-                RequireNotNull (rep);
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>

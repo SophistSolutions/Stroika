@@ -58,6 +58,7 @@ namespace   Stroika {
             , fWriteMutex_ ()
 #endif
             {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
             }
             template    <typename T>
             inline  UpdatableIterable<T>&    UpdatableIterable<T>::operator= (const UpdatableIterable<T>& rhs)

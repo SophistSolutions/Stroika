@@ -60,10 +60,10 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
-                : inherited (move (rep))
+                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
-                RequireNotNull (rep);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>

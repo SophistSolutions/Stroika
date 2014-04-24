@@ -184,6 +184,10 @@ namespace   Stroika {
 #endif
                 template    <typename T2>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
+#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+                template    <typename T2>
+                SharedPtr (SharedPtr<T2>&& from) noexcept;
+#endif
 
             private:
                 explicit SharedPtr (const Envelope_& from) noexcept;

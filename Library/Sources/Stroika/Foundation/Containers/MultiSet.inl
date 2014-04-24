@@ -367,6 +367,7 @@ namespace   Stroika {
             inline  MultiSet<T, TRAITS>::MultiSet (_SharedPtrIRep&& rep)
                 : inherited (move<typename inherited::_SharedPtrIRep> (rep))
             {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
