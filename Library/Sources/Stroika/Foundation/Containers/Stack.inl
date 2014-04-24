@@ -43,17 +43,17 @@ namespace   Stroika {
 //                AddAll (s);
             }
             template    <typename T>
-            inline  Stack<T>::Stack (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            inline  Stack<T>::Stack (const _SharedPtrIRep& src)
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
+                RequireNotNull (src);
                 _AssertRepValidType ();
-                RequireNotNull (rep);
             }
             template    <typename T>
-            inline  Stack<T>::Stack (_SharedPtrIRep&& rep)
-                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+            inline  Stack<T>::Stack (_SharedPtrIRep&& src)
+                : inherited (move<typename inherited::_SharedPtrIRep> (src))
             {
-                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
+                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T>

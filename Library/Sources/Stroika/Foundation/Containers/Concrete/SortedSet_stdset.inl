@@ -246,33 +246,33 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s)
-                    : inherited (static_cast<const inherited&> (s))
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const std::initializer_list<T>& s)
+                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
-                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& s)
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedSet_stdset<T, TRAITS>&   SortedSet_stdset<T, TRAITS>::operator= (const SortedSet_stdset<T, TRAITS>& m)
+                inline  SortedSet_stdset<T, TRAITS>&   SortedSet_stdset<T, TRAITS>::operator= (const SortedSet_stdset<T, TRAITS>& rhs)
                 {
                     AssertRepValidType_ ();
-                    inherited::operator= (m);
+                    inherited::operator= (rhs);
                     AssertRepValidType_ ();
                     return *this;
                 }

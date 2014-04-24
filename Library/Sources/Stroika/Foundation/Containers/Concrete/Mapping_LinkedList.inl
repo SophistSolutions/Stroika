@@ -283,18 +283,18 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
-                    : inherited (static_cast<const inherited&> (m))
+                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp)
+                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (cp);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

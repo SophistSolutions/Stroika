@@ -306,19 +306,19 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const std::initializer_list<T>& s)
+                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& s)
+                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>

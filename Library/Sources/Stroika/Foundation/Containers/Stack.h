@@ -98,8 +98,8 @@ namespace   Stroika {
                 explicit Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Stack (const _SharedPtrIRep& rep);
-                explicit Stack (_SharedPtrIRep&& rep);
+                explicit Stack (const _SharedPtrIRep& src);
+                explicit Stack (_SharedPtrIRep&& src);
 
             public:
                 nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;

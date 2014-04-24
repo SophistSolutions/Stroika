@@ -172,7 +172,8 @@ namespace   Stroika {
                 explicit Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit Bijection (const _SharedPtrIRep& rep);
+                explicit Bijection (const _SharedPtrIRep& src);
+                explicit Bijection (_SharedPtrIRep&& src);
 
 #if     qDebug
             public:

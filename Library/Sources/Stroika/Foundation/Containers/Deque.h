@@ -86,7 +86,8 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                explicit Deque (const _SharedPtrIRep& rep);
+                explicit Deque (const _SharedPtrIRep& src);
+                explicit Deque (_SharedPtrIRep&& src);
 
             public:
                 /**

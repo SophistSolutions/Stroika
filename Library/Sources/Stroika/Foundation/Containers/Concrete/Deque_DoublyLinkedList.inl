@@ -293,11 +293,11 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& s)
+                inline  Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->InsertAll (0, s);
+                    this->InsertAll (0, src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>

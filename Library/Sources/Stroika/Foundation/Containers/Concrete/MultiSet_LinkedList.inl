@@ -363,7 +363,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const std::initializer_list<MultiSetEntry<T>>& src)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<MultiSetEntry<T>>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();

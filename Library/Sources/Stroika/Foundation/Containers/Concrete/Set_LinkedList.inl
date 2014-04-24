@@ -278,7 +278,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const std::initializer_list<T>& src)
+                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();

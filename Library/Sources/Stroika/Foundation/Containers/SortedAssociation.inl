@@ -62,17 +62,17 @@ namespace   Stroika {
                 this->AddAll (start, end);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const _SharedPtrIRep& src)
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& rep)
-                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+            inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (_SharedPtrIRep&& src)
+                : inherited (move<typename inherited::_SharedPtrIRep> (src))
             {
-                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
+                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

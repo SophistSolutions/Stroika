@@ -319,11 +319,11 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& s)
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
@@ -336,8 +336,8 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)
-                    : inherited (static_cast<const inherited&> (s))
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }

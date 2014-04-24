@@ -98,8 +98,8 @@ namespace   Stroika {
                 explicit SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
-                explicit SortedMapping (const _SharedPtrIRep& rep);
-                explicit SortedMapping (_SharedPtrIRep&& rep);
+                explicit SortedMapping (const _SharedPtrIRep& src);
+                explicit SortedMapping (_SharedPtrIRep&& src);
 
             public:
                 nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);

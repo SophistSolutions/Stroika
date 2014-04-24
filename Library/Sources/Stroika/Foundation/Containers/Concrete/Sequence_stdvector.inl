@@ -291,18 +291,18 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& s)
-                    : inherited (static_cast<const inherited&> (s))
+                inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& s)
+                inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
@@ -315,10 +315,10 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& s)
+                inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& rhs)
                 {
                     AssertRepValidType_ ();
-                    inherited::operator= (s);
+                    inherited::operator= (rhs);
                     AssertRepValidType_ ();
                     return *this;
                 }

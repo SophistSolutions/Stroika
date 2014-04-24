@@ -117,8 +117,8 @@ namespace   Stroika {
                 explicit Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit Collection (const _SharedPtrIRep& rep);
-                explicit Collection (_SharedPtrIRep&& rep);
+                explicit Collection (const _SharedPtrIRep& src);
+                explicit Collection (_SharedPtrIRep&& src);
 
 #if     qDebug
             public:

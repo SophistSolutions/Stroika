@@ -290,34 +290,34 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& s)
-                    : inherited (static_cast<const inherited&> (s))
+                inline  Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& s)
+                inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>::Sequence_Array (const vector<T>& s)
+                inline  Sequence_Array<T>::Sequence_Array (const vector<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
-                inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& s)
+                inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AppendAll (s);
+                    this->AppendAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
@@ -330,10 +330,10 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>&   Sequence_Array<T>::operator= (const Sequence_Array<T>& s)
+                inline  Sequence_Array<T>&   Sequence_Array<T>::operator= (const Sequence_Array<T>& rhs)
                 {
                     AssertRepValidType_ ();
-                    inherited::operator= (s);
+                    inherited::operator= (rhs);
                     AssertRepValidType_ ();
                     return *this;
                 }

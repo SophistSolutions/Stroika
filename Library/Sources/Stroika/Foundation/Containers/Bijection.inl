@@ -64,10 +64,17 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& src)
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
-                RequireNotNull (rep);
+                RequireNotNull (src);
+                _AssertRepValidType ();
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (_SharedPtrIRep&& src)
+                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+            {
+                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
 #if     qDebug

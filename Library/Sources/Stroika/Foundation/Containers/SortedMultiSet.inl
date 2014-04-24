@@ -32,34 +32,34 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const _SharedPtrIRep& src)
+                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (_SharedPtrIRep&& rep)
-                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (_SharedPtrIRep&& src)
+                : inherited (move<typename inherited::_SharedPtrIRep> (src))
             {
-                //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
+                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& s)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
                 : inherited (move<inherited> (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
-                this->AddAll (s);
+                this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<MultiSetEntry<T>>& s)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<MultiSetEntry<T>>& src)
                 : inherited (move<inherited> (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
-                this->AddAll (s);
+                this->AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>

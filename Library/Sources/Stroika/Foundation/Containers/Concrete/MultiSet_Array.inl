@@ -376,19 +376,19 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<T>& s)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const std::initializer_list<MultiSetEntry<T>>& s)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<MultiSetEntry<T>>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertRepValidType_ ();
-                    this->AddAll (s);
+                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>

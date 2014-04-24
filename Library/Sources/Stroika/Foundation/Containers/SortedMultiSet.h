@@ -78,16 +78,16 @@ namespace   Stroika {
             public:
                 SortedMultiSet ();
                 SortedMultiSet (const SortedMultiSet<T, TRAITS>& src);
-                SortedMultiSet (const initializer_list<T>& s);
-                SortedMultiSet (const initializer_list<MultiSetEntry<T>>& s);
+                SortedMultiSet (const initializer_list<T>& src);
+                SortedMultiSet (const initializer_list<MultiSetEntry<T>>& src);
                 template <typename CONTAINER_OF_T>
                 explicit SortedMultiSet (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedMultiSet (const _SharedPtrIRep& rep);
-                explicit SortedMultiSet (_SharedPtrIRep&& rep);
+                explicit SortedMultiSet (const _SharedPtrIRep& src);
+                explicit SortedMultiSet (_SharedPtrIRep&& src);
 
             public:
                 nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;

@@ -136,8 +136,8 @@ namespace   Stroika {
                 explicit SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedCollection (const _SharedPtrIRep& rep);
-                explicit SortedCollection (_SharedPtrIRep&& rep);
+                explicit SortedCollection (const _SharedPtrIRep& src);
+                explicit SortedCollection (_SharedPtrIRep&& src);
 
             public:
                 /**

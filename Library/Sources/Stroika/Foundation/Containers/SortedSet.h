@@ -101,8 +101,8 @@ namespace   Stroika {
                 explicit SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedSet (const _SharedPtrIRep& rep);
-                explicit SortedSet (_SharedPtrIRep&& rep);
+                explicit SortedSet (const _SharedPtrIRep& src);
+                explicit SortedSet (_SharedPtrIRep&& src);
 
             public:
                 nonvirtual  SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs) = default;
