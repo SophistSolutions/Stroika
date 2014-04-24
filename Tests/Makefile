@@ -21,8 +21,10 @@ RUNTEST_EXE_RUN=ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) /tmp/$(BASEEXEPATTERN)
 else ifneq (,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
-#VALGRIND_OPTIONS=-q --tool=helgrind --suppressions=DefaultValgrindSuppressions.supp $(EXTRA_VALGRIND_OPTIONS)
-VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=DefaultValgrindSuppressions.supp $(EXTRA_VALGRIND_OPTIONS)
+VALGRIND_SUPPRESSIONS=Common-Valgrind.supp BlockAllocation-Valgrind.supp
+VALGRIND_EXPANDED_SUPPRESSIONS := $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
+#VALGRIND_OPTIONS=-q --tool=helgrind $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
+VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --leak-check=full $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
 RUNTEST_REMOTECOPYSETUP=:
 RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
@@ -49,7 +51,7 @@ help:
 	@echo "    clobber:"
 	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    tests:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind, as can VALGRIND_SUPPRESSIONS=)"
 
 
 all:		tests 

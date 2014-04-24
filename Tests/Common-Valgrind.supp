@@ -1,0 +1,61 @@
+{
+   Apparently_Bogus_Warning_About_StrToD_Code_calling_Looks_OK
+   Memcheck:Cond
+   fun:____strtod_l_internal
+}
+{
+   Apparently_bugs_Warning_About_std_string_memleak_called_from_duration_code
+   Memcheck:Leak
+   fun:malloc
+   fun:_Znwm
+   fun:_ZN9__gnu_cxx13new_allocatorIcE8allocateEmPKv
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs4_Rep8_M_cloneERKSaIcEm
+   fun:_ZNSs7reserveEm
+   fun:_ZNSs6appendEPKcm
+   fun:_ZNSs6appendEPKc
+   fun:_ZNSspLEPKc
+   fun:_ZN7Stroika10Foundation4Time8Duration12UnParseTime_Ed
+}
+{
+   Apparent_BugInLocaleCodeButProbablyQuirkOfValgrind
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:_ZNSt10moneypunctIwLb1EED1Ev
+   fun:_ZNSt10moneypunctIwLb1EED0Ev
+   fun:_ZNSt6locale5_ImplD1Ev
+   fun:_ZNSt6localeD1Ev
+   fun:_ZN7Stroika10Foundation13Configuration14FindLocaleNameERKNS0_10Characters6StringES5_
+}
+{
+   Apparent_BugInLocaleCodeButProbablyQuirkOfValgrind
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:_ZNSt10moneypunctIwLb0EED1Ev
+   fun:_ZNSt10moneypunctIwLb0EED0Ev
+   fun:_ZNSt6locale5_ImplD1Ev
+   fun:_ZNSt6localeD1Ev
+   fun:_ZN7Stroika10Foundation13Configuration14FindLocaleNameERKNS0_10Characters6StringES5_
+   fun:_ZN7Stroika10Foundation13Configuration15FindNamedLocaleERKNS0_10Characters6StringES5_
+}
+
+{
+   wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
+   Memcheck:Cond
+   fun:wcscmp
+   ...
+}
+{
+   libcurl_passes_some_bad_value_to_getaddrinfo_maybe
+   Memcheck:Param
+   sendmsg(mmsg[0].msg_hdr)
+   fun:sendmmsg
+   fun:__libc_res_nsend
+   fun:__libc_res_nquery
+   fun:__libc_res_nsearch
+   fun:_nss_dns_gethostbyname4_r
+   fun:gaih_inet
+   fun:getaddrinfo
+   ...
+}
+
