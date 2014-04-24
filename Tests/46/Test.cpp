@@ -961,7 +961,7 @@ namespace   {
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-            14600,
+            14500,
             .5,
             &failedTests
         );
@@ -1007,7 +1007,7 @@ namespace   {
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
-            35600,
+            37200,
             0.5,
             &failedTests
         );
@@ -1016,7 +1016,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1210000,
-            4.2,
+            4.1,
             &failedTests
         );
         Tester (
@@ -1024,7 +1024,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1270000,
-            3.8,
+            3.7,
             &failedTests
         );
         Tester (
@@ -1032,7 +1032,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             267000,
-            9.1,
+            8.6,
             &failedTests
         );
         Tester (
@@ -1040,7 +1040,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             1990000,
-            2.4,
+            2.3,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1048,7 +1048,7 @@ namespace   {
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-            5400 ,
+            5350 ,
             1.5,
             &failedTests
         );
@@ -1058,7 +1058,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3060000,
-            2.0,
+            1.9,
             &failedTests
         );
 #if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1085,7 +1085,7 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            38200,
+            39700,
             1.2,
             &failedTests
         );
