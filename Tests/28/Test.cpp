@@ -111,6 +111,8 @@ namespace   {
 
         ObjectVariantMapper mapper;
 
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
@@ -128,6 +130,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID2, L"This-HR-ContactID-To-SharedContactID-Bijection"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         mapper.AddCommonType<Bijection<String, String>> ();
         bool newEnabled = true;
@@ -193,6 +197,8 @@ namespace   {
 
         ObjectVariantMapper mapper;
 
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
@@ -210,6 +216,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_   tmp;
         tmp.fInt1 = 2;
@@ -353,6 +361,8 @@ namespace   {
         ObjectVariantMapper mapper;
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
@@ -363,6 +373,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_   tmp;
         tmp.fEnum1 = Fred::b;
@@ -424,6 +436,8 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
@@ -440,6 +454,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_   tmp;
         tmp.fDate1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
@@ -494,6 +510,8 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
@@ -504,6 +522,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_   tmp;
         tmp.fVV1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
@@ -580,6 +600,8 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
@@ -600,6 +622,8 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
         });
 #endif
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
