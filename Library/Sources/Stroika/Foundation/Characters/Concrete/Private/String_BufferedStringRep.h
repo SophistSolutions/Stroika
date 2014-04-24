@@ -46,7 +46,7 @@ namespace   Stroika {
                             _Rep (const _Rep&) = delete;
 
                         public:
-                            nonvirtual  const _Rep& operator= (const _Rep&) = delete;
+                            nonvirtual  _Rep& operator= (const _Rep&) = delete;
 
                         protected:
                             _Rep (const wchar_t* start, const wchar_t* end);

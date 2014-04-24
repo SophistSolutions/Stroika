@@ -125,7 +125,7 @@ namespace   Stroika {
                 ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
 
             public:
-                nonvirtual  const ProcessRunner& operator= (const ProcessRunner&) = delete;
+                nonvirtual  ProcessRunner& operator= (const ProcessRunner&) = delete;
 
             public:
                 /**

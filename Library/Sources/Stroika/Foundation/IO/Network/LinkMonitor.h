@@ -86,7 +86,7 @@ namespace   Stroika {
                     LinkMonitor ();
                     LinkMonitor (const LinkMonitor&& rhs);
                     LinkMonitor (const LinkMonitor&) = delete;
-                    const LinkMonitor& operator= (const LinkMonitor&) = delete;
+                    LinkMonitor& operator= (const LinkMonitor&) = delete;
 
                     enum class LinkChange {
                         eAdded,

@@ -96,8 +96,8 @@ namespace   Stroika {
 
                 public:
                     ~Socket ();
-                    nonvirtual  const Socket& operator= (Socket && s);
-                    nonvirtual  const Socket& operator= (const Socket& s);
+                    nonvirtual  Socket& operator= (Socket && s);
+                    nonvirtual  Socket& operator= (const Socket& s);
 
                 public:
                     /**

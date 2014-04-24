@@ -71,7 +71,7 @@ public:
         ::close (fFD_);
 #endif
     }
-    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
     virtual void    Write (const Byte* start, const Byte* end) override
     {
         Require (start != nullptr or start == end);

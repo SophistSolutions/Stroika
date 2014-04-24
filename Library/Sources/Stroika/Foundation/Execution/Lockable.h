@@ -47,8 +47,8 @@ namespace   Stroika {
                 Lockable (const BASE& from);
                 Lockable (const Lockable<BASE, LOCKTYPE>& from);
 
-                const Lockable& operator= (const BASE& rhs);
-                const Lockable& operator= (const Lockable<BASE, LOCKTYPE>& rhs);
+                Lockable& operator= (const BASE& rhs);
+                Lockable& operator= (const Lockable<BASE, LOCKTYPE>& rhs);
             };
 
 

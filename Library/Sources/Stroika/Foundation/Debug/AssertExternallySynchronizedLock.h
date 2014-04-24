@@ -35,7 +35,7 @@ namespace   Stroika {
                 AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock&) = delete;
 
             public:
-                const AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock&) = delete;
+                nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock&) = delete;
 
             public:
                 nonvirtual  void    lock ();

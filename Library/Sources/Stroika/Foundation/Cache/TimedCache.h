@@ -133,7 +133,7 @@ namespace   Stroika {
                 TimedCache (const TimedCache&) = delete;
 
             public:
-                nonvirtual  const TimedCache& operator= (const TimedCache&) = delete;
+                nonvirtual  TimedCache& operator= (const TimedCache&) = delete;
 
             public:
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);

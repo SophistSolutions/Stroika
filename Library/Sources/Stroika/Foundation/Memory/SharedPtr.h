@@ -368,7 +368,7 @@ namespace   Stroika {
                 constexpr enable_shared_from_this (const enable_shared_from_this& src);
 
             public:
-                const enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
+                enable_shared_from_this& operator= (const enable_shared_from_this&) = delete;
 
             public:
                 ~enable_shared_from_this () = default;

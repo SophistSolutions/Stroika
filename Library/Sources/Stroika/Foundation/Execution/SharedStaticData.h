@@ -82,7 +82,7 @@ namespace   Stroika {
                 ~SharedStaticData ();
 
             public:
-                const SharedStaticData& operator= (const SharedStaticData&) = delete;
+                SharedStaticData& operator= (const SharedStaticData&) = delete;
 
 
             public:

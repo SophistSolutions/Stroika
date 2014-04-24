@@ -180,7 +180,7 @@ namespace   Stroika {
                 LRUCache (const LRUCache&) = delete;
 
             public:
-                nonvirtual  const LRUCache& operator= (const LRUCache&) = delete;
+                nonvirtual  LRUCache& operator= (const LRUCache&) = delete;
 
             public:
                 nonvirtual  size_t  GetMaxCacheSize () const;

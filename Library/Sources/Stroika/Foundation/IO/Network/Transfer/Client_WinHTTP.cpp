@@ -96,7 +96,7 @@ public:
     virtual ~Rep_ ();
 
 public:
-    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
 public:
     virtual DurationSecondsType GetTimeout () const override;

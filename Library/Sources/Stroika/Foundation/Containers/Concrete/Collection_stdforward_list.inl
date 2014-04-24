@@ -46,7 +46,7 @@ namespace   Stroika {
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
 
                 public:
-                    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);

@@ -120,7 +120,7 @@ namespace   Stroika {
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
-                nonvirtual  const WaitableEvent& operator= (const WaitableEvent&) = delete;
+                nonvirtual  WaitableEvent& operator= (const WaitableEvent&) = delete;
 
             public:
                 /**

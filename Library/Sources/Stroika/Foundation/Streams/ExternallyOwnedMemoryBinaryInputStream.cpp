@@ -32,7 +32,7 @@ public:
     }
 
 public:
-    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
+    nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
 protected:
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override

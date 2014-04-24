@@ -61,7 +61,7 @@ namespace {
         {
             Close ();
         }
-        const AutoHANDLE_& operator= (const AutoHANDLE_& rhs)
+        AutoHANDLE_& operator= (const AutoHANDLE_& rhs)
         {
             if (this != &rhs) {
                 Close ();

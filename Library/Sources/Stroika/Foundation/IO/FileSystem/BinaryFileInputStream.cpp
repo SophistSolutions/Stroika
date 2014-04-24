@@ -67,7 +67,7 @@ public:
         ::close (fFD_);
 #endif
     }
-    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
     virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override
     {

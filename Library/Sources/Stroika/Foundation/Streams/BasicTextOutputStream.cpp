@@ -28,7 +28,7 @@ public:
     {
     }
     IRep_ (const IRep_&) = delete;
-    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
+    nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
     virtual void    Write (const Character* start, const Character* end) override
     {

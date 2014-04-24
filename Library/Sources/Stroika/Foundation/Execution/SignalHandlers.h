@@ -151,7 +151,7 @@ namespace   Stroika {
                 ~SignalHandlerRegistry ();
 
             public:
-                nonvirtual  const SignalHandlerRegistry&    operator= (const SignalHandlerRegistry&) = delete;
+                nonvirtual  SignalHandlerRegistry&    operator= (const SignalHandlerRegistry&) = delete;
 
             public:
                 class   SafeSignalsManager;
@@ -295,7 +295,7 @@ namespace   Stroika {
                 ~SafeSignalsManager ();
 
             public:
-                nonvirtual  const SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
+                nonvirtual  SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
 
             private:
                 struct Rep_;

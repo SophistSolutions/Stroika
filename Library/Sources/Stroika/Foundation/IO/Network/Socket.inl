@@ -47,14 +47,14 @@ namespace   Stroika {
                 inline  Socket::~Socket ()
                 {
                 }
-                inline  const Socket& Socket::operator= (const Socket& s)
+                inline  Socket& Socket::operator= (const Socket& s)
                 {
                     if (fRep_ != s.fRep_) {
                         fRep_ = s.fRep_;
                     }
                     return *this;
                 }
-                inline  const Socket& Socket::operator= (Socket && s)
+                inline  Socket& Socket::operator= (Socket && s)
                 {
                     if (fRep_ != s.fRep_) {
                         fRep_ = std::move (s.fRep_);

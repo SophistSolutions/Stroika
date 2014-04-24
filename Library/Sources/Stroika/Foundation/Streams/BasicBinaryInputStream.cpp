@@ -36,7 +36,7 @@ public:
     }
     IRep_ () = delete;
     IRep_ (const IRep_&) = delete;
-    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
+    nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
     virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override
     {

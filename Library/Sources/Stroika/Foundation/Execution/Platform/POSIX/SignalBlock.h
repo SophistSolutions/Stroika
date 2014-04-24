@@ -42,7 +42,7 @@ namespace   Stroika {
                         ~ScopedBlockCurrentThreadSignal ();
 
                     public:
-                        nonvirtual  const ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
+                        nonvirtual  ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
 
                     private:
                         sigset_t    fRestoreMask_;

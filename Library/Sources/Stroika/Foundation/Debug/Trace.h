@@ -141,7 +141,7 @@ namespace   Stroika {
                 ~TraceContextBumper ();
 
             public:
-                nonvirtual  const TraceContextBumper& operator= (const TraceContextBumper&) = delete;
+                nonvirtual  TraceContextBumper& operator= (const TraceContextBumper&) = delete;
 
 #if     qDefaultTracingOn
             public:

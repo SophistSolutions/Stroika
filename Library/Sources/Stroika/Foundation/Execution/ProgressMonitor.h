@@ -117,7 +117,7 @@ namespace   Stroika {
                 ~ProgressMonitor ();
 
             public:
-                nonvirtual  const ProgressMonitor& operator= (const ProgressMonitor&) = delete;
+                nonvirtual  ProgressMonitor& operator= (const ProgressMonitor&) = delete;
 
             public:
                 /**

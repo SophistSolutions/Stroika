@@ -102,7 +102,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                nonvirtual  const _IRep& operator= (const _IRep&) = delete;
+                nonvirtual  _IRep& operator= (const _IRep&) = delete;
             };
 
 

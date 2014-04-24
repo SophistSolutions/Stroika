@@ -41,14 +41,14 @@ namespace   Stroika {
             {
             }
             template    <typename BASE, typename LOCKTYPE>
-            inline  const Lockable<BASE, LOCKTYPE>& Lockable<BASE, LOCKTYPE>::operator= (const BASE& rhs)
+            inline  Lockable<BASE, LOCKTYPE>& Lockable<BASE, LOCKTYPE>::operator= (const BASE& rhs)
             {
                 BASE&   THIS_BASE   =   *this;      // intentional object slice
                 THIS_BASE = rhs;
                 return *this;
             }
             template    <typename BASE, typename LOCKTYPE>
-            inline  const Lockable<BASE, LOCKTYPE>& Lockable<BASE, LOCKTYPE>::operator= (const Lockable<BASE, LOCKTYPE>& rhs)
+            inline  Lockable<BASE, LOCKTYPE>& Lockable<BASE, LOCKTYPE>::operator= (const Lockable<BASE, LOCKTYPE>& rhs)
             {
                 BASE&   THIS_BASE   =   *this;
                 THIS_BASE = rhs;
@@ -75,12 +75,12 @@ namespace   Stroika {
                         , fBase (from)          // intentional object slice
                     {
                     }
-                    const Lockable_POD& operator= (const BASE& rhs)
+                    Lockable_POD& operator= (const BASE& rhs)
                     {
                         fBase = rhs;
                         return *this;
                     }
-                    const Lockable_POD& operator= (const Lockable_POD<BASE, LOCKTYPE>& rhs)
+                    Lockable_POD& operator= (const Lockable_POD<BASE, LOCKTYPE>& rhs)
                     {
                         fBase = rhs;        // intentional object slice
                         return *this;
@@ -100,8 +100,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
             class   Lockable<char, recursive_mutex> : public Private::Lockable_POD<char, recursive_mutex>  {
@@ -110,8 +110,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
             class   Lockable<unsigned char, recursive_mutex> : public Private::Lockable_POD<unsigned char, recursive_mutex>  {
@@ -120,8 +120,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
             class   Lockable<int, recursive_mutex> : public Private::Lockable_POD<int, recursive_mutex>  {
@@ -130,8 +130,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                 { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                 { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
             class   Lockable<unsigned int, recursive_mutex> : public Private::Lockable_POD<unsigned int, recursive_mutex>  {
@@ -140,8 +140,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
             class   Lockable<double, recursive_mutex> : public Private::Lockable_POD<double, recursive_mutex>  {
@@ -150,8 +150,8 @@ namespace   Stroika {
                 Lockable<T, recursive_mutex> ()                                                                                          {}
                 Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
                 Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
 
 

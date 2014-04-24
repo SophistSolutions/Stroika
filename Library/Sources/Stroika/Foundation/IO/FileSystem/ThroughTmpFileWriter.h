@@ -63,7 +63,7 @@ namespace   Stroika {
                     ~ThroughTmpFileWriter ();
 
                 public:
-                    nonvirtual  const ThroughTmpFileWriter& operator= (const ThroughTmpFileWriter&) = delete;
+                    nonvirtual  ThroughTmpFileWriter& operator= (const ThroughTmpFileWriter&) = delete;
 
                 public:
                     /**

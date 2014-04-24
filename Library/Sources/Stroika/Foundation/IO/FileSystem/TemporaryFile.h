@@ -62,7 +62,7 @@ namespace   Stroika {
                 class   ScopedTmpDir {
                 private:
                     ScopedTmpDir (const ScopedTmpDir&);
-                    const ScopedTmpDir& operator= (const ScopedTmpDir&);
+                    ScopedTmpDir& operator= (const ScopedTmpDir&);
                 public:
                     ScopedTmpDir (const String& fileNameBase);
 //                    ScopedTmpDir (TempFileLibrarian& tfl, const String& fileNameBase);
@@ -77,7 +77,7 @@ namespace   Stroika {
                 class   ScopedTmpFile {
                 private:
                     ScopedTmpFile (const ScopedTmpFile&);
-                    const ScopedTmpFile& operator= (const ScopedTmpFile&);
+                    ScopedTmpFile& operator= (const ScopedTmpFile&);
                 public:
                     ScopedTmpFile (const String& fileNameBase);
                     //                  ScopedTmpFile (TempFileLibrarian& tfl, const String& fileNameBase);

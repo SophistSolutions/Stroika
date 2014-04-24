@@ -321,7 +321,7 @@ EXAMPLE:
                 return *this;
             }
 
-            const UnAssignedableCharacter& operator= (const UnAssignedableCharacter&) = delete;
+            UnAssignedableCharacter& operator= (const UnAssignedableCharacter&) = delete;
         };
 */
 #ifndef qCompilerAndStdLib_UsingInheritedConstructor_Buggy

@@ -58,7 +58,7 @@ namespace   Stroika {
                 virtual ~IRunnable ();
 
             public:
-                nonvirtual  const IRunnable& operator= (const IRunnable&) = delete;
+                nonvirtual  IRunnable& operator= (const IRunnable&) = delete;
 
             public:
                 /**

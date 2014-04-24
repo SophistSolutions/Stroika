@@ -60,7 +60,7 @@ namespace   Stroika {
                     Listener (const Listener&& rhs);
                     Listener (const Listener&) = delete;
                 public:
-                    const Listener& operator= (const Listener&) = delete;
+                    Listener& operator= (const Listener&) = delete;
 
                 private:
                     struct  Rep_;

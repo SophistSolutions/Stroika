@@ -80,7 +80,7 @@ namespace   Stroika {
                 ThreadPool (const ThreadPool&) = delete;
 
             public:
-                nonvirtual  const ThreadPool& operator= (const ThreadPool&) = delete;
+                nonvirtual  ThreadPool& operator= (const ThreadPool&) = delete;
 
             public:
                 /*

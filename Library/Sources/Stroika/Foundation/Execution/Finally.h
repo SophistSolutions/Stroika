@@ -53,7 +53,7 @@ namespace   Stroika {
                 ~Finally();
 
             public:
-                nonvirtual  const Finally& operator= (const Finally&) = delete;
+                nonvirtual  Finally& operator= (const Finally&) = delete;
 
             private:
                 function<void()> fCleanupCodeBlock_;
