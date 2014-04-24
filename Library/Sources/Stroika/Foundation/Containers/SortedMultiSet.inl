@@ -36,7 +36,7 @@ namespace   Stroika {
                 : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
             {
                 _AssertRepValidType ();
-                RequireNotNull (rep);
+                RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
