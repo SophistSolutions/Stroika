@@ -28,7 +28,7 @@ using   Time::TimeOfDay;
 
 /*
  ********************************************************************************
- ******* DataExchange::ObjectVariantMapper::TypeMappingDetails ************
+ *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
  ********************************************************************************
  */
 ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
