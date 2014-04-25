@@ -6,7 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    "../ExternallySynchronizedDataStructures/Array.h"
+#include    "../../ExternallySynchronizedDataStructures/Array.h"
 
 #include    "PatchableContainerHelper.h"
 
