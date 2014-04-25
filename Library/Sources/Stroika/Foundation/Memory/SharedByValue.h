@@ -101,7 +101,7 @@ namespace   Stroika {
              *  copy-by-value (COW) envelope thread safety.
              */
             template    <typename   T, typename SHARED_IMLP>
-            struct  SharedByValue_CopySharedPtrExternallySynchonized {
+            struct  SharedByValue_CopySharedPtrExternallySynchronized {
                 static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
                 static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
@@ -114,7 +114,7 @@ namespace   Stroika {
              *  copy-by-value (COW) envelope thread safety.
              */
             template    <typename   T, typename SHARED_IMLP>
-            struct  SharedByValue_CopySharedPtrAtomicSynchonized {
+            struct  SharedByValue_CopySharedPtrAtomicSynchronized {
                 static  SHARED_IMLP     Load (const SHARED_IMLP& copyFrom);
                 static  void            Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
@@ -124,10 +124,10 @@ namespace   Stroika {
              */
 #if     qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
             template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>;
+            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
 #else
             template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>;
+            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
 #endif
 
 

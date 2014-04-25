@@ -1080,7 +1080,7 @@ const wchar_t*  String::c_str_ () const
 {
     /*
      *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
-     *  Access to this envelope MUST be externally synchonized or the returned bare pointer is doo-doo.
+     *  Access to this envelope MUST be externally synchronized or the returned bare pointer is doo-doo.
      */
     const   wchar_t*    result = ConstGetRep_ ().c_str_peek ();
     if (result == nullptr) {

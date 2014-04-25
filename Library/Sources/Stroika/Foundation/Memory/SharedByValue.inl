@@ -60,16 +60,16 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ****** SharedByValue_CopySharedPtrExternallySynchonized<T,SHARED_IMLP> *********
+            ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
             ********************************************************************************
             */
             template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
+            inline  SHARED_IMLP     SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
                 return copyFrom;
             }
             template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrExternallySynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
+            inline  void            SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 *storeTo = o;
@@ -78,16 +78,16 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ********* SharedByValue_CopySharedPtrAtomicSynchonized<T,SHARED_IMLP> **********
+            ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
             ********************************************************************************
             */
             template    <typename   T, typename SHARED_IMLP>
-            inline  SHARED_IMLP     SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
+            inline  SHARED_IMLP     SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
                 return atomic_load (&copyFrom);
             }
             template    <typename   T, typename SHARED_IMLP>
-            inline  void            SharedByValue_CopySharedPtrAtomicSynchonized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
+            inline  void            SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
             {
                 RequireNotNull (storeTo);
                 atomic_store (storeTo, o);

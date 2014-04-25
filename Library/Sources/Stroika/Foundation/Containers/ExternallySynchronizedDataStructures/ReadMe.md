@@ -5,7 +5,7 @@ Overview
 	These data structures are very similar - structurally - to those in STL.
 
 	They
-		-	are not threadsafe (externally synchonized)
+		-	are not threadsafe (externally synchronized)
 		-	are not update during iteration safe (except as with STL)
 		-	they are not organized around the Stroika Container abstractions/access patterns
 
