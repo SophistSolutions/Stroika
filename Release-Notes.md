@@ -23,7 +23,15 @@ History
 <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a22">v2.0a22x</a><br/>2014-03-??</td>
 <td>
 <ul>
-	<li>Deprecated WaitTimedOutException in place of new improved TimeOutException, and ThrowTimeoutExceptionAfter is now templated</li>
+	<li>
+		Major Rework of thread-safety appraoch. This extends throughout the memory and 
+		Execution and Containers and Characters/Strings classes.
+
+		Overall, this was neutral to performance, but intrinsicially slowed things down about 3x to 10x. However,
+		I paired the changes with other performance optimizaitons to make up.
+
+		See the tests/Performance regtest (now #46) for details.
+	</li>
 	<li>
 		Tons of further string performance/threading cleanups
 		<ul>
@@ -40,6 +48,11 @@ History
 		And I've docuemented quite a few more things which I hope will further improve performance,
 		while retaining thread safety.
 	</li>
+	<li>
+		<li>Refactor Containers/Private/DataStructures to Containers/ExternallySynchonizedDataStructures (experimental)</li>
+		<li>New Containers/UpdatableIterbale - part of thread safety fixes)</li>
+	</li>
+	<li>Deprecated WaitTimedOutException in place of new improved TimeOutException, and ThrowTimeoutExceptionAfter is now templated</li>
 	<li>SpinLock does yield</li>
 	<li>qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ , and use Memory::SharedPtr (and enable_shared_from_this) in several
 	ther classes like BLOB - as a performance tweak</li>
@@ -51,6 +64,7 @@ History
 		Lose TRAITS support from Stack<>, Queue<>, and Deque<>, since simpler, and only needed for equals(). Instead, use Equals
 		tempalte param on Equals<> method
 	</li>
+	<li>New DataStructures/OptionsFile</li>
 </ul>
 </td>
 </tr>
