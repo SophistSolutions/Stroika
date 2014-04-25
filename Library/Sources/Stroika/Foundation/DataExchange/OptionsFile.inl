@@ -34,7 +34,7 @@ namespace   Stroika {
             template    <typename T>
             T   OptionsFile::Read (const T& defaultObj)
             {
-                Optional<T> result = Read ();
+                Optional<T> result = Read<T> ();
                 return result.IsPresent() ? *result : defaultObj;
             }
             template    <typename T>
