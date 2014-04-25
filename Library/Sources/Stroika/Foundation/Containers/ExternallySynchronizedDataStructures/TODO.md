@@ -8,3 +8,6 @@ TODO:
 	(o)		MUST THEN - start really cleaning these classes up! EVEN MORE.
 
 			ANd proabbly redo thier appraoch to iteration to match STLs
+
+	(o)		I think we can mostly, or perhaps totoaly lose TRAITs from Array/LinkedList/DoubleLinkedList
+			Just pass in templated compare function to functionst that need it.
