@@ -6,7 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    "../DataStructures/Array.h"
+#include    "../ExternallySynchronizedDataStructures/Array.h"
 
 #include    "PatchableContainerHelper.h"
 
@@ -19,7 +19,7 @@
  *  (GOOD TODO NEXT)
  *      @todo   Redo Array<T,TRAITS>::ForwardIterator - so ut uses Array<T,TRAITS>::ForwardIterator- where
  *              Array<T,TRAITS>::opatchiteraorbase - is a mixin class! Instead of
- *              DataStructures::Array<T,TRAITS>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
+ *              ExternallySynchronizedDataStructures::Array<T,TRAITS>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
  *              PERHAPS EXPERIMETNT...
  *
  *              KEY IS LESS COPY-PASE OF IMPL FROM BASE
@@ -40,7 +40,7 @@ namespace   Stroika {
                     /*
                      *  Patching Support:
                      *
-                     *      This class wraps a basic container (in this case DataStructures::Array)
+                     *      This class wraps a basic container (in this case ExternallySynchronizedDataStructures::Array)
                      *  and adds in patching support (tracking a list of iterators - and managing thier
                      *  patching when appropriately wrapped changes are made to the data structure container.
                      *
@@ -50,10 +50,10 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
-                    class   Array : public PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename LOCKER, typename TRAITS = ExternallySynchronizedDataStructures::Array_DefaultTraits<T>>
+                    class   Array : public PatchableContainerHelper<ExternallySynchronizedDataStructures::Array<T, TRAITS>, LOCKER> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<ExternallySynchronizedDataStructures::Array<T, TRAITS>, LOCKER>;
 
                     public:
                         Array ();
@@ -126,11 +126,11 @@ namespace   Stroika {
                      */
                     template      <typename  T, typename LOCKER, typename TRAITS>
                     class   Array<T, LOCKER, TRAITS>::_ArrayIteratorBase
-                        : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase
-                        , public PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                        : public ExternallySynchronizedDataStructures::Array<T, TRAITS>::_ArrayIteratorBase
+                        , public PatchableContainerHelper<ExternallySynchronizedDataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
                     private:
-                        using   inherited_DataStructure =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_DataStructure =   typename ExternallySynchronizedDataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<ExternallySynchronizedDataStructures::Array<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
 
                     public:
                         _ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, LOCKER, TRAITS>* data);

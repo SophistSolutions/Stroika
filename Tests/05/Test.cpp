@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  Foundation::Containers::Private::DataStructures::LinkedList
+//  Foundation::Containers::ExternallySynchronizedDataStructures::LinkedList
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Private/DataStructures/LinkedList.h"
+#include    "Stroika/Foundation/Containers/ExternallySynchronizedDataStructures/LinkedList.h"
 #include    "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
 #include    "Stroika/Foundation/Containers/Private/SynchronizationUtils.h"
 
@@ -23,8 +23,8 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Containers::ExternallySynchronizedDataStructures;
 using   namespace   Stroika::Foundation::Containers::Private;
-using   namespace   Stroika::Foundation::Containers::Private::DataStructures;
 using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 

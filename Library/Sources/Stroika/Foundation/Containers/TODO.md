@@ -1,25 +1,6 @@
 TODO (Foundation::Containers)
 
 
-	(o)		Move ALL of the Containers/Private/DataStructures classes (e.g. Array, LinkedList, SkipList etc) - except STLContianerWrapper - 
-			to Foundation::ExternallySynchonizedContainerDataStructures.
-
-			(These are all NON-thread-safe, and have no patching.)
-
-			THEN - make sure ALL the interesting concrete containers (e.g. Sequence_Array<>) take move constructors with thier
-			backend type, and that these are efficient (really move).
-
-			I THINK this goes a long way towards addressing KDJs concerns about performance / single threading.
-
-			MUST THEN - start really cleaning these classes up! EVEN MORE.
-
-			ANd proabbly redo thier appraoch to iteration to match STLs
-
-			(MAIN TODO FOR STROIKA v2.0a23?)
-
-
-
-
 	(o)		Get qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr working (value=true)
 
 	(o)		Either normalize the new UpdatableIterable code, or remove it. Its currently marked alpha

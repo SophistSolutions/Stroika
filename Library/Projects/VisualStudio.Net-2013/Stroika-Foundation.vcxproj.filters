@@ -142,6 +142,9 @@
     <Filter Include="Sources\DataExchange\INI">
       <UniqueIdentifier>{c66c07a8-5aa1-47d5-b8b1-855e5b1fa389}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\ExternallySynchronizedDataStructures">
+      <UniqueIdentifier>{b06dc60e-c921-4e52-bc1c-c7e98ca6204a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1191,15 +1194,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.h">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.h">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.h">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1298,9 +1292,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\SkipList.h">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1604,6 +1595,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h">
       <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.h">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\DoublyLinkedList.h">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\LinkedList.h">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.h">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2016,15 +2019,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.inl">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.inl">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -2123,9 +2117,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\SkipList.inl">
-      <Filter>Sources\Containers\Private\DataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -2435,6 +2426,24 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.inl">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\DoublyLinkedList.inl">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\LinkedList.inl">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\ReadMe.md">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.inl">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\TODO.md">
+      <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </None>
   </ItemGroup>
 </Project>

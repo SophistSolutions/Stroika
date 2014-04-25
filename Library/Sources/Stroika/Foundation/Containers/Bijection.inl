@@ -35,7 +35,6 @@ namespace   Stroika {
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
-                RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -44,7 +43,6 @@ namespace   Stroika {
                 : inherited (static_cast < inherited&& > (src))
                 //: inherited (move<inherited> (src))
             {
-                //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>

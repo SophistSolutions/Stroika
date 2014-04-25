@@ -72,7 +72,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   UseLinkedListTraitsType_    =   Private::DataStructures::LinkedList_DefaultTraits<T, void>;
+                    using   UseLinkedListTraitsType_    =   ExternallySynchronizedDataStructures::LinkedList_DefaultTraits<T, void>;
                     using   DataStructureImplType_      =   Private::PatchingDataStructures::LinkedList<T, Private::ContainerRepLockDataSupport_, UseLinkedListTraitsType_>;
                     using   IteratorRep_                =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 

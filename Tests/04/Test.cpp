@@ -1,13 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::Containers::Private::DataStructures::Array
+//  TEST    Foundation::Containers::ExternallySynchronizedDataStructures::Array
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Private/DataStructures/Array.h"
+#include    "Stroika/Foundation/Containers/ExternallySynchronizedDataStructures/Array.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -21,7 +21,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
-using   Private::DataStructures::Array;
+using   ExternallySynchronizedDataStructures::Array;
 
 
 

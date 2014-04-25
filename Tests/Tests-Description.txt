@@ -1,11 +1,11 @@
 [01]	Foundation::Caching
 [02]	Foundation::Characters::Strings
 [03]	Foundation::Configuration
-[04]	Foundation::Containers::Private::DataStructures::Array
-[05]	Foundation::Containers::Private::DataStructures::LinkedList
-[06]	Foundation::Containers::Private::DataStructures::DoublyLinkedList
+[04]	Foundation::Containers::ExternallySynchronizedDataStructures::Array
+[05]	Foundation::Containers::ExternallySynchronizedDataStructures::LinkedList
+[06]	Foundation::Containers::ExternallySynchronizedDataStructures::DoublyLinkedList
 [07]	Foundation::Containers::Private::DataStructures::STLContainerWrapper
-[08]	Foundation::Containers::Private::DataStructures::SkipList
+[08]	Foundation::Containers::ExternallySynchronizedDataStructures::SkipList
 [09]	Foundation::Containers::Association
 [10]	Foundation::Containers::Bag
 [11]	Foundation::Containers::Bijection

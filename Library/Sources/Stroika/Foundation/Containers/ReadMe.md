@@ -6,6 +6,17 @@ Overview
   For example, a Stack<T>, or Set<T>, or Sequence<T>.
 
 
+Quick Start
+-----------
+
+	#include "Stroika/Foundation/Containers/Seqeunce.h"
+	using Stroika::Foundation::Containers;
+	Sequence<int> x = { 1, 3, 4 };
+	Assert (x.length () == 3);
+	x.push_back (3);
+	Assert (x.length () == 4);
+
+
 Rejected Ideas
 --------------
 	Make KEYs a UNIFYING concept for containers

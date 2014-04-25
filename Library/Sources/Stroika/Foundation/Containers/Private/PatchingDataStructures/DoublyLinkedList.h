@@ -9,7 +9,7 @@
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../../Traversal/Iterator.h"
 
-#include    "../DataStructures/DoublyLinkedList.h"
+#include    "../../ExternallySynchronizedDataStructures/DoublyLinkedList.h"
 
 #include    "PatchableContainerHelper.h"
 
@@ -35,7 +35,7 @@ namespace   Stroika {
                     /*
                      *  Patching Support:
                      *
-                     *      This class wraps a basic container (in this case DataStructures::DoublyLinkedList)
+                     *      This class wraps a basic container (in this case ExternallySynchronizedDataStructures::DoublyLinkedList)
                      *  and adds in patching support (tracking a list of iterators - and managing thier
                      *  patching when appropriately wrapped changes are made to the data structure container.
                      *
@@ -45,10 +45,10 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
-                    class   DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename LOCKER, typename TRAITS = ExternallySynchronizedDataStructures::DoublyLinkedList_DefaultTraits<T>>
+                    class   DoublyLinkedList : public PatchableContainerHelper<ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>, LOCKER> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>;
 
                     public:
                         DoublyLinkedList ();
@@ -59,7 +59,7 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList<T, LOCKER, TRAITS>& operator= (const DoublyLinkedList<T, LOCKER, TRAITS>& rhs) =   delete;
 
                     public:
-                        using   Link    =   typename DataStructures::DoublyLinkedList<T, TRAITS>::Link;
+                        using   Link    =   typename ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>::Link;
 
                     public:
                         class   ForwardIterator;
@@ -123,10 +123,10 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template      <typename  T, typename LOCKER, typename TRAITS>
-                    class   DoublyLinkedList<T, LOCKER, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                    class   DoublyLinkedList<T, LOCKER, TRAITS>::ForwardIterator : public ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator, public PatchableContainerHelper<ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
                     private:
-                        using   inherited_DataStructure =   typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_DataStructure =   typename ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<ExternallySynchronizedDataStructures::DoublyLinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, LOCKER, TRAITS>* data);

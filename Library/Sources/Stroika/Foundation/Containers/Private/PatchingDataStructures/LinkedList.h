@@ -9,7 +9,7 @@
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../../Traversal/Iterator.h"
 
-#include    "../DataStructures/LinkedList.h"
+#include    "../../ExternallySynchronizedDataStructures/LinkedList.h"
 
 #include    "PatchableContainerHelper.h"
 
@@ -36,7 +36,7 @@ namespace   Stroika {
                     /*
                      *  Patching Support:
                      *
-                     *      This class wraps a basic container (in this case DataStructures::LinkedList)
+                     *      This class wraps a basic container (in this case ExternallySynchronizedDataStructures::LinkedList)
                      *  and adds in patching support (tracking a list of iterators - and managing thier
                      *  patching when appropriately wrapped changes are made to the data structure container.
                      *
@@ -49,10 +49,10 @@ namespace   Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template      <typename  T, typename LOCKER, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
-                    class   LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER> {
+                    template      <typename  T, typename LOCKER, typename TRAITS = ExternallySynchronizedDataStructures::LinkedList_DefaultTraits<T>>
+                    class   LinkedList : public PatchableContainerHelper<ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>, LOCKER> {
                     private:
-                        using   inherited   =   PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>;
+                        using   inherited   =   PatchableContainerHelper<ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>, LOCKER>;
 
                     public:
                         LinkedList ();
@@ -63,7 +63,7 @@ namespace   Stroika {
                         nonvirtual  LinkedList<T, LOCKER, TRAITS>& operator= (const LinkedList<T, LOCKER, TRAITS>& list) = delete;
 
                     public:
-                        using   Link    =    typename DataStructures::LinkedList<T, TRAITS>::Link;
+                        using   Link    =    typename ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>::Link;
 
                     public:
                         class   ForwardIterator;
@@ -124,11 +124,11 @@ namespace   Stroika {
                      */
                     template      <typename  T, typename LOCKER, typename TRAITS>
                     class   LinkedList<T, LOCKER, TRAITS>::ForwardIterator
-                        : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator
-                        , public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
+                        : public ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>::ForwardIterator
+                        , public PatchableContainerHelper<ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn {
                     private:
-                        using   inherited_DataStructure =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
-                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
+                        using   inherited_DataStructure =   typename ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>::ForwardIterator;
+                        using   inherited_PatchHelper   =   typename PatchableContainerHelper<ExternallySynchronizedDataStructures::LinkedList<T, TRAITS>, LOCKER>::PatchableIteratorMixIn;
 
                     public:
                         ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, LOCKER, TRAITS>* data);

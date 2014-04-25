@@ -74,7 +74,7 @@ namespace   Stroika {
                     using   KeyEqualsCompareFunctionType        =   typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType;
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   Private::DataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
                     using   DataStructureImplType_              =   Private::PatchingDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>, Private::ContainerRepLockDataSupport_>;
 
                 private:

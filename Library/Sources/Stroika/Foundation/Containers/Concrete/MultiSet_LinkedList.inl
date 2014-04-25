@@ -75,7 +75,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   Private::DataStructures::LinkedList<MultiSetEntry<T>>;
+                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::LinkedList<MultiSetEntry<T>>;
                     using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<MultiSetEntry<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<MultiSetEntry<T>, DataStructureImplType_>;
 
