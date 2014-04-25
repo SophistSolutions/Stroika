@@ -102,6 +102,8 @@ namespace   Stroika {
                 explicit Stack (_SharedPtrIRep&& src);
 
             public:
+                /**
+                 */
                 nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  Stack<T>& operator= (Stack<T> && rhs)
@@ -159,12 +161,18 @@ namespace   Stroika {
             public:
                 /**
                  *      Syntactic sugar for Equals()
+                 *
+                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+                 *          use a different comparer, call Equals() directly.
                  */
                 nonvirtual  bool    operator== (const Stack<T>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for not Equals()
+                 *
+                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+                 *          use a different comparer, call Equals() directly.
                  */
                 nonvirtual  bool    operator!= (const Stack<T>& rhs) const;
 

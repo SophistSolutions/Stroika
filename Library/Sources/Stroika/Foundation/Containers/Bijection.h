@@ -165,6 +165,7 @@ namespace   Stroika {
                  */
                 Bijection ();
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
+                Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
@@ -181,7 +182,18 @@ namespace   Stroika {
 #endif
 
             public:
+                /**
+                 */
                 nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) =   default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**

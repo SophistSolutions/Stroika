@@ -102,7 +102,7 @@ namespace   Stroika {
                 /*
                  */
                 PriorityQueue ();
-                PriorityQueue (const Queue<T>& s);
+                PriorityQueue (const PriorityQueue<T>& src);
 
             protected:
                 explicit PriorityQueue (const _SharedPtrIRep& rep);
@@ -113,7 +113,18 @@ namespace   Stroika {
 #endif
 
             public:
+                /**
+                 */
                 nonvirtual  PriorityQueue<T>& operator= (const PriorityQueue<T>& src);
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T> && rhs) = default;
+#endif
 
             public:
                 nonvirtual  void    RemoveAll ();

@@ -90,6 +90,8 @@ namespace   Stroika {
                 explicit SortedMultiSet (_SharedPtrIRep&& src);
 
             public:
+                /**
+                 */
                 nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS> && rhs)

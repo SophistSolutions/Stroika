@@ -195,7 +195,10 @@ namespace   Stroika {
             public:
                 ~Mapping ();
 #endif
+
             public:
+                /**
+                 */
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) =   default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)

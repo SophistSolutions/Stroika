@@ -140,6 +140,8 @@ namespace   Stroika {
 #endif
 
             public:
+                /**
+                 */
                 nonvirtual  Queue<T>& operator= (const Queue<T>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  Queue<T>& operator= (Queue<T> && rhs)
@@ -232,12 +234,18 @@ namespace   Stroika {
             public:
                 /**
                  *      Syntactic sugar for Equals()
+                 *
+                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+                 *          use a different comparer, call Equals() directly.
                  */
                 nonvirtual  bool    operator== (const Queue<T>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for not Equals()
+                 *
+                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+                 *          use a different comparer, call Equals() directly.
                  */
                 nonvirtual  bool    operator!= (const Queue<T>& rhs) const;
 

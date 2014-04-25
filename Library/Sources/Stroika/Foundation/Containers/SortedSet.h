@@ -105,6 +105,8 @@ namespace   Stroika {
                 explicit SortedSet (_SharedPtrIRep&& src);
 
             public:
+                /**
+                 */
                 nonvirtual  SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  SortedSet<T, TRAITS>& operator= (SortedSet<T, TRAITS> && rhs)

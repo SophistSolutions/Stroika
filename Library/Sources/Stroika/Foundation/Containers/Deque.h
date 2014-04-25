@@ -93,6 +93,15 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Deque<T>&   operator= (const Deque<T>& rhs) = default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Deque<T>& operator= (Deque<T> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Deque<T>& operator= (Deque<T> && rhs) = default;
+#endif
 
             public:
                 /**

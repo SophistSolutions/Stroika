@@ -100,6 +100,8 @@ namespace   Stroika {
                 explicit SortedAssociation (_SharedPtrIRep&& src);
 
             public:
+                /**
+                 */
                 nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
                 nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)
