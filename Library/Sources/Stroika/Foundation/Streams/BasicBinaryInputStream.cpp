@@ -7,6 +7,7 @@
 
 #include    "../Containers/Common.h"
 #include    "../Execution/OperationNotSupportedException.h"
+#include    "../Memory/BLOB.h"
 
 #include    "BasicBinaryInputStream.h"
 
@@ -125,6 +126,11 @@ private:
  */
 BasicBinaryInputStream::BasicBinaryInputStream (const Byte* start, const Byte* end)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (start, end)))
+{
+}
+
+BasicBinaryInputStream::BasicBinaryInputStream (const Memory::BLOB& blob)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (blob.begin (), blob.end ())))
 {
 }
 

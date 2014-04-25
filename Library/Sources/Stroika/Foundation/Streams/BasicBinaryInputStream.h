@@ -68,6 +68,7 @@ namespace   Stroika {
 #else
                 BasicBinaryInputStream (const vector<Byte>& v);
 #endif
+                BasicBinaryInputStream (const Memory::BLOB& blob);
                 BasicBinaryInputStream (const Byte* start, const Byte* end);
             };
 

@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "../Memory/BLOB.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -56,6 +57,10 @@ namespace   Stroika {
                 if (start != end) {
                     _GetRep ()->Write (start, end);
                 }
+            }
+            inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
+            {
+                Write (blob.begin (), blob.end ());
             }
             inline  void    BinaryOutputStream::Flush () const
             {

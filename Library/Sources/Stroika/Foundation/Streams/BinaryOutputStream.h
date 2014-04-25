@@ -39,6 +39,9 @@
  */
 
 
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -100,6 +103,7 @@ namespace   Stroika {
                  *  Writes always succeed fully or throw (no partial writes).
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end) const;
+                nonvirtual  void    Write (const Memory::BLOB& blob) const;
 
             public:
                 /**
