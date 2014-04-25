@@ -40,7 +40,9 @@ namespace   Stroika {
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src)
-                : inherited (move<inherited> (src))
+            // dont udnrestand why move doesnt work
+                : inherited (static_cast < inherited&& > (src))
+                //: inherited (move<inherited> (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
