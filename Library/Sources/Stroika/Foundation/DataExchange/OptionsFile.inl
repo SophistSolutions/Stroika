@@ -23,15 +23,24 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            T   OptionsFile::Read (T defaultObj)
+            Optional<T>   OptionsFile::Read ()
             {
-                T r;
-                return r;
+                Optional<VariantValue>  tmp = Read<VariantValue> ();
+                if (tmp.IsMissing ()) {
+                    return Optional<T> ();
+                }
+                return fMapper_.ToObject<T> (*tmp);
             }
-
             template    <typename T>
-            void    OptionsFile::Write (T optionsObject)
+            T   OptionsFile::Read (const T& defaultObj)
             {
+                Optional<T> result = Read ();
+                return result.IsPresent() ? *result : defaultObj;
+            }
+            template    <typename T>
+            void    OptionsFile::Write (const T& optionsObject)
+            {
+                Write<VariantValue> (fMapper_.FromObject<T> (optionsObject));
             }
 
 
