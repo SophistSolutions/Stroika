@@ -1095,7 +1095,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             136000,
-            7.1,
+            7.2,
             &failedTests
         );
         Tester (
@@ -1111,7 +1111,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
             136000,
-            7.1,
+            7.2,
             &failedTests
         );
         Tester (
