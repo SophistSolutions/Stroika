@@ -101,7 +101,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
 
 /*
  ********************************************************************************
- ****************** DataExchange::ObjectVariantMapper *********************
+ ********************* DataExchange::ObjectVariantMapper ************************
  ********************************************************************************
  */
 namespace {

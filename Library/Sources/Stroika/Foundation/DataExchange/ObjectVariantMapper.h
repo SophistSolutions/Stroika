@@ -293,6 +293,12 @@ namespace   Stroika {
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer ();
 
+            public:
+                /**
+                 */
+                template    <typename ENUM_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Bijection<ENUM_TYPE, String>& nameMap);
+
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
