@@ -465,6 +465,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Read the last element (GetLast()). Requires not empty.
                  */
                 nonvirtual  T       back () const;
 
