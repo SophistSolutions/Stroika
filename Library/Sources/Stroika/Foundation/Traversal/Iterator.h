@@ -187,7 +187,7 @@ namespace   Stroika {
              *  Key Differences between Stroika Iterators and STL Iterators:
              *
              *      1.      Stroika iterators are threadsafe. Updates to the underlying container
-             *              never interfere with iteration, and need no explicit synchonization.
+             *              never interfere with iteration, and need no explicit synchronization.
              *
              *      2.      Stroika iterators continue to work correctly when the underlying
              *              container is modified.

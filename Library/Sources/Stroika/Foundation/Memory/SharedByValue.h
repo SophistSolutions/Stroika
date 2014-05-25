@@ -124,10 +124,10 @@ namespace   Stroika {
              */
 #if     qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
             template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
+            using  SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
 #else
             template    <typename   T, typename SHARED_IMLP>
-            using  SharedByValue_CopySharedPtrDefaultSynchonization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
+            using  SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
 #endif
 
 
@@ -137,7 +137,7 @@ namespace   Stroika {
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrDefaultSynchonization<T, SHARED_IMLP>>
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrDefaultSynchronization<T, SHARED_IMLP>>
             struct   SharedByValue_Traits {
                 using   element_type                =   T;
                 using   element_copier_type         =   COPIER;
