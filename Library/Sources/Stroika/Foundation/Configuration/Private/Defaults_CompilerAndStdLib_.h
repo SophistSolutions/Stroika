@@ -51,6 +51,7 @@
 // _MSC_FULL_VER value - see http://msdn.microsoft.com/en-us/library/b0084kay.aspx - so far unused
 #define _MS_VS_2k13_FULLVER_            180021005
 #define _MS_VS_2k13_Update1_FULLVER_    180021005
+#define _MS_VS_2k13_Update2_FULLVER_    180030501
 
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
