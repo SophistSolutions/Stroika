@@ -20,12 +20,13 @@ History
 
 
 
-  <tr>
+<tr>
 <td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a23">v2.0a23x</a><br/>2014-04-??</td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a23">v2.0a23</a><br/>2014-05-26</td>
 <td>
 <ul>
-	<li>nothin</li>
+	<li>_MS_VS_2k13_Update2_FULLVER_ Visual Studio.net 2013 Update 2 compiler defines and re-ran tests.</li>
+	<li>A few other minor tweaks to ObjectVariantMapper</li>
 </ul>
 </td>
 </tr>
