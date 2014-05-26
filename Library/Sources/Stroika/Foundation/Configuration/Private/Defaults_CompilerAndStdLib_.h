@@ -99,8 +99,7 @@
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
-// MSFT tries to support this but its buggy so disable usage
-#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     0
 #endif
@@ -121,6 +120,7 @@
 #ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
 
 #if   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     0
@@ -139,6 +139,7 @@
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
@@ -159,7 +160,7 @@
 #ifndef qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy   0
 #endif
@@ -177,6 +178,7 @@
 #ifndef qCompilerAndStdLib_constexpr_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_constexpr_Buggy   0
@@ -195,6 +197,7 @@
 #ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
@@ -269,7 +272,7 @@
 #ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   0
 #endif
@@ -328,11 +331,11 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_UsingInheritedConstructor_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy       0
+#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      0
 #endif
 
 #endif
@@ -377,6 +380,7 @@ EXAMPLE:
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy            0
@@ -395,6 +399,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_noexcept_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_noexcept_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_noexcept_Buggy    0
@@ -412,15 +417,12 @@ EXAMPLE:
 
 
 
-
-
-
-
 /*
 */
 #ifndef qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    0
@@ -490,6 +492,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy 0
@@ -575,28 +578,13 @@ EXAMPLE:
 
 
 
-#if 0
-//
-// Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
-// -- LGP 2012-05-27
-//
-//      MAYBE use http://www.mkssoftware.com/docs/man3/pthread_cancel.3.asp
-//
-//  @todo   At THIS point - I think qEVENT_GCCTHREADS_LINUX_WAITBUG is probbaly  NOT a GCC bug. Must debug better! But no
-//          reason to think this is a compiler bug...
-//
-#ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
-#endif
-#endif
-
-
 
 
 
 #ifndef qCompilerAndStdLib_thread_local_keyword_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_thread_local_keyword_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #elif     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_thread_local_keyword_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
@@ -605,6 +593,9 @@ EXAMPLE:
 #endif
 
 #endif
+
+
+
 
 
 
@@ -625,6 +616,7 @@ EXAMPLE:
 #ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qTemplateAccessCheckConfusionProtectedNeststingBug   0
@@ -639,6 +631,9 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
 
 #if     defined (_MSC_VER)
+// NO LONGER CRASHES as of _MS_VS_2k13_Update2_FULLVER_ - investigate error message. Could be my bug?
+// -- LGP 2014-05-25
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
@@ -673,9 +668,9 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   0
+#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        0
 #endif
 
 #endif
@@ -770,6 +765,7 @@ EXAMPLE:
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   0
@@ -792,6 +788,7 @@ EXAMPLE:
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    0
@@ -869,7 +866,8 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy      (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
+#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        0
 #endif
@@ -890,6 +888,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
 
 #if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
@@ -954,6 +953,7 @@ EXAMPLE:
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_deprecatedFeatureMissing              0
