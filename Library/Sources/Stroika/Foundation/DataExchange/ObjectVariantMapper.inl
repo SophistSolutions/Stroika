@@ -339,6 +339,7 @@ namespace   Stroika {
             template    <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Bijection<ENUM_TYPE, String>& nameMap)
             {
+                using   Characters::String_Constant;
                 static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
                 using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
