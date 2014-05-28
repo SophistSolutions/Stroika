@@ -23,6 +23,17 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, str
 }
 
 template    <>
+Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, string> (const string& from, const ASCII& extraData)
+{
+    for (auto i = from.begin (); i != from.end (); ++i) {
+        if (not isascii (*i)) {
+            Execution::DoThrow (BadFormatException ());
+		}
+    }
+    return ASCIIStringToWide (from);
+}
+
+template    <>
 string  DataExchange::CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData)
 {
     // @todo no chekcing done yet...

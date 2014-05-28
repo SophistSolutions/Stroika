@@ -39,10 +39,13 @@ namespace   Stroika {
 
 
             struct UTF8 {};
-            template    <>
-            Characters::String  CheckedConverter<Characters::String, UTF8, string> (const string& from, const UTF8& extraData);
-
             struct ASCII {};
+
+			template    <>
+            Characters::String  CheckedConverter<Characters::String, UTF8, string> (const string& from, const UTF8& extraData);
+            template    <>
+            Characters::String  CheckedConverter<Characters::String, ASCII, string> (const string& from, const ASCII& extraData);
+
             template    <>
             string  CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData);
 
