@@ -94,6 +94,12 @@ Duration::Duration ()
 {
 }
 
+Duration::Duration (const string& durationStr)
+    : fDurationRep_ (durationStr)
+{
+    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
+}
+
 Duration::Duration (const String& durationStr)
     : fDurationRep_ (durationStr.AsASCII ())
 {
