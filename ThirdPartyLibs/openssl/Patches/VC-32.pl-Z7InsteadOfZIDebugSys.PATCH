@@ -1,7 +1,7 @@
-*** VC-32-ORIG.pl	2013-02-11 10:26:04.000000000 -0500
---- VC-32.pl	2013-09-18 20:56:53.597296800 -0400
+*** VC-32-ORIG.pl	2014-05-29 22:26:19.807419200 -0400
+--- VC-32.pl	2014-05-29 22:26:14.769025100 -0400
 ***************
-*** 44,50 ****
+*** 46,52 ****
       # 
       $base_cflags= " $mf_cflag";
       my $f = $shlib || $fips ?' /MD':' /MT';
@@ -9,7 +9,7 @@
       $opt_cflags=$f.' /Ox';
       $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
       $lflags="/nologo /subsystem:console /opt:ref";
---- 44,50 ----
+--- 46,52 ----
       # 
       $base_cflags= " $mf_cflag";
       my $f = $shlib || $fips ?' /MD':' /MT';
@@ -18,24 +18,24 @@
       $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
       $lflags="/nologo /subsystem:console /opt:ref";
 ***************
-*** 125,131 ****
+*** 127,133 ****
       {
       $base_cflags= " $mf_cflag";
       my $f = $shlib || $fips ?' /MD':' /MT';
 !     $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
+      $ff = "/fixed";
       $opt_cflags=$f.' /Ox /O2 /Ob2';
       $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-      $lflags="/nologo /subsystem:console /opt:ref";
---- 125,131 ----
+--- 127,133 ----
       {
       $base_cflags= " $mf_cflag";
       my $f = $shlib || $fips ?' /MD':' /MT';
 !     $lib_cflag='/Z7' if (!$shlib);	# remove /DEFAULTLIBs from static lib
+      $ff = "/fixed";
       $opt_cflags=$f.' /Ox /O2 /Ob2';
       $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-      $lflags="/nologo /subsystem:console /opt:ref";
 ***************
-*** 148,155 ****
+*** 151,158 ****
   	}
   
   # generate symbols.pdb unconditionally
@@ -44,7 +44,7 @@
   $lflags.=" /debug";
   
   $obj='.obj';
---- 148,155 ----
+--- 151,158 ----
   	}
   
   # generate symbols.pdb unconditionally
@@ -54,7 +54,7 @@
   
   $obj='.obj';
 ***************
-*** 195,201 ****
+*** 198,204 ****
   		$asm='nasm -f win64 -DNEAR -Ox -g';
   		$afile='-o ';
   	} else {
@@ -62,7 +62,7 @@
   		$afile='/Fo';
   	}
   } elsif ($FLAVOR =~ /WIN64I/) {
---- 195,201 ----
+--- 198,204 ----
   		$asm='nasm -f win64 -DNEAR -Ox -g';
   		$afile='-o ';
   	} else {
@@ -71,7 +71,7 @@
   	}
   } elsif ($FLAVOR =~ /WIN64I/) {
 ***************
-*** 209,215 ****
+*** 212,218 ****
   	$asmtype="win32n";
   	$afile='-o ';
   } else {
@@ -79,7 +79,7 @@
   	$afile='/Fo';
   	$asmtype="win32";
   }
---- 209,215 ----
+--- 212,218 ----
   	$asmtype="win32n";
   	$afile='-o ';
   } else {
