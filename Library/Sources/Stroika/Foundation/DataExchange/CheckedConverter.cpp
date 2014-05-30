@@ -28,7 +28,7 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, st
     for (auto i = from.begin (); i != from.end (); ++i) {
         if (not isascii (*i)) {
             Execution::DoThrow (BadFormatException ());
-		}
+        }
     }
     return ASCIIStringToWide (from);
 }
