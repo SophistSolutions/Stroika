@@ -238,19 +238,19 @@ namespace   Stroika {
             {
                 return bool (Find (subString, co) != kBadIndex);
             }
-            inline  String    String::InsertAt_nu (Character c, size_t at) const
+            inline  String    String::InsertAt (Character c, size_t at) const
             {
-                return InsertAt_nu (&c, &c + 1, at);
+                return InsertAt (&c, &c + 1, at);
             }
-            inline  String    String::InsertAt_nu (const String& s, size_t at) const
+            inline  String    String::InsertAt (const String& s, size_t at) const
             {
                 _SafeReadRepAccessor    copyAccessor { this };
                 pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-                return InsertAt_nu (d.first, d.second, at);
+                return InsertAt (d.first, d.second, at);
             }
-            inline  String    String::InsertAt_nu (const wchar_t* from, const wchar_t* to, size_t at) const
+            inline  String    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
             {
-                return InsertAt_nu (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+                return InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
             }
             inline  void    String::Append (const wchar_t* from, const wchar_t* to)
             {

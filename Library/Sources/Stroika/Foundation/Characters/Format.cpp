@@ -126,23 +126,3 @@ String Characters::Format (const wchar_t* format, ...)
     va_end (argsList);
     return move (tmp);
 }
-
-
-
-
-
-/*
- ********************************************************************************
- *************************** StripTrailingCharIfAny *****************************
- ********************************************************************************
- */
-String  Characters::StripTrailingCharIfAny (const String& s, wchar_t c)
-{
-    if (s.size () > 0 and s[s.size () - 1] == c) {
-        String  tmp =   s;
-        tmp.erase (tmp.size () - 1);
-        return tmp;
-    }
-    return s;
-}
-

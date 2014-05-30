@@ -478,15 +478,15 @@ namespace   {
         VerifyTestResult (s.GetLength () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
-        s = s.InsertAt_nu ('x', 2);
+        s = s.InsertAt ('x', 2);
         VerifyTestResult (s == L"frxex");
         {
             wchar_t kZero[] =   L"";
-            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 0);
+            s = s.InsertAt (std::begin (kZero), std::begin (kZero), 0);
             VerifyTestResult (s == L"frxex");
-            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 1);
+            s = s.InsertAt (std::begin (kZero), std::begin (kZero), 1);
             VerifyTestResult (s == L"frxex");
-            s = s.InsertAt_nu (std::begin (kZero), std::begin (kZero), 5);
+            s = s.InsertAt (std::begin (kZero), std::begin (kZero), 5);
             VerifyTestResult (s == L"frxex");
         }
     }
@@ -502,7 +502,7 @@ namespace   {
         VerifyTestResult (s.GetLength () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
-        s = s.InsertAt_nu ('x', 2);
+        s = s.InsertAt ('x', 2);
         VerifyTestResult (s == L"frxex");
     }
 

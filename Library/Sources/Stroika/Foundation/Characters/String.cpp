@@ -451,61 +451,7 @@ void    String::SetCharAt (Character c, size_t i)
     *this = sb.str ();
 }
 
-void    String::InsertAt (const Character* from, const Character* to, size_t at)
-{
-    // DEPRECATED
-    Require (at >= 0);
-    Require (at <= GetLength ());
-    Require (from <= to);
-    Require (from != nullptr or from == to);
-    Require (to != nullptr or from == to);
-    if (from == to) {
-        return;
-    }
-    _SafeReadRepAccessor copyAccessor { this };
-    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
-    sRep->InsertAt (from, to, at);
-    *this = String (sRep);
-}
-
-void    String::InsertAt (Character c, size_t at)
-{
-    // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    InsertAt (&c, &c + 1, at);
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-}
-void    String::InsertAt (const String& s, size_t at)
-{
-    // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    /// @TODO - REDO / RETHINK THIS COMMENT - OBSOLETE
-    // NB: I don't THINK we need be careful if s.fRep == this->fRep because when we first derefence this->fRep it will force a CLONE, so OUR fRep will be unique
-    // And no need to worry about lifetime of 'p' because we don't allow changes to 's' from two different threads at a time, and the rep would rep if accessed from
-    // another thread could only change that other envelopes copy
-    _SafeReadRepAccessor rhsCopyAccessor { &s };
-    pair<const Character*, const Character*> d = rhsCopyAccessor._ConstGetRep ().GetData ();
-    String  thisCopy =  *this;
-    thisCopy.InsertAt (d.first, d.second, at);
-    *this = thisCopy;
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-}
-void    String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at)
-{
-    // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START(4996)
-    InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-}
-
-String    String::InsertAt_nu (const Character* from, const Character* to, size_t at) const
+String    String::InsertAt (const Character* from, const Character* to, size_t at) const
 {
     Require (at >= 0);
     Require (at <= GetLength ());

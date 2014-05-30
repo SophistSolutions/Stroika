@@ -112,15 +112,6 @@ namespace   Stroika {
             String Format (const wchar_t* format, ...);
 
 
-            /**
-             *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
-             *  characters (like trailing CRLF, or trailing '.').
-             *
-             *  @todo   Should this be part of String class? Or deleted?
-             */
-            String _DeprecatedFunction_ (StripTrailingCharIfAny (const String& s, wchar_t c), "Deprecated in v2.0a20 - use s.EndsWith (c)? s.CircularSubString (0, -1): s instead");
-
-
         }
     }
 }

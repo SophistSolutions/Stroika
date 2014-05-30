@@ -84,9 +84,6 @@ namespace   Stroika {
                 };
 
 
-                typedef String_ExternalMemoryOwnership_ApplicationLifetime _DeprecatedFunction_ (String_Constant, "Deprecated as of v2.0a20 - see Characters::String_Constant instead");
-
-
             }
         }
     }
