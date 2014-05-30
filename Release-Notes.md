@@ -23,10 +23,13 @@ History
 
 <tr>
 <td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a24">v2.0a24x</a><br/>2014-05-??</td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a24">v2.0a24</a><br/>2014-05-29</td>
 <td>
 <ul>
-	<li>nothing yet.</li>
+	<li>Minor tweaks to Time::Duration (new CTOR); and DataExchange::CheckedConverter<>.</li>
+	<li>New CallerStalenessCache<>.</li>
+	<li>OpenSSL 1.0.1g (post heartbleed)</li>
+	<li>Lose some earlier deprecated functions</li>
 </ul>
 </td>
 </tr>
