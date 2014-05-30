@@ -71,6 +71,11 @@ namespace   Stroika {
                 }
                 return o->fValue;
             }
+            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
+            inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()
+            {
+                Clear();
+            }
 
 
         }

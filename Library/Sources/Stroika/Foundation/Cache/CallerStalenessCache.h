@@ -86,6 +86,12 @@ namespace   Stroika {
                  */
                 nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
 
+            public:
+                /**
+                 * \brief STL-ish alias for Clear/RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
             private:
                 struct  myVal_ {
                     VALUE   fValue;
