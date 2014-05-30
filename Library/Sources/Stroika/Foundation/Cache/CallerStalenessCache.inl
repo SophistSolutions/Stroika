@@ -58,7 +58,7 @@ namespace   Stroika {
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
             inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (KEY k, VALUE v)
             {
-                fMap_.Add (k, myVal_ (v, GetCurrentTimestamp ()));
+                fMap_.Add (k, myVal_ (std::move (v), GetCurrentTimestamp ()));
             }
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
             VALUE   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller)

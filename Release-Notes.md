@@ -24,10 +24,10 @@ History
 
 <tr>
 <td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a25">v2.0a25x</a><br/>2014-05-??</td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a25">v2.0a25</a><br/>2014-05-29</td>
 <td>
 <ul>
-	<li>nothing yet.</li>
+	<li>Minor fix to CallerStalenessCache</li>
 </ul>
 </td>
 </tr>
@@ -43,7 +43,7 @@ History
 <td>
 <ul>
 	<li>Minor tweaks to Time::Duration (new CTOR); and DataExchange::CheckedConverter<>.</li>
-	<li>New CallerStalenessCache<>.</li>
+	<li>New CallerStalenessCache.</li>
 	<li>OpenSSL 1.0.1g (post heartbleed)</li>
 	<li>Lose some earlier deprecated functions</li>
 	<li>Very little change, and largely untested.</li>
