@@ -17,6 +17,17 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************** CallerStalenessCache_Traits_DEFAULT *********************
+             ********************************************************************************
+             */
+            inline  CallerStalenessCache_Traits_DEFAULT::TimeStampType   CallerStalenessCache_Traits_DEFAULT::GetCurrentTimestamp ()
+            {
+                return Time::GetTickCount ();
+            }
+
+
+            /*
+             ********************************************************************************
              ****************** CallerStalenessCache<KEY,VALUE,TIME_TRAITS> *****************
              ********************************************************************************
              */

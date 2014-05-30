@@ -35,7 +35,7 @@ namespace   Stroika {
              */
             struct  CallerStalenessCache_Traits_DEFAULT {
                 using  TimeStampType = Time::DurationSecondsType  ; // type must support operator<()
-                static  TimeStampType   GetCurrentTimestamp()   { return Time::GetTickCount (); }
+                static  TimeStampType   GetCurrentTimestamp();
             };
 
 
@@ -43,12 +43,12 @@ namespace   Stroika {
              *
              *  The idea behind this cache to to track when something is added, and that the lookup function can avoid
              *  a costly call to compute soemthing if its been recently enough added.
-			 *
-			 *	For example, consider a system where memory is stored across a slow bus, and several components need to read data from
-			 *	across that bus. But the different components have different tolerance for staleness.
-			 *
-			 *	This CallerStalenessCache will store when the value is updated, and let the caller either return the
-			 *	value from cache, or fetch it and update the cache if needed.
+             *
+             *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
+             *  across that bus. But the different components have different tolerance for staleness.
+             *
+             *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
+             *  value from cache, or fetch it and update the cache if needed.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -92,7 +92,7 @@ namespace   Stroika {
                     {
                     }
 
-					// @todo
+                    // @todo
                     //tmphack cuz Stroika Mapping requires operator== (to be fixed soon)
                     bool operator==(const myVal_& rhs) const
                     {
@@ -101,7 +101,7 @@ namespace   Stroika {
                 };
 
             private:
-                Mapping<KEY, myVal_>  fMap_;
+                Containers::Mapping<KEY, myVal_>  fMap_;
             };
 
 
