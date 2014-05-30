@@ -79,7 +79,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
+                nonvirtual   void   Add (KEY k, VALUE v);
+
+            public:
+                /**
+                 */
+                nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
 
             private:
                 struct  myVal_ {
