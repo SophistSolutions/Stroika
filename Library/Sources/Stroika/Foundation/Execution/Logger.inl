@@ -23,6 +23,14 @@ namespace   Stroika {
             {
                 return fAppender_;
             }
+            inline  Priority    Logger::GetMinLogLevel () const
+            {
+                return fMinLogLevel_;
+            }
+            inline  void        Logger::SetMinLogLevel (Priority minLogLevel)
+            {
+                fMinLogLevel_ = minLogLevel;
+            }
             inline  void    Logger::Log (Priority logLevel, String format, ...)
             {
                 // CANNOT DO NUMBNERIC FILTERING TIL I WORK OUT IF I WANT THE SAME GOOFY NUMBERING AS SYSLOG?

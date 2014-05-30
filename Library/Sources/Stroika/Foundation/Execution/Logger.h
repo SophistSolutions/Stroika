@@ -96,8 +96,7 @@ namespace   Stroika {
                 IAppenderRepPtr fAppender_;
 
             public:
-
-                /*
+                /**
                  * Stroika uses this facility for NO DEBUGGING - but and to be portbale, but
                     convenitnetly these numbers corredspond to teh SYSLOG values (so they can be substeid as needed).
 
@@ -119,11 +118,21 @@ namespace   Stroika {
 
                     Stroika_Define_Enum_Bounds(eEmergency, eDebug)
                 };
-            public:
+
+            private:
                 // EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS
                 Priority    fMinLogLevel_;  // SB PRIVATE
                 // Get/Set LogLevel - this affects what WE EAT INLINE versus passon
 
+            public:
+                /**
+                 */
+                nonvirtual  Priority    GetMinLogLevel () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void        SetMinLogLevel (Priority minLogLevel);
 
             public:
                 /**
