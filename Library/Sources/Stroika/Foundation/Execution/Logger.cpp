@@ -10,7 +10,9 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
+#include    "BlockingQueue.h"
 #include    "Process.h"
+#include    "Thread.h"
 
 #include    "Logger.h"
 
@@ -27,6 +29,12 @@ using   namespace   Stroika::Foundation::Execution;
  */
 Logger  Logger::sThe_;
 
+namespace {
+    BlockingQueue<pair<Logger::Priority, String>>   sOutMsgQ_;
+    Execution::Thread                               sMessagePump_;
+    mutex                                           sMessagePump_EnableMutex_;
+}
+
 Logger::Logger ()
     : fAppender_ ()
     , fMinLogLevel_ (Priority::eInfo)
@@ -42,10 +50,64 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 {
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {
-        tmp->Log (logLevel, Characters::FormatV (format.c_str (), argList));
+        auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
+        if (GetBufferingEnabled ()) {
+            sOutMsgQ_.AddTail (p);
+        }
+        else {
+            tmp->Log (p.first, p.second);
+        }
     }
 }
 
+bool        Logger::GetBufferingEnabled ()
+{
+    return sMessagePump_.GetStatus () != Thread::Status::eNull;
+}
+
+void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
+{
+    lock_guard<mutex> critSec (sMessagePump_EnableMutex_);
+    if (logBufferingEnabled) {
+        if (sMessagePump_.GetStatus () == Thread::Status::eNull) {
+            sMessagePump_ = Thread ([] () {
+                while (true) {
+                    auto p = sOutMsgQ_.RemoveHead ();
+                    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                    if (tmp != nullptr) {
+                        tmp->Log (p.first, p.second);
+                    }
+                }
+            });
+            sMessagePump_.SetThreadPriority (Thread::Priority::eBelowNormal);
+            sMessagePump_.Start ();
+        }
+    }
+    else {
+        sMessagePump_.AbortAndWaitForDone ();
+        sMessagePump_ = Thread ();  // so null
+        Assert (sMessagePump_.GetStatus () == Thread::Status::eNull);
+
+        /// manually push out pending messages
+        FlushBuffer ();
+    }
+}
+
+void        Logger::FlushBuffer ()
+{
+    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+    if (tmp != nullptr) {
+        while (true) {
+            auto p = sOutMsgQ_.RemoveHeadIfPossible ();
+            if (p.IsPresent ()) {
+                tmp->Log (p->first, p->second);
+            }
+            else {
+                return; // no more entries
+            }
+        }
+    }
+}
 
 
 

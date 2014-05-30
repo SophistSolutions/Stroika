@@ -105,7 +105,7 @@ namespace   Stroika {
 
                      UPDATE DOCS
                     // Names are based on syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
-					But the NUMBERS do NOT correspond!
+                    But the NUMBERS do NOT correspond!
 
                  */
                 enum class  Priority : uint8_t {
@@ -122,20 +122,53 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	This defaults to eInfo. Messages of lower priority (e.g. eDebug) will not be logged to the underlying log
-				 *	system.
-				 *
-				 *	This is done inline, so in principle, the compiler may eliminate the calls.
-				 *
-				 *	The MIN is min inclusive.
+                 *  This defaults to eInfo. Messages of lower priority (e.g. eDebug) will not be logged to the underlying log
+                 *  system.
+                 *
+                 *  This is done inline, so in principle, the compiler may eliminate the calls.
+                 *
+                 *  The MIN is min inclusive.
                  */
                 nonvirtual  Priority    GetMinLogLevel () const;
 
             public:
                 /**
-				 *		@see GetMinLogLevel
+                 *      @see GetMinLogLevel
                  */
                 nonvirtual  void        SetMinLogLevel (Priority minLogLevel);
+
+            public:
+                /**
+                 *      Log bufffering is DISABLED by default, since it has some cost. But if enabled, Log() calls
+                 *  queue an internal message, which another thread wakes up to write. This CAN be critical for performance
+                 *  reasons, so the caller can freely log things, and not have their thread blocked.
+                 *
+                 *      Beware, this feature CAN mean that something you log, wont make it out of the application if
+                 *  the appliaction terminates before the log can be flushed. For example:
+                 *
+                 *              Log ("QUITTING");
+                 *              exit (0);
+                 *      probably won't get logged. To avoid this issue, call SetBufferingEnabled(false) before quitting, or
+                 *      call FlushBuffer();
+                 *
+                 *
+                 *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
+                 */
+                static  bool        GetBufferingEnabled ();
+
+            public:
+                /**
+                 *      @see GetBufferingEnabled ()
+                 */
+                static  void        SetBufferingEnabled (bool logBufferingEnabled);
+
+            public:
+                /**
+                 *      @see GetBufferingEnabled ()
+                 *
+                 *  This has no effect if the buffer is empty or buffering is disabled.
+                 */
+                static  void        FlushBuffer ();
 
             public:
                 /**
