@@ -30,6 +30,7 @@ History
 	<li>New CallerStalenessCache<>.</li>
 	<li>OpenSSL 1.0.1g (post heartbleed)</li>
 	<li>Lose some earlier deprecated functions</li>
+	<li>Very little change, and largely untested.</li>
 </ul>
 </td>
 </tr>
