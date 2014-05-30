@@ -15,6 +15,11 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /*
+             ********************************************************************************
+             ********************************* Logger ***************************************
+             ********************************************************************************
+             */
             inline  Logger& Logger::Get ()
             {
                 return sThe_;
@@ -23,7 +28,7 @@ namespace   Stroika {
             {
                 return fAppender_;
             }
-            inline  Priority    Logger::GetMinLogLevel () const
+            inline  Logger::Priority    Logger::GetMinLogLevel () const
             {
                 return fMinLogLevel_;
             }
@@ -31,10 +36,9 @@ namespace   Stroika {
             {
                 fMinLogLevel_ = minLogLevel;
             }
-            inline  void    Logger::Log (Priority logLevel, String format, ...)
+            inline  void    Logger::Log (Priority logLevel, const String& format, ...)
             {
-                // CANNOT DO NUMBNERIC FILTERING TIL I WORK OUT IF I WANT THE SAME GOOFY NUMBERING AS SYSLOG?
-                if (/*logLevel >= sThe_.fMinLogLevel_ and*/ sThe_.fAppender_.get () != nullptr) {
+                if (logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_.get () != nullptr) {
                     va_list     argsList;
                     va_start (argsList, format);
                     Log_ (logLevel, format, argsList);

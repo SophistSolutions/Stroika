@@ -98,8 +98,37 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
-    DbgTrace (L"%s", message.c_str ());
-    syslog (static_cast<int> (logLevel), "%s", message.AsNarrowSDKString ().c_str ());
+    DbgTrace (L"SYSLOG: %d: %s", logLevel, message.c_str ());
+    int sysLogLevel = LOG_NOTICE;   // doesnt matter cuz assert error if hit
+    switch (logLevel) {
+        case Priority::eDebug:
+            sysLogLevel = LOG_DEBUG;
+            break;
+        case Priority::eInfo:
+            sysLogLevel = LOG_INFO;
+            break;
+        case Priority::eNotice:
+            sysLogLevel = LOG_NOTICE;
+            break;
+        case Priority::eWarning:
+            sysLogLevel = LOG_WARNING;
+            break;
+        case Priority::eError:
+            sysLogLevel = LOG_DEBUG;
+            break;
+        case Priority::eCriticalError:
+            sysLogLevel = LOG_CRIT;
+            break;
+        case Priority::eAlertError:
+            sysLogLevel = LOG_ALERT;
+            break;
+        case Priority::eEmergency:
+            sysLogLevel = LOG_EMERG;
+            break;
+        default:
+            RequireNotReached ();
+    }
+    syslog (sysLogLevel, "%s", message.AsNarrowSDKString ().c_str ());
 }
 #endif
 

@@ -104,33 +104,36 @@ namespace   Stroika {
                      and keep the
 
                      UPDATE DOCS
+                    // Names are based on syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
+					But the NUMBERS do NOT correspond!
+
                  */
                 enum class  Priority : uint8_t {
-                    // Names and numbers for syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
-                    eDebug              =   7,              // SYSLOG name LOG_DEBUG    -   The message is debug info (not a good use of syslog - consider using DbgTrace)
-                    eInfo               =   6,              // SYSLOG name LOG_INFO     -   The message is purely informational
-                    eNotice             =   5,              // SYSLOG name LOG_NOTICE   -   The message describes a normal but important event
-                    eWarning            =   4,              // SYSLOG name LOG_WARNING  -   The message is a warning
-                    eError              =   3,              // SYSLOG name LOG_ERR      -   The message describes an error
-                    eCriticalError      =   2,              // SYSLOG name LOG_CRIT     -   The message states a critical condition
-                    eAlertError         =   1,              // SYSLOG name LOG_ALERT    -   Action on the message must be taken immediately
-                    eEmergency          =   0,              // SYSLOG name LOG_EMERG    -   The message says the system is unusable
-
-                    Stroika_Define_Enum_Bounds(eEmergency, eDebug)
+                    eDebug              =   0,              // The message is debug info (not a good use of syslog - consider using DbgTrace)
+                    eInfo               =   1,              // The message is purely informational
+                    eNotice             =   2,              // The message describes a normal but important event
+                    eWarning            =   3,              // The message is a warning
+                    eError              =   4,              // The message describes an error
+                    eCriticalError      =   5,              // The message states a critical condition
+                    eAlertError         =   6,              // Action on the message must be taken immediately
+                    eEmergency          =   7,              // The message says the system is unusable
+                    Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
-
-            private:
-                // EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS
-                Priority    fMinLogLevel_;  // SB PRIVATE
-                // Get/Set LogLevel - this affects what WE EAT INLINE versus passon
 
             public:
                 /**
+				 *	This defaults to eInfo. Messages of lower priority (e.g. eDebug) will not be logged to the underlying log
+				 *	system.
+				 *
+				 *	This is done inline, so in principle, the compiler may eliminate the calls.
+				 *
+				 *	The MIN is min inclusive.
                  */
                 nonvirtual  Priority    GetMinLogLevel () const;
 
             public:
                 /**
+				 *		@see GetMinLogLevel
                  */
                 nonvirtual  void        SetMinLogLevel (Priority minLogLevel);
 
@@ -151,11 +154,13 @@ namespace   Stroika {
                  *      not compatible with the type that results when passing an argument for which there
                  *      is no parameter, the behavior is undeﬁned.
                  */
-                static  void    Log (Priority logLevel, String format, ...); // varargs logger
-
+                static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
 
             private:
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
+
+            private:
+                Priority    fMinLogLevel_;
 
             private:
                 static  Logger  sThe_;
