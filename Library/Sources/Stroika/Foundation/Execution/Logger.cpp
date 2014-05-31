@@ -41,10 +41,13 @@ namespace {
     // @TODO - not threadsafe - til we add a threadsafe Optional to Stroika - but SB OK
     Optional<DurationSecondsType>                   sSupressDuplicatesThreshold_;
 
-    mutex                                           sLastMsgMutex_;     // mutex so we can update related variables together
-    pair<Logger::Priority, String>                   sLastMsgSent_;
-    Time::DurationSecondsType                       sLastMsgSentAt_;
-    unsigned int                                    sLastMsgRepeatCount_;
+    struct LastMsg_ {
+        mutex                               fMutex_;     // mutex so we can update related variables together
+        pair<Logger::Priority, String>      fLastMsgSent_;
+        Time::DurationSecondsType           fLastSentAt = 0.0;
+        unsigned int                        fRepeatCount_ = 0;
+    };
+    LastMsg_    sLastMsg_;
 }
 
 
@@ -66,19 +69,19 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
         if (sSupressDuplicatesThreshold_.IsPresent ()) {
-            lock_guard<mutex>   critSec (sLastMsgMutex_);
-            if (p == sLastMsgSent_) {
-                sLastMsgRepeatCount_++;
+            lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
+            if (p == sLastMsg_.fLastMsgSent_) {
+                sLastMsg_.fRepeatCount_++;
                 return; // so will be handled later
             }
             else {
-                if (sLastMsgRepeatCount_ > 0) {
+                if (sLastMsg_.fRepeatCount_ > 0) {
                     FlushDupsWarning_ ();
                 }
-                sLastMsgSent_ = p;
-                sLastMsgRepeatCount_ = 0;
+                sLastMsg_.fLastMsgSent_ = p;
+                sLastMsg_.fRepeatCount_ = 0;
             }
-            sLastMsgSentAt_ = Time::GetTickCount ();
+            sLastMsg_.fLastSentAt = Time::GetTickCount ();
         }
         if (GetBufferingEnabled ()) {
             sOutQMaybeNeedsFlush_ = true;
@@ -132,19 +135,18 @@ void    Logger::SetSuppressDuplicates (const Optional<DurationSecondsType>& supp
 
 void    Logger::FlushDupsWarning_ ()
 {
-    lock_guard<mutex>   critSec (sLastMsgMutex_);
-    if (sLastMsgRepeatCount_ > 0) {
+    if (sLastMsg_.fRepeatCount_ > 0) {
         shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
         if (tmp != nullptr) {
-            if (sLastMsgRepeatCount_ == 1) {
-                tmp->Log (sLastMsgSent_.first, sLastMsgSent_.second);
+            if (sLastMsg_.fRepeatCount_ == 1) {
+                tmp->Log (sLastMsg_.fLastMsgSent_.first, sLastMsg_.fLastMsgSent_.second);
             }
             else {
-                tmp->Log (sLastMsgSent_.first,  Characters::Format (L"[%d duplicates supressed]: %s", sLastMsgRepeatCount_ - 1, sLastMsgSent_.second.c_str ()));
+                tmp->Log (sLastMsg_.fLastMsgSent_.first,  Characters::Format (L"[%d duplicates supressed]: %s", sLastMsg_.fRepeatCount_ - 1, sLastMsg_.fLastMsgSent_.second.c_str ()));
             }
         }
-        sLastMsgRepeatCount_ = 0;
-        sLastMsgSent_.second.clear ();
+        sLastMsg_.fRepeatCount_ = 0;
+        sLastMsg_.fLastMsgSent_.second.clear ();
     }
 }
 
@@ -169,8 +171,11 @@ void    Logger::UpdateBookkeepingThread_ ()
                     }
                     catch (const TimeOutException&) {
                     }
-                    if (sLastMsgRepeatCount_ > 0 and sLastMsgSentAt_ < Time::GetTickCount ()) {
-                        FlushDupsWarning_ ();
+                    {
+                        lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
+                        if (sLastMsg_.fRepeatCount_ > 0 and sLastMsg_.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
+                            FlushDupsWarning_ ();
+                        }
                     }
                 }
             });
