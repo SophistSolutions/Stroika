@@ -78,9 +78,9 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional<T, TRAITS>& rhs)
             {
                 unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
-                unique_lock<std::mutex> l2 (from.fMutex_, std::defer_lock);
+                unique_lock<std::mutex> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                fValue_ = rhsalue_;
+                fValue_ = rhs.fValue_;
                 return *this;
             }
             template    <typename T, typename TRAITS>
