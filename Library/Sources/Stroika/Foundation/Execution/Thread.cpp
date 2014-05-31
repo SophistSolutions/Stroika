@@ -564,19 +564,19 @@ void    Thread::SetThreadPriority (Priority priority)
     }
     switch (priority) {
         case Priority::eLowest:
-            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), sPriorityMin_));
+            Verify (::pthread_setschedprio (fRep_->GetNativeHandle (), sPriorityMin_) == 0);
             break;
         case Priority::eBelowNormal:
-            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_));
+            Verify (::pthread_setschedprio (fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_) == 0);
             break;
         case Priority::eNormal:
-            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_));
+            Verify (::pthread_setschedprio (fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_) == 0);
             break;
         case Priority::eAboveNormal:
-            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_));
+            Verify (::pthread_setschedprio (fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_) == 0);
             break;
         case Priority::eHighest:
-            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), sPriorityMax_));
+            Verify (::pthread_setschedprio (fRep_->GetNativeHandle (), sPriorityMax_) == 0);
             break;
         default:
             RequireNotReached ();
