@@ -812,6 +812,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
@@ -1149,6 +1150,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />

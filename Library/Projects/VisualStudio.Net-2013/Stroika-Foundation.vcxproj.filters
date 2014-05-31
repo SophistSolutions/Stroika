@@ -1611,6 +1611,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2450,6 +2453,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl">
       <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Optional.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>
