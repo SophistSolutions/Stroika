@@ -18,10 +18,6 @@
  *  \file
  *
  *  TODO:
- *      @todo   EITHER somehow automatically be smart about filtering out logging that misses log level filter,
- *              or add explicit data member saying to skip logging stuff below a given level. We probably need todo
- *              the later, and let the former be done by the backend appender.
- *
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
  *              by specifying hardwired/hacked values in the CTOR args.
@@ -87,6 +83,9 @@ namespace   Stroika {
                 static  Logger& Get ();
             private:
                 Logger ();
+            public:
+                Logger (const Logger&) = delete;
+                const Logger& operator= (const Logger&) = delete;
 
             public:
                 nonvirtual  IAppenderRepPtr GetAppender () const;
@@ -97,18 +96,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Stroika uses this facility for NO DEBUGGING - but and to be portbale, but
-                    convenitnetly these numbers corredspond to teh SYSLOG values (so they can be substeid as needed).
-
-                    NOTE: I don't think so many levels makes sense and I dont think these are well defined. I should probably trim the list,
-                     and keep the
-
-                     UPDATE DOCS
-                    // Names are based on syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
-                    But the NUMBERS do NOT correspond!
-
+                 *
+                 *  Names are based on syslog from http://unix.superglobalmegacorp.com/Net2/newsrc/sys/syslog.h.html
+                 *  But the NUMBERS do NOT correspond!
+                 *
+                 *  Lower numbers are less interesting (debug) and higher numbers more important (higher priority).
                  */
-                enum class  Priority : uint8_t {
+                enum    class  Priority : uint8_t {
                     eDebug              =   0,              // The message is debug info (not a good use of syslog - consider using DbgTrace)
                     eInfo               =   1,              // The message is purely informational
                     eNotice             =   2,              // The message describes a normal but important event
@@ -150,7 +144,6 @@ namespace   Stroika {
                  *              exit (0);
                  *      probably won't get logged. To avoid this issue, call SetBufferingEnabled(false) before quitting, or
                  *      call FlushBuffer();
-                 *
                  *
                  *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
                  */
