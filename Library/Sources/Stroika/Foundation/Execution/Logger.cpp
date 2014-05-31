@@ -9,6 +9,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Containers/Optional.h"
 #include    "../Debug/Trace.h"
 #include    "BlockingQueue.h"
 #include    "Process.h"
@@ -21,7 +22,6 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-using   Memory::Optional;
 using   Time::DurationSecondsType;
 
 
@@ -38,8 +38,7 @@ namespace {
     Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    // @TODO - not threadsafe - til we add a threadsafe Optional to Stroika - but SB OK
-    Optional<DurationSecondsType>                   sSupressDuplicatesThreshold_;
+    Containers::Optional<DurationSecondsType>       sSupressDuplicatesThreshold_;
 
     struct LastMsg_ {
         mutex                               fMutex_;     // mutex so we can update related variables together
@@ -121,10 +120,10 @@ void        Logger::FlushBuffer ()
 
 Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 {
-    return sSupressDuplicatesThreshold_;
+    return Memory::Optional<Time::DurationSecondsType> (sSupressDuplicatesThreshold_);
 }
 
-void    Logger::SetSuppressDuplicates (const Optional<DurationSecondsType>& suppressDuplicatesThreshold)
+void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
     if (sSupressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
