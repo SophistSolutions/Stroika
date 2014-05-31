@@ -129,6 +129,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  explicit operator Memory::Optional<T, TRAITS> () const;
+
+            public:
+                /**
                  *  \req (IsPresent ())
                  *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
@@ -157,7 +162,7 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const Optional<T, TRAITS>& rhs) const;
 
             private:
-                mutex               fMutex_;
+                mutable mutex       fMutex_;
 
             private:
                 Memory::Optional<T> fValue_;

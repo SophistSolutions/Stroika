@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <mutex>
+
 #include   "../Debug/Assertions.h"
 
 namespace   Stroika {
@@ -61,14 +63,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ = rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ = std::move (rhs);
                 return *this;
             }
@@ -85,59 +87,65 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional<T, TRAITS> && rhs)
             {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ = std::move (rhs.fValue_);
                 return *this;
             }
             template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::operator Memory::Optional<T, TRAITS> () const
+            {
+                lock_guard<mutex>   critSec (fMutex_);
+                return fValue_;
+            }
+            template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_.clear ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::IsMissing () const
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 return fValue_.IsMissing ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::IsPresent () const
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 return fValue_.IsPresent ();
             }
             template    <typename T, typename TRAITS>
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 return fValue_.Value (defaultValue);
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ += rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ -= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ *= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
-                lock_gaurd<mutex>   critSec (fMutex_);
+                lock_guard<mutex>   critSec (fMutex_);
                 fValue_ /= rhs;
                 return *this;
             }
@@ -147,8 +155,7 @@ namespace   Stroika {
                 unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
                 unique_lock<std::mutex> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                fValue_.Compare (rhs.fValue_);
-                return *this;
+                return fValue_.Compare (rhs.fValue_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::operator< (const Optional<T, TRAITS>& rhs) const
