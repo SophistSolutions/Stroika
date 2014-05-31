@@ -63,7 +63,7 @@ namespace   Stroika {
                 return fQueue_.HeadIf ();
             }
             template    <typename T>
-            inline  Memory::Optional<T> BlockingQueue<T>::empty () const
+            inline  bool    BlockingQueue<T>::empty () const
             {
                 return fQueue_.empty ();
             }

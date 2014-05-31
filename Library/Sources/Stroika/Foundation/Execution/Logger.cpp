@@ -33,7 +33,7 @@ namespace {
     BlockingQueue<pair<Logger::Priority, String>>   sOutMsgQ_;
     Execution::Thread                               sMessagePump_;
     mutex                                           sMessagePump_EnableMutex_;
-	bool											sOutQMaybeNeedsFlush_ = true;		// sligt optimziation of not using buffering
+    bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 }
 
 Logger::Logger ()
@@ -53,13 +53,13 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
         if (GetBufferingEnabled ()) {
-			sOutQMaybeNeedsFlush_ = true;
+            sOutQMaybeNeedsFlush_ = true;
             sOutMsgQ_.AddTail (p);
         }
         else {
-			if (sOutQMaybeNeedsFlush_) {
-				FlushBuffer (); // in case recently disabled
-			}
+            if (sOutQMaybeNeedsFlush_) {
+                FlushBuffer (); // in case recently disabled
+            }
             tmp->Log (p.first, p.second);
         }
     }
@@ -113,7 +113,7 @@ void        Logger::FlushBuffer ()
             }
         }
     }
-	sOutQMaybeNeedsFlush_ = false;
+    sOutQMaybeNeedsFlush_ = false;
 }
 
 
