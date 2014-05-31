@@ -61,6 +61,12 @@ namespace   Stroika {
                 // its assumed std::move() - no lock is needed
             }
             template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (const Memory::Optional<T, TRAITS>& from)
+                : fMutex_ ()
+                , fValue_ (from)
+            {
+            }
+            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
                 lock_guard<mutex>   critSec (fMutex_);
@@ -89,6 +95,13 @@ namespace   Stroika {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
                 lock_guard<mutex>   critSec (fMutex_);
                 fValue_ = std::move (rhs.fValue_);
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Memory::Optional<T, TRAITS>& rhs)
+            {
+                lock_guard<mutex>   critSec (fMutex_);
+                fValue_ = rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
