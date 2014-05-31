@@ -11,6 +11,8 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
+#include    "../Memory/Optional.h"
+#include    "../Time/Realtime.h"
 
 
 
@@ -165,6 +167,22 @@ namespace   Stroika {
 
             public:
                 /**
+                 *      If true, then a sequence of N (N > 1) identical messages will be replaced with two messages,
+                 *      the second of which appears with the added label [N-2 suppressed].
+                 *
+                 *      The duration is the window of time after the last message we wait before emitting the
+                 *      last message. A good default for this might be 5 or 10 seconds.
+                 */
+                static  Memory::Optional<Time::DurationSecondsType>     GetSuppressDuplicates ();
+
+            public:
+                /**
+                 *      @see GetSuppressDuplicates ()
+                 */
+                static  void        SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
+
+            public:
+                /**
                  *  Log
                  *
                  *  Design Note:
@@ -186,7 +204,14 @@ namespace   Stroika {
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
 
             private:
+                static  void    FlushDupsWarning_ ();
+
+            private:
+                static  void    UpdateBookkeepingThread_ ();
+
+            private:
                 Priority    fMinLogLevel_;
+                bool        fBufferingEnabled_;
 
             private:
                 static  Logger  sThe_;

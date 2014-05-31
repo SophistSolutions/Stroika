@@ -36,6 +36,10 @@ namespace   Stroika {
             {
                 fMinLogLevel_ = minLogLevel;
             }
+            inline  bool        Logger::GetBufferingEnabled ()
+            {
+                return sThe_.fBufferingEnabled_;
+            }
             inline  void    Logger::Log (Priority logLevel, const String& format, ...)
             {
                 if (logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_.get () != nullptr) {

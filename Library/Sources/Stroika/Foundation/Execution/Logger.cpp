@@ -13,12 +13,16 @@
 #include    "BlockingQueue.h"
 #include    "Process.h"
 #include    "Thread.h"
+#include    "TimeOutException.h"
 
 #include    "Logger.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
+
+using   Memory::Optional;
+using   Time::DurationSecondsType;
 
 
 
@@ -31,14 +35,23 @@ Logger  Logger::sThe_;
 
 namespace {
     BlockingQueue<pair<Logger::Priority, String>>   sOutMsgQ_;
-    Execution::Thread                               sMessagePump_;
-    mutex                                           sMessagePump_EnableMutex_;
+    Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
+
+    // @TODO - not threadsafe - til we add a threadsafe Optional to Stroika - but SB OK
+    Optional<DurationSecondsType>                   sSupressDuplicatesThreshold_;
+
+    mutex                                           sLastMsgMutex_;     // mutex so we can update related variables together
+    pair<Logger::Priority, String>                   sLastMsgSent_;
+    Time::DurationSecondsType                       sLastMsgSentAt_;
+    unsigned int                                    sLastMsgRepeatCount_;
 }
+
 
 Logger::Logger ()
     : fAppender_ ()
     , fMinLogLevel_ (Priority::eInfo)
+    , fBufferingEnabled_ (false)
 {
 }
 
@@ -52,6 +65,21 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
+        if (sSupressDuplicatesThreshold_.IsPresent ()) {
+            lock_guard<mutex>   critSec (sLastMsgMutex_);
+            if (p == sLastMsgSent_) {
+                sLastMsgRepeatCount_++;
+                return; // so will be handled later
+            }
+            else {
+                if (sLastMsgRepeatCount_ > 0) {
+                    FlushDupsWarning_ ();
+                }
+                sLastMsgSent_ = p;
+                sLastMsgRepeatCount_ = 0;
+            }
+            sLastMsgSentAt_ = Time::GetTickCount ();
+        }
         if (GetBufferingEnabled ()) {
             sOutQMaybeNeedsFlush_ = true;
             sOutMsgQ_.AddTail (p);
@@ -65,38 +93,10 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     }
 }
 
-bool        Logger::GetBufferingEnabled ()
-{
-    return sMessagePump_.GetStatus () != Thread::Status::eNull;
-}
-
 void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
-    lock_guard<mutex> critSec (sMessagePump_EnableMutex_);
-    if (logBufferingEnabled) {
-        if (sMessagePump_.GetStatus () == Thread::Status::eNull) {
-            sMessagePump_ = Thread ([] () {
-                while (true) {
-                    auto p = sOutMsgQ_.RemoveHead ();
-                    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
-                    if (tmp != nullptr) {
-                        tmp->Log (p.first, p.second);
-                    }
-                }
-            });
-            sMessagePump_.SetThreadName (L"Logger Message Pump");
-            sMessagePump_.SetThreadPriority (Thread::Priority::eBelowNormal);
-            sMessagePump_.Start ();
-        }
-    }
-    else {
-        sMessagePump_.AbortAndWaitForDone ();
-        sMessagePump_ = Thread ();  // so null
-        Assert (sMessagePump_.GetStatus () == Thread::Status::eNull);
-
-        /// manually push out pending messages
-        FlushBuffer ();
-    }
+    sThe_.fBufferingEnabled_ = logBufferingEnabled;
+    UpdateBookkeepingThread_ ();
 }
 
 void        Logger::FlushBuffer ()
@@ -116,6 +116,84 @@ void        Logger::FlushBuffer ()
     sOutQMaybeNeedsFlush_ = false;
 }
 
+Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
+{
+    return sSupressDuplicatesThreshold_;
+}
+
+void    Logger::SetSuppressDuplicates (const Optional<DurationSecondsType>& suppressDuplicatesThreshold)
+{
+    Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
+    if (sSupressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
+        sSupressDuplicatesThreshold_ = suppressDuplicatesThreshold;
+        UpdateBookkeepingThread_ ();
+    }
+}
+
+void    Logger::FlushDupsWarning_ ()
+{
+    lock_guard<mutex>   critSec (sLastMsgMutex_);
+    if (sLastMsgRepeatCount_ > 0) {
+        shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+        if (tmp != nullptr) {
+            if (sLastMsgRepeatCount_ == 1) {
+                tmp->Log (sLastMsgSent_.first, sLastMsgSent_.second);
+            }
+            else {
+                tmp->Log (sLastMsgSent_.first,  Characters::Format (L"[%d duplicates supressed]: %s", sLastMsgRepeatCount_ - 1, sLastMsgSent_.second.c_str ()));
+            }
+        }
+        sLastMsgRepeatCount_ = 0;
+        sLastMsgSent_.second.clear ();
+    }
+}
+
+void    Logger::UpdateBookkeepingThread_ ()
+{
+    sBookkeepingThread_.AbortAndWaitForDone ();
+    sBookkeepingThread_ = Thread ();  // so null
+
+    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSupressDuplicatesThreshold_.Value (0);
+    bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
+    if (suppressDuplicates or GetBufferingEnabled ()) {
+        if (suppressDuplicates) {
+            sBookkeepingThread_ = Thread ([suppressDuplicatesThreshold] () {
+                while (true) {
+                    DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
+                    try {
+                        auto p = sOutMsgQ_.RemoveHead (time2Wait);
+                        shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                        if (tmp != nullptr) {
+                            tmp->Log (p.first, p.second);
+                        }
+                    }
+                    catch (const TimeOutException&) {
+                    }
+                    if (sLastMsgRepeatCount_ > 0 and sLastMsgSentAt_ < Time::GetTickCount ()) {
+                        FlushDupsWarning_ ();
+                    }
+                }
+            });
+        }
+        else {
+            sBookkeepingThread_ = Thread ([] () {
+                while (true) {
+                    auto p = sOutMsgQ_.RemoveHead ();
+                    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                    if (tmp != nullptr) {
+                        tmp->Log (p.first, p.second);
+                    }
+                }
+            });
+        }
+        sBookkeepingThread_.SetThreadName (L"Logger Bookkeeping");
+        sBookkeepingThread_.SetThreadPriority (Thread::Priority::eBelowNormal);
+        sBookkeepingThread_.Start ();
+    }
+
+    // manually push out pending messages
+    FlushBuffer ();
+}
 
 
 
