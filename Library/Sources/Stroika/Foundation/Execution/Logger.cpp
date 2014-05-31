@@ -38,7 +38,7 @@ namespace {
     Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    Containers::Optional<DurationSecondsType>       sSupressDuplicatesThreshold_;
+    Containers::Optional<DurationSecondsType>       sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         mutex                               fMutex_;     // mutex so we can update related variables together
@@ -67,7 +67,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
-        if (sSupressDuplicatesThreshold_.IsPresent ()) {
+        if (sSuppressDuplicatesThreshold_.IsPresent ()) {
             lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
             if (p == sLastMsg_.fLastMsgSent_) {
                 sLastMsg_.fRepeatCount_++;
@@ -120,14 +120,14 @@ void        Logger::FlushBuffer ()
 
 Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 {
-    return Memory::Optional<Time::DurationSecondsType> (sSupressDuplicatesThreshold_);
+    return Memory::Optional<Time::DurationSecondsType> (sSuppressDuplicatesThreshold_);
 }
 
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
-    if (sSupressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
-        sSupressDuplicatesThreshold_ = suppressDuplicatesThreshold;
+    if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
+        sSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         UpdateBookkeepingThread_ ();
     }
 }
@@ -141,7 +141,7 @@ void    Logger::FlushDupsWarning_ ()
                 tmp->Log (sLastMsg_.fLastMsgSent_.first, sLastMsg_.fLastMsgSent_.second);
             }
             else {
-                tmp->Log (sLastMsg_.fLastMsgSent_.first,  Characters::Format (L"[%d duplicates supressed]: %s", sLastMsg_.fRepeatCount_ - 1, sLastMsg_.fLastMsgSent_.second.c_str ()));
+                tmp->Log (sLastMsg_.fLastMsgSent_.first,  Characters::Format (L"[%d duplicates suppressed]: %s", sLastMsg_.fRepeatCount_ - 1, sLastMsg_.fLastMsgSent_.second.c_str ()));
             }
         }
         sLastMsg_.fRepeatCount_ = 0;
@@ -154,7 +154,7 @@ void    Logger::UpdateBookkeepingThread_ ()
     sBookkeepingThread_.AbortAndWaitForDone ();
     sBookkeepingThread_ = Thread ();  // so null
 
-    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSupressDuplicatesThreshold_.Value (0);
+    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSuppressDuplicatesThreshold_.Value (0);
     bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
     if (suppressDuplicates or GetBufferingEnabled ()) {
         if (suppressDuplicates) {
