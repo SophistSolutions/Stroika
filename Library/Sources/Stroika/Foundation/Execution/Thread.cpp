@@ -544,10 +544,45 @@ void    Thread::SetThreadPriority (Priority priority)
         case Priority::eHighest:
             Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_HIGHEST));
             break;
+        default:
+            RequireNotReached ();
+    }
+#elif   qPlatform_POSIX
+    // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
+    static  bool    sValidPri_ = false;
+    static  int     sPriorityMin_;
+    static  int     sPriorityMax_;
+    {
+        if (not sValidPri_) {
+            int         sched_policy;
+            sched_param param;
+            Verify (pthread_getschedparam (pthread_self (), &sched_policy, &param) != 0);
+            sPriorityMin_ = sched_get_priority_min (sched_policy);
+            sPriorityMax_ = sched_get_priority_max (sched_policy);
+            sValidPri_ = true;
+        }
+    }
+    switch (priority) {
+        case Priority::eLowest:
+            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), sPriorityMin_));
+            break;
+        case Priority::eBelowNormal:
+            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .25 + sPriorityMin_));
+            break;
+        case Priority::eNormal:
+            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .5 + sPriorityMin_));
+            break;
+        case Priority::eAboveNormal:
+            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), (sPriorityMax_ - sPriorityMin_) * .75 + sPriorityMin_));
+            break;
+        case Priority::eHighest:
+            Verify (pthread_setschedprio(fRep_->GetNativeHandle (), sPriorityMax_));
+            break;
+        default:
+            RequireNotReached ();
     }
 #else
-    // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
-    AssertNotImplemented();
+    AssertNotImplemented ();
 #endif
 }
 
