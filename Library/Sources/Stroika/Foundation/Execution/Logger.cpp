@@ -71,6 +71,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
             lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
             if (p == sLastMsg_.fLastMsgSent_) {
                 sLastMsg_.fRepeatCount_++;
+                sLastMsg_.fLastSentAt = Time::GetTickCount ();
                 return; // so will be handled later
             }
             else {
@@ -79,8 +80,8 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
                 }
                 sLastMsg_.fLastMsgSent_ = p;
                 sLastMsg_.fRepeatCount_ = 0;
+                sLastMsg_.fLastSentAt = Time::GetTickCount ();
             }
-            sLastMsg_.fLastSentAt = Time::GetTickCount ();
         }
         if (GetBufferingEnabled ()) {
             sOutQMaybeNeedsFlush_ = true;
