@@ -104,7 +104,7 @@ namespace   Stroika {
                  *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
                  *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
-                nonvirtual  void    AddTail (T e, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  void    AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -135,6 +135,12 @@ namespace   Stroika {
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */
                 nonvirtual  Memory::Optional<T> PeekHead () const;
+
+            public:
+                /**
+                 *  Returns true if the Q contains no items. Equivilent to PeekHead ().IsEmpty ()
+                 */
+                nonvirtual  bool    empty () const;
 
             private:
                 WaitableEvent               fDataAvailable_;

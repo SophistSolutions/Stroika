@@ -35,7 +35,7 @@ namespace   Stroika {
                 Require (useQueue.empty ());
             }
             template    <typename T>
-            void    BlockingQueue<T>::AddTail (T e, Time::DurationSecondsType timeout)
+            void    BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType timeout)
             {
                 fQueue_.AddTail (e);
                 fDataAvailable_.Set ();
@@ -61,6 +61,11 @@ namespace   Stroika {
             inline  Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
                 return fQueue_.HeadIf ();
+            }
+            template    <typename T>
+            inline  Memory::Optional<T> BlockingQueue<T>::empty () const
+            {
+                return fQueue_.empty ();
             }
 
 
