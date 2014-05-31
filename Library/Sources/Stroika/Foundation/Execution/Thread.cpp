@@ -556,7 +556,7 @@ void    Thread::SetThreadPriority (Priority priority)
         if (not sValidPri_) {
             int         sched_policy;
             sched_param param;
-            Verify (pthread_getschedparam (pthread_self (), &sched_policy, &param) != 0);
+            Verify (pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
             sPriorityMin_ = sched_get_priority_min (sched_policy);
             sPriorityMax_ = sched_get_priority_max (sched_policy);
             sValidPri_ = true;
