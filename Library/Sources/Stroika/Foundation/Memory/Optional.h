@@ -167,7 +167,7 @@ namespace   Stroika {
                 /**
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  T   Value (T defaultValue = T ()) const;
+                nonvirtual  T   Value (T defaultValue = T {}) const;
 
             public:
                 /**
