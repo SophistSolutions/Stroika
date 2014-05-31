@@ -55,6 +55,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
             sOutMsgQ_.AddTail (p);
         }
         else {
+            FlushBuffer (); // in case recently disabled
             tmp->Log (p.first, p.second);
         }
     }
@@ -79,6 +80,7 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
                     }
                 }
             });
+            sMessagePump_.SetThreadName (L"Logger Message Pump");
             sMessagePump_.SetThreadPriority (Thread::Priority::eBelowNormal);
             sMessagePump_.Start ();
         }
