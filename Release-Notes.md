@@ -34,6 +34,7 @@ History
 	<li>Fixed thread priority support for POSIX threads</li>
 	<li>New experimental threadsafe Containers::Optional, and minor fixes to Memory::Optional</li>
 	<li>Minor tweaks to BlockingQueue code</li>
+	<li>Little tested</li>
 </ul>
 </td>
 </tr>
