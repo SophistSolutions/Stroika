@@ -24,10 +24,16 @@ History
 
 <tr>
 <td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a26">v2.0a26x</a><br/>2014-05-29</td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a26">v2.0a26</a><br/>2014-05-31</td>
 <td>
 <ul>
-	<li>nothing yet</li>
+	<li>Quite a few Logger class improvements, including better numbering of priorities,
+	buffering of output, automatic duplication suppression, and respect of min/max logger
+	priority (automatic filtering).</li>
+	<li>Experiemental new EnumNames</li>
+	<li>Fixed thread priority support for POSIX threads</li>
+	<li>New experimental threadsafe Containers::Optional, and minor fixes to Memory::Optional</li>
+	<li>Minor tweaks to BlockingQueue code</li>
 </ul>
 </td>
 </tr>
