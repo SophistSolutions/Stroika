@@ -34,15 +34,15 @@ using   Time::DurationSecondsType;
  */
 Logger  Logger::sThe_;
 
-const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)[Logger::Priority::eCOUNT] = {
-    EnumName<Priority> { Logger::Priority::eDebug, L"Debug" },
-    EnumName<Priority> { Logger::Priority::eInfo, L"Info" },
-    EnumName<Priority> { Logger::Priority::eNotice, L"Notice" },
-    EnumName<Priority> { Logger::Priority::eWarning, L"Warning" },
-    EnumName<Priority> { Logger::Priority::eError, L"Error" },
-    EnumName<Priority> { Logger::Priority::eCriticalError, L"CriticalError" },
-    EnumName<Priority> { Logger::Priority::eAlertError, L"AlertError" },
-    EnumName<Priority> { Logger::Priority::eEmergency, L"Emergency" },
+const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = {
+    { Logger::Priority::eDebug, L"Debug" },
+    { Logger::Priority::eInfo, L"Info" },
+    { Logger::Priority::eNotice, L"Notice" },
+    { Logger::Priority::eWarning, L"Warning" },
+    { Logger::Priority::eError, L"Error" },
+    { Logger::Priority::eCriticalError, L"CriticalError" },
+    { Logger::Priority::eAlertError, L"AlertError" },
+    { Logger::Priority::eEmergency, L"Emergency" },
 };
 
 

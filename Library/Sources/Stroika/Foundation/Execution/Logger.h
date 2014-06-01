@@ -116,7 +116,7 @@ namespace   Stroika {
                     eEmergency          =   7,              // The message says the system is unusable
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
-                static  const EnumNames<Priority>   Stroika_Enum_Names(Priority)[Priority::eCOUNT];
+                static  const EnumNames<Priority>   Stroika_Enum_Names(Priority);
 
             public:
                 /**
