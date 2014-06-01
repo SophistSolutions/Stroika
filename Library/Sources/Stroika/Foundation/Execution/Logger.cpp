@@ -20,6 +20,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Configuration;
 using   namespace   Stroika::Foundation::Execution;
 
 using   Time::DurationSecondsType;
@@ -32,6 +33,19 @@ using   Time::DurationSecondsType;
  ********************************************************************************
  */
 Logger  Logger::sThe_;
+
+const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)[Logger::Priority::eCOUNT] = {
+    EnumName<Priority> { Logger::Priority::eDebug, L"Debug" },
+    EnumName<Priority> { Logger::Priority::eInfo, L"Info" },
+    EnumName<Priority> { Logger::Priority::eNotice, L"Notice" },
+    EnumName<Priority> { Logger::Priority::eWarning, L"Warning" },
+    EnumName<Priority> { Logger::Priority::eError, L"Error" },
+    EnumName<Priority> { Logger::Priority::eCriticalError, L"CriticalError" },
+    EnumName<Priority> { Logger::Priority::eAlertError, L"AlertError" },
+    EnumName<Priority> { Logger::Priority::eEmergency, L"Emergency" },
+};
+
+
 
 namespace {
     BlockingQueue<pair<Logger::Priority, String>>   sOutMsgQ_;
