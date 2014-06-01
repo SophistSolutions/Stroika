@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <type_traits>
+#include    <utility>
 
 #include    "Common.h"
 
@@ -87,6 +88,27 @@ namespace   Stroika {
                     eEND        =   LAST_ITEM + 1,\
                                     eLAST        =  LAST_ITEM,\
                                             eCOUNT      =   eEND - eSTART,
+
+
+            /**
+             *  \def Stroika_Enum_Names
+             *
+             *
+             */
+#define Stroika_Enum_Names(ENUMNAME)\
+    ENUMNAME##_EnumNames
+
+
+            /**
+             */
+            template <typename ENUM_TYPE>
+            using EnumName = pair<ENUM_TYPE, const wchar_t*>;
+
+
+            /**
+             */
+            template <typename ENUM_TYPE>
+            using EnumNames = initializer_list<EnumName<ENUM_TYPE>>;
 
 
         }
