@@ -412,7 +412,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
                         const Byte* e   =   p + stdinBLOB.GetSize ();
                         while (p < e) {
                             DWORD   written     =   0;
-                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) != 0) {
+                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
                                 DWORD   err = ::GetLastError ();
                                 // sometimes we fail because the target process hasn't read enough and the pipe is full.
                                 // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
@@ -677,7 +677,10 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
 
         // Prefill stream
         // @todo - decide if we should use Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM
-        Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
+        if (not cmdStdInValue.empty ()) {
+            // for now while we write BOM, dont write empty string as just a BOM!
+            Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
+        }
         Assert (useStdIn.ReadGetOffset () == 0);
 
         SetStdIn (useStdIn);
