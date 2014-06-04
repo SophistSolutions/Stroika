@@ -19,8 +19,6 @@
 /**
  * TODO:
  *
- *      @todo   Get rid of StripTrailingCharIfAny - and probably merge into String class??
- *
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
  *              But DOCUMENT in all cases!!! And maybe implement variants...
