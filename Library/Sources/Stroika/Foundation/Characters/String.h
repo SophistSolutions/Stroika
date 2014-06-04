@@ -770,8 +770,11 @@ namespace   Stroika {
                 /**
                  *  This function is for GUI/display purposes. It returns the given string, trimmed down
                  *  to at most maxLen characters, and removes surrounding whitespace.
+                 *
+                 *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
                  */
                 nonvirtual  String  LimitLength (size_t maxLen, bool keepLeft = true) const;
+                nonvirtual  String  LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
 
             public:
                 /**

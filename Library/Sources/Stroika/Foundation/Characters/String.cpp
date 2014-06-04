@@ -960,24 +960,30 @@ String  String::LimitLength (size_t maxLen, bool keepLeft) const
 #else
     static  const String kELIPSIS_  { String_Constant (L"...") };
 #endif
+    return LimitLength (maxLen, keepLeft, kELIPSIS_);
+}
+
+String  String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const
+{
     String  tmp =   Trim ();
     if (tmp.length () <= maxLen) {
         return tmp;
     }
     size_t  useLen  =   maxLen;
-    if (useLen > kELIPSIS_.length ()) {
-        useLen -= kELIPSIS_.length ();
+    if (useLen > ellipsis.length ()) {
+        useLen -= ellipsis.length ();
     }
     else {
         useLen = 0;
     }
     if (keepLeft) {
-        return tmp.substr (0, useLen) + kELIPSIS_;
+        return tmp.substr (0, useLen) + ellipsis;
     }
     else {
-        return kELIPSIS_ + tmp.substr (tmp.length () - useLen);
+        return ellipsis + tmp.substr (tmp.length () - useLen);
     }
 }
+
 
 template    <>
 void    String::AsUTF8 (string* into) const
