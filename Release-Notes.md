@@ -21,11 +21,12 @@ History
   
 
 <tr>
-<td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a27">v2.0a27x</a><br/>2014-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a27">v2.0a27</a><br/>2014-06-04</td>
 <td>
 <ul>
-	<li>nothing yet</li>
+	<li>Two bugfixes to ProcessRunner () - Windows. And when writing emty string to process dont stick BOM on front end</li>
+	<li>String::LimitLength() overload that takes ellipsis string arg</li>
+	<li>Little tested</li>
 </ul>
 </td>
 </tr>
@@ -37,8 +38,7 @@ History
 
 
 <tr>
-<td>
-<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a26">v2.0a26</a><br/>2014-05-31</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a26">v2.0a26</a><br/>2014-05-31</td>
 <td>
 <ul>
 	<li>Quite a few Logger class improvements, including better numbering of priorities,
