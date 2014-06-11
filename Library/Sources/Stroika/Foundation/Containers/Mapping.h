@@ -65,7 +65,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>>
             struct   Mapping_DefaultTraits {
                 /**
                  */
@@ -77,7 +77,7 @@ namespace   Stroika {
                  *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
                  *  underlying Mapping's TRAITS objects.
                  */
-                using   MappingTraitsType               =    Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>;
+                using   MappingTraitsType               =    Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
             };
 
 

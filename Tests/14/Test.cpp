@@ -89,7 +89,6 @@ namespace   {
         using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   Mapping_DefaultTraits <
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
                 >   ;
 
@@ -119,7 +118,6 @@ namespace   {
                 Concrete::Mapping_stdmap_DefaultTraits <
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
                 MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
                 >;

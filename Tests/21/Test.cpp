@@ -94,7 +94,6 @@ namespace   {
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
                 MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
                 >;
 

@@ -132,7 +132,7 @@ namespace CommonTests {
                     }
 #endif
                     {
-                        using   MAPPING_TRAITS  =   Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>;
+                        using   MAPPING_TRAITS  =   Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType>;
                         Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.template As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         VerifyTestResult (m.ContainsKey (3));
