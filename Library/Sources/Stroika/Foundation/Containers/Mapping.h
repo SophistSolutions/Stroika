@@ -26,14 +26,6 @@
  *
  *  TODO:
  *
- *      @todo   Current API REQUIRES definition of EQUALS (VALUE_TYPE)!!!! (if cannot done operator== we lose because of
- *              Mapping<>::REp::Equals()).
- *
- *              INESTAED do outside of Mapping<> ::REP - and not using MAPPING_TRAITS.. Any compares requoiring
- *              VALUE_TYPE equals MUST GO INTO method-provided TRAITS EXTRA PARAM (like with Sequence)
- *
- *              <<< WHEN WE FIX - LOSE KLUDGE operator==) in DataExcahgne::INI::Profile/Section>>>
- *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here

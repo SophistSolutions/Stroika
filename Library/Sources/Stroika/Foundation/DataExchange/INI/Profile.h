@@ -38,13 +38,6 @@ namespace   Stroika {
                  */
                 struct  Section {
                     Mapping<String, String>  fProperties;
-
-                    //TEMPORARY HACK TIL WE FIX Mapping<> to not require operator==
-                    // -- LGP 2014-02-19
-                    bool operator==(const Section& rhs) const
-                    {
-                        return fProperties == rhs.fProperties;
-                    }
                 };
 
 
@@ -52,9 +45,8 @@ namespace   Stroika {
                  *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
                  */
                 struct  Profile {
-                    Section                 fUnnamedSection;
-                    Mapping<String, Section> fNamedSections;
-
+                    Section                     fUnnamedSection;
+                    Mapping<String, Section>    fNamedSections;
                 };
 
                 Profile         Convert (VariantValue v);
