@@ -50,6 +50,14 @@ namespace   Stroika {
                 , fFromVariantMapper (fromVariantMapper)
             {
             }
+            inline  bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
+            {
+                return (fForType == rhs.fForType);
+            }
+            inline  bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
+            {
+                return (fForType < rhs.fForType);
+            }
 
 
             /*
