@@ -349,6 +349,16 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
+
+                // NEW EXPERIMENTAL
+                /*
+                 *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
+                 *  They need not be in the same order to compare equals.
+                 */
+                template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
+                nonvirtual  bool    Equals_NEW (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+
+
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().

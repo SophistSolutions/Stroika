@@ -267,7 +267,55 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
-                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
+                //return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
+                Assert (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ()) == Equals_NEW<ValueEqualsCompareFunctionType> (rhs));
+                return Equals_NEW<ValueEqualsCompareFunctionType> (rhs);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename VALUE_EQUALS_COMPARER>
+            bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals_NEW (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            {
+                /*
+                 *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
+                 */
+                // Check length, so we dont need to check both iterators for end/done
+                if (this == &rhs) {
+                    return true;
+                }
+                _SafeReadRepAccessor<_IRep> lhs { this };
+                if (lhs._ConstGetRep ().GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+                /*
+                 *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
+                 *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
+                 *  If they miss, we need to fall back to a slower strategy.
+                 */
+                auto li = lhs._ConstGetRep ().MakeIterator (this);
+                auto ri = rhs.MakeIterator ();
+                while (not li.Done ()) {
+                    bool keysEqual = KeyEqualsCompareFunctionType::Equals (li->fKey, ri->fKey);
+                    if (keysEqual and VALUE_EQUALS_COMPARER::Equals (li->fValue, ri->fValue)) {
+                        // then this element matches
+                    }
+                    else {
+                        // check if li maps to right value in rhs
+                        auto o = rhs.Lookup (li->fKey);
+                        if (o.IsMissing () or not VALUE_EQUALS_COMPARER::Equals (*o, li->fValue)) {
+                            return false;
+                        }
+                        // if the keys were differnt, we must check the reverse direction too
+                        if (not keysEqual) {
+                            if (not lhs._ConstGetRep ().Lookup (ri->fKey, &o) or not VALUE_EQUALS_COMPARER::Equals (*o, ri->fValue)) {
+                                return false;
+                            }
+                        }
+                    }
+                    // if we got this far, all compared OK so far, so keep going
+                    ++li;
+                    ++ri;
+                }
+                return li.Done ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
