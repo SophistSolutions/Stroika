@@ -50,13 +50,13 @@ namespace   Stroika {
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
              *
-             *  When dereferencing an empty value, there are three plausible interpretions:
+             *  When dereferencing an 'IsMissing' value, there are three plausible interpretions:
              *      -   Return the default value T()
              *      -   throw bad_alloc()
              *      -   Assertion error
              *
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
-             *  runs the risk of producing surprising exceptions, we treat dereferencing an empty
+             *  runs the risk of producing surprising exceptions, we treat dereferencing an 'IsMissing'
              *  Optional<T, TRAITS> as an Assertion Erorr.
              *
              *  However, see @ref Value()
@@ -148,7 +148,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns true iff the Optional<T, TRAITS> has a valid value ( not empty ());
+                 *  Returns true iff the Optional<T, TRAITS> has a valid value ( not IsMissing ());
                  */
                 nonvirtual  bool    IsPresent () const;
 
@@ -220,7 +220,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
+                 *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
                 nonvirtual  int Compare (const Optional<T, TRAITS>& rhs) const;
 

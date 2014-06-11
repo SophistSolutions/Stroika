@@ -225,7 +225,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+                 *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
                 nonvirtual  ValueType   LookupValue (KeyType key, ValueType defaultValue = ValueType ()) const;
 
@@ -237,7 +237,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Synonym for not (Lookup (key).empty ())
+                 *  Synonym for Lookup (key).IsPresent ()
                  */
                 nonvirtual  bool    ContainsKey (KeyType key) const;
 
