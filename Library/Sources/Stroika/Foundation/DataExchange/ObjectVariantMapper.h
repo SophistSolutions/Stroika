@@ -376,13 +376,14 @@ namespace   Stroika {
 
 
             /**
+             *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
              */
             struct  ObjectVariantMapper::StructureFieldInfo {
                 size_t      fOffset;
                 type_index  fTypeInfo;
                 String      fSerializedFieldName;
 
-                StructureFieldInfo (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
+                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName);
             };
 
 
