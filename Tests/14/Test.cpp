@@ -61,6 +61,21 @@ namespace {
 }
 
 
+namespace {
+    template <typename CONTAINER, typename COMPARER>
+    void    doIt_t3_()
+    {
+        CommonTests::MappingTests::SimpleMappingTest_WhichRequiresExplcitValueComparer<CONTAINER, COMPARER> ([] (const CONTAINER & c) {});
+    }
+    void    Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ()
+    {
+        doIt_t3_<Mapping_LinkedList<size_t, size_t>, Common::ComparerWithEquals<size_t>> ();
+    }
+}
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -112,6 +127,8 @@ namespace   {
         }
 
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
+
+        Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ();
     }
 }
 

@@ -265,13 +265,8 @@ namespace   Stroika {
                 return result;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
-            {
-                return Equals_NEW<ValueEqualsCompareFunctionType> (rhs);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename VALUE_EQUALS_COMPARER>
-            bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals_NEW (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
                 /*
                  *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11

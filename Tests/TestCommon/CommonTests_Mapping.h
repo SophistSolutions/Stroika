@@ -82,19 +82,16 @@ namespace CommonTests {
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 using   KeyEqualsCompareFunctionType    =   typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
-                using   ValueEqualsCompareFunctionType  =   typename USING_MAPPING_CONTAINER::ValueEqualsCompareFunctionType;
                 USING_MAPPING_CONTAINER m;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
                     VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
                     VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
                 }
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
@@ -109,15 +106,12 @@ namespace CommonTests {
                     cnt++;
                     if (cnt == 1) {
                         VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
                     }
                     if (cnt == 2) {
                         VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 2));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 3));
                     }
                     if (cnt == 3) {
                         VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 3));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 4));
                     }
                 }
                 VerifyTestResult (cnt == 3);
@@ -128,7 +122,7 @@ namespace CommonTests {
 
 
         namespace Test4_Equals {
-            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_MAPPING_CONTAINER m;
@@ -140,13 +134,13 @@ namespace CommonTests {
                 applyToContainer (m);
                 applyToContainer (m2);
                 applyToContainer (m3);
-                VerifyTestResult (m == m3);
-                VerifyTestResult (m.Equals (m3));
-                VerifyTestResult (not (m != m3));
+                //VerifyTestResult (m == m3);
+                VerifyTestResult (m.Equals<VALUE_EQUALS_COMPARER_TYPE> (m3));
+                //VerifyTestResult (not (m != m3));
 
-                VerifyTestResult (m != m2);
-                VerifyTestResult (not m.Equals (m2));
-                VerifyTestResult (not (m == m2));
+                //VerifyTestResult (m != m2);
+                VerifyTestResult (not m.Equals<VALUE_EQUALS_COMPARER_TYPE> (m2));
+                //VerifyTestResult (not (m == m2));
             }
         }
 
@@ -229,6 +223,54 @@ namespace CommonTests {
             }
         }
 
+        namespace Test_8_Iteration_With_Value_Comparer {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                using   KeyEqualsCompareFunctionType    =   typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
+                using   ValueEqualsCompareFunctionType  =   VALUE_EQUALS_COMPARER_TYPE;
+                USING_MAPPING_CONTAINER m;
+                m.Add (1, 2);
+                VerifyTestResult (m.size () == 1);
+                for (auto i : m) {
+                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                }
+                m.Add (1, 2);
+                VerifyTestResult (m.size () == 1);
+                for (auto i : m) {
+                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                }
+                m.Remove (1);
+                VerifyTestResult (m.size () == 0);
+                for (auto i : m) {
+                    VerifyTestResult (false);
+                }
+                m.Add (1, 2);
+                m.Add (2, 3);
+                m.Add (3, 4);
+                unsigned int cnt = 0;
+                for (auto i : m) {
+                    cnt++;
+                    if (cnt == 1) {
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                    }
+                    if (cnt == 2) {
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 2));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 3));
+                    }
+                    if (cnt == 3) {
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 3));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 4));
+                    }
+                }
+                VerifyTestResult (cnt == 3);
+                m.RemoveAll ();
+                VerifyTestResult (m.size () == 0);
+            }
+        }
 
 
 
@@ -239,7 +281,6 @@ namespace CommonTests {
             Test1_BasicConstruction::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
-            Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test6_AsSTLVector::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test7_Keys::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
@@ -257,6 +298,12 @@ namespace CommonTests {
             SimpleMappingTest_AllTestsRequireComparer_For_Type_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
+        template <typename USING_MAPPING_CONTAINER, typename VALUE_EQUALS_COMPARER_TYPE, typename TEST_FUNCTION>
+        void    SimpleMappingTest_WhichRequiresExplcitValueComparer (TEST_FUNCTION applyToContainer)
+        {
+            Test_8_Iteration_With_Value_Comparer::DoAllTests_<USING_MAPPING_CONTAINER, TEST_FUNCTION, VALUE_EQUALS_COMPARER_TYPE> (applyToContainer);
+            Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER, TEST_FUNCTION, VALUE_EQUALS_COMPARER_TYPE> (applyToContainer);
+        }
 
     }
 }

@@ -74,13 +74,6 @@ namespace   Stroika {
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
 
                 /**
-                 * only defined optionally...(see what can call this - gen list here @todo)
-                 *
-                 *  @todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
-                 */
-                using   ValueEqualsCompareFunctionType  =   VALUE_EQUALS_COMPARER;
-
-                /**
                  *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
                  *  underlying Mapping's TRAITS objects.
                  */
@@ -160,15 +153,6 @@ namespace   Stroika {
                  *  building other templates.
                  */
                 using   KeyEqualsCompareFunctionType    =   typename TraitsType::KeyEqualsCompareFunctionType;
-
-            public:
-                /**
-                 *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 *
-                 *  @todo - GET RID OF THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
-                 */
-                using   ValueEqualsCompareFunctionType  =   typename TraitsType::ValueEqualsCompareFunctionType;
 
             public:
                 /**
@@ -344,20 +328,9 @@ namespace   Stroika {
                  *  Equals is commutative().
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-                 *
-                 *  @todo -REDO THIS _ SEE WHAT WE DO FOR Sequence<> - call thigns that use it must specify COMPARER as param!!! (can be via template defaults).
-                 */
-                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
-
-                // NEW EXPERIMENTAL
-                /*
-                 *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
-                 *  They need not be in the same order to compare equals.
                  */
                 template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
-                nonvirtual  bool    Equals_NEW (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
+                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
