@@ -22,10 +22,13 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a28">v2.0a28x</a><br/>2014-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a28">v2.0a28</a><br/>2014-06-11</td>
 <td>
 <ul>
-	<li>nothing yet</li>
+	<li>Logger::WouldLog</li>
+	<li>Mapping no longer requires operator== for VALUE_TYPE () - but at a slight cost for Equals() comparisons on entire Mapping</li>
+	<li>ObjectVariantMapper now supports optional preflight phase on each object reader for a CLASS (user defined type) - to implement backward comatability/schema changing for a type</li>
+	<li>Very little tested</li>
 </ul>
 </td>
 </tr>
