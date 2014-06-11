@@ -137,6 +137,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *      @see GetMinLogLevel
+                 *      This determines if a call to Log() with this argument log-level would
+                 *      write anything.
+                 */
+                static  bool    WouldLog (Priority logLevel);
+
+            public:
+                /**
                  *      Log bufffering is DISABLED by default, since it has some cost. But if enabled, Log() calls
                  *  queue an internal message, which another thread wakes up to write. This CAN be critical for performance
                  *  reasons, so the caller can freely log things, and not have their thread blocked.
