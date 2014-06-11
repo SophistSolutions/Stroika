@@ -373,22 +373,11 @@ namespace   Stroika {
                 );
                 TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 
-#if 0
-                // @todo
-                //tmphack - so I can use Stroika Set<> code with smarter field extraction etc.., and fix to default CTOR issue
-                // --LGP 2013-06-23
-                TypeMappingDetails ()
-                    : fForType (typeid(void))
-                    , fToVariantMapper (nullptr)
-                    , fFromVariantMapper (nullptr)
-                {
-                }
-#endif
-                bool operator== (const TypeMappingDetails& rhs) const
+                nonvirtual  bool operator== (const TypeMappingDetails& rhs) const
                 {
                     return (fForType == rhs.fForType);
                 }
-                bool operator< (const TypeMappingDetails& rhs) const
+                nonvirtual  bool operator< (const TypeMappingDetails& rhs) const
                 {
                     return (fForType < rhs.fForType);
                 }

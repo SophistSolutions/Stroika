@@ -79,6 +79,12 @@ namespace   Stroika {
             template    <typename CLASS>
             inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
             {
+                /*
+                 *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
+                 *  all its types to have a default constructor. To avoid that dependency, you may provide a template
+                 *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
+                 *  by the two argument ToObject.
+                 */
                 CLASS tmp;
                 ToObject (v, &tmp);
                 return tmp;
