@@ -26,77 +26,6 @@ using   Time::TimeOfDay;
 
 
 
-/*
- ********************************************************************************
- *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
- ********************************************************************************
- */
-ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
-    const type_index& forTypeInfo,
-    const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-    const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
-)
-    : fForType (forTypeInfo)
-    , fToVariantMapper (toVariantMapper)
-    , fFromVariantMapper (fromVariantMapper)
-{
-}
-
-ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields)
-    : fForType (forTypeInfo)
-    , fToVariantMapper ()
-    , fFromVariantMapper ()
-{
-#if     qDebug
-    for (auto i : fields) {
-        Require (i.fOffset < n);
-    }
-    {
-        // assure each field unique
-        Containers::MultiSet<size_t> t;
-        for (auto i : fields) {
-            t.Add (i.fOffset);
-        }
-        for (auto i : t) {
-            Require (i.fCount == 1);        //  not necessarily something we want to prohibit?
-        }
-    }
-#if 0
-    // GOOD TODO but cannot since no longer a member of the ObjectMapper class...
-    {
-        // Assure for each field type is registered
-        for (auto i : fields) {
-            Require (Lookup_ (i.fTypeInfo).fFromVariantMapper);
-            Require (Lookup_ (i.fTypeInfo).fToVariantMapper);
-        }
-    }
-#endif
-#endif
-
-    fToVariantMapper = [fields] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
-        Mapping<String, VariantValue> m;
-        for (auto i : fields)
-        {
-            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
-            const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
-            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset));
-        }
-        return VariantValue (m);
-    };
-    fFromVariantMapper = [fields] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
-        Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
-        for (auto i : fields)
-        {
-            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
-            Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-            if (not o.IsMissing ()) {
-                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
-            }
-        }
-    };
-}
 
 
 /*
@@ -379,6 +308,59 @@ void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const Vari
 {
     Require (Lookup_ (forTypeInfo).fFromVariantMapper);
     Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
+}
+
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const
+{
+#if     qDebug
+    for (auto i : fields) {
+        Require (i.fOffset < n);
+    }
+    {
+        // assure each field unique
+        Containers::MultiSet<size_t> t;
+        for (auto i : fields) {
+            t.Add (i.fOffset);
+        }
+        for (auto i : t) {
+            Require (i.fCount == 1);        //  not necessarily something we want to prohibit?
+        }
+    }
+    {
+        // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
+        // If you ever need to avoid it (I dont see how because this mapper doesnt work with circular data structures)
+        // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
+        for (auto i : fields) {
+            (void)Lookup_ (i.fTypeInfo);
+        }
+    }
+#endif
+
+    auto toVariantMapper = [fields] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
+        Mapping<String, VariantValue> m;
+        for (auto i : fields)
+        {
+            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
+            const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
+            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset));
+        }
+        return VariantValue (m);
+    };
+    auto fromVariantMapper = [fields] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
+        Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
+        for (auto i : fields)
+        {
+            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
+            Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
+            if (not o.IsMissing ()) {
+                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+            }
+        }
+    };
+
+    return TypeMappingDetails (forTypeInfo, toVariantMapper, fromVariantMapper);
 }
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const

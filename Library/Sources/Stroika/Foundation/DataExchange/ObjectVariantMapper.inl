@@ -37,6 +37,23 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
+             ********************************************************************************
+             */
+            inline  ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
+                const type_index& forTypeInfo,
+                const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+                const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+            )
+                : fForType (forTypeInfo)
+                , fToVariantMapper (toVariantMapper)
+                , fFromVariantMapper (fromVariantMapper)
+            {
+            }
+
+
+            /*
+             ********************************************************************************
              ******************************** ObjectVariantMapper ***************************
              ********************************************************************************
              */
@@ -56,7 +73,7 @@ namespace   Stroika {
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
-                Add (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
+                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
 #if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
             template    <typename CLASS>

@@ -122,16 +122,9 @@ namespace   Stroika {
              * EXAMPLE USAGE:
              *      struct SharedContactsConfig_
              *      {
-             *          bool                    fEnabled;
+             *          bool                    fEnabled = false;
              *          DateTime                fLastSynchronizedAt;
              *          Mapping<String,String>  fThisPHRsIDToSharedContactID;
-             *
-             *          SharedContactsConfig_ ()
-             *              : fEnabled (false)
-             *              , fLastSynchronizedAt ()
-             *              , fThisPHRsIDToSharedContactID ()
-             *          {
-             *          }
              *      };
              *...
              *
@@ -350,6 +343,8 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
+            private:
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
@@ -371,7 +366,6 @@ namespace   Stroika {
                     const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
                     const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
                 );
-                TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 
                 nonvirtual  bool operator== (const TypeMappingDetails& rhs) const
                 {

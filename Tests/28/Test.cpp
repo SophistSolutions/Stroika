@@ -111,6 +111,8 @@ namespace   {
 
         ObjectVariantMapper mapper;
 
+        mapper.AddCommonType<Bijection<String, String>> ();
+
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
@@ -133,7 +135,6 @@ namespace   {
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
-        mapper.AddCommonType<Bijection<String, String>> ();
         bool newEnabled = true;
         SharedContactsConfig_   tmp;
         tmp.fEnabled = newEnabled;
@@ -600,6 +601,17 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
+#if 1
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Array<int, 5> ());
+#else
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
+#endif
+
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
@@ -625,15 +637,6 @@ namespace   {
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
-#if 1
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Array<int, 5> ());
-#else
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
-#endif
 
         SharedContactsConfig_   tmp;
         tmp.fInt1 = 4;
