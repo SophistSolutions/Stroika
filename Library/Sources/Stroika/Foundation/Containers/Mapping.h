@@ -452,7 +452,6 @@ namespace   Stroika {
 
             public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual bool                Equals (const _IRep& rhs) const                                         =   0;
                 virtual  Iterable<KeyType>  Keys () const                                                           =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
@@ -463,16 +462,6 @@ namespace   Stroika {
 #if     qDebug
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
-
-                /*
-                 *  Reference Implementations (often not used except for ensure's, but can be used for
-                 *  quickie backends).
-                 *
-                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-                 *  the sucblass refers to the method in a subclass virtual override.
-                 */
-            protected:
-                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
 
             protected:
                 nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;

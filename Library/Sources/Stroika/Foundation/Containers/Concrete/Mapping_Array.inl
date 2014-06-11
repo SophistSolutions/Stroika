@@ -60,7 +60,6 @@ namespace   Stroika {
                     // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const override;
                     virtual Iterable<KEY_TYPE>  Keys () const override;
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
@@ -188,11 +187,6 @@ namespace   Stroika {
                     else {
                         return _SharedPtrIRep (new Rep_ ());
                     }
-                }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const
-                {
-                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterable<KEY_TYPE>    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const

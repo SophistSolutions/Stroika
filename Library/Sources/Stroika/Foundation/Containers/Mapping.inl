@@ -267,8 +267,6 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
             {
-                //return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
-                Assert (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ()) == Equals_NEW<ValueEqualsCompareFunctionType> (rhs));
                 return Equals_NEW<ValueEqualsCompareFunctionType> (rhs);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -278,11 +276,12 @@ namespace   Stroika {
                 /*
                  *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
                  */
-                // Check length, so we dont need to check both iterators for end/done
-                if (this == &rhs) {
+                _SafeReadRepAccessor<_IRep> lhs { this };
+                if (&lhs._ConstGetRep () == &rhs._ConstGetRep ()) {
+                    // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
                     return true;
                 }
-                _SafeReadRepAccessor<_IRep> lhs { this };
+                // Check length, so we dont need to check both iterators for end/done
                 if (lhs._ConstGetRep ().GetLength () != rhs.GetLength ()) {
                     return false;
                 }
@@ -358,26 +357,6 @@ namespace   Stroika {
              ***************** Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep *****************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
-            {
-                if (this == &rhs) {
-                    return true;
-                }
-                // If sizes differ, the Mappings differ
-                if (this->GetLength () != rhs.GetLength ()) {
-                    return false;
-                }
-                // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
-                // are present, and with the same mapping in the second.
-                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    Memory::Optional<ValueType>   tmp;
-                    if (not rhs.Lookup (i->fKey, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->fValue)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Iterable<KEY_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
             {
