@@ -234,6 +234,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Adds the given class (defined in explicit template argument) with the given list of field.
+                 *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
+                 *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
                  */
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
@@ -243,6 +246,14 @@ namespace   Stroika {
 #endif
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd);
+                template    <typename CLASS>
+                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
+#if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+                template    <typename CLASS>
+                nonvirtual  void    AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
+#endif
+                template    <typename CLASS>
+                nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject);
 
             public:
                 /**
@@ -345,6 +356,7 @@ namespace   Stroika {
 
             private:
                 nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const;
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;

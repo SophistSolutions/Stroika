@@ -312,6 +312,11 @@ void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const Vari
 
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const
 {
+    return MakeCommonSerializer_ForClassObject_ (forTypeInfo, n, fields, [] (VariantValue*) {});
+}
+
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const
+{
 #if     qDebug
     for (auto i : fields) {
         Require (i.fOffset < n);
@@ -347,9 +352,11 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         }
         return VariantValue (m);
     };
-    auto fromVariantMapper = [fields] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
-        Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
+        VariantValue v2Decode = d;
+        preflightBeforeToObject (&v2Decode);
+        Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
         for (auto i : fields)
         {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);

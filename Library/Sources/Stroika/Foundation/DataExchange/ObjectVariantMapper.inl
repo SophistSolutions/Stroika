@@ -96,6 +96,23 @@ namespace   Stroika {
                 return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd));
             }
             template    <typename CLASS>
+            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
+            {
+                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
+            }
+#if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+            template    <typename CLASS>
+            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
+            {
+                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptions), preflightBeforeToObject);
+            }
+#endif
+            template    <typename CLASS>
+            void    ObjectVariantMapper::AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject)
+            {
+                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd), preflightBeforeToObject);
+            }
+            template    <typename CLASS>
             inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, CLASS* into) const
             {
                 RequireNotNull (into);
