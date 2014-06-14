@@ -16,7 +16,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *      @todo
+ *      @todo   Review naming/design (vis-a-vis Memory::Optional and std::experimental::optional). But get a little
+ *              experience with this first (--LGP 2014-06-14)
  */
 
 
@@ -121,9 +122,8 @@ namespace   Stroika {
                 /**
                  *  \pre (IsPresent ())
                  *
-                 *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
+                 *  \note
+                 *      Unlike Memory::Optional<>::operator* - this is completely threadsafe.
                  */
                 nonvirtual  T   operator* () const;
 
