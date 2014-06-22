@@ -50,7 +50,7 @@ $(ALL_OBJS):
 $(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFoundationLib)...
-	@rm $(StroikaFoundationLib)
+	@rm -f $(StroikaFoundationLib)
 	#not sure why rm needed, but otherwise on remake of lib its corrupted somehow
 	@$(AR) cru $(StroikaFoundationLib) $(ALL_OBJS)
 	@$(RANLIB) $(StroikaFoundationLib)
