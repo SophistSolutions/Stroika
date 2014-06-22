@@ -29,15 +29,20 @@ namespace   Stroika {
                 inline  SocketAddress::SocketAddress (const sockaddr& iaddr)
                     : fSocketAddress_ ()
                 {
-                    Assert  (sizeof (fSocketAddress_) == sizeof (sockaddr));
-                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (fSocketAddress_));
+                    static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
+                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const sockaddr_in& iaddr)
                     : fSocketAddress_ ()
                 {
-                    Assert  (sizeof (fSocketAddress_) == sizeof (sockaddr));
-                    Assert  (sizeof (fSocketAddress_) == sizeof (sockaddr_in));
-                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (fSocketAddress_));
+                    static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
+                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
+                }
+                inline  SocketAddress::SocketAddress (const sockaddr_storage& iaddr)
+                    : fSocketAddress_ ()
+                {
+                    static_assert (sizeof (iaddr) == sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
+                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
                     : fSocketAddress_ ()
@@ -72,34 +77,36 @@ namespace   Stroika {
                 }
                 inline  bool    SocketAddress::empty () const
                 {
-                    return fSocketAddress_.sa_family == AF_UNSPEC;
+                    return fSocketAddress_.ss_family == AF_UNSPEC;
                     //constexpr sockaddr kZero_ = { 0 };
                     //return ::memcmp (&fSocketAddress_, &kZero_, sizeof (kZero_)) == 0;
                 }
                 inline  void    SocketAddress::clear ()
                 {
-                    fSocketAddress_.sa_family = AF_UNSPEC;
+                    fSocketAddress_.ss_family = AF_UNSPEC;
                     //::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
                 }
                 inline  SocketAddress::FamilyType    SocketAddress::GetAddressFamily () const
                 {
-                    return fSocketAddress_.sa_family;
+                    return fSocketAddress_.ss_family;
                 }
                 inline  bool    SocketAddress::IsInternetAddress () const
                 {
-                    return fSocketAddress_.sa_family == AF_INET or fSocketAddress_.sa_family == AF_INET6;
+                    return fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_INET6;
                 }
                 inline  InternetAddress    SocketAddress::GetInternetAddress () const
                 {
                     Require (IsInternetAddress ());
-                    switch (fSocketAddress_.sa_family) {
+                    switch (fSocketAddress_.ss_family) {
                         case AF_INET: {
-                                Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
+                                Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
+                                static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
                                 return InternetAddress (as.sin_addr);
                             }
                         case AF_INET6: {
-                                Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
+                                Require (fSocketAddress_.ss_family == AF_INET6 or fSocketAddress_.ss_family == AF_UNSPEC);
+                                static_assert (sizeof (sockaddr_in6) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
                                 return InternetAddress (as.sin6_addr);
                             }
@@ -112,16 +119,18 @@ namespace   Stroika {
                 inline  uint16_t    SocketAddress::GetPort () const
                 {
                     Require (IsInternetAddress ());
-                    switch (fSocketAddress_.sa_family) {
+                    switch (fSocketAddress_.ss_family) {
                         case AF_INET: {
-                                Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
+                                Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
+                                static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 return ntohs (as.sin_port);
                                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                             }
                         case AF_INET6: {
-                                Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
+                                Require (fSocketAddress_.ss_family == AF_INET6 or fSocketAddress_.ss_family == AF_UNSPEC);
+                                static_assert (sizeof (sockaddr_in6) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
                                 return ntohs (as.sin6_port);
@@ -145,19 +154,23 @@ namespace   Stroika {
                 template    <>
                 inline  sockaddr   SocketAddress::As<sockaddr> () const
                 {
-                    return fSocketAddress_;
+                    Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
+                    static_assert (sizeof (sockaddr) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
+                    return *reinterpret_cast<const sockaddr*> (&fSocketAddress_);
                 }
                 template    <>
                 inline  sockaddr_in   SocketAddress::As<sockaddr_in> () const
                 {
-                    Assert (sizeof (sockaddr_in) == sizeof (fSocketAddress_));
+                    Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);
+                    static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                     const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
                     return as;
                 }
                 template    <>
                 inline  sockaddr_in6   SocketAddress::As<sockaddr_in6> () const
                 {
-                    Assert (sizeof (sockaddr_in6) == sizeof (fSocketAddress_));
+                    Require (fSocketAddress_.ss_family == AF_INET6 or fSocketAddress_.ss_family == AF_UNSPEC);
+                    static_assert (sizeof (sockaddr_in6) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                     const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
                     return as;
                 }

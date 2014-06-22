@@ -19,10 +19,7 @@
 
 /**
  * TODO:
- *  @todo   Either use, or document why not using - sockaddr_storage. I think the answer is no need
- *          and this class is a more (space) efficient alternative to sockaddr_storage? But off hand
- *          this code LOOKS wrong on teh surface - in that it us storing in sockaddr which doesnt appear
- *          fast sockaddr_in6
+ *  @todo   Optimize storage for case when sockaddr_storage is too large.
  */
 
 
@@ -45,6 +42,7 @@ namespace   Stroika {
                     SocketAddress ();
                     SocketAddress (const sockaddr& iaddr);
                     SocketAddress (const sockaddr_in& iaddr);
+                    SocketAddress (const sockaddr_storage& iaddr);
                     SocketAddress (const InternetAddress& iaddr, uint16_t portNumber);
 
                 public:
@@ -96,7 +94,7 @@ namespace   Stroika {
                     nonvirtual  T   As () const;
 
                 private:
-                    sockaddr    fSocketAddress_;
+                    sockaddr_storage    fSocketAddress_;
                 };
 
 
