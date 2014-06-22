@@ -101,6 +101,9 @@ namespace   Stroika {
                 explicit AnyVariantValue (T val);
 
             public:
+                /**
+                 *  Note - its legal to call this even if empty: in that case it returns typeid(void).
+                 */
                 nonvirtual  const type_info&    GetType () const;
 
             public:
