@@ -41,6 +41,8 @@ $(ALL_OBJS):
 $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFrameworksLib)...
+	#not sure why rm needed, but otherwise on remake of lib its corrupted somehow
+	@rm $(StroikaFrameworksLib)
 	@$(AR) cru $(StroikaFrameworksLib) $(ALL_OBJS)
 	@$(RANLIB) $(StroikaFrameworksLib)
 
