@@ -285,3 +285,22 @@ bool    InternetAddress::IsMulticastAddress () const
     AssertNotReached ();
     return false;
 }
+
+int InternetAddress::Compare (const InternetAddress& rhs) const
+{
+    if (fAddressFamily_ != rhs.fAddressFamily_) {
+        return fAddressFamily_ < rhs.fAddressFamily_ ? -1 : 1;
+    }
+    switch (fAddressFamily_) {
+        case AddressFamily::V4: {
+                return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
+            }
+            break;
+        case AddressFamily::V6: {
+                return memcmp (&fV6_, &fV6_, sizeof (fV6_));
+            }
+            break;
+    }
+    AssertNotReached ();
+    return false;
+}

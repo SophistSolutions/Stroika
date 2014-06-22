@@ -146,6 +146,24 @@ namespace   Stroika {
                      */
                     nonvirtual  bool    IsMulticastAddress () const;
 
+                public:
+                    /**
+                     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                     *  Treat any in_addr4 < in_addr6 (in other words fAddressFamily_ is high-order of compare).
+                     */
+                    nonvirtual  int Compare (const InternetAddress& rhs) const;
+
+                public:
+                    /**
+                     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const InternetAddress& rhs)
+                     */
+                    nonvirtual  bool    operator< (const InternetAddress& rhs) const;
+                    nonvirtual  bool    operator<= (const InternetAddress& rhs) const;
+                    nonvirtual  bool    operator> (const InternetAddress& rhs) const;
+                    nonvirtual  bool    operator>= (const InternetAddress& rhs) const;
+                    nonvirtual  bool    operator== (const InternetAddress& rhs) const;
+                    nonvirtual  bool    operator!= (const InternetAddress& rhs) const;
+
                 private:
                     AddressFamily   fAddressFamily_;
                     union {

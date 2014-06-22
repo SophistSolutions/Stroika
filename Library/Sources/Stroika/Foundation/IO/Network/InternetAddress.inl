@@ -85,6 +85,30 @@ namespace   Stroika {
                     Require (fAddressFamily_ == AddressFamily::V6);
                     return fV6_;
                 }
+                inline  bool    InternetAddress::operator< (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) < 0;
+                }
+                inline  bool    InternetAddress::operator<= (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) <= 0;
+                }
+                inline  bool    InternetAddress::operator> (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) > 0;
+                }
+                inline  bool    InternetAddress::operator>= (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) >= 0;
+                }
+                inline  bool    InternetAddress::operator== (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) == 0;
+                }
+                inline  bool    InternetAddress::operator!= (const InternetAddress& rhs) const
+                {
+                    return Compare (rhs) != 0;
+                }
 
 
             }
