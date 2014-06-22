@@ -105,6 +105,13 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
+            inline  T   Optional<T, TRAITS>::operator* () const
+            {
+                lock_guard<mutex>   critSec (fMutex_);
+                Require (IsPresent ());
+                return *fValue_;
+            }
+            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::operator Memory::Optional<T, TRAITS> () const
             {
                 lock_guard<mutex>   critSec (fMutex_);
