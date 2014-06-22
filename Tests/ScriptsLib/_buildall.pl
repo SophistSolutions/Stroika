@@ -3,6 +3,12 @@
 require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
+$SIG{INT}  = \&signal_handler;
+$SIG{TERM} = \&signal_handler;
+
+sub signal_handler {
+    die "Caught a signal $!";
+}
 
 my $activeConfig = GetActiveConfigurationName ();
 
