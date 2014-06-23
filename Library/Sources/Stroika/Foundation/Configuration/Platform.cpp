@@ -14,6 +14,7 @@
 
 #if     qPlatform_POSIX
 #include    "../DataExchange/INI/Reader.h"
+#include    "../Execution/ProcessRunner.h"
 #include    "../Streams/iostream/FStreamSupport.h"
 #endif
 
@@ -87,7 +88,7 @@ Platform    Platform::Get ()
 #elif   qPlatform_POSIX
         tmp.TokenName = String_Constant (L"Unix");
         try {
-            tmp.TokenName = ProcessRunner (SDKSTR ("uname")).Run ().Trim ();
+            tmp.TokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run ().Trim ();
         }
         catch (...)
         {
