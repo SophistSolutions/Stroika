@@ -21,3 +21,15 @@ namespace {
 
 const   SocketAddress   UPnP::SSDP::V4::kSocketAddress =   SocketAddress (InternetAddress (SSDP_MULTICAST_, InternetAddress::AddressFamily::V4), SSDP_PORT_);
 
+
+
+
+
+String  UPnP::SSDP::MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion, const String& useUPNPVersion)
+{
+    Require (not useProductTokenWithVersion.empty ());
+    Require (not usePlatformTokenAndVersion.empty ());
+    Require (not useUPNPVersion.empty ());
+    static  const   String_Constant kSpace_ {L" "};
+    return usePlatformTokenAndVersion + kSpace_ + useUPNPVersion + kSpace_ + useProductTokenWithVersion;
+}
