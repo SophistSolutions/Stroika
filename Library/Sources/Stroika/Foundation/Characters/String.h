@@ -159,6 +159,8 @@
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
+ *      @todo   Add overload for ReplaceAll() where first arg is a lambda on a character, so easier to generalzie to replace all whitespace, etc.
+ *
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
  *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
