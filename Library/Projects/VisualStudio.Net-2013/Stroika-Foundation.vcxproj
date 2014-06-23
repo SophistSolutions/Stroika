@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
@@ -743,6 +744,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_TChar_.h" />
@@ -1092,6 +1094,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />

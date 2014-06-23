@@ -693,6 +693,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1614,6 +1617,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2456,6 +2462,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Optional.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>

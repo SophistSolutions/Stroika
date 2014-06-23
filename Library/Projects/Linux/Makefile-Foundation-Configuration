@@ -10,6 +10,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Enumeration.o\
 	$(ObjDir)Locale.o\
+	$(ObjDir)Platform.o\
 	$(ObjDir)StroikaVersion.o\
 	$(ObjDir)Version.o\
 	$(ObjDir)VersionDefs.o\
