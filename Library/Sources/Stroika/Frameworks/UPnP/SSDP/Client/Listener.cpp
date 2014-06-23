@@ -132,7 +132,7 @@ public:
                     d.fLocation = value;
                 }
                 else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
-                    d.fST = value;
+                    d.fTarget = value;
                 }
                 else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fUSN = value;

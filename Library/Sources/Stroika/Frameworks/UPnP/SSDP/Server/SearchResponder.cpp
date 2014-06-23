@@ -88,7 +88,7 @@ namespace {
                     da.fRawHeaders.Add (label, value);
                 }
                 if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
-                    da.fST = value;
+                    da.fTarget = value;
                 }
                 else {
                     int hreab = 1;
@@ -96,16 +96,16 @@ namespace {
             }
 
             bool    matches = false;
-            if (da.fST == L"upnp:rootdevice") {
+            if (da.fTarget.Equals (kTarget_UPNPRootDevice, Characters::CompareOptions::eCaseInsensitive)) {
                 matches = true;
             }
-            else if (da.fST == L"ssdp:all") {
+            else if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {
                 matches = true;
             }
-            else if (da.fST.StartsWith (String_Constant (L"uuid:"))) {
+            else if (da.fTarget.StartsWith (String_Constant (L"uuid:"))) {
                 for (auto a : advertisements) {
                     // @todo - not quite right... well - maybe right - look more closely
-                    if (a.fUSN == da.fST) {
+                    if (a.fUSN == da.fTarget) {
                         matches = true;
                     }
                 }
@@ -113,19 +113,30 @@ namespace {
             if (matches) {
                 // if any match, I think we are supposed to send all
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"sending advertisements...");
+                DbgTrace (L"sending search responder advertisements...");
 #endif
                 for (auto a : advertisements) {
                     a.fAlive.clear (); // in responder we dont set alive flag
-                    Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", a);
-                    useSocket.SendTo (data.begin (), data.end (), sendTo);
+
+                    bool    includeThisAdvertisement    =   false;
+                    if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {
+                        includeThisAdvertisement = true;
+                    }
+                    else {
+                        includeThisAdvertisement = a.fTarget.Equals (da.fTarget, Characters::CompareOptions::eCaseInsensitive);
+                    }
+
+                    if (includeThisAdvertisement) {
+                        Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", SearchOrNotify::SearchResponse, a);
+                        useSocket.SendTo (data.begin (), data.end (), sendTo);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    String msg;
-                    msg += String (L"location=") + a.fLocation + L", ";
-                    msg += String (L"ST=") + a.fST + L", ";
-                    msg += String (L"USN=") + a.fUSN;
-                    DbgTrace (L"(%s)", msg.c_str ());
+                        String msg;
+                        msg += String (L"location=") + a.fLocation + L", ";
+                        msg += String (L"TARGET(ST/NT)=") + a.fTarget + L", ";
+                        msg += String (L"USN=") + a.fUSN;
+                        DbgTrace (L"(%s)", msg.c_str ());
 #endif
+                    }
                 }
             }
         }
@@ -135,6 +146,11 @@ namespace {
 
 void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
+#if     qDebug
+    for (auto a : advertisements) {
+        Require (not a.fTarget.empty ());
+    }
+#endif // qDebug
     fListenThread_ = Execution::Thread ([advertisements]() {
         Debug::TraceContextBumper ctx (SDKSTR ("SSDP SearchResponder thread loop"));
         Socket s (Socket::SocketKind::DGRAM);

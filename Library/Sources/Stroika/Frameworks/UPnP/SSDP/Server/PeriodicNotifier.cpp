@@ -54,6 +54,12 @@ PeriodicNotifier::~PeriodicNotifier ()
 
 void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
+#if     qDebug
+    for (auto a : advertisements) {
+        Require (not a.fTarget.empty ());
+    }
+#endif // qDebug
+
     fListenThread_ = Execution::Thread ([advertisements, fi]() {
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
@@ -88,7 +94,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
             try {
                 for (auto a : advertisements) {
                     a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
-                    Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);
+                    Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", SearchOrNotify::Notify, a);
                     s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
                 }
             }

@@ -56,13 +56,13 @@ public:
             dan.fLocation = d.fLocation.GetFullURL ();
             dan.fServer = d.fServer;
             {
-                dan.fST = String_Constant (L"upnp:rootdevice");
-                dan.fUSN = Format (L"uuid:%s::upnp:rootdevice", d.fDeviceID.c_str ());
+                dan.fTarget = kTarget_UPNPRootDevice;
+                dan.fUSN = Format (L"uuid:%s::%s", d.fDeviceID.c_str (), kTarget_UPNPRootDevice.c_str ());
                 fAdvertisements.Append (dan);
             }
             {
                 dan.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                dan.fST = dan.fUSN;
+                dan.fTarget = dan.fUSN;
                 fAdvertisements.Append (dan);
             }
         }

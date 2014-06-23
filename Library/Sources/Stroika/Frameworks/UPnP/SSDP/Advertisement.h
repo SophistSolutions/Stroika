@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Characters/String.h"
+#include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
@@ -33,28 +34,44 @@ namespace   Stroika {
                 using   Foundation::Memory::Optional;
                 using   Foundation::Memory::BLOB;
                 using   Foundation::Characters::String;
+                using   Foundation::Characters::String_Constant;
                 using   Foundation::Containers::Mapping;
 
 
                 /**
                  */
                 struct  Advertisement {
-                    Optional<bool>              fAlive; // else Bye notification, or empty if neither
+                    Optional<bool>              fAlive;     // else Bye notification, or empty if neither
                     String                      fUSN;
                     String                      fLocation;
                     String                      fServer;
-                    String                      fST;         // usually ST header (or NT for notify)
+                    String                      fTarget;         // usually ST header (or NT for notify)
                     Mapping<String, String>     fRawHeaders;
                 };
 
 
-                /*
-                */
-                BLOB        Serialize (const String& headLine, const Advertisement& ad);
+                /**
+                 */
+                static  const   String_Constant kTarget_UPNPRootDevice  { L"upnp:rootdevice" };
 
 
-                /*
-                */
+                /**
+                 */
+                static  const   String_Constant kTarget_SSDPAll { L"ssdp:all" };
+
+
+                /**
+                 */
+                enum    class   SearchOrNotify { SearchResponse, Notify };
+
+
+                /**
+                 */
+                BLOB        Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad);
+
+
+                /**
+                 */
                 void    DeSerialize (const BLOB& b, String* headLine, Advertisement* advertisement);
 
 

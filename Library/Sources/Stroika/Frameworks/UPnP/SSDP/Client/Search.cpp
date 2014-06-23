@@ -30,7 +30,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
 // Comment this in to turn on tracing in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -129,6 +129,9 @@ public:
             SSDP::Advertisement d;
             while (true) {
                 String line =   in.ReadLine ().Trim ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"reply-line: %s", line.c_str ());
+#endif
                 if (line.empty ()) {
                     break;
                 }
@@ -147,7 +150,7 @@ public:
                     d.fLocation = value;
                 }
                 else if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
-                    d.fST = value;
+                    d.fTarget = value;
                 }
                 else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fUSN = value;

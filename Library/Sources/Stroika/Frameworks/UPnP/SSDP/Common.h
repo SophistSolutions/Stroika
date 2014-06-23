@@ -18,6 +18,9 @@
  *  for details on the SSDP specification.
  *
  *  And http://www.upnp-hacks.org/upnp.html for more hints.
+ *
+ *  Also - http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf
+ *  Also - http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
  */
 
 

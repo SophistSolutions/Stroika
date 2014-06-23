@@ -41,5 +41,5 @@ String  UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID)
     }
     result = baseDeviceID.SubString (0, 36 - 12) + macAddr;
     Ensure (result.length () == 36);
-    return result.ToLowerCase ();       // just normalize
+    return result.ToLowerCase ();       // http://tools.ietf.org/html/draft-leach-uuids-guids-00 says to use lower case on emitted uuids
 }

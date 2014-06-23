@@ -26,7 +26,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 
 
 
-Memory::BLOB        SSDP::Serialize (const String& headLine, const Advertisement& ad)
+Memory::BLOB        SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
 {
     Require (not headLine.Contains (L"\n"));
     Require (not headLine.Contains (L"\r"));
@@ -52,7 +52,12 @@ Memory::BLOB        SSDP::Serialize (const String& headLine, const Advertisement
     if (not ad.fServer.empty ()) {
         textOut.Write (Characters::Format (L"Server: %s\r\n", ad.fServer.c_str ()));
     }
-    textOut.Write (Characters::Format (L"NT: %s\r\n", ad.fST.c_str ()));
+    if (searchOrNotify == SearchOrNotify::SearchResponse) {
+        textOut.Write (Characters::Format (L"ST: %s\r\n", ad.fTarget.c_str ()));
+    }
+    else {
+        textOut.Write (Characters::Format (L"NT: %s\r\n", ad.fTarget.c_str ()));
+    }
     textOut.Write (Characters::Format (L"USN: %s\r\n", ad.fUSN.c_str ()));
 
     // Terminate list of headers
@@ -98,7 +103,7 @@ void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisemen
             advertisement->fLocation = value;
         }
         else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
-            advertisement->fST = value;
+            advertisement->fTarget = value;
         }
         else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
             advertisement->fUSN = value;
