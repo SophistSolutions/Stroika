@@ -313,7 +313,7 @@ namespace   Stroika {
                     RequireNotNull (intoObjOfTypeT);
                     /*
                      *  NB: When you mixup having an array and an object (say because of writing with
-                     *  MakeCommonSerializer_MappingWithStringishKeym and reading back with this regular Mapping serializer?) or for other reasons,
+                     *  MakeCommonSerializer_ContainerWithStringishKey and reading back with this regular Mapping serializer?) or for other reasons,
                      *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
                      *
                      *  This requires you wrote with the above serializer.
@@ -449,6 +449,31 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
+            template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey ()
+            {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const ACTUAL_CONTAINTER_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT);
+                    Mapping<String, VariantValue> m;
+                    for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
+                    {
+                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
+                    }
+                    return VariantValue (m);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
+                    ACTUAL_CONTAINTER_TYPE*  actualInto  =   reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (Common::KeyValuePair<String, VariantValue> p : m)
+                    {
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.fKey), mapper->ToObject<VALUE_TYPE> (p.fValue));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINTER_TYPE), toVariantMapper, fromVariantMapper);
+            }
             template <typename RANGE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
             {
@@ -515,27 +540,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
             {
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
-                    Mapping<String, VariantValue> m;
-                    for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
-                    {
-                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
-                    }
-                    return VariantValue (m);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
-                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (Common::KeyValuePair<String, VariantValue> p : m)
-                    {
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.fKey), mapper->ToObject<VALUE_TYPE> (p.fValue));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
+                return MakeCommonSerializer_ContainerWithStringishKey<Mapping<KEY_TYPE, VALUE_TYPE>> ();
             }
 
 

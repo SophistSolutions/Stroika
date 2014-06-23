@@ -306,6 +306,15 @@ namespace   Stroika {
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
 
+            public:
+                /**
+                 *
+                 *  This works on Any Iterable<KeyValuePair<>>, where the Key can be Mapped to / from a String, using
+                 *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.
+                 */
+                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::KeyType, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::ValueType>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_ContainerWithStringishKey ();
+
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
@@ -375,7 +384,7 @@ namespace   Stroika {
                 //
                 //  NB: To use this - you must add to your typemapper a mapping from KEY_TYPE to/from String (unless it is String).
                 template    <typename KEY_TYPE, typename VALUE_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
+                static  _DeprecatedFunction_ (ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey (), "Instead use MakeCommonSerializer_ContainerWithStringishKey() - to be removed after v2.0a28");
 
             private:
                 nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const;
