@@ -353,8 +353,8 @@ namespace   Stroika {
                     {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
+                            DbgTrace ("Container with Key/Value pair ('%s') element with item count (%d) other than 2", typeid (ACTUAL_CONTAINER_TYPE).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Container with Key/Value pair element with item count other than 2")));
                         }
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
