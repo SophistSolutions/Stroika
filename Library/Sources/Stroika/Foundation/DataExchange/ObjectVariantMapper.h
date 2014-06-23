@@ -341,6 +341,14 @@ namespace   Stroika {
                 template    <typename ACTUAL_CONTAINER_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_WithSimpleAdd_ ();
 
+            private:
+                template    <typename ACTUAL_CONTAINER_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_WithSimpleAddByAppend_ ();
+
+            private:
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_WithKeyValuePairAdd_ ();
+
 #if 1
             public:
                 //

@@ -183,45 +183,9 @@ namespace   Stroika {
                 return MakeCommonSerializer_WithSimpleAdd_<Containers::Collection<T>> ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
-                using   Characters::String_Constant;
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    Sequence<VariantValue> s;
-                    const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember)
-                    {
-                        Sequence<VariantValue>  encodedPair;
-                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
-                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
-                        s.Append (VariantValue (encodedPair));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    /*
-                     *  NB: When you mixup having an array and an object (say because of writing with
-                     *  MakeCommonSerializer_MappingWithStringishKeym and reading back with this regular Mapping serializer?) or for other reasons,
-                     *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
-                     *
-                     *  This requires you wrote with the above serializer.
-                     */
-                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
-                    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (VariantValue encodedPair : s)
-                    {
-                        Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
-                        if (p.size () != 2) {
-                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
-                        }
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
+                return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
@@ -252,29 +216,9 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>&)
             {
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    Sequence<VariantValue> s;
-                    const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember)
-                    {
-                        s.Append (mapper->FromObject<T> (i));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Sequence<VariantValue> s  =   d.As<Sequence<VariantValue>> ();
-                    Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (auto i : s)
-                    {
-                        actualInto->Append (mapper->ToObject<T> (i));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
+                return MakeCommonSerializer_WithSimpleAddByAppend_<Sequence<T>> ();
             }
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>&)
@@ -289,44 +233,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
-                using   Characters::String_Constant;
-                using   Containers::SortedMapping;
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    Sequence<VariantValue> s;
-                    const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualMember    =   reinterpret_cast<const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember)
-                    {
-                        Sequence<VariantValue>  encodedPair;
-                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
-                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
-                        s.Append (VariantValue (encodedPair));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    /*
-                     *  NB: When you mixup having an array and an object (say because of writing with
-                     *  MakeCommonSerializer_MappingWithStringishKeym and reading back with this regular Mapping serializer?) or for other reasons,
-                     *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
-                     *
-                     *  This requires you wrote with the above serializer.
-                     */
-                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
-                    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualInto  =   reinterpret_cast<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (VariantValue encodedPair : s)
-                    {
-                        Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
-                        if (p.size () != 2) {
-                            DbgTrace ("SortedMapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"SortedMapping element with item count other than 2")));
-                        }
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
+                return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>&)
@@ -355,6 +262,73 @@ namespace   Stroika {
                     for (auto i : s)
                     {
                         actualInto->Add (mapper->ToObject<T> (i));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename ACTUAL_CONTAINER_TYPE>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_WithSimpleAddByAppend_ ()
+            {
+                using   T   =   typename ACTUAL_CONTAINER_TYPE::ElementType;
+                auto toVariantMapper = [](const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const ACTUAL_CONTAINER_TYPE*  actualMember = reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT);
+                    for (auto i : *actualMember)
+                    {
+                        s.Append (mapper->FromObject<T> (i));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [](const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                    ACTUAL_CONTAINER_TYPE*    actualInto = reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (auto i : s)
+                    {
+                        actualInto->Append (mapper->ToObject<T> (i));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_WithKeyValuePairAdd_ ()
+            {
+                using   Characters::String_Constant;
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const ACTUAL_CONTAINER_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT);
+                    for (auto i : *actualMember)
+                    {
+                        Sequence<VariantValue>  encodedPair;
+                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
+                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
+                        s.Append (VariantValue (encodedPair));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    /*
+                     *  NB: When you mixup having an array and an object (say because of writing with
+                     *  MakeCommonSerializer_MappingWithStringishKeym and reading back with this regular Mapping serializer?) or for other reasons,
+                     *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
+                     *
+                     *  This requires you wrote with the above serializer.
+                     */
+                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
+                    ACTUAL_CONTAINER_TYPE*  actualInto  =   reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (VariantValue encodedPair : s)
+                    {
+                        Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
+                        if (p.size () != 2) {
+                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
+                        }
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
