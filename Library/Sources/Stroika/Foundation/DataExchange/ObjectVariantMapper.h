@@ -337,6 +337,10 @@ namespace   Stroika {
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type* = 0);
 
+            private:
+                template    <typename ACTUAL_CONTAINER_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_WithSimpleAdd_ ();
+
 #if 1
             public:
                 //
