@@ -25,7 +25,7 @@ else
 	@./buildall_.pl
 endif
 	@echo ...done - Built OpenSSL $(VERSION)
-	@make check
+	@make --no-print-directory check
 
 clean:
 	@rm -rf $(TRGDIR)

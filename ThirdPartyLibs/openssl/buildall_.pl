@@ -26,13 +26,16 @@ sub	CopyBuilds2Out
 
 #REM - only reconfigure if we just did the extract
 if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
-	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
-	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
 	unless (-e "CURRENT/CONFIG.OUT") {
 		print ("Creating CURRENT/CONFIG.OUT - new configuration\n");
 		system ("cd CURRENT ; ./config -no-shared 2>&1  > CONFIG.OUT");
 	}
-	system ("make --directory CURRENT --no-print-directory -s all");
+	if (-e "CURRENT/libssl.a") {
+		print (" ...Skipping build (already built)\n");
+	}
+	else {
+		system ("make --directory CURRENT --no-print-directory -s all");
+	}
 }
 else {if ("$^O" eq "cygwin") {
 	if ((-e 'CURRENT/Builds/Debug32') && (-e 'CURRENT/Builds/Release32')) {
