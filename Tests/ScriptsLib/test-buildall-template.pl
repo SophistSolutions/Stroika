@@ -26,7 +26,7 @@ sub RunAndPrint
 	print ("$cmd2Run...\n");
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
-		print "Run result = $result\r\n";
+		die ("Run result - FAILED - = $result\r\n");
 	}
 }
 

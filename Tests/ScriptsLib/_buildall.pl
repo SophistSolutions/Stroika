@@ -40,14 +40,19 @@ if ("$^O" eq "linux") {
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
 			print ("Test $tst: $tstName; clobber...\n");
-			system ("cd Test$tst; make -s clobber");
+			if ($exit_status != 0) {
+				die("Stopping build: failed");
+			}
 		}
 		$useBld = "all";
 	}
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ("Test $tst: $tstName; $useBld...\n");
-		system ("cd Test$tst; make -s $useBld");
+		$exit_status = system ("cd Test$tst; make -s $useBld\n");
+		if ($exit_status != 0) {
+			die("Stopping build: failed");
+		}
 	}
 	chdir ($savedDir);
 }
@@ -61,7 +66,10 @@ else {
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
 			print ("$BLD_TRG Test $tst: $tstName ...\n");
-			system ("cd $tst; perl buildall.pl $BLD_TRG");
+			$exit_status = system ("cd $tst; perl buildall.pl $BLD_TRG");
+			if ($exit_status != 0) {
+				die("Stopping build: failed");
+			}
 		}
 	chdir ($savedDir);
 }
