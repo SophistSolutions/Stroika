@@ -11,9 +11,13 @@
 
 #include    "../Characters/String.h"
 #include    "../Containers/Bijection.h"
+#include    "../Containers/Collection.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
+#include    "../Containers/SortedCollection.h"
+#include    "../Containers/SortedMapping.h"
+#include    "../Containers/SortedSet.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/DiscreteRange.h"
@@ -105,7 +109,6 @@ namespace   Stroika {
 
 
             using   Characters::String;
-            using   Containers::Bijection;
             using   Containers::Mapping;
             using   Containers::Sequence;
             using   Containers::Set;
@@ -301,11 +304,13 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Bijection<ENUM_TYPE, String>& nameMap);
+                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
 
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>&);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
                 template    <typename T>
@@ -314,6 +319,12 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>&);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedCollection<T>&);
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>&);
 #if 0
                 // haven't gotten to work
                 template    <typename T, size_t SZ>
