@@ -336,6 +336,7 @@ namespace   Stroika {
             template    <typename ACTUAL_CONTAINER_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_WithSimpleAdd_ ()
             {
+                using   T   =   typename ACTUAL_CONTAINER_TYPE::ElementType;
                 auto toVariantMapper = [](const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
