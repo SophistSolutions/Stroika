@@ -346,7 +346,7 @@ namespace   Stroika {
                         actualInto->Add (mapper->ToObject<T> (i));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Collection<T>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (SortedCollection<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
@@ -382,13 +382,13 @@ namespace   Stroika {
                     {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
+                            DbgTrace ("SortedMapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"SortedMapping element with item count other than 2")));
                         }
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>&)
