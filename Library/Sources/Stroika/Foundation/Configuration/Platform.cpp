@@ -6,7 +6,7 @@
 #if     qPlatform_Windows
 #include    <Windows.h>
 #elif   qPlatform_POSIX
-#include    <ifstream>
+#include    <fstream>
 #endif
 
 #include    "../Characters/Format.h"
