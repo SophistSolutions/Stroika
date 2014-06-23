@@ -188,6 +188,34 @@ namespace   Stroika {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Optional<T>&)
+            {
+                using   Containers::Optional;
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
+                    if (actualMember->IsPresent ())
+                    {
+                        return mapper->FromObject<T> (**actualMember);
+                    }
+                    else {
+                        return VariantValue ();
+                    }
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
+                    if (d.empty ())
+                    {
+                        actualInto->clear ();
+                    }
+                    else {
+                        *actualInto = mapper->ToObject<T> (d);
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
             {
                 using   Memory::Optional;
@@ -508,18 +536,6 @@ namespace   Stroika {
                             DbgTrace ("Range ('%s') element needs LowerBound and UpperBound", typeid (RANGE_TYPE).name ());
                             Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
                         }
-                        // temporary backward compat -- LGP 2013-11-01
-#if 0
-                        if (1)
-                        {
-                            if (not m.ContainsKey (L"LowerBound") and m.ContainsKey (L"Begin")) {
-                                m.Add (L"LowerBound", m.LookupValue (L"Begin"));
-                            }
-                            if (not m.ContainsKey (L"UpperBound") and m.ContainsKey (L"End")) {
-                                m.Add (String_Constant (L"UpperBound"), m.LookupValue (L"End"));
-                            }
-                        }
-#endif
                         if (not m.ContainsKey (String_Constant (L"LowerBound")))
                         {
                             DbgTrace ("Range ('%s') needs LowerBound", typeid (RANGE_TYPE).name ());
