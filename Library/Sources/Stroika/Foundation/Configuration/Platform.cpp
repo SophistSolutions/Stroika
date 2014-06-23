@@ -88,7 +88,7 @@ Platform    Platform::Get ()
 #elif   qPlatform_POSIX
         tmp.TokenName = String_Constant (L"Unix");
         try {
-            tmp.TokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run ().Trim ();
+            tmp.TokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run (String ()).Trim ();
         }
         catch (...)
         {
