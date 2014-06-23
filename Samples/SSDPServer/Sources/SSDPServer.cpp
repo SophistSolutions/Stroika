@@ -96,7 +96,7 @@ int main (int argc, const char* argv[])
         deviceInfo.fSerialNumber = String_Constant (L"manufacturer's serial number");
 
         WebServerForDeviceDescription_  deviceWS (portForOurWS, d, deviceInfo);
-        BasicServer b (d, BasicServer::FrequencyInfo ());
+        BasicServer b (d, deviceInfo, BasicServer::FrequencyInfo ());
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {

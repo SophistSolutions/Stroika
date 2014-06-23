@@ -49,7 +49,7 @@ namespace   Stroika {
                          *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
                          */
                         BasicServer (const BasicServer&) = delete;
-                        BasicServer (const Device& d, const FrequencyInfo& fi);
+                        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi);
                         const BasicServer& operator= (const BasicServer&) = delete;
 
                     private:

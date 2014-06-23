@@ -46,7 +46,7 @@ public:
     Sequence<Advertisement> fAdvertisements;
     FrequencyInfo           fFrequencyInfo;
     URL                     fLocation;
-    Rep_ (const Device& d, const FrequencyInfo& fi)
+    Rep_ (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
         : fAdvertisements ()
         , fFrequencyInfo (fi)
         , fLocation (d.fLocation)
@@ -63,6 +63,11 @@ public:
             {
                 dan.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
                 dan.fTarget = dan.fUSN;
+                fAdvertisements.Append (dan);
+            }
+            if (not dd.fDeviceType.empty ()) {
+                dan.fUSN = Format (L"uuid:%s::%s", d.fDeviceID.c_str (), dd.fDeviceType.c_str ());
+                dan.fTarget = dd.fDeviceType;
                 fAdvertisements.Append (dan);
             }
         }
@@ -143,7 +148,7 @@ public:
 ********************************** BasicServer *********************************
 ********************************************************************************
 */
-BasicServer::BasicServer (const Device& d, const FrequencyInfo& fi)
-    : fRep_ (new Rep_ (d, fi))
+BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
+    : fRep_ (new Rep_ (d, dd, fi))
 {
 }
