@@ -44,7 +44,7 @@ namespace   Stroika {
             {
                 return sThe_.fBufferingEnabled_;
             }
-            inline  void    Logger::Log (Priority logLevel, const String& format, ...)
+            inline  void    Logger::Log (Priority logLevel, String format, ...)
             {
                 if (WouldLog (logLevel)) {
                     va_list     argsList;

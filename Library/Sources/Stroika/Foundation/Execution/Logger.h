@@ -196,7 +196,8 @@ namespace   Stroika {
                  *  Log
                  *
                  *  Design Note:
-                 *      The 'format' parameter must be defined a String, not const String&, because:
+                 *      The 'format' parameter must be defined a String (or const wchar_t*), but
+                 *      not const String&, because:
                  *
                  *      18.10 Other runtime support [support.runtime]
                  *      ...
@@ -208,7 +209,7 @@ namespace   Stroika {
                  *      not compatible with the type that results when passing an argument for which there
                  *      is no parameter, the behavior is undeﬁned.
                  */
-                static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
+                static  void    Log (Priority logLevel, String format, ...); // varargs logger
 
             private:
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
