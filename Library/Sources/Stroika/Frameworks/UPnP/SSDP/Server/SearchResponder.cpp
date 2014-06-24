@@ -104,22 +104,12 @@ namespace {
             }
             else {
                 for (auto a : advertisements) {
-                    if (a.fUSN.Equals (da.fTarget, Characters::CompareOptions::eCaseInsensitive)) {
+                    if (a.fTarget.Equals (da.fTarget, Characters::CompareOptions::eCaseInsensitive)) {
                         matches = true;
                         break;
                     }
                 }
             }
-#if 0
-            else if (da.fTarget.StartsWith (String_Constant (L"uuid:"))) {
-                for (auto a : advertisements) {
-                    // @todo - not quite right... well - maybe right - look more closely
-                    if (a.fUSN == da.fTarget) {
-                        matches = true;
-                    }
-                }
-            }
-#endif
             if (matches) {
                 // if any match, I think we are supposed to send all
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
