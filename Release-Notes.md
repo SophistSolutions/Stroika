@@ -21,10 +21,19 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a29">v2.0a29x</a><br/>2014-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a29">v2.0a29</a><br/>2014-06-23</td>
 <td>
 <ul>
-	<li>nothing yet</li>
+	<li>Quite a few improvements to UPnP SSDP code (especailly SearchListener) - fixing issues with case sensatity on compares, advertising devicetypes, and fixing ST/NT usage.</li>
+	<li>New Configuration::Platform module - essentially reporting OS version (primitive but portable)</li>
+	<li>Fixed bug with varargs and Logger::Log() code</li>
+	<li>A variety of (mostly linux) makefile improvements - so you can now rebuild without getting messed up
+	.a files - and no longer need to make clean/clobber</li>
+	<li>ObjectVariantMapper improvements - Container::Optional, Collection, SortedCollection, SortedSet, and a few others. Also - refactoring to make it simpler</li>
+	<li>socket_storage fix to SocketAddress class</li>
+	<li>Fixed bug with missing Containers::Optional<>::operator*</li>
+	<li>Added compare operators for InternetAddress (so can be stored in maps etc)</li>
+	<li>Tested with clang++, gcc48, msvc2k13, and clean report card (one minor issue) from VALGRIND</li>
 </ul>
 </td>
 </tr>
