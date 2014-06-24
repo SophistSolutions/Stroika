@@ -17,6 +17,23 @@ History
 
 
 
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a30">v2.0a30x</a><br/>2014-06-??</td>
+<td>
+<ul>
+	<li>nothingyet</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
 
   
 
