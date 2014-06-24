@@ -20,10 +20,10 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a30">v2.0a30x</a><br/>2014-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a30">v2.0a30</a><br/>2014-06-24</td>
 <td>
 <ul>
-	<li>nothingyet</li>
+	<li>Fixed deadlock in Containers::Optional<>::operator*</li>
 </ul>
 </td>
 </tr>
