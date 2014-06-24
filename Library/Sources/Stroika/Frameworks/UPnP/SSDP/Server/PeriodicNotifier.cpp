@@ -93,7 +93,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
 #endif
             try {
                 for (auto a : advertisements) {
-                    a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
+                    a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet)
                     Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", SearchOrNotify::Notify, a);
                     s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
                 }
@@ -110,7 +110,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
             catch (...) {
                 DbgTrace (L"Ignoring inability to send SSDP notify packets (try again later)");
             }
-            Execution::Sleep (30.0);
+            Execution::Sleep (fi.fRepeatInterval);
         }
     });
     fListenThread_.SetThreadName (L"SSDP Periodic Notifier thread");

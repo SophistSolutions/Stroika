@@ -50,8 +50,9 @@ namespace   Stroika {
                         ~PeriodicNotifier ();
 
                     public:
+                        // Very primitive definition - should refine - read details on spec on this...
                         struct FrequencyInfo {
-
+                            Time::DurationSecondsType   fRepeatInterval = 3 * 60.0;
                         };
                         nonvirtual  void    Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
 
