@@ -372,10 +372,23 @@ namespace {
 }
 
 
+namespace {
+    void    Test11_GetDistanceSpanned_ ()
+    {
+        using IntRange =  Range<unsigned int>;
+        IntRange foo {3, 9};
+#if     !qCompilerAndStdLib_Template_AliasBuggy
+        VerifyTestResult (foo.GetDistanceSpanned () == 6);
+#endif
+    }
+}
+
+
+
+
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
         Test_1_BasicRange_ ();
@@ -388,6 +401,7 @@ namespace   {
         Test8_DiscreteRangeTestFromDocs_ ();
         Test9_Generators_ ();
         Test10_MakeIterableFromIterator_ ();
+        Test11_GetDistanceSpanned_ ();
     }
 }
 

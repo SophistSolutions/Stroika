@@ -417,6 +417,27 @@ EXAMPLE:
 
 
 
+
+
+
+/*
+*/
+#ifndef qCompilerAndStdLib_Template_AliasBuggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
+#define qCompilerAndStdLib_Template_AliasBuggy    (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_Template_AliasBuggy    0
+#endif
+
+#endif
+
+
+
+
+
+
 /*
 */
 #ifndef qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug
