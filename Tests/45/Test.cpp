@@ -377,9 +377,7 @@ namespace {
     {
         using IntRange =  Range<unsigned int>;
         IntRange foo {3, 9};
-#if     !qCompilerAndStdLib_Template_AliasBuggy
         VerifyTestResult (foo.GetDistanceSpanned () == 6);
-#endif
     }
 }
 

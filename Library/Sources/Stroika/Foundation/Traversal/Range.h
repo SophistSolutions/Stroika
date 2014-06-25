@@ -101,22 +101,23 @@ namespace   Stroika {
 
 
                 namespace Private_ {
-#if     qCompilerAndStdLib_Template_AliasBuggy
-                    // this at least sometimes compiles if not fully used...
                     template    <typename T>
-                    struct  UnsignedDifferenceType_ : conditional <
-                    ((is_integral<T>::value || is_enum<T>::value)&&  !is_same<T, bool>::value),
-                    typename make_unsigned < decltype (T () - T ()) >::type,
-                    decltype (T () - T ())
-                    >::type {
-                    };
-#else
+                    using  BaseDifferenceType_ =   decltype (T {} - T {});
+                    // @todo - cannot get to compile using make_unsigned or conditional<>
+#if 0
                     template    <typename T>
                     using  UnsignedDifferenceType_ = typename conditional <
-                                                     ((is_integral<T>::value or is_enum<T>::value) and not is_same<T, bool>::value),
-                                                     typename make_unsigned < decltype (T {} - T {}) >::type,
-                                                     decltype (T {} - T {})
+                                                     ((is_integral<T>::value || is_enum<T>::value) && !is_same<T, bool>::value),
+                                                     typename make_unsigned < BaseDifferenceType_<T> >::type,
+                                                     BaseDifferenceType_<T>
                                                      >::type;
+#elif 0
+                    template    <typename T>
+                    using  UnsignedDifferenceType_ =   typename make_unsigned < BaseDifferenceType_<T> >::type;
+
+#else
+                    template    <typename T>
+                    using  UnsignedDifferenceType_ =   BaseDifferenceType_<T>;
 #endif
                 }
 
