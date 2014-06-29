@@ -21,13 +21,19 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a31">v2.0a31x</a><br/>2014-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a31">v2.0a31</a><br/>2014-06-29</td>
 <td>
 <ul>
-	<li>nothing yet</li>
+	<li>A variety of fixes to Range<> code - most notably supporting data-parameterized openness on endpoints.</li>
+	<li>Improved Configuration::EnumNames - so can call GetName()</li>
+	<li>Did only modest testing (clang++, gcc47,gcc48 and msvc2k13 passed regtests)</li>
+	<li>Passed gcc48-x64/valgrind regtests</li>
 </ul>
 </td>
 </tr>
+
+
+
 
 
 
