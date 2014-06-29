@@ -108,7 +108,38 @@ namespace   Stroika {
             /**
              */
             template <typename ENUM_TYPE>
-            using EnumNames = initializer_list<EnumName<ENUM_TYPE>>;
+            class   EnumNames {
+                initializer_list<EnumName<ENUM_TYPE>>   fEnumNames_;
+
+            public:
+                /**
+                 */
+                EnumNames () = delete;
+                EnumNames (const EnumNames& src);
+                EnumNames (EnumNames&& src);
+                EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
+                EnumNames (initializer_list<EnumName<ENUM_TYPE>>&& origEnumNames);
+
+            public:
+                /**
+                 */
+                EnumNames& operator= (const EnumNames& rhs) = default;
+
+            public:
+                /**
+                 */
+                explicit operator initializer_list<EnumName<ENUM_TYPE>> () const;
+
+            public:
+                /**
+                 */
+                const wchar_t*  PeekName (ENUM_TYPE e) const;
+
+            public:
+                /**
+                 */
+                const wchar_t*  GetName (ENUM_TYPE e) const;
+            };
 
 
         }

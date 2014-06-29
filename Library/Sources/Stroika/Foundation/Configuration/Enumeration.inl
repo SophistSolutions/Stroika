@@ -68,6 +68,56 @@ namespace   Stroika {
             }
 
 
+
+            /*
+             ********************************************************************************
+             ************************ Configuration::EnumNames ******************************
+             ********************************************************************************
+             */
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::EnumNames (const EnumNames<ENUM_TYPE>& src)
+                : fEnumNames_ (src.fEnumNames_)
+            {
+            }
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::EnumNames (EnumNames<ENUM_TYPE>&& src)
+                : fEnumNames_ (move (src.fEnumNames_))
+            {
+            }
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
+                : fEnumNames_ (origEnumNames)
+            {
+            }
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::EnumNames (initializer_list<EnumName<ENUM_TYPE>>&& origEnumNames)
+                : fEnumNames_ (move (origEnumNames))
+            {
+            }
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
+            {
+                return fEnumNames_;
+            }
+            template     <typename ENUM_TYPE>
+            const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
+            {
+                for (auto i : fEnumNames_) {
+                    if (i.first == e) {
+                        return i.second;
+                    }
+                }
+                return nullptr;
+            }
+            template     <typename ENUM_TYPE>
+            inline  const wchar_t*  EnumNames<ENUM_TYPE>::GetName (ENUM_TYPE e) const
+            {
+                auto tmp = PeekName (e);
+                RequireNotNull (tmp);
+                return tmp;
+            }
+
+
         }
     }
 }

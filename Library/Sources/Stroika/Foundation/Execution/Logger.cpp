@@ -264,7 +264,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
-    DbgTrace (L"SYSLOG: %d: %s", logLevel, message.c_str ());
+    DbgTrace (L"SYSLOG: %s: %s", Stroika_Enum_Names(Priority).GetName (logLevel), message.c_str ());
     int sysLogLevel = LOG_NOTICE;   // doesnt matter cuz assert error if hit
     switch (logLevel) {
         case Priority::eDebug:
