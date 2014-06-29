@@ -4,6 +4,7 @@
 //  TEST    Foundation::DataExchangeFormat::ObjectVariantMapper
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Containers/Bijection.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -343,6 +344,16 @@ namespace   {
 
             Stroika_Define_Enum_Bounds (a, h)
         };
+        const Configuration::EnumNames<Fred>   Stroika_Enum_Names(Fred) = {
+            { Fred::a, L"a" },
+            { Fred::b, L"b" },
+            { Fred::c, L"c" },
+            { Fred::d, L"d" },
+            { Fred::e, L"e" },
+            { Fred::f, L"f" },
+            { Fred::g, L"g" },
+            { Fred::h, L"h" },
+        };
         struct SharedContactsConfig_ {
             Fred fEnum1;
 
@@ -359,43 +370,85 @@ namespace   {
             }
         };
 
-        ObjectVariantMapper mapper;
+        {
+            ObjectVariantMapper mapper;
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
+            ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+            };
+            mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
 #else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
-        });
+            mapper.AddClass<SharedContactsConfig_> ({
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+            });
 #endif
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
-        SharedContactsConfig_   tmp;
-        tmp.fEnum1 = Fred::b;
-        VariantValue v = mapper.FromObject (tmp);
+            SharedContactsConfig_   tmp;
+            tmp.fEnum1 = Fred::b;
+            VariantValue v = mapper.FromObject (tmp);
 
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
+            // at this point - we should have VariantValue object with "Enabled" field.
+            // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+            Streams::BasicBinaryInputOutputStream   tmpStream;
+            JSON::Writer ().Write (v, tmpStream);
 
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            if (kWrite2FileAsWell_) {
+                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
+                JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            }
+
+            // THEN deserialized, and mapped back to C++ object form
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+            VerifyTestResult (tmp2 == tmp);
         }
 
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        {
+            ObjectVariantMapper mapper;
+
+            mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Stroika_Enum_Names(Fred))));
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+            ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+            };
+            mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
+#else
+            mapper.AddClass<SharedContactsConfig_> ({
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+            });
+#endif
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
+
+            SharedContactsConfig_   tmp;
+            tmp.fEnum1 = Fred::b;
+            VariantValue v = mapper.FromObject (tmp);
+
+            // at this point - we should have VariantValue object with "Enabled" field.
+            // This can then be serialized using
+
+            Streams::BasicBinaryInputOutputStream   tmpStream;
+            JSON::Writer ().Write (v, tmpStream);
+
+            if (kWrite2FileAsWell_) {
+                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
+                JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            }
+
+            // THEN deserialized, and mapped back to C++ object form
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+            VerifyTestResult (tmp2 == tmp);
+        }
     }
 }
 
