@@ -4,6 +4,7 @@
 //  TEST    Foundation::Configuration
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Configuration/Version.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -31,11 +32,30 @@ namespace   {
 
 
 
+namespace {
+    void    Test2_EnumNames_ ()
+    {
+        using   namespace Configuration;
+        enum class fooEnum {
+            eOne,
+            eTwo,
+        };
+        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+            { fooEnum::eOne, L"eOne" },
+            { fooEnum::eTwo, L"eTwo" },
+        };
+        Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+        Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+    }
+}
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Version_ ();
+        Test2_EnumNames_ ();
     }
 }
 
