@@ -8,6 +8,7 @@
 
 #include    <type_traits>
 #include    <utility>
+#include    <vector>
 
 #include    "Common.h"
 
@@ -19,6 +20,11 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
+ *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
+ *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
+ *              to copy. That maybe a poor tradeoff. The only reason for not using aliases was to add
+ *              the Peek/GetName methods, but those could have been global functions? Hmmm.
  */
 
 
@@ -114,7 +120,7 @@ namespace   Stroika {
             template <typename ENUM_TYPE>
             class   EnumNames {
             private:
-                initializer_list<EnumName<ENUM_TYPE>>   fEnumNames_;
+                vector<EnumName<ENUM_TYPE>>   fEnumNames_;
 
             public:
                 /**
@@ -123,7 +129,6 @@ namespace   Stroika {
                 EnumNames (const EnumNames& src);
                 EnumNames (EnumNames&& src);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
-                EnumNames (initializer_list<EnumName<ENUM_TYPE>>&& origEnumNames);
 
             public:
                 /**
@@ -144,6 +149,11 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  end () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  size_t  size () const;
 
             public:
                 /**

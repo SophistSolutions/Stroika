@@ -90,11 +90,6 @@ namespace   Stroika {
             {
             }
             template     <typename ENUM_TYPE>
-            inline  EnumNames<ENUM_TYPE>::EnumNames (initializer_list<EnumName<ENUM_TYPE>>&& origEnumNames)
-                : fEnumNames_ (move (origEnumNames))
-            {
-            }
-            template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
             {
                 return fEnumNames_;
@@ -108,6 +103,11 @@ namespace   Stroika {
             inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::end () const
             {
                 return fEnumNames_.end ();
+            }
+            template     <typename ENUM_TYPE>
+            inline  size_t  EnumNames<ENUM_TYPE>::size () const
+            {
+                return fEnumNames_.size ();
             }
             template     <typename ENUM_TYPE>
             const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const

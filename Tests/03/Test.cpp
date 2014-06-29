@@ -33,13 +33,23 @@ namespace   {
 
 
 namespace {
-    void    Test2_EnumNames_ ()
-    {
+    namespace    Test2_EnumNames_Private_ {
         using   namespace Configuration;
         enum class fooEnum {
             eOne,
             eTwo,
         };
+        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+            { fooEnum::eOne, L"eOne" },
+            { fooEnum::eTwo, L"eTwo" },
+        };
+    }
+
+    void    Test2_EnumNames_ ()
+    {
+        using namespace Test2_EnumNames_Private_;
+        Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+        Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         {
             const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
                 { fooEnum::eOne, L"eOne" },
