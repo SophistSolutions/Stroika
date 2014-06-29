@@ -327,11 +327,26 @@ namespace   {
 
 
 namespace   {
+#if     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
+    enum class Fred {
+        a = -3,
+        b,
+        c,
+        d,
+        e,
+        f,
+        g,
+        h,
+
+        Stroika_Define_Enum_Bounds (a, h)
+    };
+#endif
     void    DoRegressionTests_SimpleEnumTypes_5_ ()
     {
         using   namespace Traversal;
         const bool kWrite2FileAsWell_ = true;      // just for debugging
 
+#if     !qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
         enum class Fred {
             a = -3,
             b,
@@ -344,6 +359,7 @@ namespace   {
 
             Stroika_Define_Enum_Bounds (a, h)
         };
+#endif
         const Configuration::EnumNames<Fred>   Stroika_Enum_Names(Fred) = {
             { Fred::a, L"a" },
             { Fred::b, L"b" },
