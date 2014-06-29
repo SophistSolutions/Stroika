@@ -40,12 +40,22 @@ namespace {
             eOne,
             eTwo,
         };
-        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
-            { fooEnum::eOne, L"eOne" },
-            { fooEnum::eTwo, L"eTwo" },
-        };
-        Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-        Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+        {
+            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+                { fooEnum::eOne, L"eOne" },
+                { fooEnum::eTwo, L"eTwo" },
+            };
+            Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+            Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+        }
+        {
+            static  const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+                { fooEnum::eOne, L"eOne" },
+                { fooEnum::eTwo, L"eTwo" },
+            };
+            Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+            Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+        }
     }
 }
 
