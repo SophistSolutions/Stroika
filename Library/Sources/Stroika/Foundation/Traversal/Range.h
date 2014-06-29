@@ -61,7 +61,9 @@ namespace   Stroika {
              */
             enum    class   Openness {
                 eOpen,
-                eClosed
+                eClosed,
+
+                Stroika_Define_Enum_Bounds(eOpen, eClosed)
             };
 
 
@@ -198,6 +200,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This returns Range<T, TRAITS> (TraitsType::kLowerBound, TraitsType::kUpperBound);
                  */
                 static  Range<T, TRAITS> FullRange ();
 
@@ -306,7 +309,6 @@ namespace   Stroika {
                  *  Default is from traits.
                  */
                 static  T    GetDefaultUpperBound ();
-
 
             public:
                 /**
