@@ -89,7 +89,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
             {
-                return Range<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
+                return Range<T, TRAITS> (
+                           typename TraitsType::kLowerBound, typename TraitsType::kUpperBound,
+                           typename TraitsType::kLowerBoundOpenness, typename TraitsType::kUpperBoundOpenness
+                       );
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const
@@ -223,26 +226,6 @@ namespace   Stroika {
             inline  Openness    Range<T, TRAITS>::GetUpperBoundOpenness () const
             {
                 return fEndOpenness_;
-            }
-            template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetDefaultLowerBoundOpenness ()
-            {
-                return TRAITS::kLowerBoundOpenness;
-            }
-            template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetDefaultUpperBoundOpenness ()
-            {
-                return TRAITS::kUpperBoundOpenness;
-            }
-            template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetDefaultLowerBound ()
-            {
-                return TRAITS::kLowerBound;
-            }
-            template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetDefaultUpperBound ()
-            {
-                return TRAITS::kUpperBound;
             }
             template    <typename T, typename TRAITS>
             template    <typename... ARGS>

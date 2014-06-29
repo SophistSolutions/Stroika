@@ -200,7 +200,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This returns Range<T, TRAITS> (TraitsType::kLowerBound, TraitsType::kUpperBound);
+                 *  This returns Range<T, TRAITS> (
+                            TraitsType::kLowerBound, TraitsType::kUpperBound,
+                            TraitsType::kLowerBound, TraitsType::kUpperBound
+                        );
                  */
                 static  Range<T, TRAITS> FullRange ();
 
@@ -285,30 +288,6 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Openness    GetUpperBoundOpenness () const;
-
-            public:
-                /**
-                 *  Default is from traits.
-                 */
-                static  Openness    GetDefaultLowerBoundOpenness ();
-
-            public:
-                /**
-                 *  Default is from traits.
-                 */
-                static  Openness    GetDefaultUpperBoundOpenness ();
-
-            public:
-                /**
-                 *  Default is from traits.
-                 */
-                static  T    GetDefaultLowerBound ();
-
-            public:
-                /**
-                 *  Default is from traits.
-                 */
-                static  T    GetDefaultUpperBound ();
 
             public:
                 /**
