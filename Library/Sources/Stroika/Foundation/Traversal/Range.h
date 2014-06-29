@@ -201,9 +201,9 @@ namespace   Stroika {
             public:
                 /**
                  *  This returns Range<T, TRAITS> (
-                            TraitsType::kLowerBound, TraitsType::kUpperBound,
-                            TraitsType::kLowerBound, TraitsType::kUpperBound
-                        );
+                 *              TraitsType::kLowerBound, TraitsType::kUpperBound,
+                 *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
+                  *      );
                  */
                 static  Range<T, TRAITS> FullRange ();
 

@@ -90,8 +90,8 @@ namespace   Stroika {
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
             {
                 return Range<T, TRAITS> (
-                           typename TraitsType::kLowerBound, typename TraitsType::kUpperBound,
-                           typename TraitsType::kLowerBoundOpenness, typename TraitsType::kUpperBoundOpenness
+                           TraitsType::kLowerBound, TraitsType::kUpperBound,
+                           TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
                        );
             }
             template    <typename T, typename TRAITS>
