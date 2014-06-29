@@ -34,8 +34,7 @@
  *          -- LGP 2013-10-17
  *
  *  TODO:
- *          @todo   Should openness be in TRAITS or instance? Having in traits casuse some quirks
- *                  on definition of intersection...
+ *          @todo   Range<T, TRAITS>::Format() should take into account openness
  *
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
@@ -60,7 +59,10 @@ namespace   Stroika {
              *  Openness is used to define whether an end of a range is open or closed. Open means
              *  not containing the endpoint, and closed means containing the endpoint.
              */
-            enum    class   Openness { eOpen, eClosed };
+            enum    class   Openness {
+                eOpen,
+                eClosed
+            };
 
 
             /**
@@ -150,7 +152,7 @@ namespace   Stroika {
              *  A Range<> is analagous to a mathematical range. It's left and and its right side can
              *  be optionally open or closed.
              *
-             *  This Range<> template is similar to Ruby range -
+             *  This Range<> template is similar to Ruby range.
              *
              *  Somewhat inspired by, and at least influenced by, the definition in
              *      http://ruby-doc.org/core-2.0/Range.html
@@ -190,6 +192,9 @@ namespace   Stroika {
                 explicit Range ();
                 explicit Range (const T& begin, const T& end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+                explicit Range (Openness lhsOpen, Openness rhsOpen);
+                explicit Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen);
+                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
             public:
                 /**
@@ -227,10 +232,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  UNCLEAR - THOUGH OUT DEF _ IF WE WANT TO CONTIN EDGES. ANSWER COULD BE DIFFERNT BETWEEN
-                 *  DISCRETE versus NON-DISCRETE cases?
-                 *
-                 *  Numerically - what makes the most sense is to contain the edges - so assume yes.
+                 *  This corresponds to the mathematical set containment. When comparing with the edges
+                 *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
                 nonvirtual  bool    Contains (const T& r) const;
 
@@ -266,6 +269,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  Openness    GetLowerBoundOpenness () const;
+
+            public:
+                /**
                  *  \req not empty ();
                  */
                 nonvirtual  T    GetUpperBound () const;
@@ -273,22 +281,31 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  Openness    GetTraitsLowerBoundOpenness ();
+                nonvirtual  Openness    GetUpperBoundOpenness () const;
 
             public:
                 /**
+                 *  Default is from traits.
                  */
-                static  Openness    GetTraitsUpperBoundOpenness ();
+                static  Openness    GetDefaultLowerBoundOpenness ();
 
             public:
                 /**
+                 *  Default is from traits.
                  */
-                static  T    GetTraitsLowerBound ();
+                static  Openness    GetDefaultUpperBoundOpenness ();
 
             public:
                 /**
+                 *  Default is from traits.
                  */
-                static  T    GetTraitsUpperBound ();
+                static  T    GetDefaultLowerBound ();
+
+            public:
+                /**
+                 *  Default is from traits.
+                 */
+                static  T    GetDefaultUpperBound ();
 
 
             public:
@@ -309,6 +326,8 @@ namespace   Stroika {
             private:
                 T           fBegin_;
                 T           fEnd_;
+                Openness    fBeginOpenness_;
+                Openness    fEndOpenness_;
             };
 
 

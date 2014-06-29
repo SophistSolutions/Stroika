@@ -46,17 +46,35 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range ()
-                : fBegin_ (TRAITS::kUpperBound)
-                , fEnd_ (TRAITS::kLowerBound)
+                : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
             {
-                Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
-                Require (TRAITS::kLowerBound != TRAITS::kUpperBound);     // you cannot make an empty range if min=max
                 Ensure (empty ());
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
+                : Range (begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+            {
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+                : Range (begin.IsPresent () ? *begin : TRAITS::kLowerBound, end.IsPresent () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+            {
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
+                : fBegin_ (TRAITS::kUpperBound)
+                , fEnd_ (TRAITS::kLowerBound)
+                , fBeginOpenness_ (lhsOpen)
+                , fEndOpenness_ (rhsOpen)
+            {
+                Ensure (empty ());
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>::Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen)
                 : fBegin_ (begin)
                 , fEnd_ (end)
+                , fBeginOpenness_ (lhsOpen)
+                , fEndOpenness_ (rhsOpen)
             {
                 Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
                 Require (TRAITS::kLowerBound <= begin);
@@ -64,14 +82,9 @@ namespace   Stroika {
                 Require (end <= TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
-            inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
-                : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kLowerBound)
-                , fEnd_ (end.IsPresent () ? *end : TRAITS::kUpperBound)
+            inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen)
+                : Range (begin.IsPresent () ? *begin : TRAITS::kLowerBound, end.IsPresent () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen)
             {
-                Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
-                Require (TRAITS::kLowerBound <= fBegin_);
-                Require (fBegin_ <= fEnd_);
-                Require (fEnd_ <= TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
@@ -86,7 +99,7 @@ namespace   Stroika {
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
-                    return TRAITS::kLowerBoundOpenness == Openness::eOpen and TRAITS::kUpperBoundOpenness == Openness::eOpen;
+                    return fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen;
                 }
                 return false;
             }
@@ -113,10 +126,10 @@ namespace   Stroika {
                 if (fBegin_ < r and r < fEnd_) {
                     return true;
                 }
-                if (TRAITS::kLowerBoundOpenness == Openness::eClosed and r == fBegin_) {
+                if (fBeginOpenness_ == Openness::eClosed and r == fBegin_) {
                     return true;
                 }
-                if (TRAITS::kUpperBoundOpenness == Openness::eClosed and r == fEnd_) {
+                if (fEndOpenness_ == Openness::eClosed and r == fEnd_) {
                     return true;
                 }
                 return false;
@@ -127,7 +140,7 @@ namespace   Stroika {
                 if (empty ()) {
                     return rhs.empty ();
                 }
-                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_;
+                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_ and fBeginOpenness_ == rhs.fBeginOpenness_ and fBeginOpenness_ == rhs.fBeginOpenness_;
             }
 #if 0
             template    <typename T, typename TRAITS>
@@ -152,7 +165,10 @@ namespace   Stroika {
                 T   l   =   max (fBegin_, rhs.fBegin_);
                 T   r   =   min (fEnd_, rhs.fEnd_);
                 if (l <= r) {
-                    return Range<T, TRAITS> (l, r);
+                    // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
+                    Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
+                    Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
+                    return Range<T, TRAITS> (l, r, lhsO, rhsO);
                 }
                 else {
                     return Range ();
@@ -167,7 +183,15 @@ namespace   Stroika {
                 if (rhs.empty ()) {
                     return *this;
                 }
-                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (GetLowerBound (), rhs.GetLowerBound ()), max (GetUpperBound (), rhs.GetUpperBound ()));
+                T   l   =   min (GetLowerBound (), rhs.GetLowerBound ());
+                T   r   =   max (GetUpperBound (), rhs.GetUpperBound ());
+                Range<T, TRAITS>   result;
+                if (l <= r) {
+                    // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
+                    Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
+                    Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
+                    result = Range<T, TRAITS> (l, r, lhsO, rhsO);
+                }
                 Ensure (result.GetLowerBound () <= GetLowerBound ());
                 Ensure (result.GetLowerBound () <= GetUpperBound ());
                 Ensure (result.GetLowerBound () <= rhs.GetLowerBound ());
@@ -185,28 +209,38 @@ namespace   Stroika {
                 return fBegin_;
             }
             template    <typename T, typename TRAITS>
+            inline  Openness    Range<T, TRAITS>::GetLowerBoundOpenness () const
+            {
+                return fBeginOpenness_;
+            }
+            template    <typename T, typename TRAITS>
             inline  T    Range<T, TRAITS>::GetUpperBound () const
             {
                 Require (not empty ());
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetTraitsLowerBoundOpenness ()
+            inline  Openness    Range<T, TRAITS>::GetUpperBoundOpenness () const
+            {
+                return fEndOpenness_;
+            }
+            template    <typename T, typename TRAITS>
+            inline     Openness    Range<T, TRAITS>::GetDefaultLowerBoundOpenness ()
             {
                 return TRAITS::kLowerBoundOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetTraitsUpperBoundOpenness ()
+            inline     Openness    Range<T, TRAITS>::GetDefaultUpperBoundOpenness ()
             {
                 return TRAITS::kUpperBoundOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetTraitsLowerBound ()
+            inline     T    Range<T, TRAITS>::GetDefaultLowerBound ()
             {
                 return TRAITS::kLowerBound;
             }
             template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetTraitsUpperBound ()
+            inline     T    Range<T, TRAITS>::GetDefaultUpperBound ()
             {
                 return TRAITS::kUpperBound;
             }
