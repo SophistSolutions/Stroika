@@ -106,9 +106,14 @@ namespace   Stroika {
 
 
             /**
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *          This class fully supports multiple readers, but it is not designed to support update while ongoing access
+             *          is going on.
              */
             template <typename ENUM_TYPE>
             class   EnumNames {
+            private:
                 initializer_list<EnumName<ENUM_TYPE>>   fEnumNames_;
 
             public:
@@ -123,7 +128,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                EnumNames& operator= (const EnumNames& rhs) = default;
+                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = default;
 
             public:
                 /**
@@ -133,12 +138,22 @@ namespace   Stroika {
             public:
                 /**
                  */
-                const wchar_t*  PeekName (ENUM_TYPE e) const;
+                nonvirtual  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  begin () const;
 
             public:
                 /**
                  */
-                const wchar_t*  GetName (ENUM_TYPE e) const;
+                nonvirtual  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  end () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  const wchar_t*  PeekName (ENUM_TYPE e) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const;
             };
 
 

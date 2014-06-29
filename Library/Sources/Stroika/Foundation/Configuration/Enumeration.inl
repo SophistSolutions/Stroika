@@ -100,6 +100,16 @@ namespace   Stroika {
                 return fEnumNames_;
             }
             template     <typename ENUM_TYPE>
+            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::begin () const
+            {
+                return fEnumNames_.begin ();
+            }
+            template     <typename ENUM_TYPE>
+            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::end () const
+            {
+                return fEnumNames_.end ();
+            }
+            template     <typename ENUM_TYPE>
             const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
             {
                 for (auto i : fEnumNames_) {
