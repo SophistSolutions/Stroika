@@ -95,12 +95,12 @@ namespace   Stroika {
                 return fEnumNames_;
             }
             template     <typename ENUM_TYPE>
-            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::begin () const
+            inline  typename EnumNames<ENUM_TYPE>::const_iterator  EnumNames<ENUM_TYPE>::begin () const
             {
                 return fEnumNames_.begin ();
             }
             template     <typename ENUM_TYPE>
-            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::end () const
+            inline  typename EnumNames<ENUM_TYPE>::const_iterator  EnumNames<ENUM_TYPE>::end () const
             {
                 return fEnumNames_.end ();
             }
