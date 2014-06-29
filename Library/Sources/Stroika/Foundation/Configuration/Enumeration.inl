@@ -68,6 +68,7 @@ namespace   Stroika {
             }
 
 
+
             /*
              ********************************************************************************
              ************************ Configuration::EnumNames ******************************
@@ -75,28 +76,43 @@ namespace   Stroika {
              */
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (const EnumNames<ENUM_TYPE>& src)
-                : inherited (src)
+                : fEnumNames_ (src.fEnumNames_)
             {
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (EnumNames<ENUM_TYPE>&& src)
-                : inherited (move (src))
+                : fEnumNames_ (move (src.fEnumNames_))
             {
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
-                : inherited (origEnumNames)
+                : fEnumNames_ (origEnumNames)
             {
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (initializer_list<EnumName<ENUM_TYPE>>&& origEnumNames)
-                : inherited (move (origEnumNames))
+                : fEnumNames_ (move (origEnumNames))
             {
+            }
+            template     <typename ENUM_TYPE>
+            inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
+            {
+                return fEnumNames_;
+            }
+            template     <typename ENUM_TYPE>
+            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::begin () const
+            {
+                return fEnumNames_.begin ();
+            }
+            template     <typename ENUM_TYPE>
+            inline  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  EnumNames<ENUM_TYPE>::end () const
+            {
+                return fEnumNames_.end ();
             }
             template     <typename ENUM_TYPE>
             const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
             {
-                for (auto i : *this) {
+                for (auto i : fEnumNames_) {
                     if (i.first == e) {
                         return i.second;
                     }

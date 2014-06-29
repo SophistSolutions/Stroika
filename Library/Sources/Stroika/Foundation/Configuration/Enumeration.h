@@ -112,9 +112,9 @@ namespace   Stroika {
              *          is going on.
              */
             template <typename ENUM_TYPE>
-            class   EnumNames : public initializer_list<EnumName<ENUM_TYPE>> {
+            class   EnumNames {
             private:
-                using inherited = initializer_list<EnumName<ENUM_TYPE>>;
+                initializer_list<EnumName<ENUM_TYPE>>   fEnumNames_;
 
             public:
                 /**
@@ -129,6 +129,21 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  EnumNames& operator= (const EnumNames& rhs) = default;
+
+            public:
+                /**
+                 */
+                explicit operator initializer_list<EnumName<ENUM_TYPE>> () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  begin () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  typename initializer_list<EnumName<ENUM_TYPE>>::const_iterator  end () const;
 
             public:
                 /**
