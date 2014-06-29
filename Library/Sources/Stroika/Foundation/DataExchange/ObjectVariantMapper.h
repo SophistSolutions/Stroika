@@ -10,6 +10,7 @@
 #include    <typeindex>
 
 #include    "../Characters/String.h"
+#include    "../Configuration/Enumeration.h"
 #include    "../Containers/Bijection.h"
 #include    "../Containers/Collection.h"
 #include    "../Containers/Mapping.h"
@@ -306,6 +307,8 @@ namespace   Stroika {
                  */
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
+                template    <typename ENUM_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap);
 
             public:
                 /**
