@@ -18,6 +18,20 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a32">v2.0a32x</a><br/>2014-06-??</td>
+<td>
+<ul>
+	<li>TBD.</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+
     
 
 <tr>
