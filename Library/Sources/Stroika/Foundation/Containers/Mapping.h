@@ -26,6 +26,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
+ *              like Equals()
+ *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
