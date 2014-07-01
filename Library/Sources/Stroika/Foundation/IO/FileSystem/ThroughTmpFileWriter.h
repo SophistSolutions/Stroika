@@ -54,7 +54,14 @@ namespace   Stroika {
                  *
                  * Using this class, you create a tempfile, write to it, and the Commit () the change. NOTE,
                  * it is REQUIRED you call Commit () after all writing to tmpfile is done (and closed),
-                 * otehrwise the changes are abandoned.
+                 * otherwise the changes are abandoned.
+                 *
+                 *  EXAMPLE:
+                 *      ThroughTmpFileWriter    tmpFile (targetFileName);
+                 *      BinaryFileOutputStream  out (tmpFile.GetTmpFilePath ());
+                 *      YourCodeToWriteDataToStream (your_data, out);
+                 *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+                 *
                  */
                 class   ThroughTmpFileWriter {
                 public:
