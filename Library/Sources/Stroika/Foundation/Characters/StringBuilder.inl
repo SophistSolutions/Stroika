@@ -78,6 +78,11 @@ namespace   Stroika {
                 Append (s);
                 return *this;
             }
+            inline  StringBuilder&  StringBuilder::operator+= (const Character& c)
+            {
+                Append (c);
+                return *this;
+            }
             inline  StringBuilder&  StringBuilder::operator<< (const String& s)
             {
                 Append (s);
@@ -87,6 +92,11 @@ namespace   Stroika {
             {
                 RequireNotNull (s);
                 Append (s);
+                return *this;
+            }
+            inline  StringBuilder&  StringBuilder::operator<< (const Character& c)
+            {
+                Append (c);
                 return *this;
             }
             inline  void  StringBuilder::push_back (Character c)
@@ -111,6 +121,10 @@ namespace   Stroika {
                 fData_.GrowToSize (fLength_ + 1);
                 fData_[fLength_] = '\0';
                 return fData_.begin ();
+            }
+            inline  void    StringBuilder::clear ()
+            {
+                fLength_ = 0;
             }
             inline  String StringBuilder::str () const
             {

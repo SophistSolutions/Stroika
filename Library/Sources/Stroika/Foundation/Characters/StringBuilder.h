@@ -84,6 +84,7 @@ namespace   Stroika {
                 nonvirtual  StringBuilder&  operator+= (const wchar_t* s);
                 nonvirtual  StringBuilder&  operator+= (const wstring& s);
                 nonvirtual  StringBuilder&  operator+= (const String& s);
+                nonvirtual  StringBuilder&  operator+= (const Character& c);
 
             public:
                 /**
@@ -92,6 +93,7 @@ namespace   Stroika {
                 nonvirtual  StringBuilder& operator<< (const String& s);
                 nonvirtual  StringBuilder& operator<< (const wstring& s);
                 nonvirtual  StringBuilder& operator<< (const wchar_t* s);
+                nonvirtual  StringBuilder& operator<< (const Character& c);
 
             public:
                 /**
@@ -130,6 +132,11 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  const wchar_t* c_str () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    clear ();
 
             public:
                 /**
