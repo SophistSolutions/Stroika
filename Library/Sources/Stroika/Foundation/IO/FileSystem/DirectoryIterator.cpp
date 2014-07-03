@@ -124,7 +124,7 @@ public:
             fCur_ = ::readdir (fDirIt_);
         }
         if (fCur_ != nullptr) {
-            *result = fCur_->d_name;
+            *result = String::FromSDKString (fCur_->d_name);
         }
 #endif
     }
