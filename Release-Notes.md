@@ -20,10 +20,15 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a32">v2.0a32x</a><br/>2014-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a32">v2.0a32</a><br/>2014-07-03</td>
 <td>
 <ul>
-	<li>TBD.</li>
+	<li>Makefile tweaks (lose runastyle.pl - do directly in makefile)</li>
+	<li>Fixed Execution::ParseCommandLine() implementation to support quotes</li>
+	<li>Minor improveemnts to String::CircularSubString, and helpers to StringBuilder</li>
+	<li>Minor Iterator<> performance tweeks (cget instead of get to avoid clone)</li>
+	<li>New DirectoryIterator/DirectoryIterable File support classes - DirectoryContentsIterator ALMOST deprecated</li>
+	<li>Passed gcc48-x64/valgrind regtests, and clang++</li>
 </ul>
 </td>
 </tr>
