@@ -6,6 +6,9 @@
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/IO/FileSystem/DirectoryIterable.h"
+#include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -13,11 +16,15 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::IO::FileSystem;
 
 
 namespace   {
     void    Test1_()
     {
+        for (String filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
+            DbgTrace (L"filename = %s", filename.c_str ());
+        }
     }
 }
 

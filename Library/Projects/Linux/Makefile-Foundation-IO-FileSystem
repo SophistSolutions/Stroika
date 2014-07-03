@@ -13,6 +13,8 @@ Objs	=	\
 	$(ObjDir)BinaryFileOutputStream.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)Directory.o\
+	$(ObjDir)DirectoryIterable.o\
+	$(ObjDir)DirectoryIterator.o\
 	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
 	$(ObjDir)MemoryMappedFileReader.o\

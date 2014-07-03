@@ -569,6 +569,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp" />
@@ -975,6 +977,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h" />
@@ -1281,6 +1285,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl" />
