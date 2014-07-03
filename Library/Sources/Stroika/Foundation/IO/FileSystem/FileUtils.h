@@ -108,6 +108,8 @@ namespace   Stroika {
 
 
                 // MUST REDO USING Iterator<T>... and Move to FileSystem module ...
+                //class   _DeprecatedClass_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator (or iterable)  except this has wildcards") {
+                // DONT DEPRECATE TIL WE HAVE WILDCARD (RegExp) supprot in DirectoryIterator
                 class   DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs

@@ -1198,7 +1198,7 @@ EXAMPLE:
 
 /*
  *  Wrap this macro around entire declaration, as in:
- *      nonvirtual  _DeprecatedFunction_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+ *       class _DeprecatedClass_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator")
  */
 #if     !defined (_DeprecatedClass_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
