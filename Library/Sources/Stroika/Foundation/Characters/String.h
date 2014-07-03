@@ -538,15 +538,19 @@ namespace   Stroika {
             public:
                 /**
                  *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
-                 *  of the String. Also CircularSubString () has no special exception for kBadStingIndex.
+                 *  of the String.
                  *
                  *  So for example, CircularSubString (0, -1) is equivlent to SubString (0, GetLength () - 1) - and so is an
                  *  error if the string is empty.
+                 *
+                 *  Similarly, CircularSubString (-5) is equivilent to SubString (GetLength ()-5, GetLength ()) - so can be used
+                 *  to grab the end of a string.
                  *
                  *  \note \em Design Note
                  *      We chose not to overload SubString() with this functionality because it would have been to easy
                  *      to mask bugs.
                  */
+                nonvirtual  String      CircularSubString (ptrdiff_t from) const;
                 nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
 
             private:
