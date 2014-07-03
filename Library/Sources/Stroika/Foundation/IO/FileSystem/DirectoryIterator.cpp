@@ -59,7 +59,7 @@ public:
 #elif   qPlatform_POSIX
         if (fDirIt_ == nullptr)
         {
-            ThrowIfError_errno_t ();
+            Execution::ThrowIfError_errno_t ();
         }
 #endif
     }
