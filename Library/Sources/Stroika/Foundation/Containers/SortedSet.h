@@ -20,6 +20,11 @@
  *  TODO:
  *      @todo   Support EachWith?
  *
+ *      @todo   CRITICAL - need version where you can pass in a lambda to compare two things for <, so
+ *              easy to construct a sorted set with your own sorter function!!!
+ *
+ *              This applies equally to other Stroika sorted types
+ *
  *
  */
 
