@@ -11,6 +11,7 @@
 
 #include    "DelegatedIterator.h"
 #include    "Iterator.h"
+#include    "Iterable.h"
 
 
 
