@@ -119,6 +119,8 @@ public:
         }
 #elif   qPlatform_POSIX
         if (advance) {
+            RequireNotNull (fCur_);
+            RequireNotNull (fDirIt_);
             fCur_ = ::readdir (fDirIt_);
         }
         if (fCur_ != nullptr) {
@@ -151,8 +153,8 @@ public:
     virtual IteratorOwnerID GetOwner () const override
     {
         /*
-            *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-            */
+         *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
+         */
         return typeid (*this).name ();
     }
 };
