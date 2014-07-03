@@ -51,7 +51,7 @@ namespace   Stroika {
                 , fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
-                Require (fIterator_.get () != nullptr or Done ());  // if not special 'auto-done' we must have legit iterator rep
+                Require (fIterator_.cget () != nullptr or Done ());  // if not special 'auto-done' we must have legit iterator rep
             }
             template    <typename T>
             inline Iterator<T>::Iterator (const SharedIRepPtr& rep)
@@ -72,7 +72,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
             {
-                Require (rhs.fIterator_.get () != nullptr or rhs.Done ());  // if not special 'auto-done' we must have legit iterator rep
+                Require (rhs.fIterator_.cget () != nullptr or rhs.Done ());  // if not special 'auto-done' we must have legit iterator rep
                 fIterator_ = rhs.fIterator_;
                 fCurrent_ = rhs.fCurrent_;
                 return *this;
@@ -171,8 +171,8 @@ namespace   Stroika {
                 }
                 Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
-                const   Iterator<T>::IRep* lhsRep = fIterator_.get ();
-                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.get ();
+                const   Iterator<T>::IRep* lhsRep = fIterator_.cget ();
+                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.cget ();
                 Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
                 return lhsRep->Equals (rhsRep);
             }
