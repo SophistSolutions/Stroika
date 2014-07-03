@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/Tokenize.h"
 
@@ -58,9 +59,45 @@ Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String&
  */
 Sequence<String>  Execution::ParseCommandLine (const String& cmdLine)
 {
+    using   namespace Characters;
+
     Sequence<String>    result;
-    // super quickie hack impl
-    result = Characters::Tokenize<String> (cmdLine, String_Constant(L" "));
+
+    size_t  e   =   cmdLine.length ();
+
+    StringBuilder   curToken;
+    Character       endQuoteChar = '\0';
+
+    for (size_t i = 0; i < e; i++) {
+        Character   c   =   cmdLine[i];
+        if (endQuoteChar != '\0' and c == endQuoteChar) {
+            result.Append (curToken.str ());
+            endQuoteChar = '\0';
+            curToken.clear ();
+        }
+        else if (c == '\'' or c == '\"') {
+            endQuoteChar = c;
+        }
+        else if (endQuoteChar != '\0') {
+            // in middle of quoted string
+            curToken += c;
+        }
+        else {
+            bool        isTokenChar = not c.IsWhitespace ();
+            if (isTokenChar) {
+                curToken += c;
+            }
+            else {
+                if (curToken.GetLength () != 0) {
+                    result.Append (curToken.str ());
+                    curToken.clear ();
+                }
+            }
+        }
+    }
+    if (curToken.GetLength () != 0) {
+        result.Append (curToken.str ());
+    }
     return result;
 }
 
