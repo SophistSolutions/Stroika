@@ -124,7 +124,7 @@ public:
             fCur_ = ::readdir (fDirIt_);
         }
         if (fCur_ != nullptr) {
-            *result = fCur_->name;
+            *result = fCur_->d_name;
         }
 #endif
     }
@@ -145,9 +145,9 @@ public:
         return SharedIRepPtr (new Rep_ (fDirName_, fSeekOffset_));
 #elif   qPlatform_POSIX
         if (fDirIt_ == nullptr) {
-            return SharedIRepPtr (new Rep_ (nullptr, 0)));
+            return SharedIRepPtr (new Rep_ (nullptr, 0));
         }
-        return SharedIRepPtr (new Rep_ (fdopendir(::dirfd (fDirIt_)), ::telldir (fDirIt_))));
+        return SharedIRepPtr (new Rep_ (fdopendir(::dirfd (fDirIt_)), ::telldir (fDirIt_)));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
