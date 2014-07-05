@@ -44,9 +44,11 @@ clean:
 
 
 clobber:
+	@echo "Clobbering..."
+	@rm -rf IntermediateFiles
+	@rm -rf Builds
 	@make --directory ThirdPartyLibs --no-print-directory clobber
-	@rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@make --directory Tests --no-print-directory MAKEFLAGS= clobber
+	@#SHOULD DO BUT BROKEN NOW - @make --directory Tests --no-print-directory MAKEFLAGS= clobber
 
 
 documentation:
