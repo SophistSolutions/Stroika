@@ -95,6 +95,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qHasFeature_libcurl'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qHasFeature_zlib>");
+		if (defined $pps) {
+			$configuration {'qHasFeature_zlib'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qHasFeature_WinHTTP>");
 		if (defined $pps) {
 			$configuration {'qHasFeature_WinHTTP'} = $pps;

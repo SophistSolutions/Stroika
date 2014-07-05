@@ -34,6 +34,7 @@ my @useExtraMakeDefines;
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
+my $ENABLE_ZLIB = 0;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
@@ -95,6 +96,7 @@ sub	ReadConfiguration_
 
 	$ENABLE_OPENSSL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_openssl"));
 	$ENABLE_LIBCURL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_libcurl"));
+	$ENABLE_ZLIB = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_zlib"));
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
@@ -429,7 +431,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 
-	#If $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
+	#if $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
 	if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1)) {
 		print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
 	}
@@ -462,7 +464,12 @@ sub WriteStroikaConfigMakeHeader
 	else {
 		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
 	}	
-	print (OUT "qBuildThirdPartyProducts_zlib=1\n");
+	if ($ENABLE_ZLIB) {
+		print (OUT "qBuildThirdPartyProducts_zlib=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_zlib=0\n");
+	}	
 	if ($ENABLE_OPENSSL) {
 		print (OUT "qBuildThirdPartyProducts_OpenSSL=1\n");
 	}	

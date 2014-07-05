@@ -36,6 +36,7 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
+my $ENABLE_ZLIB = 1;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
@@ -70,6 +71,8 @@ sub	DoHelp_
 	print("	    --no-has-openssl             /* disables openssl for the configuration being configured */\n");
 	print("	    --has-winhttp                /* enables winhttp for the configuration being configured */\n");
 	print("	    --no-has-winhttp             /* disables winhttp for the configuration being configured */\n");
+	print("	    --has-zlib                   /* enables zlib for the configuration being configured */\n");
+	print("	    --no-has-zlib                /* disables zlib for the configuration being configured */\n");
 	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured */\n");
 	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured */\n");
 	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
@@ -273,6 +276,12 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-no-has-xerces") or (lc ($var) eq "--no-has-xerces")) {
 			$useThirdPartyXerces = 0;
 		}
+		elsif ((lc ($var) eq "-has-zlib") or (lc ($var) eq "--has-zlib")) {
+			$ENABLE_ZLIB = 1;
+		}
+		elsif ((lc ($var) eq "-no-has-zlib") or (lc ($var) eq "--no-has-zlib")) {
+			$ENABLE_ZLIB = 0;
+		}
 		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
 			$ENABLE_TRACE2FILE = 1;
 		}
@@ -369,6 +378,7 @@ sub	WriteConfigFile_
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");
 	print (OUT "    <qHasFeature_libcurl>$ENABLE_LIBCURL</qHasFeature_libcurl>\n");
+	print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
 	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 
