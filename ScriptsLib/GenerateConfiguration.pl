@@ -33,6 +33,7 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_WINHTTP = 0;
@@ -58,6 +59,9 @@ sub	DoHelp_
 	print("	    --enable-assertions          /* enables assertions for the configuration being configured */\n");
 	print("	    --disable-assertions         /* disables assertions for the configuration being configured */\n");
 	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
+	print("	    --enable-GLIBCXX_DEBUG       /* enables GLIBCXX_DEBUG (G++-specific) */\n");
+	print("	    --disable-GLIBCXX_DEBUG      /* disables GLIBCXX_DEBUG (G++-specific) */\n");
+	print("	    --default-GLIBCXX_DEBUG      /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured */\n");
 	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured */\n");
 	print("	    --has-xerces                 /* enables openssl for the configuration being configured */\n");
@@ -236,6 +240,15 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
 			$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 		}
+		elsif ((lc ($var) eq "-enable-GLIBCXX_DEBUG") or (lc ($var) eq "--enable-GLIBCXX_DEBUG")) {
+			$ENABLE_GLIBCXX_DEBUG = 1;
+		}
+		elsif ((lc ($var) eq "-disable-GLIBCXX_DEBUG") or (lc ($var) eq "--disable-GLIBCXX_DEBUG")) {
+			$ENABLE_GLIBCXX_DEBUG = 0;
+		}
+		elsif ((lc ($var) eq "-default-GLIBCXX_DEBUG") or (lc ($var) eq "--default-GLIBCXX_DEBUG")) {
+			$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+		}
 		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
 			$ENABLE_OPENSSL = 1;
 		}
@@ -346,6 +359,9 @@ sub	WriteConfigFile_
 	print (OUT "    <CompilerDriver>$COMPILER_DRIVER</CompilerDriver>\n");
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
+	}
+	if ($ENABLE_GLIBCXX_DEBUG != DEFAULT_BOOL_OPTIONS) {
+		print (OUT "    <ENABLE_GLIBCXX_DEBUG>$ENABLE_GLIBCXX_DEBUG</ENABLE_GLIBCXX_DEBUG>\n");
 	}
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");

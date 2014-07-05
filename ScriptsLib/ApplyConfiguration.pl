@@ -97,6 +97,7 @@ sub	ReadConfiguration_
 	$ENABLE_LIBCURL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_libcurl"));
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
+	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_TRACE2FILE"));
 	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbtolsInExecutables"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter("OptimizerFlag");
@@ -428,8 +429,9 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 
-	if ($ENABLE_ASSERTIONS == 1) {
-		print (OUT "ENABLE_GLIBC_ASSERTIONS=1\n");
+	// If $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
+	if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1) {
+		print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
 	}
 
 	if ($useThirdPartyXerces) {
