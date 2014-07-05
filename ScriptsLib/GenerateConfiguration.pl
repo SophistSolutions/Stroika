@@ -240,13 +240,13 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
 			$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 		}
-		elsif ((lc ($var) eq "-enable-GLIBCXX_DEBUG") or (lc ($var) eq "--enable-GLIBCXX_DEBUG")) {
+		elsif ((lc ($var) eq "-enable-glibcxx_debug") or (lc ($var) eq "--enable-glibcxx_debug")) {
 			$ENABLE_GLIBCXX_DEBUG = 1;
 		}
-		elsif ((lc ($var) eq "-disable-GLIBCXX_DEBUG") or (lc ($var) eq "--disable-GLIBCXX_DEBUG")) {
+		elsif ((lc ($var) eq "-disable-glibcxx_debug") or (lc ($var) eq "--disable-glibcxx_debug")) {
 			$ENABLE_GLIBCXX_DEBUG = 0;
 		}
-		elsif ((lc ($var) eq "-default-GLIBCXX_DEBUG") or (lc ($var) eq "--default-GLIBCXX_DEBUG")) {
+		elsif ((lc ($var) eq "-default-glibcxx_debug") or (lc ($var) eq "--default-glibcxx_debug")) {
 			$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 		}
 		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
@@ -292,6 +292,9 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
+		}
+		else {
+			#print ("MAYBE UNRECOGNIZED ARG: $var\n");
 		}
 	}
 }

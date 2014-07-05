@@ -115,6 +115,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ENABLE_ASSERTIONS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<ENABLE_GLIBCXX_DEBUG>");
+		if (defined $pps) {
+			$configuration {'ENABLE_GLIBCXX_DEBUG'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
