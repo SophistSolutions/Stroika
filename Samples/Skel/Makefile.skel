@@ -1,29 +1,3 @@
-RelPathToStroikaDevRoot	=	../../../../
-RelPathToStroikaIntemediateFilesForConfiguration	=	$(RelPathToStroikaDevRoot)/IntermediateFiles/DefaultConfiguration/
-
-include	$(RelPathToStroikaIntemediateFilesForConfiguration)/Library/Configuration.mk
-include	$(RelPathToStroikaIntemediateFilesForConfiguration)/Library/SharedBuildRules.mk
-include	$(RelPathToStroikaIntemediateFilesForConfiguration)/Library/SharedMakeVariables.mk
-
-
-
-SrcDir				=	$(RelPathToStroikaDevRoot)Samples/WebServer/
-Includes				+=	-I.
-
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_WebServer
-
-
-VPATH	=			$(SrcDir)/Sources/
-
-
-Objs	=	\
-	$(ObjDir)WebServer.o\
-
-
-all:	$(TARGETEXE)
-
-
-$(TARGETEXE):	$(Objs)
-	$(Linker) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
-
-
+all:
+	echo "must rewrite this makeifle"
+	
