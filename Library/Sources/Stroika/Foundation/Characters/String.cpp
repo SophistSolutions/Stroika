@@ -289,6 +289,19 @@ String::String (const Iterable<Character>& src)
 {
 }
 
+namespace {
+    wstring mkWS_ (const Character& src)
+    {
+        wchar_t c = src.As<wchar_t> ();
+        return wstring  (&c, &c + 1);
+    }
+}
+
+String::String (const Character& c)
+    : String (mkWS_ (c))      // @todo SLOPPY INEFFICIENT IMPLEMENTATION!
+{
+}
+
 String  String::FromUTF8 (const char* from)
 {
     RequireNotNull (from);

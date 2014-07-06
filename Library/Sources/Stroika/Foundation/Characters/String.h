@@ -348,6 +348,7 @@ namespace   Stroika {
                 String (const Iterable<Character>& src);
                 String (const String& from) noexcept;
                 String (String&& from) noexcept;
+                explicit String (const Character& c);
 
             public:
                 ~String () = default;
