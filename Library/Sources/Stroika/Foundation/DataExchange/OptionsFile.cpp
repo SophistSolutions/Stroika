@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Execution/Logger.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
 #include    "../IO/FileSystem/BinaryFileOutputStream.h"
 #include    "../IO/FileSystem/ThroughTmpFileWriter.h"
@@ -38,7 +39,8 @@ using   Memory::BLOB;
 const   OptionsFile::LoggerType OptionsFile::kDefaultLogger =
     [] (const String& message)
 {
-    //Logger::Log (Logger::Priority::eError, L"%s", message.c_str ());
+    using   Execution::Logger;
+    Logger::Log (Logger::Priority::eWarning, L"%s", message.c_str ());
 };
 
 const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapper (const String& appName)
