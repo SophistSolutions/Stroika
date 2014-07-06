@@ -6,6 +6,7 @@
 #include    "../Characters/Format.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
 #include    "../IO/FileSystem/BinaryFileOutputStream.h"
+#include    "../IO/FileSystem/PathName.h"
 #include    "../IO/FileSystem/ThroughTmpFileWriter.h"
 #include    "../IO/FileSystem/WellKnownLocations.h"
 
@@ -46,7 +47,7 @@ const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapp
     String useAppName = appName;
     return
     [useAppName] (const String & moduleFileName) -> String {
-        return IO::FileSystem::WellKnownLocations::GetApplicationData() + useAppName + moduleFileName ;
+        return IO::FileSystem::WellKnownLocations::GetApplicationData() + useAppName + String (IO::FileSystem::kPathComponentSeperator) + moduleFileName ;
     }
     ;
 }

@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Characters/Format.h"
 
 
 namespace   Stroika {
@@ -35,7 +36,18 @@ namespace   Stroika {
             T   OptionsFile::Read (const T& defaultObj)
             {
                 Optional<T> result = Read<T> ();
-                return result.IsPresent() ? *result : defaultObj;
+                if (result.IsPresent ()) {
+                    return *result;
+                }
+                else {
+                    try {
+                        Write (defaultObj);
+                    }
+                    catch (...) {
+                        fLogWarning_ (Characters::Format (L"Failed to write default values to file: %s", fModuleNameToFileNameMapper_(fModuleName_).c_str ()));
+                    }
+                    return defaultObj;
+                }
             }
             template    <typename T>
             void    OptionsFile::Write (const T& optionsObject)
