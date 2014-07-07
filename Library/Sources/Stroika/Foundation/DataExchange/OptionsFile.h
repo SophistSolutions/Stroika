@@ -54,7 +54,8 @@ namespace   Stroika {
             class   OptionsFile {
             public:
                 using LoggerType = function<void(const String& errorMessage)>;
-                static  const   LoggerType  kDefaultLogger;
+                static  const   LoggerType  kDefaultWarningLogger;
+                static  const   LoggerType  kDefaultErrorLogger;
 
             public:
                 using ModuleNameToFileNameMapperType = function<String(const String& errorMessage)>;
@@ -77,8 +78,8 @@ namespace   Stroika {
                     const String& modName,
                     const ObjectVariantMapper& mapper,
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
-                    LoggerType logWarning = kDefaultLogger,
-                    LoggerType logError = kDefaultLogger,
+                    LoggerType logWarning = kDefaultWarningLogger,
+                    LoggerType logError = kDefaultErrorLogger,
                     Reader reader = kDefaultReader,
                     Writer writer = kDefaultWriter
                 );

@@ -37,11 +37,18 @@ using   Memory::BLOB;
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
-const   OptionsFile::LoggerType OptionsFile::kDefaultLogger =
+const   OptionsFile::LoggerType OptionsFile::kDefaultWarningLogger =
     [] (const String& message)
 {
     using   Execution::Logger;
     Logger::Log (Logger::Priority::eWarning, L"%s", message.c_str ());
+};
+
+const   OptionsFile::LoggerType OptionsFile::kDefaultErrorLogger =
+    [] (const String& message)
+{
+    using   Execution::Logger;
+    Logger::Log (Logger::Priority::eError, L"%s", message.c_str ());
 };
 
 const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapper (const String& appName)
