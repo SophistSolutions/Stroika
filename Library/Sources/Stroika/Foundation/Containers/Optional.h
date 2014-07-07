@@ -58,6 +58,10 @@ namespace   Stroika {
              *      -   Plus, one must carefully check each use of a variable of type T, being converted
              *          to type Optional<T, TRAITS>, so being forced to say "*" first isn't totally unreasonable.
              *
+             *  \note   \em Design-Note - why no operator ->
+             *      -   operator-> requires returing an internal pointer, and thats not consisent with threadsafety (since
+             *          no way to control when the returned pointer is freed).
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
