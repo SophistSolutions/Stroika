@@ -44,7 +44,7 @@ namespace   Stroika {
                         Write (defaultObj);
                     }
                     catch (...) {
-                        fLogWarning_ (Characters::Format (L"Failed to write default values to file: %s", fModuleNameToFileNameMapper_(fModuleName_).c_str ()));
+                        fLogWarning_ (Characters::Format (L"Failed to write default values to file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
                     }
                     return defaultObj;
                 }
