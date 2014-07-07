@@ -48,6 +48,12 @@ namespace   Stroika {
             protected:
                 explicit Writer (shared_ptr<_IRep> rep);
                 Writer () = delete; // @todo may want to allow?
+
+            public:
+                /**
+                 */
+                nonvirtual String           GetDefaultFileSuffix () const;
+
             public:
                 /**
                  *  Note - to use std::ostream - use
@@ -78,9 +84,10 @@ namespace   Stroika {
 
             class   Writer::_IRep {
             public:
-                virtual _SharedPtrIRep  Clone () const                                                                  =   0;
-                virtual void            Write (const VariantValue& v, const Streams::BinaryOutputStream& out) = 0;
-                virtual void            Write (const VariantValue& v, const Streams::TextOutputStream& out) = 0;
+                virtual _SharedPtrIRep  Clone () const                                                          =   0;
+                virtual String          GetDefaultFileSuffix () const                                           =   0;
+                virtual void            Write (const VariantValue& v, const Streams::BinaryOutputStream& out)   =   0;
+                virtual void            Write (const VariantValue& v, const Streams::TextOutputStream& out)     =   0;
             };
 
 

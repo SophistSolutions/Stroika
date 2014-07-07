@@ -56,6 +56,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual String           GetDefaultFileSuffix () const;
+
+            public:
+                /**
+                 */
                 nonvirtual  VariantValue    Read (const Streams::BinaryInputStream& in);
                 nonvirtual  VariantValue    Read (const Streams::TextInputStream& in);
                 nonvirtual  VariantValue    Read (istream& in);
@@ -82,8 +87,9 @@ namespace   Stroika {
             class   Reader::_IRep {
             public:
                 virtual _SharedPtrIRep  Clone () const                              =   0;
-                virtual VariantValue    Read (const Streams::BinaryInputStream& in) = 0;
-                virtual VariantValue    Read (const Streams::TextInputStream& in) = 0;
+                virtual String          GetDefaultFileSuffix () const               =   0;
+                virtual VariantValue    Read (const Streams::BinaryInputStream& in) =   0;
+                virtual VariantValue    Read (const Streams::TextInputStream& in)   =   0;
             };
 
 

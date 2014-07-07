@@ -428,6 +428,10 @@ public:
     {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
+    virtual String          GetDefaultFileSuffix () const override
+    {
+        return String_Constant (L".json");
+    }
     virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {
         return Read (Streams::TextInputStreamBinaryAdapter (in));

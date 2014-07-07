@@ -154,10 +154,13 @@ public:
         , fDocumentElementName_ (config.GetDocumentElementName ().Value ())
     {
     }
-
     virtual _SharedPtrIRep  Clone () const override
     {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
+    }
+    virtual String          GetDefaultFileSuffix () const override
+    {
+        return String_Constant (L".xml");
     }
     virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {

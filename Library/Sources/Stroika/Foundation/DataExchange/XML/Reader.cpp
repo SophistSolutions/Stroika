@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/Format.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "../BadFormatException.h"
@@ -14,6 +15,10 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::XML;
+
+using   Characters::String_Constant;
+
+
 
 
 class   DataExchange::XML::Reader::Rep_ : public DataExchange::Reader::_IRep {
@@ -28,6 +33,10 @@ public:
     virtual _SharedPtrIRep  Clone () const override
     {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
+    }
+    virtual String          GetDefaultFileSuffix () const override
+    {
+        return String_Constant (L".xml");
     }
     virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {

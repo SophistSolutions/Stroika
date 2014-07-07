@@ -55,8 +55,8 @@ const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapp
 {
     String useAppName = appName;
     return
-    [useAppName] (const String & moduleFileName) -> String {
-        return IO::FileSystem::WellKnownLocations::GetApplicationData() + useAppName + String (IO::FileSystem::kPathComponentSeperator) + moduleFileName ;
+    [useAppName] (const String & moduleName, const String & fileSuffix) -> String {
+        return IO::FileSystem::WellKnownLocations::GetApplicationData() + useAppName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + fileSuffix;
     }
     ;
 }
@@ -74,6 +74,20 @@ OptionsFile::OptionsFile (
     Reader reader,
     Writer writer
 )
+    : OptionsFile (modName, mapper, moduleNameToFileNameMapper, logWarning, logError, reader, writer, reader.GetDefaultFileSuffix ())
+{
+}
+
+OptionsFile::OptionsFile (
+    const String& modName,
+    const ObjectVariantMapper& mapper,
+    ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
+    LoggerType logWarning,
+    LoggerType logError,
+    Reader reader,
+    Writer writer,
+    const String& fileSuffix
+)
     : fModuleName_ (modName)
     , fMapper_ (mapper)
     , fModuleNameToFileNameMapper_ (moduleNameToFileNameMapper)
@@ -81,18 +95,19 @@ OptionsFile::OptionsFile (
     , fLogError_ (logError)
     , fReader_ (reader)
     , fWriter_ (writer)
+    , fFileSuffix_ (fileSuffix)
 {
 }
 
 BLOB    OptionsFile::ReadRaw () const
 {
-    return IO::FileSystem::BinaryFileInputStream (fModuleNameToFileNameMapper_(fModuleName_)).ReadAll ();
+    return IO::FileSystem::BinaryFileInputStream (fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_)).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
     try {
-        IO::FileSystem::ThroughTmpFileWriter    tmpFile (fModuleNameToFileNameMapper_(fModuleName_));
+        IO::FileSystem::ThroughTmpFileWriter    tmpFile (fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_));
         IO::FileSystem::BinaryFileOutputStream  outStream (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Flush();
@@ -100,7 +115,7 @@ void    OptionsFile::WriteRaw (const BLOB& blob)
         tmpFile.Commit ();
     }
     catch (...) {
-        fLogError_ (Characters::Format (L"Failed to write file: %s", fModuleNameToFileNameMapper_(fModuleName_).c_str ()));
+        fLogError_ (Characters::Format (L"Failed to write file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
     }
 }
 
@@ -112,7 +127,7 @@ Optional<VariantValue>  OptionsFile::Read ()
     }
     catch (...) {
         // @todo - check different exception cases and for some - like file not found - just no warning...
-        fLogWarning_ (Characters::Format (L"Failed to read file: %s", fModuleNameToFileNameMapper_(fModuleName_).c_str ()));
+        fLogWarning_ (Characters::Format (L"Failed to read file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
         return Optional<VariantValue> ();
     }
 }

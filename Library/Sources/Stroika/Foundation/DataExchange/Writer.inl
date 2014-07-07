@@ -17,7 +17,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************ DataExchange::Writer::_Rep_Cloner ***************************
+             ****************** DataExchange::Writer::_Rep_Cloner ***************************
              ********************************************************************************
              */
             inline   Writer::_SharedPtrIRep   Writer::_Rep_Cloner::Copy (const _IRep& t)
@@ -28,12 +28,16 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* DataExchange::Writer ***************************
+             ******************************* DataExchange::Writer ***************************
              ********************************************************************************
              */
             inline  Writer::Writer (shared_ptr<_IRep> rep)
                 : fRep_ (rep)
             {
+            }
+            inline  String  Writer::GetDefaultFileSuffix () const
+            {
+                return fRep_->GetDefaultFileSuffix ();
             }
             inline  void    Writer::Write (const VariantValue& v, const Streams::BinaryOutputStream& out)
             {

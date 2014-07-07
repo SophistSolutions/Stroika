@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "../../Streams/TextOutputStreamBinaryAdapter.h"
 
@@ -13,10 +14,12 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Characters::String_Constant;
+
 
 /*
  ********************************************************************************
- ************************** DataExchange::INI::Writer **************************
+ ************************** DataExchange::INI::Writer ***************************
  ********************************************************************************
  */
 class   DataExchange::INI::Writer::Rep_ : public DataExchange::Writer::_IRep {
@@ -26,6 +29,10 @@ public:
     virtual _SharedPtrIRep  Clone () const override
     {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
+    }
+    virtual String          GetDefaultFileSuffix () const override
+    {
+        return String_Constant (L".ini");
     }
     virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {

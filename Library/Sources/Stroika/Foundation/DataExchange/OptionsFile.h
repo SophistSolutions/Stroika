@@ -20,6 +20,7 @@
  *  \file
  *
  * TODO:
+ *
  *      @todo   UNDOCUMENTED - VERY PRELIMINARY DRAFT
  *
  *      @todo   Biggest thing needed is to think out erorr handling/reporting...
@@ -58,7 +59,7 @@ namespace   Stroika {
                 static  const   LoggerType  kDefaultErrorLogger;
 
             public:
-                using ModuleNameToFileNameMapperType = function<String(const String& errorMessage)>;
+                using ModuleNameToFileNameMapperType = function<String(const String& moduleName, const String& fileSuffix)>;
                 static  const   ModuleNameToFileNameMapperType  mkFilenameMapper (const String& appName);
 
             public:
@@ -82,6 +83,16 @@ namespace   Stroika {
                     LoggerType logError = kDefaultErrorLogger,
                     Reader reader = kDefaultReader,
                     Writer writer = kDefaultWriter
+                );
+                OptionsFile (
+                    const String& modName,
+                    const ObjectVariantMapper& mapper,
+                    ModuleNameToFileNameMapperType,
+                    LoggerType logWarning,
+                    LoggerType logError,
+                    Reader reader,
+                    Writer writer,
+                    const String& fileSuffix
                 );
 
             public:
@@ -120,6 +131,7 @@ namespace   Stroika {
                 LoggerType                      fLogError_;
                 Reader                          fReader_;
                 Writer                          fWriter_;
+                String                          fFileSuffix_;
             };
 
 

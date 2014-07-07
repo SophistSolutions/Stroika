@@ -17,7 +17,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************ DataExchange::Reader::_Rep_Cloner ***************************
+             ************ DataExchange::Reader::_Rep_Cloner *********************************
              ********************************************************************************
              */
             inline   Reader::_SharedPtrIRep   Reader::_Rep_Cloner::Copy (const _IRep& t)
@@ -28,12 +28,16 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* DataExchange::Reader ***************************
+             ******************************* DataExchange::Reader ***************************
              ********************************************************************************
              */
             inline  Reader::Reader (shared_ptr<_IRep> rep)
                 : fRep_ (rep)
             {
+            }
+            inline  String  Reader::GetDefaultFileSuffix () const
+            {
+                return fRep_->GetDefaultFileSuffix ();
             }
             inline  VariantValue    Reader::Read (const Streams::BinaryInputStream& in)
             {
