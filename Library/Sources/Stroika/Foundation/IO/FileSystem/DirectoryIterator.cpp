@@ -61,6 +61,9 @@ public:
         {
             Execution::ThrowIfError_errno_t ();
         }
+        else {
+            fCur_ = ::readdir (fDirIt_);
+        }
 #endif
     }
 #if     qPlatform_Windows
