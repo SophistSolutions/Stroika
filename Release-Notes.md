@@ -22,10 +22,13 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a33">v2.0a33x</a><br/>2014-07-???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a33">v2.0a33</a><br/>2014-07-07</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Fixed POSIX bug with DirectoryIterator/DirectoryIterable</li>
+	<li>OptionsFile improvements (logerror/logwarning, file suffixes)</li>
+	<li>Makefile / build tweaks, including progress on mkae skel, qHasFeature_zlib, and ENABLE_GLIBCXX_DEBUG configurability not strictly implied by enable-assertions, and small improvement to make clobber (still wrong)</li>
+	<li>Minimal testing</li>
 </ul>
 </td>
 </tr>
