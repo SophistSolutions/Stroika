@@ -20,6 +20,21 @@ History
 
 
 
+
+  
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a34">v2.0a34x</a><br/>2014-07-??</td>
+<td>
+<ul>
+	<li>tbd</li>
+</ul>
+</td>
+</tr>
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a33">v2.0a33</a><br/>2014-07-07</td>
