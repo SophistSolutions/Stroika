@@ -43,6 +43,34 @@ namespace   Stroika {
             {
                 return Stroika_Make_FULL_VERSION (fMajorVer, fMinorVer, ((uint8_t)fVerStage), fVerSubStage, static_cast<int> (fFinalBuild));
             }
+            inline  int Version::Compare (const Version& rhs) const
+            {
+                return make_signed<FullVersionType>::type (AsFullVersionNum ()) - make_signed<FullVersionType>::type (rhs.AsFullVersionNum ());
+            }
+            inline  bool    Version::operator< (const Version& rhs) const
+            {
+                return Compare (rhs) < 0;
+            }
+            inline  bool    Version::operator<= (const Version& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            inline  bool    Version::operator> (const Version& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            inline  bool    Version::operator>= (const Version& rhs) const
+            {
+                return Compare (rhs) >= 0;
+            }
+            inline  bool    Version::operator== (const Version& rhs) const
+            {
+                return Compare (rhs) == 0;
+            }
+            inline  bool    Version::operator!= (const Version& rhs) const
+            {
+                return Compare (rhs) != 0;
+            }
 
 
 #if     defined (__cplusplus)

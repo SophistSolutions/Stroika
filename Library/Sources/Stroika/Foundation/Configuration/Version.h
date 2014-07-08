@@ -58,6 +58,23 @@ namespace   Stroika {
                 nonvirtual  FullVersionType         AsFullVersionNum () const;
                 nonvirtual  Characters::String      AsWin32Version4DotString () const;
                 nonvirtual  Characters::String      AsPrettyVersionString () const;
+
+            public:
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 */
+                nonvirtual  int Compare (const Version& rhs) const;
+
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
+                 */
+                nonvirtual  bool    operator< (const Version& rhs) const;
+                nonvirtual  bool    operator<= (const Version& rhs) const;
+                nonvirtual  bool    operator> (const Version& rhs) const;
+                nonvirtual  bool    operator>= (const Version& rhs) const;
+                nonvirtual  bool    operator== (const Version& rhs) const;
+                nonvirtual  bool    operator!= (const Version& rhs) const;
             };
 
 
