@@ -171,9 +171,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
@@ -738,9 +735,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -2392,9 +2386,6 @@
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl">

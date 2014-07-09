@@ -43,7 +43,6 @@ Objs	=	\
 	$(ObjDir)UserCanceledException.o\
 	$(ObjDir)Users.o\
 	$(ObjDir)WaitableEvent.o\
-	$(ObjDir)WaitTimedOutException.o\
 
 all:	$(Objs)  $(SubDirs)
 

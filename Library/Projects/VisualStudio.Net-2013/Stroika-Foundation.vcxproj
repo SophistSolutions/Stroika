@@ -542,7 +542,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
@@ -968,7 +967,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
@@ -1277,7 +1275,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitTimedOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
