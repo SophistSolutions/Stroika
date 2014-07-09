@@ -48,20 +48,28 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 #if     qPlatform_Windows
-    DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
-    if (attribs == INVALID_FILE_ATTRIBUTES) {
-        return false;
+    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eNoAccess) {
+        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
+        if (attribs == INVALID_FILE_ATTRIBUTES) {
+            return false;
+        }
+    }
+    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eNoAccess) {
+        DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
+        if ((attribs == INVALID_FILE_ATTRIBUTES) or (attribs & FILE_ATTRIBUTE_READONLY)) {
+            return false;
+        }
     }
     return true;
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    if (accessMode & FileAccessMode::eRead == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eNoAccess) {
         if (access (fileFullPath.AsSDKString().c_str (), R_OK) != 0) {
             return false;
         }
     }
-    if (accessMode & FileAccessMode::eWrite == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eNoAccess) {
         if (access (fileFullPath.AsSDKString().c_str (), W_OK) != 0) {
             return false;
         }
