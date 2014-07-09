@@ -47,17 +47,22 @@ namespace   Stroika {
                     static  FileSystem  Default ();
 
                 public:
-                    /*
-                     *  Return true if the given access is allowed (for the current user id)
+                    /**
+                     *  Return true if the given access is allowed (for the current user id).
+                     *  This works for a file or directory.
                      */
-                    nonvirtual  bool    Access (const String& fileFullPath, FileAccessMode accessMode) const;
+                    nonvirtual  bool    Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
 
                 public:
-                    // doesn't actually open the file. It's purely advisory. But its helpful to assure
-                    // a consistent set of error reporting across different styles of opens. Just call this first,
-                    // and it will throw exceptions if the file doesn't exist, or has access privileges issues.
-                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, FileAccessMode accessMode);
-                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
+                    /**
+                     * doesn't actually open the file. It's purely advisory. But its helpful to assure
+                     * a consistent set of error reporting across different styles of opens. Just call this first,
+                     * and it will throw exceptions if the file doesn't exist, or has access privileges issues.
+                     *
+                     *  This works for a file or directory.
+                     */
+                    nonvirtual  void    CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
+                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
                 public:
                     nonvirtual  String ResolveShortcut (const String& path2FileOrShortcut);

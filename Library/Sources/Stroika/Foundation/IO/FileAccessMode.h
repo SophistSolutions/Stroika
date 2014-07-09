@@ -17,11 +17,12 @@ namespace   Stroika {
             // But this will do for now...
             //      -- LGP 2009-08-15
             enum class FileAccessMode : uint8_t {
-                eRead_FAM   = 0x1,
-                eWrite_FAM  = 0x2,
+                eNoAccess,
+                eRead   = 0x1,
+                eWrite  = 0x2,
 
                 // composite values
-                eReadWrite_FAM  = eRead_FAM | eWrite_FAM,
+                eReadWrite  = eRead | eWrite,
             };
             FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
             FileAccessMode operator| (FileAccessMode l, FileAccessMode r);

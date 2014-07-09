@@ -24,13 +24,13 @@ namespace   {
     {
         DISABLE_COMPILER_MSC_WARNING_START(4800)
         wstring message;
-        if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead_FAM) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite_FAM)) {
+        if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead) and static_cast<bool> (fileAccessMode & FileAccessMode::eWrite)) {
             message = L"Cannot read from or write to file";
         }
-        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead_FAM)) {
+        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eRead)) {
             message = L"Cannot read from file";
         }
-        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eWrite_FAM)) {
+        else if (static_cast<bool> (fileAccessMode & FileAccessMode::eWrite)) {
             message = L"Cannot write to file";
         }
         else {

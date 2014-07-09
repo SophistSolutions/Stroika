@@ -56,7 +56,7 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    if (accessMode & FileAccessMode::eRead_FAM) {
+    if (accessMode & FileAccessMode::eRead) {
         if (access (fileFullPath.AsSDKString().c_str (), R_OK) != 0) {
             return false;
         }
@@ -73,7 +73,7 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 #endif
 }
 
-void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, FileAccessMode accessMode)
+void    IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, FileAccessMode accessMode)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
@@ -86,13 +86,13 @@ void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath,
 void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
     if (checkCanRead and checkCanWrite) {
-        CheckFileAccess (fileFullPath, IO::FileAccessMode::eReadWrite_FAM);
+        CheckAccess (fileFullPath, IO::FileAccessMode::eReadWrite);
     }
     else if (checkCanRead) {
-        CheckFileAccess (fileFullPath, IO::FileAccessMode::eRead_FAM);
+        CheckAccess (fileFullPath, IO::FileAccessMode::eRead);
     }
     else if (checkCanWrite) {
-        CheckFileAccess (fileFullPath, IO::FileAccessMode::eWrite_FAM);
+        CheckAccess (fileFullPath, IO::FileAccessMode::eWrite);
     }
 }
 

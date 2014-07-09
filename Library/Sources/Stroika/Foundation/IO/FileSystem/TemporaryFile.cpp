@@ -34,6 +34,7 @@
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
 #include    "../../IO/FileFormatException.h"
+#include    "../../IO/FileSystem/FileSystem.h"
 #include    "../../Memory/SmallStackBuffer.h"
 #include    "FileUtils.h"
 #include    "PathName.h"
@@ -96,12 +97,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  **************** FileSystem::Private::FileUtilsModuleData_ *********************
  ********************************************************************************
  */
-FileSystem::Private::FileUtilsModuleData_::FileUtilsModuleData_ ()
+IO::FileSystem::Private::FileUtilsModuleData_::FileUtilsModuleData_ ()
     : fAppTempFileManager ()
 {
 }
 
-FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
+IO::FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
 {
 }
 
@@ -190,7 +191,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 {
 #if     qPlatform_Windows
     String fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
-    FileSystem::CreateDirectoryForFile (fn);
+    IO::FileSystem::CreateDirectoryForFile (fn);
 
     SDKString::size_type  suffixStart = fn.rfind ('.');
     if (suffixStart == SDKString::npos) {
@@ -203,7 +204,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
         s.insert (suffixStart, NarrowSDKStringToWide (buf));
-        if (not FileExists (s.c_str ())) {
+        if (not IO::FileSystem::FileSystem::Default ().Access (s.c_str ())) {
             HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 ::CloseHandle (f);

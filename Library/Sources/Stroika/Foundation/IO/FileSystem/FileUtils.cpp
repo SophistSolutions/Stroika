@@ -34,6 +34,7 @@
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
 #include    "../../IO/FileFormatException.h"
+#include    "../../IO/FileSystem/FileSystem.h"
 #include    "../../Memory/SmallStackBuffer.h"
 #include    "PathName.h"
 #include    "WellKnownLocations.h"
@@ -102,7 +103,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  ******************* FileSystem::FileSizeToDisplayString ************************
  ********************************************************************************
  */
-String FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
+String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
 {
     if (bytes < 1000) {
         return Format (L"%d bytes", static_cast<int> (bytes));
@@ -128,7 +129,7 @@ String FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
  *      Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
+void    IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 {
     try {
 #if     qPlatform_Windows
@@ -211,7 +212,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
  ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded)
+void    IO::FileSystem::CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded)
 {
     /*
      * TODO:
@@ -294,13 +295,13 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
  ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectoryForFile (const String& filePath)
+void    IO::FileSystem::CreateDirectoryForFile (const String& filePath)
 {
     if (filePath.empty ()) {
         // NOT sure this is the best exception to throw here?
         Execution::DoThrow (IO::FileAccessException ());
     }
-    if (FileExists (filePath)) {
+    if (IO::FileSystem::FileSystem::Default ().Access (filePath)) {
         // were done
         return;
     }
@@ -317,7 +318,7 @@ void    FileSystem::CreateDirectoryForFile (const String& filePath)
  ************************** FileSystem::GetVolumeName ***************************
  ********************************************************************************
  */
-String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
+String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 {
 #if     qPlatform_Windows
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
@@ -358,7 +359,7 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
  ***************************** FileSystem::FileExists ***************************
  ********************************************************************************
  */
-bool    FileSystem::FileExists (const String& filePath)
+bool    IO::FileSystem::FileExists (const String& filePath)
 {
 #if     qPlatform_Windows
     DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
@@ -420,15 +421,13 @@ bool    FileSystem::DirectoryExists (const String& filePath)
  ******************************* FileSystem::CopyFile ***************************
  ********************************************************************************
  */
-void    FileSystem::CopyFile (const String& srcFile, const String& destPath)
+void    IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
 {
 #if     qPlatform_Windows
 // see if can be/should be rewritten to use Win32 API of same name!!!
 //
 // If I DONT do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
-    if (not FileExists (srcFile)) {
-        Execution::DoThrow (FileAccessException (srcFile, IO::FileAccessMode::eRead_FAM));
-    }
+    IO::FileSystem::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
     CreateDirectoryForFile (destPath);
     ThrowIfFalseGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
 #else
@@ -449,7 +448,7 @@ void    FileSystem::CopyFile (const String& srcFile, const String& destPath)
  ***************************** FileSystem::FindFiles ****************************
  ********************************************************************************
  */
-vector<String> FileSystem::FindFiles (const String& path, const String& fileNameToMatch)
+vector<String> IO::FileSystem::FindFiles (const String& path, const String& fileNameToMatch)
 {
     vector<String> result;
     if (path.empty ()) {
@@ -495,7 +494,7 @@ vector<String> FileSystem::FindFiles (const String& path, const String& fileName
  ************************* FileSystem::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const String& fileNameToMatch)
+vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const String& fileNameToMatch)
 {
     if (path.empty ()) {
         return vector<String> ();
@@ -540,7 +539,7 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
  ***************** FileSystem::DeleteAllFilesInDirectory ************************
  ********************************************************************************
  */
-void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreErrors)
+void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreErrors)
 {
 #if     qPlatform_Windows
     if (path.empty ()) {
@@ -604,7 +603,7 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
  ********************* FileSystem::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
-FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& directoryName, bool watchSubTree, DWORD notifyFilter)
+IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& directoryName, bool watchSubTree, DWORD notifyFilter)
     : fDirectory (directoryName)
     , fWatchSubTree (watchSubTree)
     , fThread ()
@@ -617,7 +616,7 @@ FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& direct
     fThread.Start ();
 }
 
-FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
+IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
 {
     fQuitting = true;
     if (fDoneEvent != INVALID_HANDLE_VALUE) {
@@ -634,11 +633,11 @@ FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
     }
 }
 
-void    FileSystem::DirectoryChangeWatcher::ValueChanged ()
+void    IO::FileSystem::DirectoryChangeWatcher::ValueChanged ()
 {
 }
 
-void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
+void    IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 {
     DirectoryChangeWatcher*     _THS_   =   reinterpret_cast<DirectoryChangeWatcher*> (lpParameter);
     while (not _THS_->fQuitting and _THS_->fWatchEvent != INVALID_HANDLE_VALUE) {
@@ -663,7 +662,7 @@ void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 #if         qPlatform_Windows
 /*
  ********************************************************************************
- ****************************** FileSystem::AdjustSysErrorMode **************************
+ ********************** FileSystem::AdjustSysErrorMode **************************
  ********************************************************************************
  */
 UINT    AdjustSysErrorMode::GetErrorMode ()
