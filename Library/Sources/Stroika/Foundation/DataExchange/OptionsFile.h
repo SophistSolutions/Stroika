@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/String.h"
+#include    "../Configuration/Version.h"
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 
@@ -20,6 +21,13 @@
  *  \file
  *
  * TODO:
+ *
+ *      @todo   Provide some (straight forward and semi-automatic) mechanism so that
+ *              template    <>
+ *              Optional<VariantValue>  OptionsFile::Read ()
+ *
+ *              knows about the correct version (if you use a versioning scheme it controls - like the filesystem
+ *              filename scheme I used for Block Engineering).
  *
  *      @todo   UNDOCUMENTED - VERY PRELIMINARY DRAFT
  *
@@ -59,8 +67,28 @@ namespace   Stroika {
                 static  const   LoggerType  kDefaultErrorLogger;
 
             public:
+                /**
+                 */
                 using ModuleNameToFileNameMapperType = function<String(const String& moduleName, const String& fileSuffix)>;
+
+            public:
+                /**
+                 */
                 static  const   ModuleNameToFileNameMapperType  mkFilenameMapper (const String& appName);
+
+            public:
+                /**
+                 *  This function gets a crack at revising the form (in variant/tree form) of the data to accomodate a version
+                 *  change. The version may not be known, in which case the function is still called, but with the verison information
+                 *  missing.
+                 */
+                using ModuleDataUpgraderType = function<VariantValue(const Memory::Optional<Configuration::Version>& version, const VariantValue& rawVariantValue)>;
+
+            public:
+                /**
+                 *  kDefaultUpgrader does nothing (no-op)
+                 */
+                static  const   ModuleDataUpgraderType  kDefaultUpgrader;
 
             public:
                 /**
@@ -78,6 +106,7 @@ namespace   Stroika {
                 OptionsFile (
                     const String& modName,
                     const ObjectVariantMapper& mapper,
+                    ModuleDataUpgraderType moduleUpgrader = kDefaultUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
                     LoggerType logWarning = kDefaultWarningLogger,
                     LoggerType logError = kDefaultErrorLogger,
@@ -87,7 +116,8 @@ namespace   Stroika {
                 OptionsFile (
                     const String& modName,
                     const ObjectVariantMapper& mapper,
-                    ModuleNameToFileNameMapperType,
+                    ModuleDataUpgraderType moduleUpgrader,
+                    ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
                     LoggerType logWarning,
                     LoggerType logError,
                     Reader reader,
@@ -109,7 +139,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note - predefined version Read<VariantValue> doesnt use ObjectVariantMapper
+                 *  Note - predefined version Read<VariantValue> doesnt use ObjectVariantMapper.
+                 *
+                 *  Note also that Read<VariantValue> does use any provided ModuleDataUpgrader, so that the data is upgraded
+                 *  before its seen by the object variant mapper.
                  */
                 template    <typename T>
                 nonvirtual  Optional<T>   Read ();
@@ -126,6 +159,7 @@ namespace   Stroika {
             private:
                 String                          fModuleName_;
                 ObjectVariantMapper             fMapper_;
+                ModuleDataUpgraderType          fModuleDataUpgrader_;
                 ModuleNameToFileNameMapperType  fModuleNameToFileNameMapper_;
                 LoggerType                      fLogWarning_;
                 LoggerType                      fLogError_;

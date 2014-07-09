@@ -37,6 +37,10 @@ using   Memory::BLOB;
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
+const   OptionsFile::ModuleDataUpgraderType  OptionsFile::kDefaultUpgrader = [] (const Memory::Optional<Configuration::Version>& version, const VariantValue& rawVariantValue) -> VariantValue {
+    return rawVariantValue;
+};
+
 const   OptionsFile::LoggerType OptionsFile::kDefaultWarningLogger =
     [] (const String& message)
 {
@@ -68,19 +72,21 @@ const   Writer  OptionsFile::kDefaultWriter =   JSON::Writer ();
 OptionsFile::OptionsFile (
     const String& modName,
     const ObjectVariantMapper& mapper,
+    ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
     LoggerType logWarning,
     LoggerType logError,
     Reader reader,
     Writer writer
 )
-    : OptionsFile (modName, mapper, moduleNameToFileNameMapper, logWarning, logError, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, logWarning, logError, reader, writer, reader.GetDefaultFileSuffix ())
 {
 }
 
 OptionsFile::OptionsFile (
     const String& modName,
     const ObjectVariantMapper& mapper,
+    ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
     LoggerType logWarning,
     LoggerType logError,
@@ -90,6 +96,7 @@ OptionsFile::OptionsFile (
 )
     : fModuleName_ (modName)
     , fMapper_ (mapper)
+    , fModuleDataUpgrader_ (moduleUpgrader)
     , fModuleNameToFileNameMapper_ (moduleNameToFileNameMapper)
     , fLogWarning_ (logWarning)
     , fLogError_ (logError)
@@ -123,7 +130,12 @@ template    <>
 Optional<VariantValue>  OptionsFile::Read ()
 {
     try {
-        return fReader_.Read (BasicBinaryInputStream (ReadRaw ()));
+        Optional<VariantValue>  r   =   fReader_.Read (BasicBinaryInputStream (ReadRaw ()));
+        if (r.IsPresent ()) {
+            // @todo see module todo about better handling input version#s
+            *r = fModuleDataUpgrader_ (Memory::Optional<Configuration::Version> (), *r);
+        }
+        return r;
     }
     catch (...) {
         // @todo - check different exception cases and for some - like file not found - just no warning...
