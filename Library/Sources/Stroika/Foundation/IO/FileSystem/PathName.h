@@ -12,6 +12,10 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
  * TODO:
  *
  *      @todo   Redo these APIs using String instead of TString!

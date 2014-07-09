@@ -14,9 +14,11 @@
 
 
 /**
- * TODO:
+ *  \file
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
+ * TODO:
  *
  *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
  *              of globbing, as its more standardized (the matching strings).

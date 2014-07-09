@@ -10,7 +10,11 @@
 
 
 
-/*
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
  * Note - most of the LINUX/POSIX pathnames come from
  *      http://www.pathname.com/fhs/pub/fhs-2.3.html
  */
