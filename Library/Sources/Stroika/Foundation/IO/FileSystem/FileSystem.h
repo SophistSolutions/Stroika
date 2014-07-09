@@ -19,6 +19,8 @@
 /**
  * TODO:
  *
+ *      @todo   Terrible name - class FileSystem inside namesapce FileSystem!
+ *
  *      @todo   Great IDEA FROM KDJ. I USED TO support abstractfilesystem in stroika. Maybe in old code base. Used for Win32 FS versus UNIX versus MacOS FS.
  *              KDJ's point is this idea should be resurected cuz its useful for stuff like TARFILEs and ZIPFILES or ISO files which act like a FS, and can be treated
  *              that way.
@@ -40,14 +42,21 @@ namespace   Stroika {
                  *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
                  *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
                  */
-                class FileSystem {
+                class   FileSystem {
                 public:
                     static  FileSystem  Default ();
+
+                public:
+                    /*
+                     *  Return true if the given access is allowed (for the current user id)
+                     */
+                    nonvirtual  bool    Access (const String& fileFullPath, FileAccessMode accessMode) const;
 
                 public:
                     // doesn't actually open the file. It's purely advisory. But its helpful to assure
                     // a consistent set of error reporting across different styles of opens. Just call this first,
                     // and it will throw exceptions if the file doesn't exist, or has access privileges issues.
+                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, FileAccessMode accessMode);
                     nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
 
                 public:

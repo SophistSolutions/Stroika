@@ -44,13 +44,32 @@ IO::FileSystem::FileSystem  IO::FileSystem::FileSystem::Default ()
     return sThe_;
 }
 
-void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const
+{
+    // quick hack - not fully implemented - but since advsiory only - not too important...
+    return FileExists (fileFullPath);
+}
+
+void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, FileAccessMode accessMode)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
-    if (not FileExists (fileFullPath)) {
+    if (not Access (fileFullPath, accessMode)) {
         // FOR NOW - MIMIC OLD CODE - BUT FIX TO CHECK READ AND WRITE (AND BOTH) ACCESS DEPENDING ON ARGS) -- LGP 2009-08-15
-        Execution::DoThrow (FileAccessException (fileFullPath, IO::FileAccessMode::eRead_FAM));
+        Execution::DoThrow (FileAccessException (fileFullPath, accessMode));
+    }
+}
+
+void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+{
+    if (checkCanRead and checkCanWrite) {
+        CheckFileAccess (fileFullPath, IO::FileAccessMode::eReadWrite_FAM);
+    }
+    else if (checkCanRead) {
+        CheckFileAccess (fileFullPath, IO::FileAccessMode::eRead_FAM);
+    }
+    else if (checkCanWrite) {
+        CheckFileAccess (fileFullPath, IO::FileAccessMode::eWrite_FAM);
     }
 }
 
