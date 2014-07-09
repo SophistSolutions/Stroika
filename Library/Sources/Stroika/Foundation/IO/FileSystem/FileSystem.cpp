@@ -56,12 +56,12 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    if (accessMode & FileAccessMode::eRead) {
+    if (accessMode & FileAccessMode::eRead == FileAccessMode::eNoAccess) {
         if (access (fileFullPath.AsSDKString().c_str (), R_OK) != 0) {
             return false;
         }
     }
-    if (accessMode & FileAccessMode::eWrite_FAM) {
+    if (accessMode & FileAccessMode::eWrite == FileAccessMode::eNoAccess) {
         if (access (fileFullPath.AsSDKString().c_str (), W_OK) != 0) {
             return false;
         }
