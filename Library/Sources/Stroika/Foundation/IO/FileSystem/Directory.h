@@ -24,6 +24,9 @@
 /**
  * TODO:
  *
+ *      @todo   Probably get rid of most 'filesystem' access methods. Instead, make overloaded methods in the FILESYSTEM
+ *              class so these directories can work with otehr filesystems.
+ *
  *      (o)     Add access /creation time etc calls
  *      (o)     almost TOTALLY un-implemtend - miggrade code from FileUtils to here...
  */
