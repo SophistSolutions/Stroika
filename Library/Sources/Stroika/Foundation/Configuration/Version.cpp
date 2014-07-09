@@ -7,6 +7,7 @@
 
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Execution/StringException.h"
 
 #include    "Version.h"
 
@@ -30,12 +31,15 @@ Version::Version (const Characters::String& win32Version4DoTString)
     int verStage    =   0;
     int verSubStage =   0;
     DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
-    (void)::swscanf (win32Version4DoTString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
+    int nMatchingItems = ::swscanf (win32Version4DoTString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
     fMajorVer = major;
     fMinorVer = minor;
     fVerStage = static_cast<VersionStage> (verStage);   // hack - should throw if out of range
     fVerSubStage = verSubStage;
+    if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
+        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
+    }
 }
 
 Characters::String      Version::AsWin32Version4DotString () const

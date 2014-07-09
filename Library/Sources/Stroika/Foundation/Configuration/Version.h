@@ -39,14 +39,19 @@ namespace   Stroika {
                 Beta = kStroika_Version_Stage_Beta,
                 ReleaseCandidate = kStroika_Version_Stage_ReleaseCandidate,
                 Release = kStroika_Version_Stage_Release,
+
+                Stroika_Define_Enum_Bounds(Dev, Release)
             };
 
 
             /**
              */
             struct  Version {
+                /**
+                 *  The String CTOR overload may throw if it detects an ill-formatted version string.
+                 */
                 Version (FullVersionType fullVersionNumber = 0);
-                Version (const Characters::String& win32Version4DoTString);
+                explicit Version (const Characters::String& win32Version4DoTString);
                 Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
 
                 uint8_t     fMajorVer;
