@@ -48,11 +48,19 @@ namespace   Stroika {
              */
             struct  Version {
                 /**
-                 *  The String CTOR overload may throw if it detects an ill-formatted version string.
                  */
                 Version (FullVersionType fullVersionNumber = 0);
-                explicit Version (const Characters::String& win32Version4DoTString);
                 Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
+
+                /**
+                 *  FromWin32Version4DoTString may throw if it detects an ill-formatted version string.
+                 */
+                static  Version FromWin32Version4DotString (const Characters::String& win32Version4DotString);
+
+                /**
+                 *  FromPrettyVersionString may throw if it detects an ill-formatted version string.
+                 */
+                static  Version FromPrettyVersionString (const Characters::String& prettyVersionString);
 
                 uint8_t     fMajorVer;
                 uint8_t     fMinorVer;

@@ -24,22 +24,87 @@ using   Characters::String_Constant;
  *********************************** Version ************************************
  ********************************************************************************
  */
-Version::Version (const Characters::String& win32Version4DoTString)
+Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
     int major       =   0;
     int minor       =   0;
     int verStage    =   0;
     int verSubStage =   0;
     DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
-    int nMatchingItems = ::swscanf (win32Version4DoTString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
+    int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
-    fMajorVer = major;
-    fMinorVer = minor;
-    fVerStage = static_cast<VersionStage> (verStage);   // hack - should throw if out of range
-    fVerSubStage = verSubStage;
     if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
     }
+    return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage);   // in this form - no encoding of 'final build'
+}
+
+Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
+{
+    uint8_t major       =   0;
+    uint8_t minor       =   0;
+
+    const wchar_t*  i   =   prettyVersionString.c_str ();
+    wchar_t*    tokenEnd    =   nullptr;
+    major = wcstol (i, &tokenEnd, 10);  // @todo should validate, but no biggie
+    if (i == tokenEnd) {
+        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
+    }
+    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    i = tokenEnd + 1;   // end plus '.' separator
+
+    minor = wcstol (i, &tokenEnd, 10);
+    if (i == tokenEnd) {
+        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+    }
+    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    i = tokenEnd;
+
+    VersionStage    verStage = VersionStage::Release;
+    switch (*i) {
+        case '\0': {
+                // e.g. 1.0
+                return Version (major, minor, VersionStage::Release, 0);
+            }
+        case 'a': {
+                verStage = VersionStage::Alpha;
+                i += 1;
+            }
+            break;
+        case 'b': {
+                verStage = VersionStage::Beta;
+                i += 1;
+            }
+            break;
+        case 'd': {
+                verStage = VersionStage::Dev;
+                i += 1;
+            }
+            break;
+        case 'r': {
+                verStage = VersionStage::ReleaseCandidate;
+                i += 2; // rc
+            }
+            break;
+        case '.': {
+                // e.g. 1.0.3
+                verStage = VersionStage::Release;
+                i += 1;
+            }
+            break;
+    }
+    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    uint8_t verSubStage = wcstol (i, &tokenEnd, 10);
+    if (i == tokenEnd) {
+        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+    }
+    i = tokenEnd;
+    bool    finalBuild = true;
+    if (*i == 'x') {
+        finalBuild = false;
+    }
+    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    return Version (major, minor, verStage, verSubStage, finalBuild);
 }
 
 Characters::String      Version::AsWin32Version4DotString () const

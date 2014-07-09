@@ -27,6 +27,10 @@ namespace   {
                                    )
             ;
         VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
+        VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString (L"1.0a1x"));
+        VerifyTestResult (Configuration::Version (1, 0, Configuration::VersionStage::Release, 0) == Configuration::Version::FromPrettyVersionString (L"1.0"));
+        VerifyTestResult (Configuration::Version (1, 0, Configuration::VersionStage::Release, 1) == Configuration::Version::FromPrettyVersionString (L"1.0.1"));
+        VerifyTestResult (Configuration::Version (2, 0, Configuration::VersionStage::Beta, 3) == Configuration::Version::FromPrettyVersionString (L"2.0b3"));
     }
 }
 
