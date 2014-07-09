@@ -24,16 +24,14 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a34">v2.0a34</a><br/>2014-07-09</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a35">v2.0a35x</a><br/>2014-07-??</td>
 <td>
 <ul>
-	<li>Configuration::Version class improvements</li>
-	<li>IO::FileSystem improvements (many incompatible) - new Access() method</li>
-	<li>Draft support in OptionsFile for upgrading</li>
-	<li>Minimal testing</li>
+	<li>tbd</li>
 </ul>
 </td>
 </tr>
+
 
 
 
