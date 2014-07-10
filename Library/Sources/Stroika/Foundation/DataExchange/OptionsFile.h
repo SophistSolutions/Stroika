@@ -105,6 +105,8 @@ namespace   Stroika {
                 static  const   Writer  kDefaultWriter;
 
             public:
+                /**
+                 */
                 OptionsFile (
                     const String& modName,
                     const ObjectVariantMapper& mapper,
@@ -118,7 +120,18 @@ namespace   Stroika {
                     const String& modName,
                     const ObjectVariantMapper& mapper,
                     ModuleDataUpgraderType moduleUpgrader,
-                    ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
+                    ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
+                    ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                    LoggerType logger = kDefaultLogger,
+                    Reader reader = kDefaultReader,
+                    Writer writer = kDefaultWriter
+                );
+                OptionsFile (
+                    const String& modName,
+                    const ObjectVariantMapper& mapper,
+                    ModuleDataUpgraderType moduleUpgrader,
+                    ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
+                    ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                     LoggerType logger,
                     Reader reader,
                     Writer writer,
@@ -166,13 +179,15 @@ namespace   Stroika {
                 nonvirtual  void    Write (const T& optionsObject);
 
             private:
-                nonvirtual  String  GetFilePath_ () const;
+                nonvirtual  String  GetReadFilePath_ () const;
+                nonvirtual  String  GetWriteFilePath_ () const;
 
             private:
                 String                          fModuleName_;
                 ObjectVariantMapper             fMapper_;
                 ModuleDataUpgraderType          fModuleDataUpgrader_;
-                ModuleNameToFileNameMapperType  fModuleNameToFileNameMapper_;
+                ModuleNameToFileNameMapperType  fModuleNameToReadFileNameMapper_;
+                ModuleNameToFileNameMapperType  fModuleNameToWriteFileNameMapper_;
                 LoggerType                      fLogger_;
                 Reader                          fReader_;
                 Writer                          fWriter_;
