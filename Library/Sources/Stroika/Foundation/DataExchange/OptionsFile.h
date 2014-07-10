@@ -8,7 +8,6 @@
 
 #include    "../Characters/String.h"
 #include    "../Configuration/Version.h"
-#include    "../Execution/Logger.h"
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 
@@ -24,11 +23,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *
- *      @todo   Redo LogErorr support so more modular, not depend on Logger, and allows for locationlziaiton.
- *              That means 'ErorrObj' with fields and enum - and that gets passed to logger, and default
- *              does syslog, and formats messages as we do. Maybe also provide re-usable method to genreate those
- *              enlgish string messgaes (fallback)
  *
  *      @todo   Provide some (straight forward and semi-automatic) mechanism so that
  *              template    <>
@@ -70,7 +64,28 @@ namespace   Stroika {
              */
             class   OptionsFile {
             public:
-                using LoggerType = function<void(Execution::Logger::Priority priority, const String& message)>;
+                /**
+                 */
+                struct  LoggerMessage {
+                    enum    class   Msg {
+                        eFailedToWriteFile,
+                        eFailedToReadFile,
+                        eFailedToParseReadFile,
+                        eFailedToParseReadFileBadFormat,
+                        eFailedToCompareReadFile,
+                        eWritingConfigFile_SoDefaultsEditable,
+                        eWritingConfigFile_BecauseUpgraded,
+                        eWritingConfigFile_BecauseSomethingChanged,
+                        eFailedToWriteInUseValues,
+                    };
+                    Msg                 fMsg;
+                    Optional<String>    fFileName;
+
+                    LoggerMessage (Msg msg, String fn);
+                    nonvirtual  String  FormatMessage () const;
+                };
+            public:
+                using LoggerType = function<void(const LoggerMessage& message)>;
                 static  const   LoggerType  kDefaultLogger;
 
             public:

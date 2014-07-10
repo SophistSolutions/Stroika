@@ -31,6 +31,47 @@ using   namespace   Stroika::Foundation::Streams;
 using   Memory::BLOB;
 
 
+/*
+ ********************************************************************************
+ ***************** DataExchange::OptionsFile::LoggerMessage *********************
+ ********************************************************************************
+ */
+OptionsFile::LoggerMessage::LoggerMessage (Msg msg, String fn)
+    : fMsg (msg)
+    , fFileName (fn)
+{
+}
+
+String  OptionsFile::LoggerMessage::FormatMessage () const
+{
+    switch (fMsg) {
+        case Msg::eFailedToWriteFile:
+            return Characters::Format (L"Failed to write file: %s", fFileName.Value ().c_str ());
+        case Msg::eFailedToReadFile:
+            return Characters::Format (L"Failed to read file: %s", fFileName.Value ().c_str ());
+        case Msg::eFailedToParseReadFile:
+            return Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", fFileName.Value ().c_str ());
+        case Msg::eFailedToParseReadFileBadFormat:
+            return Characters::Format (L"Error analyzing configuration file (because bad format) '%s' - using defaults.", fFileName.Value ().c_str ());
+        case Msg::eFailedToCompareReadFile:
+            return Characters::Format (L"Failed to compare configuration file: %s", fFileName.Value ().c_str ());
+        case Msg::eWritingConfigFile_SoDefaultsEditable:
+            return Characters::Format (L"Writing configuration file '%s' because not found (and so defaults are more easily seen and editable).", fFileName.Value ().c_str ());
+        case Msg::eWritingConfigFile_BecauseUpgraded:
+            return Characters::Format (L"Writing configuration file '%s' in a new directory because the software has been upgraded.", fFileName.Value ().c_str ());
+        case Msg::eWritingConfigFile_BecauseSomethingChanged:
+            return Characters::Format (L"Writing configuration file '%s' because something changed (e.g. a default, or field added/removed).", fFileName.Value ().c_str ());
+        case Msg::eFailedToWriteInUseValues:
+            return Characters::Format (L"Failed to write default (in use) values to file: %s", fFileName.Value ().c_str ());
+        default:
+            RequireNotReached ();
+            return String ();
+    }
+}
+
+
+
+
 
 /*
  ********************************************************************************
@@ -42,10 +83,28 @@ const   OptionsFile::ModuleDataUpgraderType  OptionsFile::kDefaultUpgrader = [] 
 };
 
 const   OptionsFile::LoggerType OptionsFile::kDefaultLogger =
-    [] (Execution::Logger::Priority priority, const String& message)
+    [] (const LoggerMessage& message)
 {
     using   Execution::Logger;
-    Logger::Log (priority, L"%s", message.c_str ());
+    Logger::Priority priority = Logger::Priority::eError;
+    using Msg = OptionsFile::LoggerMessage::Msg;
+    switch (message.fMsg) {
+        case Msg::eFailedToReadFile:
+            priority = Logger::Priority::eWarning;   // could be just because new system, no file
+            break;
+        case Msg::eWritingConfigFile_SoDefaultsEditable:
+        case Msg::eWritingConfigFile_BecauseUpgraded:
+        case Msg::eWritingConfigFile_BecauseSomethingChanged:
+            priority = Logger::Priority::eInfo;
+            break;
+
+        case Msg::eFailedToParseReadFile:
+        case Msg::eFailedToParseReadFileBadFormat:
+            // Most likely very bad - as critical configuration data will be lost, and overwritten with 'defaults'
+            priority = Logger::Priority::eCriticalError;
+            break;
+    }
+    Logger::Log (priority, L"%s", message.FormatMessage ().c_str ());
 };
 
 const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapper (const String& appName)
@@ -61,6 +120,11 @@ const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapp
 // Consider using XML by default when more mature
 const   Reader  OptionsFile::kDefaultReader =   JSON::Reader ();
 const   Writer  OptionsFile::kDefaultWriter =   JSON::Writer ();
+
+
+
+
+
 
 OptionsFile::OptionsFile (
     const String& modName,
@@ -128,7 +192,7 @@ void    OptionsFile::WriteRaw (const BLOB& blob)
         tmpFile.Commit ();
     }
     catch (...) {
-        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write file: %s", GetWriteFilePath_ ().c_str ()));
+        fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToWriteFile, GetWriteFilePath_ ()));
     }
 }
 
@@ -145,7 +209,7 @@ Optional<VariantValue>  OptionsFile::Read ()
     }
     catch (...) {
         // @todo - check different exception cases and for some - like file not found - just no warning...
-        fLogger_ (Execution::Logger::Priority::eWarning, Characters::Format (L"Failed to read file: %s", GetReadFilePath_ ().c_str ()));
+        fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ ()));
         return Optional<VariantValue> ();
     }
 }

@@ -35,13 +35,13 @@ namespace   Stroika {
                     return fMapper_.ToObject<T> (*tmp);
                 }
                 catch (const BadFormatException& bf) {
-                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file (bad format) '%s' - using defaults.", GetReadFilePath_ ().c_str ()));
+                    fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToParseReadFileBadFormat, GetReadFilePath_ ()));
                     return Optional<T> ();
                 }
                 catch (...) {
                     // if this fails, its probably because somehow the data in the config file was bad.
                     // So at least log that, and continue without reading anything (as if empty file)
-                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", GetReadFilePath_ ().c_str ()));
+                    fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToParseReadFile, GetReadFilePath_ ()));
                     return Optional<T> ();
                 }
             }
@@ -50,11 +50,15 @@ namespace   Stroika {
             {
                 Optional<T> eltRead = Read<T> ();
                 Optional<T> elt2Write;              // only if needed
-                String      msgAugment;
+                eWritingConfigFile_SoDefaultsEditable,
+                eWritingConfigFile_BecauseUpgraded,
+                eWritingConfigFile_BecauseSomethingChanged,
+
+                LoggerMessage::Msg  msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                 if (eltRead.IsMissing ()) {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
                         elt2Write = defaultObj;
-                        msgAugment = L" so defaults are more easily editable";
+                        msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                     }
                 }
                 else {
@@ -63,7 +67,7 @@ namespace   Stroika {
                             // if filename differs - upgrading
                             if (GetReadFilePath_ () != GetWriteFilePath_ ()) {
                                 elt2Write = eltRead;
-                                msgAugment = L" in a new directory because the software has been upgraded";
+                                msgAugment = LoggerMessage::Msg::eWritingConfigFile_BecauseUpgraded;
                             }
                         }
                         if (elt2Write.IsMissing ()) {
@@ -81,22 +85,22 @@ namespace   Stroika {
                                 }
                                 if (oldData != newData) {
                                     elt2Write = eltRead;
-                                    msgAugment = L" because something changed (e.g. a default, or field added/removed).";
+                                    msgAugment = LoggerMessage::Msg::eWritingConfigFile_BecauseSomethingChanged;
                                 }
                             }
                             catch (...) {
-                                fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetReadFilePath_ ().c_str ()));
+                                fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToCompareReadFile, GetReadFilePath_ ()));
                             }
                         }
                     }
                 }
                 if (elt2Write.IsPresent ()) {
-                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing configuration file '%s'%s.", GetWriteFilePath_ ().c_str (), msgAugment.c_str ()));
+                    fLogger_ (LoggerMessage (msgAugment, GetWriteFilePath_ ()));
                     try {
                         Write (*elt2Write);
                     }
                     catch (...) {
-                        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write default values to file: %s", GetWriteFilePath_ ().c_str ()));
+                        fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToWriteInUseValues, GetWriteFilePath_ ()));
                     }
                     return *elt2Write;
                 }
