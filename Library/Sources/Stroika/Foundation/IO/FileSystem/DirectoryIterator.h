@@ -20,6 +20,9 @@
  *
  * TODO:
  *
+ *      @todo   Should review for thread safety. Maybe not issue cuz we dont promise iterators threasafe? But
+ *              we do for iterables!  And use IterableFromIterator...--LGP 2014-07-10
+ *
  *      @todo   Add CTOR argument with RegExp() - to filter names. Do this instead
  *              of globbing, as its more standardized (the matching strings).
  *

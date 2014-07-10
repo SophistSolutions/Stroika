@@ -24,8 +24,18 @@ namespace   {
     void    Test1_DirectoryIterator_()
     {
         Debug::TraceContextBumper ctx (SDKSTR ("Test1_DirectoryIterator_"));
-        for (DirectoryIterator i { WellKnownLocations::GetTemporary () }; not i.Done (); ++i) {
-            DbgTrace (L"filename = %s", i->c_str ());
+        {
+            Debug::TraceContextBumper ctx (SDKSTR ("simple test"));
+            for (DirectoryIterator i { WellKnownLocations::GetTemporary () }; not i.Done (); ++i) {
+                DbgTrace (L"filename = %s", i->c_str ());
+            }
+        }
+        {
+            Debug::TraceContextBumper ctx (SDKSTR ("t2"));
+            DirectoryIterator i { WellKnownLocations::GetTemporary () };
+            for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
+                DbgTrace (L"filename = %s", i2->c_str ());
+            }
         }
     }
     void    Test2_DirectoryIterable_()
