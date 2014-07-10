@@ -143,6 +143,9 @@ namespace   Stroika {
                  *
                  *  Note also that Read<VariantValue> does use any provided ModuleDataUpgrader, so that the data is upgraded
                  *  before its seen by the object variant mapper.
+                 *
+                 *  This also emits warnings, and maps to 'isMissing' or default value (depending on overload) if read data is corrupted.
+                 *  to avoid this behavior, use ReadRaw() directly.
                  */
                 template    <typename T>
                 nonvirtual  Optional<T>   Read ();
