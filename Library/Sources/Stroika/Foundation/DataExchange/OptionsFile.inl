@@ -35,13 +35,13 @@ namespace   Stroika {
                     return fMapper_.ToObject<T> (*tmp);
                 }
                 catch (const BadFormatException& bf) {
-                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file (bad format) '%s' - using defaults.", GetFilePath_ ().c_str ()));
+                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file (bad format) '%s' - using defaults.", GetReadFilePath_ ().c_str ()));
                     return Optional<T> ();
                 }
                 catch (...) {
                     // if this fails, its probably because somehow the data in the config file was bad.
                     // So at least log that, and continue without reading anything (as if empty file)
-                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", GetFilePath_ ().c_str ()));
+                    fLogger_ (Execution::Logger::Priority::eCriticalError, Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", GetReadFilePath_ ().c_str ()));
                     return Optional<T> ();
                 }
             }
@@ -77,17 +77,17 @@ namespace   Stroika {
                             }
                         }
                         catch (...) {
-                            fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetFilePath_ ().c_str ()));
+                            fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetReadFilePath_ ().c_str ()));
                         }
                     }
                 }
                 if (elt2Write.IsPresent ()) {
-                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetFilePath_ ().c_str ()));
+                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetWriteFilePath_ ().c_str ()));
                     try {
                         Write (*elt2Write);
                     }
                     catch (...) {
-                        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write default values to file: %s", GetFilePath_ ().c_str ()));
+                        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write default values to file: %s", GetWriteFilePath_ ().c_str ()));
                     }
                     return *elt2Write;
                 }
