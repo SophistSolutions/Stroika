@@ -66,7 +66,7 @@ namespace   Stroika {
                             Memory::BLOB    newData;
                             {
                                 Streams::BasicBinaryOutputStream outStream;
-                                WriteRaw (outStream, fMapper_.FromObject (result));
+                                WriteRaw (outStream, fMapper_.FromObject (*eltRead));
                                 // not sure needed? outStream.Flush();
                                 newData = outStream.As<Memory::BLOB> ();
                             }
@@ -76,12 +76,12 @@ namespace   Stroika {
                             }
                         }
                         catch (...) {
-                            fLogger_ (Execution::Logger::Priority::eError, L"Failed to compare configuration file: %s", GetFilePath_ ().c_str ());
+                            fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetFilePath_ ().c_str ()));
                         }
                     }
                 }
                 if (elt2Write.IsPresent ()) {
-                    fLogger_ (Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetFilePath_ ().c_str ()));
+                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetFilePath_ ().c_str ()));
                     try {
                         Write (*elt2Write);
                     }
