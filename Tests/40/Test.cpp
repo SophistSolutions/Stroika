@@ -6,6 +6,7 @@
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 #include    "Stroika/Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
@@ -20,8 +21,16 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 
 
 namespace   {
-    void    Test1_()
+    void    Test1_DirectoryIterator_()
     {
+        Debug::TraceContextBumper ctx (SDKSTR ("Test1_DirectoryIterator_"));
+        for (DirectoryIterator i { WellKnownLocations::GetTemporary () }; not i.Done (); ++i) {
+            DbgTrace (L"filename = %s", i->c_str ());
+        }
+    }
+    void    Test2_DirectoryIterable_()
+    {
+        Debug::TraceContextBumper ctx (SDKSTR ("Test2_DirectoryIterable_"));
         for (String filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
             DbgTrace (L"filename = %s", filename.c_str ());
         }
@@ -29,10 +38,12 @@ namespace   {
 }
 
 
+
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test1_ ();
+        Test1_DirectoryIterator_ ();
+        Test2_DirectoryIterable_ ();
     }
 }
 
