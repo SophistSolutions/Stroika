@@ -63,7 +63,7 @@ namespace   Stroika {
                             // if filename differs - upgrading
                             if (GetReadFilePath_ () != GetWriteFilePath_ ()) {
                                 elt2Write = eltRead;
-                                msgAugment = L" in a new directory because upgrading the software has been upgraded";
+                                msgAugment = L" in a new directory because the software has been upgraded";
                             }
                         }
                         if (elt2Write.IsMissing ()) {
