@@ -50,9 +50,6 @@ namespace   Stroika {
             {
                 Optional<T> eltRead = Read<T> ();
                 Optional<T> elt2Write;              // only if needed
-                eWritingConfigFile_SoDefaultsEditable,
-                eWritingConfigFile_BecauseUpgraded,
-                eWritingConfigFile_BecauseSomethingChanged,
 
                 LoggerMessage::Msg  msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                 if (eltRead.IsMissing ()) {
