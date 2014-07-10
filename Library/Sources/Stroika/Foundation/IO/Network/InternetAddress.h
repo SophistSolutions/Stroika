@@ -22,8 +22,6 @@
 /**
  * TODO:
  *
- *      @todo   add operator== method, int compare(), and operator< methods
- *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
