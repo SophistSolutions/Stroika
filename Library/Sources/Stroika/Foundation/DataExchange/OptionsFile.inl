@@ -34,7 +34,7 @@ namespace   Stroika {
                 try {
                     return fMapper_.ToObject<T> (*tmp);
                 }
-                catch (const BadFormatException& bf) {
+                catch (const BadFormatException& /*bf*/) {
                     fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToParseReadFileBadFormat, GetReadFilePath_ ()));
                     return Optional<T> ();
                 }

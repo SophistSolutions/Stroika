@@ -117,6 +117,12 @@ const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapp
     ;
 }
 
+const   OptionsFile::ModuleNameToFileVersionMapperType  OptionsFile::kDefaultModuleNameToFileVersionMapper = [] (const String& moduleName) -> Optional<Configuration::Version> {
+    return Optional<Configuration::Version> (); // default to dont know
+};
+
+
+
 // Consider using XML by default when more mature
 const   Reader  OptionsFile::kDefaultReader =   JSON::Reader ();
 const   Writer  OptionsFile::kDefaultWriter =   JSON::Writer ();
@@ -131,11 +137,12 @@ OptionsFile::OptionsFile (
     const ObjectVariantMapper& mapper,
     ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
+    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
     Reader reader,
     Writer writer
 )
-    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, logger, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
 }
 
@@ -145,11 +152,12 @@ OptionsFile::OptionsFile (
     ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
     Reader reader,
     Writer writer
 )
-    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, logger, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
 }
 
@@ -159,6 +167,7 @@ OptionsFile::OptionsFile (
     ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
     Reader reader,
     Writer writer,
@@ -169,6 +178,7 @@ OptionsFile::OptionsFile (
     , fModuleDataUpgrader_ (moduleUpgrader)
     , fModuleNameToReadFileNameMapper_ (moduleNameToReadFileNameMapper)
     , fModuleNameToWriteFileNameMapper_ (moduleNameToWriteFileNameMapper)
+    , fModuleNameToFileVersionMapper_ (moduleNameToReadFileVersion)
     , fLogger_ (logger)
     , fReader_ (reader)
     , fWriter_ (writer)
@@ -202,8 +212,7 @@ Optional<VariantValue>  OptionsFile::Read ()
     try {
         Optional<VariantValue>  r   =   fReader_.Read (BasicBinaryInputStream (ReadRaw ()));
         if (r.IsPresent ()) {
-            // @todo see module todo about better handling input version#s
-            *r = fModuleDataUpgrader_ (Memory::Optional<Configuration::Version> (), *r);
+            *r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
         return r;
     }

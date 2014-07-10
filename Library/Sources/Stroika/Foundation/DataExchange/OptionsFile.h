@@ -23,25 +23,15 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *
- *      @todo   Provide some (straight forward and semi-automatic) mechanism so that
- *              template    <>
- *              Optional<VariantValue>  OptionsFile::Read ()
- *
- *              knows about the correct version (if you use a versioning scheme it controls - like the filesystem
- *              filename scheme I used for Block Engineering).
- *
- *      @todo   UNDOCUMENTED - VERY PRELIMINARY DRAFT
- *
  *      @todo   Biggest thing needed is to think out erorr handling/reporting...
+ *
+ *      @todo   Look at http://s11n.net/
  *
  *  GIST:
  *      if you have mapper object for type T) – one line create object that writes/reads
  *      it to/from filessytem (defaults to good places) – and handles logging warning if created,
  *      or bad, and rewrites for if changes detected (added/renamed etc).
  *      Maybe hook / configure options for these features.
- *
- *
  *
  *  \em Design Note:
  */
@@ -59,31 +49,39 @@ namespace   Stroika {
 
 
             /**
+             *  Simple wrapper on ObjectVariantMapper code, and code to serialize to/from JSON/XML etc, to wrap
+             *  all this into an easy to use (but configurable/customizable) helper to serialize configuration data
+             *  between disk and module-specific C++ objects.
              *
-             *  @todo document, test, and complete (so far - just a prototype)
+             *  Example:
+             *      struct  MyData_ {
+             *          bool                fEnabled = false;
+             *          DateTime            fLastSynchronizedAt;
+             *      };
+             *      OptionsFile of {
+             *          L"MyModule",
+             *          [] () -> ObjectVariantMapper {
+             *              ObjectVariantMapper mapper;
+             *              mapper.AddClass<MyData_> ({
+             *                  ObjectVariantMapper_StructureFieldInfo_Construction_Helper (MyData_, fEnabled, L"Enabled"),
+             *                  ObjectVariantMapper_StructureFieldInfo_Construction_Helper (MyData_, fLastSynchronizedAt, L"Last-Synchronized-At"),
+             *              });
+             *              return mapper;
+             *          } (),
+             *          OptionsFile::kDefaultUpgrader,
+             *          [] (const String & moduleName, const String & fileSuffix) -> String {
+             *              return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName;
+             *          }
+             *      };
+             *      MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
+             *      of.Write (m);                               // test writing
              */
             class   OptionsFile {
             public:
                 /**
                  */
-                struct  LoggerMessage {
-                    enum    class   Msg {
-                        eFailedToWriteFile,
-                        eFailedToReadFile,
-                        eFailedToParseReadFile,
-                        eFailedToParseReadFileBadFormat,
-                        eFailedToCompareReadFile,
-                        eWritingConfigFile_SoDefaultsEditable,
-                        eWritingConfigFile_BecauseUpgraded,
-                        eWritingConfigFile_BecauseSomethingChanged,
-                        eFailedToWriteInUseValues,
-                    };
-                    Msg                 fMsg;
-                    Optional<String>    fFileName;
+                struct  LoggerMessage;
 
-                    LoggerMessage (Msg msg, String fn);
-                    nonvirtual  String  FormatMessage () const;
-                };
             public:
                 using LoggerType = function<void(const LoggerMessage& message)>;
                 static  const   LoggerType  kDefaultLogger;
@@ -97,6 +95,18 @@ namespace   Stroika {
                 /**
                  */
                 static  const   ModuleNameToFileNameMapperType  mkFilenameMapper (const String& appName);
+
+            public:
+                /**
+                 *  Optionally provide (based on filenames/locations) information about the incoming file(read file)
+                 *  version.
+                 */
+                using ModuleNameToFileVersionMapperType = function<Optional<Configuration::Version>(const String& moduleName)>;
+
+            public:
+                /**
+                 */
+                static  const   ModuleNameToFileVersionMapperType   kDefaultModuleNameToFileVersionMapper;
 
             public:
                 /**
@@ -132,6 +142,7 @@ namespace   Stroika {
                     const ObjectVariantMapper& mapper,
                     ModuleDataUpgraderType moduleUpgrader = kDefaultUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
+                    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
                     Reader reader = kDefaultReader,
                     Writer writer = kDefaultWriter
@@ -142,6 +153,7 @@ namespace   Stroika {
                     ModuleDataUpgraderType moduleUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
                     Reader reader = kDefaultReader,
                     Writer writer = kDefaultWriter
@@ -152,6 +164,7 @@ namespace   Stroika {
                     ModuleDataUpgraderType moduleUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
                     LoggerType logger,
                     Reader reader,
                     Writer writer,
@@ -206,15 +219,38 @@ namespace   Stroika {
                 nonvirtual  String  GetWriteFilePath_ () const;
 
             private:
-                String                          fModuleName_;
-                ObjectVariantMapper             fMapper_;
-                ModuleDataUpgraderType          fModuleDataUpgrader_;
-                ModuleNameToFileNameMapperType  fModuleNameToReadFileNameMapper_;
-                ModuleNameToFileNameMapperType  fModuleNameToWriteFileNameMapper_;
-                LoggerType                      fLogger_;
-                Reader                          fReader_;
-                Writer                          fWriter_;
-                String                          fFileSuffix_;
+                String                              fModuleName_;
+                ObjectVariantMapper                 fMapper_;
+                ModuleDataUpgraderType              fModuleDataUpgrader_;
+                ModuleNameToFileNameMapperType      fModuleNameToReadFileNameMapper_;
+                ModuleNameToFileNameMapperType      fModuleNameToWriteFileNameMapper_;
+                ModuleNameToFileVersionMapperType   fModuleNameToFileVersionMapper_;
+                LoggerType                          fLogger_;
+                Reader                              fReader_;
+                Writer                              fWriter_;
+                String                              fFileSuffix_;
+            };
+
+
+            /**
+             */
+            struct  OptionsFile::LoggerMessage {
+                enum    class   Msg {
+                    eFailedToWriteFile,
+                    eFailedToReadFile,
+                    eFailedToParseReadFile,
+                    eFailedToParseReadFileBadFormat,
+                    eFailedToCompareReadFile,
+                    eWritingConfigFile_SoDefaultsEditable,
+                    eWritingConfigFile_BecauseUpgraded,
+                    eWritingConfigFile_BecauseSomethingChanged,
+                    eFailedToWriteInUseValues,
+                };
+                Msg                 fMsg;
+                Optional<String>    fFileName;
+
+                LoggerMessage (Msg msg, String fn);
+                nonvirtual  String  FormatMessage () const;
             };
 
 
