@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #include    "../Characters/Format.h"
-#include    "../Streams/BasicBinaryInputOutputStream.h"
+#include    "../Streams/BasicBinaryOutputStream.h"
 
 
 namespace   Stroika {
