@@ -49,7 +49,8 @@ namespace   Stroika {
             struct  Version {
                 /**
                  */
-                Version (FullVersionType fullVersionNumber = 0);
+                Version ();
+                explicit Version (FullVersionType fullVersionNumber);
                 Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
 
                 /**

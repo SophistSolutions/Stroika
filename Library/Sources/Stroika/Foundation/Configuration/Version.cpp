@@ -44,16 +44,26 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t major       =   0;
     uint8_t minor       =   0;
 
+    // Helper to throw if out of range
+    auto my_wcstol_ = [] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
+        long l = wcstol (i, endResult, 10);
+        if (l < 0 || l > numeric_limits<uint8_t>::max ())
+        {
+            Execution::DoThrow (Execution::StringException (L"Invalid Version String: component out of range"));
+        }
+        return static_cast<uint8_t> (l);
+    };
+
     const wchar_t*  i   =   prettyVersionString.c_str ();
     wchar_t*    tokenEnd    =   nullptr;
-    major = wcstol (i, &tokenEnd, 10);  // @todo should validate, but no biggie
+    major = my_wcstol_ (i, &tokenEnd);  // @todo should validate, but no biggie
     if (i == tokenEnd) {
         Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1;   // end plus '.' separator
 
-    minor = wcstol (i, &tokenEnd, 10);
+    minor = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
         Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
     }
@@ -94,7 +104,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
             break;
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
-    uint8_t verSubStage = wcstol (i, &tokenEnd, 10);
+    uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
         Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
     }

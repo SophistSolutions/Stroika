@@ -23,6 +23,14 @@ namespace   Stroika {
              *********************************** Version ************************************
              ********************************************************************************
              */
+            inline  Version::Version ()
+                : fMajorVer (0)
+                , fMinorVer (0)
+                , fVerStage (VersionStage::eSTART)
+                , fVerSubStage (0)
+                , fFinalBuild (0)
+            {
+            }
             inline  Version::Version (FullVersionType fullVersionNumber)
                 : fMajorVer ((fullVersionNumber >> 25) & 0x8f)
                 , fMinorVer ((fullVersionNumber >> 17) & 0xff)
