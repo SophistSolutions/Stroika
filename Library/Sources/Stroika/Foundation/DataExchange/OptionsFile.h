@@ -25,6 +25,11 @@
  *
  * TODO:
  *
+ *      @todo   Redo LogErorr support so more modular, not depend on Logger, and allows for locationlziaiton.
+ *              That means 'ErorrObj' with fields and enum - and that gets passed to logger, and default
+ *              does syslog, and formats messages as we do. Maybe also provide re-usable method to genreate those
+ *              enlgish string messgaes (fallback)
+ *
  *      @todo   Provide some (straight forward and semi-automatic) mechanism so that
  *              template    <>
  *              Optional<VariantValue>  OptionsFile::Read ()
@@ -151,6 +156,9 @@ namespace   Stroika {
                 nonvirtual  void    WriteRaw (const BLOB& blob);
 
             public:
+                /**
+                 *  Just a parameter to Read() function.
+                 */
                 enum    class   ReadFlags {
                     eNoWriteIfChanged,
                     eWriteIfChanged,
