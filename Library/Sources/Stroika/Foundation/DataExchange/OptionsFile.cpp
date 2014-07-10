@@ -212,7 +212,7 @@ Optional<VariantValue>  OptionsFile::Read ()
     try {
         Optional<VariantValue>  r   =   fReader_.Read (BasicBinaryInputStream (ReadRaw ()));
         if (r.IsPresent ()) {
-            *r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
+            r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
         return r;
     }

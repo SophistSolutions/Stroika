@@ -23,7 +23,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Biggest thing needed is to think out erorr handling/reporting...
+ *
+ *      @todo   eFailedToReadFile should be broken into failed to read, and failed to upgrade.
  *
  *      @todo   Look at http://s11n.net/
  *
