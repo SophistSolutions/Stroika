@@ -45,19 +45,55 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            T   OptionsFile::Read (const T& defaultObj)
+            T   OptionsFile::Read (const T& defaultObj, ReadFlags readFlags)
             {
-                Optional<T> result = Read<T> ();
-                if (result.IsPresent ()) {
-                    return *result;
+                Optional<T> eltRead = Read<T> ();
+                Optional<T> elt2Write;              // only if needed
+                String      msgAugment;
+                if (eltRead.IsMissing ()) {
+                    if (readFlags == ReadFlags::eWriteIfChanged) {
+                        elt2Write = defaultObj;
+                        msgAugment = L"default";
+                    }
                 }
                 else {
+                    if (readFlags == ReadFlags::eWriteIfChanged) {
+                        try {
+                            // See if re-persisting the item would change it.
+                            // This is useful if your data model adds or removes fields. It updates the file contents written to the
+                            // upgraded/latest form
+                            Memory::BLOB    oldData =   ReadRaw (); // @todo could have saved from previous Read<T>
+                            Memory::BLOB    newData;
+                            {
+                                Streams::BasicBinaryOutputStream outStream;
+                                WriteRaw (outStream, fMapper_.FromObject (result));
+                                // not sure needed? outStream.Flush();
+                                newData = outStream.As<Memory::BLOB> ();
+                            }
+                            if (oldData != newData) {
+                                elt2Write = eltRead;
+                                msgAugment = L"(because something changed)";
+                            }
+                        }
+                        catch (...) {
+                            fLogger_ (Execution::Logger::Priority::eError, L"Failed to compare configuration file: %s", GetFilePath_ ().c_str ());
+                        }
+                    }
+                }
+                if (elt2Write.IsPresent ()) {
+                    fLogger_ (Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetFilePath_ ().c_str ()));
                     try {
-                        Write (defaultObj);
+                        Write (*elt2Write);
                     }
                     catch (...) {
-                        fLogger_ (Execution::Logger::Priority::Characters::Format (L"Failed to write default values to file: %s", GetFilePath_ ().c_str ()));
+                        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write default values to file: %s", GetFilePath_ ().c_str ()));
                     }
+                    return *elt2Write;
+                }
+                else if (eltRead.IsPresent ()) {
+                    return *eltRead;
+                }
+                else {
                     return defaultObj;
                 }
             }

@@ -138,8 +138,14 @@ namespace   Stroika {
                 nonvirtual  void    WriteRaw (const BLOB& blob);
 
             public:
+                enum    class   ReadFlags {
+                    eNoWriteIfChanged,
+                    eWriteIfChanged,
+                };
+
+            public:
                 /**
-                 *  Note - predefined version Read<VariantValue> doesnt use ObjectVariantMapper.
+                 *  Note - predefined version Read<VariantValue> doesn't use ObjectVariantMapper.
                  *
                  *  Note also that Read<VariantValue> does use any provided ModuleDataUpgrader, so that the data is upgraded
                  *  before its seen by the object variant mapper.
@@ -150,7 +156,7 @@ namespace   Stroika {
                 template    <typename T>
                 nonvirtual  Optional<T>   Read ();
                 template    <typename T>
-                nonvirtual  T   Read (const T& defaultObj);
+                nonvirtual  T   Read (const T& defaultObj, ReadFlags readFlags = ReadFlags::eNoWriteIfChanged);
 
             public:
                 /**
@@ -158,7 +164,6 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 nonvirtual  void    Write (const T& optionsObject);
-
 
             private:
                 nonvirtual  String  GetFilePath_ () const;
