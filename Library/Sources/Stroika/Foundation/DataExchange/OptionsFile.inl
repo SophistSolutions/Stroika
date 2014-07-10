@@ -67,7 +67,7 @@ namespace   Stroika {
                             Memory::BLOB    newData;
                             {
                                 Streams::BasicBinaryOutputStream outStream;
-                                WriteRaw (outStream, fMapper_.FromObject (*eltRead));
+								fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
                                 // not sure needed? outStream.Flush();
                                 newData = outStream.As<Memory::BLOB> ();
                             }
