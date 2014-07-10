@@ -83,6 +83,20 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
     LoggerType logger,
     Reader reader,
+    Writer writer
+)
+    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, logger, reader, writer, reader.GetDefaultFileSuffix ())
+{
+}
+
+OptionsFile::OptionsFile (
+    const String& modName,
+    const ObjectVariantMapper& mapper,
+    ModuleDataUpgraderType moduleUpgrader,
+    ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper,
+    ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+    LoggerType logger,
+    Reader reader,
     Writer writer,
     const String& fileSuffix
 )
