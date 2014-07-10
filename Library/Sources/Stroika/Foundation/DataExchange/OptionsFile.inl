@@ -54,35 +54,44 @@ namespace   Stroika {
                 if (eltRead.IsMissing ()) {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
                         elt2Write = defaultObj;
-                        msgAugment = L"default";
+                        msgAugment = L" so defaults are more easily editable";
                     }
                 }
                 else {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
-                        try {
-                            // See if re-persisting the item would change it.
-                            // This is useful if your data model adds or removes fields. It updates the file contents written to the
-                            // upgraded/latest form
-                            Memory::BLOB    oldData =   ReadRaw (); // @todo could have saved from previous Read<T>
-                            Memory::BLOB    newData;
-                            {
-                                Streams::BasicBinaryOutputStream outStream;
-                                fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
-                                // not sure needed? outStream.Flush();
-                                newData = outStream.As<Memory::BLOB> ();
-                            }
-                            if (oldData != newData) {
+                        if (elt2Write.IsMissing ()) {
+                            // if filename differs - upgrading
+                            if (GetReadFilePath_ () != GetWriteFilePath_ ()) {
                                 elt2Write = eltRead;
-                                msgAugment = L"(because something changed)";
+                                msgAugment = L" in a new directory because upgrading the software has been upgraded";
                             }
                         }
-                        catch (...) {
-                            fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetReadFilePath_ ().c_str ()));
+                        if (elt2Write.IsMissing ()) {
+                            try {
+                                // See if re-persisting the item would change it.
+                                // This is useful if your data model adds or removes fields. It updates the file contents written to the
+                                // upgraded/latest form.
+                                Memory::BLOB    oldData =   ReadRaw (); // @todo could have saved from previous Read<T>
+                                Memory::BLOB    newData;
+                                {
+                                    Streams::BasicBinaryOutputStream outStream;
+                                    fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
+                                    // not sure needed? outStream.Flush();
+                                    newData = outStream.As<Memory::BLOB> ();
+                                }
+                                if (oldData != newData) {
+                                    elt2Write = eltRead;
+                                    msgAugment = L" because something changed (e.g. a default, or field added/removed).";
+                                }
+                            }
+                            catch (...) {
+                                fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to compare configuration file: %s", GetReadFilePath_ ().c_str ()));
+                            }
                         }
                     }
                 }
                 if (elt2Write.IsPresent ()) {
-                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing %s '%s' configuration file.", msgAugment.c_str (), GetWriteFilePath_ ().c_str ()));
+                    fLogger_ (Execution::Logger::Priority::eInfo, Characters::Format (L"Writing configuration file '%s'%s.", GetWriteFilePath_ ().c_str (), msgAugment.c_str ()));
                     try {
                         Write (*elt2Write);
                     }
