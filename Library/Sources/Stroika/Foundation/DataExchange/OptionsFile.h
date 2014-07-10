@@ -8,6 +8,7 @@
 
 #include    "../Characters/String.h"
 #include    "../Configuration/Version.h"
+#include    "../Execution/Logger.h"
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 
@@ -64,9 +65,8 @@ namespace   Stroika {
              */
             class   OptionsFile {
             public:
-                using LoggerType = function<void(const String& errorMessage)>;
-                static  const   LoggerType  kDefaultWarningLogger;
-                static  const   LoggerType  kDefaultErrorLogger;
+                using LoggerType = function<void(Execution::Logger::Priority priority, const String& message)>;
+                static  const   LoggerType  kDefaultLogger;
 
             public:
                 /**
@@ -110,8 +110,7 @@ namespace   Stroika {
                     const ObjectVariantMapper& mapper,
                     ModuleDataUpgraderType moduleUpgrader = kDefaultUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
-                    LoggerType logWarning = kDefaultWarningLogger,
-                    LoggerType logError = kDefaultErrorLogger,
+                    LoggerType logger = kDefaultLogger,
                     Reader reader = kDefaultReader,
                     Writer writer = kDefaultWriter
                 );
@@ -120,8 +119,7 @@ namespace   Stroika {
                     const ObjectVariantMapper& mapper,
                     ModuleDataUpgraderType moduleUpgrader,
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
-                    LoggerType logWarning,
-                    LoggerType logError,
+                    LoggerType logger,
                     Reader reader,
                     Writer writer,
                     const String& fileSuffix
@@ -158,13 +156,16 @@ namespace   Stroika {
                 template    <typename T>
                 nonvirtual  void    Write (const T& optionsObject);
 
+
+            private:
+                nonvirtual  String  GetFilePath_ () const;
+
             private:
                 String                          fModuleName_;
                 ObjectVariantMapper             fMapper_;
                 ModuleDataUpgraderType          fModuleDataUpgrader_;
                 ModuleNameToFileNameMapperType  fModuleNameToFileNameMapper_;
-                LoggerType                      fLogWarning_;
-                LoggerType                      fLogError_;
+                LoggerType                      fLogger_;
                 Reader                          fReader_;
                 Writer                          fWriter_;
                 String                          fFileSuffix_;

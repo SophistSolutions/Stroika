@@ -30,7 +30,19 @@ namespace   Stroika {
                 if (tmp.IsMissing ()) {
                     return Optional<T> ();
                 }
-                return fMapper_.ToObject<T> (*tmp);
+                try {
+                    return fMapper_.ToObject<T> (*tmp);
+                }
+                catch (const BadFormatException& bf) {
+                    fLogError_ (Characters::Format (L"Error analyzing configuration file (bad format) '%s' - using defaults.", GetFilePath_ ().c_str ()));
+                    return Optional<T> ();
+                }
+                catch (...) {
+                    // if this fails, its probably because somehow the data in the config file was bad.
+                    // So at least log that, and continue without reading anything (as if empty file)
+                    fLogError_ (Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", GetFilePath_ ().c_str ()));
+                    return Optional<T> ();
+                }
             }
             template    <typename T>
             T   OptionsFile::Read (const T& defaultObj)
@@ -44,7 +56,7 @@ namespace   Stroika {
                         Write (defaultObj);
                     }
                     catch (...) {
-                        fLogWarning_ (Characters::Format (L"Failed to write default values to file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
+                        fLogWarning_ (Characters::Format (L"Failed to write default values to file: %s", GetFilePath_ ().c_str ()));
                     }
                     return defaultObj;
                 }

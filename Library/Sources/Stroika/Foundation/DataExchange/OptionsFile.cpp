@@ -41,18 +41,11 @@ const   OptionsFile::ModuleDataUpgraderType  OptionsFile::kDefaultUpgrader = [] 
     return rawVariantValue;
 };
 
-const   OptionsFile::LoggerType OptionsFile::kDefaultWarningLogger =
-    [] (const String& message)
+const   OptionsFile::LoggerType OptionsFile::kDefaultLogger =
+    [] (Execution::Logger::Priority priority, const String& message)
 {
     using   Execution::Logger;
-    Logger::Log (Logger::Priority::eWarning, L"%s", message.c_str ());
-};
-
-const   OptionsFile::LoggerType OptionsFile::kDefaultErrorLogger =
-    [] (const String& message)
-{
-    using   Execution::Logger;
-    Logger::Log (Logger::Priority::eError, L"%s", message.c_str ());
+    Logger::Log (priority, L"%s", message.c_str ());
 };
 
 const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapper (const String& appName)
@@ -74,12 +67,11 @@ OptionsFile::OptionsFile (
     const ObjectVariantMapper& mapper,
     ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
-    LoggerType logWarning,
-    LoggerType logError,
+    LoggerType logger,
     Reader reader,
     Writer writer
 )
-    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, logWarning, logError, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
 }
 
@@ -88,8 +80,7 @@ OptionsFile::OptionsFile (
     const ObjectVariantMapper& mapper,
     ModuleDataUpgraderType moduleUpgrader,
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
-    LoggerType logWarning,
-    LoggerType logError,
+    LoggerType logger,
     Reader reader,
     Writer writer,
     const String& fileSuffix
@@ -98,8 +89,7 @@ OptionsFile::OptionsFile (
     , fMapper_ (mapper)
     , fModuleDataUpgrader_ (moduleUpgrader)
     , fModuleNameToFileNameMapper_ (moduleNameToFileNameMapper)
-    , fLogWarning_ (logWarning)
-    , fLogError_ (logError)
+    , fLogger_ (logger)
     , fReader_ (reader)
     , fWriter_ (writer)
     , fFileSuffix_ (fileSuffix)
@@ -108,13 +98,13 @@ OptionsFile::OptionsFile (
 
 BLOB    OptionsFile::ReadRaw () const
 {
-    return IO::FileSystem::BinaryFileInputStream (fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_)).ReadAll ();
+    return IO::FileSystem::BinaryFileInputStream (GetFilePath_ ()).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
     try {
-        IO::FileSystem::ThroughTmpFileWriter    tmpFile (fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_));
+        IO::FileSystem::ThroughTmpFileWriter    tmpFile (GetFilePath_ ());
         IO::FileSystem::BinaryFileOutputStream  outStream (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Flush();
@@ -122,7 +112,7 @@ void    OptionsFile::WriteRaw (const BLOB& blob)
         tmpFile.Commit ();
     }
     catch (...) {
-        fLogError_ (Characters::Format (L"Failed to write file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
+        fLogger_ (Execution::Logger::Priority::eError, Characters::Format (L"Failed to write file: %s", GetFilePath_ ().c_str ()));
     }
 }
 
@@ -139,15 +129,20 @@ Optional<VariantValue>  OptionsFile::Read ()
     }
     catch (...) {
         // @todo - check different exception cases and for some - like file not found - just no warning...
-        fLogWarning_ (Characters::Format (L"Failed to read file: %s", fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_).c_str ()));
+        fLogger_ (Execution::Logger::Priority::eWarning, Characters::Format (L"Failed to read file: %s", GetFilePath_ ().c_str ()));
         return Optional<VariantValue> ();
     }
 }
 
 template    <>
-void            OptionsFile::Write (const VariantValue& optionsObject)
+void        OptionsFile::Write (const VariantValue& optionsObject)
 {
     BasicBinaryOutputStream tmp;
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
+}
+
+String  OptionsFile::GetFilePath_ () const
+{
+    return fModuleNameToFileNameMapper_(fModuleName_, fFileSuffix_);
 }
