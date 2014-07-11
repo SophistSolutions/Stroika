@@ -501,7 +501,7 @@ namespace   Stroika {
                  *                  // not be - if you do you real work on another thread
                  *      return;
                  *
-                 *  See the Samples/SimpleService example code for a functioanl example.
+                 *  See the Samples/SimpleService example code for a functional example.
                  */
                 virtual void                MainLoop (function<void()> startedCB) = 0;
 
