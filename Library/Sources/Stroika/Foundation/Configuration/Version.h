@@ -23,7 +23,7 @@
  *      @todo   RETHINK MAPPING TO FULL_VERSION_NUMBER type? VersionStage only needs 3 bits (??)
  *              But maybe useful compat with windows format?
  *
- *      @todo
+ *      @todo	Consider if explicit Version(FullVersionType) CTOR should be FromFullVersionType
  */
 
 
@@ -63,11 +63,11 @@ namespace   Stroika {
                  */
                 static  Version FromPrettyVersionString (const Characters::String& prettyVersionString);
 
-                uint8_t     fMajorVer;
-                uint8_t     fMinorVer;
-                VersionStage fVerStage;
-                uint8_t     fVerSubStage;
-                bool        fFinalBuild;
+                uint8_t			fMajorVer;
+                uint8_t			fMinorVer;
+                VersionStage	fVerStage;
+                uint8_t			fVerSubStage;
+                bool			fFinalBuild;
 
                 nonvirtual  FullVersionType         AsFullVersionNum () const;
                 nonvirtual  Characters::String      AsWin32Version4DotString () const;
