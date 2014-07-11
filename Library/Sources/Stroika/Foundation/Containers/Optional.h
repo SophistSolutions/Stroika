@@ -41,7 +41,7 @@ namespace   Stroika {
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
              *
-             *  This is a thread-safe, but to be threadsafe, slightly less functioanl variant of
+             *  This is a thread-safe, but to be threadsafe, slightly less functional variant of
              *  Memory::Optional<>
              *
              *  \note   To use Optional with un-copyable things, use:
