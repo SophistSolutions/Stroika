@@ -54,6 +54,10 @@ namespace   Stroika {
              *  all this into an easy to use (but configurable/customizable) helper to serialize configuration data
              *  between disk and module-specific C++ objects.
              *
+             *  This is SOMEWHAT flexible and customizable, but not so much. Its mostly intended to be a one-size-fits all
+             *  utility that will often be useful, and will save some typing. If it does fit your needs, dont use it, and
+             *  use ObjectVariantMapper and the reader abstractions directly.
+             *
              *  Example:
              *      struct  MyData_ {
              *          bool                fEnabled = false;
@@ -195,18 +199,23 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note - predefined version Read<VariantValue> doesn't use ObjectVariantMapper.
+                 *  Read () reads in the data from the associated options file, and returns it as a struct you've defined.
+                 *
+                 *  The mapping to/from external format is defined by OptionsFile constructor parameters.
+                 *
+                 *  The predefined (template specialization) of Read<VariantValue> doesn't use ObjectVariantMapper:
+                 *  it does the raw read (just using the Reader object).
                  *
                  *  Note also that Read<VariantValue> does use any provided ModuleDataUpgrader, so that the data is upgraded
                  *  before its seen by the object variant mapper.
                  *
-                 *  This also emits warnings, and maps to 'isMissing' or default value (depending on overload) if read data is corrupted.
-                 *  to avoid this behavior, use ReadRaw() directly.
+                 *  Read () will emit warnings, and maps to 'isMissing' or default value (depending on overload) if
+                 *  read data is corrupted. To avoid this behavior, use ReadRaw() directly.
                  */
                 template    <typename T>
                 nonvirtual  Optional<T>   Read ();
                 template    <typename T>
-                nonvirtual  T   Read (const T& defaultObj, ReadFlags readFlags = ReadFlags::eNoWriteIfChanged);
+                nonvirtual  T   Read (const T& defaultObj, ReadFlags readFlags = ReadFlags::eWriteIfChanged);
 
             public:
                 /**
