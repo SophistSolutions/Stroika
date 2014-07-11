@@ -69,7 +69,7 @@ namespace {
             } (),
             OptionsFile::kDefaultUpgrader,
             [] (const String & moduleName, const String & fileSuffix) -> String {
-                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName;
+                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
             }
         };
         MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
