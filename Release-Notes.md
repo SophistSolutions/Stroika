@@ -29,6 +29,7 @@ History
 <ul>
 	<li>Many improvements to OptionsFile code, including version/upgrade support, better message handling, and much more.</li>
 	<li>Fixed bug with POSIX DirectoryIterator/DirectoryIterable</li>
+	<li>Essentially no testing of this release</li>
 </ul>
 </td>
 </tr>
