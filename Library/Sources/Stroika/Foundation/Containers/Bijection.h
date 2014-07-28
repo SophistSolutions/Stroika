@@ -94,6 +94,8 @@ namespace   Stroika {
              *  of the domain maps to exactly one element of the range, and that one element of the range maps uniquely to
              *  one element of the range, and these mappings happen in a way that the mapping is fully invertable.
              *
+             *  See also http://en.wikipedia.org/wiki/Bijection
+             *
              *  Design Notes:
              *      \note   We used Iterable<pair<DOMAIN_TYPE,RANGE_TYPE>> instead of
              *              Iterable<KeyValuePairType<DOMAIN_TYPE,RANGE_TYPE>> because its completly symetric - both

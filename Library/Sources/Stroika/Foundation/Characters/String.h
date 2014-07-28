@@ -53,6 +53,15 @@
  *
  * TODO:
  *
+ *      @todo   EXPLAIN why InsertAt () returns string and Append() doesnt! Or - change it!
+ *              Basic idea is that append is SO convnentit (+=) - that we just must support that
+ *              and it can be done safely.
+ *
+ *              But InsertAt () is less common, and so we can just encourage the more safe strategy of
+ *              returning a new string.
+ *
+ *              Weak arguemnt! BUt best I can come up with...
+ *
  *      @todo   WRITEUP THREAD SAFETY:
  *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
@@ -473,7 +482,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+                 *  InsertAt() constructs a new string by taking this string, and inserting the argument
+                 *  characters.
+                 *
+                 *  \em Note that for repeated insertions, this is much less efficient than just
+                 *      using StringBuilder.
                  */
                 nonvirtual  String      InsertAt (Character c, size_t at) const;
                 nonvirtual  String      InsertAt (const String& s, size_t at) const;
@@ -482,9 +495,14 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note that it is legal, but pointless to pass in an empty string to insert
+                 *  Append() adds the given argument characters to the end of this string object.
                  *
-                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+                 *  Unlike InsertAt() - this modifies 'this' string, rather than returning a new one.
+                 *
+                 *  \em Note that for repeated insertions, this is much less efficient than just
+                 *      using StringBuilder.
+                 *
+                 *  \em Note that it is legal, but pointless to pass in an empty string to insert
                  */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
