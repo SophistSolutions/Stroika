@@ -57,6 +57,18 @@ namespace   Stroika {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash);
                     return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
                 }
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
+                {
+                    Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + salt;
+                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                }
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt)
+                {
+                    Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + Private_::SerializeForHash_ (salt);
+                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                }
 
 
             }

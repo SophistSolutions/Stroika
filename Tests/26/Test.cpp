@@ -227,6 +227,7 @@ namespace  {
                 VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
                 VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
                 VerifyTestResult (Adapter<USE_HASHER_> (Characters::String (L"1")) == 2154528969);
+                VerifyTestResult (Adapter<USE_HASHER_> ("1", "mysalt") == 2164173146);
                 VerifyTestResult (Adapter<USE_HASHER_> (93993) == 1748544338);
             }
             {

@@ -48,12 +48,21 @@ namespace   Stroika {
                  *
                  *  EXAMPLE USAGE:
                  *      using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
-                 *      VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 10338022);
-                 *      VerifyTestResult (HashAdapter<USE_HASHER_> ("1") == 10338022);
-                 *      VerifyTestResult (HashAdapter<USE_HASHER_> (String ("1")) == 10338022);
+                 *      VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
+                 *      VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
+                 *      VerifyTestResult (Adapter<USE_HASHER_> (String (L"1")) == 2154528969);
+                 *
+                 *  If you use the overload with 'salt', if the SALT is not a BLOB, it will be turned into a BLOB with the same
+                 *  normalizing function used on data2Hash. The resulting BLOB salt will be combined with the serialized data2Hash
+                 *  producing a different output hash value. This can be used for cryptographic salt (as with passwords) or
+                 *  with rehashing, for example.
                  */
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
+                HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt);
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
+                HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt);
 
 
             }
