@@ -159,7 +159,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp" />
@@ -841,7 +841,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.h" />
@@ -1183,7 +1183,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.inl" />

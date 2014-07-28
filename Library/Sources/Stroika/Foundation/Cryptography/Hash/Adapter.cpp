@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    "Adapters.h"
+#include    "Adapter.h"
 
 
 using   namespace   Stroika::Foundation;

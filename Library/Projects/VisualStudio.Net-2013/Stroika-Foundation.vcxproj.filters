@@ -504,9 +504,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.cpp">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClCompile>
@@ -701,6 +698,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
+      <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1272,9 +1272,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.h">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClInclude>
@@ -1631,6 +1628,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.h">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
+      <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2112,9 +2112,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.inl">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </None>
@@ -2483,6 +2480,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.inl">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl">
+      <Filter>Sources\Cryptography\Hash</Filter>
     </None>
   </ItemGroup>
 </Project>
