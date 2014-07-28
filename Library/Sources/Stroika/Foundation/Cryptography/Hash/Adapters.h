@@ -9,6 +9,7 @@
 #include    <cstdint>
 
 #include    "../../Characters/String.h"
+#include    "../../Memory/BLOB.h"
 
 #include    "Common.h"
 
@@ -35,6 +36,8 @@ namespace   Stroika {
             namespace   Hash {
 
 
+
+                /**
                 // NOT SURE HOWT TODO
                 // BUT IDEA IS PROBBALY USE  ATEMPLATE WHICH OWRKS ON ANY TTYPE.
                 // DO SPECIAILIZER THAT ASKS "ispodtype' or "has-interstitial-space' - and then do default series of bytes hash on it
@@ -46,8 +49,8 @@ namespace   Stroika {
                 //  o   Adapters take other types – like string, or stream, etc, and maybe template things todo
                 //  other types, and let use plug in an int-based algorithm, and ??
 
-
                 // VAGUELY loke this - but also need has ptr arg somehow ...
+                 */
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
                 HASH_RETURN_TYPE  HashAdapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);
 
