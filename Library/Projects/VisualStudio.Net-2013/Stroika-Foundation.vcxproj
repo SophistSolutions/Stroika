@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Cryptography-Hash-Common.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Hash-Common.o</ObjectFileName>
@@ -843,6 +844,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.h" />
@@ -1184,6 +1186,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\TODO.md" />

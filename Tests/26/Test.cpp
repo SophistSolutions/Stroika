@@ -16,6 +16,7 @@
 #include    "Stroika/Foundation/Cryptography/Hash/Adapters.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/SuperFastHash.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
@@ -255,6 +256,38 @@ namespace  {
 
 
 
+namespace  {
+    namespace Hash_SuperFastHash {
+
+        using   namespace   Cryptography::Hash;
+
+        void    DoRegressionTests_ ()
+        {
+            using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::SuperFastHash>;
+            {
+                //VerifyTestResult (Adapapter<USE_HASHER_>::Hash (1) == 3028713910);
+                //VerifyTestResult (Adapapter<USE_HASHER_>::Hash (93993) == 2249810398);
+            }
+            {
+				// special case where these collide
+                const   char    kSrc1[] = "        90010";
+                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc1, (const Byte*)kSrc1 + ::strlen(kSrc1), 375771507);
+                const   char    kSrc2[] = "        10028";
+                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc2, (const Byte*)kSrc2 + ::strlen(kSrc2), 375771507);
+            }
+            {
+                const   char    kSrc[] = "This is a very good test of a very good test";
+                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 1181771593);
+            }
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -262,6 +295,7 @@ namespace   {
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
         Hash_Jenkins::DoRegressionTests_ ();
+        Hash_SuperFastHash::DoRegressionTests_ ();
     }
 }
 

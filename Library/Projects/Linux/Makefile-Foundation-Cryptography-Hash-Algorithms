@@ -11,6 +11,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)CRC32.o\
 	$(ObjDir)Jenkins.o\
+	$(ObjDir)SuperFastHash.o\
 
 all:	$(Objs)
 
