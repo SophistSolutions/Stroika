@@ -43,6 +43,8 @@ namespace   Stroika {
 
                 BasicRep_ (const Byte* start, const Byte* end);
                 BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
+                BasicRep_ (const initializer_list<BLOB>& list2Concatenate);
+
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (BasicRep_);
@@ -118,6 +120,10 @@ namespace   Stroika {
             }
             inline  BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
                 : fRep_ (DEBUG_NEW BasicRep_ (startEndPairs))
+            {
+            }
+            inline  BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
+                : fRep_ (DEBUG_NEW BasicRep_ (list2Concatenate))
             {
             }
             inline  BLOB::BLOB (const SharedIRep& rep)
@@ -209,6 +215,10 @@ namespace   Stroika {
             inline  size_t  BLOB::size () const
             {
                 return GetSize ();
+            }
+            inline  BLOB    BLOB::operator+ (const BLOB& rhs) const
+            {
+                return BLOB ({ * this, rhs });
             }
 
 

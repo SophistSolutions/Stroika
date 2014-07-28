@@ -118,6 +118,7 @@ namespace   Stroika {
                 explicit BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
                 BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
+                BLOB (const initializer_list<BLOB>& list2Concatenate);
 
             protected:
                 struct  _IRep;
@@ -232,6 +233,12 @@ namespace   Stroika {
                  *  Trivial alias for @see GetSize()
                  */
                 nonvirtual  size_t      length () const;
+
+            public:
+                /**
+                 *  Trivial alias BLOB ({*this, rhs});
+                 */
+                nonvirtual  BLOB    operator+ (const BLOB& rhs) const;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

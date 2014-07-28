@@ -33,6 +33,14 @@ namespace {
         }
         return sz;
     }
+    size_t  len_ (const initializer_list<Memory::BLOB>& list2Concatenate)
+    {
+        size_t  sz = 0;
+        for (auto i : list2Concatenate) {
+            sz += i.GetSize ();
+        }
+        return sz;
+    }
 }
 
 Memory::BLOB::BasicRep_::BasicRep_ (const Byte* start, const Byte* end)
@@ -49,8 +57,19 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, con
         memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
     }
+    Ensure (pb == fData.end ());
 }
 
+Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
+    : fData (len_ (list2Concatenate))
+{
+    Byte*   pb  =   fData.begin ();
+    for (auto i : list2Concatenate) {
+        memcpy (pb, i.begin (), i.GetSize ());
+        pb += i.GetSize ();
+    }
+    Ensure (pb == fData.end ());
+}
 
 pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
 {
