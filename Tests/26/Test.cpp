@@ -220,28 +220,12 @@ namespace  {
 
         using   namespace   Cryptography::Hash;
 
-        namespace PRIVATE_ {
-            uint32_t    robert_jenkins_hash_ (uint32_t a)
-            {
-                a = (a + 0x7ed55d16) + (a << 12);
-                a = (a ^ 0xc761c23c) ^ (a >> 19);
-                a = (a + 0x165667b1) + (a << 5);
-                a = (a + 0xd3a2646c) ^ (a << 9);
-                a = (a + 0xfd7046c5) + (a << 3);
-                a = (a ^ 0xb55a4f09) ^ (a >> 16);
-                return a;
-            }
-        }
         void    DoRegressionTests_ ()
         {
             using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
             {
-                VerifyTestResult (Adapapter<USE_HASHER_>::Hash (1) == 3028713910);
-                VerifyTestResult (Adapapter<USE_HASHER_>::Hash (93993) == 2249810398);
-                // semi-random range test
-                for (uint32_t i = 3034; i > 0; i += 101) {
-                    VerifyTestResult (Adapapter<USE_HASHER_>::Hash (i) == PRIVATE_::robert_jenkins_hash_ (i));
-                }
+                VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 10338022);
+                VerifyTestResult (HashAdapter<USE_HASHER_> (93993) == 1748544338);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
@@ -265,11 +249,11 @@ namespace  {
         {
             using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::SuperFastHash>;
             {
-                //VerifyTestResult (Adapapter<USE_HASHER_>::Hash (1) == 3028713910);
-                //VerifyTestResult (Adapapter<USE_HASHER_>::Hash (93993) == 2249810398);
+                VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 422304363);
+                VerifyTestResult (HashAdapter<USE_HASHER_> (93993) == 2489559407);
             }
             {
-				// special case where these collide
+                // special case where these collide
                 const   char    kSrc1[] = "        90010";
                 DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc1, (const Byte*)kSrc1 + ::strlen(kSrc1), 375771507);
                 const   char    kSrc2[] = "        10028";

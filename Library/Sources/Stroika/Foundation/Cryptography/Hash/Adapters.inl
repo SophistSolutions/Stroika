@@ -16,13 +16,30 @@ namespace   Stroika {
             namespace   Hash {
 
 
+                // for POD_TYPE ONLY
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                HASH_RETURN_TYPE  HashAdapter (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+                {
+                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1)));
+                }
+
+
+#if 0
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                HASH_RETURN_TYPE  HashAdapter (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+                {
+                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1)));
+                }
+
+
+
+                template    <typename HASHER_TYPE>
                 template    <>
-                struct Adapapter<Hasher<uint32_t, Algorithms::Jenkins>> {
-                    using   ReturnType  =   Hasher<uint32_t, Algorithms::Jenkins>::ReturnType;
-
-                    static  uint32_t  Hash (uint32_t data2Hash);
-                };
-
+                typename HASHER_TYPE::ReturnType  Adapapter<HASHER_TYPE>::Hash (const Characters::String& data2Hash)
+                {
+                    return 1;
+                }
+#endif
 
             }
         }

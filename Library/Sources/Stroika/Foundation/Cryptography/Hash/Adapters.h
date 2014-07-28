@@ -8,6 +8,8 @@
 
 #include    <cstdint>
 
+#include    "../../Characters/String.h"
+
 #include    "Common.h"
 
 
@@ -46,13 +48,9 @@ namespace   Stroika {
 
 
                 // VAGUELY loke this - but also need has ptr arg somehow ...
-                template <typename HASHER_TYPE>
-                struct Adapapter {
-                    using   ReturnType      =   typename    HASHER_TYPE::ReturnType;
+                template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
+                HASH_RETURN_TYPE  HashAdapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);
 
-                    template    <typename   TYPE_TO_COMPUTE_HASH_OF>
-                    static  ReturnType  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash);
-                };
 
             }
         }
