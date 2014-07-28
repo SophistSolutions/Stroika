@@ -9,6 +9,8 @@
  ********************************************************************************
  */
 
+#include    <type_traits>
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
@@ -16,14 +18,12 @@ namespace   Stroika {
 
 
                 namespace Private_ {
-                    // for POD_TYPE ONLY
                     template    <typename TYPE_TO_COMPUTE_HASH_OF>
-                    Memory::BLOB    SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+                    Memory::BLOB    SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value, void>::type* = nullptr)
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1));
                     }
-                    template    <>
-                    Memory::BLOB    SerializeForHash_ (Characters::String data2Hash)
+                    Memory::BLOB    SerializeForHash1_ (const Characters::String& data2Hash)
                     {
                         string  utf8    =   data2Hash.AsUTF8 ();    // unwise approach because costly
                         return Memory::BLOB (reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
@@ -33,15 +33,18 @@ namespace   Stroika {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (p), reinterpret_cast<const Byte*> (p + data2Hash.length ()));
 #endif
                     }
-                    template    <>
-                    Memory::BLOB    SerializeForHash_ (const char* data2Hash)
+                    Memory::BLOB    SerializeForHash1_ (const char* data2Hash)
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash), reinterpret_cast<const Byte*> (data2Hash + ::strlen (data2Hash)));
                     }
-                    template    <>
-                    Memory::BLOB    SerializeForHash_ (string data2Hash)
+                    Memory::BLOB    SerializeForHash1_ (const string& data2Hash)
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash.c_str ()), reinterpret_cast<const Byte*> (data2Hash.c_str () + data2Hash.length ()));
+                    }
+                    template    <typename TYPE_TO_COMPUTE_HASH_OF>
+                    inline  Memory::BLOB    SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+                    {
+                        return SerializeForHash1_ (data2Hash);
                     }
                 }
 
