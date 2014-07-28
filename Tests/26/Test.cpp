@@ -13,7 +13,7 @@
 
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Cryptography/Base64.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Adapters.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Adapter.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/SuperFastHash.h"
@@ -224,8 +224,10 @@ namespace  {
         {
             using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
             {
-                VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 10338022);
-                VerifyTestResult (HashAdapter<USE_HASHER_> (93993) == 1748544338);
+                VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
+                VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
+                VerifyTestResult (Adapter<USE_HASHER_> (Characters::String (L"1")) == 2154528969);
+                VerifyTestResult (Adapter<USE_HASHER_> (93993) == 1748544338);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
@@ -249,8 +251,8 @@ namespace  {
         {
             using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::SuperFastHash>;
             {
-                VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 422304363);
-                VerifyTestResult (HashAdapter<USE_HASHER_> (93993) == 2489559407);
+                VerifyTestResult (Adapter<USE_HASHER_> (1) == 422304363);
+                VerifyTestResult (Adapter<USE_HASHER_> (93993) == 2489559407);
             }
             {
                 // special case where these collide

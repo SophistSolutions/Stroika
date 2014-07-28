@@ -37,18 +37,21 @@ namespace   Stroika {
 
 
                 /**
-				 *	This function applies any (argument) Hash function (HASHER_TYPE) to the given data type, and
-				 *	returns the argument hash value.
-				 *
-				 *	Hash algorithms work on BLOBs, and generate return (often longish) integers, often encoded
-				 *	as strings and such.
-				 *
-				 *	This Adpater takes care of the general part of mapping the inputs and outputs to/from
-				 *	common forms, and then makes generic the actual hash computing algorithm.
-				 *
-				 *	EXAMPLE USAGE:
-				 *		xx;
-				 */
+                 *  This function applies any (argument) Hash function (HASHER_TYPE) to the given data type, and
+                 *  returns the argument hash value.
+                 *
+                 *  Hash algorithms work on BLOBs, and generate return (often longish) integers, often encoded
+                 *  as strings and such.
+                 *
+                 *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
+                 *  common forms, and then makes generic the actual hash computing algorithm.
+                 *
+                 *  EXAMPLE USAGE:
+                 *      using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
+                 *      VerifyTestResult (HashAdapter<USE_HASHER_> (1) == 10338022);
+                 *      VerifyTestResult (HashAdapter<USE_HASHER_> ("1") == 10338022);
+                 *      VerifyTestResult (HashAdapter<USE_HASHER_> (String ("1")) == 10338022);
+                 */
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);
 
