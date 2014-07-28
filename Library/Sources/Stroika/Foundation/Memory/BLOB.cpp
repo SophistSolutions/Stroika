@@ -24,11 +24,33 @@ using   namespace   Stroika::Foundation::Streams;
  ************************* Memory::BLOB::BasicRep_ ******************************
  ********************************************************************************
  */
+namespace {
+    size_t  len_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+    {
+        size_t  sz = 0;
+        for (auto i : startEndPairs) {
+            sz += (i.second - i.first);
+        }
+        return sz;
+    }
+}
+
 Memory::BLOB::BasicRep_::BasicRep_ (const Byte* start, const Byte* end)
     : fData (end - start)
 {
     memcpy (fData.begin (), start, end - start);
 }
+
+Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+    : fData (len_ (startEndPairs))
+{
+    Byte*   pb  =   fData.begin ();
+    for (auto i : startEndPairs) {
+        memcpy (pb, i.first, i.second - i.first);
+        pb += (i.second - i.first);
+    }
+}
+
 
 pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
 {

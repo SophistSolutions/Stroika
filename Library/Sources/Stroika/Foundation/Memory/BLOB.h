@@ -117,6 +117,7 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_BYTE>
                 explicit BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
+                BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
 
             protected:
                 struct  _IRep;
