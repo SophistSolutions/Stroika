@@ -16,16 +16,7 @@
 
 
 /*
- * STATUS *****************DRAFT ..... ROUHGH OUTLINE
- *
- *      VERY ROUGH
- *
- *
- *
- *
- * TODO:
- *      o
- *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  */
 
@@ -56,6 +47,14 @@ namespace   Stroika {
                  *  normalizing function used on data2Hash. The resulting BLOB salt will be combined with the serialized data2Hash
                  *  producing a different output hash value. This can be used for cryptographic salt (as with passwords) or
                  *  with rehashing, for example.
+                 *
+                 *  For now, this works with TYPE_TO_COMPUTE_HASH_OF:
+                 *      o   is_arithmetic (e.g. int, float, uint32_t, etc)
+                 *      o   const char*
+                 *      o   std::string
+                 *      o   String (or anything promotable to string)
+                 *
+                 *  Other types should generate compile-time error.
                  */
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);
