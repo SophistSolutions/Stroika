@@ -60,6 +60,8 @@ Hasher<uint32_t, Algorithms::Jenkins>::ReturnType  Hasher<uint32_t, Algorithms::
 
 Hasher<uint32_t, Algorithms::Jenkins>::ReturnType  Hasher<uint32_t, Algorithms::Jenkins>::Hash (const Byte* from, const Byte* to)
 {
+    Require (from == to or from != nullptr);
+    Require (from == to or to != nullptr);
     uint32_t    hash    =   0;
     DoMore_ (&hash, from, to);
     DoEnd_ (&hash);

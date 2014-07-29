@@ -55,6 +55,9 @@ Hasher<uint32_t, Algorithms::SuperFastHash>::ReturnType  Hasher<uint32_t, Algori
 
 Hasher<uint32_t, Algorithms::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithms::SuperFastHash>::Hash (const Byte* from, const Byte* to)
 {
+    Require (from == to or from != nullptr);
+    Require (from == to or to != nullptr);
+
     if (from == to) {
         return 0;
     }
