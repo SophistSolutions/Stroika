@@ -16,6 +16,7 @@
 #include    "Stroika/Foundation/Cryptography/Hash/Adapter.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/MD5.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/SuperFastHash.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -240,6 +241,25 @@ namespace  {
 
 
 
+namespace  {
+    namespace Hash_MD5 {
+
+        using   namespace   Cryptography::Hash;
+
+        void    DoRegressionTests_ ()
+        {
+            using   USE_HASHER_     =   Hasher<HashResult128BitType, Algorithms::MD5>;
+            {
+                const   char    kSrc[] = "This is a very good test of a very good test";
+                const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
+                VerifyTestResult ((Adapter<USE_HASHER_, string, string> (kSrc)) == kEncodedVal);
+            }
+        }
+    }
+}
+
+
+
 
 
 
@@ -282,6 +302,7 @@ namespace   {
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
         Hash_Jenkins::DoRegressionTests_ ();
+        Hash_MD5::DoRegressionTests_ ();
         Hash_SuperFastHash::DoRegressionTests_ ();
     }
 }

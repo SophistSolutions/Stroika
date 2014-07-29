@@ -11,6 +11,9 @@
 
 #include    <type_traits>
 
+#include    "../../Characters/CString/Utilities.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
@@ -65,21 +68,22 @@ namespace   Stroika {
                     }
                 }
 
+
                 namespace Private_ {
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-                    ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_arithmetic<ADAPTER_RETURN_TYPE>::value, void>::type* = nullptr)
+                    inline  ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_arithmetic<ADAPTER_RETURN_TYPE>::value, void>::type* = nullptr)
                     {
                         return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
                     }
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-                    ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
+                    inline  ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
                     {
                         return cvtResultArray2stdstring (hashVal);
                     }
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
                     inline  ADAPTER_RETURN_TYPE    mkReturnType_ (HASHER_RETURN_TYPE hashVal)
                     {
-                        return mkReturnType1_ (hashVal);
+                        return mkReturnType1_<ADAPTER_RETURN_TYPE> (hashVal);
                     }
                 }
 
