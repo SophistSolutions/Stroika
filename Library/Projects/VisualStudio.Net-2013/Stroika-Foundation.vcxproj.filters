@@ -702,6 +702,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1632,6 +1635,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.h">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2483,6 +2489,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </None>
   </ItemGroup>
 </Project>

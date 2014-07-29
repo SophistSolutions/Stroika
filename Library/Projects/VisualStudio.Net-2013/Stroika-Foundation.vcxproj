@@ -160,9 +160,86 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-CRC32.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-Jenkins.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-MD5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/Cryptography-Hash-Algorithms-SuperFastHash.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Cryptography-Hash-Common.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Hash-Common.o</ObjectFileName>
@@ -844,6 +921,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
@@ -1186,6 +1264,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md" />
