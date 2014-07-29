@@ -53,6 +53,7 @@ namespace   Stroika {
                  *      o   const char*
                  *      o   std::string
                  *      o   String (or anything promotable to string)
+                 *      o   Memory::BLOB (just passed throgh, not adpated)
                  *
                  *  Other types should generate compile-time error.
                  *

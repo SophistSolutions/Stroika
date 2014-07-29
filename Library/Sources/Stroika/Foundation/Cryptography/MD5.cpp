@@ -9,7 +9,10 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
-#include    "../Memory/SmallStackBuffer.h"
+#include    "../Memory/BLOB.h"
+
+#include    "Hash/Adapter.h"
+#include    "Hash/Algorithms/MD5.h"
 
 #include    "MD5.h"
 
@@ -19,7 +22,7 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Memory;
 
-
+#if 0
 /*
  ********************************************************************************
  ***************************** Encoding::ComputeMD5Digest ***********************
@@ -354,12 +357,16 @@ namespace   {
 }
 
 
-
+#endif
 
 string  Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
 {
     Require (s == e or s != nullptr);
     Require (s == e or e != nullptr);
+#if 1
+    using   USE_HASHER_     =   Hash::Hasher<Hash::HashResult128BitType, Hash::Algorithms::MD5>;
+    return Hash::Adapter<USE_HASHER_, Memory::BLOB, string> (Memory::BLOB (s, e));
+#else
     MD5_CTX ctx;
     memset (&ctx, 0, sizeof (ctx));
     MD5Init (&ctx);
@@ -375,6 +382,7 @@ string  Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
         result += b;
     }
     return result;
+#endif
 }
 
 string  Cryptography::ComputeMD5Digest (const vector<Byte>& b)

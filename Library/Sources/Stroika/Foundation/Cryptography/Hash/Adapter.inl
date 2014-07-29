@@ -26,7 +26,12 @@ namespace   Stroika {
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1));
                     }
-                    Memory::BLOB    SerializeForHash1_ (const Characters::String& data2Hash)
+                    template    <typename TYPE_TO_COMPUTE_HASH_OF>
+                    inline  Memory::BLOB    SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_same<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>::value, void>::type* = nullptr)
+                    {
+                        return data2Hash;
+                    }
+                    inline  Memory::BLOB    SerializeForHash1_ (const Characters::String& data2Hash)
                     {
                         string  utf8    =   data2Hash.AsUTF8 ();    // unwise approach because costly
                         return Memory::BLOB (reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
@@ -36,11 +41,11 @@ namespace   Stroika {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (p), reinterpret_cast<const Byte*> (p + data2Hash.length ()));
 #endif
                     }
-                    Memory::BLOB    SerializeForHash1_ (const char* data2Hash)
+                    inline  Memory::BLOB    SerializeForHash1_ (const char* data2Hash)
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash), reinterpret_cast<const Byte*> (data2Hash + ::strlen (data2Hash)));
                     }
-                    Memory::BLOB    SerializeForHash1_ (const string& data2Hash)
+                    inline  Memory::BLOB    SerializeForHash1_ (const string& data2Hash)
                     {
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash.c_str ()), reinterpret_cast<const Byte*> (data2Hash.c_str () + data2Hash.length ()));
                     }
