@@ -6,8 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <cstdint>
-
 #include    "../../Characters/String.h"
 #include    "../../Memory/BLOB.h"
 

@@ -13,6 +13,12 @@
 #include    "../Memory/Common.h"
 
 
+/*
+ *  TODO
+ *      @todo   FILE SOON TO BE DEPRECTED - USE ADAPTER CODE AND Algorithm/MD5 (see impl)
+ *              But need to improve generic accessors / adapters first, before we deprecate here!
+ */
+
 
 namespace   Stroika {
     namespace   Foundation {
