@@ -33,7 +33,10 @@ namespace   Stroika {
 
                 using   Memory::Byte;
 
-
+                /**
+                 *  RETURN_TYPE is typically uint32_t, uint64_t, or array<uint8_t,NBYTES>, but could in principle be
+                 *  anything.
+                 */
                 template    <typename RETURN_TYPE, typename ALGORITHM>
                 struct Hasher {
                     using   ReturnType      =   RETURN_TYPE;
