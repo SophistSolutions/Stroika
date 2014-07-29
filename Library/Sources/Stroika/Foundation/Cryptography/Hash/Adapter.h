@@ -55,6 +55,9 @@ namespace   Stroika {
                  *      o   String (or anything promotable to string)
                  *
                  *  Other types should generate compile-time error.
+                 *
+                 *  Supported values for HASH_RETURN_TYPE, depend on the HASHER_TYPE::ReturnType. This can be any type
+                 *  cast convertible into HASH_RETURN_TYPE (typically an unsigned int), or std::string, or Characters::String.
                  */
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE = typename HASHER_TYPE::ReturnType>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash);

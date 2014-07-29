@@ -368,7 +368,6 @@ Hasher<ReturnType, Algorithms::MD5>::ReturnType  Hasher<ReturnType, Algorithms::
 
     // No idea why array<> type sucks like this...--LGP 2014-07-28
     ReturnType  result {};
-    array<uint8_t, 16>  fred;
-    memcpy(&*fred.begin (), ctx.digest, 16);
+    memcpy(&*result.begin (), ctx.digest, 16);
     return result;
 }

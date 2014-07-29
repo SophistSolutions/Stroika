@@ -6,8 +6,6 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    <array>
-
 #include    "../Common.h"
 
 
@@ -35,10 +33,9 @@ namespace   Stroika {
                     };
                 }
 
-
                 template    <>
-                struct Hasher<array<uint8_t, 16>, Algorithms::MD5> {
-                    using   ReturnType      =   array<uint8_t, 16>;
+                struct Hasher<HashResult128BitType, Algorithms::MD5> {
+                    using   ReturnType      =   HashResult128BitType;
 
                     static  ReturnType  Hash (const Streams::BinaryInputStream& from);
                     static  ReturnType  Hash (const Byte* from, const Byte* to);

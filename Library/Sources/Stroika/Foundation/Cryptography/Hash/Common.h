@@ -6,8 +6,8 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+#include    <array>
+#include    <cstdint>
 
 #include    "../../Configuration/Common.h"
 #include    "../../Streams/BinaryInputStream.h"
@@ -16,12 +16,7 @@
 
 
 /*
- * STATUS *****************DRAFT ..... ROUHGH OUTLINE
- *
- * TODO:
- *      o
- *
- *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  */
 
 
@@ -33,9 +28,14 @@ namespace   Stroika {
 
                 using   Memory::Byte;
 
+
+                using   HashResult128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
+                using   HashResult160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
+
+
                 /**
-                 *  RETURN_TYPE is typically uint32_t, uint64_t, or array<uint8_t,NBYTES>, but could in principle be
-                 *  anything.
+                 *  RETURN_TYPE is typically uint32_t, uint64_t, or HashResult128BitType, HashResult160BitTypem etc,
+                 *  but could in principle be anything.
                  */
                 template    <typename RETURN_TYPE, typename ALGORITHM>
                 struct Hasher {

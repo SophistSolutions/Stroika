@@ -49,6 +49,41 @@ namespace   Stroika {
                 }
 
 
+                namespace Private_ {
+                    template    <size_t N>
+                    string  cvtResultArray2stdstring (const array<uint8_t, N>& arr)
+                    {
+                        string  result;
+                        result.reserve (2 * N);
+                        for (int i = 0; i < 16; ++i) {
+                            char    b[10];
+                            b[0] = '\0';
+                            snprintf (b, NEltsOf (b), "%02x", arr[i]);
+                            result += b;
+                        }
+                        return result;
+                    }
+                }
+
+                namespace Private_ {
+                    template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+                    ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_arithmetic<ADAPTER_RETURN_TYPE>::value, void>::type* = nullptr)
+                    {
+                        return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
+                    }
+                    template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+                    ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
+                    {
+                        return cvtResultArray2stdstring (hashVal);
+                    }
+                    template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+                    inline  ADAPTER_RETURN_TYPE    mkReturnType_ (HASHER_RETURN_TYPE hashVal)
+                    {
+                        return mkReturnType1_ (hashVal);
+                    }
+                }
+
+
                 /*
                  ********************************************************************************
                  ************************************** Adapter *********************************
@@ -58,19 +93,19 @@ namespace   Stroika {
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash);
-                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
                 }
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + salt;
-                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
                 }
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + Private_::SerializeForHash_ (salt);
-                    return static_cast<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
                 }
 
 
