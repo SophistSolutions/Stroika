@@ -11,21 +11,23 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
+            namespace   Encoding {
 
 
 #if     qHas_OpenSSL
-            /*
-             ********************************************************************************
-             ********************* Cryptography::OpenSSLCryptoParams ************************
-             ********************************************************************************
-             */
-            inline  OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*)>& f)
-                : fInitializer (f)
-            {
-            }
+                /*
+                 ********************************************************************************
+                 ********************* Cryptography::OpenSSLCryptoParams ************************
+                 ********************************************************************************
+                 */
+                inline  OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*)>& f)
+                    : fInitializer (f)
+                {
+                }
 #endif
 
 
+            }
         }
     }
 }

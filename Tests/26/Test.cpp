@@ -12,7 +12,7 @@
 #endif
 
 #include    "Stroika/Foundation/Containers/Common.h"
-#include    "Stroika/Foundation/Cryptography/Base64.h"
+#include    "Stroika/Foundation/Cryptography/Encoding/Base64.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Adapter.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
@@ -54,7 +54,7 @@ namespace  {
                     }
                     return vector<Byte> ();
                 }
-                string  EncodeBase64_ATL_ (const vector<Byte>& b, LineBreak lb)
+                string  EncodeBase64_ATL_ (const vector<Byte>& b, Encoding::LineBreak lb)
                 {
                     size_t  totalSize       =   b.size ();
                     if (totalSize != 0) {
@@ -63,11 +63,11 @@ namespace  {
                         relBuf.GrowToSize (relEncodedSize);
                         VerifyTestResult (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
-                        if (lb == LineBreak::eCRLF_LB) {
+                        if (lb == Encoding::LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));
                         }
                         else {
-                            VerifyTestResult (lb == LineBreak::eLF_LB);
+                            VerifyTestResult (lb == Encoding::LineBreak::eLF_LB);
                             string  result;
                             result.reserve (relEncodedSize);
                             for (int i = 0; i < relEncodedSize; ++i) {
@@ -92,8 +92,8 @@ namespace  {
                 inline  void    VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
                 {
 #if     qPlatform_Windows
-                    VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), Encoding::LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, Encoding::LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), Encoding::LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, Encoding::LineBreak::eLF_LB));
 #endif
                 }
                 inline  void    VERIFY_ATL_DECODE_ ()
@@ -107,15 +107,15 @@ namespace  {
             namespace   {
                 void    VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
                 {
-                    VerifyTestResult (DecodeBase64 (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes))) == bytes);
+                    VerifyTestResult (Encoding::DecodeBase64 (Encoding::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes))) == bytes);
                 }
             }
 
             namespace   {
                 void    DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
                 {
-                    Verify (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (originalUnEncodedBytes)) == base64EncodedString);
-                    Verify (DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+                    Verify (Encoding::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (originalUnEncodedBytes)) == base64EncodedString);
+                    Verify (Encoding::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
                 }

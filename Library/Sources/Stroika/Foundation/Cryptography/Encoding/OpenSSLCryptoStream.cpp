@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#include    "../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
-#include    "../Containers/Common.h"
-#include    "../Debug/Assertions.h"
-#include    "../Memory/SmallStackBuffer.h"
+#include    "../../Containers/Common.h"
+#include    "../../Debug/Assertions.h"
+#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "OpenSSLCryptoStream.h"
 

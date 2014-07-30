@@ -145,6 +145,9 @@
     <Filter Include="Sources\Containers\ExternallySynchronizedDataStructures">
       <UniqueIdentifier>{b06dc60e-c921-4e52-bc1c-c7e98ca6204a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cryptography\Encoding">
+      <UniqueIdentifier>{a4f7b4a9-2ebc-4b1e-aa2d-dd2c024c5f06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -170,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp">
-      <Filter>Sources\Cryptography</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp">
       <Filter>Sources\Cryptography</Filter>
@@ -486,15 +486,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\RC4.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -705,6 +696,18 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.cpp">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\AES.cpp">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Base64.cpp">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\RC4.cpp">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.cpp">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -746,9 +749,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h">
-      <Filter>Sources\Cryptography</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h">
       <Filter>Sources\Cryptography</Filter>
@@ -1175,15 +1175,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\RC4.h">
-      <Filter>Sources\Cryptography</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
       <Filter>Sources\Containers\Private</Filter>
@@ -1638,6 +1629,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.h">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\AES.h">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Base64.h">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\RC4.h">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h">
+      <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2027,9 +2030,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl">
       <Filter>Sources\Streams\iostream</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.inl">
-      <Filter>Sources\Cryptography</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
@@ -2492,6 +2492,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.inl">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl">
+      <Filter>Sources\Cryptography\Encoding</Filter>
     </None>
   </ItemGroup>
 </Project>

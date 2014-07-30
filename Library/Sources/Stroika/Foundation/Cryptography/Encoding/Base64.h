@@ -4,15 +4,15 @@
 #ifndef _Stroika_Foundation_Cryptography_Base64_h_
 #define _Stroika_Foundation_Cryptography_Base64_h_  1
 
-#include    "../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
 #include    <string>
 #include    <vector>
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/BLOB.h"
-#include    "../Streams/BinaryInputStream.h"
-#include    "../Streams/BinaryOutputStream.h"
+#include    "../../Configuration/Common.h"
+#include    "../../Memory/BLOB.h"
+#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/BinaryOutputStream.h"
 
 
 
@@ -38,15 +38,16 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
+            namespace   Encoding {
+
+                Memory::BLOB    DecodeBase64 (const string& s);
+                void            DecodeBase64 (const string& s, Streams::BinaryOutputStream out);
+
+                enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
+                string          EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb = LineBreak::eAuto_LB);
 
 
-            Memory::BLOB    DecodeBase64 (const string& s);
-            void            DecodeBase64 (const string& s, Streams::BinaryOutputStream out);
-
-            enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
-            string          EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb = LineBreak::eAuto_LB);
-
-
+            }
         }
     }
 }

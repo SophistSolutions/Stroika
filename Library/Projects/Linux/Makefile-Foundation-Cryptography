@@ -8,8 +8,9 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Crypt
 
 
 SubDirs	=	\
-	Hash	\
-	SSL		\
+	Encoding	\
+	Hash		\
+	SSL			\
 
 .PHONY:			$(SubDirs)
 
@@ -17,24 +18,24 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)AES.o\
-	$(ObjDir)Base64.o\
-	$(ObjDir)OpenSSLCryptoStream.o\
 	$(ObjDir)MD5.o\
-	$(ObjDir)RC4.o\
 
 all:	$(Objs) $(SubDirs)
 
 
+Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs))
 Hash_OBJS := $(addprefix "Hash/", $(shell $(MAKE) --directory Hash -s list-objs))
 SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
 
 
 list-objs::
-	@echo $(Hash_OBJS) $(SSL_OBJS)
+	@echo $(Encoding_OBJS) $(Hash_OBJS) $(SSL_OBJS)
 
 Hash:
 	@$(MAKE) --directory Hash -s
+
+Encoding:
+	@$(MAKE) --directory Encoding -s
 
 SSL:
 	@$(MAKE) --directory SSL -s

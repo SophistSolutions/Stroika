@@ -5,17 +5,17 @@
  * Note - used PUBLIC DOMAIN http://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.src.zip/download
  * code as a starting point.
  */
-#include    "../StroikaPreComp.h"
+#include    "../../StroikaPreComp.h"
 
 #include    <algorithm>
 #include    <cstdlib>
 
-#include    "../Containers/Common.h"
-#include    "../DataExchange/BadFormatException.h"
-#include    "../Debug/Assertions.h"
-#include    "../Execution/Exceptions.h"
-#include    "../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...
-#include    "../Memory/SmallStackBuffer.h"
+#include    "../../Containers/Common.h"
+#include    "../../DataExchange/BadFormatException.h"
+#include    "../../Debug/Assertions.h"
+#include    "../../Execution/Exceptions.h"
+#include    "../../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...
+#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "Base64.h"
 
@@ -23,6 +23,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
+using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Memory;
 
 
@@ -143,7 +144,7 @@ namespace   {
 
 
 
-Memory::BLOB    Cryptography::DecodeBase64 (const string& s)
+Memory::BLOB    Encoding::DecodeBase64 (const string& s)
 {
     if (s.empty ()) {
         return Memory::BLOB ();
@@ -156,7 +157,7 @@ Memory::BLOB    Cryptography::DecodeBase64 (const string& s)
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void    Cryptography::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
+void    Encoding::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
 {
     // QUICKIE implementation...
     Memory::BLOB   tmp = DecodeBase64 (s);
@@ -286,7 +287,7 @@ namespace   {
     }
 }
 
-string  Cryptography::EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb)
+string  Encoding::EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!
