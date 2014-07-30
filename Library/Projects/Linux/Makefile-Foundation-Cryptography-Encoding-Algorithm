@@ -1,0 +1,17 @@
+include ../../../../Configuration.mk
+include	../../../../SharedMakeVariables.mk
+include	../../../../SharedBuildRules.mk
+
+
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)AES.o\
+	$(ObjDir)Base64.o\
+	$(ObjDir)RC4.o\
+
+all:	$(Objs)
+

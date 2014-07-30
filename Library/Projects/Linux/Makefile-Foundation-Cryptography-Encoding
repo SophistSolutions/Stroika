@@ -6,28 +6,26 @@ include	../../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Encoding/
 
-.PHONY:			Algorithms
+.PHONY:			Algorithm
 
 
 SubDirs	=	\
-	Algorithms	\
+	Algorithm	\
 
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)AES.o\
-	$(ObjDir)Base64.o\
 	$(ObjDir)OpenSSLCryptoStream.o\
-	$(ObjDir)RC4.o\
+
 
 all:	$(Objs)  $(SubDirs)
 
 
-Algorithms_OBJS := $(addprefix "./Algorithms/", $(shell cd Algorithms; make -s list-objs))
+Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; make -s list-objs))
 
 
 list-objs::
-	@echo $(Objs) $(Algorithms_OBJS)
+	@echo $(Objs) $(Algorithm_OBJS)
 
-Algorithms:
-	(cd Algorithms; make -s)
+Algorithm:
+	(cd Algorithm; make -s)

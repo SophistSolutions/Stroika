@@ -4,11 +4,11 @@
 #ifndef _Stroika_Foundation_Cryptography_AES_h_
 #define _Stroika_Foundation_Cryptography_AES_h_  1
 
-#include    "../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/BLOB.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BLOB.h"
+#include    "../../../Streams/BinaryInputStream.h"
 
 
 

@@ -13,7 +13,7 @@
 #include    "../Memory/BLOB.h"
 
 #include    "Hash/Adapter.h"
-#include    "Hash/Algorithms/MD5.h"
+#include    "Hash/Algorithm/MD5.h"
 
 #include    "MD5.h"
 

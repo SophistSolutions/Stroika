@@ -121,9 +121,6 @@
     <Filter Include="Sources\Cryptography\Hash">
       <UniqueIdentifier>{11bf2507-553c-47f8-aa78-2b6535bf6e89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Cryptography\Hash\Algorithms">
-      <UniqueIdentifier>{1a5f6d25-2dce-4905-a34f-71b6b872dad4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Characters\Concrete">
       <UniqueIdentifier>{406fdc1a-940e-48e2-8a3f-b6219b190485}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,12 @@
     </Filter>
     <Filter Include="Sources\Cryptography\Encoding">
       <UniqueIdentifier>{a4f7b4a9-2ebc-4b1e-aa2d-dd2c024c5f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography\Encoding\Algorithm">
+      <UniqueIdentifier>{7c82edbb-ecf9-4aa9-a6e8-8e6fc42b9bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography\Hash\Algorithm">
+      <UniqueIdentifier>{1a5f6d25-2dce-4905-a34f-71b6b872dad4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -495,12 +498,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -687,26 +684,32 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.cpp">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.cpp">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\AES.cpp">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Base64.cpp">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\RC4.cpp">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.cpp">
       <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\CRC32.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\Jenkins.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\MD5.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\SuperFastHash.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.cpp">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.cpp">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1266,12 +1269,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1620,26 +1617,32 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.h">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.h">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\AES.h">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Base64.h">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\RC4.h">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h">
       <Filter>Sources\Cryptography\Encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\CRC32.h">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\Jenkins.h">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\MD5.h">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\SuperFastHash.h">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.h">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h">
+      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2118,12 +2121,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\TODO.md">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
@@ -2484,17 +2481,23 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\SuperFastHash.inl">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\MD5.inl">
-      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl">
       <Filter>Sources\Cryptography\Encoding</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\CRC32.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\Jenkins.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\MD5.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\SuperFastHash.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
     </None>
   </ItemGroup>
 </Project>

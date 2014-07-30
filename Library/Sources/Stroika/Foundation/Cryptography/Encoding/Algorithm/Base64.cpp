@@ -5,17 +5,17 @@
  * Note - used PUBLIC DOMAIN http://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.src.zip/download
  * code as a starting point.
  */
-#include    "../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
 #include    <algorithm>
 #include    <cstdlib>
 
-#include    "../../Containers/Common.h"
-#include    "../../DataExchange/BadFormatException.h"
-#include    "../../Debug/Assertions.h"
-#include    "../../Execution/Exceptions.h"
-#include    "../../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...
-#include    "../../Memory/SmallStackBuffer.h"
+#include    "../../../Containers/Common.h"
+#include    "../../../DataExchange/BadFormatException.h"
+#include    "../../../Debug/Assertions.h"
+#include    "../../../Execution/Exceptions.h"
+#include    "../../../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...
+#include    "../../../Memory/SmallStackBuffer.h"
 
 #include    "Base64.h"
 

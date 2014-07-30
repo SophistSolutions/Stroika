@@ -6,11 +6,11 @@ include	../../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Hash/
 
-.PHONY:			Algorithms
+.PHONY:			Algorithm
 
 
 SubDirs	=	\
-	Algorithms	\
+	Algorithm	\
 
 vpath %cpp $(SrcDir)
 
@@ -21,11 +21,11 @@ Objs	=	\
 all:	$(Objs)  $(SubDirs)
 
 
-Algorithms_OBJS := $(addprefix "./Algorithms/", $(shell cd Algorithms; make -s list-objs))
+Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; make -s list-objs))
 
 
 list-objs::
-	@echo $(Algorithms_OBJS)
+	@echo $(Algorithm_OBJS)
 
-Algorithms:
-	(cd Algorithms; make -s)
+Algorithm:
+	(cd Algorithm; make -s)

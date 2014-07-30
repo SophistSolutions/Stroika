@@ -12,12 +12,12 @@
 #endif
 
 #include    "Stroika/Foundation/Containers/Common.h"
-#include    "Stroika/Foundation/Cryptography/Encoding/Base64.h"
+#include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Adapter.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/MD5.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/SuperFastHash.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithm/CRC32.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithm/Jenkins.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithm/MD5.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithm/SuperFastHash.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
