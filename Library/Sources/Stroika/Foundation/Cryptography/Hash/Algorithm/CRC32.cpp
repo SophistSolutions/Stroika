@@ -93,7 +93,7 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithms::CRC32>::ReturnType  Hasher<uint32_t, Algorithms::CRC32>::Hash (const Streams::BinaryInputStream& from)
+Hasher<uint32_t, Algorithm::CRC32>::ReturnType  Hasher<uint32_t, Algorithm::CRC32>::Hash (const Streams::BinaryInputStream& from)
 {
     uint32_t    hash    =   0xFFFFFFFF;
     while (true) {
@@ -109,7 +109,7 @@ Hasher<uint32_t, Algorithms::CRC32>::ReturnType  Hasher<uint32_t, Algorithms::CR
     return hash;
 }
 
-Hasher<uint32_t, Algorithms::CRC32>::ReturnType  Hasher<uint32_t, Algorithms::CRC32>::Hash (const Byte* from, const Byte* to)
+Hasher<uint32_t, Algorithm::CRC32>::ReturnType  Hasher<uint32_t, Algorithm::CRC32>::Hash (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

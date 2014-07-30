@@ -33,7 +33,7 @@ namespace   Stroika {
             namespace   Hash {
 
 
-                namespace Algorithms {
+                namespace Algorithm {
                     // Just a name to select template implementation
                     struct Jenkins {
                     };
@@ -41,7 +41,7 @@ namespace   Stroika {
 
 
                 template    <>
-                struct Hasher<uint32_t, Algorithms::Jenkins> {
+                struct Hasher<uint32_t, Algorithm::Jenkins> {
                     using   ReturnType      =   uint32_t;
 
                     static  ReturnType  Hash (const Streams::BinaryInputStream& from);

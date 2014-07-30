@@ -1623,9 +1623,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h">
       <Filter>Sources\Cryptography\Encoding</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\CRC32.h">
-      <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\Jenkins.h">
       <Filter>Sources\Cryptography\Hash\Algorithm</Filter>
     </ClInclude>
@@ -1643,6 +1640,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h">
       <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithm\CRC32.h">
+      <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -47,13 +47,13 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithms::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithms::SuperFastHash>::Hash (const Streams::BinaryInputStream& from)
+Hasher<uint32_t, Algorithm::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (const Streams::BinaryInputStream& from)
 {
     Memory::BLOB    b = from.ReadAll ();
-    return Hasher<uint32_t, Algorithms::SuperFastHash>::Hash (b.begin (), b.end ());
+    return Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (b.begin (), b.end ());
 }
 
-Hasher<uint32_t, Algorithms::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithms::SuperFastHash>::Hash (const Byte* from, const Byte* to)
+Hasher<uint32_t, Algorithm::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

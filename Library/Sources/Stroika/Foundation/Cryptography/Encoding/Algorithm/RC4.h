@@ -26,36 +26,38 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
+                namespace   Algorithm {
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryInputStream  DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
+                    /**
+                     */
+                    Streams::BinaryInputStream  DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryInputStream  EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
+                    /**
+                     */
+                    Streams::BinaryInputStream  EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryOutputStream  RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
+                    /**
+                     */
+                    Streams::BinaryOutputStream  RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryOutputStream  RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
+                    /**
+                     */
+                    Streams::BinaryOutputStream  RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
 #endif
 
 
+                }
             }
         }
     }

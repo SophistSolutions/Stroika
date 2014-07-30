@@ -71,10 +71,10 @@ namespace {
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- ************************** Cryptography::DecodeAES *****************************
+ ***************************** Algorithm::DecodeAES *****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream  Cryptography::DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
+Streams::BinaryInputStream  Algorithm::DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
 }
@@ -87,10 +87,10 @@ Streams::BinaryInputStream  Cryptography::DecodeAES (const Memory::BLOB& key, St
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- *************************** Cryptography::EncodeAES ****************************
+ ****************************** Algorithm::EncodeAES ****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream  Cryptography::EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
+Streams::BinaryInputStream  Algorithm::EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
 }
@@ -105,10 +105,10 @@ Streams::BinaryInputStream  Cryptography::EncodeAES (const Memory::BLOB& key, St
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- ************************* Cryptography::AESEncoder *****************************
+ **************************** Algorithm::AESEncoder *****************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
+Streams::BinaryOutputStream  Algorithm::AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), out);
 }
@@ -121,10 +121,10 @@ Streams::BinaryOutputStream  Cryptography::AESDecoder (const Memory::BLOB& key, 
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- *************************** Cryptography::AESEncoder ***************************
+ ****************************** Algorithm::AESEncoder ***************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
+Streams::BinaryOutputStream  Algorithm::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), out);
 }

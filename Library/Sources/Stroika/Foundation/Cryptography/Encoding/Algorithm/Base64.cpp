@@ -24,6 +24,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::Encoding;
+using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
 using   namespace   Stroika::Foundation::Memory;
 
 
@@ -144,7 +145,7 @@ namespace   {
 
 
 
-Memory::BLOB    Encoding::DecodeBase64 (const string& s)
+Memory::BLOB    Algorithm::DecodeBase64 (const string& s)
 {
     if (s.empty ()) {
         return Memory::BLOB ();
@@ -157,7 +158,7 @@ Memory::BLOB    Encoding::DecodeBase64 (const string& s)
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void    Encoding::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
+void    Algorithm::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
 {
     // QUICKIE implementation...
     Memory::BLOB   tmp = DecodeBase64 (s);
@@ -174,7 +175,7 @@ void    Encoding::DecodeBase64 (const string& s, Streams::BinaryOutputStream out
 
 /*
  ********************************************************************************
- *********************** Cryptography::EncodeBase64 *****************************
+ ************************** Algorithm::EncodeBase64 *****************************
  ********************************************************************************
  */
 namespace   {
@@ -287,7 +288,7 @@ namespace   {
     }
 }
 
-string  Encoding::EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb)
+string  Algorithm::EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!

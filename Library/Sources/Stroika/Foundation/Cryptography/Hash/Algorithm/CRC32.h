@@ -28,18 +28,16 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Hash {
-                namespace   Algorithms {
 
 
+                namespace   Algorithm {
                     struct CRC32 {
                     };
-
-
                 }
 
 
                 template    <>
-                struct Hasher<uint32_t, Algorithms::CRC32> {
+                struct Hasher<uint32_t, Algorithm::CRC32> {
                     using   ReturnType      =   uint32_t;
 
                     static  ReturnType    Hash (const Streams::BinaryInputStream& from);

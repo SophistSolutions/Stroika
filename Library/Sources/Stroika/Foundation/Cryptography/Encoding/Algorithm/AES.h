@@ -26,63 +26,65 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
+                namespace   Algorithms {
 
 
-                /**
-                 */
-                enum class AESOptions {
-                    e128_CBC,
-                    e128_ECB,
-                    e128_OFB,
-                    e128_CFB1,
-                    e128_CFB8,
-                    e128_CFB128,
-                    e192_CBC,
-                    e192_ECB,
-                    e192_OFB,
-                    e192_CFB1,
-                    e192_CFB8,
-                    e192_CFB128,
-                    e256_CBC,
-                    e256_ECB,
-                    e256_OFB,
-                    e256_CFB1,
-                    e256_CFB8,
-                    e256_CFB128,
+                    /**
+                     */
+                    enum class AESOptions {
+                        e128_CBC,
+                        e128_ECB,
+                        e128_OFB,
+                        e128_CFB1,
+                        e128_CFB8,
+                        e128_CFB128,
+                        e192_CBC,
+                        e192_ECB,
+                        e192_OFB,
+                        e192_CFB1,
+                        e192_CFB8,
+                        e192_CFB128,
+                        e256_CBC,
+                        e256_ECB,
+                        e256_OFB,
+                        e256_CFB1,
+                        e256_CFB8,
+                        e256_CFB128,
 
-                    Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
-                    eDEFAULT = e256_CBC,
-                };
+                        Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
+                        eDEFAULT = e256_CBC,
+                    };
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryInputStream  DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
+                    /**
+                     */
+                    Streams::BinaryInputStream  DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryInputStream  EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
+                    /**
+                     */
+                    Streams::BinaryInputStream  EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryOutputStream  AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
+                    /**
+                     */
+                    Streams::BinaryOutputStream  AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
 #if     qHas_OpenSSL
-                /**
-                 */
-                Streams::BinaryOutputStream  AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
+                    /**
+                     */
+                    Streams::BinaryOutputStream  AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
+                }
             }
         }
     }

@@ -11,6 +11,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
+using   namespace   Stroika::Foundation::Cryptography::Encoding;
 
 
 
@@ -30,10 +31,10 @@ namespace {
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- ************************** Cryptography::DecodeRC4 *****************************
+ ***************************** Algorithm::DecodeRC4 *****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream  Cryptography::DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
+Streams::BinaryInputStream  Algorithm::DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
 {
     return OpenSSLInputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eDecrypt), in);
 }
@@ -46,7 +47,7 @@ Streams::BinaryInputStream  Cryptography::DecodeRC4 (const Memory::BLOB& key, St
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- *************************** Cryptography::EncodeRC4 ****************************
+ ****************************** Algorithm::EncodeRC4 ****************************
  ********************************************************************************
  */
 Streams::BinaryInputStream  Cryptography::EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
@@ -64,10 +65,10 @@ Streams::BinaryInputStream  Cryptography::EncodeRC4 (const Memory::BLOB& key, St
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- ************************* Cryptography::RC4Encoder *****************************
+ **************************** Algorithm::RC4Encoder *****************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
+Streams::BinaryOutputStream  Algorithm::RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
 {
     return OpenSSLOutputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eDecrypt), out);
 }
@@ -80,21 +81,12 @@ Streams::BinaryOutputStream  Cryptography::RC4Decoder (const Memory::BLOB& key, 
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
- *************************** Cryptography::RC4Encoder ***************************
+ ****************************** Algorithm::RC4Encoder ***************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
+Streams::BinaryOutputStream  Algorithm::RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
 {
     return OpenSSLOutputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eEncrypt), out);
 }
 #endif
-
-
-
-
-
-
-
-
-
 

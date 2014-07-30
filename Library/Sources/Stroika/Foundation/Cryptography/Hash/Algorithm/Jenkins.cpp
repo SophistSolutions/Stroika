@@ -42,7 +42,7 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithms::Jenkins>::ReturnType  Hasher<uint32_t, Algorithms::Jenkins>::Hash (const Streams::BinaryInputStream& from)
+Hasher<uint32_t, Algorithm::Jenkins>::ReturnType  Hasher<uint32_t, Algorithm::Jenkins>::Hash (const Streams::BinaryInputStream& from)
 {
     uint32_t    hash    =   0;
     while (true) {
@@ -58,7 +58,7 @@ Hasher<uint32_t, Algorithms::Jenkins>::ReturnType  Hasher<uint32_t, Algorithms::
     return hash;
 }
 
-Hasher<uint32_t, Algorithms::Jenkins>::ReturnType  Hasher<uint32_t, Algorithms::Jenkins>::Hash (const Byte* from, const Byte* to)
+Hasher<uint32_t, Algorithm::Jenkins>::ReturnType  Hasher<uint32_t, Algorithm::Jenkins>::Hash (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

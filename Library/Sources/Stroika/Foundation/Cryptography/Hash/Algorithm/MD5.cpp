@@ -349,14 +349,14 @@ namespace   {
 
 
 
-Hasher<ReturnType, Algorithms::MD5>::ReturnType  Hasher<ReturnType, Algorithms::MD5>::Hash (const Streams::BinaryInputStream& from)
+Hasher<ReturnType, Algorithm::MD5>::ReturnType  Hasher<ReturnType, Algorithm::MD5>::Hash (const Streams::BinaryInputStream& from)
 {
     // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
     Memory::BLOB    b = from.ReadAll ();
-    return Hasher<ReturnType, Algorithms::MD5>::Hash (b.begin (), b.end ());
+    return Hasher<ReturnType, Algorithm::MD5>::Hash (b.begin (), b.end ());
 }
 
-Hasher<ReturnType, Algorithms::MD5>::ReturnType  Hasher<ReturnType, Algorithms::MD5>::Hash (const Byte* from, const Byte* to)
+Hasher<ReturnType, Algorithm::MD5>::ReturnType  Hasher<ReturnType, Algorithm::MD5>::Hash (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

@@ -32,7 +32,7 @@ namespace   Stroika {
             namespace   Hash {
 
 
-                namespace Algorithms {
+                namespace Algorithm {
                     // Just a name to select template implementation
                     struct SuperFastHash {
                     };
@@ -40,7 +40,7 @@ namespace   Stroika {
 
 
                 template    <>
-                struct Hasher<uint32_t, Algorithms::SuperFastHash> {
+                struct Hasher<uint32_t, Algorithm::SuperFastHash> {
                     using   ReturnType      =   uint32_t;
 
                     static  ReturnType  Hash (const Streams::BinaryInputStream& from);

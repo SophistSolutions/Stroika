@@ -27,14 +27,14 @@ namespace   Stroika {
             namespace   Hash {
 
 
-                namespace Algorithms {
+                namespace Algorithm {
                     // Just a name to select template implementation
                     struct MD5 {
                     };
                 }
 
                 template    <>
-                struct Hasher<HashResult128BitType, Algorithms::MD5> {
+                struct Hasher<HashResult128BitType, Algorithm::MD5> {
                     using   ReturnType      =   HashResult128BitType;
 
                     static  ReturnType  Hash (const Streams::BinaryInputStream& from);
