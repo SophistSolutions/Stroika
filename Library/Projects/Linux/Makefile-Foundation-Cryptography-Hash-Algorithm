@@ -4,7 +4,7 @@ include	../../../../SharedBuildRules.mk
 
 
 RelPathToStroikaDevRoot		=	../../../../../../../
-SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Hash/Algorithms/
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Hash/Algorithm/
 
 vpath %cpp $(SrcDir)
 
