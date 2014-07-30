@@ -51,7 +51,7 @@ Streams::BinaryInputStream  Algorithm::DecodeRC4 (const Memory::BLOB& key, Strea
  ****************************** Algorithm::EncodeRC4 ****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream  Cryptography::EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
+Streams::BinaryInputStream  Algorithm::EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
 {
     return OpenSSLInputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eEncrypt), in);
 }
