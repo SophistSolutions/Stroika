@@ -26,7 +26,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
-                namespace   Algorithms {
+                namespace   Algorithm {
 
 
                     /**

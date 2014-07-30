@@ -13,6 +13,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
+using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
