@@ -11,8 +11,6 @@
 
 #include    <type_traits>
 
-//#include    "../../Characters/CString/Utilities.h"
-
 #include    "../Digest/Format.h"
 
 namespace   Stroika {
@@ -60,25 +58,6 @@ namespace   Stroika {
                         return SerializeForHash1_ (data2Hash);
                     }
                 }
-
-#if 0
-                namespace Private_ {
-                    template    <size_t N>
-                    string  cvtResultArray2stdstring (const array<uint8_t, N>& arr)
-                    {
-                        string  result;
-                        result.reserve (2 * N);
-                        for (int i = 0; i < 16; ++i) {
-                            char    b[10];
-                            b[0] = '\0';
-                            snprintf (b, NEltsOf (b), "%02x", arr[i]);
-                            result += b;
-                        }
-                        return result;
-                    }
-                }
-#endif
-
 
                 namespace Private_ {
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>

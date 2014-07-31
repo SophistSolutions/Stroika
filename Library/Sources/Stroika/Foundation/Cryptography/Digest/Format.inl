@@ -41,7 +41,7 @@ namespace   Stroika {
                     template    <typename DIGEST_RESULT_TYPE>
                     inline  String      Format_ (const DIGEST_RESULT_TYPE& arr, const String*)
                     {
-                        return String::FromASCII (Format_ (arr, static_cast<const string*> (nullptr)));
+                        return String::FromAscii (Format_ (arr, static_cast<const string*> (nullptr)));
                     }
                 }
 
