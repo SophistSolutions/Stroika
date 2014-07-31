@@ -18,13 +18,14 @@ namespace   Stroika {
         namespace   Streams {
             namespace   iostream {
 
+
                 template    <typename T>
                 Memory::BLOB  SerializeItemToBLOB (const T& elt)
                 {
                     stringstream    out;
                     out << elt;
                     string  tmp = out.str ();
-                    return Memory::BLOB (vector<Byte> (Containers::Start (tmp), Containers::End (tmp)));
+                    return Memory::BLOB (vector<Byte> (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp))));
                 }
 
 
