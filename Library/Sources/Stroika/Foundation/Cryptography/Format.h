@@ -38,8 +38,10 @@ namespace   Stroika {
              *      o   Characters::String
              *      o   std::string
              */
-            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE, typename AS_RESULT_TYPE = string>
+            template    <typename AS_RESULT_TYPE, typename CRYTO_RESULT_TO_FORMAT_TYPE>
             AS_RESULT_TYPE  Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult);
+            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE>
+            string          Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult);
 
 
         }

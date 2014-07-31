@@ -52,10 +52,15 @@ namespace   Stroika {
             }
 
 
-            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE, typename AS_RESULT_TYPE>
+            template    <typename AS_RESULT_TYPE, typename CRYTO_RESULT_TO_FORMAT_TYPE>
             inline  AS_RESULT_TYPE  Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult)
             {
                 return Private_::Format_ (digestResult, static_cast<const AS_RESULT_TYPE*> (nullptr));
+            }
+            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE>
+            inline  string          Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult)
+            {
+                return Format<string, CRYTO_RESULT_TO_FORMAT_TYPE> (digestResult);
             }
 
         }
