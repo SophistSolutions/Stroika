@@ -120,7 +120,26 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Characters-CString-Utilities.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Characters-Format.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
@@ -257,6 +276,27 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Encoding-Algorithm-AES.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Encoding-Algorithm-AES.obj</ObjectFileName>
@@ -997,6 +1037,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h" />
@@ -1342,7 +1384,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl" />

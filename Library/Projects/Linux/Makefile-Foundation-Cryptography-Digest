@@ -16,6 +16,8 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Common.o\
+	$(ObjDir)Format.o\
+	$(ObjDir)ResultTypes.o\
 
 all:	$(Objs)  $(SubDirs)
 

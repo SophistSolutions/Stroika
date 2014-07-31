@@ -11,8 +11,9 @@
 
 #include    <type_traits>
 
-#include    "../../Characters/CString/Utilities.h"
+//#include    "../../Characters/CString/Utilities.h"
 
+#include    "../Digest/Format.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -24,6 +25,7 @@ namespace   Stroika {
                     template    <typename TYPE_TO_COMPUTE_HASH_OF>
                     Memory::BLOB    SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value, void>::type* = nullptr)
                     {
+                        using   Memory::Byte;
                         return Memory::BLOB (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1));
                     }
                     template    <typename TYPE_TO_COMPUTE_HASH_OF>
@@ -59,7 +61,7 @@ namespace   Stroika {
                     }
                 }
 
-
+#if 0
                 namespace Private_ {
                     template    <size_t N>
                     string  cvtResultArray2stdstring (const array<uint8_t, N>& arr)
@@ -75,6 +77,7 @@ namespace   Stroika {
                         return result;
                     }
                 }
+#endif
 
 
                 namespace Private_ {
@@ -86,7 +89,7 @@ namespace   Stroika {
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
                     inline  ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
                     {
-                        return cvtResultArray2stdstring (hashVal);
+                        return Digest::Format (hashVal);
                     }
                     template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
                     inline  ADAPTER_RETURN_TYPE    mkReturnType_ (HASHER_RETURN_TYPE hashVal)

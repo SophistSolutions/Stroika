@@ -6,7 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <array>
 #include    <cstdint>
 
 #include    "../../Configuration/Common.h"
@@ -27,10 +26,6 @@ namespace   Stroika {
 
 
                 using   Memory::Byte;
-
-
-                using   Result128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
-                using   Result160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
 
 
                 /**

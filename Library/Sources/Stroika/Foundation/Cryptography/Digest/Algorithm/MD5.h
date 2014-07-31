@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../Common.h"
+#include    "../ResultTypes.h"
 
 
 

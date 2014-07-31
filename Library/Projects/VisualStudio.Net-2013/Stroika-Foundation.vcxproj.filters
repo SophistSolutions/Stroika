@@ -714,6 +714,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.cpp">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1647,6 +1653,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.h">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2501,6 +2513,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.inl">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl">
+      <Filter>Sources\Cryptography\Digest</Filter>
     </None>
   </ItemGroup>
 </Project>
