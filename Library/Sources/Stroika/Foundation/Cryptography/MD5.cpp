@@ -13,7 +13,7 @@
 #include    "../Memory/BLOB.h"
 
 #include    "Digest/Algorithm/MD5.h"
-#include    "Hash/Adapter.h"
+#include    "Hash.h"
 
 #include    "MD5.h"
 
@@ -29,7 +29,7 @@ string  Cryptography::ComputeMD5Digest (const Byte* s, const Byte* e)
     Require (s == e or s != nullptr);
     Require (s == e or e != nullptr);
     using   USE_HASHER_     =   Digest::Digester<Digest::Result128BitType, Digest::Algorithm::MD5>;
-    return Hash::Adapter<USE_HASHER_, Memory::BLOB, string> (Memory::BLOB (s, e));
+    return Hash<USE_HASHER_, Memory::BLOB, string> (Memory::BLOB (s, e));
 }
 
 string  Cryptography::ComputeMD5Digest (const vector<Byte>& b)

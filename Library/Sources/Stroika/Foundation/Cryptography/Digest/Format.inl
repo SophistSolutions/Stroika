@@ -24,7 +24,8 @@ namespace   Stroika {
                     template    <size_t N>
                     inline  string      Format_ (const array<uint8_t, N>& arr, const string*)
                     {
-                        return mkArrayFmt_ (&*arr.begin (), &*arr.end ());
+						static_assert (N >= 1, "N >= 1");
+                        return mkArrayFmt_ (&*arr.begin (), &*arr.begin () + N);
                     }
                     inline  string      Format_ (unsigned int n, const string*)
                     {

@@ -358,7 +358,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Encoding-OpenSSLCryptoStream.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Encoding-OpenSSLCryptoStream.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.cpp">
@@ -1024,7 +1024,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
@@ -1370,7 +1370,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />

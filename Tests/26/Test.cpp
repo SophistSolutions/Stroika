@@ -17,7 +17,7 @@
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
-#include    "Stroika/Foundation/Cryptography/Hash/Adapter.h"
+#include    "Stroika/Foundation/Cryptography/Hash.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
@@ -221,21 +221,20 @@ namespace  {
     namespace Hash_Jenkins {
 
         using   namespace   Cryptography::Digest;
-        using   namespace   Cryptography::Hash;
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Digester<uint32_t, Algorithm::Jenkins>;
+            using   USE_DIGESTER_     =   Digester<uint32_t, Algorithm::Jenkins>;
             {
-                VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
-                VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
-                VerifyTestResult (Adapter<USE_HASHER_> (Characters::String (L"1")) == 2154528969);
-                VerifyTestResult (Adapter<USE_HASHER_> ("1", "mysalt") == 2164173146);
-                VerifyTestResult (Adapter<USE_HASHER_> (93993) == 1748544338);
+                VerifyTestResult (Hash<USE_DIGESTER_> (1) == 10338022);
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
+                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == 2154528969);
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == 2164173146);
+                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == 1748544338);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
             }
         }
     }
@@ -250,11 +249,11 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Digester<Result128BitType, Algorithm::MD5>;
+            using   USE_DIGESTER_     =   Digester<Result128BitType, Algorithm::MD5>;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult ((Hash::Adapter<USE_HASHER_, string, string> (kSrc)) == kEncodedVal);
+                VerifyTestResult ((Hash<USE_DIGESTER_, string, string> (kSrc)) == kEncodedVal);
             }
         }
     }
@@ -272,21 +271,21 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Digester<uint32_t, Algorithm::SuperFastHash>;
+            using   USE_DIGESTER_     =   Digester<uint32_t, Algorithm::SuperFastHash>;
             {
-                VerifyTestResult (Hash::Adapter<USE_HASHER_> (1) == 422304363);
-                VerifyTestResult (Hash::Adapter<USE_HASHER_> (93993) == 2489559407);
+                VerifyTestResult (Hash<USE_DIGESTER_> (1) == 422304363);
+                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == 2489559407);
             }
             {
                 // special case where these collide
                 const   char    kSrc1[] = "        90010";
-                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc1, (const Byte*)kSrc1 + ::strlen(kSrc1), 375771507);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc1, (const Byte*)kSrc1 + ::strlen(kSrc1), 375771507);
                 const   char    kSrc2[] = "        10028";
-                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc2, (const Byte*)kSrc2 + ::strlen(kSrc2), 375771507);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc2, (const Byte*)kSrc2 + ::strlen(kSrc2), 375771507);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 1181771593);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 1181771593);
             }
         }
     }

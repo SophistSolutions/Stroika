@@ -118,9 +118,6 @@
     <Filter Include="Sources\Containers\Private\DataStructures">
       <UniqueIdentifier>{8724e535-91f9-4ba0-ac61-4ad4a9e1fa89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Cryptography\Hash">
-      <UniqueIdentifier>{11bf2507-553c-47f8-aa78-2b6535bf6e89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Characters\Concrete">
       <UniqueIdentifier>{406fdc1a-940e-48e2-8a3f-b6219b190485}</UniqueIdentifier>
     </Filter>
@@ -708,9 +705,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.cpp">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.cpp">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
@@ -719,6 +713,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp">
+      <Filter>Sources\Cryptography</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1647,9 +1644,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.h">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
@@ -1658,6 +1652,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h">
+      <Filter>Sources\Cryptography</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2508,9 +2505,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\TODO.md">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.inl">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
@@ -2519,6 +2513,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl">
+      <Filter>Sources\Cryptography</Filter>
     </None>
   </ItemGroup>
 </Project>
