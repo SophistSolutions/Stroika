@@ -62,7 +62,7 @@ namespace   Stroika {
                 template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
                 inline  ADAPTER_RETURN_TYPE    mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
                 {
-                    return Digest::Format (hashVal);
+                    return Format (hashVal);
                 }
                 template    <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
                 inline  ADAPTER_RETURN_TYPE    mkReturnType_ (HASHER_RETURN_TYPE hashVal)

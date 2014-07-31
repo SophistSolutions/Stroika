@@ -14,7 +14,7 @@ using   namespace   Stroika::Foundation;
 
 
 
-string  Cryptography::Digest::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
+string  Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
 {
     string  result;
     size_t  N   =   end - start;
@@ -28,7 +28,7 @@ string  Cryptography::Digest::Private_::mkArrayFmt_ (const uint8_t* start, const
     return result;
 }
 
-string  Cryptography::Digest::Private_::mkFmt_ (unsigned int n)
+string  Cryptography::Private_::mkFmt_ (unsigned int n)
 {
     char    b[1024];
     b[0] = '\0';
@@ -36,7 +36,7 @@ string  Cryptography::Digest::Private_::mkFmt_ (unsigned int n)
     return b;
 }
 
-string  Cryptography::Digest::Private_::mkFmt_ (unsigned long n)
+string  Cryptography::Private_::mkFmt_ (unsigned long n)
 {
     char    b[1024];
     b[0] = '\0';
@@ -44,7 +44,7 @@ string  Cryptography::Digest::Private_::mkFmt_ (unsigned long n)
     return b;
 }
 
-string  Cryptography::Digest::Private_::mkFmt_ (unsigned long long n)
+string  Cryptography::Private_::mkFmt_ (unsigned long long n)
 {
     char    b[1024];
     b[0] = '\0';
