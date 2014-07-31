@@ -29,7 +29,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  RETURN_TYPE is typically uint32_t, uint64_t, or HashResult128BitType, HashResult160BitTypem etc,
+                 *  RETURN_TYPE is typically uint32_t, uint64_t, or Result128BitType, Result128BitType etc,
                  *  but could in principle be anything.
                  */
                 template    <typename RETURN_TYPE, typename ALGORITHM>
