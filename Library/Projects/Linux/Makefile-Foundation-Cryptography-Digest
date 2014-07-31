@@ -1,0 +1,30 @@
+include ../../../Configuration.mk
+include	../../../SharedMakeVariables.mk
+include	../../../SharedBuildRules.mk
+
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/
+
+.PHONY:			Algorithm
+
+
+SubDirs	=	\
+	Algorithm	\
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Common.o\
+
+all:	$(Objs)  $(SubDirs)
+
+
+Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; make -s list-objs))
+
+
+list-objs::
+	@echo $(Objs) $(Algorithm_OBJS)
+
+Algorithm:
+	(cd Algorithm; make -s)
