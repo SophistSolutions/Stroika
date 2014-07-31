@@ -36,7 +36,7 @@ namespace   Stroika {
                  *  common forms, and then makes generic the actual hash computing algorithm.
                  *
                  *  EXAMPLE USAGE:
-                 *      using   USE_HASHER_     =   Hasher<uint32_t, Algorithms::Jenkins>;
+                 *      using   USE_HASHER_     =   Digester<uint32_t, Algorithms::Jenkins>;
                  *      VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
                  *      VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
                  *      VerifyTestResult (Adapter<USE_HASHER_> (String (L"1")) == 2154528969);

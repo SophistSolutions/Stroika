@@ -191,8 +191,8 @@ namespace {
     template    <typename HASHER>
     void    DoCommonHasherTest_ (const Byte* dataStart, const Byte* dataEnd, uint32_t answer)
     {
-        VerifyTestResult (HASHER::Hash (dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER::Hash (Memory::BLOB (dataStart, dataEnd).As<Streams::BinaryInputStream> ()) == answer);
+        VerifyTestResult (HASHER::ComputeDigest (dataStart, dataEnd) == answer);
+        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::BinaryInputStream> ()) == answer);
     }
 
 }
@@ -203,14 +203,14 @@ namespace {
 namespace  {
     namespace Hash_CRC32 {
 
-        using   namespace   Cryptography::Hash;
+        using   namespace   Cryptography::Digest;
 
         void    DoRegressionTests_ ()
         {
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<Hasher<uint32_t, Algorithm::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
+                DoCommonHasherTest_<Digester<uint32_t, Algorithm::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
             }
         }
     }
@@ -220,11 +220,12 @@ namespace  {
 namespace  {
     namespace Hash_Jenkins {
 
+        using   namespace   Cryptography::Digest;
         using   namespace   Cryptography::Hash;
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Hasher<uint32_t, Algorithm::Jenkins>;
+            using   USE_HASHER_     =   Digester<uint32_t, Algorithm::Jenkins>;
             {
                 VerifyTestResult (Adapter<USE_HASHER_> (1) == 10338022);
                 VerifyTestResult (Adapter<USE_HASHER_> ("1") == 2154528969);
@@ -245,15 +246,15 @@ namespace  {
 namespace  {
     namespace Hash_MD5 {
 
-        using   namespace   Cryptography::Hash;
+        using   namespace   Cryptography::Digest;
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Hasher<HashResult128BitType, Algorithm::MD5>;
+            using   USE_HASHER_     =   Digester<Result128BitType, Algorithm::MD5>;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult ((Adapter<USE_HASHER_, string, string> (kSrc)) == kEncodedVal);
+                VerifyTestResult ((Hash::Adapter<USE_HASHER_, string, string> (kSrc)) == kEncodedVal);
             }
         }
     }
@@ -267,14 +268,14 @@ namespace  {
 namespace  {
     namespace Hash_SuperFastHash {
 
-        using   namespace   Cryptography::Hash;
+        using   namespace   Cryptography::Digest;
 
         void    DoRegressionTests_ ()
         {
-            using   USE_HASHER_     =   Hasher<uint32_t, Algorithm::SuperFastHash>;
+            using   USE_HASHER_     =   Digester<uint32_t, Algorithm::SuperFastHash>;
             {
-                VerifyTestResult (Adapter<USE_HASHER_> (1) == 422304363);
-                VerifyTestResult (Adapter<USE_HASHER_> (93993) == 2489559407);
+                VerifyTestResult (Hash::Adapter<USE_HASHER_> (1) == 422304363);
+                VerifyTestResult (Hash::Adapter<USE_HASHER_> (93993) == 2489559407);
             }
             {
                 // special case where these collide

@@ -12,7 +12,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Hash;
+using   namespace   Stroika::Foundation::Cryptography::Digest;
 
 
 using   ReturnType = array<uint8_t, 16>;
@@ -349,14 +349,14 @@ namespace   {
 
 
 
-Hasher<ReturnType, Algorithm::MD5>::ReturnType  Hasher<ReturnType, Algorithm::MD5>::Hash (const Streams::BinaryInputStream& from)
+Digester<ReturnType, Algorithm::MD5>::ReturnType  Digester<ReturnType, Algorithm::MD5>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
     Memory::BLOB    b = from.ReadAll ();
-    return Hasher<ReturnType, Algorithm::MD5>::Hash (b.begin (), b.end ());
+    return Digester<ReturnType, Algorithm::MD5>::ComputeDigest (b.begin (), b.end ());
 }
 
-Hasher<ReturnType, Algorithm::MD5>::ReturnType  Hasher<ReturnType, Algorithm::MD5>::Hash (const Byte* from, const Byte* to)
+Digester<ReturnType, Algorithm::MD5>::ReturnType  Digester<ReturnType, Algorithm::MD5>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

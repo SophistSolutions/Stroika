@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_Hash_CRC32_h_
-#define _Stroika_Foundation_Cryptography_Hash_CRC32_h_  1
+#ifndef _Stroika_Foundation_Cryptography_Digest_CRC32_h_
+#define _Stroika_Foundation_Cryptography_Digest_CRC32_h_  1
 
 #include    "../../../StroikaPreComp.h"
 
@@ -27,7 +27,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
-            namespace   Hash {
+            namespace   Digest {
 
 
                 namespace   Algorithm {
@@ -37,11 +37,11 @@ namespace   Stroika {
 
 
                 template    <>
-                struct Hasher<uint32_t, Algorithm::CRC32> {
+                struct  Digester<uint32_t, Algorithm::CRC32> {
                     using   ReturnType      =   uint32_t;
 
-                    static  ReturnType    Hash (const Streams::BinaryInputStream& from);
-                    static  ReturnType    Hash (const Byte* from, const Byte* to);
+                    static  ReturnType    ComputeDigest (const Streams::BinaryInputStream& from);
+                    static  ReturnType    ComputeDigest (const Byte* from, const Byte* to);
                 };
 
 
@@ -58,4 +58,4 @@ namespace   Stroika {
  */
 #include    "CRC32.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Hash_CRC32_h_*/
+#endif  /*_Stroika_Foundation_Cryptography_Digest_CRC32_h_*/

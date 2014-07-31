@@ -33,6 +33,7 @@ namespace   Stroika {
                     }
                     inline  Memory::BLOB    SerializeForHash1_ (const Characters::String& data2Hash)
                     {
+                        using   Memory::Byte;
                         string  utf8    =   data2Hash.AsUTF8 ();    // unwise approach because costly
                         return Memory::BLOB (reinterpret_cast<const Byte*> (utf8.c_str ()), reinterpret_cast<const Byte*> (utf8.c_str () + utf8.length ()));
 #if 0
@@ -43,10 +44,12 @@ namespace   Stroika {
                     }
                     inline  Memory::BLOB    SerializeForHash1_ (const char* data2Hash)
                     {
+                        using   Memory::Byte;
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash), reinterpret_cast<const Byte*> (data2Hash + ::strlen (data2Hash)));
                     }
                     inline  Memory::BLOB    SerializeForHash1_ (const string& data2Hash)
                     {
+                        using   Memory::Byte;
                         return Memory::BLOB (reinterpret_cast<const Byte*> (data2Hash.c_str ()), reinterpret_cast<const Byte*> (data2Hash.c_str () + data2Hash.length ()));
                     }
                     template    <typename TYPE_TO_COMPUTE_HASH_OF>
@@ -102,19 +105,19 @@ namespace   Stroika {
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash);
-                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::ComputeDigest (blob.begin (), blob.end ()));
                 }
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + salt;
-                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::ComputeDigest (blob.begin (), blob.end ()));
                 }
                 template    <typename HASHER_TYPE, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
                 HASH_RETURN_TYPE  Adapter (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt)
                 {
                     Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash) + Private_::SerializeForHash_ (salt);
-                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::Hash (blob.begin (), blob.end ()));
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (HASHER_TYPE::ComputeDigest (blob.begin (), blob.end ()));
                 }
 
 

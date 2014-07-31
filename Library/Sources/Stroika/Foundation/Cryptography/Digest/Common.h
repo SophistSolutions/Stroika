@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_Hash_Common_h_
-#define _Stroika_Foundation_Cryptography_Hash_Common_h_  1
+#ifndef _Stroika_Foundation_Cryptography_Digest_Common_h_
+#define _Stroika_Foundation_Cryptography_Digest_Common_h_  1
 
 #include    "../../StroikaPreComp.h"
 
@@ -23,14 +23,14 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
-            namespace   Hash {
+            namespace   Digest {
 
 
                 using   Memory::Byte;
 
 
-                using   HashResult128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
-                using   HashResult160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
+                using   Result128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
+                using   Result160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
 
 
                 /**
@@ -38,11 +38,11 @@ namespace   Stroika {
                  *  but could in principle be anything.
                  */
                 template    <typename RETURN_TYPE, typename ALGORITHM>
-                struct Hasher {
+                struct  Digester {
                     using   ReturnType      =   RETURN_TYPE;
 
-                    static  ReturnType  Hash (const Streams::BinaryInputStream& from);
-                    static  ReturnType  Hash (const Byte* from, const Byte* to);
+                    static  ReturnType  ComputeDigest (const Streams::BinaryInputStream& from);
+                    static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
                 };
 
 
@@ -59,4 +59,4 @@ namespace   Stroika {
  */
 #include    "Common.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Hash_Common_h_*/
+#endif  /*_Stroika_Foundation_Cryptography_Digest_Common_h_*/

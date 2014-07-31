@@ -9,7 +9,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Hash;
+using   namespace   Stroika::Foundation::Cryptography::Digest;
 
 
 
@@ -93,7 +93,7 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithm::CRC32>::ReturnType  Hasher<uint32_t, Algorithm::CRC32>::Hash (const Streams::BinaryInputStream& from)
+Digester<uint32_t, Algorithm::CRC32>::ReturnType  Digester<uint32_t, Algorithm::CRC32>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     uint32_t    hash    =   0xFFFFFFFF;
     while (true) {
@@ -109,7 +109,7 @@ Hasher<uint32_t, Algorithm::CRC32>::ReturnType  Hasher<uint32_t, Algorithm::CRC3
     return hash;
 }
 
-Hasher<uint32_t, Algorithm::CRC32>::ReturnType  Hasher<uint32_t, Algorithm::CRC32>::Hash (const Byte* from, const Byte* to)
+Digester<uint32_t, Algorithm::CRC32>::ReturnType  Digester<uint32_t, Algorithm::CRC32>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

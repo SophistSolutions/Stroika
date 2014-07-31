@@ -14,7 +14,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Hash;
+using   namespace   Stroika::Foundation::Cryptography::Digest;
 
 
 
@@ -47,13 +47,13 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithm::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (const Streams::BinaryInputStream& from)
+Digester<uint32_t, Algorithm::SuperFastHash>::ReturnType  Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     Memory::BLOB    b = from.ReadAll ();
-    return Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (b.begin (), b.end ());
+    return Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (b.begin (), b.end ());
 }
 
-Hasher<uint32_t, Algorithm::SuperFastHash>::ReturnType  Hasher<uint32_t, Algorithm::SuperFastHash>::Hash (const Byte* from, const Byte* to)
+Digester<uint32_t, Algorithm::SuperFastHash>::ReturnType  Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

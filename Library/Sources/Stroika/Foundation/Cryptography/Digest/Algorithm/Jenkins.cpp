@@ -8,7 +8,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Cryptography;
-using   namespace   Stroika::Foundation::Cryptography::Hash;
+using   namespace   Stroika::Foundation::Cryptography::Digest;
 
 
 
@@ -42,7 +42,7 @@ namespace {
 
 
 
-Hasher<uint32_t, Algorithm::Jenkins>::ReturnType  Hasher<uint32_t, Algorithm::Jenkins>::Hash (const Streams::BinaryInputStream& from)
+Digester<uint32_t, Algorithm::Jenkins>::ReturnType  Digester<uint32_t, Algorithm::Jenkins>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     uint32_t    hash    =   0;
     while (true) {
@@ -58,7 +58,7 @@ Hasher<uint32_t, Algorithm::Jenkins>::ReturnType  Hasher<uint32_t, Algorithm::Je
     return hash;
 }
 
-Hasher<uint32_t, Algorithm::Jenkins>::ReturnType  Hasher<uint32_t, Algorithm::Jenkins>::Hash (const Byte* from, const Byte* to)
+Digester<uint32_t, Algorithm::Jenkins>::ReturnType  Digester<uint32_t, Algorithm::Jenkins>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

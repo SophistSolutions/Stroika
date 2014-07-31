@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_Hash_MD5_h_
-#define _Stroika_Foundation_Cryptography_Hash_MD5_h_  1
+#ifndef _Stroika_Foundation_Cryptography_Digest_MD5_h_
+#define _Stroika_Foundation_Cryptography_Digest_MD5_h_  1
 
 #include    "../../../StroikaPreComp.h"
 
@@ -24,7 +24,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
-            namespace   Hash {
+            namespace   Digest {
 
 
                 namespace Algorithm {
@@ -34,11 +34,11 @@ namespace   Stroika {
                 }
 
                 template    <>
-                struct Hasher<HashResult128BitType, Algorithm::MD5> {
-                    using   ReturnType      =   HashResult128BitType;
+                struct  Digester<Result128BitType, Algorithm::MD5> {
+                    using   ReturnType      =   Result128BitType;
 
-                    static  ReturnType  Hash (const Streams::BinaryInputStream& from);
-                    static  ReturnType  Hash (const Byte* from, const Byte* to);
+                    static  ReturnType  ComputeDigest (const Streams::BinaryInputStream& from);
+                    static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
                 };
 
 
@@ -55,4 +55,4 @@ namespace   Stroika {
  */
 #include    "MD5.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Hash_MD5_h_*/
+#endif  /*_Stroika_Foundation_Cryptography_Digest_MD5_h_*/

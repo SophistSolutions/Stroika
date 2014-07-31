@@ -1,10 +1,8 @@
-This Folder contains the Foundation::Cryptography::Hash source code.
+This Folder contains the Foundation::Cryptography::Digest source code.
 
-	(VERY PROTOTYPE DEFINITION AT THIS STAGE)
-	
 	Overview
 
-	We have Algorithms - that take a stream of bytes and convert it to a Hash::ReturnType. This is
+	We have Algorithms - that take a stream of bytes and convert it to a Digester<>::ReturnType. This is
 	all template driven (at least the types and choice of algorithm) - so invoking a hash algorithm
 	can be inlined.
 
@@ -20,10 +18,7 @@ This Folder contains the Foundation::Cryptography::Hash source code.
 
 	Algorithms:
 	Each file in the Algorithms folder repesents a different algorithm. Each follows a pattern layed out
-	in the Hasher<> template pattern.
+	in the Digester<> template pattern.
 	
 	Conceptually its best for each to just operate on a stream, but for performance
 	reasons, we must also allow Hash of individual ints etc.
-	
-	ADAPTERS:
-	MAYBE push actual algorithms itno subdir? (algorithms).
