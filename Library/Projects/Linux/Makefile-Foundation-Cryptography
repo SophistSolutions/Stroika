@@ -8,6 +8,7 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Crypt
 
 
 SubDirs	=	\
+	Digest		\
 	Encoding	\
 	Hash		\
 	SSL			\
@@ -23,13 +24,17 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+Digest_OBJS := $(addprefix "Digest/", $(shell $(MAKE) --directory Digest -s list-objs))
 Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs))
 Hash_OBJS := $(addprefix "Hash/", $(shell $(MAKE) --directory Hash -s list-objs))
 SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
 
 
 list-objs::
-	@echo $(Encoding_OBJS) $(Hash_OBJS) $(SSL_OBJS)
+	@echo $(Digest_OBJS) $(Encoding_OBJS) $(Hash_OBJS) $(SSL_OBJS)
+
+Digest:
+	@$(MAKE) --directory Digest -s
 
 Hash:
 	@$(MAKE) --directory Hash -s

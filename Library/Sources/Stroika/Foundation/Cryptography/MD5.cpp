@@ -12,8 +12,8 @@
 #include    "../Debug/Assertions.h"
 #include    "../Memory/BLOB.h"
 
+#include    "Digest/Algorithm/MD5.h"
 #include    "Hash/Adapter.h"
-#include    "Hash/Algorithm/MD5.h"
 
 #include    "MD5.h"
 
