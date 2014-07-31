@@ -8,6 +8,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Memory/BLOB.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
@@ -38,16 +40,20 @@ namespace   Stroika {
                 {
                     return mkFmt_ (n);
                 }
-                template    <typename DIGEST_RESULT_TYPE>
-                inline  String      Format_ (const DIGEST_RESULT_TYPE& arr, const String*)
+                inline  string      Format_ (const Memory::BLOB& b, const string*)
+                {
+                    return mkArrayFmt_ (b.begin (), b.end ());
+                }
+                template    <typename CRYTO_RESULT_TO_FORMAT_TYPE>
+                inline  String      Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const String*)
                 {
                     return String::FromAscii (Format_ (arr, static_cast<const string*> (nullptr)));
                 }
             }
 
 
-            template    <typename DIGEST_RESULT_TYPE, typename AS_RESULT_TYPE>
-            inline  AS_RESULT_TYPE  Format (const DIGEST_RESULT_TYPE& digestResult)
+            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE, typename AS_RESULT_TYPE>
+            inline  AS_RESULT_TYPE  Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult)
             {
                 return Private_::Format_ (digestResult, static_cast<const AS_RESULT_TYPE*> (nullptr));
             }

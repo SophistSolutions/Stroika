@@ -29,15 +29,17 @@ namespace   Stroika {
             /**
              *  Generally, this Format function is used to take a BLOB and render it as a hex string.
              *
-             *  DIGEST_RESULT_TYPE can be any of the uintN types (e.g. uint16_t, etc), or any of the defined
-             *  std::array<> types defined in Digest/ResultTypes.h.
+             *  CRYTO_RESULT_TO_FORMAT_TYPE can be
+             *      o   any of the uintN types (e.g. uint16_t, etc)
+             *      o   any of the defined std::array<> types defined in Digest/ResultTypes.h.
+             *      o   Memory::BLOB
              *
              *  AS_RESULT_TYPE can be:
              *      o   Characters::String
              *      o   std::string
              */
-            template    <typename DIGEST_RESULT_TYPE, typename AS_RESULT_TYPE = string>
-            AS_RESULT_TYPE  Format (const DIGEST_RESULT_TYPE& digestResult);
+            template    <typename CRYTO_RESULT_TO_FORMAT_TYPE, typename AS_RESULT_TYPE = string>
+            AS_RESULT_TYPE  Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult);
 
 
         }
