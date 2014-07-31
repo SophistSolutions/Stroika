@@ -6,7 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    "../Common.h"
+#include    "../Digester.h"
 #include    "../ResultTypes.h"
 
 

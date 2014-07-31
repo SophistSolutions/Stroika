@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_Digest_Common_h_
-#define _Stroika_Foundation_Cryptography_Digest_Common_h_  1
+#ifndef _Stroika_Foundation_Cryptography_Digest_Digester_h_
+#define _Stroika_Foundation_Cryptography_Digest_Digester_h_  1
 
 #include    "../../StroikaPreComp.h"
 
@@ -52,6 +52,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Common.inl"
+#include    "Digester.inl"
 
-#endif  /*_Stroika_Foundation_Cryptography_Digest_Common_h_*/
+#endif  /*_Stroika_Foundation_Cryptography_Digest_Digester_h_*/

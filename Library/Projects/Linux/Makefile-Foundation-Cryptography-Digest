@@ -15,7 +15,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Common.o\
+	$(ObjDir)Digester.o\
 	$(ObjDir)Format.o\
 	$(ObjDir)ResultTypes.o\
 

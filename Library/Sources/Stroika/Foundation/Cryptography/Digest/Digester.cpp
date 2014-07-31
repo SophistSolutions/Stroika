@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    "Common.h"
+#include    "Digester.h"
 
 
 using   namespace   Stroika::Foundation;

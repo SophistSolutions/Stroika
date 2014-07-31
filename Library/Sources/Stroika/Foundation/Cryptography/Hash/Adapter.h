@@ -9,7 +9,7 @@
 #include    "../../Characters/String.h"
 #include    "../../Memory/BLOB.h"
 
-#include    "../Digest/Common.h"
+#include    "../Digest/Digester.h"
 
 
 

@@ -708,9 +708,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.cpp">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.cpp">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
@@ -718,6 +715,9 @@
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1647,9 +1647,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.h">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapter.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
@@ -1657,6 +1654,9 @@
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2502,9 +2502,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.inl">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
@@ -2518,6 +2515,9 @@
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
   </ItemGroup>

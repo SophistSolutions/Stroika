@@ -256,26 +256,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Algorithm-SuperFastHash.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Algorithm-SuperFastHash.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Common.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Digest-Format.obj</ObjectFileName>
@@ -1036,7 +1017,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h" />
@@ -1383,7 +1364,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl" />
