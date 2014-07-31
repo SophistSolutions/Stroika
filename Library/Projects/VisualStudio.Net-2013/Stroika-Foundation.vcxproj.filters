@@ -717,6 +717,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.cpp">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1656,6 +1659,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h">
       <Filter>Sources\Cryptography</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.h">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2516,6 +2522,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.inl">
       <Filter>Sources\Cryptography</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.inl">
+      <Filter>Sources\Streams\iostream</Filter>
     </None>
   </ItemGroup>
 </Project>
