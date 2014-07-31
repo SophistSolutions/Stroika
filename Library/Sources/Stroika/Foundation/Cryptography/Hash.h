@@ -35,10 +35,10 @@ namespace   Stroika {
                  *  common forms, and then makes generic the actual hash computing algorithm.
                  *
                  *  EXAMPLE USAGE:
-                 *      using   USE_HASHER_     =   Digester<uint32_t, Algorithms::Jenkins>;
-                 *      VerifyTestResult (Hash<USE_HASHER_> (1) == 10338022);
-                 *      VerifyTestResult (Hash<USE_HASHER_> ("1") == 2154528969);
-                 *      VerifyTestResult (Hash<USE_HASHER_> (String (L"1")) == 2154528969);
+                 *      using   USE_DIGESTER_     =   Digester<uint32_t, Algorithms::Jenkins>;
+                 *      VerifyTestResult (Hash<USE_DIGESTER_> (1) == 10338022);
+                 *      VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
+                 *      VerifyTestResult (Hash<USE_DIGESTER_> (String (L"1")) == 2154528969);
                  *
                  *  If you use the overload with 'salt', if the SALT is not a BLOB, it will be turned into a BLOB with the same
                  *  normalizing function used on data2Hash. The resulting BLOB salt will be combined with the serialized data2Hash

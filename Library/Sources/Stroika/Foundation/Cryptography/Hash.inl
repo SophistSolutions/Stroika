@@ -11,7 +11,7 @@
 
 #include    <type_traits>
 
-#include    "Digest/Format.h"
+#include    "Format.h"
 
 namespace   Stroika {
     namespace   Foundation {
