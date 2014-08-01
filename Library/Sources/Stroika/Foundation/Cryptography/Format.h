@@ -17,6 +17,9 @@
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *  TODO:
+ *      @todo   Consider  renaming this module FormatResult
  */
 
 
