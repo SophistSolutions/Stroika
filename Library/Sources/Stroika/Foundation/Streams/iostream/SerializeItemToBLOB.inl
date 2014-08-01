@@ -22,6 +22,7 @@ namespace   Stroika {
                 template    <typename T>
                 Memory::BLOB  SerializeItemToBLOB (const T& elt)
                 {
+                    using   Memory::Byte;
                     stringstream    out;
                     out << elt;
                     string  tmp = out.str ();
