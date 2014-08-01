@@ -13,10 +13,10 @@
 
 
 
-
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  */
+
 
 
 namespace   Stroika {
