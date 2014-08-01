@@ -25,7 +25,7 @@ Algorithm_OBJS := $(addprefix "./Algorithm/", $(shell cd Algorithm; make -s list
 
 
 list-objs::
-	@echo $(Objs) $(Algorithm_OBJS)
+	@echo $(Algorithm_OBJS)
 
 Algorithm:
 	(cd Algorithm; make -s)
