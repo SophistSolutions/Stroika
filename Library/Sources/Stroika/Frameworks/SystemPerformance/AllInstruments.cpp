@@ -36,7 +36,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
         Instruments::GetSystemTimes (),
 #endif
-        Instruments::GetMountedFilesystemUsage (),
+        Instruments::MountedFilesystemUsage::GetInstrument (),
     };
     return kInstruments_;
 }
