@@ -18,11 +18,13 @@
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include    "Stroika/Foundation/Cryptography/Hash.h"
-#include    "Stroika/Foundation/Cryptography/MD5.h"
+#include    "Stroika/Foundation/Cryptography/Format.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
+
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -175,10 +177,23 @@ namespace  {
     namespace MD5Test {
         void    DoRegressionTests_ ()
         {
+            // really this is a test of high level tools used in orig Cryptography::MD5 module, but these are really
+            // generic utilities...
+            using   DIGESTER_ = Digest::Digester<Digest::Result128BitType, Digest::Algorithm::MD5>;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (ComputeMD5Digest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == kEncodedVal);
+                VerifyTestResult (Format (DIGESTER_::ComputeDigest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc))) == kEncodedVal);
+            }
+            {
+                // replacement for ComputeMD5Digest_UsingOStream
+                int tmp = 3;
+                string  digestStr = Format (
+                                        DIGESTER_::ComputeDigest (
+                                            Streams::iostream::SerializeItemToBLOB (tmp).As<Streams::BinaryInputStream> ()
+                                        )
+                                    );
+                VerifyTestResult (digestStr ==  "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
         }
     }

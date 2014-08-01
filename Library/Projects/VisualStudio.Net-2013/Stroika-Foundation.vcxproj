@@ -397,7 +397,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Format.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Cryptography-SSL-Common.obj</ObjectFileName>
@@ -1064,7 +1063,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
@@ -1411,7 +1409,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />

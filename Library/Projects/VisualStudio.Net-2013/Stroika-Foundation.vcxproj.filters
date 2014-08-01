@@ -177,9 +177,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
       <Filter>Sources\Database</Filter>
     </ClCompile>
@@ -761,9 +758,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h">
-      <Filter>Sources\Cryptography</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
       <Filter>Sources\Memory</Filter>
@@ -1696,9 +1690,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl">
-      <Filter>Sources\Cryptography</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
