@@ -10,6 +10,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)LoadAverage.o\
 	$(ObjDir)MountedFilesystemUsage.o\
+	$(ObjDir)ProcFSProcesses.o\
 	$(ObjDir)SystemTimes.o\
 
 all:	$(Objs)
