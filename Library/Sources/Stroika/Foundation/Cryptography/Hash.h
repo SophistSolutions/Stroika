@@ -25,6 +25,19 @@ namespace   Stroika {
 
 
             /**
+             *  A Hash is very much like a Digest - it takes a series of bytes and produces a
+             *  series of bits which as closely as practical uniquely bijectively maps between
+             *  the series of input bytes and the series of output bits.
+             *
+             *  The main difference between a Digest and a Hash, more a focus on how its used. A Hash
+             *  is typically required to be more quick, and often works on a variety of input types (int, string
+             *  etc), and maps to often smaller sequences of bits (say 32-bit number).
+             *
+             *  So this class uses the Digist mechanism to allow users to easily map differnt types to
+             *  a sequence of 'bytes' in normalized form, and hten allows them to be digested, and then the digest
+             *  mapped to a (typically) small number (32-bit integer for example).
+             *
+             *
              *  This function applies any (argument) Hash function (DIGESTER given data type, and
              *  returns the argument hash value.
              *

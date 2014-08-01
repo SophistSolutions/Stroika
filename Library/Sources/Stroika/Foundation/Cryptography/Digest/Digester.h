@@ -29,6 +29,12 @@ namespace   Stroika {
 
 
                 /**
+                 *  A Digest is an algorithm that takes a stream of bytes and computes a series of bits
+                 *  (can be thought of as a number, or string, or seqeunce of bits) which hopefully as
+                 *  nearly as possible (given the length of the digest) uniquely identifies the input.
+                 *
+                 *  A digest is generally of fixed length - often 4, or 16, or 20 bytes long.
+                 *
                  *  RETURN_TYPE is typically uint32_t, uint64_t, or Result128BitType, Result128BitType etc,
                  *  but could in principle be anything.
                  *
