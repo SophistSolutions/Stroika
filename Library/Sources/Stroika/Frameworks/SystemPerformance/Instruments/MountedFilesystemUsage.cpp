@@ -153,13 +153,13 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         mapper.AddCommonType<Optional<String>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<VolumeInfo> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fFileSystemType, L"Filesystem-Type"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fDeviceOrVolumeName, L"Device-Name"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fVolumeID, L"Volume-ID"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fMountedOnName, L"Mounted-On"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fDiskSizeInBytes, L"Disk-Size"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (VolumeInfo, fUsedSizeInBytes, L"Disk-Used-Size"),
+        mapper.AddClass<VolumeInfo> (initializer_list<ObjectVariantMapper::StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), L"Filesystem-Type" },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), L"Device-Name" },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fVolumeID), L"Volume-ID" },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), L"Mounted-On" },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), L"Disk-Size" },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), L"Disk-Used-Size" },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");

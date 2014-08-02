@@ -438,7 +438,7 @@ namespace   Stroika {
 
 
             /**
-             *  Greatly regret adding Macro, but it just seems SO HELPFUL (makes things much more terse).
+             *  Greatly regret adding a macro, but it just seems SO HELPFUL (makes things much more terse).
              *  No need to use - but some may find it helpfull...
              *
              *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
@@ -449,9 +449,30 @@ namespace   Stroika {
              *      for 'standard-layout' objects (e.g. those without virtual functions, or other fancy
              *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
              *      the approach/question (could  we use pointer to member?).
+             *
+             *  @see Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey
              */
 #define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
     DataExchange::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
+
+
+            /**
+             *  Greatly regret adding a macro, but it just seems SO HELPFUL (makes things much more terse).
+             *  No need to use - but some may find it helpfull...
+             *
+             *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
+             *  thing and offsetof()).
+             *
+             *  \note
+             *      This macro uses offsetof(). According to the C++11 spec, offsetof() is only supported
+             *      for 'standard-layout' objects (e.g. those without virtual functions, or other fancy
+             *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
+             *      the approach/question (could  we use pointer to member?).
+             *
+             *  @see ObjectVariantMapper_StructureFieldInfo_Construction_Helper
+             */
+#define     Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey(CLASS,MEMBER)\
+    offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))
 
 
             template    <>
