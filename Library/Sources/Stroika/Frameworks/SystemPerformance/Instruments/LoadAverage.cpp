@@ -23,6 +23,12 @@ using   Characters::String_Constant;
 
 
 
+Instruments::LoadAverage::Info::Info (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve)
+    : f1MinuteAve (oneMinuteAve)
+    , f5MinuteAve (fiveMinuteAve)
+    , f15MinuteAve (fifteenMinuteAve)
+{
+}
 
 
 /*
@@ -70,7 +76,7 @@ Instrument  SystemPerformance::Instruments::LoadAverage::GetInstrument ()
         if (result == 3)
         {
             Measurement m;
-            m.fValue = GetObjectVariantMapper ().FromObject (Info   { loadAve[0], loadAve[1], loadAve[2] });
+            m.fValue = GetObjectVariantMapper ().FromObject (Info { loadAve[0], loadAve[1], loadAve[2] });
             m.fType = kLoadAverage;
             results.fMeasurements.Add (m);
         }

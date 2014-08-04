@@ -41,9 +41,10 @@ namespace   Stroika {
                      *
                      */
                     struct  Info {
-                        double  f1MinuteAve = 0.0;
-                        double  f5MinuteAve = 0.0;
-                        double  f15MinuteAve = 0.0;
+                        double  f1MinuteAve;
+                        double  f5MinuteAve;
+                        double  f15MinuteAve;
+                        Info (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
                     };
 
 
