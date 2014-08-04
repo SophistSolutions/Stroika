@@ -64,7 +64,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcFSProcesses.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcessDetails.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
   </ItemGroup>
@@ -102,7 +102,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcFSProcesses.h">
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcessDetails.h">
       <Filter>Sources\Instruments</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Instruments_ProcFSProcesses_h_
-#define _Stroika_Framework_SystemPerformance_Instruments_ProcFSProcesses_h_ 1
+#ifndef _Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_
+#define _Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -27,15 +27,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-                namespace ProcFSProcesses {
-
-
-//tmphack to test
-#define qSupport_SystemPerformance_Instruments_ProcFSProcesses  1
-
-#ifndef qSupport_SystemPerformance_Instruments_ProcFSProcesses
-#define qSupport_SystemPerformance_Instruments_ProcFSProcesses  qPlatform_POSIX
-#endif
+                namespace ProcessDetails {
 
 
                     using   Foundation::Containers::Mapping;
@@ -88,7 +80,6 @@ namespace   Stroika {
                     };
 
 
-#if     qSupport_SystemPerformance_Instruments_ProcFSProcesses
                     /**
                      *  Instrument returning ProcessMapType measurements.
                      */
@@ -98,7 +89,6 @@ namespace   Stroika {
                         const Optional<Set<pid_t>>& omitPIDs = Optional<Set<pid_t>> (),
                         CachePolicy cachePolicy = CachePolicy::eIncludeAllRequestedValues
                     );
-#endif
 
 
                 }
@@ -116,4 +106,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_ProcFSProcesses_h_*/
+#endif  /*_Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_*/

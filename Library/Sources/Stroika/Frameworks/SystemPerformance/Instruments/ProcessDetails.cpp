@@ -8,7 +8,7 @@
 
 #include    "../CommonMeasurementTypes.h"
 
-#include    "ProcFSProcesses.h"
+#include    "ProcessDetails.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -19,23 +19,29 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::ProcFSProcesses;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails;
 
 using   Characters::String_Constant;
 
 
 
 
-const   MeasurementType Instruments::ProcFSProcesses::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
+const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
+
+
+
+#ifndef     qUseProcFS_
+#define     qUseProcFS_ qPlatform_POSIX
+#endif
 
 
 
 /*
  ********************************************************************************
- ************* Instruments::ProcFSProcesses::GetObjectVariantMapper *************
+ ************** Instruments::ProcessDetails::GetObjectVariantMapper *************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::ProcFSProcesses::GetObjectVariantMapper ()
+ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
@@ -70,12 +76,21 @@ namespace {
         //
         ProcessMapType  tmp;
 
+#if qUseProcFS_
         ProcessType test;
         test.fCommandLine = L"Hi mom comamndline";
         Mapping<String, String> env;
         env.Add (L"Home", L"/home/lewis");
         test.fEnvironmentVariables = env;
         tmp.Add (101, test);
+#else
+        ProcessType test;
+        test.fCommandLine = L"Hi mom comamndline";
+        Mapping<String, String> env;
+        env.Add (L"Home", L"/home/lewis");
+        test.fEnvironmentVariables = env;
+        tmp.Add (101, test);
+#endif
         return tmp;
     }
 }
@@ -86,11 +101,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************* Instruments::ProcFSProcesses::GetInstrument **********************
+ ************* Instruments::ProcessDetails::GetInstrument **********************
  ********************************************************************************
  */
-#if     qSupport_SystemPerformance_Instruments_ProcFSProcesses
-Instrument          SystemPerformance::Instruments::ProcFSProcesses::GetInstrument (
+Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (
     const Optional<Set<Fields2Capture>>& onlyCaptureFields,
     const Optional<Set<pid_t>>& restrictToPIDs,
     const Optional<Set<pid_t>>& omitPIDs,
@@ -99,7 +113,7 @@ Instrument          SystemPerformance::Instruments::ProcFSProcesses::GetInstrume
 {
     // @todo can only use static one if right options passed in...
     static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (String_Constant (L"ProcFSProcesses")),
+            InstrumentNameType (String_Constant (L"ProcessDetails")),
     [] () -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -115,4 +129,3 @@ Instrument          SystemPerformance::Instruments::ProcFSProcesses::GetInstrume
                                           );
     return kInstrument_;
 }
-#endif
