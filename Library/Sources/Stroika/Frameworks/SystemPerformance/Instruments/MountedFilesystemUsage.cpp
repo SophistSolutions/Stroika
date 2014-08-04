@@ -147,7 +147,7 @@ namespace {
  */
 ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper ()
 {
-	using	StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
+    using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<double>> ();
