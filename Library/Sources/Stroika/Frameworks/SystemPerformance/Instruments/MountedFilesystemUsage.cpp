@@ -155,12 +155,12 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), L"Filesystem-Type", StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), L"Device-Name", StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fVolumeID), L"Volume-ID", StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), L"Mounted-On" },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), L"Disk-Size", StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), L"Disk-Used-Size", StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), String_Constant (L"Mounted-On") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), String_Constant (L"Disk-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Disk-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -186,42 +186,15 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
         DateTime    before = DateTime::Now ();
         Sequence<VolumeInfo> volumes   =   capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
-#if 0
-        // @todo - make sure our above code doesnt emit NULL items!!!
-        Mapping<String, VariantValue> vv;
-        if (not v.fFileSystemType.empty ())
-        {
-            vv.Add (String_Constant (L"Filesystem-Type"), v.fFileSystemType);
-        }
-        if (not v.fDeviceOrVolumeName.empty ())
-        {
-            vv.Add (String_Constant (L"Device-Name"), v.fDeviceOrVolumeName);
-        }
-        if (not v.fVolumeID.empty ())
-        {
-            vv.Add (String_Constant (L"Volume-ID"), v.fVolumeID);
-        }
-        vv.Add (String_Constant (L"Mounted-On"), v.fMountedOnName);
-        if (v.fDiskSizeInBytes.IsPresent ())
-        {
-            vv.Add (String_Constant (L"Disk-Size"), *v.fDiskSizeInBytes);
-        }
-        if (v.fUsedSizeInBytes.IsPresent ())
-        {
-            vv.Add (String_Constant (L"Disk-Used-Size"), *v.fUsedSizeInBytes);
-        }
-        volumnesAsVariants.Append (VariantValue (vv));
-    }
-#endif
-    Measurement m;
-    m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
-               m.fType = kMountedVolumeUsage;
-               results.fMeasurements.Add (m);
-               return results;
-},
-{kMountedVolumeUsage}
-                                      );
-return kInstrument_;
+        Measurement m;
+        m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
+        m.fType = kMountedVolumeUsage;
+        results.fMeasurements.Add (m);
+        return results;
+    },
+    {kMountedVolumeUsage}
+                                          );
+    return kInstrument_;
 }
 
 Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
