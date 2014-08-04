@@ -31,7 +31,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
     // OK to cache - copyable - but construct AFTER main (only when called here)
     static  InstrumentSet   kInstruments_ = {
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-        Instruments::GetLoadAverage (),
+        Instruments::LoadAverage::GetInstrument (),
 #endif
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
         Instruments::GetSystemTimes (),

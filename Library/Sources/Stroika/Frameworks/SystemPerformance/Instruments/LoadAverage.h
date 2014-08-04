@@ -6,13 +6,19 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+
 #include    "../Instrument.h"
 
 
+
 /*
- * TODO:
- *      @todo
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *
  */
+
 
 
 namespace   Stroika {
@@ -26,8 +32,41 @@ namespace   Stroika {
 #endif
 
 
+                namespace   LoadAverage {
+
+
+                    using   Memory::Optional;
+                    using   DataExchange::ObjectVariantMapper;
+
+                    /**
+                     *
+                     */
+                    struct  Info {
+                        double  f1MinuteAve = 0.0;
+                        double  f5MinuteAve = 0.0;
+                        double  f15MinuteAve = 0.0;
+                    };
+
+
+                    /**
+                     *  For Info type.
+                     */
+                    ObjectVariantMapper GetObjectVariantMapper ();
+
+
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-                Instrument  GetLoadAverage ();
+                    /**
+                     *  Instrument returning Info measurements (mainly for Linux/POSIX).
+                     */
+                    Instrument          GetInstrument ();
+#endif
+
+
+                }
+
+
+#if     qSupport_SystemPerformance_Instruments_LoadAverage
+                _DeprecatedFunction_ (Instrument  GetLoadAverage (), "Deprecated in v2.0a36; instead use LoadAverage::GetInstrument ()");
 #endif
 
 

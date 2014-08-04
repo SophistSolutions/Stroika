@@ -13,6 +13,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
@@ -22,13 +23,42 @@ using   Characters::String_Constant;
 
 
 
+
+
 /*
  ********************************************************************************
- ************************* Instruments::GetLoadAverage **************************
+ ***************** Instruments::LoadAverage::GetObjectVariantMapper *************
+ ********************************************************************************
+ */
+ObjectVariantMapper Instruments::LoadAverage::GetObjectVariantMapper ()
+{
+    using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
+    ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
+        ObjectVariantMapper mapper;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f1MinuteAve), String_Constant (L"1-minute") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f5MinuteAve), String_Constant (L"5-minute") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f15MinuteAve), String_Constant (L"15-minute") },
+        });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
+        mapper.AddCommonType<Sequence<Info>> ();
+        return mapper;
+    } ();
+    return sMapper_;
+}
+
+
+
+/*
+ ********************************************************************************
+ ******************* Instruments::LoadAverage::GetInstrument ********************
  ********************************************************************************
  */
 #if     qSupport_SystemPerformance_Instruments_LoadAverage
-Instrument  SystemPerformance::Instruments::GetLoadAverage ()
+Instrument  SystemPerformance::Instruments::LoadAverage::GetInstrument ()
 {
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"Load-Average")),
@@ -40,12 +70,8 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         if (result == 3)
         {
-            Mapping<String, VariantValue> v;
-            v.Add (String_Constant (L"1-minute"), loadAve[0]);
-            v.Add (String_Constant (L"5-minute"), loadAve[1]);
-            v.Add (String_Constant (L"15-minute"), loadAve[2]);
             Measurement m;
-            m.fValue = VariantValue (v);
+            m.fValue = GetObjectVariantMapper ().FromObject (Info   { loadAve[0], loadAve[1], loadAve[2] });
             m.fType = kLoadAverage;
             results.fMeasurements.Add (m);
         }
@@ -54,5 +80,12 @@ Instrument  SystemPerformance::Instruments::GetLoadAverage ()
     {kLoadAverage}
                                           );
     return kInstrument_;
+}
+
+
+
+Instrument  SystemPerformance::Instruments::GetLoadAverage ()
+{
+    return LoadAverage::GetInstrument ();
 }
 #endif
