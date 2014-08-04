@@ -62,7 +62,7 @@ namespace   Stroika {
              *  This also runs its capturing on a (single) background thread. This has implications for how much its able to
              *  keep up with and maintain all the measurements in question.
              *
-             *  Note - there is no reason you cannot use the rest of teh SystemPerformance framework without this class,
+             *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
              *  if its pattern doesnt meet your needs.
              */
             class   Capturer {
