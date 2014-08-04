@@ -26,7 +26,9 @@ namespace   Stroika {
             extern  const   MeasurementType kLoadAverage;
 
             /*
-             * Portable average percent CPU usage(combines system and user time).
+             * Portable average percent CPU usage(combines system and user time, and aggregates over installed CPUs).
+             *
+             *  @todo clarify what this means if you use all of 4 cpus - 100% or 400%?
              */
             extern  const   MeasurementType kPercentCPUUsage;
 
