@@ -28,7 +28,7 @@ namespace   Stroika {
             /*
              * Portable average percent CPU usage(combines system and user time, and aggregates over installed CPUs).
              *
-             *  @todo clarify what this means if you use all of 4 cpus - 100% or 400%?
+             *  @todo clarify what this means if you use all of 4 cpus - 100% or 400%? But I think max is 100%
              */
             extern  const   MeasurementType kPercentCPUUsage;
 
