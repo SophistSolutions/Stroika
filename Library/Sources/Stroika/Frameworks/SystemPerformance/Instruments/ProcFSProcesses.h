@@ -7,14 +7,19 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Execution/Process.h"
+#include    "../../../Foundation/Memory/Optional.h"
 
 #include    "../Instrument.h"
 
 
 /*
  * TODO:
- *      @todo
+ *      @todo   Eventually allow configuration of whether to use procfs or ps process grep, but default to
+ *              procfs is available.
+ *
+ *      @todo   Do Windoze impl using windows APIs for process enumeration etc
  */
 
 
@@ -22,36 +27,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-
-
                 namespace ProcFSProcesses {
-
-
-                    using   Foundation::Containers::Mapping;
-                    using   Foundation::Execution::pid_t;
-
-
-                    /*
-                     *  Based closely on http://en.wikipedia.org/wiki/Procfs
-                     */
-                    struct  ProcessType {
-                        String  fCommandLine;
-                        String  fCurrentWorkingDirectory;
-                        String  fEnvironmentVariables;
-                        String  fEXEPath;
-                        String  fRoot;  // chroot
-                        String  fStatus;            /// @todo wrong - fix details of this
-                        // could add subsqeunce of 'threads' - tasks
-                    };
-
-
-                    using ProcessMapType = Mapping<pid_t, ProcessType>;
-
-
-                    extern  const   MeasurementType kProcessMapMeasurement;
-
-
-                }
 
 
 //tmphack to test
@@ -62,10 +38,70 @@ namespace   Stroika {
 #endif
 
 
+                    using   Foundation::Containers::Mapping;
+                    using   Foundation::DataExchange::ObjectVariantMapper;
+                    using   Foundation::Execution::pid_t;
+                    using   Foundation::Memory::Optional;
+
+
+                    /*
+                     *  Based closely on http://en.wikipedia.org/wiki/Procfs
+                     */
+                    struct  ProcessType {
+                        Optional<String>  fCommandLine;
+                        Optional<String>  fCurrentWorkingDirectory;
+                        Optional<Mapping<String, String>>  fEnvironmentVariables;
+                        Optional<String>  fEXEPath;
+                        Optional<String>  fRoot;  // chroot
+                        enum class RunStatus {
+                            eRun,
+                            eSuspended,
+                            eIdle,
+                            // See linux docs - these above are guesses
+                        };
+                        Time::DurationSecondsType   fTotalTimeUsed = 0;     // ps time field - in seconds - combines system and user time
+                        //String  fStatus;            /// @todo wrong - fix details of this
+                        // could add subsqeunce of 'threads' - tasks
+                    };
+
+
+                    enum    class   Fields2Capture {
+                        eCommandLine,
+                        /// many more TBD
+                    };
+
+                    using ProcessMapType = Mapping<pid_t, ProcessType>;
+
+
+                    extern  const   MeasurementType kProcessMapMeasurement;
+
+
+                    /**
+                     *  For ProcessType and ProcessMapType types.
+                     */
+                    ObjectVariantMapper GetObjectVariantMapper ();
+
+
+                    enum class CachePolicy {
+                        eOmitUnchangedValues,
+                        eIncludeAllRequestedValues,
+                    };
+
+
 #if     qSupport_SystemPerformance_Instruments_ProcFSProcesses
-                Instrument  GetProcFSProcesses ();
+                    /**
+                     *  Instrument returning ProcessMapType measurements.
+                     */
+                    Instrument          GetInstrument (
+                        const Optional<Set<Fields2Capture>>& onlyCaptureFields = Optional<Set<Fields2Capture>> (),
+                        const Optional<Set<pid_t>>& restrictToPIDs = Optional<Set<pid_t>> (),
+                        const Optional<Set<pid_t>>& omitPIDs = Optional<Set<pid_t>> (),
+                        CachePolicy cachePolicy = CachePolicy::eIncludeAllRequestedValues
+                    );
 #endif
 
+
+                }
 
             }
         }
