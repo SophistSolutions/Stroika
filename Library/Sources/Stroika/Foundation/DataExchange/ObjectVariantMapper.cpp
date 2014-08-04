@@ -348,7 +348,10 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
-            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset));
+            VariantValue    vv = mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset);
+            if (i.fNullFields == ObjectVariantMapper::StructureFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
+                m.Add (i.fSerializedFieldName, vv);
+            }
         }
         return VariantValue (m);
     };

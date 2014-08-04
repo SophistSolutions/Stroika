@@ -27,10 +27,11 @@ namespace   Stroika {
              ******************* ObjectVariantMapper::StructureFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::StructureFieldInfo::StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName)
+            inline  ObjectVariantMapper::StructureFieldInfo::StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields)
                 : fOffset (fieldOffset)
                 , fTypeInfo (typeInfo)
                 , fSerializedFieldName (serializedFieldName)
+                , fNullFields (nullFields)
             {
             }
 

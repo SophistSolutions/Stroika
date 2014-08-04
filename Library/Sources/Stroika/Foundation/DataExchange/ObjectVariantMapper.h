@@ -429,11 +429,17 @@ namespace   Stroika {
              *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
              */
             struct  ObjectVariantMapper::StructureFieldInfo {
-                size_t      fOffset;
-                type_index  fTypeInfo;
-                String      fSerializedFieldName;
+                enum class NullFieldHandling {
+                    eOmit,
+                    eInclude
+                };
 
-                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName);
+                size_t              fOffset;
+                type_index          fTypeInfo;
+                String              fSerializedFieldName;
+                NullFieldHandling   fNullFields;
+
+                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude);
             };
 
 
