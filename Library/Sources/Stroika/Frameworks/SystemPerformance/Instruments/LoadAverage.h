@@ -35,7 +35,6 @@ namespace   Stroika {
                 namespace   LoadAverage {
 
 
-                    using   Memory::Optional;
                     using   DataExchange::ObjectVariantMapper;
 
                     /**

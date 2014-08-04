@@ -44,7 +44,6 @@ ObjectVariantMapper Instruments::LoadAverage::GetObjectVariantMapper ()
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
-        mapper.AddCommonType<Sequence<Info>> ();
         return mapper;
     } ();
     return sMapper_;
