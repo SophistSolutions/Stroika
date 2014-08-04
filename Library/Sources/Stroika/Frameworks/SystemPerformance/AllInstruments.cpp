@@ -34,7 +34,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
         Instruments::LoadAverage::GetInstrument (),
 #endif
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
-        Instruments::GetSystemTimes (),
+        Instruments::SystemTimes::GetInstrument (),
 #endif
         Instruments::MountedFilesystemUsage::GetInstrument (),
     };

@@ -11,10 +11,14 @@
 #include    "../Instrument.h"
 
 
+
 /*
- * TODO:
- *      @todo
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *
  */
+
 
 
 namespace   Stroika {
@@ -26,10 +30,20 @@ namespace   Stroika {
 #ifndef qSupport_SystemPerformance_Instruments_SystemTimes
 #define qSupport_SystemPerformance_Instruments_SystemTimes  qPlatform_Windows
 #endif
+                namespace   SystemTimes {
+
+
+                    /**
+                     *  Instrument returning Info measurements (primarily windows only).
+                     */
+                    Instrument          GetInstrument (Time::DurationSecondsType measureInterval = 5.0);
+
+
+                }
 
 
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
-                Instrument  GetSystemTimes (Time::DurationSecondsType measureInterval = 5.0);
+                _DeprecatedFunction_ (Instrument  GetSystemTimes (Time::DurationSecondsType measureInterval = 5.0), "Deprecated in v2.0a36; instead use SystemTimes::GetInstrument ()");
 #endif
 
 

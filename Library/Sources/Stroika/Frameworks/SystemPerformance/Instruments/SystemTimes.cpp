@@ -58,13 +58,15 @@ namespace {
 #endif
 
 
+
+
 /*
  ********************************************************************************
- ************************* Instruments::GetSystemTimes **************************
+ *************** Instruments::SystemTimes::GetInstrument ************************
  ********************************************************************************
  */
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
-Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecondsType measureInterval)
+Instrument  SystemPerformance::Instruments::SystemTimes::GetInstrument (Time::DurationSecondsType measureInterval)
 {
     // NB: Cannot cache systemTimesInstrument since takes capture argument
     Instrument  systemTimesInstrument    = Instrument (
@@ -104,5 +106,10 @@ Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecond
     {kPercentCPUUsage}
                                            );
     return systemTimesInstrument;
+}
+
+Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecondsType measureInterval)
+{
+    return SystemTimes::GetInstrument (measureInterval);
 }
 #endif
