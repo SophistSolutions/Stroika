@@ -15,7 +15,7 @@
 #include    "../../Execution/Platform/Windows/Exception.h"
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include    "../../ErrNoException.h"
+#include    "../../Execution/ErrNoException.h"
 
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
@@ -185,10 +185,10 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
-        errno_ErrorException::DoThrow (errno);
+        Execution::errno_ErrorException::DoThrow (errno);
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
-    return SDKString (buf.begin (), buf.begin () + n);
+    return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
 #endif
 }
 
