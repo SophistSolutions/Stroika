@@ -4,7 +4,12 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Characters/String_Constant.h"
+#include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Execution/ThreadAbortException.h"
+#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
+#include    "../../../Foundation/Memory/BLOB.h"
 
 #include    "../CommonMeasurementTypes.h"
 
@@ -12,6 +17,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Memory;
@@ -28,7 +34,8 @@ using   Characters::String_Constant;
 
 const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
 
-
+//tmphack to test
+//#define qUseProcFS_ 1
 
 #ifndef     qUseProcFS_
 #define     qUseProcFS_ qPlatform_POSIX
@@ -68,6 +75,19 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 
 
 namespace {
+    // this reads /proc format files - meaning that a trialing nul-byte is the EOS
+    String  ReadFileString_(const String& fullPath)
+    {
+        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (fullPath).ReadAll ();
+        const char* s = reinterpret_cast<const char*> (b.begin ());
+        const char* e = s + b.size ();
+        if (s < e and * (e - 1) == '\0') {
+            e--;
+        }
+        return String::FromNarrowSDKString (s, e);
+    }
+
+
     ProcessMapType  ExtractFromProcFS_ ()
     {
         /// Most status - like time - come from http://linux.die.net/man/5/proc
@@ -76,13 +96,17 @@ namespace {
         //
         ProcessMapType  tmp;
 
-#if qUseProcFS_
-        ProcessType test;
-        test.fCommandLine = L"Hi mom comamndline";
-        Mapping<String, String> env;
-        env.Add (L"Home", L"/home/lewis");
-        test.fEnvironmentVariables = env;
-        tmp.Add (101, test);
+#if     qUseProcFS_
+        for (String dir : IO::FileSystem::DirectoryIterable (L"/proc")) {
+            bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
+            pid_t pid = String2Int<pid_t> (dir);
+            ProcessType processDetails;
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (L"/proc/" + dir + L"/cmdline"));
+            Mapping<String, String> env;
+            env.Add (L"Home", L"/home/lewis");
+            processDetails.fEnvironmentVariables = env;
+            tmp.Add (pid, processDetails);
+        }
 #else
         ProcessType test;
         test.fCommandLine = L"Hi mom comamndline";

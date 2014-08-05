@@ -40,11 +40,11 @@ namespace   Stroika {
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
                     struct  ProcessType {
-                        Optional<String>  fCommandLine;
-                        Optional<String>  fCurrentWorkingDirectory;
-                        Optional<Mapping<String, String>>  fEnvironmentVariables;
-                        Optional<String>  fEXEPath;
-                        Optional<String>  fRoot;  // chroot
+                        Optional<String>                    fCommandLine;
+                        Optional<String>                    fCurrentWorkingDirectory;
+                        Optional<Mapping<String, String>>   fEnvironmentVariables;
+                        Optional<String>                    fEXEPath;
+                        Optional<String>                    fRoot;  // chroot
                         enum class RunStatus {
                             eRun,
                             eSuspended,
