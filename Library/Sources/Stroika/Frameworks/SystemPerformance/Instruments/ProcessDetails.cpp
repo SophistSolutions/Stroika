@@ -24,7 +24,7 @@
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -93,16 +93,17 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_"));
 #endif
-        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (fullPath).ReadAll ();
-        const char* s = reinterpret_cast<const char*> (b.begin ());
-        const char* e = s + b.size ();
-        if (s < e and * (e - 1) == '\0') {
-            e--;
+        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
+        StringBuilder sb;
+        for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
+            if (*b == '\0') {
+                break;
+            }
+            else {
+                sb.Append ((char) (*b));    // for now assume no charset
+            }
         }
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("line: len=%d bytes; start=%s", b.size (), s);
-#endif
-        return String::FromNarrowSDKString (s, e);
+        return (sb.As<String> ());
     }
     Sequence<String>  ReadFileStrings_(const String& fullPath)
     {
@@ -141,15 +142,16 @@ namespace {
         ProcessMapType  results;
 
 #if     qUseProcFS_
-        for (String dir : IO::FileSystem::DirectoryIterable (L"/proc")) {
+        for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
             bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
             pid_t pid = String2Int<pid_t> (dir);
+            String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
             ProcessType processDetails;
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (L"/proc/" + dir + L"/cmdline"));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/cwd"));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (L"/proc/" + dir + L"/environ"));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/exe"));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/root"));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L"cmdline")));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"cwd")));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
             results.Add (pid, processDetails);
         }
 #else
