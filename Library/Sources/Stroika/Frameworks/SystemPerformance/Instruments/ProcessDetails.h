@@ -45,13 +45,14 @@ namespace   Stroika {
                         Optional<Mapping<String, String>>   fEnvironmentVariables;
                         Optional<String>                    fEXEPath;
                         Optional<String>                    fRoot;  // chroot
+                        Optional<Time::DateTime>            fProcessStartedAt;
                         enum class RunStatus {
                             eRun,
                             eSuspended,
                             eIdle,
                             // See linux docs - these above are guesses
                         };
-                        Time::DurationSecondsType   fTotalTimeUsed = 0;     // ps time field - in seconds - combines system and user time
+                        Optional<Time::DurationSecondsType>   fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
                         //String  fStatus;            /// @todo wrong - fix details of this
                         // could add subsqeunce of 'threads' - tasks
                     };

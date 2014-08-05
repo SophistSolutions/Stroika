@@ -66,12 +66,14 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<String>> ();
+        mapper.AddCommonType<Optional<Time::DateTime>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCommandLine), String_Constant (L"Command-Line"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCurrentWorkingDirectory), String_Constant (L"Current-Working-Directory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessStartedAt), String_Constant (L"Process-Started-At"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEnvironmentVariables), String_Constant (L"Environment-Variables"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEXEPath), String_Constant (L"EXE-Path"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRoot), String_Constant (L"Root"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -132,6 +134,117 @@ namespace {
         }
         return results;
     }
+    struct StatFileInfo_ {
+        // trim down and find better source - but for now use 'procps-3.2.8\proc\'
+        int ppid;
+        char state;     // stat,status     single-char code for process state (S=sleeping)
+        uint64_t    utime;      // stat            user-mode CPU time accumulated by process
+        uint64_t stime;     // stat            kernel-mode CPU time accumulated by process
+        uint64_t    cutime;     // stat            cumulative utime of process and reaped children
+        uint64_t cstime;        // stat            cumulative stime of process and reaped children
+        uint64_t start_time;    // stat            start time of process -- seconds since 1-1-70
+
+        long
+        priority,   // stat            kernel scheduling priority
+        nice,       // stat            standard unix nice level of process
+        rss,        // stat            resident set size from /proc/#/stat (pages)
+        alarm,      // stat            ?
+        // the next 7 members come from /proc/#/statm
+        size,       // statm           total # of pages of memory
+        resident,   // statm           number of resident set (non-swapped) pages (4k)
+        share,      // statm           number of pages of shared (mmap'd) memory
+        trs,        // statm           text resident set size
+        lrs,        // statm           shared-lib resident set size
+        drs,        // statm           data resident set size
+        dt;     // statm           dirty pages
+        unsigned long
+        vm_size,        // status          same as vsize in kb
+        vm_lock,        // status          locked pages in kb
+        vm_rss,         // status          same as rss in kb
+        vm_data,        // status          data size
+        vm_stack,       // status          stack size
+        vm_exe,         // status          executable size
+        vm_lib,         // status          library size (all pages, not just used ones)
+        rtprio,     // stat            real-time priority
+        sched,      // stat            scheduling class
+        vsize,      // stat            number of pages of virtual memory ...
+        rss_rlim,   // stat            resident set size limit?
+        flags,      // stat            kernel flags for the process
+        min_flt,    // stat            number of minor page faults since process start
+        maj_flt,    // stat            number of major page faults since process start
+        cmin_flt,   // stat            cumulative min_flt of process and child processes
+        cmaj_flt;   // stat            cumulative maj_flt of process and child processes
+
+        int
+        pgrp,       // stat            process group id
+        session,    // stat            session id
+        nlwp,       // stat,status     number of threads, or 0 if no clue
+        tgid,       // (special)       task group ID, the POSIX PID (see also: tid)
+        tty,        // stat            full device number of controlling terminal
+        euid, egid,     // stat(),status   effective
+        ruid, rgid,     // status          real
+        suid, sgid,     // status          saved
+        fuid, fgid,     // status          fs (used for file access only)
+        tpgid,      // stat            terminal process group id
+        exit_signal,    // stat            might not be SIGCHLD
+        processor;
+
+    };
+    StatFileInfo_   ReadStatFile_ (const String& fullPath)
+    {
+        StatFileInfo_    result {};
+        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
+        Byte    data[10 * 1024];
+        size_t nBytes = in.Read (begin (data), end (data));
+
+        const char* S = reinterpret_cast<const char*> (data);
+        S = strchr(S, '(') + 1;
+        const char* tmp = strrchr(S, ')');
+        S = tmp + 2;                 // skip ") "
+
+        int num = sscanf(S,
+                         "%c "
+                         "%d %d %d %d %d "
+                         "%lu %lu %lu %lu %lu "
+                         "%Lu %Lu %Lu %Lu "  /* utime stime cutime cstime */
+                         "%ld %ld "
+                         "%d "
+                         "%ld "
+                         "%Lu "  /* start_time */
+#if 0
+                         "%lu "
+                         "%ld "
+                         "%lu %"KLF"u %"KLF"u %"KLF"u %"KLF"u %"KLF"u "
+                         "%*s %*s %*s %*s " /* discard, no RT signals & Linux 2.1 used hex */
+                         "%"KLF"u %*lu %*lu "
+                         "%d %d "
+                         "%lu %lu"
+#endif
+                         ,
+                         &result.state,
+                         &result.ppid, &result.pgrp, &result.session, &result.tty, &result.tpgid,
+                         &result.flags, &result.min_flt, &result.cmin_flt, &result.maj_flt, &result.cmaj_flt,
+                         &result.utime, &result.stime, &result.cutime, &result.cstime,
+                         &result.priority, &result.nice,
+                         &result.nlwp,
+                         &result.alarm,
+                         &result.start_time
+#if 0
+                         & result.vsize,
+                         &result.rss,
+                         &result.rss_rlim, &result.start_code, &result.end_code, &result.start_stack, &result.kstk_esp, &result.kstk_eip,
+                         /*     P->signal, P->blocked, P->sigignore, P->sigcatch,   */ /* can't use */
+                         &result.wchan, /* &P->nswap, &P->cnswap, */  /* nswap and cnswap dead for 2.4.xx and up */
+                         /* -- Linux 2.0.35 ends here -- */
+                         &result.exit_signal, &result.processor,  /* 2.2.1 ends with "exit_signal" */
+                         /* -- Linux 2.2.8 to 2.5.17 end here -- */
+                         &result.rtprio, &result.sched  /* both added to 2.5.18 */
+#endif
+                        );
+
+
+        return result;
+    }
 
     ProcessMapType  ExtractFromProcFS_ ()
     {
@@ -152,6 +265,15 @@ namespace {
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
+
+            try {
+                static  const   double  kClockTick_ = sysconf(_SC_CLK_TCK);
+                StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"))
+                                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time));
+                processDetails.fTotalTimeUsed = double (stats.utime) + double (stats.stime ) / kClockTick_;
+            }
+            catch (...) {
+            }
             results.Add (pid, processDetails);
         }
 #else
