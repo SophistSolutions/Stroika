@@ -20,10 +20,16 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a36">v2.0a36x</a><br/>2014-07-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a36">v2.0a36</a><br/>2014-08-05</td>
 <td>
 <ul>
-	<li>TBD.</li>
+	<li>Major cleanups (not all backwards compatible) with the SystemPerformance framework. This includes a new (incomplete but usable on linux) ProcessDetails instrument (using procfs).</li>
+	<li>Linux implementation of ResolveShortcut()</li>
+	<li>BinaryStream and String minor additions, and cleanup of OptionsFile</li>
+	<li>Cleanups (optional members and explicit type register and better merge) for ObjectVariantMapper</li>
+	<li>Major cleanup/refactoring of Cryptography (esp Digest/Hash code)</li>
+	<li>Lots of work adding stuff to github issues database</li>
+	<li>Practically no testing for this release</li>
 </ul>
 </td>
 </tr>
