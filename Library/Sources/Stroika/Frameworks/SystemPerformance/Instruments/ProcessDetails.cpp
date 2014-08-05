@@ -9,6 +9,7 @@
 #include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
@@ -20,6 +21,11 @@
 #include    "../CommonMeasurementTypes.h"
 
 #include    "ProcessDetails.h"
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 
 
 using   namespace   Stroika::Foundation;
@@ -84,12 +90,18 @@ namespace {
     // this reads /proc format files - meaning that a trialing nul-byte is the EOS
     String  ReadFileString_(const String& fullPath)
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_"));
+#endif
         Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (fullPath).ReadAll ();
         const char* s = reinterpret_cast<const char*> (b.begin ());
         const char* e = s + b.size ();
         if (s < e and * (e - 1) == '\0') {
             e--;
         }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("line: len=%d bytes; start=%s", b.size (), s);
+#endif
         return String::FromNarrowSDKString (s, e);
     }
     Sequence<String>  ReadFileStrings_(const String& fullPath)
