@@ -135,6 +135,9 @@ namespace {
         return results;
     }
     struct StatFileInfo_ {
+        //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
+
+
         // trim down and find better source - but for now use 'procps-3.2.8\proc\'
         int ppid;
         char state;     // stat,status     single-char code for process state (S=sleeping)
@@ -204,15 +207,17 @@ namespace {
 #endif
 
         const char* S = reinterpret_cast<const char*> (data);
-        S = strchr(S, '(') + 1;
+        {
+            S = strchr(S, '(') + 1;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("S = %x", S);
+            DbgTrace ("S = %x", S);
 #endif
-        const char* tmp = strrchr(S, ')');
+            const char* tmp = strrchr(S, ')');
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("S = %x", S);
+            DbgTrace ("S = %x", S);
 #endif
-        S = tmp + 2;                 // skip ") "
+            S = tmp + 2;                 // skip ") "
+        }
 
         int num = sscanf(S,
                          "%c "
@@ -224,6 +229,7 @@ namespace {
                          "%ld "
                          "%Lu "  /* start_time */
 #if 0
+                         /*
                          "%lu "
                          "%ld "
                          "%lu %"KLF"u %"KLF"u %"KLF"u %"KLF"u %"KLF"u "
@@ -231,6 +237,7 @@ namespace {
                          "%"KLF"u %*lu %*lu "
                          "%d %d "
                          "%lu %lu"
+                         * /
 #endif
                          ,
                          &result.state,
@@ -269,10 +276,13 @@ namespace {
 #if     qUseProcFS_
         for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
             bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files"));
+            DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
+#endif
             if (isAllNumeric) {
                 pid_t pid = String2Int<pid_t> (dir);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files"));
                 DbgTrace ("reading for pid = %d", pid);
 #endif
                 String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
