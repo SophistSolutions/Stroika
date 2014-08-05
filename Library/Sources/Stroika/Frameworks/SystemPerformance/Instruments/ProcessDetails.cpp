@@ -12,6 +12,7 @@
 #include    "../../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
+#include    "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
@@ -133,7 +134,9 @@ namespace {
             pid_t pid = String2Int<pid_t> (dir);
             ProcessType processDetails;
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (L"/proc/" + dir + L"/cmdline"));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/cwd"));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (L"/proc/" + dir + L"/environ"));
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/exe"));
             tmp.Add (pid, processDetails);
         }
 #else
