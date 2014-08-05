@@ -197,6 +197,7 @@ namespace {
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadStatFile_"));
+        DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
         StatFileInfo_    result {};
         Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
@@ -207,6 +208,9 @@ namespace {
 #endif
 
         const char* S = reinterpret_cast<const char*> (data);
+
+        ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH!
+
         {
             S = strchr(S, '(') + 1;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -275,7 +279,7 @@ namespace {
 
 #if     qUseProcFS_
         for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
-            bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
+            bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files"));
             DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
