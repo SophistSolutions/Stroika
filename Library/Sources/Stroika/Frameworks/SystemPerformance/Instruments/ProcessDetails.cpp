@@ -126,7 +126,7 @@ namespace {
         ///proc/[pid]/stat
         //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
         //
-        ProcessMapType  tmp;
+        ProcessMapType  results;
 
 #if     qUseProcFS_
         for (String dir : IO::FileSystem::DirectoryIterable (L"/proc")) {
@@ -137,7 +137,8 @@ namespace {
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/cwd"));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (L"/proc/" + dir + L"/environ"));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/exe"));
-            tmp.Add (pid, processDetails);
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (L"/proc/" + dir + L"/root"));
+            results.Add (pid, processDetails);
         }
 #else
         ProcessType test;
@@ -145,9 +146,9 @@ namespace {
         Mapping<String, String> env;
         env.Add (L"Home", L"/home/lewis");
         test.fEnvironmentVariables = env;
-        tmp.Add (101, test);
+        results.Add (101, test);
 #endif
-        return tmp;
+        return results;
     }
 }
 
