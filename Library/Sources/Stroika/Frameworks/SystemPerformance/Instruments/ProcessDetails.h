@@ -60,6 +60,8 @@ namespace   Stroika {
 
                     enum    class   Fields2Capture {
                         eCommandLine,
+                        eCurrentWorkingDirectory,
+                        eEnvironmentVariables,
                         /// many more TBD
                     };
 

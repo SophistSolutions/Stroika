@@ -328,7 +328,7 @@ namespace {
 
 /*
  ********************************************************************************
- ************* Instruments::ProcessDetails::GetInstrument **********************
+ ************** Instruments::ProcessDetails::GetInstrument **********************
  ********************************************************************************
  */
 Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (
