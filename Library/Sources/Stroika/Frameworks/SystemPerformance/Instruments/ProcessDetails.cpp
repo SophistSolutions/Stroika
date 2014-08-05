@@ -24,7 +24,7 @@
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -138,11 +138,11 @@ namespace {
         // trim down and find better source - but for now use 'procps-3.2.8\proc\'
         int ppid;
         char state;     // stat,status     single-char code for process state (S=sleeping)
-        uint64_t    utime;      // stat            user-mode CPU time accumulated by process
-        uint64_t stime;     // stat            kernel-mode CPU time accumulated by process
-        uint64_t    cutime;     // stat            cumulative utime of process and reaped children
-        uint64_t cstime;        // stat            cumulative stime of process and reaped children
-        uint64_t start_time;    // stat            start time of process -- seconds since 1-1-70
+        unsigned long long    utime;      // stat            user-mode CPU time accumulated by process
+        unsigned long long stime;     // stat            kernel-mode CPU time accumulated by process
+        unsigned long long    cutime;     // stat            cumulative utime of process and reaped children
+        unsigned long long cstime;        // stat            cumulative stime of process and reaped children
+        unsigned long long start_time;    // stat            start time of process -- seconds since 1-1-70
 
         long
         priority,   // stat            kernel scheduling priority
@@ -192,14 +192,26 @@ namespace {
     };
     StatFileInfo_   ReadStatFile_ (const String& fullPath)
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadStatFile_"));
+#endif
         StatFileInfo_    result {};
         Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
         Byte    data[10 * 1024];
         size_t nBytes = in.Read (begin (data), end (data));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("nBytes read = %d", nBytes);
+#endif
 
         const char* S = reinterpret_cast<const char*> (data);
         S = strchr(S, '(') + 1;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("S = %x", S);
+#endif
         const char* tmp = strrchr(S, ')');
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("S = %x", S);
+#endif
         S = tmp + 2;                 // skip ") "
 
         int num = sscanf(S,
@@ -257,24 +269,30 @@ namespace {
 #if     qUseProcFS_
         for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
             bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
-            pid_t pid = String2Int<pid_t> (dir);
-            String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
-            ProcessType processDetails;
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L"cmdline")));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"cwd")));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
-            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
+            if (isAllNumeric) {
+                pid_t pid = String2Int<pid_t> (dir);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files"));
+                DbgTrace ("reading for pid = %d", pid);
+#endif
+                String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
+                ProcessType processDetails;
+                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L"cmdline")));
+                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"cwd")));
+                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
+                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
+                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
 
-            try {
-                static  const   double  kClockTick_ = sysconf(_SC_CLK_TCK);
-                StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"))
-                                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time));
-                processDetails.fTotalTimeUsed = double (stats.utime) + double (stats.stime ) / kClockTick_;
+                try {
+                    static  const   double  kClockTick_ = sysconf(_SC_CLK_TCK);
+                    StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
+                    processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time));
+                    processDetails.fTotalTimeUsed = double (stats.utime) + double (stats.stime ) / kClockTick_;
+                }
+                catch (...) {
+                }
+                results.Add (pid, processDetails);
             }
-            catch (...) {
-            }
-            results.Add (pid, processDetails);
         }
 #else
         ProcessType test;
