@@ -67,16 +67,18 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<Time::DateTime>> ();
+        mapper.AddCommonType<Optional<Time::DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCommandLine), String_Constant (L"Command-Line"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCurrentWorkingDirectory), String_Constant (L"Current-Working-Directory"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessStartedAt), String_Constant (L"Process-Started-At"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEnvironmentVariables), String_Constant (L"Environment-Variables"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEXEPath), String_Constant (L"EXE-Path"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRoot), String_Constant (L"Root"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessStartedAt), String_Constant (L"Process-Started-At"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalTimeUsed), String_Constant (L"Total-Time-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -145,7 +147,7 @@ namespace {
         unsigned long long stime;     // stat            kernel-mode CPU time accumulated by process
         unsigned long long    cutime;     // stat            cumulative utime of process and reaped children
         unsigned long long cstime;        // stat            cumulative stime of process and reaped children
-        unsigned long long start_time;    // stat            start time of process -- seconds since 1-1-70
+        unsigned long  start_time;    // stat            start time of process -- seconds since 1-1-70
 
         long
         priority,   // stat            kernel scheduling priority
@@ -227,11 +229,11 @@ namespace {
                          "%c "
                          "%d %d %d %d %d "
                          "%lu %lu %lu %lu %lu "
-                         "%Lu %Lu %Lu %Lu "  /* utime stime cutime cstime */
+                         "%llu %llu %llu %llu "  /* utime stime cutime cstime */
                          "%ld %ld "
                          "%d "
                          "%ld "
-                         "%Lu "  /* start_time */
+                         "%llu "  /* start_time */
 #if 0
                          /*
                          "%lu "
