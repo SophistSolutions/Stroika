@@ -5,11 +5,16 @@
 
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
+#include    "../../../Foundation/Characters/StringBuilder.h"
+#include    "../../../Foundation/Characters/Tokenize.h"
+#include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "../../../Foundation/Memory/BLOB.h"
+#include    "../../../Foundation/Memory/Optional.h"
+#include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
 
 #include    "../CommonMeasurementTypes.h"
 
@@ -87,6 +92,33 @@ namespace {
         return String::FromNarrowSDKString (s, e);
     }
 
+    Sequence<String>  ReadFileStrings_(const String& fullPath)
+    {
+        Sequence<String>    results;
+        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
+        StringBuilder sb;
+        for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
+            if (*b == '\0') {
+                results.Append (sb.As<String> ());
+                sb.clear();
+            }
+            else {
+                sb.Append ((char) (*b));    // for now assume no charset
+            }
+        }
+        return results;
+    }
+    Mapping<String, String>  ReadFileStringsMap_(const String& fullPath)
+    {
+        Mapping<String, String>    results;
+        for (auto i : ReadFileStrings_ (fullPath)) {
+            auto tokens = Tokenize<String> (i, L"=");
+            if (tokens.size () == 2) {
+                results.Add (tokens[0], tokens[1]);
+            }
+        }
+        return results;
+    }
 
     ProcessMapType  ExtractFromProcFS_ ()
     {
@@ -101,10 +133,9 @@ namespace {
             bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
             pid_t pid = String2Int<pid_t> (dir);
             ProcessType processDetails;
+
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (L"/proc/" + dir + L"/cmdline"));
-            Mapping<String, String> env;
-            env.Add (L"Home", L"/home/lewis");
-            processDetails.fEnvironmentVariables = env;
+            IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (L"/proc/" + dir + L"/environ"));
             tmp.Add (pid, processDetails);
         }
 #else
