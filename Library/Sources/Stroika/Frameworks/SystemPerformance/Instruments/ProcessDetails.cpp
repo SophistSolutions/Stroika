@@ -147,7 +147,7 @@ namespace {
         unsigned long long stime;     // stat            kernel-mode CPU time accumulated by process
         unsigned long long    cutime;     // stat            cumulative utime of process and reaped children
         unsigned long long cstime;        // stat            cumulative stime of process and reaped children
-        unsigned long  start_time;    // stat            start time of process -- seconds since 1-1-70
+        unsigned long long start_time;    // stat            start time of process -- seconds since 1-1-70
 
         long
         priority,   // stat            kernel scheduling priority
@@ -234,10 +234,10 @@ namespace {
                          "%d "
                          "%ld "
                          "%llu "  /* start_time */
-#if 0
-                         /*
                          "%lu "
                          "%ld "
+#if 0
+                         /*
                          "%lu %"KLF"u %"KLF"u %"KLF"u %"KLF"u %"KLF"u "
                          "%*s %*s %*s %*s " /* discard, no RT signals & Linux 2.1 used hex */
                          "%"KLF"u %*lu %*lu "
@@ -253,11 +253,11 @@ namespace {
                          &result.priority, &result.nice,
                          &result.nlwp,
                          &result.alarm,
-                         &result.start_time
+                         &result.start_time,
+                         &result.vsize,
+                         &result.rss
 #if 0
-                         & result.vsize,
-                         &result.rss,
-                         &result.rss_rlim, &result.start_code, &result.end_code, &result.start_stack, &result.kstk_esp, &result.kstk_eip,
+                         & result.rss_rlim, &result.start_code, &result.end_code, &result.start_stack, &result.kstk_esp, &result.kstk_eip,
                          /*     P->signal, P->blocked, P->sigignore, P->sigcatch,   */ /* can't use */
                          &result.wchan, /* &P->nswap, &P->cnswap, */  /* nswap and cnswap dead for 2.4.xx and up */
                          /* -- Linux 2.0.35 ends here -- */
