@@ -171,23 +171,28 @@ namespace   Stroika {
                 struct  TypeMappingDetails;
 
             public:
+                struct  TypesRegistry;
+
+            public:
                 /**
                  *  Returns the current set of type mappers.
                  */
-                nonvirtual  Set<TypeMappingDetails>    GetTypeMappingRegistry () const;
+                nonvirtual  TypesRegistry    GetTypeMappingRegistry () const;
 
             public:
                 /**
                  *  Sets the current set of type mappers.
                  */
-                nonvirtual  void    SetTypeMappingRegistry (const Set<TypeMappingDetails>& s);
+                nonvirtual  void    SetTypeMappingRegistry (const TypesRegistry& s);
 
             public:
                 /**
-                 *  Adds the given type mapper(s)
+                 *  Adds the given type mapper(s). This could have been called 'Merge'.
                  */
                 nonvirtual  void    Add (const TypeMappingDetails& s);
                 nonvirtual  void    Add (const Set<TypeMappingDetails>& s);
+                nonvirtual  void    Add (const TypesRegistry& s);
+                nonvirtual  void    Add (const ObjectVariantMapper& s);
 
             public:
                 /**
@@ -399,8 +404,15 @@ namespace   Stroika {
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
 
+            public:
+                /**
+                */
+                struct  TypesRegistry {
+                    Set<TypeMappingDetails> fSerializers;         // need Stroika set with separate traits-based key extractor/compare function
+                };
+
             private:
-                Set<TypeMappingDetails> fSerializers_;  // need Stroika set with separate traits-based key extractor/compare function
+                TypesRegistry   fTypeMappingRegistry_;
             };
 
 

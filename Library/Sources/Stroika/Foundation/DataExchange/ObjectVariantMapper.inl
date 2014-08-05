@@ -66,13 +66,13 @@ namespace   Stroika {
              ******************************** ObjectVariantMapper ***************************
              ********************************************************************************
              */
-            inline  Set<ObjectVariantMapper::TypeMappingDetails>    ObjectVariantMapper::GetTypeMappingRegistry () const
+            inline  ObjectVariantMapper::TypesRegistry    ObjectVariantMapper::GetTypeMappingRegistry () const
             {
-                return fSerializers_;
+                return fTypeMappingRegistry_;
             }
-            inline  void    ObjectVariantMapper::SetTypeMappingRegistry (const Set<TypeMappingDetails>& s)
+            inline  void    ObjectVariantMapper::SetTypeMappingRegistry (const TypesRegistry& s)
             {
-                fSerializers_ = s;
+                fTypeMappingRegistry_ = s;
             }
             template    <typename T>
             inline  void    ObjectVariantMapper::AddCommonType ()

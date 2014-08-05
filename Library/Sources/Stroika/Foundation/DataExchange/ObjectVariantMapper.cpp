@@ -270,32 +270,42 @@ namespace   {
     }
 
     // Construct the default map once, so that it never needs be re-created (though it could easily get cloned when modified)
-    Set<ObjectVariantMapper::TypeMappingDetails>    GetDefaultTypeMappers_ ()
+    ObjectVariantMapper::TypesRegistry    GetDefaultTypeMappers_ ()
     {
-        static  Set<ObjectVariantMapper::TypeMappingDetails>    sDefaults_ = mkCommonSerializers_ ();
+        static  ObjectVariantMapper::TypesRegistry    sDefaults_ = { mkCommonSerializers_ () };
         return sDefaults_;
     }
 }
 
 
 ObjectVariantMapper::ObjectVariantMapper ()
-    : fSerializers_ (GetDefaultTypeMappers_ ())
+    : fTypeMappingRegistry_ (GetDefaultTypeMappers_ ())
 {
 }
 
 void    ObjectVariantMapper::Add (const TypeMappingDetails& s)
 {
-    fSerializers_.Add (s);
+    fTypeMappingRegistry_.fSerializers.Add (s);
 }
 
 void    ObjectVariantMapper::Add (const Set<TypeMappingDetails>& s)
 {
-    fSerializers_.AddAll (s);
+    fTypeMappingRegistry_.fSerializers.AddAll (s);
+}
+
+void    ObjectVariantMapper::Add (const TypesRegistry& s)
+{
+    fTypeMappingRegistry_.fSerializers.AddAll (s.fSerializers);
+}
+
+void    ObjectVariantMapper::Add (const ObjectVariantMapper& s)
+{
+    fTypeMappingRegistry_.fSerializers.AddAll (s.fTypeMappingRegistry_.fSerializers);
 }
 
 void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
 {
-    fSerializers_ = GetDefaultTypeMappers_ ();
+    fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
 }
 
 VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType) const
@@ -376,7 +386,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
     TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
-    auto i  = fSerializers_.Lookup (foo);
+    auto i  = fTypeMappingRegistry_.fSerializers.Lookup (foo);
 #if     qDebug
     if (not i.IsPresent ()) {
         Debug::TraceContextBumper   ctx (SDKSTR ("ObjectVariantMapper::Lookup_"));
