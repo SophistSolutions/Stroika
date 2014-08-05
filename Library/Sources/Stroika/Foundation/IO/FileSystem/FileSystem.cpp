@@ -19,6 +19,7 @@
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
 #include    "../../IO/FileFormatException.h"
+#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "FileUtils.h"
 
