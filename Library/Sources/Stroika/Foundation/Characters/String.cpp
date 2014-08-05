@@ -359,6 +359,14 @@ String  String::FromNarrowSDKString (const char* from)
     return NarrowSDKStringToWide (from);
 }
 
+String  String::FromNarrowSDKString (const char* from, const char* to)
+{
+    // @todo FIX PERFORMANCE
+    wstring tmp;
+    NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
+    return String (tmp);
+}
+
 String  String::FromNarrowSDKString (const string& from)
 {
     // @todo FIX PERFORMANCE

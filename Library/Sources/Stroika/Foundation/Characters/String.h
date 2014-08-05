@@ -419,6 +419,7 @@ namespace   Stroika {
                  *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
                  */
                 static  String  FromNarrowSDKString (const char* from);
+                static  String  FromNarrowSDKString (const char* from, const char* to);
                 static  String  FromNarrowSDKString (const string& from);
 
             public:
