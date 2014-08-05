@@ -49,6 +49,17 @@ namespace   Stroika {
             {
                 return dynamic_pointer_cast<_IRep> (BinaryStream::_GetRep ());
             }
+            inline  Memory::Optional<Byte>  BinaryInputStream::Read () const
+            {
+                Byte b = 0;
+                RequireNotNull (_GetRep ().get ());
+                if (_GetRep ()->Read (&b, &b + 1) == 0) {
+                    return Memory::Optional<Byte> ();
+                }
+                else {
+                    return b;
+                }
+            }
             inline  size_t  BinaryInputStream::Read (Byte* intoStart, Byte* intoEnd) const
             {
                 RequireNotNull (intoStart);

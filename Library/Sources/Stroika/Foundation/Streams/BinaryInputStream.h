@@ -10,6 +10,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
+#include    "../Memory/Optional.h"
 
 #include    "BinaryStream.h"
 
@@ -134,11 +135,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-                 *  BLOCKING until data is available, but can return with fewer bytes than bufSize
-                 *  without prejudice about how much more is available.
+                 *  Read/0
+                 *      return IsMissing() on EOF.
+                 *
+                 *  Read/2
+                 *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
+                 *      bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
+                 *      BLOCKING until data is available, but can return with fewer bytes than bufSize
+                 *      without prejudice about how much more is available.
                  */
+                nonvirtual  Memory::Optional<Byte>  Read () const;
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd) const;
 
             public:
