@@ -91,7 +91,6 @@ namespace {
         }
         return String::FromNarrowSDKString (s, e);
     }
-
     Sequence<String>  ReadFileStrings_(const String& fullPath)
     {
         Sequence<String>    results;
@@ -133,7 +132,6 @@ namespace {
             bool isAllNumeric = dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
             pid_t pid = String2Int<pid_t> (dir);
             ProcessType processDetails;
-
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (L"/proc/" + dir + L"/cmdline"));
             IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (L"/proc/" + dir + L"/environ"));
             tmp.Add (pid, processDetails);
