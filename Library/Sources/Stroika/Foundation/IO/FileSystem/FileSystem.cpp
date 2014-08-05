@@ -15,6 +15,7 @@
 #include    "../../Execution/Platform/Windows/Exception.h"
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
+#include    "../../ErrNoException.h"
 
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
