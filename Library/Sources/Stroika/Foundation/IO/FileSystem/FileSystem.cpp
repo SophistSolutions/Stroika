@@ -177,9 +177,16 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
     }
     return path2FileOrShortcut;
 #else
-    // interpret as slink follow - readlink
-    AssertNotImplemented ();
-    return String ();
+    Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
+    ssize_t n;
+    while ( (n = readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
+        buf.GrowToSize (buf.GetSize () * 2);
+    }
+    if (n < 0) {
+        errno_ErrorException::DoThrow (errno);
+    }
+    Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
+    return SDKString (buf.begin (), buf.begin () + n);
 #endif
 }
 

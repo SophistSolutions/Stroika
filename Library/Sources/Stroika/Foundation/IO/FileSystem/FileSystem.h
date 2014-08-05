@@ -69,15 +69,20 @@ namespace   Stroika {
                     nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
                 public:
-                    nonvirtual  String ResolveShortcut (const String& path2FileOrShortcut);
+                    /**
+                     *  This returns what is pointed to by a shortcut. On Windows - this refers to shortcut files, and on
+                     *  LINUX this is the same as POSIX readlink.
+                     */
+                    nonvirtual  String  ResolveShortcut (const String& path2FileOrShortcut);
 
                 public:
                     nonvirtual  FileOffset_t    GetFileSize (const String& fileName);
+
                 public:
                     nonvirtual  DateTime        GetFileLastModificationDate (const String& fileName);
+
                 public:
                     nonvirtual  DateTime        GetFileLastAccessDate (const String& fileName);
-
                 };
 
 
