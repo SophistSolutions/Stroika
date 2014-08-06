@@ -23,6 +23,8 @@
  * TODO:
  *      @todo   IPV6 compat.
  *
+ *      @todo   Handle case of multiple address bindings to a single interface (groupby).
+ *
  *      @todo   Incomplete POSIX IMPL
  *
  *      @todo   No Windoze impl
