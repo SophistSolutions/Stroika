@@ -7,6 +7,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/IO/Network/Interface.h"
 #include    "Stroika/Foundation/IO/Network/URL.h"
 
 #include    "../TestHarness/SimpleClass.h"
@@ -15,6 +16,7 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
@@ -32,11 +34,40 @@ namespace   {
     }
 }
 
+#if 0
+#include <iostream>
+#endif
+
+namespace {
+    void    Test2_NetworkInterfaceList_ ()
+    {
+        for (Interface iFace : Network::GetInterfaces ()) {
+#if 0
+            cout << "iface: " << endl;
+            cout << "  name: " << iFace.fInterfaceName.AsUTF8 () << endl;
+            if (iFace.fType.IsPresent ()) {
+                cout << "  type: " << *iFace.fType << endl;
+            }
+            for (InternetAddress ipAddr : iFace.fBindings) {
+                cout << "  addr: " << ipAddr.As<String> ().AsUTF8 () << endl;
+            }
+            if (iFace.fStatus.IsPresent ()) {
+                for (Interface::Status s : *iFace.fStatus) {
+                    cout << "  status: " << s << endl;
+                }
+            }
+#endif
+        }
+    }
+}
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_URL_ ();
+        Test2_NetworkInterfaceList_ ();
     }
 }
 

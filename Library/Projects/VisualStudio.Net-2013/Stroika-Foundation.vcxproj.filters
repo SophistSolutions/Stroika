@@ -720,6 +720,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.cpp">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1662,6 +1665,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.h">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2525,6 +2531,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
 </Project>

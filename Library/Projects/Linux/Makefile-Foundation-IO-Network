@@ -14,6 +14,7 @@ SubDirs	=		\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)Interface.o\
 	$(ObjDir)InternetAddress.o\
 	$(ObjDir)LinkMonitor.o\
 	$(ObjDir)Listener.o\

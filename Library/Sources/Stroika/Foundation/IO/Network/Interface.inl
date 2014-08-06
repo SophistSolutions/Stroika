@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_LinkMonitor_inl_
-#define _Stroika_Foundation_IO_Network_LinkMonitor_inl_  1
+#ifndef _Stroika_Foundation_IO_Network_Interface_inl_
+#define _Stroika_Foundation_IO_Network_Interface_inl_  1
 
 
 /*
@@ -20,4 +20,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_LinkMonitor_inl_*/
+#endif  /*_Stroika_Foundation_IO_Network_Interface_inl_*/
