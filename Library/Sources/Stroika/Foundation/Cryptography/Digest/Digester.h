@@ -39,19 +39,19 @@ namespace   Stroika {
                  *  but could in principle be anything.
                  *
                  *  EXAMPLE USAGE:
-                 *      string digestStr = Format (Digester<Result128BitType, Algorithm::MD5>::ComputeDigest (s, e));
+                 *      string digestStr = Format (Digester<Algorithm::MD5, Result128BitType>::ComputeDigest (s, e));
                  *
                  *  EXAMPLE USAGE:
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = Format (
-                 *          Digester<Result128BitType, Algorithm::MD5>::ComputeDigest (
+                 *          Digester<Algorithm::MD5, Result128BitType>::ComputeDigest (
                  *                  Streams::iostream::SerializeItemToBLOB (tmp).As<Streams::BinaryInputStream> ()
                  *              )
                  *          );
                  *      // NB: SOON WE CAN address issue https://github.com/SophistSolutions/Stroika/issues/88 we can lsoe the As<Streams...> stuff
                  *
                  */
-                template    <typename RETURN_TYPE, typename ALGORITHM>
+                template    <typename ALGORITHM, typename RETURN_TYPE>
                 struct  Digester {
                     using   ReturnType      =   RETURN_TYPE;
 

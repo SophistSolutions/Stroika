@@ -47,13 +47,13 @@ namespace {
 
 
 
-Digester<uint32_t, Algorithm::SuperFastHash>::ReturnType  Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (const Streams::BinaryInputStream& from)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     Memory::BLOB    b = from.ReadAll ();
-    return Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (b.begin (), b.end ());
+    return Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (b.begin (), b.end ());
 }
 
-Digester<uint32_t, Algorithm::SuperFastHash>::ReturnType  Digester<uint32_t, Algorithm::SuperFastHash>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

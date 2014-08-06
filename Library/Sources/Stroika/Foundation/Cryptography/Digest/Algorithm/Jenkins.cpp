@@ -42,7 +42,7 @@ namespace {
 
 
 
-Digester<uint32_t, Algorithm::Jenkins>::ReturnType  Digester<uint32_t, Algorithm::Jenkins>::ComputeDigest (const Streams::BinaryInputStream& from)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     uint32_t    hash    =   0;
     while (true) {
@@ -58,7 +58,7 @@ Digester<uint32_t, Algorithm::Jenkins>::ReturnType  Digester<uint32_t, Algorithm
     return hash;
 }
 
-Digester<uint32_t, Algorithm::Jenkins>::ReturnType  Digester<uint32_t, Algorithm::Jenkins>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

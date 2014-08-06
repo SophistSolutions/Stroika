@@ -37,7 +37,7 @@ namespace   Stroika {
 
 
                 template    <>
-                struct  Digester<uint32_t, Algorithm::CRC32> {
+                struct  Digester<Algorithm::CRC32, uint32_t> {
                     using   ReturnType      =   uint32_t;
 
                     static  ReturnType    ComputeDigest (const Streams::BinaryInputStream& from);

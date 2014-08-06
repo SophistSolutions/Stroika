@@ -40,7 +40,7 @@ namespace   Stroika {
 
 
                 template    <>
-                struct  Digester<uint32_t, Algorithm::SuperFastHash> {
+                struct  Digester<Algorithm::SuperFastHash, uint32_t> {
                     using   ReturnType      =   uint32_t;
 
                     static  ReturnType  ComputeDigest (const Streams::BinaryInputStream& from);

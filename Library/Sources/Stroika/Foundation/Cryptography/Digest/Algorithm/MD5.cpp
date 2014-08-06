@@ -349,14 +349,14 @@ namespace   {
 
 
 
-Digester<ReturnType, Algorithm::MD5>::ReturnType  Digester<ReturnType, Algorithm::MD5>::ComputeDigest (const Streams::BinaryInputStream& from)
+Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::BinaryInputStream& from)
 {
     // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
     Memory::BLOB    b = from.ReadAll ();
-    return Digester<ReturnType, Algorithm::MD5>::ComputeDigest (b.begin (), b.end ());
+    return Digester<Algorithm::MD5, ReturnType>::ComputeDigest (b.begin (), b.end ());
 }
 
-Digester<ReturnType, Algorithm::MD5>::ReturnType  Digester<ReturnType, Algorithm::MD5>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Byte* from, const Byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

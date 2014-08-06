@@ -35,7 +35,7 @@ namespace   Stroika {
                 }
 
                 template    <>
-                struct  Digester<Result128BitType, Algorithm::MD5> {
+                struct  Digester<Algorithm::MD5, Result128BitType> {
                     using   ReturnType      =   Result128BitType;
 
                     static  ReturnType  ComputeDigest (const Streams::BinaryInputStream& from);
