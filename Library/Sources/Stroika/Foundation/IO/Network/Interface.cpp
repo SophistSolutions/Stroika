@@ -27,7 +27,7 @@
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Containers/Collection.h"
 #include    "../../Execution/ErrNoException.h"
-#include    "../../Execution/Thread.h"
+#include    "../../Execution/Finally.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -69,6 +69,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 
     int sd = socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
+    Execution::Finally cleanup ([sd] () {
+        close (sd);
+    });
 
     int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
@@ -96,8 +99,8 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fStatus = status;
         }
         newInterface.fBindings.Add (InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
+        result.Add (newInterface);
     }
-    close (sd);
 #else
     AssertNotImplemented ();
 #endif

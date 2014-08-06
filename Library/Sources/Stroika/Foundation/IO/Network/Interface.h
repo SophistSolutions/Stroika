@@ -27,7 +27,7 @@
  *
  *      @todo   Weak API - just a rough first draft
  *
- *		@todo	Fix exception safety (fd leak)
+ *      @todo   Fix use of assert - SB exceptions mostly...
  */
 
 

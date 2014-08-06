@@ -46,14 +46,14 @@ namespace {
             cout << "iface: " << endl;
             cout << "  name: " << iFace.fInterfaceName.AsUTF8 () << endl;
             if (iFace.fType.IsPresent ()) {
-                cout << "  type: " << *iFace.fType << endl;
+                cout << "  type: " << (int)*iFace.fType << endl;
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
                 cout << "  addr: " << ipAddr.As<String> ().AsUTF8 () << endl;
             }
             if (iFace.fStatus.IsPresent ()) {
                 for (Interface::Status s : *iFace.fStatus) {
-                    cout << "  status: " << s << endl;
+                    cout << "  status: " << (int)s << endl;
                 }
             }
 #endif
@@ -67,7 +67,10 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_URL_ ();
+#if     qPlatform_POSIX
+        // WINDOZE NYI
         Test2_NetworkInterfaceList_ ();
+#endif
     }
 }
 

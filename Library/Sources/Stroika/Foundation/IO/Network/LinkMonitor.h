@@ -27,6 +27,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Should this API be renamed InterfaceMonitor? Probably yes?
+ *
  *      @todo   Optimize of listener is STATIC - and so we only register one (and esp on linux with threads)
  *              only one thread - and fan out to all subscribers. SB pretty easy - just make data static,
  *              but I guess one trick is then you need to be able to remove callbacks (ours - need Function).
@@ -48,22 +50,21 @@ namespace   Stroika {
                 using   Characters::String;
 
 
-                //// @todo Add somthing to return
-                /// struct INTERFCE { name; set<IPADDR> ()}
                 //
-
+                //  @todo Move to Interace API???
+                //
+                //// add options for filtering out disabled ones (not onlnie)
+                /// add optikon for fitlering out localhost
+                //
                 // This isn't always well defined, but is typically. This is the primary ip address used to address this machine.
                 // This CAN return an empty address if none available (like not connected to a network).
                 //. (if no net do we return localhost?))
                 InternetAddress GetPrimaryInternetAddress ();
 
 
-                //// ADD API for listint all interfaces (as above)
-
-                //// add options for filtering out disabled ones (not onlnie)
-                /// add optikon for fitlering out localhost
-
-
+                //
+                //  @todo Move to Interace API???
+                //
                 // Usefull as a (semi)persisent seed for GUIDs etc
                 // Otherwise, not super-well defined
                 // THINK OUT RELATION BETWEENT HIS AND GetPrimaryInternetAddress???
