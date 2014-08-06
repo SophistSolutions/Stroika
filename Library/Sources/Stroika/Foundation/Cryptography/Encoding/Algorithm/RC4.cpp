@@ -39,9 +39,9 @@ Streams::BinaryInputStream  Algorithm::DecodeRC4 (const Memory::BLOB& key, Strea
 {
     return OpenSSLInputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eDecrypt), in);
 }
-Streams::BinaryInputStream  Algorithm::DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
+Memory::BLOB  Algorithm::DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
 {
-    return DecodeRC4 (key, in.As<Streams::BinaryInputStream> (), options);
+    return DecodeRC4 (key, in.As<Streams::BinaryInputStream> ()).ReadAll ();
 }
 #endif
 
@@ -59,9 +59,9 @@ Streams::BinaryInputStream  Algorithm::EncodeRC4 (const Memory::BLOB& key, Strea
 {
     return OpenSSLInputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eEncrypt), in);
 }
-Streams::BinaryInputStream  Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
+Memory::BLOB  Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
 {
-    return EncodeRC4 (key, in.As<Streams::BinaryInputStream> (), options);
+    return EncodeRC4 (key, in.As<Streams::BinaryInputStream> ()).ReadAll ();
 }
 #endif
 

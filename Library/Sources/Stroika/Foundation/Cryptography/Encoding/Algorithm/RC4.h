@@ -33,7 +33,7 @@ namespace   Stroika {
                     /**
                      */
                     Streams::BinaryInputStream  DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
-                    Streams::BinaryInputStream  DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
+                    Memory::BLOB                DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 
@@ -41,7 +41,7 @@ namespace   Stroika {
                     /**
                      */
                     Streams::BinaryInputStream  EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
-                    Streams::BinaryInputStream  EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
+                    Memory::BLOB                EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 
