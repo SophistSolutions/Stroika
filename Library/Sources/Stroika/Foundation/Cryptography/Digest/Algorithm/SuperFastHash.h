@@ -36,6 +36,10 @@ namespace   Stroika {
                     // Just a name to select template implementation
                     struct SuperFastHash {
                     };
+                    template    <>
+                    struct  DigesterDefaultTraitsForAlgorithm<SuperFastHash> {
+                        using   ReturnType      =   uint32_t;
+                    };
                 }
 
 

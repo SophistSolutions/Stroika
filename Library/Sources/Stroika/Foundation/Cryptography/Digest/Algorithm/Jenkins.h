@@ -37,6 +37,10 @@ namespace   Stroika {
                     // Just a name to select template implementation
                     struct Jenkins {
                     };
+                    template    <>
+                    struct  DigesterDefaultTraitsForAlgorithm<Jenkins> {
+                        using   ReturnType      =   uint32_t;
+                    };
                 }
 
 

@@ -32,6 +32,10 @@ namespace   Stroika {
                     // Just a name to select template implementation
                     struct MD5 {
                     };
+                    template    <>
+                    struct  DigesterDefaultTraitsForAlgorithm<MD5> {
+                        using   ReturnType      =   Result128BitType;
+                    };
                 }
 
                 template    <>

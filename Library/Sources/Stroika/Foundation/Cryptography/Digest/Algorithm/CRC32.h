@@ -33,7 +33,13 @@ namespace   Stroika {
                 namespace   Algorithm {
                     struct CRC32 {
                     };
+                    template    <>
+                    struct  DigesterDefaultTraitsForAlgorithm<CRC32> {
+                        using   ReturnType      =   uint32_t;
+                    };
                 }
+
+
 
 
                 template    <>

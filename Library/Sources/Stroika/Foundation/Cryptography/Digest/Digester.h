@@ -28,6 +28,18 @@ namespace   Stroika {
                 using   Memory::Byte;
 
 
+                namespace   Algorithm {
+
+
+                    template    <typename ALGORITHM>
+                    struct  DigesterDefaultTraitsForAlgorithm {
+                        // TODO - REPLACE
+                    };
+
+
+                }
+
+
                 /**
                  *  A Digest is an algorithm that takes a stream of bytes and computes a series of bits
                  *  (can be thought of as a number, or string, or seqeunce of bits) which hopefully as
@@ -39,19 +51,19 @@ namespace   Stroika {
                  *  but could in principle be anything.
                  *
                  *  EXAMPLE USAGE:
-                 *      string digestStr = Format (Digester<Algorithm::MD5, Result128BitType>::ComputeDigest (s, e));
+                 *      string digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (s, e));
                  *
                  *  EXAMPLE USAGE:
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = Format (
-                 *          Digester<Algorithm::MD5, Result128BitType>::ComputeDigest (
+                 *          Digester<Algorithm::MD5>::ComputeDigest (
                  *                  Streams::iostream::SerializeItemToBLOB (tmp).As<Streams::BinaryInputStream> ()
                  *              )
                  *          );
                  *      // NB: SOON WE CAN address issue https://github.com/SophistSolutions/Stroika/issues/88 we can lsoe the As<Streams...> stuff
                  *
                  */
-                template    <typename ALGORITHM, typename RETURN_TYPE>
+                template    <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
                 struct  Digester {
                     using   ReturnType      =   RETURN_TYPE;
 

@@ -179,7 +179,7 @@ namespace  {
         {
             // really this is a test of high level tools used in orig Cryptography::MD5 module, but these are really
             // generic utilities...
-            using   DIGESTER_ = Digest::Digester<Digest::Algorithm::MD5, Digest::Result128BitType>;
+            using   DIGESTER_ = Digest::Digester<Digest::Algorithm::MD5>;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
@@ -225,6 +225,7 @@ namespace  {
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const   char    kSrc[] = "This is a very good test of a very good test";
+                DoCommonHasherTest_<Digester<Algorithm::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
                 DoCommonHasherTest_<Digester<Algorithm::CRC32, uint32_t>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
             }
         }
@@ -239,7 +240,7 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins, uint32_t>;
+            using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
             {
                 VerifyTestResult (Hash<USE_DIGESTER_> (1) == 10338022);
                 VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
@@ -264,7 +265,7 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            using   USE_DIGESTER_     =   Digester<Algorithm::MD5, Result128BitType>;
+            using   USE_DIGESTER_     =   Digester<Algorithm::MD5>;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
@@ -286,7 +287,7 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            using   USE_DIGESTER_     =   Digester<Algorithm::SuperFastHash, uint32_t>;
+            using   USE_DIGESTER_     =   Digester<Algorithm::SuperFastHash>;
             {
                 VerifyTestResult (Hash<USE_DIGESTER_> (1) == 422304363);
                 VerifyTestResult (Hash<USE_DIGESTER_> (93993) == 2489559407);
