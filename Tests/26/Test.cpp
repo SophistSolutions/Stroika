@@ -43,8 +43,8 @@ using   namespace   Stroika::Foundation::Streams;
 
 namespace {
     namespace AESTest_ {
-    using   namespace   Cryptography::Encoding;
-    using   namespace   Cryptography::Encoding::Algorithm;
+        using   namespace   Cryptography::Encoding;
+        using   namespace   Cryptography::Encoding::Algorithm;
 
         void    DoRegressionTests_ ()
         {
