@@ -17,6 +17,7 @@
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
+#include    "Stroika/Foundation/Cryptography/Digest/DigestDataToString.h"
 #include    "Stroika/Foundation/Cryptography/Hash.h"
 #include    "Stroika/Foundation/Cryptography/Format.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -186,9 +187,13 @@ namespace  {
                 VerifyTestResult (Format (DIGESTER_::ComputeDigest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc))) == kEncodedVal);
             }
             {
-                // replacement for ComputeMD5Digest_UsingOStream
                 int tmp = 3;
                 string  digestStr = Format (DIGESTER_::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
+                VerifyTestResult (digestStr ==  "eccbc87e4b5ce2fe28308fd9f2a7baf3");
+            }
+            {
+                int tmp = 3;
+                string  digestStr = Digest::DigestDataToString<DIGESTER_> (tmp);
                 VerifyTestResult (digestStr ==  "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
         }

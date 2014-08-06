@@ -24,7 +24,7 @@ namespace   Stroika {
                 template    <typename DIGESTER, typename T>
                 string  DigestDataToString (const T& t)
                 {
-                    Format (DIGESTER::ComputeDigest (Streams::iostream::SerializeItemToBLOB (t)));
+                    return Format (DIGESTER::ComputeDigest (Streams::iostream::SerializeItemToBLOB (t)));
                 }
 
 
