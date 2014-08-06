@@ -21,10 +21,10 @@ namespace   Stroika {
             namespace   Digest {
 
 
-                template    <typename DIGESTER, typename T>
-                string  DigestDataToString (const T& t)
+                template    <typename DIGESTER, typename T, typename RESULT_TYPE>
+                RESULT_TYPE  DigestDataToString (const T& t)
                 {
-                    return Format (DIGESTER::ComputeDigest (Streams::iostream::SerializeItemToBLOB (t)));
+                    return Format<RESULT_TYPE, typename DIGESTER::ReturnType> (DIGESTER::ComputeDigest (Streams::iostream::SerializeItemToBLOB (t)));
                 }
 
 

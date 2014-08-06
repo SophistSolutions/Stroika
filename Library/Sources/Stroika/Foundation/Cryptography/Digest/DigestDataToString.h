@@ -26,8 +26,8 @@ namespace   Stroika {
             namespace   Digest {
 
 
-                template    <typename DIGESTER, typename T>
-                string  DigestDataToString (const T& t);
+                template    <typename DIGESTER, typename T, typename RESULT_TYPE = string>
+                RESULT_TYPE  DigestDataToString (const T& t);
 
 
             }
