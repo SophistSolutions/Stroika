@@ -73,7 +73,6 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
-    InternetAddress result;
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
         Interface   newInterface;
         newInterface.fInterfaceName = String::FromSDKString (ifreqs[i].ifr_name);
@@ -84,7 +83,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         }
         else {
             // NYI
-            newInterface.fType = Interface::Type::eEthernet;    // WAY - not the right way to tell!
+            newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
 
         {
