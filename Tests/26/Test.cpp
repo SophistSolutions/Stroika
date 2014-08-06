@@ -42,19 +42,19 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 namespace {
-	namespace AESTest_ {
+    namespace AESTest_ {
         using   namespace   Cryptography::Encoding;
 
         void    DoRegressionTests_ ()
         {
             {
-				// super quick hack - must validate results
+                // super quick hack - must validate results
                 const   char    kKey[] = "Mr Key";
                 const   char    kSrc[] = "This is a very good test of a very good test";
-				const   Byte    kEncodedVal[] = { 0x22 };
-				const	Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
-				const	Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
-				const	Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
+                const   Byte    kEncodedVal[] = { 0x22 };
+                const   Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
+                const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
+                const   Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
 #if     qHas_OpenSSL && 0
                 VerifyTestResult (EncodeAES (key, src) == encodedVal);
                 VerifyTestResult (DecodeAES (key, encodedVal) == src);
@@ -63,7 +63,7 @@ namespace {
             }
         }
 
-	}
+    }
 }
 
 
@@ -245,7 +245,7 @@ namespace {
 namespace  {
     namespace Hash_CRC32 {
 
-		using   namespace   Cryptography::Digest;
+        using   namespace   Cryptography::Digest;
 
         void    DoRegressionTests_ ()
         {
@@ -257,7 +257,7 @@ namespace  {
             }
         }
 
-	}
+    }
 }
 
 
@@ -282,7 +282,7 @@ namespace  {
             }
         }
 
-	}
+    }
 }
 
 
@@ -302,7 +302,7 @@ namespace  {
             }
         }
 
-	}
+    }
 }
 
 
@@ -335,7 +335,7 @@ namespace  {
             }
         }
 
-	}
+    }
 }
 
 
@@ -346,7 +346,7 @@ namespace  {
 namespace   {
     void    DoRegressionTests_ ()
     {
-		AESTest_::DoRegressionTests_ ();
+        AESTest_::DoRegressionTests_ ();
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
