@@ -16,6 +16,11 @@
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *  TODO:
+ *      @todo   Can we overload function templates? Diff # template parms? So RESULT_TYPE is second arg? We
+ *              almost always want to infer the 'T' arg. But if you specify result type you dont want to
+ *              lose ability to get that inference.
  */
 
 
@@ -30,6 +35,10 @@ namespace   Stroika {
                  *  A simple helper function to make it easier (fewer characters) for the most common
                  *  case, taking a data object and using operator << to insert it into a stream, and then
                  *  taking THAT and digesting it, and taking its result to compute a string of the hash (hex).
+                 *
+                 *  EXAMPLE USAGE:
+                 *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
+                 *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
                  */
                 template    <typename DIGESTER, typename T, typename RESULT_TYPE = string>
                 RESULT_TYPE  DigestDataToString (const T& t);
