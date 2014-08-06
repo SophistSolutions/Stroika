@@ -12,7 +12,9 @@
 #endif
 
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
@@ -26,7 +28,6 @@
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
-
 #include    "../TestHarness/TestHarness.h"
 
 
@@ -39,6 +40,31 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
+
+namespace {
+	namespace AESTest_ {
+        using   namespace   Cryptography::Encoding;
+
+        void    DoRegressionTests_ ()
+        {
+            {
+				// super quick hack - must validate results
+                const   char    kKey[] = "Mr Key";
+                const   char    kSrc[] = "This is a very good test of a very good test";
+				const   Byte    kEncodedVal[] = { 0x22 };
+				const	Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
+				const	Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
+				const	Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
+#if     qHas_OpenSSL && 0
+                VerifyTestResult (EncodeAES (key, src) == encodedVal);
+                VerifyTestResult (DecodeAES (key, encodedVal) == src);
+#endif
+
+            }
+        }
+
+	}
+}
 
 
 
@@ -219,7 +245,7 @@ namespace {
 namespace  {
     namespace Hash_CRC32 {
 
-        using   namespace   Cryptography::Digest;
+		using   namespace   Cryptography::Digest;
 
         void    DoRegressionTests_ ()
         {
@@ -230,7 +256,8 @@ namespace  {
                 DoCommonHasherTest_<Digester<Algorithm::CRC32, uint32_t>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
             }
         }
-    }
+
+	}
 }
 
 
@@ -254,7 +281,8 @@ namespace  {
                 DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
             }
         }
-    }
+
+	}
 }
 
 
@@ -273,7 +301,8 @@ namespace  {
                 VerifyTestResult ((Hash<USE_DIGESTER_, string, string> (kSrc)) == kEncodedVal);
             }
         }
-    }
+
+	}
 }
 
 
@@ -305,7 +334,8 @@ namespace  {
                 DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 1181771593);
             }
         }
-    }
+
+	}
 }
 
 
@@ -316,6 +346,7 @@ namespace  {
 namespace   {
     void    DoRegressionTests_ ()
     {
+		AESTest_::DoRegressionTests_ ();
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
