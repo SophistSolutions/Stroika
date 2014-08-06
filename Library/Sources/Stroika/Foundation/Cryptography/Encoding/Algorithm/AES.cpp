@@ -79,6 +79,10 @@ Streams::BinaryInputStream  Algorithm::DecodeAES (const Memory::BLOB& key, Strea
 {
     return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
 }
+Streams::BinaryInputStream  Algorithm::DecodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
+{
+    return DecodeAES (key, in.As<Streams::BinaryInputStream> (), options);
+}
 #endif
 
 
@@ -94,6 +98,10 @@ Streams::BinaryInputStream  Algorithm::DecodeAES (const Memory::BLOB& key, Strea
 Streams::BinaryInputStream  Algorithm::EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
+}
+Streams::BinaryInputStream  Algorithm::EncodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
+{
+    return EncodeAES (key, in.As<Streams::BinaryInputStream> (), options);
 }
 #endif
 

@@ -60,6 +60,7 @@ namespace   Stroika {
                     /**
                      */
                     Streams::BinaryInputStream  DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::BinaryInputStream  DecodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
@@ -67,6 +68,7 @@ namespace   Stroika {
                     /**
                      */
                     Streams::BinaryInputStream  EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::BinaryInputStream  EncodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 

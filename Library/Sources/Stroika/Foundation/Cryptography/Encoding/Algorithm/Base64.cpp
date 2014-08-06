@@ -325,3 +325,21 @@ string  Algorithm::EncodeBase64 (const Streams::BinaryInputStream& from, LineBre
     return string (data.begin (), data.begin () + totalBytes);
 #endif
 }
+
+string  Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
+{
+    const Byte* start = from.begin ();
+    const Byte* end = from.end ();
+    Require (start == end or start != nullptr);
+    Require (start == end or end != nullptr);
+    base64_encodestate state (lb);
+    size_t srcLen = end - start;
+    size_t bufSize = 4 * srcLen;
+    Assert (bufSize >= srcLen);  // no overflow!
+    SmallStackBuffer<signed char>  data (bufSize);
+    size_t mostBytesCopied =     base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t totalBytes = mostBytesCopied + extraBytes;
+    Assert (totalBytes <= bufSize);
+    return string (data.begin (), data.begin () + totalBytes);
+}

@@ -41,11 +41,13 @@ namespace   Stroika {
             namespace   Encoding {
                 namespace   Algorithm {
 
+
                     Memory::BLOB    DecodeBase64 (const string& s);
                     void            DecodeBase64 (const string& s, Streams::BinaryOutputStream out);
 
                     enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
                     string          EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb = LineBreak::eAuto_LB);
+                    string          EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
 
 
                 }
