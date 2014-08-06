@@ -21,10 +21,11 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a38">v2.0a38x</a><br/>2014-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a38">v2.0a38</a><br/>2014-08-06</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>More cleanups (BLOB overloads) of the Cryptography code</li>
+	<li>Practically no testing for this release</li>
 </ul>
 </td>
 </tr>
