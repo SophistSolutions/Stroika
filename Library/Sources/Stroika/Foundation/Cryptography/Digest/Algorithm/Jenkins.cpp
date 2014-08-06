@@ -67,3 +67,8 @@ Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins,
     DoEnd_ (&hash);
     return hash;
 }
+
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Memory::BLOB& from)
+{
+    return ComputeDigest (from.begin (), from.end ());
+}

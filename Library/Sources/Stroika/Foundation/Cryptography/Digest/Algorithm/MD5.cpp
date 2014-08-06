@@ -371,3 +371,8 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, Retur
     memcpy(&*result.begin (), ctx.digest, 16);
     return result;
 }
+
+Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Memory::BLOB& from)
+{
+    return ComputeDigest (from.begin (), from.end ());
+}

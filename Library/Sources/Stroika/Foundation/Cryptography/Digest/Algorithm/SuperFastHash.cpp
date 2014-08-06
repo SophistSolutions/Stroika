@@ -111,3 +111,8 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::Su
 
     return hash;
 }
+
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Memory::BLOB& from)
+{
+    return ComputeDigest (from.begin (), from.end ());
+}

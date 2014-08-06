@@ -9,6 +9,7 @@
 #include    <cstdint>
 
 #include    "../../Configuration/Common.h"
+#include    "../../Memory/BLOB.h"
 #include    "../../Streams/BinaryInputStream.h"
 
 
@@ -26,6 +27,7 @@ namespace   Stroika {
 
 
                 using   Memory::Byte;
+                using   Memory::BLOB;
 
 
                 namespace   Algorithm {
@@ -55,12 +57,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE USAGE:
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
-                 *      string  digestStr = Format (
-                 *          Digester<Algorithm::MD5>::ComputeDigest (
-                 *                  Streams::iostream::SerializeItemToBLOB (tmp).As<Streams::BinaryInputStream> ()
-                 *              )
-                 *          );
-                 *      // NB: SOON WE CAN address issue https://github.com/SophistSolutions/Stroika/issues/88 we can lsoe the As<Streams...> stuff
+                 *      string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
                  *
                  */
                 template    <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
@@ -69,6 +66,7 @@ namespace   Stroika {
 
                     static  ReturnType  ComputeDigest (const Streams::BinaryInputStream& from);
                     static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
+                    static  ReturnType  ComputeDigest (const BLOB& from);
                 };
 
 

@@ -188,11 +188,7 @@ namespace  {
             {
                 // replacement for ComputeMD5Digest_UsingOStream
                 int tmp = 3;
-                string  digestStr = Format (
-                                        DIGESTER_::ComputeDigest (
-                                            Streams::iostream::SerializeItemToBLOB (tmp).As<Streams::BinaryInputStream> ()
-                                        )
-                                    );
+                string  digestStr = Format (DIGESTER_::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
                 VerifyTestResult (digestStr ==  "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
         }

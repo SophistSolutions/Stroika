@@ -118,3 +118,8 @@ Digester<Algorithm::CRC32, uint32_t>::ReturnType  Digester<Algorithm::CRC32, uin
     DoEnd_ (&hash);
     return hash;
 }
+
+Digester<Algorithm::CRC32, uint32_t>::ReturnType  Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Memory::BLOB& from)
+{
+    return ComputeDigest (from.begin (), from.end ());
+}
