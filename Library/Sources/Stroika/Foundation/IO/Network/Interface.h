@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   IPV6 compat.
+ *
  *      @todo   Incomplete POSIX IMPL
  *
  *      @todo   No Windoze impl
