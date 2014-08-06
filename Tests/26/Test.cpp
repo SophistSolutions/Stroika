@@ -43,7 +43,8 @@ using   namespace   Stroika::Foundation::Streams;
 
 namespace {
     namespace AESTest_ {
-        using   namespace   Cryptography::Encoding;
+    using   namespace   Cryptography::Encoding;
+    using   namespace   Cryptography::Encoding::Algorithm;
 
         void    DoRegressionTests_ ()
         {
@@ -56,6 +57,8 @@ namespace {
                 const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
                 const   Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
 #if     qHas_OpenSSL && 0
+                // have to fix makefiles before we can even get into this
+                // @todo!!!
                 VerifyTestResult (EncodeAES (key, src) == encodedVal);
                 VerifyTestResult (DecodeAES (key, encodedVal) == src);
 #endif
