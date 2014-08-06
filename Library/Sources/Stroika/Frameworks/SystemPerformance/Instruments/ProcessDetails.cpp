@@ -24,7 +24,7 @@
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -239,11 +239,11 @@ namespace {
 #if 0
                          /*
                          "%lu %"KLF"u %"KLF"u %"KLF"u %"KLF"u %"KLF"u "
-                         "%*s %*s %*s %*s " /* discard, no RT signals & Linux 2.1 used hex */
+                         "%*s %*s %*s %*s " // discard, no RT signals & Linux 2.1 used hex
                          "%"KLF"u %*lu %*lu "
                          "%d %d "
                          "%lu %lu"
-                         * /
+                         */
 #endif
                          ,
                          &result.state,
