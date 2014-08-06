@@ -16,6 +16,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Digester.o\
+	$(ObjDir)DigestDataToString.o\
 	$(ObjDir)ResultTypes.o\
 
 all:	$(Objs)  $(SubDirs)

@@ -256,6 +256,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Cryptography-Digest-Algorithm-SuperFastHash.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Cryptography-Digest-Algorithm-SuperFastHash.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Cryptography-Digest-Digester.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-Digester.obj</ObjectFileName>
@@ -1055,6 +1056,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h" />
@@ -1402,6 +1404,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl" />
