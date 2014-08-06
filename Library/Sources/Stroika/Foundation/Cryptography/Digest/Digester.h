@@ -59,6 +59,11 @@ namespace   Stroika {
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
                  *
+                 *  @see  DigestDataToString ()
+                 *  EXAMPLE USAGE:
+                 *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
+                 *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
+                 *
                  */
                 template    <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
                 struct  Digester {

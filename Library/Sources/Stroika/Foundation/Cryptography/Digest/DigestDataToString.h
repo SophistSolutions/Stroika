@@ -26,6 +26,11 @@ namespace   Stroika {
             namespace   Digest {
 
 
+                /**
+                 *  A simple helper function to make it easier (fewer characters) for the most common
+                 *  case, taking a data object and using operator << to insert it into a stream, and then
+                 *  taking THAT and digesting it, and taking its result to compute a string of the hash (hex).
+                 */
                 template    <typename DIGESTER, typename T, typename RESULT_TYPE = string>
                 RESULT_TYPE  DigestDataToString (const T& t);
 
