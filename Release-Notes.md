@@ -23,10 +23,11 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a40">v2.0a40x</a><br/>2014-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a40">v2.0a40</a><br/>2014-08-08</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Support for MSVC 2k13 Update 3, and other cleanups to Compiler bug defines.</li>
+	<li>Practically no testing for this release</li>
 </ul>
 </td>
 </tr>
