@@ -52,12 +52,15 @@
 #define _MS_VS_2k13_FULLVER_            180021005
 #define _MS_VS_2k13_Update1_FULLVER_    180021005
 #define _MS_VS_2k13_Update2_FULLVER_    180030501
+#define _MS_VS_2k13_Update3_FULLVER_    180030723
 
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
 #endif
 #if      _MSC_VER > _MS_VS_2k13_VER_
-#pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
+#pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
+#elif    _MSC_FULL_VER > _MS_VS_2k13_Update3_FULLVER_
+#pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
 #endif
 
 #else
@@ -99,7 +102,7 @@
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
+#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     0
 #endif
@@ -116,12 +119,15 @@
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
     ErroniousReportFailWhenDateBefore1900
+
+    >>> TO TEST IF FIXED - RUN TIME REGRESSION TESTS (Foundation::Time - currently #44) <<<
 */
 #ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
 
 #if   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     0
 #endif
@@ -134,13 +140,16 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
-@DESCRIPTION:   <p></p>
+@DESCRIPTION:
+
+    >>> TO TEST IF FIXED - RUN TIME REGRESSION TESTS (Foundation::Time - currently #44) <<<
 */
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
 #endif
@@ -160,7 +169,7 @@
 #ifndef qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
+#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy   0
 #endif
@@ -179,9 +188,10 @@
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_Buggy   0
+#define qCompilerAndStdLib_constexpr_Buggy      0
 #endif
 
 #endif
@@ -193,12 +203,21 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+
+#if     qDebug && !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
+                : fLock_ (ATOMIC_FLAG_INIT)
+#endif
+
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\spinlock.inl(29): error C2280: 'std::atomic_flag::atomic_flag(const std::atomic_flag &)' : attempting to reference a deleted function
+1>          c:\program files (x86)\microsoft visual studio 12.0\vc\include\atomic(191) : see declaration of 'std::atomic_flag::atomic_flag'
+
 */
 #ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
 #endif
@@ -292,7 +311,7 @@
 #ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   0
 #endif
@@ -353,7 +372,7 @@ EXAMPLE:
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
+#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      0
 #endif
@@ -394,6 +413,15 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 @DESCRIPTION:
+    BUILDING REGTESTS:
+22>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(77): error C2975: 'MIN' : invalid template argument for 'Stroika::Foundation::Traversal::RangeTraits::ExplicitDiscreteRangeTraits', expected compile-time constant expression
+22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(53) : see declaration of 'MIN'
+22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(123) : see reference to class template instantiation 'Stroika::Foundation::Traversal::RangeTraits::DefaultDiscreteRangeTraits_Integral<T>' being compiled
+22>          with
+22>          [
+22>              T=int
+22>          ]
+22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(141) : see reference to class template instantiation 'Stroika::Foundation::Traversal::RangeTraits::DefaultDiscreteRangeTraits<T>' being compiled
 */
 #ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 
@@ -401,7 +429,8 @@ EXAMPLE:
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (_MSC_VER == _MS_VS_2k13_VER_)
+// Still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           qCompilerAndStdLib_constexpr_Buggy
 #else
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy            0
 #endif
@@ -420,9 +449,10 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_noexcept_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_noexcept_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
-#define qCompilerAndStdLib_noexcept_Buggy    0
+#define qCompilerAndStdLib_noexcept_Buggy       0
 #endif
 
 #endif
@@ -446,7 +476,8 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    0
 #endif
@@ -516,9 +547,10 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy 0
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
 #endif
 
 #endif
@@ -603,16 +635,23 @@ EXAMPLE:
 
 
 
-
+/*
+     thread_local AbortFlagType_             s_Aborting_ (false);
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(88): error C2146: syntax error : missing ';' before identifier 'AbortFlagType_'
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(88): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(89): error C2146: syntax error : missing ';' before identifier 'AbortSuppressCountType_'
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(89): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+*/
 #ifndef qCompilerAndStdLib_thread_local_keyword_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_thread_local_keyword_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #elif     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_thread_local_keyword_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_thread_local_keyword_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #else
-#define qCompilerAndStdLib_thread_local_keyword_Buggy   0
+#define qCompilerAndStdLib_thread_local_keyword_Buggy       0
 #endif
 
 #endif
@@ -636,11 +675,33 @@ EXAMPLE:
 
 
 // @todo - investigate this better
+/*
+    virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+    {
+#if     qTemplateAccessCheckConfusionProtectedNeststingBug
+        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
+#else
+        return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+#endif
+    }
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\multiset.inl(152): error C2248: 'Stroika::Foundation::Traversal::Iterable<T>::_SharedPtrIRep' : cannot access protected typedef declared in class 'Stroika::Foundation::Traversal::Iterable<T>'
+1>          with
+1>          [
+1>              T=size_t
+1>          ]
+1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(226) : see declaration of 'Stroika::Foundation::Traversal::Iterable<T>::_SharedPtrIRep'
+1>          with
+1>          [
+1>              T=size_t
+1>          ]
+1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\multiset.inl(148) : while compiling class template member function 'Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Traversal::Iterable<T>::_IRep> Stroika::Foundation::Containers::MultiSet<T,Stroika::Foundation::Containers::MultiSet_DefaultTraits<T,Stroika::Foundation::Common::ComparerWithEquals<T>>>::_IRep::_ElementsIterableHelper::MyIterableRep_::Clone(Stroika::Foundation::Traversal::IteratorOwnerID) const'
+*/
 #ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qTemplateAccessCheckConfusionProtectedNeststingBug   0
 #endif
@@ -651,13 +712,28 @@ EXAMPLE:
 
 
 // @todo - investigate this better
+/*
+
+// NO LONGER CRASHES as of _MS_VS_2k13_Update2_FULLVER_ - investigate error message. Could be my bug?
+// -- LGP 2014-05-25
+
+19>c:\sandbox\stroika\devroot\tests\testcommon\commontests_set.h(159): error C2248: 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>::SortedSet'
+                    : cannot access protected member declared in class 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>'
+19>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\sortedset.h(110) : see declaration of 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>::SortedSet'
+19>          c:\sandbox\stroika\devroot\tests\testcommon\commontests_set.h(182) : see reference to function template instantiation 'void CommonTests::SetTests::Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER,USING_BASESET_CONTAINER,TEST_FUNCTION>(TEST_FUNCTION)' being compiled
+19>          with
+19>          [
+19>              USING_SET_CONTAINER=Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>
+19>  ,            USING_BASESET_CONTAINER=Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>
+19>  ,            TEST_FUNCTION=`anonymous-namespace'::RunTests_::<lambda_9202cc4e8657f58007ab10c1a185f58f>
+19>          ]
+*/
 #ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
 
 #if     defined (_MSC_VER)
-// NO LONGER CRASHES as of _MS_VS_2k13_Update2_FULLVER_ - investigate error message. Could be my bug?
-// -- LGP 2014-05-25
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
 #endif
@@ -687,11 +763,10 @@ EXAMPLE:
 
 
 
-// @todo - investigate this better
 #ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        (_MSC_VER == _MS_VS_2k13_VER_ && _MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
+#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        0
 #endif
@@ -782,6 +857,18 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
 @DESCRIPTION:   See also qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+
+#if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
+                static  SHARED_IMLP  DefaultElementCopier_ (const T& t);
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_) noexcept;
+#else
+                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); }) noexcept;
+#endif
+
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(78): error C2226: syntax error : unexpected type 'SHARED_IMLP'
+1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(82) : see reference to class template instantiation 'Stroika::Foundation::Memory::SharedByValue_CopyByFunction<T,SHARED_IMLP>' being compiled
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(78): error C2143: syntax error : missing ')' before '{'
+
 */
 #ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
 
@@ -789,7 +876,8 @@ EXAMPLE:
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   0
 #endif
@@ -803,6 +891,12 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 @DESCRIPTION:   See also qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
+
+        nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2062: type 'bool' unexpected
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2143: syntax error : missing ')' before '{'
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2059: syntax error : ')'
 */
 #ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
@@ -812,7 +906,8 @@ EXAMPLE:
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    0
 #endif
@@ -885,12 +980,25 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
 @DESCRIPTION:
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  String& operator= (String && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  String& operator= (String && newString) = default;
+#endif
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(396): error C2610: 'Stroika::Foundation::Characters::String &Stroika::Foundation::Characters::String::operator =(Stroika::Foundation::Characters::String &&)' : is not a special member function which can be defaulted
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(226): error C2264: 'Stroika::Foundation::Characters::String::operator =' : error in function definition or declaration; function not called
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(269): error C2264: 'Stroika::Foundation::Characters::String::operator =' : error in function definition or declaration; function not called
 */
 #ifndef qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        0
 #endif
@@ -903,16 +1011,21 @@ EXAMPLE:
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
-@DESCRIPTION:   <p>
+@DESCRIPTION:
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()));
-            </p>
+            T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits<T>::epsilon ()));
+1>  ProgressMonitor.cpp
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\common.h(89): error C2064: term does not evaluate to a function taking 0 arguments
+
+
+    ///// VERIFY WE CAN DELETE THIS DEFINE AS OF 2014-08-08
 */
 #ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #else
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
 #endif
@@ -968,6 +1081,7 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
 @DESCRIPTION:
+    To test if fixed, set to zero and stroika lib will fail to compile.
 */
 #ifndef qCompilerAndStdLib_deprecatedFeatureMissing
 
@@ -977,7 +1091,8 @@ EXAMPLE:
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
-#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_VER == _MS_VS_2k13_VER_)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_deprecatedFeatureMissing              0
 #endif

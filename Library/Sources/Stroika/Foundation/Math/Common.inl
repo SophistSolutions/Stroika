@@ -161,7 +161,7 @@ namespace   Stroika {
             {
                 return std::abs (l - r) <= epsilon;
             }
-#if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy
             inline  bool   NearlyEquals (float l, float r, float epsilon = (10000 * numeric_limits<float>::epsilon ()))
             {
                 return NearlyEquals<float> (l, r, epsilon);
@@ -190,7 +190,7 @@ namespace   Stroika {
                 }
                 return p;
             }
-#if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy
             inline float   PinToSpecialPoint (float p, float special, float epsilon = (100 * numeric_limits<float>::epsilon ()))
             {
                 return PinToSpecialPoint<float> (p, special, epsilon);
