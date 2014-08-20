@@ -730,6 +730,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
@@ -1179,6 +1180,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
@@ -1495,6 +1497,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />

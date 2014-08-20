@@ -723,6 +723,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1668,6 +1671,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2534,6 +2540,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
