@@ -571,24 +571,19 @@ namespace   Stroika {
             // early alpha placeholder test
             template    <typename T>
             class Synchronized<Containers::Sequence<T>> : public Containers::Sequence<T> {
-#if 0
             private:
-                using inherited = Characters::String;
+                using inherited = Containers::Sequence<T>;
+
             public:
                 Synchronized () = default;
-                Synchronized (const char16_t* cString) : inherited (cString) {}
-                Synchronized (const char32_t* cString) : inherited (cString) {}
-                Synchronized (const wchar_t* cString) : inherited (cString) {}
-                Synchronized (const wchar_t* from, const wchar_t* to) : inherited (from, to) {}
-                Synchronized (const Characters::Character* from, const Characters::Character* to) : inherited (from, to) {}
-                Synchronized (const wstring& r) : inherited (r) {}
-                Synchronized (const Traversal::Iterable<Characters::Character>& src)  : inherited (src) {}
-            Synchronized (const String& from) noexcept  :
-                inherited (from) {}
-            Synchronized (String&& from) noexcept  :
-                inherited (from) {}
-                explicit Synchronized (const Characters::Character& c)  : inherited (c) {}
-#endif
+                Synchronized (const Sequence<T>& s) : inherited (s) {}
+                Synchronized (Sequence<T>&& s) : inherited (move (s)) {}
+                Synchronized (const initializer_list<T>& s) : inherited (s) {}
+                Synchronized (const vector<T>& s) : inherited (s) {}
+                template <typename CONTAINER_OF_T>
+				explicit Synchronized (const CONTAINER_OF_T& s) : inherited (s) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
             };
 
 
