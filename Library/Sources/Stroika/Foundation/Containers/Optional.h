@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
 
 

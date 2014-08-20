@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Execution/Synchronized.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 

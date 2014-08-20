@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Common/Compare.h"
+#include    "../Execution/Synchronized.h"
 #include    "../Traversal/Iterable.h"
 
 #include    "UpdatableIterable.h"

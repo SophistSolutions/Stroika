@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
+#include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
