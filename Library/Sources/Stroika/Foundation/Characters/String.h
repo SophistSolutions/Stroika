@@ -9,6 +9,7 @@
 #include    <string>
 
 #include    "../Execution/ModuleInit.h"
+#include    "../Execution/Synchronized.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 #include    "SDKString.h"
@@ -1170,6 +1171,35 @@ namespace   Stroika {
 
 
         }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <>
+            class Synchronized<Characters::String> : public Characters::String {
+            private:
+                using inherited = Characters::String;
+            public:
+                Synchronized () = default;
+                Synchronized (const char16_t* cString) : inherited (cString) {}
+                Synchronized (const char32_t* cString) : inherited (cString) {}
+                Synchronized (const wchar_t* cString) : inherited (cString) {}
+                Synchronized (const wchar_t* from, const wchar_t* to) : inherited (from, to) {}
+                Synchronized (const Characters::Character* from, const Characters::Character* to) : inherited (from, to) {}
+                Synchronized (const wstring& r) : inherited (r) {}
+                Synchronized (const Traversal::Iterable<Characters::Character>& src)  : inherited (src) {}
+            Synchronized (const String& from) noexcept  :
+                inherited (from) {}
+            Synchronized (String&& from) noexcept  :
+                inherited (from) {}
+                explicit Synchronized (const Characters::Character& c)  : inherited (c) {}
+            };
+
+
+        }
+
     }
 }
 
