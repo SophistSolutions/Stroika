@@ -318,8 +318,8 @@ namespace   Stroika {
 
             public:
                 Synchronized () = default;
-                Synchronized (const Collection<T>& src) : inherited (src) {}
-                Synchronized (Collection<T>&& src) : inherited (move (src)) {}
+                Synchronized (const Containers::Collection<T>& src) : inherited (src) {}
+                Synchronized (Containers::Collection<T>&& src) : inherited (move (src)) {}
                 Synchronized (const initializer_list<T>& src) : inherited (src) {}
                 template <typename CONTAINER_OF_T>
                 explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}

@@ -409,8 +409,8 @@ namespace   Stroika {
 
             public:
                 Synchronized () = default;
-                Synchronized (const Set<T, TRAITS>& src) : inherited (src) {}
-                Synchronized (Set<T, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const Containers::Set<T, TRAITS>& src) : inherited (src) {}
+                Synchronized (Containers::Set<T, TRAITS>&& src) : inherited (move (src)) {}
                 Synchronized (const initializer_list<T>& src) : inherited (src) {}
                 Synchronized (const set<T>& src) : inherited (src) {}
                 template <typename CONTAINER_OF_T>

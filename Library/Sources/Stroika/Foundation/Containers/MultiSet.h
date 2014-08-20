@@ -442,8 +442,8 @@ namespace   Stroika {
 
             public:
                 Synchronized () = default;
-                Synchronized (const MultiSet<T, TRAITS>& src) : inherited (src) {}
-                Synchronized (MultiSet<T, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const Containers::MultiSet<T, TRAITS>& src) : inherited (src) {}
+                Synchronized (Containers::MultiSet<T, TRAITS>&& src) : inherited (move (src)) {}
                 Synchronized (const initializer_list<T>& src) : inherited (src) {}
                 Synchronized (const multiset<T>& src) : inherited (src) {}
                 template <typename CONTAINER_OF_T>
