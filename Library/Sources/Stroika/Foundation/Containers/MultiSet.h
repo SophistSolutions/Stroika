@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <set>
+
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
@@ -423,6 +425,31 @@ namespace   Stroika {
             public:
 #endif
                 struct  _UniqueElementsHelper;
+            };
+
+
+        }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <typename T, typename TRAITS>
+            class Synchronized<Containers::MultiSet<T, TRAITS>> : public Containers::MultiSet<T, TRAITS> {
+            private:
+                using inherited = Containers::MultiSet<T, TRAITS>;
+
+            public:
+                Synchronized () = default;
+                Synchronized (const MultiSet<T, TRAITS>& src) : inherited (src) {}
+                Synchronized (MultiSet<T, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<T>& src) : inherited (src) {}
+                Synchronized (const multiset<T>& src) : inherited (src) {}
+                template <typename CONTAINER_OF_T>
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
             };
 
 

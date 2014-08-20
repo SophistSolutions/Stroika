@@ -396,6 +396,31 @@ namespace   Stroika {
 
 
         }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <typename T, typename TRAITS>
+            class Synchronized<Containers::Set<T, TRAITS>> : public Containers::Set<T, TRAITS> {
+            private:
+                using inherited = Containers::Set<T, TRAITS>;
+
+            public:
+                Synchronized () = default;
+                Synchronized (const Set<T, TRAITS>& src) : inherited (src) {}
+                Synchronized (Set<T, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<T>& src) : inherited (src) {}
+                Synchronized (const set<T>& src) : inherited (src) {}
+                template <typename CONTAINER_OF_T>
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+            };
+
+
+        }
     }
 }
 

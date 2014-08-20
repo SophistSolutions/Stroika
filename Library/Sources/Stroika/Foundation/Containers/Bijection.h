@@ -520,6 +520,30 @@ namespace   Stroika {
 
 
         }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            class Synchronized<Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>> : public Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> {
+            private:
+                using inherited = Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+
+            public:
+                Synchronized () = default;
+                Synchronized (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) : inherited (src) {}
+                Synchronized (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src) : inherited (src) {}
+                template <typename CONTAINER_OF_T>
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+            };
+
+
+        }
     }
 }
 

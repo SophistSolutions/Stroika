@@ -27,40 +27,40 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const Sequence<T>& s)
-                : inherited (static_cast<const inherited&> (s))
+            inline  Sequence<T>::Sequence (const Sequence<T>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (Sequence<T>&& s)
-                : inherited (static_cast < inherited&& > (s))
+            inline  Sequence<T>::Sequence (Sequence<T>&& src)
+                : inherited (static_cast < inherited&& > (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const initializer_list<T>& s)
+            inline  Sequence<T>::Sequence (const initializer_list<T>& src)
                 : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
-                AppendAll (s);
+                AppendAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const vector<T>& s)
+            inline  Sequence<T>::Sequence (const vector<T>& src)
                 : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
-                AppendAll (s);
+                AppendAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
+            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src)
                 : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
-                AppendAll (s);
+                AppendAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T>

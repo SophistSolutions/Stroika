@@ -118,12 +118,12 @@ namespace   Stroika {
                  *  The underlying data structure of the Association is defined by @see Concrete::Association_Factory<>
                  */
                 Association ();
-                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                Association (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
-                Association (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
-                Association (const std::map<KEY_TYPE, VALUE_TYPE>& m);
+                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                Association (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
+                Association (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
+                Association (const std::map<KEY_TYPE, VALUE_TYPE>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                explicit Association (const CONTAINER_OF_PAIR_KEY_T& cp);
+                explicit Association (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 

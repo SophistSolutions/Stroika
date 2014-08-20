@@ -218,12 +218,12 @@ namespace   Stroika {
                  *  all the elements.
                  */
                 Sequence ();
-                Sequence (const Sequence<T>& s);
-                Sequence (Sequence<T>&& s);
-                Sequence (const initializer_list<T>& s);
-                Sequence (const vector<T>& s);
+                Sequence (const Sequence<T>& src);
+                Sequence (Sequence<T>&& src);
+                Sequence (const initializer_list<T>& src);
+                Sequence (const vector<T>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Sequence (const CONTAINER_OF_T& s);
+                explicit Sequence (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -576,12 +576,12 @@ namespace   Stroika {
 
             public:
                 Synchronized () = default;
-                Synchronized (const Sequence<T>& s) : inherited (s) {}
-                Synchronized (Sequence<T>&& s) : inherited (move (s)) {}
-                Synchronized (const initializer_list<T>& s) : inherited (s) {}
-                Synchronized (const vector<T>& s) : inherited (s) {}
+                Synchronized (const Containers::Sequence<T>& src) : inherited (src) {}
+                Synchronized (Containers::Sequence<T>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<T>& src) : inherited (src) {}
+                Synchronized (const vector<T>& src) : inherited (src) {}
                 template <typename CONTAINER_OF_T>
-				explicit Synchronized (const CONTAINER_OF_T& s) : inherited (s) {}
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
             };
