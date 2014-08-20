@@ -6,12 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <csignal>
-#include    <thread>
-
-#include    "../Configuration/Common.h"
-#include    "../Characters/String.h"
-
 
 
 /**
