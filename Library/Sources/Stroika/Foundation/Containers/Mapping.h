@@ -452,8 +452,8 @@ namespace   Stroika {
 
             public:
                 Synchronized () = default;
-                Synchronized (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) : inherited (src) {}
-                Synchronized (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) : inherited (src) {}
+                Synchronized (Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) : inherited (move (src)) {}
                 Synchronized (const initializer_list<Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src) : inherited (src) {}
                 Synchronized (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src) : inherited (src) {}
                 Synchronized (const map<KEY_TYPE, VALUE_TYPE>& src) : inherited (src) {}
