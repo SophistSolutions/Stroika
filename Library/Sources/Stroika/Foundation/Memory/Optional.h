@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Execution/Synchronized.h"
 #include    "BlockAllocated.h"
 
 
@@ -243,6 +244,132 @@ namespace   Stroika {
                  *  and no extra count infrastructure, or threadafe locking.
                  */
                 AutomaticallyBlockAllocated<T>*  fValue_;
+            };
+
+
+        }
+
+
+        namespace   Execution {
+
+
+            // early alpha placeholder test
+            template    <typename T, typename TRAITS>
+            class   Synchronized<Memory::Optional<T, TRAITS>> : public Memory::Optional<T, TRAITS> {
+            public:
+                /**
+                 */
+                Synchronized ();
+                Synchronized (const T& from);
+                Synchronized (T&&  from);
+                Synchronized (const Synchronized<Memory::Optional<T, TRAITS>>& from);
+                Synchronized (Synchronized<Memory::Optional<T, TRAITS>>&& from);
+                Synchronized (const Memory::Optional<T, TRAITS>& from);
+                Synchronized (Memory::Optional<T, TRAITS>&& from);
+
+            public:
+                /**
+                 */
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const T& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (T && rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (Synchronized<Memory::Optional<T, TRAITS>> && rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const Memory::Optional<T, TRAITS>& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (Memory::Optional<T, TRAITS> && rhs);
+
+            public:
+                /**
+                 *  Erases (destroys) any present value for this Optional<T, TRAITS> instance. After calling clear (),
+                 *  the IsMissing () will return true.
+                 */
+                nonvirtual  void    clear ();
+
+            public:
+                /**
+                *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
+                *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
+                */
+                nonvirtual  bool    IsMissing () const; // means no value (it is optional!)
+
+            public:
+                /**
+                 *  Returns true iff the Optional<T, TRAITS> has a valid value ( not empty ());
+                 */
+                nonvirtual  bool    IsPresent () const;
+
+            public:
+                /**
+                 *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
+                 */
+                nonvirtual  T   Value (T defaultValue = T {}) const;
+
+            public:
+                /**
+                 *  \pre (IsPresent ())
+                 *
+                 *  \note
+                 *      Unlike Memory::Optional<>::operator* - this is completely threadsafe.
+                 */
+                nonvirtual  T   operator* () const;
+
+            public:
+                /**
+                 *  Replace the default 'slicing' algorithm with one that locks this before copying.
+                 */
+                nonvirtual  explicit operator Memory::Optional<T, TRAITS> () const;
+
+            private:
+                /**
+                 *  HIDDEN because not threadsafe
+                 */
+                nonvirtual  T*          get ();
+                nonvirtual  const T*    get () const;
+
+            private:
+                /**
+                 *  HIDDEN because not threadsafe
+                 */
+                nonvirtual  T* operator-> ();
+                nonvirtual  const T* operator-> () const;
+
+            public:
+                /**
+                 *  \req (IsPresent ())
+                 *
+                 *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
+                 */
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator+= (const T& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator-= (const T& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator*= (const T& rhs);
+                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator/= (const T& rhs);
+
+            public:
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
+                 */
+                nonvirtual  int Compare (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  int Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
+                 */
+                nonvirtual  bool    operator< (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator< (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator<= (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator<= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator> (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator> (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator>= (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator>= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator== (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator!= (const Memory::Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+
+            private:
+                mutable mutex       fMutex_;
             };
 
 
