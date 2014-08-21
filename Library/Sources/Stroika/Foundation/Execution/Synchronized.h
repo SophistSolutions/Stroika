@@ -37,6 +37,10 @@ namespace   Stroika {
              *  different threads without worry of data corruption. It is as if each operation were
              *  preceeded with a mutex lock (on that object) and followed by an unlock.
              *
+             *  If one thread does a Read operation on Synchonized<T> while another does a write (modification)
+             *  operation on Synchonized<T>, the Read will always return a consistent reasonable value, from
+             *  before the modification or afterwards, but never a distorted invalid value.
+             *
              *  This is ESPECAILLY critical for maintaining reference counts (as many Stroika objects
              *  are just reference counting containers).
              *

@@ -19,6 +19,8 @@ namespace   Stroika {
         namespace   Containers {
 
 
+#if 0
+
             /*
              ********************************************************************************
              **************************** Optional<T, TRAITS> *******************************
@@ -208,7 +210,7 @@ namespace   Stroika {
             {
                 return Compare (rhs) != 0;
             }
-
+#endif
 
         }
     }

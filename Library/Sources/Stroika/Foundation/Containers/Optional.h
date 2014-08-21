@@ -28,6 +28,11 @@ namespace   Stroika {
         namespace   Containers {
 
 
+#if 1
+            // @todo - DEPRECATE THIS - use Execution::Synchronized<Memory::Optional<T,TRAITS>> directly
+            template    <typename T, typename TRAITS = Memory::Optional_DefaultTraits<T>>
+            using   Optional = Execution::Synchronized<Memory::Optional<T, TRAITS>>;
+#else
             /**
              *  Default traits object for type T (for use in Optional<T, TRAITS>). This can generally be ignored.
              *  It requires operator== and operator< are defined for type T (if they are not, you must
@@ -172,7 +177,7 @@ namespace   Stroika {
             private:
                 Memory::Optional<T> fValue_;
             };
-
+#endif
 
         }
     }

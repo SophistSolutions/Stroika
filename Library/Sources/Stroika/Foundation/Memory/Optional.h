@@ -256,8 +256,8 @@ namespace   Stroika {
             // early alpha placeholder test
             template    <typename T, typename TRAITS>
             class   Synchronized<Memory::Optional<T, TRAITS>> : public Memory::Optional<T, TRAITS> {
-			private:
-				using	inherited = Memory::Optional<T, TRAITS>;
+            private:
+                using   inherited = Memory::Optional<T, TRAITS>;
 
             public:
                 /**
