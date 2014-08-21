@@ -439,6 +439,9 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
+                if (this == &rhs) {
+                    return 0;   // avoid double mutex lock
+                }
                 unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
                 unique_lock<std::mutex> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
@@ -460,7 +463,17 @@ namespace   Stroika {
                 return Compare (rhs) <= 0;
             }
             template    <typename T, typename TRAITS>
+            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator> (const Memory::Optional<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator> (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) > 0;
             }
@@ -470,12 +483,27 @@ namespace   Stroika {
                 return Compare (rhs) >= 0;
             }
             template    <typename T, typename TRAITS>
+            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            {
+                return Compare (rhs) >= 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator== (const Memory::Optional<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) == 0;
+            }
+            template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator== (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) == 0;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            {
+                return Compare (rhs) != 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) != 0;
             }
