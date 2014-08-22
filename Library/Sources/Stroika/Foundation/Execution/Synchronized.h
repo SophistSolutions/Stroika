@@ -27,14 +27,20 @@ namespace   Stroika {
 
 
             /**
-             *  This class template it denotes a pattern, for creating automatically synchronized classes.
+             *  This class template it denotes a pattern for creating automatically synchronized classes.
              *
              *  It contains no generic implementation of synchonizaiton, but instead, (partial) specializations
              *  are provided throughout Stroika, for classes that are automatically synchronized.
              *
              *  The idea behind any of these synchronized classes is that they can be used freely from
-             *  different threads without worry of data corruption. It is as if each operation were
+             *  different threads without worry of data corruption. It is almost as if each operation were
              *  preceeded with a mutex lock (on that object) and followed by an unlock.
+             *
+             *  Note - we say 'almost' because there is no guarantee of atomicity: just consistency and safety.
+             *
+             *  For example, an implementation of something like "Apply(function)" might do atomic locks
+             *  between each functional call, or some other way. But corruption or logical inconsistency
+             *  will be avoided.
              *
              *  If one thread does a Read operation on Synchronized<T> while another does a write (modification)
              *  operation on Synchronized<T>, the Read will always return a consistent reasonable value, from
