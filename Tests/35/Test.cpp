@@ -23,6 +23,7 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Math/Common.h"
+#include    "Stroika/Foundation/Memory/Optional.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -33,6 +34,10 @@ using   namespace   Containers;
 
 using   Execution::Thread;
 using   Execution::WaitableEvent;
+
+template    <typename T>
+using   Syncrhonized    =   Execution::Synchronized<T>;
+
 
 
 
@@ -262,6 +267,45 @@ namespace   {
 
 
 
+namespace {
+    namespace Test3_SynchonizedOptional_ {
+        void    DoIt_ ()
+        {
+            using   namespace   Memory;
+            try {
+                Syncrhonized<Optional<int>> sharedValue { 0 };
+                static  const int kMaxVal_ = 100000;
+                Thread  reader = [&sharedValue] () {
+                    while (sharedValue < kMaxVal_) {
+                        VerifyTestResult (sharedValue <= kMaxVal_);
+                    }
+                    VerifyTestResult (sharedValue == kMaxVal_);
+                };
+                Thread  adder = [&sharedValue] () {
+                    while (*sharedValue < kMaxVal_) {
+                        sharedValue = *sharedValue + 1;
+                    }
+                    VerifyTestResult (sharedValue == kMaxVal_);
+                };
+                reader.Start ();
+                adder.Start ();
+                Execution::Finally cleanup { [reader, adder] () mutable {
+                        reader.AbortAndWaitForDone ();
+                        adder.AbortAndWaitForDone ();
+                    }
+                };
+                // wait long time cuz of debuggers etc
+                adder.WaitForDone(100);
+                reader.WaitForDone(100);
+                VerifyTestResult (sharedValue == kMaxVal_);
+            }
+            catch (...) {
+                VerifyTestResult (false);
+            }
+        }
+    }
+}
+
 
 
 
@@ -272,6 +316,7 @@ namespace   {
     {
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
         IterateWhileMutatingContainer_Test_2_::DoIt ();
+        Test3_SynchonizedOptional_::DoIt_ ();
     }
 }
 

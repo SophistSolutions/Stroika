@@ -379,6 +379,7 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
                  */
+                nonvirtual  int Compare (const T& rhs) const;
                 nonvirtual  int Compare (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  int Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
@@ -386,16 +387,22 @@ namespace   Stroika {
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
                  */
+                nonvirtual  bool    operator< (const T& rhs) const;
                 nonvirtual  bool    operator< (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator< (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator<= (const T& rhs) const;
                 nonvirtual  bool    operator<= (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator<= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator> (const T& rhs) const;
                 nonvirtual  bool    operator> (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator> (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator>= (const T& rhs) const;;
                 nonvirtual  bool    operator>= (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator>= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator== (const T& rhs) const;
                 nonvirtual  bool    operator== (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator== (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator!= (const T& rhs) const;
                 nonvirtual  bool    operator!= (const Memory::Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
