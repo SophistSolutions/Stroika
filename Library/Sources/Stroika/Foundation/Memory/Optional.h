@@ -254,6 +254,34 @@ namespace   Stroika {
 
 
             // early alpha placeholder test
+			/**
+             *  Optional<T, TRAITS> can be used to store an object which may or may not be present. This can be
+             *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
+             *  and instead of explicitly using pointers and checking for null all over.
+             *
+             *  This is a thread-safe, but to be threadsafe, slightly less functional variant of
+             *  Memory::Optional<>
+             *
+             *  \note   To use Optional with un-copyable things, use:
+             *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+             *
+             *  \note   C++14 will be introucing std::optional<> which may possibly make this obsolete.
+             *          We'll see.
+             *
+             *  \note   \em Design-Note - why no operator T()
+             *      -   We considered having an operator T () method. This has advantages, in that
+             *          it makes more seemless replacing use of a T with an Optional<T, TRAITS>. But it has
+             *          the disadvantage that, when coupled with the Optional<T, TRAITS> (T) CTOR, you can
+             *          get overloading problems.
+             *      -   Plus, one must carefully check each use of a variable of type T, being converted
+             *          to type Optional<T, TRAITS>, so being forced to say "*" first isn't totally unreasonable.
+             *
+             *  \note   \em Design-Note - why no operator ->
+             *      -   operator-> requires returing an internal pointer, and thats not consisent with threadsafety (since
+             *          no way to control when the returned pointer is freed).
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+			 */
             template    <typename T, typename TRAITS>
             class   Synchronized<Memory::Optional<T, TRAITS>> : public Memory::Optional<T, TRAITS> {
             private:
