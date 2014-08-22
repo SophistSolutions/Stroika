@@ -27,22 +27,34 @@ namespace   Stroika {
 
 
             /**
-             *  This class template cannot be 'used' directly. Rather it denotes a pattern, for creating
-             *  automatically synchronized classes.
+             *  This class template it denotes a pattern, for creating automatically synchronized classes.
              *
-             *  Instead, (partial) specializations are provided throughout Stroika, for classes that
-             *  are automatically synchonized.
+             *  It contains no generic implementation of synchonizaiton, but instead, (partial) specializations
+             *  are provided throughout Stroika, for classes that are automatically synchronized.
              *
-             *  The idea behind any of these synchonized classes is that they can be used freely from
+             *  The idea behind any of these synchronized classes is that they can be used freely from
              *  different threads without worry of data corruption. It is as if each operation were
              *  preceeded with a mutex lock (on that object) and followed by an unlock.
              *
-             *  If one thread does a Read operation on Synchonized<T> while another does a write (modification)
-             *  operation on Synchonized<T>, the Read will always return a consistent reasonable value, from
+             *  If one thread does a Read operation on Synchronized<T> while another does a write (modification)
+             *  operation on Synchronized<T>, the Read will always return a consistent reasonable value, from
              *  before the modification or afterwards, but never a distorted invalid value.
              *
              *  This is ESPECAILLY critical for maintaining reference counts (as many Stroika objects
              *  are just reference counting containers).
+             *
+             *  EXAMPLE:
+             *      static Optional<int>                sThisVarIsNotThreadsafe;
+             *      static Synchronized<Optional<int>>  sThisIsSameAsAboveButIsThreadSafe;
+             *
+             *      // the variable sThisIsSameAsAboveButIsThreadSafe and be gotten or set from any thread
+             *      // without fear of occurption. Each individual API is threadsafe. However, you CANNOT
+             *      // safely do
+             *      //      if (sThisIsSameAsAboveButIsThreadSafe.IsPresent()) { print (*sThisIsSameAsAboveButIsThreadSafe); }
+             *      //  Instead do
+             *      //      print (sThisIsSameAsAboveButIsThreadSafe.Value ()); OR
+             *      //      auto tmp = sThisIsSameAsAboveButIsThreadSafe;
+             *      //      if (tm.IsPresent()) { print (*tmp); }
              *
              *  This is very much closely logically the java 'synchronized' attribute, except that its
              *  not a language extension/attribute here, but rather a class wrapper. Its also implemented
