@@ -6,21 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
-
-
-
-/**
- *  \file
- *
- *  \version    <a href="code_status.html#Alpha">Alpha</a>
- *
- *  TODO:
- *      @todo   Review naming/design (vis-a-vis Memory::Optional and std::experimental::optional). But get a little
- *              experience with this first (--LGP 2014-06-14)
- */
-
 
 
 namespace   Stroika {
@@ -28,9 +14,10 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            // @todo - DEPRECATE THIS - use Execution::Synchronized<Memory::Optional<T,TRAITS>> directly
+#pragma message ("Warning: Obsolete as of Stroika version 2.0a41: use Execution::Synchronized<Memory::Optional<T, TRAITS>>")
             template    <typename T, typename TRAITS = Memory::Optional_DefaultTraits<T>>
             using   Optional = Execution::Synchronized<Memory::Optional<T, TRAITS>>;
+
 
         }
     }

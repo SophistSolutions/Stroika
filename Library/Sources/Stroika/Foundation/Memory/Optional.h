@@ -254,7 +254,7 @@ namespace   Stroika {
 
 
             // early alpha placeholder test
-			/**
+            /**
              *  Optional<T, TRAITS> can be used to store an object which may or may not be present. This can be
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
@@ -281,7 +281,7 @@ namespace   Stroika {
              *          no way to control when the returned pointer is freed).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-			 */
+             */
             template    <typename T, typename TRAITS>
             class   Synchronized<Memory::Optional<T, TRAITS>> : public Memory::Optional<T, TRAITS> {
             private:

@@ -14,7 +14,6 @@
 #include    "../Containers/Bijection.h"
 #include    "../Containers/Collection.h"
 #include    "../Containers/Mapping.h"
-#include    "../Containers/Optional.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
 #include    "../Containers/SortedCollection.h"
@@ -332,7 +331,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Optional<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<Memory::Optional<T>>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
                 template    <typename T>

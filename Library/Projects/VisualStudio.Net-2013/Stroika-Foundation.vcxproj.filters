@@ -2487,9 +2487,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl">
       <Filter>Sources\Cache</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Optional.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.inl">
       <Filter>Sources\Configuration</Filter>
     </None>

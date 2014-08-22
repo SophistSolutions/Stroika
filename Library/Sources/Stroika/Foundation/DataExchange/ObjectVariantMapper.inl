@@ -189,9 +189,10 @@ namespace   Stroika {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Optional<T>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<Memory::Optional<T>>&)
             {
-                using   Containers::Optional;
+                template    <typename T>
+                using   Containers::Optional = Execution::Synchronized<Memory::Optional<T>>;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);

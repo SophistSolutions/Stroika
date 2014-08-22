@@ -9,7 +9,6 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
-#include    "../Containers/Optional.h"
 #include    "../Debug/Trace.h"
 #include    "BlockingQueue.h"
 #include    "Process.h"
@@ -52,7 +51,7 @@ namespace {
     Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    Containers::Optional<DurationSecondsType>       sSuppressDuplicatesThreshold_;
+    Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         mutex                               fMutex_;     // mutex so we can update related variables together
