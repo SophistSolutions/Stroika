@@ -191,11 +191,11 @@ namespace   Stroika {
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<Memory::Optional<T>>&)
             {
-                template    <typename T>
-                using   Optional = Execution::Synchronized<Memory::Optional<T>>;
+                using   namespace   Execution;
+                using   namespace   Memory;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
+                    const Synchronized<Optional<T>>*  actualMember    =   reinterpret_cast<const Synchronized<Optional<T>>*> (fromObjOfTypeT);
                     if (actualMember->IsPresent ())
                     {
                         return mapper->FromObject<T> (**actualMember);
@@ -206,7 +206,7 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
+                    Synchronized<Optional<T>>*    actualInto  =   reinterpret_cast<Synchronized<Optional<T>>*> (intoObjOfTypeT);
                     if (d.empty ())
                     {
                         actualInto->clear ();
@@ -215,7 +215,7 @@ namespace   Stroika {
                         *actualInto = mapper->ToObject<T> (d);
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Synchronized<Optional<T>>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
