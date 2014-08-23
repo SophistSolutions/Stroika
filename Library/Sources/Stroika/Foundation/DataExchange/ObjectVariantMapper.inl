@@ -192,7 +192,7 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<Memory::Optional<T>>&)
             {
                 template    <typename T>
-                using   Containers::Optional = Execution::Synchronized<Memory::Optional<T>>;
+                using   Optional = Execution::Synchronized<Memory::Optional<T>>;
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
