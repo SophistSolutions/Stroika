@@ -17,6 +17,9 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Execution::make_unique_lock;
+
+
 
 
 
@@ -45,7 +48,7 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -56,13 +59,13 @@ public:
 
     virtual SeekOffsetType  GetOffset () const override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
+        auto    critSec { make_unique_lock (fCriticalSection_) };     // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

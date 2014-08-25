@@ -7,7 +7,7 @@
 #include    <new>
 #include    <set>
 
-//#include    "../Execution/AtomicOperations.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/ModuleInit.h"
 
@@ -21,6 +21,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 
 using   Debug::TraceContextBumper;
+using   Execution::make_unique_lock;
 
 
 
@@ -255,7 +256,7 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
     void*   memptr  =   fBaseAllocator_.Allocate (size);
     AssertNotNull (memptr);
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
+    auto    critSec { make_unique_lock (fCritSection_) };
     try {
         fAllocations_.insert (PTRMAP::value_type (memptr, size));
         return memptr;
@@ -269,7 +270,7 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 {
     RequireNotNull (p);
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
+    auto    critSec { make_unique_lock (fCritSection_) };
     PTRMAP::iterator    i   =   fAllocations_.find (p);
     SUPER_ASSERT_ (i != fAllocations_.end ());
     fAllocations_.erase (i);
@@ -278,13 +279,13 @@ void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const
 {
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
+    auto    critSec { make_unique_lock (fCritSection_) };
     return fAllocations_.size ();
 }
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 {
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
+    auto    critSec { make_unique_lock (fCritSection_) };
     size_t  total   =   0;
     for (auto i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
         total += i->second;
@@ -294,7 +295,7 @@ size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 
 LeakTrackingGeneralPurposeAllocator::Snapshot   LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
 {
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
+    auto    critSec { make_unique_lock (fCritSection_) };
     return Snapshot (fAllocations_);
 }
 

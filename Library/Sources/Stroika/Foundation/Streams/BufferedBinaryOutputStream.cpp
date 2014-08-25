@@ -6,6 +6,7 @@
 #include    <mutex>
 
 #include    "../Containers/Common.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
 
 #include    "BufferedBinaryOutputStream.h"
@@ -15,6 +16,9 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
+
+using   Execution::make_unique_lock;
+
 
 
 namespace   {
@@ -46,12 +50,12 @@ public:
 public:
     nonvirtual  size_t  GetBufferSize () const
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return (fBuffer_.capacity ());
     }
     nonvirtual  void    SetBufferSize (size_t bufSize)
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         bufSize = max (bufSize, kMinBufSize_);
         if (bufSize < fBuffer_.size ()) {
             Flush ();
@@ -63,7 +67,7 @@ public:
     // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
     nonvirtual  void    Abort ()
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #if     qDebug
         fAborted_ = true;   // for debug sake track this
 #endif
@@ -74,7 +78,7 @@ public:
     nonvirtual  void    Flush ()
     {
         Require (not fAborted_ or fBuffer_.empty ());
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         if (not fBuffer_.empty ()) {
             fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
             fBuffer_.clear ();
@@ -89,7 +93,7 @@ public:
     {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Require (not fAborted_);
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         /*
          * Minimize the number of writes at the possible cost of extra copying.
          *

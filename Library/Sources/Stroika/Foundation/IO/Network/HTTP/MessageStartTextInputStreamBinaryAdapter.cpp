@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include    "../../../Execution/Common.h"
 #include    "../../../Execution/OperationNotSupportedException.h"
 #include    "../../../Execution/OperationNotSupportedException.h"
 #include    "../../../Memory/SmallStackBuffer.h"
@@ -56,7 +57,7 @@ protected:
             return 0;
         }
         AssertNotNull (intoStart);
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         Assert (fBufferFilledUpValidBytes_ >= fOffset_);                // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
             size_t roomLeftInBuf = fReadDataBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -88,13 +89,13 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOffset_;
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

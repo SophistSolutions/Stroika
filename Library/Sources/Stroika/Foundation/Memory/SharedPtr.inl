@@ -14,6 +14,7 @@
 
 #include    "BlockAllocated.h"
 
+#include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/SpinLock.h"
 
@@ -508,7 +509,7 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
-        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
         Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
         return result;
     }
@@ -522,7 +523,7 @@ namespace std {
     inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
         using namespace     Stroika::Foundation;
-        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
         storeTo->swap (o);
     }
     template    <typename T>
@@ -536,7 +537,7 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
-        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
         shared_ptr<T> result = *copyFrom;
         return result;
     }
@@ -550,7 +551,7 @@ namespace std {
     inline  void    atomic_store_explicit (shared_ptr<T>* storeTo, shared_ptr<T> o, memory_order)
     {
         using namespace     Stroika::Foundation;
-        lock_guard<Execution::SpinLock> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
         storeTo->swap (o);
     }
     template    <typename T>

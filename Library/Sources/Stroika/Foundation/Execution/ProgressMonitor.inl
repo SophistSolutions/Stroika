@@ -16,6 +16,7 @@
 #include    "../Math/Common.h"
 #include    "../Memory/BlockAllocated.h"
 
+#include    "Common.h"
 #include    "Thread.h"
 #include    "UserCanceledException.h"
 
@@ -72,7 +73,7 @@ namespace   Stroika {
             inline  ProgressMonitor::CurrentTaskInfo    ProgressMonitor::GetCurrentTaskInfo () const
             {
                 RequireNotNull (fRep_);
-                lock_guard<mutex> enterCriticalSection (fRep_->fCurTaskInfo_CritSect_);
+                auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
                 return fRep_->fCurrentTaskInfo_;
             }
 
@@ -131,7 +132,7 @@ namespace   Stroika {
             inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 if (fRep_.get () != nullptr) {
-                    lock_guard<mutex> enterCriticalSection (fRep_->fCurTaskInfo_CritSect_);
+                    auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
                     fRep_->fCurrentTaskInfo_ = taskInfo;
                 }
             }

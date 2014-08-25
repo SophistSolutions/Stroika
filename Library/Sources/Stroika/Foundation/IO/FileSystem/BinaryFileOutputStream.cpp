@@ -13,6 +13,7 @@
 #include    <unistd.h>
 #endif
 
+#include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -26,6 +27,8 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
+
+using   Execution::make_unique_lock;
 
 
 #if     qPlatform_Windows
@@ -78,7 +81,7 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            lock_guard<mutex>  critSec (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
 
             const Byte* i = start;
             while (i < end) {
@@ -98,7 +101,7 @@ public:
     }
     virtual Streams::SeekOffsetType  GetOffset () const override
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
@@ -108,7 +111,7 @@ public:
     virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

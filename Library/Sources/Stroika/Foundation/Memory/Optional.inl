@@ -10,7 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include   "../Debug/Assertions.h"
+#include    "../Debug/Assertions.h"
+#include    "../Execution/Common.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -329,14 +330,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const T& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (T && rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator= (std::move (rhs));
                 return *this;
             }
@@ -353,14 +354,14 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (Synchronized<Memory::Optional<T, TRAITS>> && rhs)
             {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator= (move (rhs));
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Memory::Optional<T, TRAITS>& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator= (rhs);
                 return *this;
             }
@@ -368,78 +369,78 @@ namespace   Stroika {
             inline  T   Synchronized<Memory::Optional<T, TRAITS>>::operator* () const
             {
                 Require (IsPresent ());
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 Require (inherited::IsPresent ());
                 return inherited::operator* ();
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return *static_cast<const inherited*> (this);
             }
             template    <typename T, typename TRAITS>
             inline  void    Synchronized<Memory::Optional<T, TRAITS>>::clear ()
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::clear ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return inherited::IsMissing ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return inherited::IsPresent ();
             }
             template    <typename T, typename TRAITS>
             inline  T Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return inherited::Value (defaultValue);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator+= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator-= (const T& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator-= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator*= (const T& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator*= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator/= (const T& rhs)
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 inherited::operator/= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const T& rhs) const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return inherited::Compare (rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
             {
-                lock_guard<mutex>   critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 return inherited::Compare (rhs);
             }
             template    <typename T, typename TRAITS>

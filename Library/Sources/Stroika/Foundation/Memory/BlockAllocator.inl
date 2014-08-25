@@ -15,6 +15,7 @@
 #include    <vector>
 
 #include    "../Debug/Assertions.h"
+#include    "../Execution/Common.h"
 #include    "../Memory/LeakChecker.h"
 
 #include    "Common.h"
@@ -180,7 +181,7 @@ namespace   Stroika {
                 Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
-                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
+                auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -201,7 +202,7 @@ namespace   Stroika {
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (p != nullptr);
-                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
+                auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
                 // push p onto the head of linked free list
                 (*(void**)p) = sNextLink_;
                 sNextLink_ = p;
@@ -209,7 +210,7 @@ namespace   Stroika {
             template    <size_t SIZE>
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
-                lock_guard<LockType_>  critSec (Private_::GetLock_ ());
+                auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
 
                 // step one: put all the links into a single, sorted vector
                 const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);

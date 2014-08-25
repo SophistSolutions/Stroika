@@ -11,6 +11,7 @@
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
 #include    "BlockingQueue.h"
+#include    "Common.h"
 #include    "Process.h"
 #include    "Thread.h"
 #include    "TimeOutException.h"
@@ -81,7 +82,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
         if (sSuppressDuplicatesThreshold_.IsPresent ()) {
-            lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
+            auto    critSec { make_unique_lock (sLastMsg_.fMutex_) };
             if (p == sLastMsg_.fLastMsgSent_) {
                 sLastMsg_.fRepeatCount_++;
                 sLastMsg_.fLastSentAt = Time::GetTickCount ();
@@ -185,7 +186,7 @@ void    Logger::UpdateBookkeepingThread_ ()
                     catch (const TimeOutException&) {
                     }
                     {
-                        lock_guard<mutex>   critSec (sLastMsg_.fMutex_);
+                        auto    critSec { make_unique_lock (sLastMsg_.fMutex_) };
                         if (sLastMsg_.fRepeatCount_ > 0 and sLastMsg_.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
                             FlushDupsWarning_ ();
                         }

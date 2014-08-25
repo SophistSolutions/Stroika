@@ -5,6 +5,7 @@
 
 #include    "../Characters/CodePage.h"
 #include    "../Containers/Common.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/OperationNotSupportedException.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -15,6 +16,8 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
+
+using   Execution::make_unique_lock;
 
 
 
@@ -36,7 +39,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #if 1
         if (fTmpHackTextRemaining_.empty ()) {
             // only happens once
@@ -71,13 +74,13 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOffset_;
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

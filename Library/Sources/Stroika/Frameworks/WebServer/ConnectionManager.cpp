@@ -64,13 +64,13 @@ void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeou
 
 void    ConnectionManager::AddHandler (const shared_ptr<RequestHandler>& h)
 {
-    lock_guard<recursive_mutex>  critSec (fHandlers_);
+    auto    critSec { make_unique_lock (fHandlers_) };
     fHandlers_.push_back (h);
 }
 
 void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 {
-    lock_guard<recursive_mutex>  critSec (fHandlers_);
+    auto    critSec { make_unique_lock (fHandlers_) };
     for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
         if (*i == h) {
             fHandlers_.erase (i);
@@ -82,7 +82,7 @@ void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 
 void    ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 {
-    lock_guard<recursive_mutex>  critSec (fActiveConnections_);
+    auto    critSec { make_unique_lock (fActiveConnections_) };
     fActiveConnections_.push_back (conn);
 }
 
@@ -98,7 +98,7 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
         Execution::Sleep (0.1); // hack - need smarter wait on available data
         shared_ptr<Connection>   conn;
         {
-            lock_guard<recursive_mutex>  critSec (fActiveConnections_);
+            auto    critSec { make_unique_lock (fActiveConnections_) };
             if (fActiveConnections_.empty ()) {
                 conn = fActiveConnections_.front ();
             }
@@ -109,7 +109,7 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
 // REALLY should create NEW TASK we subbit to the threadpool...
             DoOneConnection_ (conn);
 
-            lock_guard<recursive_mutex>  critSec (fActiveConnections_);
+            auto    critSec { make_unique_lock (fActiveConnections_) };
             for (auto i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
                 if (*i == conn) {
                     fActiveConnections_.erase (i);
@@ -130,7 +130,7 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
 
         shared_ptr<RequestHandler>   h;
         {
-            lock_guard<recursive_mutex>  critSec (fHandlers_);
+            auto    critSec { make_unique_lock (fHandlers_) };
             for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
                 if ((*i)->CanHandleRequest (*c)) {
                     h = *i;

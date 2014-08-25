@@ -23,6 +23,7 @@
 #include    "../../Characters/Format.h"
 #include    "../../Characters/String_Constant.h"
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -316,7 +317,7 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
             HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 CloseHandle (f);
-                lock_guard<mutex> enterCriticalSection (fCriticalSection_);
+                auto    critSec { make_unique_lock (fCriticalSection_) };
                 fFiles.insert (s);
                 return s;
             }
@@ -347,13 +348,13 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
         char    buf[100];
         {
             // man page doesn't gaurantee thread-safety of rand ()
-            lock_guard<mutex> enterCriticalSection (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
             (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         }
         s.append (NarrowSDKStringToWide  (buf));
         if (not Directory (s).Exists ()) {
             FileSystem::CreateDirectory (s, true);
-            lock_guard<mutex> enterCriticalSection (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
             fFiles.insert (s);
             return s;
         }

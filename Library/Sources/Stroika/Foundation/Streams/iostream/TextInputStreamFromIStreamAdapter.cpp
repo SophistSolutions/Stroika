@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/String_Constant.h"
+#include    "../../Execution/Common.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "TextInputStreamFromIStreamAdapter.h"
@@ -15,6 +16,8 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
+
+using   Execution::make_unique_lock;
 
 
 
@@ -33,7 +36,7 @@ protected:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
 
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         if (fOriginalStream_.eof ()) {
             return 0;
         }
@@ -51,13 +54,13 @@ protected:
     virtual SeekOffsetType  GetOffset () const override
     {
         // instead of tellg () - avoids issue with EOF where fail bit set???
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekg (offset, ios::beg);

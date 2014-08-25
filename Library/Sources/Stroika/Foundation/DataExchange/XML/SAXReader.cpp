@@ -6,6 +6,7 @@
 #include    <atomic>
 
 #include    "../../Debug/Trace.h"
+#include    "../../Execution/Common.h"
 #include    "../../Execution/ProgressMonitor.h"
 #include    "../../Execution/RequiredComponentMissingException.h"
 #include    "../../Memory/Common.h"
@@ -173,7 +174,7 @@ namespace   {
         void    DUMPCurMemStats ()
         {
             TraceContextBumper ctx (SDKSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
-            lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
+            auto    critSec { Execution::make_unique_lock (fLastSnapshot_CritSection) };
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();

@@ -10,6 +10,7 @@
 #include    "../Characters/CodePage.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Common.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/StringException.h"
 #include    "../Execution/OperationNotSupportedException.h"
 #include    "../Memory/SmallStackBuffer.h"
@@ -20,6 +21,8 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
+
+using   Execution::make_unique_lock;
 
 
 
@@ -50,7 +53,7 @@ protected:
 
         char  outBuf[10 * 1024];
         //char    outBuf[10]; // to test
-        lock_guard<recursive_mutex>  critSec (_fCriticalSection);
+        auto    critSec { make_unique_lock (_fCriticalSection) };
 Again:
         char*   p   =   std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);

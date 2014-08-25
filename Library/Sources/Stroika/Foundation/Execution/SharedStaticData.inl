@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "Common.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -34,7 +35,7 @@ namespace   Stroika {
             template    <typename T>
             SharedStaticData<T>::SharedStaticData ()
             {
-                lock_guard<mutex> critSec (sMutex_);
+                auto    critSec { make_unique_lock (sMutex_) };
                 ++sCountUses_;
                 if (sCountUses_ == 1) {
                     sOnceObj_ = new T ();
@@ -44,7 +45,7 @@ namespace   Stroika {
             template    <typename T>
             SharedStaticData<T>::~SharedStaticData ()
             {
-                lock_guard<mutex> critSec (sMutex_);
+                auto    critSec { make_unique_lock (sMutex_) };
                 --sCountUses_;
                 if (sCountUses_ == 0) {
                     delete sOnceObj_;

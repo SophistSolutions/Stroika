@@ -16,6 +16,9 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Execution::make_unique_lock;
+
+
 
 
 
@@ -38,7 +41,7 @@ public:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
-            lock_guard<mutex>  critSec (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
             size_t  roomLeft        =   fData_.end () - fCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
@@ -62,13 +65,13 @@ public:
 
     virtual SeekOffsetType  GetOffset () const override
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
+        auto    critSec { make_unique_lock (fCriticalSection_) };      // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -114,19 +117,19 @@ public:
 
     Memory::BLOB   AsBLOB () const
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return Memory::BLOB (fData_);
     }
 
     vector<Byte>   AsVector () const
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return fData_;
     }
 
     string   AsString () const
     {
-        lock_guard<mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }
 

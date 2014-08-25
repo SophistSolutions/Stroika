@@ -28,9 +28,12 @@ using   namespace   Stroika::Frameworks::UPnP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
+using   Execution::make_unique_lock;
+
+
 
 // Comment this in to turn on tracing in this module
-#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -52,7 +55,7 @@ public:
     }
     void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
-        lock_guard<recursive_mutex> critSection (fCritSection_);
+        auto    critSec { make_unique_lock (fCritSection_) };
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void    Start (const String& serviceType)
@@ -161,7 +164,7 @@ public:
             }
             {
                 // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
-                lock_guard<recursive_mutex> critSection (fCritSection_);
+                auto    critSec { make_unique_lock (fCritSection_) };
                 for (auto i : fFoundCallbacks_) {
                     i (d);
                 }

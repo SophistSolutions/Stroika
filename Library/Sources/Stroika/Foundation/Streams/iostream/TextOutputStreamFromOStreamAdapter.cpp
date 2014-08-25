@@ -5,6 +5,7 @@
 
 #include    "../../Characters/String_Constant.h"
 
+#include    "../../Execution/Common.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "TextOutputStreamFromOStreamAdapter.h"
@@ -16,6 +17,9 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
+
+
+using   Execution::make_unique_lock;
 
 
 
@@ -33,7 +37,7 @@ protected:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
 
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 
         fOriginalStream_.write (reinterpret_cast<const wchar_t*> (start), end - start);
         if (fOriginalStream_.fail ()) {
@@ -45,7 +49,7 @@ protected:
     // NYI in base class
     virtual void    Flush () override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         fOriginalStream_.flush ();
         if (fOriginalStream_.fail ()) {
             Execution::DoThrow (Execution::StringException (L"Failed to flush ostream"));
@@ -56,13 +60,13 @@ protected:
     virtual SeekOffsetType  GetOffset () const override
     {
         // instead of tellg () - avoids issue with EOF where fail bit set???
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekp (offset, ios::beg);

@@ -12,6 +12,7 @@
 
 #include    "../Characters/Format.h"
 #include    "../Characters/LineEndings.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/Module.h"
 #include    "../Execution/Process.h"
 #include    "../Execution/Thread.h"
@@ -35,6 +36,7 @@ using   namespace   Debug;
 using   namespace   Execution;
 
 
+using   Execution::make_unique_lock;
 
 
 
@@ -377,7 +379,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
 template    <typename   CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 {
-    lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+    auto    critSec { make_unique_lock (GetCritSection_ ()) };
     FlushBufferedCharacters_ ();
     static  Time::DurationSecondsType   sStartOfTime    =   0.0;
     if (sStartOfTime == 0.0) {
@@ -473,7 +475,7 @@ void    Emitter::FlushBufferedCharacters_ ()
 
 bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+    auto    critSec { make_unique_lock (GetCritSection_ ()) };
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -547,7 +549,7 @@ namespace   {
     inline  unsigned int    GetCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+        auto    critSec { make_unique_lock (GetCritSection_ ()) };
         map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts_->find (threadID);
         if (i == sCounts_->end ()) {
             return 0;
@@ -558,7 +560,7 @@ namespace   {
     inline  void    IncCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+        auto    critSec { make_unique_lock (GetCritSection_ ()) };
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
         if (i == sCounts_->end ()) {
             (void)sCounts_->insert (map<Thread::IDType, unsigned int>::value_type (threadID, 1)).first;
@@ -571,7 +573,7 @@ namespace   {
     inline  void    DecrCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+        auto    critSec { make_unique_lock (GetCritSection_ ()) };
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
         Assert (i != sCounts_->end ());
         i->second--;
@@ -613,7 +615,7 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount ();
     if (fDoEndMarker) {
-        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
+        auto    critSec { make_unique_lock (GetCritSection_ ()) };
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());

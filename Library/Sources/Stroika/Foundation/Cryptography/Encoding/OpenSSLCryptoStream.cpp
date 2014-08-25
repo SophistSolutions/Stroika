@@ -5,6 +5,7 @@
 
 #include    "../../Containers/Common.h"
 #include    "../../Debug/Assertions.h"
+#include    "../../Execution/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "OpenSSLCryptoStream.h"
@@ -109,7 +110,7 @@ public:
              *  and use that to re-populate fOutBuf_.
              */
             Require (intoStart < intoEnd);
-            lock_guard<mutex>  critSec (fCriticalSection_);
+            auto    critSec { Execution::make_unique_lock (fCriticalSection_) }
             if (fOutBufStart_ == fOutBufEnd_) {
                 Byte toDecryptBuf[kInBufSize_];
                 size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
@@ -177,7 +178,7 @@ public:
     {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);

@@ -14,9 +14,11 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
-#include    "../Execution/ErrNoException.h"
-#include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
+
+#include    "Common.h"
+#include    "ErrNoException.h"
+#include    "Lockable.h"
 #include    "DLLSupport.h"
 #include    "TimeOutException.h"
 
@@ -312,7 +314,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             bool    doRun   =   false;
             {
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
 #endif
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning)
                 {
@@ -327,7 +329,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
 #endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
@@ -341,7 +343,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
             {
-                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
 #else
@@ -354,7 +356,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
-                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
 #endif
@@ -369,7 +371,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
 #endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
@@ -404,7 +406,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 
     if (GetCurrentThreadID () == GetID ()) {
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-        lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+        auto    critSec { make_unique_lock (fStatusCriticalSection_) };
 #endif
         Assert (s_Aborting_);
         if (fStatus_ == Status::eAborting and s_AbortSuppressDepth_ == 0) {
@@ -413,12 +415,12 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
     }
 
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+    auto    critSec { make_unique_lock (fStatusCriticalSection_) };
 #endif
     if (fStatus_ == Status::eAborting) {
 #if     qPlatform_POSIX
         {
-            lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
+            auto    critSec { make_unique_lock (sHandlerInstalled_) };
             if (not sHandlerInstalled_)
             {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
@@ -473,7 +475,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     Require (GetCurrentThreadID () == rep->GetID ());
     Assert (s_Aborting_);
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    lock_guard<recursive_mutex> enterCritcalSection (rep->fStatusCriticalSection_);
+    auto    critSec { make_unique_lock (rep->fStatusCriticalSection_) };
 #endif
     // this isn't the race it might look like because this can only be called when the target (rep) thread is in an alertable state, meaning
     // inside a call to SleepEx, etc... so not updating variables
@@ -589,7 +591,7 @@ void    Thread::SetThreadPriority (Priority priority)
 #if     qPlatform_POSIX
 void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 {
-    lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
+    auto    critSec { make_unique_lock (sHandlerInstalled_) };
     if (sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;
@@ -664,7 +666,7 @@ void    Thread::Abort ()
 
     // first try to send abort exception, and then - if force - get serious!
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
+    auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
     if (fRep_->fStatus_ != Status::eCompleted) {
         fRep_->fStatus_ = Status::eAborting;
     }
@@ -785,7 +787,7 @@ Thread::Status  Thread::GetStatus_ () const noexcept
         return Status::eNull;
     }
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
+    auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
 #endif
     return fRep_->fStatus_;
 }

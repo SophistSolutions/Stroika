@@ -9,6 +9,7 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
+#include    "../Execution/Common.h"
 
 
 namespace   Stroika {
@@ -79,7 +80,7 @@ namespace   Stroika {
             void    TimedCache<KEY, RESULT, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
             {
                 Require (timeoutInSeconds > 0.0f);
-                lock_guard<mutex> critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_); }
                 if (fTimeout_ != timeoutInSeconds) {
                     ClearIfNeeded_ ();
                     fTimeout_ = timeoutInSeconds;
@@ -89,7 +90,7 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             Memory::Optional<RESULT>    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key)
             {
-                lock_guard<mutex> critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
@@ -116,7 +117,7 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             void    TimedCache<KEY, RESULT, TRAITS>::AddElement (const KEY& key, const RESULT& result)
             {
-                lock_guard<mutex> critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
@@ -129,7 +130,7 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             inline  void    TimedCache<KEY, RESULT, TRAITS>::DoBookkeeping ()
             {
-                lock_guard<mutex> critSec (fMutex_);
+                auto    critSec { make_unique_lock (fMutex_) };
                 ClearOld_ ();
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>

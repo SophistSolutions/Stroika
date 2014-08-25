@@ -11,6 +11,7 @@
 #include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
+#include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -20,6 +21,8 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
+
+using   Execution::make_unique_lock;
 
 
 
@@ -1649,7 +1652,7 @@ CodePagesInstalled::CodePagesInstalled ()
 #if     qPlatform_Windows
     static  mutex  sCritSec_;
     {
-        lock_guard<mutex> enterCritSection (sCritSec_);
+        auto    critSec { make_unique_lock (sCritSec_) };
         Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
         s_EnumCodePagesProc_Accumulator_ = accum;
         ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);

@@ -10,6 +10,7 @@
 #include    "../Containers/Concrete/Queue_Array.h"
 
 #include    "BlockingQueue.h"
+#include    "Common.h"
 #include    "Thread.h"
 
 #include    "SignalHandlers.h"
@@ -162,7 +163,7 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
      */
     shared_ptr<SignalHandlerRegistry>   sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;
     if (sp == nullptr) {
-        lock_guard<mutex> critSec (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fMutex);
+        auto    critSec { make_unique_lock (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fMutex) };
         sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;    // avoid race, and avoid locking unless needed
         if (sp == nullptr) {
             sp.reset (new SignalHandlerRegistry ());

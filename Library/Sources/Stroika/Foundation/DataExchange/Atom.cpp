@@ -6,6 +6,7 @@
 #include    "../Characters/String.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
+#include    "../Execution/Common.h"
 
 #include    "Atom.h"
 
@@ -60,7 +61,7 @@ DataExchange::Private_::AtomModuleData::~AtomModuleData ()
  */
 AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const String& s)
 {
-    lock_guard<mutex>   critSection (sCritSec_);
+    auto    critSec { Execution::make_unique_lock (sCritSec_) };
     auto i = sMap_->Lookup (s);
     if (i.IsPresent ()) {
         return *i;

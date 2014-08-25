@@ -1102,6 +1102,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h" />

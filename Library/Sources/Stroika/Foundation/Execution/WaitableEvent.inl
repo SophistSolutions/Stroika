@@ -52,12 +52,12 @@ namespace   Stroika {
             }
             inline  void    WaitableEvent::WE_::Reset ()
             {
-                std::lock_guard<mutex> lockGaurd (fMutex);
+                auto    critSec { make_unique_lock (fMutex) };
                 fTriggered = false;
             }
             inline  void    WaitableEvent::WE_::Set ()
             {
-                std::lock_guard<mutex> lockGaurd (fMutex);
+                auto    critSec { make_unique_lock (fMutex) };
                 fTriggered = true;
                 fConditionVariable.notify_all ();
             }
@@ -115,13 +115,13 @@ namespace   Stroika {
                  */
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
-                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.remove (we);
                     }
                 });
                 {
-                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
@@ -168,13 +168,13 @@ namespace   Stroika {
                  */
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
-                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.remove (we);
                     }
                 });
                 {
-                    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }

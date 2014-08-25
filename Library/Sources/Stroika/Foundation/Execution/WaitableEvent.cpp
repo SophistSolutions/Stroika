@@ -5,6 +5,7 @@
 
 #include    "../Time/Duration.h"
 
+#include    "Common.h"
 #include    "TimeOutException.h"
 
 #include    "WaitableEvent.h"
@@ -134,7 +135,7 @@ void    WaitableEvent::Set ()
 #endif
     fWE_.Set ();
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
-    lock_guard<mutex> critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
     for (auto i : fExtraWaitableEvents_) {
         i->Set ();
     }

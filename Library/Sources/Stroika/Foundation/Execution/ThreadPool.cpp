@@ -6,6 +6,8 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Memory/BlockAllocated.h"
+
+#include    "Common.h"
 #include    "Sleep.h"
 #include    "TimeOutException.h"
 
@@ -32,7 +34,7 @@ public:
 public:
     ThreadPool::TaskType    GetCurrentTask () const
     {
-        lock_guard<recursive_mutex> critSect (fCurTaskUpdateCritSection_);
+        auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
         Assert (fCurTask_.get () == nullptr or fNextTask_.get () == nullptr);   // one or both must be null
@@ -48,7 +50,7 @@ public:
         while (true) {
             {
                 fThreadPool_.WaitForNextTask_ (&fNextTask_);            // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
-                lock_guard<recursive_mutex> critSect (fCurTaskUpdateCritSection_);
+                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
                 Assert (fNextTask_.get () != nullptr);
                 Assert (fCurTask_.get () == nullptr);
                 fCurTask_ = fNextTask_;
@@ -61,12 +63,12 @@ public:
                 fCurTask_.reset ();
             }
             catch (const ThreadAbortException&) {
-                lock_guard<recursive_mutex> critSect (fCurTaskUpdateCritSection_);
+                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
                 fCurTask_.reset ();
                 throw;  // cancel this thread
             }
             catch (...) {
-                lock_guard<recursive_mutex> critSect (fCurTaskUpdateCritSection_);
+                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
                 fCurTask_.reset ();
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
             }
@@ -127,7 +129,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::SetPoolSize"));
     Require (not fAborted_);
-    lock_guard<recursive_mutex> critSection (fCriticalSection_);
+    auto    critSec { make_unique_lock (fCriticalSection_) };
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
     }
@@ -160,7 +162,7 @@ void    ThreadPool::AddTask (const TaskType& task)
     //Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AddTask"));
     Require (not fAborted_);
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.push_back (task);
     }
 
@@ -175,7 +177,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTask"));
     {
         // First see if its in the Q
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 fTasks_.erase (i);
@@ -197,7 +199,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
     Thread  thread2Kill;
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
@@ -219,17 +221,17 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTasks"));
     auto tps = GetPoolSize ();
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.clear ();
     }
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (Thread ti : fThreads_) {
             ti.Abort ();
         }
     }
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (Thread ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.AbortAndWaitForDone (timeout);
@@ -244,7 +246,7 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
 {
     {
         // First see if its in the Q
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
@@ -258,7 +260,7 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
 {
     Require (task.get () != nullptr);
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
@@ -290,7 +292,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
 {
     Collection<ThreadPool::TaskType>    result;
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
@@ -308,7 +310,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
 {
     Collection<ThreadPool::TaskType>    result;
     {
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
             Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
@@ -326,7 +328,7 @@ size_t  ThreadPool::GetTasksCount () const
     size_t  count   =   0;
     {
         // First see if its in the Q
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
@@ -347,7 +349,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     {
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
         {
-            lock_guard<recursive_mutex> critSection (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
             threadsToShutdown = fThreads_;
         }
         for (auto t : threadsToShutdown) {
@@ -362,7 +364,7 @@ void    ThreadPool::Abort ()
     fAborted_ = true;
     {
         // Clear the task Q and then abort each thread
-        lock_guard<recursive_mutex> critSection (fCriticalSection_);
+        auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.clear ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             i->Abort ();
@@ -387,7 +389,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
     while (true) {
         {
-            lock_guard<recursive_mutex> critSection (fCriticalSection_);
+            auto    critSec { make_unique_lock (fCriticalSection_) };
             if (not fTasks_.empty ()) {
                 *result =   fTasks_.front ();
                 fTasks_.pop_front ();
