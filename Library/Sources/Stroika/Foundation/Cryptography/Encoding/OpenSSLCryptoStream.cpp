@@ -110,7 +110,7 @@ public:
              *  and use that to re-populate fOutBuf_.
              */
             Require (intoStart < intoEnd);
-            auto    critSec { Execution::make_unique_lock (fCriticalSection_) }
+            auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
             if (fOutBufStart_ == fOutBufEnd_) {
                 Byte toDecryptBuf[kInBufSize_];
                 size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
