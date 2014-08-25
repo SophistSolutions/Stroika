@@ -39,7 +39,7 @@ namespace   Stroika {
              *
              *  BUT CONTINUE EXPLAIN - ONLY COST OF THIS IS CHECK IN DTOR WHICH COMPILER CAN PROBABLY OPTIMIZE AWAY
              *
-             *  As of C++11, you cannot have type of object returned inferred from arguments. Buy you CAN do this for
+             *  As of C++11, you cannot have type of object returned inferred from CTOR arguments. Buy you CAN do this for
              *  a regular function (e.g. make_unique_lock) and have that infer a type, which you then use in the return type.
              *
              *  Not sure this is safe, cuz of order of initializing copy to etc... Need to test on gcc/clang...
@@ -54,7 +54,7 @@ namespace   Stroika {
             template    <typename   MUTEX>
             inline  std::lock_guard<MUTEX>   make_lock_guard (MUTEX& m)
             {
-                return lock_guard<MUTEX> (m);
+                return std::lock_guard<MUTEX> (m);
             }
 
 
