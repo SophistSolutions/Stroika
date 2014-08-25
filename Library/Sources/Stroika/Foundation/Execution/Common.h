@@ -47,7 +47,7 @@ namespace   Stroika {
             template    <typename   MUTEX>
             inline  std::unique_lock<MUTEX>   make_unique_lock (MUTEX& m)
             {
-                return unique_lock<MUTEX> (m);
+                return std::unique_lock<MUTEX> (m);
             }
 
             // test probs wont work
