@@ -48,7 +48,11 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -59,13 +63,21 @@ public:
 
     virtual SeekOffsetType  GetOffset () const override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };     // needed only if fetch of pointer not atomic
+#endif
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

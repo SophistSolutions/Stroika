@@ -53,7 +53,7 @@ namespace   Stroika {
             inline  void    WaitableEvent::WE_::Reset ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex)>   critSec (fMutex);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex);
 #else
                 auto    critSec { make_unique_lock (fMutex) };
 #endif
@@ -62,7 +62,7 @@ namespace   Stroika {
             inline  void    WaitableEvent::WE_::Set ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex)>   critSec (fMutex);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex);
 #else
                 auto    critSec { make_unique_lock (fMutex) };
 #endif
@@ -124,7 +124,7 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    lock_guard<decltype(_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)>   critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
                     auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
 #endif
@@ -134,7 +134,7 @@ namespace   Stroika {
                 });
                 {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    lock_guard<decltype(_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)>   critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
                     auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
 #endif
@@ -185,7 +185,7 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    lock_guard<decltype(_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)>   critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
                     auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
 #endif
@@ -195,7 +195,7 @@ namespace   Stroika {
                 });
                 {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    lock_guard<decltype(_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)>   critSec (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
+                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
                     auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
 #endif

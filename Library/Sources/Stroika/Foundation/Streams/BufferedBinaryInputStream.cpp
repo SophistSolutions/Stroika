@@ -30,7 +30,11 @@ public:
 
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return fRealIn_.Read (intoStart, intoEnd);
     }
 

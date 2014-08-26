@@ -50,8 +50,12 @@ public:
 public:
     nonvirtual  size_t  GetBufferSize () const
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        return (fBuffer_.capacity ());
+#endif
+        return fBuffer_.capacity ();
     }
     nonvirtual  void    SetBufferSize (size_t bufSize)
     {
@@ -78,7 +82,11 @@ public:
     nonvirtual  void    Flush ()
     {
         Require (not fAborted_ or fBuffer_.empty ());
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         if (not fBuffer_.empty ()) {
             fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
             fBuffer_.clear ();
@@ -93,7 +101,11 @@ public:
     {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Require (not fAborted_);
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         /*
          * Minimize the number of writes at the possible cost of extra copying.
          *

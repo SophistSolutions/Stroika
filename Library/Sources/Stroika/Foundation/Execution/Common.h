@@ -62,6 +62,17 @@ namespace   Stroika {
             }
 
 
+            /**
+             *  For use when qCompilerAndStdLib_make_unique_lock_IsSlow, and until we find a better way (probably C++17).
+             *
+             *  @see make_unique_lock and @see qCompilerAndStdLib_make_unique_lock_IsSlow.
+             *
+             *  Note that the utility of this macro is that you dont need to redundantly specify the type as is normal practice
+             *  with lock_guard<>.
+             */
+#define MACRO_LOCK_GUARD_CONTEXT(theMutex)\
+    std::lock_guard<decltype(theMutex)> critSec { theMutex };
+
         }
     }
 }

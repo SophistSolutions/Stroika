@@ -79,7 +79,11 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
 #if     qPlatform_Windows
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
@@ -88,7 +92,11 @@ public:
     }
     virtual Streams::SeekOffsetType  GetOffset () const override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
@@ -98,7 +106,11 @@ public:
     virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

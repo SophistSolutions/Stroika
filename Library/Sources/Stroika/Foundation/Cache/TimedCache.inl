@@ -90,7 +90,11 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             Memory::Optional<RESULT>    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
@@ -117,7 +121,11 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             void    TimedCache<KEY, RESULT, TRAITS>::AddElement (const KEY& key, const RESULT& result)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {

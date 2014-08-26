@@ -182,7 +182,7 @@ namespace   Stroika {
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+                MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
                 auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
 #endif
@@ -207,7 +207,7 @@ namespace   Stroika {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (p != nullptr);
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+                MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
                 auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
 #endif
@@ -219,7 +219,7 @@ namespace   Stroika {
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+                MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
                 auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
 #endif

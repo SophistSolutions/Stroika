@@ -38,7 +38,11 @@ public:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
             auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
             size_t  roomLeft        =   fData_.end () - fCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
@@ -65,13 +69,21 @@ public:
 
     virtual SeekOffsetType  GetOffset () const override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };    // needed only if fetch of pointer not atomic
+#endif
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -131,7 +143,11 @@ public:
 
     String   AsString () const
     {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
         auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return String (Containers::Start (fData_), Containers::End (fData_));
     }
 

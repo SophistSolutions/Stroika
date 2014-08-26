@@ -40,7 +40,7 @@ namespace   Stroika {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fLock_)>   critSec (fLock_);
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
 #else
                 auto    critSec { Execution::make_unique_lock (fLock_) };
 #endif
@@ -107,7 +107,7 @@ namespace   Stroika {
             inline  void  StringBuilder::push_back (Character c)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fLock_)>   critSec (fLock_);
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
 #else
                 auto    critSec { Execution::make_unique_lock (fLock_) };
 #endif
@@ -127,7 +127,7 @@ namespace   Stroika {
             inline  const wchar_t*  StringBuilder::c_str () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fLock_)>   critSec (fLock_);
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
 #else
                 auto    critSec { Execution::make_unique_lock (fLock_) };
 #endif
@@ -142,7 +142,7 @@ namespace   Stroika {
             inline  String StringBuilder::str () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fLock_)>   critSec (fLock_);
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
 #else
                 auto    critSec { Execution::make_unique_lock (fLock_) };
 #endif

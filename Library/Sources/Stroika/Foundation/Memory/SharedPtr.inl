@@ -510,7 +510,7 @@ namespace std {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
 #endif
@@ -528,7 +528,7 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
 #endif
@@ -546,7 +546,7 @@ namespace std {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
 #endif
@@ -564,7 +564,7 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
 #endif

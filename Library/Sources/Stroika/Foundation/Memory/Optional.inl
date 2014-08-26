@@ -331,7 +331,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -342,7 +342,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (T && rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -363,7 +363,7 @@ namespace   Stroika {
             {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -374,7 +374,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Memory::Optional<T, TRAITS>& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -386,7 +386,7 @@ namespace   Stroika {
             {
                 Require (IsPresent ());
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -397,7 +397,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -407,7 +407,7 @@ namespace   Stroika {
             inline  void    Synchronized<Memory::Optional<T, TRAITS>>::clear ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -417,7 +417,7 @@ namespace   Stroika {
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -427,7 +427,7 @@ namespace   Stroika {
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -437,7 +437,7 @@ namespace   Stroika {
             inline  T Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -447,7 +447,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -458,7 +458,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator-= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -469,7 +469,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator*= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -480,7 +480,7 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator/= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -491,7 +491,7 @@ namespace   Stroika {
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const T& rhs) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
@@ -501,7 +501,7 @@ namespace   Stroika {
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif

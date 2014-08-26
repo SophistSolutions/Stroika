@@ -61,7 +61,11 @@ DataExchange::Private_::AtomModuleData::~AtomModuleData ()
  */
 AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const String& s)
 {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+    MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
+#else
     auto    critSec { Execution::make_unique_lock (sCritSec_) };
+#endif
     auto i = sMap_->Lookup (s);
     if (i.IsPresent ()) {
         return *i;
