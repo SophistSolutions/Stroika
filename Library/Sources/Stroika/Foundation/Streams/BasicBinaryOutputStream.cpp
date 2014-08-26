@@ -52,7 +52,7 @@ public:
                 fCursor_ = fData_.begin () + curOffset;
                 Assert (fCursor_ < fData_.end ());
             }
-            memcpy (&*fCursor_, start, roomRequired);
+            (void)::memcpy (&*fCursor_, start, roomRequired);
             fCursor_ += roomRequired;
             Assert (fCursor_ <= fData_.end ());
         }

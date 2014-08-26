@@ -368,7 +368,7 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, Retur
 
     // No idea why array<> type sucks like this...--LGP 2014-07-28
     ReturnType  result {};
-    memcpy(&*result.begin (), ctx.digest, 16);
+    (void)::memcpy (&*result.begin (), ctx.digest, 16);
     return result;
 }
 

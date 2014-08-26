@@ -456,12 +456,12 @@ size_t  StyledTextIOSrcStream_Memory::read (void* buffer, size_t bytes)
     size_t  curIdx      =   curBytePtr - ((char*)fData);
     size_t  bytesLeft   =   fBytesInBuffer - curIdx;
     bytes = min (bytesLeft, bytes);
-    ::memcpy (buffer, curBytePtr, bytes);
+    (void)::memcpy (buffer, curBytePtr, bytes);
     fCurPtr = curBytePtr + bytes;
     return bytes;
 #else
     bytes = min (fBytesLeft, bytes);
-    ::memcpy (buffer, fCurPtr, bytes);
+    (void)::memcpy (buffer, fCurPtr, bytes);
     fCurPtr = ((char*)fCurPtr) + bytes;
     fBytesLeft -= bytes;
     return bytes;
@@ -574,7 +574,7 @@ NotherRead:
         size_t  bytesToCopyNow  =   min ((bytes - bytesCopiedSoFar), (fBufferWindowEnd - fCurSeekPos));
         Assert (bytesToCopyNow > 0);
         Assert (bytesToCopyNow <= bytes);
-        memcpy (&((char*)buffer)[bytesCopiedSoFar], &fInputBuffer[fCurSeekPos - fBufferWindowStart], bytesToCopyNow);
+        (void)::memcpy (&((char*)buffer)[bytesCopiedSoFar], &fInputBuffer[fCurSeekPos - fBufferWindowStart], bytesToCopyNow);
         bytesCopiedSoFar += bytesToCopyNow;
         fCurSeekPos += bytesToCopyNow;
     }

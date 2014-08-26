@@ -270,7 +270,7 @@ void    Led_MFCWriterDAndDFlavorPackage::AddFlavorData (Led_ClipFormat clipForma
     Led_ThrowIfNull (dataHandle);
     char*   lockedMem   =   (char*)::GlobalLock (dataHandle);
     AssertNotNull (lockedMem);
-    memcpy (lockedMem, buf, bufSize);
+    (void)::memcpy (lockedMem, buf, bufSize);
     ::GlobalUnlock (lockedMem);
     fDataObject->CacheGlobalData (clipFormat, dataHandle);
 

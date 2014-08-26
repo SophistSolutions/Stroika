@@ -39,7 +39,7 @@ namespace   Stroika {
             {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
-#if		qCompilerAndStdLib_make_unique_lock_IsSlow
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 lock_guard<decltype(fLock_)>   critSec (fLock_);
 #else
                 auto    critSec { Execution::make_unique_lock (fLock_) };
@@ -48,7 +48,7 @@ namespace   Stroika {
                 size_t  rhsLen  =  e - s;
                 fData_.GrowToSize (i + rhsLen);
                 fLength_ = i + rhsLen;
-                memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
+                (void)::memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
             }
             inline  void    StringBuilder::Append (const wchar_t* s)
             {

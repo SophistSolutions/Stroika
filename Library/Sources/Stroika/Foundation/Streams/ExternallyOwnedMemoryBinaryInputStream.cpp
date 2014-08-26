@@ -46,7 +46,7 @@ protected:
         Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
         size_t  nAvail      =   fEnd_ - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
-        memcpy (intoStart, fCursor_, nCopied);
+        (void)::memcpy (intoStart, fCursor_, nCopied);
         fCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
     }

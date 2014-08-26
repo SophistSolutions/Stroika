@@ -128,7 +128,7 @@ public:
             }
             if (fOutBufStart_ < fOutBufEnd_) {
                 size_t  n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
-                memcpy (intoStart, fOutBufStart_, n2Copy);
+                (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
                 fOutBufStart_ += n2Copy;
                 return n2Copy;
             }

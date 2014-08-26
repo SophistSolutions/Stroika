@@ -60,7 +60,7 @@ namespace   Stroika {
                     // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
                     // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever
                     // bus errors???)
-                    ::memcpy (newPtr, fPointer_, oldEltCount * sizeof (T));
+                    (void)::memcpy (newPtr, fPointer_, oldEltCount * sizeof (T));
                     if (fPointer_ != fBuffer_) {
                         // we must have used the heap...
                         delete[] fPointer_;

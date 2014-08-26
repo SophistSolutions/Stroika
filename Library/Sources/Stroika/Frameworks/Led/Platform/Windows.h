@@ -2579,7 +2579,7 @@ namespace   Stroika {
                     int nChars  =   ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, NULL, NULL);
 #else
                     size_t  nChars = min (size_t (cchTextMax) - 1, len2);
-                    ::memcpy (lpText, buf2, nChars);
+                    (void)::memcpy (lpText, buf2, nChars);
 #endif
                     lpText[nChars] = '\0';
                     return (nChars);
@@ -2604,7 +2604,7 @@ namespace   Stroika {
                         // Assume they want ANSI code page text?
                         len =   static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf, static_cast<int> (len)));
 #else
-                        ::memcpy (buf, lpText, len);
+                        (void)::memcpy (buf, lpText, len);
 #endif
                         len = Led_NormalizeTextToNL (buf, len, buf, len);
                         Replace (0, 0, buf, len);
@@ -2791,7 +2791,7 @@ namespace   Stroika {
 
 #if     qWideCharacters == qSDK_UNICODE
                     //::_tcscpy (buf, text);
-                    ::memcpy (buf.begin (), text, (len + 1)*sizeof (text[0]));
+                    (void)::memcpy (buf.begin (), text, (len + 1)*sizeof (text[0]));
 #elif   qWideCharacters && !qSDK_UNICODE
                     len =   ::MultiByteToWideChar (CP_ACP, 0, text, len, buf, len); // Assume they want ANSI code page text?
 #elif   !qWideCharacters && qSDK_UNICODE

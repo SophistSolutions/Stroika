@@ -30,24 +30,24 @@ namespace   Stroika {
                     : fSocketAddress_ ()
                 {
                     static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
-                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
+                    (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const sockaddr_in& iaddr)
                     : fSocketAddress_ ()
                 {
                     static_assert (sizeof (iaddr) <= sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
-                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
+                    (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const sockaddr_storage& iaddr)
                     : fSocketAddress_ ()
                 {
                     static_assert (sizeof (iaddr) == sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
-                    ::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
+                    (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
                     : fSocketAddress_ ()
                 {
-                    ::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
+                    (void)::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
                     switch (iaddr.GetAddressFamily ()) {
                         case    InternetAddress::AddressFamily::V4: {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));

@@ -46,7 +46,7 @@ namespace {
 Memory::BLOB::BasicRep_::BasicRep_ (const Byte* start, const Byte* end)
     : fData (end - start)
 {
-    memcpy (fData.begin (), start, end - start);
+    (void)::memcpy (fData.begin (), start, end - start);
 }
 
 Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
@@ -54,7 +54,7 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, con
 {
     Byte*   pb  =   fData.begin ();
     for (auto i : startEndPairs) {
-        memcpy (pb, i.first, i.second - i.first);
+        (void)::memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
     }
     Ensure (pb == fData.end ());
@@ -65,7 +65,7 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatena
 {
     Byte*   pb  =   fData.begin ();
     for (auto i : list2Concatenate) {
-        memcpy (pb, i.begin (), i.GetSize ());
+        (void)::memcpy (pb, i.begin (), i.GetSize ());
         pb += i.GetSize ();
     }
     Ensure (pb == fData.end ());

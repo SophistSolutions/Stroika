@@ -162,7 +162,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     }
     for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
         struct in_addr addr;
-        memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+        (void)::memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
         return InternetAddress (addr);
     }
     return InternetAddress ();

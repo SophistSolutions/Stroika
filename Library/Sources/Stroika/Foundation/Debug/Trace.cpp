@@ -511,7 +511,7 @@ void    Emitter::DoEmit_ (const char* p, const char* e)
 {
     size_t  len =   e - p;
     Memory::SmallStackBuffer<char>  buf (len + 1);
-    memcpy (buf.begin (), p, len);
+    (void)::memcpy (buf.begin (), p, len);
     buf.begin () [len] = '\0';
     DoEmit_ (buf.begin ());
 }
@@ -520,7 +520,7 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
 {
     size_t  len =   e - p;
     Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
-    memcpy (buf.begin (), p, len * sizeof (wchar_t));
+    (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
     buf.begin () [len] = '\0';
     DoEmit_ (buf.begin ());
 }

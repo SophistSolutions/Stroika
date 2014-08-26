@@ -47,7 +47,7 @@ public:
         size_t  nAvail      =   fData_.end () - fReadCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
         if (nCopied != 0) {
-            memcpy (intoStart, &*fReadCursor_, nCopied);
+            (void)::memcpy (intoStart, &*fReadCursor_, nCopied);
         }
         fReadCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
@@ -71,7 +71,7 @@ public:
                 fWriteCursor_ = fData_.begin () + curWriteOffset;
                 Assert (fWriteCursor_ < fData_.end ());
             }
-            memcpy (&*fWriteCursor_, start, roomRequired);
+            (void)::memcpy (&*fWriteCursor_, start, roomRequired);
             fWriteCursor_ += roomRequired;
             Assert (fReadCursor_ <= fData_.end ());
             Assert (fWriteCursor_ <= fData_.end ());

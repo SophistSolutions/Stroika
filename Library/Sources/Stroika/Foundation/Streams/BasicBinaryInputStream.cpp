@@ -34,7 +34,7 @@ public:
             fCursor_ = fData_.end ();
         }
         else {
-            memcpy (fData_.begin (), start, end - start);
+            (void)::memcpy (fData_.begin (), start, end - start);
             fCursor_ = fData_.begin ();
         }
     }
@@ -52,7 +52,7 @@ public:
         Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
-        memcpy (intoStart, fCursor_, nCopied);
+        (void)::memcpy (intoStart, fCursor_, nCopied);
         fCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
     }

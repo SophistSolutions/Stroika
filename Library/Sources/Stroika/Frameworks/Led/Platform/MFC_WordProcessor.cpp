@@ -131,7 +131,7 @@ struct  MyOLEStream_input : OLESTREAM {
         MyOLEStream_input*  myStream    =   (MyOLEStream_input*)lpoleStr;
         DWORD           bytesLeft       =   myStream->end - myStream->cur;
         DWORD           bytesToRead     =   min (bytesLeft, nb);
-        memcpy (data, myStream->cur, bytesToRead);
+        (void)::memcpy (data, myStream->cur, bytesToRead);
         myStream->cur += bytesToRead;
         return bytesToRead;
     }
