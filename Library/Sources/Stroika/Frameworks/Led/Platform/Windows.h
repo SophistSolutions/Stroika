@@ -3138,7 +3138,7 @@ namespace   Stroika {
                                 <p>This seems like a somewhat unconventional thing todo, but it apears much safer, and less quirky. I've found
                             that SUBCLASSING a window often produces slightly wierd results (perhaps depnding on WHICH window you choose
                             to subclass). Anyhow - this works well if you define a widget in your .rc file, and then use this to replace it
-                            with the roughly equivilently sized etc Led version.
+                            with the roughly equivalently sized etc Led version.
                                 </p>
                                 <p>Returns false on failure, and true on success.</p>
                 */

@@ -97,7 +97,7 @@ namespace   Stroika {
              *
              *      See also: http://bugzilla/show_bug.cgi?id=468
              *
-             *  This class is roughly equivilent to the .Net Timespan class, and also might be called
+             *  This class is roughly equivalent to the .Net Timespan class, and also might be called
              *  "time period", or "timespan".
              *
              *  Note that a Duration may be negative.
@@ -156,7 +156,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Add the given duration to this (equivilent to *this = *this + rhs;).
+                 *  Add the given duration to this (equivalent to *this = *this + rhs;).
                  */
                 nonvirtual  Duration&   operator+= (const Duration& rhs);
 

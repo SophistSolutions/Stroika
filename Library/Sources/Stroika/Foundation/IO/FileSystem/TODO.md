@@ -1,5 +1,5 @@
 >	Redo most of the code using AsSDKString() to use wide-char verisons of APIs. Will be much more performnant
-	and otherwise probably equivilent!
+	and otherwise probably equivalent!
 
 >	More cleanups of FileSystem code? Move stuff from FileUtils if truly useful? 
 	Like MemoryMappedFile SB redone using STREAMS – as MemoryMappedFileReaderSTREAM?

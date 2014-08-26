@@ -3463,7 +3463,7 @@ void    WordProcessor::InteractiveSetFirstIndent (Led_TWIPS firstIndent)
 
 /*
 @METHOD:        WordProcessor::InteractiveSetMarginsAndFirstIndent
-@DESCRIPTION:   <p>Roughly equivilent to @'WordProcessor::InteractiveSetMargins' followed by @'WordProcessor::InteractiveSetFirstIndent'
+@DESCRIPTION:   <p>Roughly equivalent to @'WordProcessor::InteractiveSetMargins' followed by @'WordProcessor::InteractiveSetFirstIndent'
     except that they are bundled together into one action, as far as UNDO is concerned.</p>
 */
 void    WordProcessor::InteractiveSetMarginsAndFirstIndent (Led_TWIPS leftMargin, Led_TWIPS rightMargin, Led_TWIPS firstIndent)

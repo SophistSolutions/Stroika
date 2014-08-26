@@ -225,7 +225,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  cget is equivilent to get () on a const pointer. The reason to have/use this method
+                 *  cget is equivalent to get () on a const pointer. The reason to have/use this method
                  *  is just to avoid accidentally getting a reference to the non-const overload of get ().
                  *
                  *  \em Note: cget () will never invoke BreakReferences/Clone.

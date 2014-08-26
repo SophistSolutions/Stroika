@@ -138,7 +138,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns true if the Q contains no items. Equivilent to PeekHead ().IsEmpty ()
+                 *  Returns true if the Q contains no items. Equivalent to PeekHead ().IsEmpty ()
                  */
                 nonvirtual  bool    empty () const;
 

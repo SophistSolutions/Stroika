@@ -44,7 +44,7 @@
  *
  *              So data pusher/buffer loop does select on external streams to see if data avialble.
  *
- *              This implies I must also be able to do the moral equivilent of selects on my BinaryInput/Output streams? Maybe,
+ *              This implies I must also be able to do the moral equivalent of selects on my BinaryInput/Output streams? Maybe,
  *              unless I do all the buffering... But at least for the stdin stream - I need to be able to check if/whjen there
  *              is new data available!!! TRICKY
  *

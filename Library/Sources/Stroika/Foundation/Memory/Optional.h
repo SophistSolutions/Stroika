@@ -190,7 +190,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
                  *
-                 *  This is really just syntactic sugar equivilent to get () - except that it requires
+                 *  This is really just syntactic sugar equivalent to get () - except that it requires
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */

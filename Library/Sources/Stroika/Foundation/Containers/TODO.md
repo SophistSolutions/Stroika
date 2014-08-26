@@ -154,7 +154,7 @@ Notes from obsolete Collection.h
 
 	RemoveIfPresent:
                 /*
-                 *  This function is logically equivilent to
+                 *  This function is logically equivalent to
                  *      if (Contains (item)) {
                  *          Remove (item);
                  *      }
@@ -170,7 +170,7 @@ Notes from obsolete Collection.h
 
 
                 /*
-                 *      +=/-= are equivilent Add() and Remove(). They
+                 *      +=/-= are equivalent Add() and Remove(). They
                  *  are just syntactic sugar.
                  */
             public:

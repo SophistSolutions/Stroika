@@ -198,7 +198,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Contains (item) is equivilent to OccurrencesOf (item) != 0, but maybe faster (since it doesn't need to compute
+                 *  Contains (item) is equivalent to OccurrencesOf (item) != 0, but maybe faster (since it doesn't need to compute
                  *  the fully tally).
                  */
                 nonvirtual  bool    Contains (T item) const;
@@ -238,7 +238,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * if newCount == 0, equivilent to Remove(i). Require not i.Done () - so it must point to a given item.
+                 * if newCount == 0, equivalent to Remove(i). Require not i.Done () - so it must point to a given item.
                  */
                 nonvirtual  void    UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount);
 
@@ -252,7 +252,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns the sum of all tallys of all contained elements. This is equivilent
+                 *  Returns the sum of all tallys of all contained elements. This is equivalent
                  *  to Elements ().size ().
                  */
                 nonvirtual  size_t  TotalOccurrences () const;

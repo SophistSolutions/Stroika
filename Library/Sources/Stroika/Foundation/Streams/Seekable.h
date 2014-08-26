@@ -132,7 +132,7 @@ namespace   Stroika {
             public:
                 /**
                  * GetOffsetToEndOfStream () returns the the distance from the current offset position to the end of the stream.
-                 *  This is equivilent to:
+                 *  This is equivalent to:
                  *      size_t  size =  Seek (Whence::eFromEnd, 0);
                  *      Seek (Whence::eFromStart, savedReadFrom);
                  *(EXCPET MAYBE GUARNATEED ATOMIC????)

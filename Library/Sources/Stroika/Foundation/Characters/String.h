@@ -564,7 +564,7 @@ namespace   Stroika {
                  *  So for example, CircularSubString (0, -1) is equivlent to SubString (0, GetLength () - 1) - and so is an
                  *  error if the string is empty.
                  *
-                 *  Similarly, CircularSubString (-5) is equivilent to SubString (GetLength ()-5, GetLength ()) - so can be used
+                 *  Similarly, CircularSubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
                  *  to grab the end of a string.
                  *
                  *  \note \em Design Note
@@ -586,7 +586,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Returns true if the argument character or string is found anywhere inside this string.
-                 *  This is equivilent to
+                 *  This is equivalent to
                  *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
                  *                                          // a regular expression
                  *
@@ -757,7 +757,7 @@ namespace   Stroika {
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
                 /**
-                 * String Trim () is locally equivilent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
+                 * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
                  */
                 nonvirtual  String  Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
 #else
@@ -776,14 +776,14 @@ namespace   Stroika {
             public:
                 /**
                  * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivilent. Note that non-lower-case characters (such as punctuation) un unchanged.
+                 * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToLowerCase () const;
 
             public:
                 /**
                  * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivilent. Note that non-upper-case characters (such as punctuation) un unchanged.
+                 * upper case equivalent. Note that non-upper-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToUpperCase () const;
 
@@ -898,7 +898,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * @brief   Return true of the two argument strings are equal. This is equivilent to
+                 * @brief   Return true of the two argument strings are equal. This is equivalent to
                  *              lhs.Compare (rhs, co);
                  */
                 nonvirtual  bool    Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
