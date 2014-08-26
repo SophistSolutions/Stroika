@@ -330,14 +330,22 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const T& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (T && rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator= (std::move (rhs));
                 return *this;
             }
@@ -354,14 +362,22 @@ namespace   Stroika {
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (Synchronized<Memory::Optional<T, TRAITS>> && rhs)
             {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator= (move (rhs));
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Memory::Optional<T, TRAITS>& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator= (rhs);
                 return *this;
             }
@@ -369,78 +385,126 @@ namespace   Stroika {
             inline  T   Synchronized<Memory::Optional<T, TRAITS>>::operator* () const
             {
                 Require (IsPresent ());
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 Require (inherited::IsPresent ());
                 return inherited::operator* ();
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return *static_cast<const inherited*> (this);
             }
             template    <typename T, typename TRAITS>
             inline  void    Synchronized<Memory::Optional<T, TRAITS>>::clear ()
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::clear ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return inherited::IsMissing ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return inherited::IsPresent ();
             }
             template    <typename T, typename TRAITS>
             inline  T Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return inherited::Value (defaultValue);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator+= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator-= (const T& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator-= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator*= (const T& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator*= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator/= (const T& rhs)
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 inherited::operator/= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const T& rhs) const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return inherited::Compare (rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<decltype(fMutex_)>   critSec (fMutex_);
+#else
                 auto    critSec { make_unique_lock (fMutex_) };
+#endif
                 return inherited::Compare (rhs);
             }
             template    <typename T, typename TRAITS>

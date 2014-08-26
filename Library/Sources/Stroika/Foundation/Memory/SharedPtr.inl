@@ -509,7 +509,11 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+#else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+#endif
         Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
         return result;
     }
@@ -523,7 +527,11 @@ namespace std {
     inline  void    atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
         using namespace     Stroika::Foundation;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+#else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+#endif
         storeTo->swap (o);
     }
     template    <typename T>
@@ -537,7 +545,11 @@ namespace std {
     {
         using namespace     Stroika::Foundation;
         RequireNotNull (copyFrom);
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+#else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+#endif
         shared_ptr<T> result = *copyFrom;
         return result;
     }
@@ -551,7 +563,11 @@ namespace std {
     inline  void    atomic_store_explicit (shared_ptr<T>* storeTo, shared_ptr<T> o, memory_order)
     {
         using namespace     Stroika::Foundation;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        lock_guard<decltype(Memory::Private_::sSharedPtrCopyLock_)> critSec (Memory::Private_::sSharedPtrCopyLock_);
+#else
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+#endif
         storeTo->swap (o);
     }
     template    <typename T>

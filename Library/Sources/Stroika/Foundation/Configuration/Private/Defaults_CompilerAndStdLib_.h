@@ -462,6 +462,26 @@ EXAMPLE:
 
 
 
+/**
+ *  This works, and as near as I can tell, its just a compiler 'misfeature' with msvc that this is slow.
+ *
+ *  Tell that this is slow by running/comparing performance regtests with and without.
+ */
+#ifndef qCompilerAndStdLib_make_unique_lock_IsSlow
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+#define qCompilerAndStdLib_make_unique_lock_IsSlow      (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+#else
+#define qCompilerAndStdLib_make_unique_lock_IsSlow      0
+#endif
+
+#endif /*qCompilerAndStdLib_make_unique_lock_IsSlow*/
+
+
+
+
 
 
 

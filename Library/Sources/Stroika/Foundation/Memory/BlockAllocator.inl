@@ -181,7 +181,11 @@ namespace   Stroika {
                 Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+#else
                 auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
+#endif
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -202,7 +206,11 @@ namespace   Stroika {
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (p != nullptr);
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+#else
                 auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
+#endif
                 // push p onto the head of linked free list
                 (*(void**)p) = sNextLink_;
                 sNextLink_ = p;
@@ -210,7 +218,11 @@ namespace   Stroika {
             template    <size_t SIZE>
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                lock_guard<Private_::LockType_> critSec (Private_::GetLock_ ());
+#else
                 auto    critSec { make_unique_lock (Private_::GetLock_ ()) };
+#endif
 
                 // step one: put all the links into a single, sorted vector
                 const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);

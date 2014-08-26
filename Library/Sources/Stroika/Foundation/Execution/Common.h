@@ -43,18 +43,22 @@ namespace   Stroika {
              *  a regular function (e.g. make_unique_lock) and have that infer a type, which you then use in the return type.
              *
              *  Not sure this is safe, cuz of order of initializing copy to etc... Need to test on gcc/clang...
+             *
+             *  Note - though:
+             *      template    <typename   MUTEX>
+             *      inline  std::lock_guard<MUTEX>   make_lock_guard (MUTEX& m)
+             *      {
+             *          return std::lock_guard<MUTEX> (m);
+             *      }
+             *  works on visual studio.net 2k13, it should not (compiler bug - cannot copy std::unique_lock).
+             *
+             *  See:
+             *      @see qCompilerAndStdLib_make_unique_lock_IsSlow
              */
             template    <typename   MUTEX>
             inline  std::unique_lock<MUTEX>   make_unique_lock (MUTEX& m)
             {
                 return std::unique_lock<MUTEX> (m);
-            }
-
-            // test probs wont work
-            template    <typename   MUTEX>
-            inline  std::lock_guard<MUTEX>   make_lock_guard (MUTEX& m)
-            {
-                return std::lock_guard<MUTEX> (m);
             }
 
 
