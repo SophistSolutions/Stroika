@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Execution/SpinLock.h"
 #include    "../Execution/Synchronized.h"
 #include    "BlockAllocated.h"
 
@@ -407,7 +408,9 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
             private:
-                mutable mutex       fMutex_;
+                // nb: use SpinLock instead of mutex since faster and we essentially never hold the
+                // lock long enuf to keep others 'spinning'
+                mutable SpinLock       fMutex_;
             };
 
 
