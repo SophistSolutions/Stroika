@@ -36,6 +36,11 @@ namespace   Stroika {
 
 
             /**
+             *  The idea is to mimic that of a black bag (not like SmallTalk Bag<T> which Stroika Collection<> is closest to).
+             *
+             *  You put stuff in, you iterate, and you take stuff out not knowing about ordering. The ordering (of iteration)
+             *  is sticky, but not known (like with a physical bag). So you can 'shake' and that changes the order, or you
+             *  can COPY a bag (which preserves order).
              */
             template    <typename T>
             class   Bag : public Iterable<T> {
