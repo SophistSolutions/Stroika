@@ -36,7 +36,7 @@ using   Execution::Thread;
 using   Execution::WaitableEvent;
 
 template    <typename T>
-using   Syncrhonized    =   Execution::Synchronized<T>;
+using   Synchronized    =   Execution::Synchronized<T>;
 
 
 
@@ -273,7 +273,7 @@ namespace {
         {
             using   namespace   Memory;
             try {
-                Syncrhonized<Optional<int>> sharedValue { 0 };
+                Synchronized<Optional<int>> sharedValue { 0 };
                 static  const int kMaxVal_ = 100000;
                 Thread  reader = [&sharedValue] () {
                     while (sharedValue < kMaxVal_) {
