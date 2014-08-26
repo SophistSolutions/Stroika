@@ -26,13 +26,14 @@ namespace   Stroika {
             public:
                 BadFormatException ();
                 BadFormatException (const Characters::String& details);
-                BadFormatException (const Characters::String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset);
+                BadFormatException (const Characters::String& details, const Memory::Optional<unsigned int>& lineNumber, const Memory::Optional<unsigned int>& columnNumber, const Memory::Optional<uint64_t>& fileOffset);
 
             public:
                 nonvirtual  Characters::String GetDetails () const;
 
             public:
                 nonvirtual  void    GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
+
             private:
                 Memory::Optional<unsigned int>  fLineNumber_;
                 Memory::Optional<unsigned int>  fColumnNumber_;

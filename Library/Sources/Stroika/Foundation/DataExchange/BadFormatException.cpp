@@ -12,23 +12,27 @@
 /*
  * Design Note:
  *
- *      o   Chose to include lineNumber etc stuff in message by default because in apps where this is not desired - (fancy gui apps) they are
- *          more likely to be the ones to override the exception mapping to message anyhow, and tune it themselves. Its the simple apps
- *          that do little but dump the string representations of a message that are more likely to want to know the line number (a bit of a guess).
+ *      o   Chose to include lineNumber etc stuff in message by default because in apps where this is not desired -
+ *          (fancy gui apps) they are more likely to be the ones to override the exception mapping to message anyhow,
+ *          and tune it themselves. Its the simple apps that do little but dump the string representations of a
+ *          message that are more likely to want to know the line number (a bit of a guess).
  */
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
+using   Memory::Optional;
+
+
 
 /*
  ********************************************************************************
- ****************** DataExchange::BadFormatException **********************
+ ************************ DataExchange::BadFormatException **********************
  ********************************************************************************
  */
 namespace   {
-    String mkMessage_OffsetInfo_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_OffsetInfo_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     {
         String result;
         if (not lineNumber.IsMissing ()) {
@@ -53,7 +57,7 @@ namespace   {
     {
         return details.empty () ? mkMessage_ () : details;
     }
-    String mkMessage_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, Optional<uint64_t> fileOffset)
     {
         String msg             =   mkMessage_ ();
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
@@ -62,7 +66,7 @@ namespace   {
         }
         return msg;
     }
-    String mkMessage_ (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_ (const String& details, const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     {
         String msg             =   mkMessage_ (details);
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
@@ -90,7 +94,7 @@ DataExchange::BadFormatException::BadFormatException (const String& details)
 {
 }
 
-DataExchange::BadFormatException::BadFormatException (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+DataExchange::BadFormatException::BadFormatException (const String& details, const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     : inherited (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
     , fLineNumber_ (lineNumber)
     , fColumnNumber_ (columnNumber)
@@ -115,9 +119,12 @@ void    _NoReturn_  Execution::DoThrow (const DataExchange::BadFormatException& 
     Memory::Optional<unsigned int>  colNumber;
     Memory::Optional<uint64_t>      fileOffset;
     e2Throw.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
-    int useLineNum  =   lineNum.IsMissing () ? -1 : *lineNum;
-    int useColNum   =   colNumber.IsMissing () ? -1 : *colNumber;
-    DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), useLineNum, useColNum);
+    if (lineNum.IsPresent () or colNumber.IsPresent  ()) {
+        DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), (int)lineNum.Value (-1), (int)colNumber.Value (-1));
+    }
+    else {
+        DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s)", e2Throw.GetDetails ().LimitLength (50).c_str ());
+    }
 #endif
     throw e2Throw;
 }
