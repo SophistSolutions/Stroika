@@ -527,6 +527,17 @@ namespace   {
             d += chrono::milliseconds (30);
             VerifyTestResult (Math::NearlyEquals (d.As<Time::DurationSecondsType> (), .130));
         }
+        {
+            VerifyTestResult (Duration (L"PT1.4S").PrettyPrintAge () == L"now");
+            VerifyTestResult (Duration (L"-PT9M").PrettyPrintAge () == L"now");
+            VerifyTestResult (Duration (L"-PT20M").PrettyPrintAge () == L"20 minutes ago");
+            VerifyTestResult (Duration (L"PT20M").PrettyPrintAge () == L"20 minutes from now");
+            VerifyTestResult (Duration (L"PT4H").PrettyPrintAge () == L"4 hours from now");
+            VerifyTestResult (Duration (L"PT4.4H").PrettyPrintAge () == L"4 hours from now");
+            VerifyTestResult (Duration (L"P2Y").PrettyPrintAge () == L"2 years from now");
+            VerifyTestResult (Duration (L"P2.4Y").PrettyPrintAge () == L"2 years from now");
+            VerifyTestResult (Duration (L"P2.6Y").PrettyPrintAge () == L"3 years from now");
+        }
     }
 
 }

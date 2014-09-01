@@ -192,6 +192,8 @@ namespace   Stroika {
                         Characters::String fYears;
                         Characters::String fMonth;
                         Characters::String fMonths;
+                        Characters::String fWeek;
+                        Characters::String fWeeks;
                         Characters::String fDay;
                         Characters::String fDays;
                         Characters::String fHour;
@@ -210,6 +212,26 @@ namespace   Stroika {
                 };
                 static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
                 nonvirtual  Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+
+            public:
+                struct  AgePrettyPrintInfo {
+                    struct  Labels  {
+                        Characters::String fNow;
+                        Characters::String fAgo;
+                        Characters::String fFromNow;        // could use 'until' or 'from now'
+                    }   fLabels;
+
+                    double  fNowThreshold;
+                };
+                static  const   AgePrettyPrintInfo kDefaultAgePrettyPrintInfo;
+                /**
+                 *  Inspired by useful JQuery plugin http://ksylvest.github.io/jquery-age/
+                 *
+                 *  Technically, this isn't an 'age' but just a 'now-centric' pretty printing of durations.
+                 *
+                 *  Just a DRAFT impl for now ... --LGP 2014-09-01 -- @todo FIX/revise/test
+                 */
+                nonvirtual  Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
                 /**

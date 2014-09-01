@@ -79,6 +79,7 @@ const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
     {
         String_Constant (L"year"), String_Constant (L"years"),
         String_Constant (L"month"), String_Constant (L"months"),
+        String_Constant (L"week"), String_Constant (L"weeks"),
         String_Constant (L"day"), String_Constant (L"days"),
         String_Constant (L"hour"), String_Constant (L"hours"),
         String_Constant (L"minute"), String_Constant (L"minutes"),
@@ -87,6 +88,15 @@ const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
         String_Constant (L"µs"), String_Constant (L"µs"),
         String_Constant (L"ns"), String_Constant (L"ns")
     }
+};
+
+const   Duration::AgePrettyPrintInfo   Duration::kDefaultAgePrettyPrintInfo = {
+    {
+        String_Constant (L"now"),
+        String_Constant (L"ago"),
+        String_Constant (L"from now"),
+    },
+    12 * 60 /*fNowThreshold*/
 };
 
 Duration::Duration ()
@@ -374,6 +384,44 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         result = String_Constant (L"-") + result;
     }
     return result;
+}
+
+Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
+{
+    InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
+    bool    isNeg       =   (t < 0);
+    InternalNumericFormatType_  absT        =   isNeg ? -t : t;
+    if (absT < agePrettyPrintInfo.fNowThreshold) {
+        return agePrettyPrintInfo.fLabels.fNow;
+    }
+
+    Characters::String  suffix  =   isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
+
+    InternalNumericFormatType_  kHoursThreshold =       55 * kSecondsPerMinute;
+    if (absT < kHoursThreshold) {
+        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinutes.c_str (), suffix.c_str ());
+    }
+
+    InternalNumericFormatType_  kDaysThreshold_ =       23 * kSecondsPerHour;
+    if (absT < kDaysThreshold_) {
+        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHours.c_str (), suffix.c_str ());
+    }
+
+    InternalNumericFormatType_  kWeeksThreshold_    =       14 * kSecondsPerDay;
+    if (absT < kWeeksThreshold_) {
+        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDays.c_str (), suffix.c_str ());
+    }
+
+    InternalNumericFormatType_  kMonthsThreshold_   =       59 * kSecondsPerDay;
+    if (absT < kWeeksThreshold_) {
+        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeeks.c_str (), suffix.c_str ());
+    }
+
+    InternalNumericFormatType_  kYearsThreshold_    =       11 * kSecondsPerMonth;
+    if (absT < kYearsThreshold_) {
+        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerMonth)), prettyPrintInfo.fLabels.fMonths.c_str (), suffix.c_str ());
+    }
+    return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYears.c_str (), suffix.c_str ());
 }
 
 Duration    Duration::operator- () const
