@@ -298,8 +298,8 @@ namespace   Stroika {
                         : inherited ()
                         , fMutex_ ()
             {
-                unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
-                unique_lock<std::mutex> l2 (from.fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l2 (from.fMutex_, std::defer_lock);
                 lock (l1, l2);
                 *static_cast<Memory::Optional<T, TRAITS>*> (this) = *static_cast<const Memory::Optional<T, TRAITS>*> (&from);
             }
@@ -308,8 +308,8 @@ namespace   Stroika {
                         : inherited ()
                         , fMutex_ ()
             {
-                unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
-                unique_lock<std::mutex> l2 (from.fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l2 (from.fMutex_, std::defer_lock);
                 lock (l1, l2);
                 *static_cast<Memory::Optional<T, TRAITS>*> (this) = move (*static_cast<const Memory::Optional<T, TRAITS>*> (&from));
             }
@@ -352,8 +352,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs)
             {
-                unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
-                unique_lock<std::mutex> l2 (rhs.fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
                 inherited::operator= (rhs);
                 return *this;
@@ -513,8 +513,8 @@ namespace   Stroika {
                 if (this == &rhs) {
                     return 0;   // avoid double mutex lock
                 }
-                unique_lock<std::mutex> l1 (fMutex_, std::defer_lock);
-                unique_lock<std::mutex> l2 (rhs.fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
+                unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
                 return inherited::Compare (*static_cast<inherited*> (&rhs));
             }
