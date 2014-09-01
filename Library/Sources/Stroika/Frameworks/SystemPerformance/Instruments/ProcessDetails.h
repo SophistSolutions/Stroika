@@ -34,26 +34,43 @@ namespace   Stroika {
                     using   Foundation::DataExchange::ObjectVariantMapper;
                     using   Foundation::Execution::pid_t;
                     using   Foundation::Memory::Optional;
+                    using   Foundation::Time::DurationSecondsType;
+
+
+                    using   MemorySizeType = uint64_t;
 
 
                     /*
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
                     struct  ProcessType {
+                        Optional<pid_t>                     fParentProcessID;
+                        Optional<String>                    fUserName;
                         Optional<String>                    fCommandLine;
                         Optional<String>                    fCurrentWorkingDirectory;
                         Optional<Mapping<String, String>>   fEnvironmentVariables;
                         Optional<String>                    fEXEPath;
                         Optional<String>                    fRoot;  // chroot
                         Optional<Time::DateTime>            fProcessStartedAt;
-                        enum class RunStatus {
-                            eRun,
-                            eSuspended,
-                            eIdle,
-                            // See linux docs - these above are guesses
+
+                        /*
+                         *  Based on
+                         *      http://linux.die.net/man/5/proc (search for /proc/[pid]/stat)
+                         *          One character from the string "RSDZTW" where R is running, S is sleeping in
+                         *          an interruptible wait, D is waiting in uninterruptible disk sleep, Z is zombie,
+                         *          T is traced or stopped (on a signal), and W is paging.
+                         */
+                        enum    class   RunStatus {
+                            eRunning,
+                            eSleeping,
+                            eWaitingOnDisk,
+                            eWaitingOnPaging,
+                            eSuspended,         //  T is traced or stopped (on a signal)
                         };
-                        Optional<Time::DurationSecondsType>   fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
-                        //String  fStatus;            /// @todo wrong - fix details of this
+                        Optional<RunStatus>                 fRunStatus;
+                        Optional<MemorySizeType>            fVirtualMemorySize;
+                        Optional<MemorySizeType>            fResidentMemorySize;
+                        Optional<Time::DurationSecondsType> fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
                         // could add subsqeunce of 'threads' - tasks
                     };
 

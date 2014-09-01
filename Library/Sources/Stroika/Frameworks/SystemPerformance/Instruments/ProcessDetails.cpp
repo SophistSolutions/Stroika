@@ -139,7 +139,6 @@ namespace {
     struct StatFileInfo_ {
         //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
 
-
         // trim down and find better source - but for now use 'procps-3.2.8\proc\'
         int ppid;
         char state;     // stat,status     single-char code for process state (S=sleeping)
