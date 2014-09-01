@@ -210,7 +210,11 @@ namespace   Stroika {
                         Characters::String fNanoSeconds;
                     }   fLabels;
                 };
+
+            public:
                 static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
+
+            public:
                 nonvirtual  Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
@@ -223,7 +227,11 @@ namespace   Stroika {
 
                     double  fNowThreshold;
                 };
+
+            public:
                 static  const   AgePrettyPrintInfo kDefaultAgePrettyPrintInfo;
+
+            public:
                 /**
                  *  Inspired by useful JQuery plugin http://ksylvest.github.io/jquery-age/
                  *
