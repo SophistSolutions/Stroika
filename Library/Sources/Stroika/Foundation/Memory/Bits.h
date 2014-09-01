@@ -13,8 +13,7 @@
 
 
 /**
- * TODO:
- *      @todo   quick draft of bitfield helpers
+ *  \file
  */
 
 
@@ -28,16 +27,16 @@ namespace   Stroika {
              *
              */
             template    <typename INT_TYPE = unsigned int>
-            INT_TYPE    Bit (unsigned int bitNumber);
+            constexpr   INT_TYPE    Bit (unsigned int bitNumber);
             template    <typename INT_TYPE, typename... BIT_ARGS>
-            INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args);
+            constexpr   INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args);
 
 
             /**
              *
              */
             template    <typename INT_TYPE>
-            INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset);
+            constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset);
 
 
         }

@@ -25,13 +25,13 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename INT_TYPE>
-            inline  INT_TYPE    Bit (unsigned int bitNumber)
+            inline  constexpr   INT_TYPE    Bit (unsigned int bitNumber)
             {
                 Require (bitNumber < CHAR_BIT * sizeof (INT_TYPE));
-                return (1 << bitNumber);
+                return (static_cast<INT_TYPE> (1) << bitNumber);
             }
             template    <typename INT_TYPE, typename... BIT_ARGS>
-            inline  INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args)
+            inline  constexpr   INT_TYPE    Bit (unsigned int bitNumber, const BIT_ARGS& ... args)
             {
                 return Bit<INT_TYPE> (bitNumber) | Bit<INT_TYPE> (args...);
             }
@@ -43,7 +43,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename INT_TYPE>
-            inline  INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
+            inline  constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
             {
                 Require ((nBits + offset) < CHAR_BIT * sizeof (INT_TYPE));
                 return ((bitField) >> (offset)) & ((1 << (nBits)) - 1);
