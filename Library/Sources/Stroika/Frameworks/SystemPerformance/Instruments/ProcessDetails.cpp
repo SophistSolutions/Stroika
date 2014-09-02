@@ -7,6 +7,7 @@
 #include    <sys/sysinfo.h>
 #endif
 
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Characters/StringBuilder.h"
@@ -21,6 +22,7 @@
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
+#include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
 #include    "../CommonMeasurementTypes.h"
 
@@ -88,6 +90,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<Optional<pid_t>> ();
+        mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<unsigned int>> ();
         mapper.AddCommonType<Optional<MemorySizeType>> ();
         mapper.AddCommonType<Optional<Time::DateTime>> ();
@@ -109,6 +112,8 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fResidentMemorySize), String_Constant (L"Resident-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalTimeUsed), String_Constant (L"Total-Time-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadBytes), String_Constant (L"IO-Total-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteBytes), String_Constant (L"IO-Total-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -307,6 +312,38 @@ namespace {
         return result;
     }
 
+    // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+    // search for 'cat /proc/3828/io'
+    struct proc_io_data_ {
+        unsigned long read_bytes;
+        unsigned long write_bytes;
+    };
+    proc_io_data_   Readproc_io_data_ (const String& fullPath)
+    {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_io_data_"));
+        DbgTrace (L"fullPath=%s", fullPath.c_str ());
+#endif
+        proc_io_data_    result {};
+        ifstream r;
+        Streams::iostream::OpenInputFileStream (&r, fullPath);
+        while (r) {
+            char buf[1024];
+            buf [0] = '\0';
+            if (r.getline (buf, sizeof(buf))) {
+                const char kReadLbl_ [] = "read_bytes:";
+                const char kWriteLbl_ [] = "write_bytes:";
+                if (strncmp (buf, kReadLbl_, strlen(kReadLbl_)) == 0) {
+                    result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + strlen(kReadLbl_));
+                }
+                else if (strncmp (buf, kWriteLbl_, strlen(kWriteLbl_)) == 0) {
+                    result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + strlen(kWriteLbl_));
+                }
+            }
+        }
+        return result;
+    }
+
     ProcessMapType  ExtractFromProcFS_ ()
     {
         /// Most status - like time - come from http://linux.die.net/man/5/proc
@@ -335,8 +372,9 @@ namespace {
                 IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
                 IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
 
+                static  const   double  kClockTick_ = sysconf (_SC_CLK_TCK);
+
                 try {
-                    static  const   double  kClockTick_ = sysconf (_SC_CLK_TCK);
                     StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
 
                     //One character from the string "RSDZTW" where R is running,
@@ -365,7 +403,7 @@ namespace {
 
                     static  const   size_t  kPageSizeInBytes = sysconf (_SC_PAGESIZE);
 
-                    const time_t    kSecsSinceBoot_ = [] () {
+                    static  const time_t    kSecsSinceBoot_ = [] () {
                         struct sysinfo info;
                         sysinfo(&info);
                         return time(NULL) - info.uptime;
@@ -391,6 +429,15 @@ namespace {
                 }
                 catch (...) {
                 }
+
+                try {
+                    proc_io_data_   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
+                    processDetails.fIOTotalReadBytes = stats.read_bytes;
+                    processDetails.fIOTotalWriteBytes = stats.write_bytes;
+                }
+                catch (...) {
+                }
+
                 results.Add (pid, processDetails);
             }
         }

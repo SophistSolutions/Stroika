@@ -75,13 +75,31 @@ namespace   Stroika {
                         Optional<RunStatus>                 fRunStatus;
                         Optional<MemorySizeType>            fVirtualMemorySize;
 
-                        // Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
-                        // pages which count toward text, data, or stack space. This does not include pages which have not
-                        // been demand-loaded in, or which are swapped out.
+                        /**
+                         * Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
+                         * pages which count toward text, data, or stack space. This does not include pages which have not
+                         * been demand-loaded in, or which are swapped out.
+                         *
+                         * This  does NOT include 'shared' memory (e.g. for mapped .so files)
+                         *
+                         *  @todo   This is similar to the Windows concept of PrivateBytes (but not exactly - maybe - review)
+                         */
                         Optional<MemorySizeType>            fResidentMemorySize;
 
                         Optional<DurationSecondsType>       fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
                         Optional<unsigned int>              fThreadCount;
+
+                        /**
+                         *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+                         *  search for 'read_bytes'
+                         */
+                        Optional<double>        fIOTotalReadBytes;
+
+                        /**
+                         *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+                         *  search for 'write_bytes'
+                         */
+                        Optional<double>        fIOTotalWriteBytes;
                     };
 
 
