@@ -55,6 +55,21 @@ const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = Me
 
 
 
+const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus) = {
+    { ProcessType::RunStatus::eRunning, L"Running" },
+    { ProcessType::RunStatus::eSleeping, L"Sleeping" },
+    { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+    { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+    { ProcessType::RunStatus::eZombie, L"Zombie" },
+    { ProcessType::RunStatus::eSuspended, L"Suspended" },
+};
+
+
+
+
+
+
+
 /*
  ********************************************************************************
  ************** Instruments::ProcessDetails::GetObjectVariantMapper *************
@@ -65,20 +80,28 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (ProcessType::Stroika_Enum_Names(RunStatus)));
         mapper.AddCommonType<Optional<String>> ();
+        mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<Optional<Time::DateTime>> ();
         mapper.AddCommonType<Optional<Time::DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fParentProcessID), String_Constant (L"Parent-Process-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fUserName), String_Constant (L"User-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCommandLine), String_Constant (L"Command-Line"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCurrentWorkingDirectory), String_Constant (L"Current-Working-Directory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEnvironmentVariables), String_Constant (L"Environment-Variables"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fEXEPath), String_Constant (L"EXE-Path"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRoot), String_Constant (L"Root"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessStartedAt), String_Constant (L"Process-Started-At"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRunStatus), String_Constant (L"Run-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fVirtualMemorySize), String_Constant (L"Virtual-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fResidentMemorySize), String_Constant (L"Resident-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalTimeUsed), String_Constant (L"Total-Time-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -136,17 +159,17 @@ namespace {
         }
         return results;
     }
-    struct StatFileInfo_ {
+    struct  StatFileInfo_ {
         //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
 
         // trim down and find better source - but for now use 'procps-3.2.8\proc\'
-        int ppid;
-        char state;     // stat,status     single-char code for process state (S=sleeping)
-        unsigned long long    utime;      // stat            user-mode CPU time accumulated by process
-        unsigned long long stime;     // stat            kernel-mode CPU time accumulated by process
-        unsigned long long    cutime;     // stat            cumulative utime of process and reaped children
-        unsigned long long cstime;        // stat            cumulative stime of process and reaped children
-        unsigned long long start_time;    // stat            start time of process -- seconds since 1-1-70
+        int                 ppid;
+        char                state;      // stat,status     single-char code for process state (S=sleeping)
+        unsigned long long  utime;      // stat            user-mode CPU time accumulated by process
+        unsigned long long  stime;      // stat            kernel-mode CPU time accumulated by process
+        unsigned long long  cutime;     // stat            cumulative utime of process and reaped children
+        unsigned long long  cstime;     // stat            cumulative stime of process and reaped children
+        unsigned long long  start_time; // stat            start time of process -- seconds since 1-1-70
 
         long
         priority,   // stat            kernel scheduling priority
@@ -161,6 +184,7 @@ namespace {
         lrs,        // statm           shared-lib resident set size
         drs,        // statm           data resident set size
         dt;     // statm           dirty pages
+
         unsigned long
         vm_size,        // status          same as vsize in kb
         vm_lock,        // status          locked pages in kb
@@ -219,7 +243,7 @@ namespace {
 #endif
             const char* tmp = strrchr(S, ')');
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("S = %x", S);
+            DbgTrace ("S(tmp) = %x", tmp);
 #endif
             S = tmp + 2;                 // skip ") "
         }
@@ -266,6 +290,12 @@ namespace {
 #endif
                         );
 
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("result.start_time=%lld", result.start_time);
+        DbgTrace ("result.vsize=%ld", result.vsize);
+        DbgTrace ("result.rss=%ld", result.rss);
+        DbgTrace ("result.utime=%lld", result.utime);
+#endif
 
         return result;
     }
@@ -299,10 +329,58 @@ namespace {
                 IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
 
                 try {
-                    static  const   double  kClockTick_ = sysconf(_SC_CLK_TCK);
+                    static  const   double  kClockTick_ = sysconf (_SC_CLK_TCK);
                     StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
-                    processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time));
-                    processDetails.fTotalTimeUsed = double (stats.utime) + double (stats.stime ) / kClockTick_;
+
+                    //One character from the string "RSDZTW" where R is running,
+                    //S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
+                    // Z is zombie, T is traced or stopped (on a signal), and W is paging.
+                    switch (stats.state) {
+                        case 'R':
+                            fRunStatus = ProcessType::RunStatus::eRunning;
+                            break;
+                        case 'S':
+                            fRunStatus = ProcessType::RunStatus::eSleeping;
+                            break;
+                        case 'D':
+                            fRunStatus = ProcessType::RunStatus::eWaitingOnDisk;
+                            break;
+                        case 'Z':
+                            fRunStatus = ProcessType::RunStatus::eZombie;
+                            break;
+                        case 'T':
+                            fRunStatus = ProcessType::RunStatus::eSuspended;
+                            break;
+                        case 'W':
+                            fRunStatus = ProcessType::RunStatus::eWaitingOnPaging;
+                            break;
+                    }
+
+                    static  const   size_t  kPageSizeInBytes = sysconf (_SC_PAGESIZE);
+
+                    const time_t    kSecsSinceBoot_ = [] () {
+                        struct sysinfo info;
+                        sysinfo(&info);
+                        return time(NULL) - info.uptime;
+                    } ();
+                    //starttime %llu (was %lu before Linux 2.6)
+                    //(22) The time the process started after system boot. In kernels before Linux 2.6,
+                    // this value was expressed in jiffies. Since Linux 2.6,
+                    // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+                    processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
+
+                    processDetails.fTotalTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                    if (stats.nlwp != 0) {
+                        processDetails.fThreadCount = stats.nlwp;
+                    }
+                    processDetails.fParentProcessID = stats.ppid;
+                    processDetails.fVirtualMemorySize = stats.vsize;
+                    processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes;
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", (*processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
+                    DbgTrace (L"loaded processDetails.fTotalTimeUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalTimeUsed), stats.utime , stats.stime);
+#endif
                 }
                 catch (...) {
                 }

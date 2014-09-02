@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/Configuration/Enumeration.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Execution/Process.h"
@@ -65,13 +66,22 @@ namespace   Stroika {
                             eSleeping,
                             eWaitingOnDisk,
                             eWaitingOnPaging,
+                            eZombie,
                             eSuspended,         //  T is traced or stopped (on a signal)
+                            Stroika_Define_Enum_Bounds(eRunning, eSuspended)
                         };
+                        static  const Configuration::EnumNames<RunStatus>   Stroika_Enum_Names(RunStatus);
+
                         Optional<RunStatus>                 fRunStatus;
                         Optional<MemorySizeType>            fVirtualMemorySize;
+
+                        // Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
+                        // pages which count toward text, data, or stack space. This does not include pages which have not
+                        // been demand-loaded in, or which are swapped out.
                         Optional<MemorySizeType>            fResidentMemorySize;
-                        Optional<Time::DurationSecondsType> fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
-                        // could add subsqeunce of 'threads' - tasks
+
+                        Optional<DurationSecondsType>       fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
+                        Optional<unsigned int>              fThreadCount;
                     };
 
 
