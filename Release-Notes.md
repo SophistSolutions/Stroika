@@ -23,10 +23,20 @@ History
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a41">v2.0a41x</a><br/>2014-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a41">v2.0a41</a><br/>2014-09-02</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Partial prototype of major new Synchonized<> template design
+		<ul>
+			<li>Containers::Optional deprecated</li>
+			<li>Decent Sychonized<Memory::Optional<>> impl to replace it</li>
+			<li>Placeholder so I can experiement with usage for Synchonized<Sequence<>>, Synchonized<String>, etc... most other containers</li>
+		</ul>
+	</li>
+	<li>make_unique_lock, and qCompilerAndStdLib_make_unique_lock_IsSlow MACRO_LOCK_GUARD_CONTEXT</li>
+	<li>Duration::PrettyPrintAge</li>
+	<li>constexpr usage in Memory::Bits code</li>
+	<li>Many improvements to POSIX procfs ProcessDetails SystemMonitor module. Now does a usable job of capturing process statistics (for analytiqa).</li>
 </ul>
 </td>
 </tr>
