@@ -3,6 +3,10 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#if     qPlatform_POSIX
+#include    <sys/sysinfo.h>
+#endif
+
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Characters/StringBuilder.h"
@@ -83,6 +87,9 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (ProcessType::Stroika_Enum_Names(RunStatus)));
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
+        mapper.AddCommonType<Optional<pid_t>> ();
+        mapper.AddCommonType<Optional<unsigned int>> ();
+        mapper.AddCommonType<Optional<MemorySizeType>> ();
         mapper.AddCommonType<Optional<Time::DateTime>> ();
         mapper.AddCommonType<Optional<Time::DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
@@ -337,22 +344,22 @@ namespace {
                     // Z is zombie, T is traced or stopped (on a signal), and W is paging.
                     switch (stats.state) {
                         case 'R':
-                            fRunStatus = ProcessType::RunStatus::eRunning;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eRunning;
                             break;
                         case 'S':
-                            fRunStatus = ProcessType::RunStatus::eSleeping;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eSleeping;
                             break;
                         case 'D':
-                            fRunStatus = ProcessType::RunStatus::eWaitingOnDisk;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eWaitingOnDisk;
                             break;
                         case 'Z':
-                            fRunStatus = ProcessType::RunStatus::eZombie;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eZombie;
                             break;
                         case 'T':
-                            fRunStatus = ProcessType::RunStatus::eSuspended;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eSuspended;
                             break;
                         case 'W':
-                            fRunStatus = ProcessType::RunStatus::eWaitingOnPaging;
+                            processDetails.fRunStatus = ProcessType::RunStatus::eWaitingOnPaging;
                             break;
                     }
 
