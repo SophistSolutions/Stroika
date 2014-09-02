@@ -16,6 +16,9 @@
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Execution/ThreadAbortException.h"
+#if     qPlatform_POSIX
+#include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
+#endif
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "../../../Foundation/IO/FileSystem/FileSystem.h"
@@ -344,6 +347,43 @@ namespace {
         return result;
     }
 
+#if     !qPlatform_POSIX
+    using uid_t = int;
+#endif
+
+    // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+    // search for 'cat /proc/PID/status'
+    struct proc_status_data_ {
+        uid_t ruid;
+    };
+    proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
+    {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_proc_status_data_"));
+        DbgTrace (L"fullPath=%s", fullPath.c_str ());
+#endif
+        proc_status_data_    result {};
+        ifstream r;
+        Streams::iostream::OpenInputFileStream (&r, fullPath);
+        while (r) {
+            char buf[1024];
+            buf [0] = '\0';
+            if (r.getline (buf, sizeof(buf))) {
+                const char kUidLbl [] = "Uid:";
+                if (strncmp (buf, kUidLbl, strlen(kUidLbl)) == 0) {
+                    char* S = buf + strlen(kUidLbl);
+                    int ruid = strtol(S, &S, 10);
+                    int euid = strtol(S, &S, 10);
+                    int suid = strtol(S, &S, 10);
+                    int fuid = strtol(S, &S, 10);
+                    result.ruid = ruid;
+                }
+            }
+        }
+        return result;
+    }
+
+
     ProcessMapType  ExtractFromProcFS_ ()
     {
         /// Most status - like time - come from http://linux.die.net/man/5/proc
@@ -429,6 +469,16 @@ namespace {
                 }
                 catch (...) {
                 }
+
+
+#if     qPlatform_POSIX
+                try {
+                    proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
+                    processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
+                }
+                catch (...) {
+                }
+#endif
 
                 try {
                     proc_io_data_   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
