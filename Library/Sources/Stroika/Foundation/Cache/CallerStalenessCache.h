@@ -83,7 +83,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Usually one will use this as
+                 *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+                 *
+                 *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
+                 *  but just see if a value is present.
                  */
+                nonvirtual  Memory::Optional<VALUE>   Lookup (KEY k, TimeStampType staleIfOlderThan);
                 nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
 
             public:

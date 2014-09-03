@@ -61,6 +61,15 @@ namespace   Stroika {
                 fMap_.Add (k, myVal_ (std::move (v), GetCurrentTimestamp ()));
             }
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
+            Memory::Optional<VALUE>   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan)
+            {
+                Memory::Optional<myVal_> o = fMap_.Lookup (k);
+                if (o.IsMissing () or o->fDataCapturedAt < staleIfOlderThan) {
+                    return Memory::Optional<VALUE> ();
+                }
+                return o->fValue;
+            }
+            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
             VALUE   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller)
             {
                 Memory::Optional<myVal_> o = fMap_.Lookup (k);
