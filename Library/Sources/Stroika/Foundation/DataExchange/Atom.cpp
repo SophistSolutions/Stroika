@@ -7,6 +7,7 @@
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
 #include    "../Execution/Common.h"
+#include    "../Execution/SpinLock.h"
 
 #include    "Atom.h"
 
@@ -17,9 +18,11 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
+// @todo Consider using Synchonized<> for Sequence<>
+
 namespace {
     // VERY CRUDDY (but close to what we use in HF) impl - to get started...
-    mutex   sCritSec_;  // lock needed here to keep map and sequence in sync
+    Execution::SpinLock   sCritSec_;  // lock needed here to keep map and sequence in sync
     Mapping<String, AtomManager_Default::AtomInternalType>*   sMap_;
     Sequence<String>*                                         sSeq_;
 }
@@ -61,18 +64,21 @@ DataExchange::Private_::AtomModuleData::~AtomModuleData ()
  */
 AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const String& s)
 {
+    AtomManager_Default::AtomInternalType   v;
+    {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-    MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
+        MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
 #else
-    auto    critSec { Execution::make_unique_lock (sCritSec_) };
+        auto    critSec { Execution::make_unique_lock (sCritSec_) };
 #endif
-    auto i = sMap_->Lookup (s);
-    if (i.IsPresent ()) {
-        return *i;
+        auto i = sMap_->Lookup (s);
+        if (i.IsPresent ()) {
+            return *i;
+        }
+        v = sSeq_->GetLength ();
+        sSeq_->Append (s);
+        sMap_->Add (s, v);
     }
-    AtomManager_Default::AtomInternalType v = sSeq_->GetLength ();
-    sSeq_->Append (s);
-    sMap_->Add (s, v);
     Ensure (Extract (v) == s);
     return v;
 }
@@ -80,5 +86,10 @@ AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const Strin
 String  AtomManager_Default::Extract (AtomInternalType atomI)
 {
     Require (atomI != kEmpty);
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+    MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
+#else
+    auto    critSec { Execution::make_unique_lock (sCritSec_) };
+#endif
     return (*sSeq_)[atomI];
 }
