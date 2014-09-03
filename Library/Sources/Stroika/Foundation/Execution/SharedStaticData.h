@@ -9,6 +9,7 @@
 #include    <mutex>
 
 #include    "../Configuration/Common.h"
+#include    "SpinLock.h"
 
 
 /**
@@ -94,7 +95,7 @@ namespace   Stroika {
                 nonvirtual  T*  Get ();
 
             private:
-                static  mutex           sMutex_;    // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time
+                static  SpinLock        sMutex_;    // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time
                 static  unsigned int    sCountUses_;
                 static T*               sOnceObj_;
             };

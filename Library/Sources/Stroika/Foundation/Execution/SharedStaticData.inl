@@ -27,7 +27,7 @@ namespace   Stroika {
             T*  SharedStaticData<T>::sOnceObj_;
 
             template    <typename T>
-            std::mutex  SharedStaticData<T>::sMutex_;
+            SpinLock    SharedStaticData<T>::sMutex_;
 
             template    <typename T>
             unsigned int    SharedStaticData<T>::sCountUses_ = 0;
