@@ -13,6 +13,7 @@
 #include    "Common.h"
 #include    "Finally.h"
 #include    "ModuleInit.h"
+#include    "SpinLock.h"
 
 
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
@@ -21,7 +22,7 @@ namespace   Stroika {
         namespace   Execution {
             namespace Private_ {
                 struct  WaitableEvent_ModuleInit_ {
-                    mutex     fExtraWaitableEventsMutex_;
+                    SpinLock    fExtraWaitableEventsMutex_;
                 };
             }
         }
