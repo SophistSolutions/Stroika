@@ -31,10 +31,14 @@ namespace   Stroika {
                 fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
 #endif
             }
+            inline  bool    SpinLock::try_lock ()
+            {
+                return not fLock_.test_and_set (std::memory_order_acquire);
+            }
             inline  void    SpinLock::lock ()
             {
                 // Acquire lock. If / when fails, yield processor to avoid too much busy waiting.
-                while (fLock_.test_and_set (std::memory_order_acquire)) {
+                while (not try_lock ()) {
                     Yield_ ();
                 }
             }
