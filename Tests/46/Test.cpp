@@ -1182,14 +1182,28 @@ namespace   {
 int     main (int argc, const char* argv[])
 {
     // NOTE: run with --show or look for output in PERF-OUT.txt
-    Sequence<String>  cmdLine   =   ParseCommandLine (argc, argv);
-    sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
+    try {
+        Sequence<String>  cmdLine   =   ParseCommandLine (argc, argv);
+        sShowOutput_ = MatchesCommandLineArgument (cmdLine, L"show");
 
-    {
-        Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
-        if (arg.IsPresent ()) {
-            sTimeMultiplier_ = String2Float<double> (*arg);
+        {
+            Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+            if (arg.IsPresent ()) {
+                sTimeMultiplier_ = String2Float<double> (*arg);
+            }
         }
+    }
+    catch (const std::exception& e) {
+        cerr << "Usage: '" << e.what () << endl;
+        exit (EXIT_FAILURE);
+    }
+    catch (const Execution::StringException& e) {
+        cerr << "Usage: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
+        exit (EXIT_FAILURE);
+    }
+    catch (...) {
+        cerr << "Usage:" << endl;
+        exit (EXIT_FAILURE);
     }
 
     Stroika::TestHarness::Setup ();
