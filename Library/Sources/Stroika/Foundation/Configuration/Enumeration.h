@@ -41,7 +41,7 @@ namespace   Stroika {
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              */
             template    <typename   ENUM>
-            ENUM    Inc (ENUM e);
+            constexpr   ENUM    Inc (ENUM e);
 
 
             /**
@@ -55,7 +55,7 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
-            typename underlying_type<ENUM>::type    ToInt (ENUM e);
+            constexpr   typename underlying_type<ENUM>::type    ToInt (ENUM e);
 
 
             /**
@@ -67,7 +67,7 @@ namespace   Stroika {
              *  This function is handy since class enum's cannot be automatically promoted to integers.
              */
             template    <typename   ENUM>
-            ENUM    ToEnum (typename underlying_type<ENUM>::type e);
+            constexpr   ENUM    ToEnum (typename underlying_type<ENUM>::type e);
 
 
             /**
@@ -79,7 +79,7 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
-            typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
+            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
 
 
             /**
