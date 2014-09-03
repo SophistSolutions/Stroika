@@ -19,6 +19,17 @@ History
 
 
   
+  
+   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a43">v2.0a43x</a><br/>2014-09-??</td>
+<td>
+<ul>
+	<li>TBD</li>
+</ul>
+</td>
+</tr>
+
 
 
   
@@ -26,7 +37,7 @@ History
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a41">v2.0a42</a><br/>2014-09-03</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a42">v2.0a42</a><br/>2014-09-03</td>
 <td>
 <ul>
 	<li>Small fixes for portability of last release (#includes)</li>
