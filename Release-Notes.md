@@ -26,10 +26,14 @@ History
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a41">v2.0a42x</a><br/>2014-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a41">v2.0a42</a><br/>2014-09-03</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Small fixes for portability of last release (#includes)</li>
+	<li>SpinLock::try_lock() support, and use SpinLock in several more places (since faster)</li>
+	<li>Added CallerStalenessCache<>::Lookup() overload</li>
+	<li>constexpr functions in Configuration::Enumeration</li>
+	<li>Still no significant testing (excepted tested no perf regressions from spinlock/etc changes)</li>
 </ul>
 </td>
 </tr>
