@@ -361,7 +361,7 @@ void    URL::SetProtocol (const SchemeType& protocol)
 
 bool    URL::IsSecure () const
 {
-    // should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
+    // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
     return fProtocol_ == String_Constant (L"https") or fProtocol_ == String_Constant (L"ftps") or fProtocol_ == String_Constant (L"ldaps");
 }
 

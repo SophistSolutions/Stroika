@@ -186,7 +186,7 @@ namespace   Stroika {
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,
-             *      so ??? think through - what this implies- but probably soemthing about not
+             *      so ??? think through - what this implies- but probably something about not
              *      threading stuff and ???
              *
              *  *Design Note*:

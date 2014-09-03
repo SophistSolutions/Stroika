@@ -75,7 +75,7 @@
  *                  features.
  *
  *                  But I THINK it would be possible to define the TypeMappingDetails object to take EITHER
- *                  soemthing in the currnet form, or something using "T" - and map between them. And then
+ *                  something in the currnet form, or something using "T" - and map between them. And then
  *                  users of a particular type (e.g. Range()) - could avoid calling the default ctor, and just
  *                  explicitly call the right CTOR.
  *

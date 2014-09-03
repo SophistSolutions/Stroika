@@ -193,7 +193,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     // TODO:
     //      We walk the list of existing threads and ask each one if its (indirected - running task) is the given one and abort that task.
     //      But that requires we can RESTART an ABORTED thread (or that we remove it from the list - maybe thats better). THat COULD be OK
-    //      actually since it involves on API changes and makes sense. The only slight issue is a peformace one but probably for soemthing
+    //      actually since it involves on API changes and makes sense. The only slight issue is a peformace one but probably for something
     //      quite rare.
     //
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....

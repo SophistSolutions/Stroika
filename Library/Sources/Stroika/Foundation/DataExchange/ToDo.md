@@ -12,5 +12,5 @@
 	changes, and then re-use the context to rewrite the file.
 
 	Comments MIGHT be marked as Section/Item/Offset-From-Item (or maybe using something like xpath or something
-	like Stroika markers?). Not sure. But come up with soemthing so you can preserve comemnts when reading/writing these
+	like Stroika markers?). Not sure. But come up with something so you can preserve comemnts when reading/writing these
 	files!

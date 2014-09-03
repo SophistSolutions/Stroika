@@ -42,7 +42,7 @@ namespace   Stroika {
             /**
              *
              *  The idea behind this cache to to track when something is added, and that the lookup function can avoid
-             *  a costly call to compute soemthing if its been recently enough added.
+             *  a costly call to compute something if its been recently enough added.
              *
              *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
              *  across that bus. But the different components have different tolerance for staleness.
