@@ -71,7 +71,9 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
 #if     qSupportPTONAndPTON_
                     Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.c_str (), &fV4_));
 #elif   qPlatform_Windows
+                    DISABLE_COMPILER_MSC_WARNING_START(4996)    // msft doesnt have this on old platforms but still warns!
                     fV4_.s_addr = ::inet_addr (s.c_str ());
+                    DISABLE_COMPILER_MSC_WARNING_END(4996)
 #else
                     AssertNotImplemented ();
 #endif
@@ -119,7 +121,9 @@ namespace   Stroika {
                                 const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
 #else
+                                DISABLE_COMPILER_MSC_WARNING_START(4996)    // msft doesnt have this on old platforms but still warns!
                                 return String::FromUTF8 (::inet_ntoa (fV4_));
+                                DISABLE_COMPILER_MSC_WARNING_END(4996)
 #endif
                             }
                             break;
