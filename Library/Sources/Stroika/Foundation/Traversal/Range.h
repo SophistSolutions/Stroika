@@ -258,6 +258,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Returns true iff there are any points shared in common between this range and the rhs range.
+                 */
+                nonvirtual  bool Intersects (const Range<T, TRAITS>& rhs) const;
+
+            public:
+                /**
                  */
                 nonvirtual  Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
 

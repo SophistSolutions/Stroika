@@ -160,6 +160,26 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
+            bool    Range<T, TRAITS>::Intersects (const Range<T, TRAITS>& rhs) const
+            {
+                if (empty () or rhs.empty ()) {
+                    return false;
+                }
+                T   l   =   max (fBegin_, rhs.fBegin_);
+                T   r   =   min (fEnd_, rhs.fEnd_);
+                if (l < r) {
+                    return true;
+                }
+                else if (l == r) {
+                    // must check if the end that has 'l' for each Range that that end is closed. Contains()
+                    // is a shortcut for that
+                    return Contains (l) and rhs.Contains (l);
+                }
+                else {
+                    return false;
+                }
+            }
+            template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
                 if (empty () or rhs.empty ()) {
