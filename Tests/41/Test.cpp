@@ -91,6 +91,7 @@ namespace   {
 namespace {
     void    Test5_ReBin_ ()
     {
+        using   ReBin::ReBin;
         {
             uint32_t srcBinData[] = { 3, 5, 19, 2 };
             double  resultData[4];
