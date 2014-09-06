@@ -217,7 +217,7 @@ namespace   Stroika {
                  *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
                  *          );
                  */
-                static  Range<T, TRAITS> FullRange ();
+                static  constexpr   Range<T, TRAITS> FullRange ();
 
             public:
                 /**
@@ -240,13 +240,13 @@ namespace   Stroika {
                  *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
                  *  range being empty (if both ends are closed).
                  */
-                nonvirtual  typename TraitsType::UnsignedDifferenceType    GetDistanceSpanned () const;
+                nonvirtual  constexpr   typename TraitsType::UnsignedDifferenceType    GetDistanceSpanned () const;
 
             public:
                 /**
                  *  EXPERIMENTAL v2.0a21
                  */
-                nonvirtual  T    GetMidpoint () const;
+                nonvirtual  constexpr   T    GetMidpoint () const;
 
             public:
                 /**

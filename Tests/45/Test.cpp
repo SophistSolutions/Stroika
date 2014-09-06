@@ -385,6 +385,25 @@ namespace {
 
 
 
+namespace {
+    void    Test12_RangeConstExpr_ ()
+    {
+        using IntRange =  Range<unsigned int>;
+        constexpr IntRange kFoo_ {3, 9};
+        constexpr unsigned int l = kFoo_.GetLowerBound ();
+        constexpr unsigned int u = kFoo_.GetUpperBound ();
+        VerifyTestResult (l == 3);
+        VerifyTestResult (u == 9);
+        constexpr   unsigned int m = kFoo_.GetMidpoint ();
+        VerifyTestResult (m == 6);
+    }
+}
+
+
+
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -400,6 +419,7 @@ namespace   {
         Test9_Generators_ ();
         Test10_MakeIterableFromIterator_ ();
         Test11_GetDistanceSpanned_ ();
+        Test12_RangeConstExpr_ ();
     }
 }
 

@@ -105,7 +105,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
+            inline  constexpr   Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
             {
                 return Range<T, TRAITS> (
                            TraitsType::kLowerBound, TraitsType::kUpperBound,
@@ -136,17 +136,28 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-            inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
+            inline  constexpr   typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
             {
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                return
+                    empty () ?
+                    static_cast<typename TRAITS::UnsignedDifferenceType> (0) :
+                    b
+                    (fEnd_ - fBegin_)
+                    ;
+#else
                 if (empty ()) {
                     return static_cast<typename TRAITS::UnsignedDifferenceType> (0);
                 }
                 return fEnd_ - fBegin_;
+#endif
             }
             template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::GetMidpoint () const
+            inline  constexpr   T    Range<T, TRAITS>::GetMidpoint () const
             {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
+#endif
                 return GetLowerBound () + GetDistanceSpanned () / 2;
             }
             template    <typename T, typename TRAITS>
