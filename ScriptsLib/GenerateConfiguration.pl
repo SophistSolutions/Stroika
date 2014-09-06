@@ -34,6 +34,7 @@ my @useExtraMakeDefines;
 
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+my $CPPSTD_VERSION_FLAG = '';
 my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_ZLIB = 1;
@@ -63,6 +64,7 @@ sub	DoHelp_
 	print("	    --enable-GLIBCXX_DEBUG       /* enables GLIBCXX_DEBUG (G++-specific) */\n");
 	print("	    --disable-GLIBCXX_DEBUG      /* disables GLIBCXX_DEBUG (G++-specific) */\n");
 	print("	    --default-GLIBCXX_DEBUG      /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
+	print("	    --cppstd-version-flag {FLAG} /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured */\n");
 	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured */\n");
 	print("	    --has-xerces                 /* enables openssl for the configuration being configured */\n");
@@ -252,6 +254,11 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-default-glibcxx_debug") or (lc ($var) eq "--default-glibcxx_debug")) {
 			$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 		}
+		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
+			$i++;
+			$var = $ARGV[$i];
+			$CPPSTD_VERSION_FLAG = $var;
+		}
 		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
 			$ENABLE_OPENSSL = 1;
 		}
@@ -374,6 +381,10 @@ sub	WriteConfigFile_
 	}
 	if ($ENABLE_GLIBCXX_DEBUG != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_GLIBCXX_DEBUG>$ENABLE_GLIBCXX_DEBUG</ENABLE_GLIBCXX_DEBUG>\n");
+	}
+
+	if (not ($CPPSTD_VERSION_FLAG eq "")) {
+		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
 	}
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");

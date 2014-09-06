@@ -123,6 +123,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ENABLE_GLIBCXX_DEBUG'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<CPPSTD_VERSION_FLAG>");
+		if (defined $pps) {
+			$configuration {'CPPSTD_VERSION_FLAG'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
