@@ -27,6 +27,9 @@ namespace   Stroika {
             namespace ReBin {
 
 
+                /**
+                 *  Utility to describe source data (bins) for use in the ReBin() API.
+                 */
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 class   BasicDataDescriptor {
                 public:
@@ -34,6 +37,7 @@ namespace   Stroika {
                     using   XType           =   X_TYPE;
                     using   ValueType       =   VALUE_TYPE;
 
+                public:
 #if qCompilerAndStdLib_constexpr_Buggy
                     static const ValueType kZero;
 #else
@@ -44,23 +48,44 @@ namespace   Stroika {
                     BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd);
 
                 public:
-                    BucketIndexType  GetBucketCount () const;
-                    Traversal::Range<X_TYPE>   GetBucketRange (BucketIndexType bucket) const;
+                    nonvirtual  BucketIndexType  GetBucketCount () const;
 
-                protected:
-                    const VALUE_TYPE* fBucketDataStart_;
-                    const VALUE_TYPE* fBucketDataEnd_;
-                    X_TYPE      fXStart_;
-                    X_TYPE      fXEnd_;
+                public:
+                    nonvirtual  Traversal::Range<X_TYPE>   GetBucketRange (BucketIndexType bucket) const;
 
                 public:
                     // for the given argument x-range, find the range of intersecting buckets
                     // this is assumed to be contiguous (for now)
-                    Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange(const Traversal::Range<X_TYPE>& xrange) const;
+                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange(const Traversal::Range<X_TYPE>& xrange) const;
 
                 public:
-                    VALUE_TYPE  GetValue (BucketIndexType bucket) const;
+                    nonvirtual  VALUE_TYPE  GetValue (BucketIndexType bucket) const;
+
+                protected:
+                    const VALUE_TYPE*   fBucketDataStart_;
+                    const VALUE_TYPE*   fBucketDataEnd_;
+                    X_TYPE              fXStart_;
+                    X_TYPE              fXEnd_;
                 };
+
+
+                /**
+                 *  Utility to describe target data (bins) for use in the ReBin() API.
+                 */
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                class   UpdatableDataDescriptor : public BasicDataDescriptor<X_TYPE, VALUE_TYPE> {
+                private:
+                    using inherited = BasicDataDescriptor<X_TYPE, VALUE_TYPE>;
+                public:
+                    UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd);
+
+                public:
+                    nonvirtual  void    AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta);
+
+                public:
+                    nonvirtual  void    ZeroBuckets ();
+                };
+
 
                 /**
                  *  Take one array of counts (buckets/samples) - and stretch them (rebin them) to another number
@@ -80,16 +105,19 @@ namespace   Stroika {
                  *  As a future exercise, we may want to experiment  with different assumptions (like linear up/down according
                  *  to prev and successive bins?).
                  */
-#if 0
+                template    <typename   SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
+                void    ReBin (
+                    const SRC_DATA_DESCRIPTOR& srcData,
+                    TRG_DATA_DESCRIPTOR* trgData
+                );
                 template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>
                 void    ReBin (
                     const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
                     TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
                 );
-#endif
+
+
             }
-
-
         }
     }
 }

@@ -22,27 +22,30 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************** Math::ReBin *********************************
+                 ********************** Math::ReBin::BasicDataDescriptor ************************
                  ********************************************************************************
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd)
+                inline  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd)
                     : fBucketDataStart_ (bucketStart)
                     , fBucketDataEnd_ (bucketEnd)
                     , fXStart_ (xStart)
                     , fXEnd_ (xEnd)
                 {
+                    RequireNotNull (bucketStart);
+                    RequireNotNull (bucketEnd);
+                    Require (bucketStart < bucketEnd);
+                    Require (xStart < xEnd);
                 }
-
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketCount () const
+                inline  typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketCount () const
                 {
                     BucketIndexType result = fBucketDataEnd_ - fBucketDataStart_;
                     Ensure (result > 0);
                     return result;
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                Traversal::Range<X_TYPE>   BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketRange (BucketIndexType bucket) const
+                inline  Traversal::Range<X_TYPE>   BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketRange (BucketIndexType bucket) const
                 {
                     using Traversal::Range;
                     Require (bucket < GetBucketCount ());
@@ -51,7 +54,7 @@ namespace   Stroika {
                     return Range<X_TYPE> (s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen);
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                Traversal::DiscreteRange<typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType> BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetMappedBucketRange(const Traversal::Range<X_TYPE>& xrange) const
+                Traversal::DiscreteRange<typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType> BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetMappedBucketRange (const Traversal::Range<X_TYPE>& xrange) const
                 {
                     using Traversal::DiscreteRange;
                     if (xrange.GetUpperBound () < fXStart_) {
@@ -75,7 +78,6 @@ namespace   Stroika {
 
                     return DiscreteRange<BucketIndexType> (bucketLB, bucketUB);
                 }
-
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  VALUE_TYPE  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValue (BucketIndexType bucket) const
                 {
@@ -88,37 +90,38 @@ namespace   Stroika {
 #endif
 
 
-
+                /*
+                 ********************************************************************************
+                 ***************** Math::ReBin::UpdatableDataDescriptor *************************
+                 ********************************************************************************
+                 */
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                class   UpdatableDataDescriptor : public BasicDataDescriptor<X_TYPE, VALUE_TYPE> {
-                private:
-                    using inherited = BasicDataDescriptor<X_TYPE, VALUE_TYPE>;
-                public:
-                    UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd)
-                        : inherited (bucketStart, bucketEnd, xStart, xEnd)
-                    {
+                inline  UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd)
+                    : inherited (bucketStart, bucketEnd, xStart, xEnd)
+                {
+                }
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                inline  void  UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta)
+                {
+                    Require (bucket < inherited::GetBucketCount ());
+                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
+                    updatableStart[bucket] += delta;
+                }
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                inline  void    UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::ZeroBuckets ()
+                {
+                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
+                    for (VALUE_TYPE* i = updatableStart; i != inherited::fBucketDataEnd_; ++i) {
+                        *i = inherited::kZero;
                     }
-
-                public:
-                    void  AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta)
-                    {
-                        Require (bucket < inherited::GetBucketCount ());
-                        VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
-                        updatableStart[bucket] += delta;
-                    }
-
-                public:
-                    nonvirtual  void    ZeroBuckets ()
-                    {
-                        VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
-                        for (VALUE_TYPE* i = updatableStart; i != inherited::fBucketDataEnd_; ++i) {
-                            *i = inherited::kZero;
-                        }
-                    }
-                };
+                }
 
 
-
+                /*
+                 ********************************************************************************
+                 ********************************** Math::ReBin *********************************
+                 ********************************************************************************
+                 */
                 template    <typename   SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
                 void    ReBin (
                     const SRC_DATA_DESCRIPTOR& srcData,
@@ -137,7 +140,6 @@ namespace   Stroika {
                     // the buckets are contiguous.
                     size_t      srcBucketCount = srcData.GetBucketCount ();
                     for (size_t srcBucketIdx = 0; srcBucketIdx < srcBucketCount; ++srcBucketIdx) {
-                        //DbgTrace ("srcBucketIdx=%d", srcBucketIdx);
                         Range<typename SRC_DATA_DESCRIPTOR::XType>  curSrcBucketX       =   srcData.GetBucketRange(srcBucketIdx);
                         auto                                        curSrcBucketXWidth  =   curSrcBucketX.GetDistanceSpanned ();
                         typename SRC_DATA_DESCRIPTOR::ValueType     thisSrcBucketValue  =   srcData.GetValue(srcBucketIdx);
@@ -157,9 +159,7 @@ namespace   Stroika {
                         }
                     }
                 }
-
-
-                template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE = double>
+                template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE>
                 void    ReBin (
                     const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
                     TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
