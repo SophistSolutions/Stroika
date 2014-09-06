@@ -255,24 +255,28 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::GetLowerBound () const
+            inline  constexpr   T    Range<T, TRAITS>::GetLowerBound () const
             {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
+#endif
                 return fBegin_;
             }
             template    <typename T, typename TRAITS>
-            inline  Openness    Range<T, TRAITS>::GetLowerBoundOpenness () const
+            inline  constexpr   Openness    Range<T, TRAITS>::GetLowerBoundOpenness () const
             {
                 return fBeginOpenness_;
             }
             template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::GetUpperBound () const
+            inline  constexpr   T    Range<T, TRAITS>::GetUpperBound () const
             {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
+#endif
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline  Openness    Range<T, TRAITS>::GetUpperBoundOpenness () const
+            inline  constexpr   Openness    Range<T, TRAITS>::GetUpperBoundOpenness () const
             {
                 return fEndOpenness_;
             }

@@ -289,23 +289,23 @@ namespace   Stroika {
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  T    GetLowerBound () const;
+                nonvirtual  constexpr   T    GetLowerBound () const;
 
             public:
                 /**
                  */
-                nonvirtual  Openness    GetLowerBoundOpenness () const;
+                nonvirtual  constexpr   Openness    GetLowerBoundOpenness () const;
 
             public:
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  T    GetUpperBound () const;
+                nonvirtual  constexpr   T    GetUpperBound () const;
 
             public:
                 /**
                  */
-                nonvirtual  Openness    GetUpperBoundOpenness () const;
+                nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
 
             public:
                 /**
