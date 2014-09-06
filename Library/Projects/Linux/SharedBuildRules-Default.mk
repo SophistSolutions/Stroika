@@ -10,6 +10,9 @@
 
 %.o : %.cpp
 	@echo "Compiling $<"
+	@if [ $(ECHO_BUILD_LINES) -neq 0 ]; then\
+	    echo "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
+	fi
 	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
 
