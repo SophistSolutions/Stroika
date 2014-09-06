@@ -95,8 +95,9 @@ namespace   Stroika {
                        );
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::empty () const
+            inline  constexpr   bool    Range<T, TRAITS>::empty () const
             {
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wc++1y-extensions\"");  // use of this statement in a constexpr function
                 if (fBegin_ > fEnd_) {
                     // internal hack done in Range<T, TRAITS>::Range() - empty range - otherwise not possible to create this situation
                     return true;
@@ -105,6 +106,7 @@ namespace   Stroika {
                     return fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen;
                 }
                 return false;
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wc++1y-extensions\"");  // use of this statement in a constexpr function
             }
             template    <typename T, typename TRAITS>
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const

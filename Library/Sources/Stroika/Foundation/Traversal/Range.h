@@ -220,7 +220,7 @@ namespace   Stroika {
                  *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed,
                  *  the one closed point endpoint is in the range, so the range is non-empty.
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual  constexpr   bool    empty () const;
 
             public:
                 /**
