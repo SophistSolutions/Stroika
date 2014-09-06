@@ -77,6 +77,10 @@ namespace   Stroika {
                 //, fBuffer_ ()
                 , fPointer_ (fBuffer_)
             {
+#if     qDebug
+                memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+                memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+#endif
 #if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
                 static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
@@ -105,6 +109,9 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
             {
+#if     qDebug
+                ValidateGuards_ ();
+#endif
                 if (fPointer_ != fBuffer_) {
                     // we must have used the heap...
                     delete[] fPointer_;
@@ -113,6 +120,9 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>&   SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
+#if     qDebug
+                ValidateGuards_ ();
+#endif
                 GrowToSize (rhs.fSize_);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
@@ -165,6 +175,18 @@ namespace   Stroika {
                 AssertNotNull (fPointer_);
                 return (fPointer_);
             }
+#if     qDebug
+            template    <typename   T, size_t BUF_SIZE>
+            constexpr   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
+            template    <typename   T, size_t BUF_SIZE>
+            constexpr   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8]  =   { 0x15, 0x32, 0xa5, 0x16, 0x15, 0x7a, 0x90, 0x10, };
+            template    <typename   T, size_t BUF_SIZE>
+            void    SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ ()
+            {
+                Assert (memcmp (kGuard1_, fGuard1_, sizeof (kGuard1_)) == 0);
+                Assert (memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);
+            }
+#endif
 
 
         }

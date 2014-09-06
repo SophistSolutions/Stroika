@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "Common.h"
 
 
 
@@ -105,10 +106,27 @@ namespace   Stroika {
             public:
                 nonvirtual  void    push_back (const T& e);
 
+#if     qDebug
+            private:
+                static  constexpr   Byte    kGuard1_[8];
+                static  constexpr   Byte    kGuard2_[8];
+#endif
+
             private:
                 size_t  fSize_;
+#if     qDebug
+                Byte    fGuard1_[sizeof(kGuard1_)];
+#endif
                 T       fBuffer_[BUF_SIZE];
+#if     qDebug
+                Byte    fGuard2_[sizeof(kGuard2_)];
+#endif
                 T*      fPointer_;
+
+#if     qDebug
+            private:
+                nonvirtual  void    ValidateGuards_ ();
+#endif
             };
 
 
