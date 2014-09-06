@@ -213,9 +213,9 @@
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= 201103)
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= 201103)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
 #endif
