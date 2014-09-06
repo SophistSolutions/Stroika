@@ -131,13 +131,38 @@ namespace   Stroika {
                     RequireNotNull (trgData);
 
                     using   namespace Traversal;
+                    /*
+                     *  OLD OBSOLETE Algorithm:
+                     *      Two iterators - one marking (start/end of target buckets), and one marking current
+                     *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new
+                     *      iterators. When they overlap and must advance - proportionally add to bucket,
+                     *      advance and add rest to next target bucket.
+                     *
+                     *      This is probably more efficent than the algorithm below, but trickier to generalize
+                     *      so we can have differently scaled source buckets.
+                     */
+
+                    /*
+                     *  By default, zero all target buckets, but you could override that in the TRG argument
+                     *  to avoid zeroing (say to accumulate multiple sources)
+                     */
                     trgData->ZeroBuckets ();
 
-                    // Iterate over each source bucket. It represnts data from its sourceXStart, to srcXEnd (bucket X domain)
-                    // all data spread evently.
-
-                    // See where that start x/endx map to in y buckets, and spread it over them. Assume that in the TARGET
-                    // the buckets are contiguous.
+                    /*
+                     *  x               0    1    2    3    4    5
+                     *
+                     *  SRC-BUCKETS:    |    |    |    |    |    |
+                     *  TRG-BUCKETS:    |      |      |      |
+                     *
+                     *  Iterate over each source bucket. It represnts data from its sourceXStart, to srcXEnd (bucket X domain)
+                     *  all data spread evently.
+                     *
+                     *  See where that start x/endx map to in y buckets, and spread it over them. Assume that in the TARGET
+                     *  the buckets are contiguous.
+                     *
+                     *  For each one source bucket, put part into current ti (proportional), and put reset into next
+                     *  ti (proportional).
+                     */
                     size_t      srcBucketCount = srcData.GetBucketCount ();
                     for (size_t srcBucketIdx = 0; srcBucketIdx < srcBucketCount; ++srcBucketIdx) {
                         Range<typename SRC_DATA_DESCRIPTOR::XType>  curSrcBucketX       =   srcData.GetBucketRange(srcBucketIdx);
@@ -148,12 +173,15 @@ namespace   Stroika {
 
                         // Check special value of zero so we dont waste time spreading zeros around
                         if (thisSrcBucketValue != SRC_DATA_DESCRIPTOR::kZero and curSrcBucketXWidth != 0) {
-                            // find range of target buckets to distribute value
-                            // Each bucket returned may have little overall contribution from the source bucket. We look at
-                            // the degree of overlap.
+                            /*
+                             *  find range of target buckets to distribute value.
+                             *
+                             *  Each bucket returned may have little overall contribution from the source bucket. We look at
+                             *  the degree of overlap.
+                             */
                             for (auto targetBucket : trgData->GetMappedBucketRange (curSrcBucketX)) {
-                                Range<typename SRC_DATA_DESCRIPTOR::XType>      trgBucketIntersectRange     =   trgData->GetBucketRange(targetBucket).Intersection (curSrcBucketX);
-                                auto                                            trgBucketXWidth             =   trgBucketIntersectRange.GetDistanceSpanned ();
+                                Range<typename SRC_DATA_DESCRIPTOR::XType>  trgBucketIntersectRange =   trgData->GetBucketRange(targetBucket).Intersection (curSrcBucketX);
+                                auto                                        trgBucketXWidth         =   trgBucketIntersectRange.GetDistanceSpanned ();
                                 trgData->AccumulateValue (targetBucket, thisSrcBucketValue * (trgBucketXWidth / curSrcBucketXWidth));
                             }
                         }
@@ -165,82 +193,13 @@ namespace   Stroika {
                     TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
                 )
                 {
-                    using SRC_DATA_DESCRIPTOR = BasicDataDescriptor<X_OFFSET_TYPE, SRC_BUCKET_TYPE>;
-                    using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<X_OFFSET_TYPE, TRG_BUCKET_TYPE>;
+                    using   SRC_DATA_DESCRIPTOR     =   BasicDataDescriptor<X_OFFSET_TYPE, SRC_BUCKET_TYPE>;
+                    using   TRG_DATA_DESCRIPTOR     =   UpdatableDataDescriptor<X_OFFSET_TYPE, TRG_BUCKET_TYPE>;
 
                     SRC_DATA_DESCRIPTOR srcData (srcStart, srcEnd, 1, 2);
                     TRG_DATA_DESCRIPTOR trgData (trgStart, trgEnd, 1, 2);
                     ReBin (srcData, &trgData);
                 }
-#if 0
-                template    <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE>
-                void    ReBin (
-                    const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
-                    TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd
-                )
-                {
-                    /*
-                     *  Algorithm:
-                     *      Two iterators - one marking (start/end of target buckets), and one marking current
-                     *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new
-                     *      iterators. When they overlap and must advance - proportionally add to bucket,
-                     *      advance and add rest to next target bucket.
-                     */
-                    size_t  nSrcBuckets =   srcEnd - srcStart;
-                    size_t  nTrgBuckets =   trgEnd - trgStart;
-                    Require (nSrcBuckets >= 1);
-                    Require (nTrgBuckets >= 1);
-
-                    // zero target bins
-                    for (TRG_BUCKET_TYPE* i = trgStart; i != trgEnd; ++i) {
-                        *i = 0;
-                    }
-
-                    X_OFFSET_TYPE       srcBucketsPerTrgBucket = static_cast<X_OFFSET_TYPE> (nSrcBuckets) / static_cast<X_OFFSET_TYPE> (nTrgBuckets);
-                    TRG_BUCKET_TYPE*    ti  =   trgStart;
-                    X_OFFSET_TYPE       xLeftInThisTrgBucket =   srcBucketsPerTrgBucket;
-
-                    /*
-                     *  x               0    1    2    3    4    5
-                     *
-                     *  SRC-BUCKETS:    |    |    |    |    |    |
-                     *  TRG-BUCKETS:    |      |      |      |
-                     *
-                     *  Filling target buckets (pre-initialized to zero). Major iteration over SRC buckets.
-                     *  For each one (si), but part into current ti (proportional), and put reset into next
-                     *  ti (proportional).
-                     *
-                     */
-                    for (const SRC_BUCKET_TYPE* si = srcStart; si != srcEnd; ++si) {
-                        // start a new x bucket each time through the loop
-                        X_OFFSET_TYPE       xLeftInThisSrcBucket =   1.0;
-
-                        Assert (ti < trgEnd or NearlyEquals (xLeftInThisTrgBucket, X_OFFSET_TYPE (0))); // careful of floating point round
-                        if (ti >= trgEnd) {
-                            break;  //in case float round error
-                        }
-
-                        while (xLeftInThisSrcBucket > 0) {
-                            // Divide the si value across possibly multiple fractional ti (target) bins!
-
-                            X_OFFSET_TYPE   amount2AdvanceX =   min (xLeftInThisSrcBucket, xLeftInThisTrgBucket);
-                            *ti += (*si) * amount2AdvanceX;
-
-                            xLeftInThisSrcBucket -= amount2AdvanceX;
-                            xLeftInThisTrgBucket -= amount2AdvanceX;
-
-                            if (xLeftInThisTrgBucket <= 0) {        // allow for < case because of floating point rounding
-                                Assert (NearlyEquals (xLeftInThisTrgBucket, X_OFFSET_TYPE (0)));
-                                ++ti;
-                                xLeftInThisTrgBucket = srcBucketsPerTrgBucket;
-                            }
-                        }
-
-                    }
-
-
-                }
-#endif
 
 
             }

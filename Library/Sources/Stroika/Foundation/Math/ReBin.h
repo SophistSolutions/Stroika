@@ -104,6 +104,20 @@ namespace   Stroika {
                  *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
                  *  As a future exercise, we may want to experiment  with different assumptions (like linear up/down according
                  *  to prev and successive bins?).
+                 *
+                 *      @todo - ADD EXAMPLES
+                 *
+                 *  EMBELLISH THE EXAMPLE...
+                 *
+                 *      struct SRC_DATA_DESCRIPTOR : BasicDataDescriptor<double, double> {
+                 *          ...
+                 *          static  Range<XType>   GetBucketRange (unsigned int bucket) {
+                 *                  return fMapper_->ToFrequency (fMapper_->BinToAtoDValue (bucket));
+                 *              }
+                 *          }
+                 *      };
+                 *      using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<double, double>;
+                 *
                  */
                 template    <typename   SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
                 void    ReBin (
