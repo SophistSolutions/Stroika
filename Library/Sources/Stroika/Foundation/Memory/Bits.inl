@@ -27,7 +27,9 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             inline  constexpr   INT_TYPE    Bit (unsigned int bitNumber)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
                 Require (bitNumber < CHAR_BIT * sizeof (INT_TYPE));
+#endif
                 return (static_cast<INT_TYPE> (1) << bitNumber);
             }
             template    <typename INT_TYPE, typename... BIT_ARGS>
@@ -45,7 +47,9 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             inline  constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
                 Require ((nBits + offset) < CHAR_BIT * sizeof (INT_TYPE));
+#endif
                 return ((bitField) >> (offset)) & ((1 << (nBits)) - 1);
             }
 
