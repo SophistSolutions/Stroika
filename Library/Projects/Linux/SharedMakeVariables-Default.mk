@@ -78,8 +78,16 @@ endif
 
 
 #g++-4.6 still only accepts c++0x
-#CFLAGS		+=	-std=c++11  $(COPTIMIZE_FLAGS) $(Includes)
-CFLAGS		+=	-std=c++0x  $(COPTIMIZE_FLAGS) $(Includes) $(CWARNING_FLAGS)
+ifndef STDCPP_VERSION_FLAG
+	#STDCPP_VERSION_FLAG	=	-std=c++1z
+	#STDCPP_VERSION_FLAG	=	-std=c++1y
+	#STDCPP_VERSION_FLAG	=	-std=c++14
+	#STDCPP_VERSION_FLAG	=	-std=c++11
+	STDCPP_VERSION_FLAG		=	-std=c++0x
+endif
+
+
+CFLAGS		+=	$(STDCPP_VERSION_FLAG)  $(COPTIMIZE_FLAGS) $(Includes) $(CWARNING_FLAGS)
 
 
 
