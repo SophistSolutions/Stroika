@@ -142,7 +142,6 @@ namespace   Stroika {
                 return
                     empty () ?
                     static_cast<typename TRAITS::UnsignedDifferenceType> (0) :
-                    b
                     (fEnd_ - fBegin_)
                     ;
 #else
