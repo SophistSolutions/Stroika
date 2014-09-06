@@ -135,9 +135,9 @@ namespace   {
             Debug::TraceContextBumper traceCtx (SDKSTR ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"));
             no_lock_ lock ;
             //mutex lock;
-            ITERABLE_TYPE   oneToKeepOverwriting = elt1;
+            Synchronized<ITERABLE_TYPE>  oneToKeepOverwriting { elt1 };
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
-            Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
+            Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, Synchronized<ITERABLE_TYPE> (elt1), Synchronized<ITERABLE_TYPE> (elt2), &lock, repeatCount);
             RunThreads_ ({iterateThread, overwriteThread});
         }
         void    DoIt ()
@@ -159,9 +159,11 @@ namespace   {
             DoItOnce_<Mapping<int, int>> (Mapping<int, int> (kOrigPairValueInit_), Mapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
             DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), kRepeatCount_);
             DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), kRepeatCount_);
+#if 0
             DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int> (kOrigPairValueInit_), SortedMapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
             DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int> (kOrigValueInit_), SortedMultiSet<int> (kUpdateValueInit_), kRepeatCount_);
             DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), kRepeatCount_);
+#endif
             // Stack NYI cuz not enough of stack implemented (op=)
             //DoItOnce_<Stack<int>> (Stack<int> (kOrigValueInit_), Stack<int> (kUpdateValueInit_), kRepeatCount_);
         }
@@ -182,7 +184,7 @@ namespace   {
         template    <typename ITERABLE_TYPE, typename LOCK, typename MUTATE_FUNCTION>
         void    DoItOnce_ (LOCK* lock, ITERABLE_TYPE elt1, unsigned int repeatCount, MUTATE_FUNCTION baseMutateFunction)
         {
-            ITERABLE_TYPE   oneToKeepOverwriting = elt1;
+            Synchronized<ITERABLE_TYPE>   oneToKeepOverwriting { elt1 };
             auto mutateFunction =               [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction] () {
                 Debug::TraceContextBumper traceCtx (SDKSTR ("{}::MutateFunction ()"));
                 DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name());
@@ -211,7 +213,7 @@ namespace   {
                                  &lock,
                                  Set<int> (kOrigValueInit_),
                                  kRepeatCount_,
-            [&lock] (Set<int>* oneToKeepOverwriting) {
+            [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     //DbgTrace ("doing update loop %d", ii);
                     if (Math::IsOdd (ii)) {
@@ -229,7 +231,7 @@ namespace   {
                                       &lock,
                                       Sequence<int> (kOrigValueInit_),
                                       kRepeatCount_,
-            [&lock] (Sequence<int>* oneToKeepOverwriting) {
+            [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
                         lock_guard<decltype(lock)> critSec (lock);
@@ -246,7 +248,7 @@ namespace   {
                 &lock,
                 String (L"123456789"),
                 kRepeatCount_,
-            [&lock] (String * oneToKeepOverwriting) {
+            [&lock] (Synchronized<String>* oneToKeepOverwriting) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
                         lock_guard<decltype(lock)> critSec (lock);
