@@ -37,7 +37,9 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  constexpr   typename underlying_type<ENUM>::type    ToInt (ENUM e)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+#endif
                 return static_cast<typename underlying_type<ENUM>::type> (e);
             }
 
@@ -50,7 +52,9 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline   constexpr  ENUM   ToEnum (typename underlying_type<ENUM>::type e)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
                 Require (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+#endif
                 return static_cast<ENUM> (e);
             }
 
@@ -63,7 +67,9 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+#endif
                 return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
             }
 

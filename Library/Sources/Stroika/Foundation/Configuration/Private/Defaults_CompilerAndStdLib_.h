@@ -201,6 +201,29 @@
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
+
+    The issue is really
+            warning: use of this statement in a constexpr function is a C++1y
+    for require lines at the start of constexp functions
+*/
+#ifndef qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#else
+#define qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
