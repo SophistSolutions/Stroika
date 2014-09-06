@@ -191,10 +191,22 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 explicit Range ();
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 explicit Range (const T& begin, const T& end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 explicit Range (Openness lhsOpen, Openness rhsOpen);
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 explicit Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
