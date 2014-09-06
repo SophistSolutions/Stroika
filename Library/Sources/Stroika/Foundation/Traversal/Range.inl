@@ -51,7 +51,9 @@ namespace   Stroika {
             inline  Range<T, TRAITS>::Range ()
                 : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
             {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure (empty ());
+#endif
             }
             template    <typename T, typename TRAITS>
 #if     !qCompilerAndStdLib_constexpr_Buggy
@@ -117,9 +119,10 @@ namespace   Stroika {
                 return
                     fBegin_ > fEnd_ ?
                     true :
-                    (fBegin_ == fEnd_) ?
-                    (fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen) :
-                    false
+                    ((fBegin_ == fEnd_) ?
+                     (fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen) :
+                     false
+                    )
                     ;
 #else
                 if (fBegin_ > fEnd_) {
