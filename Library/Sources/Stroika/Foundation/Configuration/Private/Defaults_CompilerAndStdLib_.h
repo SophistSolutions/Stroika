@@ -204,18 +204,20 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
     The issue is really
             warning: use of this statement in a constexpr function is a C++1y
     for require lines at the start of constexp functions
 */
-#ifndef qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy
+#ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
-#define qCompilerAndStdLib_constexpr_functions_requireStatement_Buggy      0
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
 #endif
 
 #endif
