@@ -24,7 +24,15 @@ namespace   Stroika {
 
 
             /**
+             *  bitNumber's start with 0, not 1.
              *
+             *  EXAMPLES:
+             *      VerifyTestResult (Bit (0) == 0x1);
+             *      VerifyTestResult (Bit (1) == 0x2);
+             *      VerifyTestResult (Bit (3) == 0x8);
+             *      VerifyTestResult (Bit (15) == 0x8000);
+             *      VerifyTestResult (Bit<int> (1, 2) == 0x6);
+             *      VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
              */
             template    <typename INT_TYPE = unsigned int>
             constexpr   INT_TYPE    Bit (unsigned int bitNumber);
@@ -33,7 +41,14 @@ namespace   Stroika {
 
 
             /**
+             *  Capture the bits from 'bitField' - starting at bit 'offset' (zero-based), and go for
+             *  'nBits'.
              *
+             *  EXAMPLES:
+             *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 0) == 1);
+             *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
+             *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
+             *      VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
              */
             template    <typename INT_TYPE>
             constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset);

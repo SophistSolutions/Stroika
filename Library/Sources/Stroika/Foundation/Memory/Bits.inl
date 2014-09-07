@@ -50,7 +50,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require ((nBits + offset) < CHAR_BIT * sizeof (INT_TYPE));
 #endif
-                return ((bitField) >> (offset)) & ((1 << (nBits)) - 1);
+                return (bitField >> offset) & ((1 << nBits) - 1);
             }
 
 
