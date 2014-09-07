@@ -178,6 +178,28 @@ namespace   Stroika {
                 return DiscreteRange<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>    DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
+            {
+                return inherited_RangeType::Intersection (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange<T, TRAITS>& rhs) const
+            {
+                auto    r   =   inherited_RangeType::Intersection (rhs);
+                return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
+            {
+                return inherited_RangeType::UnionBounds (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const
+            {
+                auto    r   =   inherited_RangeType::UnionBounds (rhs);
+                return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
+            }
+            template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const
             {
                 Ensure (inherited_RangeType::empty () == Iterable<T>::empty ());

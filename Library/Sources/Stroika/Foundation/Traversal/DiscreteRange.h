@@ -164,8 +164,23 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Like Range<>::FullRange () but returing a DiscreteRange<> type.
                  */
                 static  DiscreteRange<T, TRAITS> FullRange ();
+
+            public:
+                /**
+                 *  Like Range<>::Intersection (), but returing a DiscreteRange<> type.
+                 */
+                nonvirtual  Range<T, TRAITS>            Intersection (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  DiscreteRange<T, TRAITS>    Intersection (const DiscreteRange<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 *  Like Range<>::UnionBounds (), but returing a DiscreteRange<> type.
+                 */
+                nonvirtual  Range<T, TRAITS>            UnionBounds (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  DiscreteRange<T, TRAITS>    UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const;
 
             public:
                 using   inherited_RangeType::Contains;
