@@ -108,8 +108,13 @@ namespace   Stroika {
 
 #if     qDebug
             private:
+#if     qCompilerAndStdLib_constexpr_Buggy
                 static  constexpr   Byte    kGuard1_[8];
                 static  constexpr   Byte    kGuard2_[8];
+#else
+                static  constexpr   Byte    kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
+                static  constexpr   Byte    kGuard2_[8]  =   { 0x15, 0x32, 0xa5, 0x16, 0x15, 0x7a, 0x90, 0x10, };
+#endif
 #endif
 
             private:
