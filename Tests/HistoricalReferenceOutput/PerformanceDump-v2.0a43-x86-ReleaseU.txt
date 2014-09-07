@@ -1,0 +1,112 @@
+Using TIME MULTIPLIER: 30
+
+Test Test of simple locking strategies (mutex v shared_ptr copy) (mutex vs shared_ptr<> copy)
+	PERFORMANCE_SCORE	0.43
+	DETAILS:         	[baseline test 28.767 secs, and comparison 12.3391 sec, and warnIfPerfScore > 0.5, and perfScore=0.428932]
+	                 	shared_ptr<> copy is FASTER
+
+Test Test of simple locking strategies (mutex v SpinLock) (mutex vs SpinLock)
+	PERFORMANCE_SCORE	0.28
+	DETAILS:         	[baseline test 30.3916 secs, and comparison 8.58866 sec, and warnIfPerfScore > 0.35, and perfScore=0.2826]
+	                 	SpinLock is FASTER
+
+Test std::shared_ptr versus Memory::SharedPtr (shared_ptr vs SharedPtr)
+	PERFORMANCE_SCORE	0.8
+	DETAILS:         	[baseline test 29.7787 secs, and comparison 23.7318 sec, and warnIfPerfScore > 0.9, and perfScore=0.796937]
+	                 	SharedPtr is FASTER
+
+Test Simple Struct With Strings Filling And Copying (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	0.41
+	DETAILS:         	[baseline test 29.8668 secs, and comparison 12.2958 sec, and warnIfPerfScore > 0.5, and perfScore=0.411688]
+	                 	Charactes::String is FASTER
+
+Test Simple Struct With Strings Filling And Copying2 (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	0.39
+	DETAILS:         	[baseline test 31.8842 secs, and comparison 12.5117 sec, and warnIfPerfScore > 0.56, and perfScore=0.392409]
+	                 	Charactes::String is FASTER
+
+Test Simple String append test (+='string object') 10x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	4
+	DETAILS:         	[baseline test 29.5804 secs, and comparison 116.981 sec, and warnIfPerfScore > 4.1, and perfScore=3.9547]
+	                 	Charactes::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 10x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	3.4
+	DETAILS:         	[baseline test 30.4835 secs, and comparison 104.816 sec, and warnIfPerfScore > 3.7, and perfScore=3.43846]
+	                 	Charactes::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 100x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	8.5
+	DETAILS:         	[baseline test 30.7065 secs, and comparison 261.908 sec, and warnIfPerfScore > 8.6, and perfScore=8.52939]
+	                 	Charactes::String is ***SLOWER***
+
+Test String a + b (wstring vs String)
+	PERFORMANCE_SCORE	2.1
+	DETAILS:         	[baseline test 29.3058 secs, and comparison 61.2967 sec, and warnIfPerfScore > 2.3, and perfScore=2.09163]
+	                 	String is ***SLOWER***
+
+Test wstringstream << test (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	1.4
+	DETAILS:         	[baseline test 30.1247 secs, and comparison 42.8087 sec, and warnIfPerfScore > 1.5, and perfScore=1.42105]
+	                 	Charactes::String is ***SLOWER***
+
+Test String::substr() (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	1.8
+	DETAILS:         	[baseline test 29.5369 secs, and comparison 52.209 sec, and warnIfPerfScore > 1.9, and perfScore=1.76758]
+	                 	Charactes::String is ***SLOWER***
+
+Test wstringstream versus BasicTextOutputStream (wstringstream vs BasicTextOutputStream)
+	PERFORMANCE_SCORE	3.5
+	DETAILS:         	[baseline test 31.2883 secs, and comparison 108.95 sec, and warnIfPerfScore > 3.7, and perfScore=3.48212]
+	                 	BasicTextOutputStream is ***SLOWER***
+
+Test wstringstream versus StringBuilder (wstringstream vs StringBuilder)
+	PERFORMANCE_SCORE	0.12
+	DETAILS:         	[baseline test 31.851 secs, and comparison 3.78274 sec, and warnIfPerfScore > 0.14, and perfScore=0.118764]
+	                 	StringBuilder is FASTER
+
+Test Simple c_str() test (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	1.1
+	DETAILS:         	[baseline test 29.4284 secs, and comparison 32.48 sec, and warnIfPerfScore > 1.2, and perfScore=1.10369]
+	                 	Charactes::String is ***SLOWER***
+
+Test Sequence<int> basics (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	7
+	DETAILS:         	[baseline test 29.7349 secs, and comparison 208.868 sec, and warnIfPerfScore > 7.2, and perfScore=7.02435]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence<string> basics (vector<string> vs Sequence<string>)
+	PERFORMANCE_SCORE	0.89
+	DETAILS:         	[baseline test 29.7064 secs, and comparison 26.4077 sec, and warnIfPerfScore > 0.9, and perfScore=0.888957]
+	                 	Sequence<string> is FASTER
+
+Test Sequence_DoublyLinkedList<int> basics (vector<int> vs Sequence_DoublyLinkedList<int>)
+	PERFORMANCE_SCORE	7.1
+	DETAILS:         	[baseline test 29.4898 secs, and comparison 208.554 sec, and warnIfPerfScore > 7.2, and perfScore=7.07208]
+	                 	Sequence_DoublyLinkedList<int> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<string> basics (vector<string> vs Sequence_DoublyLinkedList<string>)
+	PERFORMANCE_SCORE	0.92
+	DETAILS:         	[baseline test 28.4593 secs, and comparison 26.3058 sec, and warnIfPerfScore > 1.1, and perfScore=0.92433]
+	                 	Sequence_DoublyLinkedList<string> is FASTER
+
+Test Collection<int> basics (vector<int> vs Collection<int>)
+	PERFORMANCE_SCORE	7.3
+	DETAILS:         	[baseline test 29.2877 secs, and comparison 213.458 sec, and warnIfPerfScore > 7.3, and perfScore=7.28831]
+	                 	Collection<int> is ***SLOWER***
+
+Test Collection<string> basics (vector<string> vs Collection<string>)
+	PERFORMANCE_SCORE	0.84
+	DETAILS:         	[baseline test 28.971 secs, and comparison 24.2092 sec, and warnIfPerfScore > 0.9, and perfScore=0.835637]
+	                 	Collection<string> is FASTER
+
+Test String Chracters::Format () (sprintf vs String Characters::Format)
+	PERFORMANCE_SCORE	1.3
+	DETAILS:         	[baseline test 29.3163 secs, and comparison 37.286 sec, and warnIfPerfScore > 1.5, and perfScore=1.27185]
+	                 	String Characters::Format is ***SLOWER***
+
+Test BLOB versus vector<Byte> (vector<Byte> vs BLOB)
+	PERFORMANCE_SCORE	0.22
+	DETAILS:         	[baseline test 29.8012 secs, and comparison 6.63756 sec, and warnIfPerfScore > 0.25, and perfScore=0.222728]
+	                 	BLOB is FASTER
+
