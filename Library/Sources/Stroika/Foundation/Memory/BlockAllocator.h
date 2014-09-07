@@ -20,7 +20,7 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *
- *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-gaurd, and if
+ *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-guard, and if
  *          we get multiple results, just patch them into the linked list. That way in case of
  *          multithreading (when we're paging in freepool) - we'll do less busy waiting.
  *
