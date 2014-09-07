@@ -22,10 +22,16 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a43">v2.0a43x</a><br/>2014-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a43">v2.0a43</a><br/>2014-09-07</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Improved use of constexpr functions - especially to Range and DiscreteRange classes.</li>
+	<li>Improved Math::ReBin() code.</li>
+	<li>DiscreteRange versions of some functions from Range() - except return DiscreteRange.</li>
+	<li>STDCPP_VERSION_FLAG / ECHO_BUILD_LINES makefile</li>
+	<li>Modest progress (and testing) on Synchonized templates</li>
+	<li>Guards (debug) for SmallStackBuffer</li>
+	<li>Passed regtests on clang++ 3.4, g++-4.7, g++-4.8, msvc.net 2k13 update 3, and re-ran performance tests (and saved as reference)</li>
 </ul>
 </td>
 </tr>
