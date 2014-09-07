@@ -175,6 +175,30 @@ namespace   Stroika {
 
 
         }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <typename T>
+            class Synchronized<Containers::SortedCollection<T>> : public Containers::SortedCollection<T> {
+            private:
+                using inherited = Containers::SortedCollection<T>;
+
+            public:
+                Synchronized () = default;
+                Synchronized (const Containers::SortedCollection<T>& src) : inherited (src) {}
+                Synchronized (Containers::SortedCollection<T>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<T>& src) : inherited (src) {}
+                template <typename CONTAINER_OF_T>
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+            };
+
+
+        }
     }
 }
 

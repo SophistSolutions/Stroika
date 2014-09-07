@@ -145,6 +145,31 @@ namespace   Stroika {
 
 
         }
+
+
+        namespace Execution {
+
+
+            // early alpha placeholder test
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class Synchronized<Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>> : public Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
+            private:
+                using inherited = Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
+
+            public:
+                Synchronized () = default;
+                Synchronized (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) : inherited (src) {}
+                Synchronized (Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) : inherited (move (src)) {}
+                Synchronized (const initializer_list<Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src) : inherited (src) {}
+                Synchronized (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src) : inherited (src) {}
+                template <typename CONTAINER_OF_T>
+                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+            };
+
+
+        }
     }
 }
 
