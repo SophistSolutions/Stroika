@@ -253,7 +253,7 @@ namespace   Stroika {
                  *  This corresponds to the mathematical set containment. When comparing with the edges
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
-                nonvirtual  bool    Contains (const T& r) const;
+                nonvirtual  constexpr   bool    Contains (const T& r) const;
 
 #if 0
             public:

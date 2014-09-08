@@ -160,8 +160,19 @@ namespace   Stroika {
                 return GetLowerBound () + GetDistanceSpanned () / 2;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::Contains (const T& r) const
+            inline  constexpr   bool    Range<T, TRAITS>::Contains (const T& r) const
             {
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                return
+                    empty () ?
+                    false :
+                    (
+                        (fBegin_ < r and r < fEnd_) or
+                        (fBeginOpenness_ == Openness::eClosed and r == fBegin_) or
+                        (fEndOpenness_ == Openness::eClosed and r == fEnd_)
+                    )
+                    ;
+#else
                 if (empty ()) {
                     return false;
                 }
@@ -175,6 +186,7 @@ namespace   Stroika {
                     return true;
                 }
                 return false;
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& rhs) const
