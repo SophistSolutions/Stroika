@@ -280,7 +280,7 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
             sysLogLevel = LOG_WARNING;
             break;
         case Priority::eError:
-            sysLogLevel = LOG_ERROR;
+            sysLogLevel = LOG_ERR;
             break;
         case Priority::eCriticalError:
             sysLogLevel = LOG_CRIT;
