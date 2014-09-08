@@ -21,10 +21,10 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a45">v2.0a45x</a><br/>2014-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a45">v2.0a45</a><br/>2014-09-08</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Fixed typo</li>
 </ul>
 </td>
 </tr>
