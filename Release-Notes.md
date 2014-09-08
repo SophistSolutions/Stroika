@@ -21,10 +21,11 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a44">v2.0a44x</a><br/>2014-09-?</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a44">v2.0a44</a><br/>2014-09-08</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Tweak Range<> template</li>
+	<li>Fixed small bug with Logger / syslog / error priority</li>
 </ul>
 </td>
 </tr>
