@@ -37,23 +37,14 @@ $(ZIPEDFILE):
 
 $(TRGDIR):	$(ZIPEDFILE)
 	@echo Building $(TRGDIR)...
-	tar xf $(ZIPEDFILE) --no-same-owner
-	mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+	@tar xf $(ZIPEDFILE) --no-same-owner
+	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	dos2unix -q CURRENT/win32/Makefile.msc
-	patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH
-	patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH
-	unix2dos -q CURRENT/win32/Makefile.msc
 else
 	cd CURRENT && ./buildconf
-	cd CURRENT && ./configure
-	make --directory CURRENT -f Makefile
+	cd CURRENT && ./configure --without-ssl
+	make --directory CURRENT
 endif
-
-ORIGS:	$(ZIPEDFILE)
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
-	@unix2dos ORIGS/win32/Makefile.msc
 
 all:	$(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
