@@ -40,10 +40,12 @@ $(TRGDIR):	$(ZIPEDFILE)
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
+	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
-	cd CURRENT && ./buildconf
-	cd CURRENT && ./configure --without-ssl
-	make --directory CURRENT
+	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT
+	#@TODO - fix to use my copy of ssl, if we build SSL...
+	cd CURRENT && ./configure --without-ssl --prefix=`pwd`/../BUILDS > CONFIGURE.OUT
+	make --directory CURRENT install
 endif
 
 all:	$(TRGDIR)
