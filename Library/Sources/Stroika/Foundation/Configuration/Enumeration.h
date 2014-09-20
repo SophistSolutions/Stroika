@@ -100,6 +100,14 @@ namespace   Stroika {
              *  \def Stroika_Enum_Names
              *
              *
+             *  EXAMPLE USAGE:
+             *      enum class Priority { a, b, c };
+             *      const EnumNames<Priority>   Stroika_Enum_Names(Priority);
+             *      const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = {
+             *          { Priority::a, L"a" },
+             *          { Priority::b, L"b" },
+             *          { Priority::c, L"c" },
+             *  };
              */
 #define Stroika_Enum_Names(ENUMNAME)\
     ENUMNAME##_EnumNames
