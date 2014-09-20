@@ -26,7 +26,7 @@ endif
 
 TRGDIR=CURRENT
 
-BUILDS_DIR=	CURRENT/Builds/
+BUILDS_DIR=	`pwd`/Builds/
 
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
@@ -36,38 +36,30 @@ $(ZIPEDFILE):
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPEDFILE)
-	@echo Building $(TRGDIR)...
+	@echo Creating $(TRGDIR)...
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+
+$(BUILDS_DIR):	$(TRGDIR)
+	@echo Building $(TRGDIR) to $(BUILDS_DIR)...
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
 	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT
 	#@TODO - fix to use my copy of ssl, if we build SSL...
-	@cd CURRENT && ./configure --without-ssl --prefix=`pwd`/../BUILDS > CONFIGURE.OUT
-	@make --directory CURRENT --no-print-directory install > MAKE.OUT
+	cd CURRENT && ./configure --without-ssl --prefix=$(BUILDS_DIR) > CONFIGURE.OUT
+	make --directory CURRENT --no-print-directory install > MAKE.OUT
 endif
 
-all:	$(TRGDIR)
-ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@rm -rf $(BUILDS_DIR)
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MTd -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)' zlib.lib"
-	@mkdir -p $(BUILDS_DIR)Debug32
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Debug32/
-
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MT -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' 'CC=$(WIN_CC32)' 'AR=$(WIN_LIB32)' zlib.lib"
-	@mkdir -p $(BUILDS_DIR)Release32
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release32
-endif
+all:	$(BUILDS_DIR)
 	
 check:
 	@##THMPHACK
-	@echo "ThirdPartyLibs/zlib - [Succeeded]"
+	@echo "ThirdPartyLibs/curl - [Succeeded]"
 
 clean:
-	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
+	@rm -rf $(TRGDIR)
 
 clobber:
+	@rm -rf $(BUILDS_DIR)
 	@rm -rf $(TRGDIR)
