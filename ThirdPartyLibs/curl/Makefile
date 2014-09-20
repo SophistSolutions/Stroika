@@ -45,10 +45,10 @@ $(BUILDS_DIR):	$(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
-	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT
-	#@TODO - fix to use my copy of ssl, if we build SSL...
-	cd CURRENT && ./configure --prefix=$(BUILDS_DIR) > CONFIGURE.OUT
-	make --directory CURRENT --no-print-directory install > MAKE.OUT
+	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT 2>&1
+	@echo @TODO - fix to use my copy of ssl, if we build SSL...
+	cd CURRENT && ./configure --prefix=$(BUILDS_DIR) > CONFIGURE.OUT 2>&1
+	make --directory CURRENT --no-print-directory install > CURRENT/MAKE.OUT 2>&1
 endif
 
 all:	$(BUILDS_DIR)
