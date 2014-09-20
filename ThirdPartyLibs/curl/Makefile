@@ -26,7 +26,7 @@ endif
 
 TRGDIR=CURRENT
 
-BUILDS_DIR=	`pwd`/Builds/
+BUILDS_DIR=	$(shell pwd)/Builds/
 
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
