@@ -45,7 +45,9 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH
 	unix2dos -q CURRENT/win32/Makefile.msc
 else
-	@make --directory CURRENT -f Makefile.dist
+	cd CURRENT && ./buildconf
+	cd CURRENT && ./configure
+	make --directory CURRENT -f Makefile
 endif
 
 ORIGS:	$(ZIPEDFILE)
