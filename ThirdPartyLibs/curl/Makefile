@@ -44,8 +44,8 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 else
 	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT
 	#@TODO - fix to use my copy of ssl, if we build SSL...
-	cd CURRENT && ./configure --without-ssl --prefix=`pwd`/../BUILDS > CONFIGURE.OUT
-	make --directory CURRENT install
+	@cd CURRENT && ./configure --without-ssl --prefix=`pwd`/../BUILDS > CONFIGURE.OUT
+	@make --directory CURRENT --no-print-directory install > MAKE.OUT
 endif
 
 all:	$(TRGDIR)
