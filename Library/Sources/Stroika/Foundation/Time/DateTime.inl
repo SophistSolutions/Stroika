@@ -23,13 +23,21 @@ namespace   Stroika {
              ********************************** DateTime ************************************
              ********************************************************************************
              */
-            inline  DateTime::DateTime ()
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            DateTime::DateTime ()
                 : fTimezone_ (Timezone::eUnknown)
                 , fDate_ ()
                 , fTimeOfDay_ ()
             {
             }
-            inline  DateTime::DateTime (const Date& d)
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            DateTime::DateTime (const Date& d)
                 : fTimezone_ (Timezone::eUnknown)
                 , fDate_ (d)
                 , fTimeOfDay_ ()

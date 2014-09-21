@@ -39,7 +39,7 @@
  *
  *              This is an ESPECIALLY good idea since we've now done this for the 'Date' class.
  *
- *				<<< NOTE - DID DEPRECATE AND NEW CTOR 2014-09-21>>>
+ *              <<< NOTE - DID DEPRECATE AND NEW CTOR 2014-09-21>>>
  *
  *
  *
@@ -118,16 +118,16 @@ namespace   Stroika {
              *
              *      'empty' concept:
              *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
-			 *			of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
-			 *			return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
+             *          of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
+             *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
              *          This is a bit like the floating point concept of negative infinity.
-			 *
-			 *			This concept is the same as the Date::empty () concept.
-			 *
-			 *	<<<CONSIDERING MAYBE REQUIRING>>>
-			 *			Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
-			 *			the value of timezone is undefined.
-			 *	<<</CONSIDERING MAYBE REQUIRING>>>
+             *
+             *          This concept is the same as the Date::empty () concept.
+             *
+             *  <<<CONSIDERING MAYBE REQUIRING>>>
+             *          Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
+             *          the value of timezone is undefined.
+             *  <<</CONSIDERING MAYBE REQUIRING>>>
              *
              *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
              *          static de-initializaiton.
@@ -158,7 +158,13 @@ namespace   Stroika {
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 DateTime ();
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 DateTime (const Date& d);
                 DateTime (const DateTime& dt, const Date& updateDate);
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD);
@@ -312,10 +318,10 @@ namespace   Stroika {
             public:
                 nonvirtual  Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
 
-			public:
+            public:
                 nonvirtual  TimeOfDay   GetTimeOfDay () const;  // ditto
 
-			public:
+            public:
                 _DeprecatedFunction_ (nonvirtual  void        SetDate (const Date& d), "d = DateTime (dt, d) - to be removed after v2.0a46");
                 _DeprecatedFunction_ (nonvirtual  void        SetTimeOfDay (const TimeOfDay& tod), "dt = DateTime (dt, tod) - to be removed after v2.0a46");
 
