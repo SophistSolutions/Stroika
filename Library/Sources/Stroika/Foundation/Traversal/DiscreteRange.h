@@ -147,6 +147,11 @@ namespace   Stroika {
                  */
                 using   ElementType =   typename inherited_RangeType::ElementType;
 
+            public:
+                /**
+                 */
+                using   UnsignedDifferenceType      =   typename inherited_RangeType::UnsignedDifferenceType;
+
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
