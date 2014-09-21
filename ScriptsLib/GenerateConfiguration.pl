@@ -48,7 +48,8 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $ENABLE_OPENSSL = 0;
-my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+#my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 1;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -147,9 +148,9 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/openssl/conf.h') {
 		$ENABLE_OPENSSL = 1;
 	}
-        #if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/curl/curl.h') {
-        #	$ENABLE_LIBCURL = 1;
-        #}
+	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+	}
 	if ("$^O" eq "cygwin") {
 		$ENABLE_WINHTTP = 1;
 	}
@@ -275,17 +276,11 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-no-has-openssl") or (lc ($var) eq "--no-has-openssl")) {
 			$ENABLE_OPENSSL = 0;
 		}
-                elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
-                    $i++;
-                    $var = $ARGV[$i];
-                    $FEATUREFLAG_LIBCURL = $var;
-                }
-                #elsif ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
-                #	$ENABLE_LIBCURL = 1;
-                #}
-                #elsif ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
-                #	$ENABLE_LIBCURL = 0;
-                #}
+        elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_LIBCURL = $var;
+        }
 		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
 			$ENABLE_WINHTTP = 1;
 		}
@@ -336,6 +331,10 @@ sub	ParseCommandLine_Remaining_
                     elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
                         $i++;
                     }
+                    elsif (lc ($var) eq "-has-libcurl" or lc ($var) eq "--has-libcurl") {
+                        print ("UNRECOGNIZED ARG: $var: use --libcurl use\n");
+                        DoHelp_ ();
+                    }
                     elsif (lc ($var) eq "-no-has-libcurl" or lc ($var) eq "--no-has-libcurl") {
                         print ("UNRECOGNIZED ARG: $var: use --libcurl no\n");
                         DoHelp_ ();
@@ -365,7 +364,7 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
 	}
-        CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
+    CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
 sub	ParseCommandLine_
@@ -430,17 +429,8 @@ sub	WriteConfigFile_
 	}
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");
-        if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem)) {
-            print (OUT "    <qHasFeature_libcurl>1</qHasFeature_libcurl>\n");
-        }
-        else {
-            print (OUT "    <qHasFeature_libcurl>0</qHasFeature_libcurl>\n");
-        }
-        print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
-
-
-
-        print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
+    print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
+    print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
 	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 

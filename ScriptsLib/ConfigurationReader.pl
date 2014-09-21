@@ -101,10 +101,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qHasFeature_openssl'} = $pps;
 		}
-                my $pps = ReadValue_($line, "<qFeatureFlag_libcurl>");
-                if (defined $pps) {
-                        $configuration {'qFeatureFlag_libcurl'} = $pps;
-                }
+		my $pps = ReadValue_($line, "<qFeatureFlag_libcurl>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_libcurl'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qHasFeature_zlib>");
 		if (defined $pps) {
 			$configuration {'qHasFeature_zlib'} = $pps;
