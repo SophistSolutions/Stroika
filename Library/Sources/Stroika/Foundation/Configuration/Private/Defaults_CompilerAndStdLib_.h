@@ -451,13 +451,13 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // Still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          qCompilerAndStdLib_constexpr_Buggy
 #else
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy            0
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          0
 #endif
 
 #endif
