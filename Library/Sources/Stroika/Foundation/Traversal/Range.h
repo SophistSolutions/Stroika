@@ -185,6 +185,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                using   UnsignedDifferenceType      =   typename TraitsType::UnsignedDifferenceType;
+
+            public:
+                /**
                  *  Range () creates an empty range.
                  *
                  *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values.
@@ -240,7 +245,7 @@ namespace   Stroika {
                  *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
                  *  range being empty (if both ends are closed).
                  */
-                nonvirtual  constexpr   typename TraitsType::UnsignedDifferenceType    GetDistanceSpanned () const;
+                nonvirtual  constexpr   UnsignedDifferenceType    GetDistanceSpanned () const;
 
             public:
                 /**

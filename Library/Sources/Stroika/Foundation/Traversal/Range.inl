@@ -136,17 +136,17 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
+            inline  constexpr   typename Range<T, TRAITS>::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
             {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 return
                     empty () ?
-                    static_cast<typename TRAITS::UnsignedDifferenceType> (0) :
+                    static_cast<UnsignedDifferenceType> (0) :
                     (fEnd_ - fBegin_)
                     ;
 #else
                 if (empty ()) {
-                    return static_cast<typename TRAITS::UnsignedDifferenceType> (0);
+                    return static_cast<UnsignedDifferenceType> (0);
                 }
                 return fEnd_ - fBegin_;
 #endif

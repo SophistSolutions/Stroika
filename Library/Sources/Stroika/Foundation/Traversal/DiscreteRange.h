@@ -188,7 +188,7 @@ namespace   Stroika {
                  *  This equals GetDistancespanned () + 1 (roughly).
                  *  If (empty ()) .... this returns 0;
                  */
-                nonvirtual  typename TraitsType::UnsignedDifferenceType GetNumberOfContainedPoints () const;
+                nonvirtual  UnsignedDifferenceType GetNumberOfContainedPoints () const;
 
             public:
                 using   inherited_RangeType::Contains;

@@ -200,7 +200,7 @@ namespace   Stroika {
                 return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
             }
             template    <typename T, typename TRAITS>
-            typename DiscreteRange<T, TRAITS>::TraitsType::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
+            typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
             {
                 if (empty ()) {
                     return 0;
