@@ -33,7 +33,7 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 all:
 	@echo Building libcurl $(VERSION)...
 	@make --no-print-directory $(TRGDIR)
-	@make --no-print-directory $(BUILDS_DIR)
+	@make --no-print-directory doBuilds
 	@make --no-print-directory check
 
 $(ZIPEDFILE):
@@ -44,14 +44,18 @@ $(TRGDIR):	$(ZIPEDFILE)
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 
+
 $(BUILDS_DIR):	$(TRGDIR)
+	make -f --no-print-directory doBuilds
+
+doBuilds:
 	@echo Building libcurl $(TRGDIR) into $(BUILDS_DIR)...
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
 	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT 2>&1
 	@echo @TODO - fix to use my copy of ssl, if we build SSL...
-	cd CURRENT && ./configure --prefix=$(BUILDS_DIR) --without-openssl > CONFIGURE.OUT 2>&1
+	cd CURRENT && ./configure --prefix=$(BUILDS_DIR) --without-openssl --disable-shared  > CONFIGURE.OUT 2>&1
 	make --directory CURRENT --no-print-directory install > CURRENT/MAKE.OUT 2>&1
 endif
 
