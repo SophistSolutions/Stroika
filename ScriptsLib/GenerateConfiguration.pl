@@ -32,11 +32,23 @@ my $useThirdPartyXerces	=	true;
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
+
+
+#
+# BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
+# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP OR LIBFEATUREFLAG_UseSystem
+#
+my $LIBFEATUREFLAG_BuildOnly = "build-only";
+my $LIBFEATUREFLAG_UseStaticTPP = "use";
+my $LIBFEATUREFLAG_UseSystem = "use-system";
+my $LIBFEATUREFLAG_No = "no";
+
+
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $ENABLE_OPENSSL = 0;
-my $ENABLE_LIBCURL = 0;
+my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 1;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -49,38 +61,36 @@ my $COMPILER_DRIVER = "";
 
 
 
-
 sub	DoHelp_
 {
 	print("Usage:\n");
-	print("	GenerateConfiguration.pl OPTIONS where options can be:\n");
-	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
-	print("	    --default-for-platform       /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
-	print("	    --platform {PLATFORM}        /* specifies the directory under Builds/Intermediate Files to create */\n");
-	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
-	print("	    --enable-assertions          /* enables assertions for the configuration being configured */\n");
-	print("	    --disable-assertions         /* disables assertions for the configuration being configured */\n");
-	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
-	print("	    --enable-GLIBCXX_DEBUG       /* enables GLIBCXX_DEBUG (G++-specific) */\n");
-	print("	    --disable-GLIBCXX_DEBUG      /* disables GLIBCXX_DEBUG (G++-specific) */\n");
-	print("	    --default-GLIBCXX_DEBUG      /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
-	print("	    --cppstd-version-flag {FLAG} /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
-	print("	    --has-libcurl                /* enables libcurl for the configuration being configured */\n");
-	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured */\n");
-	print("	    --has-xerces                 /* enables openssl for the configuration being configured */\n");
-	print("	    --no-has-xerces              /* disables openssl for the configuration being configured */\n");
-	print("	    --has-openssl                /* enables openssl for the configuration being configured */\n");
-	print("	    --no-has-openssl             /* disables openssl for the configuration being configured */\n");
-	print("	    --has-winhttp                /* enables winhttp for the configuration being configured */\n");
-	print("	    --no-has-winhttp             /* disables winhttp for the configuration being configured */\n");
-	print("	    --has-zlib                   /* enables zlib for the configuration being configured */\n");
-	print("	    --no-has-zlib                /* disables zlib for the configuration being configured */\n");
-	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured */\n");
-	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured */\n");
-	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-	print("	    --c-define {ARG}             /* Define C++ / CPP define for the given target */\n");
-	print("	    --make-define {ARG}          /* Define makefile define for the given target */\n");
-	print("	    --compiler-driver {ARG}      /* default is g++ */\n");
+        print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
+        print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the configfiles if absent */\n");
+        print("	    --default-for-platform                     /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
+        print("	    --platform {PLATFORM}                      /* specifies the directory under Builds/Intermediate Files to create */\n");
+        print("	    --target {TARGET}                          /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
+        print("	    --enable-assertions                        /* enables assertions for the configuration being configured */\n");
+        print("	    --disable-assertions                       /* disables assertions for the configuration being configured */\n");
+        print("	    --default-assertions                       /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
+        print("	    --enable-GLIBCXX_DEBUG                     /* enables GLIBCXX_DEBUG (G++-specific) */\n");
+        print("	    --disable-GLIBCXX_DEBUG                    /* disables GLIBCXX_DEBUG (G++-specific) */\n");
+        print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
+        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
+        print("	    --libcurl {build-only|use|use-system|no}   /* enables/disables use of libcurl and build for the confguration being defined */\n");
+        print("	    --has-xerces                               /* enables openssl for the configuration being configured */\n");
+        print("	    --no-has-xerces                            /* disables openssl for the configuration being configured */\n");
+        print("	    --has-openssl                              /* enables openssl for the configuration being configured */\n");
+        print("	    --no-has-openssl                           /* disables openssl for the configuration being configured */\n");
+        print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
+        print("	    --no-has-winhttp                           /* disables winhttp for the configuration being configured */\n");
+        print("	    --has-zlib                                 /* enables zlib for the configuration being configured */\n");
+        print("	    --no-has-zlib                              /* disables zlib for the configuration being configured */\n");
+        print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
+        print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
+        print("	    --cpp-optimize-flag  {FLAG}                /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+        print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given target */\n");
+        print("	    --make-define {ARG}                        /* Define makefile define for the given target */\n");
+        print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
 
 	exit (0);
 }
@@ -137,9 +147,9 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/openssl/conf.h') {
 		$ENABLE_OPENSSL = 1;
 	}
-	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/curl/curl.h') {
-		$ENABLE_LIBCURL = 1;
-	}
+        #if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/curl/curl.h') {
+        #	$ENABLE_LIBCURL = 1;
+        #}
 	if ("$^O" eq "cygwin") {
 		$ENABLE_WINHTTP = 1;
 	}
@@ -265,12 +275,17 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-no-has-openssl") or (lc ($var) eq "--no-has-openssl")) {
 			$ENABLE_OPENSSL = 0;
 		}
-		elsif ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
-			$ENABLE_LIBCURL = 1;
-		}
-		elsif ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
-			$ENABLE_LIBCURL = 0;
-		}
+                elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
+                    $i++;
+                    $var = $ARGV[$i];
+                    $FEATUREFLAG_LIBCURL = $var;
+                }
+                #elsif ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
+                #	$ENABLE_LIBCURL = 1;
+                #}
+                #elsif ((lc ($var) eq "-no-has-libcurl") or (lc ($var) eq "--no-has-libcurl")) {
+                #	$ENABLE_LIBCURL = 0;
+                #}
 		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
 			$ENABLE_WINHTTP = 1;
 		}
@@ -309,10 +324,37 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
 		}
-		else {
-			#print ("MAYBE UNRECOGNIZED ARG: $var\n");
-		}
+                else {
+                    if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+                        $i++;
+                    }
+                    elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+                    }
+                    elsif ((lc ($var) eq "-target") or (lc ($var) eq "--target")) {
+                        $i++;
+                    }
+                    elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+                        $i++;
+                    }
+                    elsif (lc ($var) eq "-no-has-libcurl" or lc ($var) eq "--no-has-libcurl") {
+                        print ("UNRECOGNIZED ARG: $var: use --libcurl no\n");
+                        DoHelp_ ();
+                    }
+                    else {
+                        print ("UNRECOGNIZED ARG: $var\n");
+                        DoHelp_ ();
+                    }
+                }
 	}
+}
+
+
+sub     CHECK_FEATURE_OPTION
+{
+    my $x = shift(@_);
+    if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
+            die ("Cannot identify ProjectPlatformSubdir\n");
+    }
 }
 
 sub	CHECK_OPTIONS_
@@ -323,7 +365,7 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
 	}
-	
+        CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
 sub	ParseCommandLine_
@@ -388,8 +430,17 @@ sub	WriteConfigFile_
 	}
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");
-	print (OUT "    <qHasFeature_libcurl>$ENABLE_LIBCURL</qHasFeature_libcurl>\n");
-	print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
+        if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem)) {
+            print (OUT "    <qHasFeature_libcurl>1</qHasFeature_libcurl>\n");
+        }
+        else {
+            print (OUT "    <qHasFeature_libcurl>0</qHasFeature_libcurl>\n");
+        }
+        print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
+
+
+
+        print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
 	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 

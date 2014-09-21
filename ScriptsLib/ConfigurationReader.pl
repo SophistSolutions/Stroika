@@ -14,6 +14,16 @@ require (GetThisScriptDir () + "StringUtils.pl");
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
+
+#
+# BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
+# HAS_FEATURE iff LIBFEATUREFLAG_UseStaticTPP OR LIBFEATUREFLAG_UseSystem
+#
+my $LIBFEATUREFLAG_BuildOnly = "build-only";
+my $LIBFEATUREFLAG_UseStaticTPP = "use";
+my $LIBFEATUREFLAG_UseSystem = "use-system";
+my $LIBFEATUREFLAG_No = "no";
+
 my $fileErr = "";
 
 # Declare the subroutines
@@ -91,10 +101,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qHasFeature_openssl'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qHasFeature_libcurl>");
-		if (defined $pps) {
-			$configuration {'qHasFeature_libcurl'} = $pps;
-		}
+                my $pps = ReadValue_($line, "<qFeatureFlag_libcurl>");
+                if (defined $pps) {
+                        $configuration {'qFeatureFlag_libcurl'} = $pps;
+                }
 		my $pps = ReadValue_($line, "<qHasFeature_zlib>");
 		if (defined $pps) {
 			$configuration {'qHasFeature_zlib'} = $pps;
