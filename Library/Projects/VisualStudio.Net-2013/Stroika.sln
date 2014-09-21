@@ -157,6 +157,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "curl", "curl", "{A60110B0-7
 		..\..\..\ThirdPartyLibs\curl\Makefile = ..\..\..\ThirdPartyLibs\curl\Makefile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{7398AECD-738D-4BD8-B2E4-7B8DB9382F72}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ScriptsLib\ApplyConfiguration.pl = ..\..\..\ScriptsLib\ApplyConfiguration.pl
+		..\..\..\ScriptsLib\BuildUtils.pl = ..\..\..\ScriptsLib\BuildUtils.pl
+		..\..\..\ScriptsLib\ConfigurationReader.pl = ..\..\..\ScriptsLib\ConfigurationReader.pl
+		..\..\..\ScriptsLib\GenerateConfiguration.pl = ..\..\..\ScriptsLib\GenerateConfiguration.pl
+		..\..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl = ..\..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl
+		..\..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
+		..\..\..\ScriptsLib\StringUtils.pl = ..\..\..\ScriptsLib\StringUtils.pl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
