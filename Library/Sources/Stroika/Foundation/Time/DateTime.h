@@ -32,6 +32,17 @@
  *
  * TODO:
  *
+ *      @todo   Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const
+ *              and just return a new date. Would matter from an API standpoint if the internl rep was BIGGER
+ *              (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
+ *              SharedByValue<> template. Maybe a boondoggle?
+ *
+ *              This is an ESPECIALLY good idea since we've now done this for the 'Date' class.
+ *
+ *				<<< NOTE - DID DEPRECATE AND NEW CTOR 2014-09-21>>>
+ *
+ *
+ *
  *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
  *              use ModuleInit<> code to assure proper construction order.
  *
@@ -72,13 +83,6 @@
  *      @todo   Error checking in conversions (date to string/Format/String2Date - should be doign THROWS on
  *              bad conversions I think - moistly an issue for the locale-based stuff. Now it maybe just
  *              silently returns empty date/time/etc. Better to except!
-
- *      @todo   Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const
- *              and just return a new date. Would matter from an API standpoint if the internl rep was BIGGER
- *              (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
- *              SharedByValue<> template. Maybe a boondoggle?
- *
- *              This is an ESPECIALLY good idea since we've now done this for the 'Date' class.
  *
  *      @todo   Future directions consider representing as big struct
  *          o   And maybe store cached string reps for common cases as optimization and
@@ -113,9 +117,17 @@ namespace   Stroika {
              *      There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
              *
              *      'empty' concept:
-             *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number of seconds or days (JulienRep),
-             *          treat empty as DateTime::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
+             *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
+			 *			of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
+			 *			return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
              *          This is a bit like the floating point concept of negative infinity.
+			 *
+			 *			This concept is the same as the Date::empty () concept.
+			 *
+			 *	<<<CONSIDERING MAYBE REQUIRING>>>
+			 *			Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
+			 *			the value of timezone is undefined.
+			 *	<<</CONSIDERING MAYBE REQUIRING>>>
              *
              *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
              *          static de-initializaiton.
@@ -146,7 +158,11 @@ namespace   Stroika {
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
-                DateTime (const Date& date = Date (), const TimeOfDay& timeOfDay = TimeOfDay (), Timezone tz = Timezone::eUnknown);
+                DateTime ();
+                DateTime (const Date& d);
+                DateTime (const DateTime& dt, const Date& updateDate);
+                DateTime (const DateTime& dt, const TimeOfDay& updateTOD);
+                DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown);
 
             public:
                 /**
@@ -295,10 +311,13 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
-                nonvirtual  TimeOfDay   GetTimeOfDay () const;  // ditto
-                nonvirtual  void        SetDate (const Date& d);
-                nonvirtual  void        SetTimeOfDay (const TimeOfDay& tod);
 
+			public:
+                nonvirtual  TimeOfDay   GetTimeOfDay () const;  // ditto
+
+			public:
+                _DeprecatedFunction_ (nonvirtual  void        SetDate (const Date& d), "d = DateTime (dt, d) - to be removed after v2.0a46");
+                _DeprecatedFunction_ (nonvirtual  void        SetTimeOfDay (const TimeOfDay& tod), "dt = DateTime (dt, tod) - to be removed after v2.0a46");
 
             public:
                 /*

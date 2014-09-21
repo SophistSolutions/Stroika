@@ -221,7 +221,7 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
 DateTime    DateTime::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
-        return Date ();
+        return DateTime ();
     }
     switch (pf) {
         case    ParseFormat::eCurrentLocale: {
@@ -291,7 +291,7 @@ DateTime    DateTime::Parse (const String& rep, ParseFormat pf)
             break;
         default: {
                 AssertNotReached ();
-                return Date ();
+                return DateTime ();
             }
             break;
     }
@@ -300,7 +300,7 @@ DateTime    DateTime::Parse (const String& rep, ParseFormat pf)
 DateTime    DateTime::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
-        return Date ();
+        return DateTime ();
     }
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
     ios::iostate state  =   ios::goodbit;
@@ -324,7 +324,7 @@ DateTime    DateTime::Parse (const String& rep, const locale& l)
 DateTime    DateTime::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
-        return Date ();
+        return DateTime ();
     }
 #if     qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
     {

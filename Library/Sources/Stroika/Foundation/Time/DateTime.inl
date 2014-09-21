@@ -23,6 +23,30 @@ namespace   Stroika {
              ********************************** DateTime ************************************
              ********************************************************************************
              */
+            inline  DateTime::DateTime ()
+                : fTimezone_ (Timezone::eUnknown)
+                , fDate_ ()
+                , fTimeOfDay_ ()
+            {
+            }
+            inline  DateTime::DateTime (const Date& d)
+                : fTimezone_ (Timezone::eUnknown)
+                , fDate_ (d)
+                , fTimeOfDay_ ()
+            {
+            }
+            inline  DateTime::DateTime (const DateTime& dt, const Date& updateDate)
+                : fTimezone_ (dt.GetTimezone ())
+                , fDate_ (updateDate)
+                , fTimeOfDay_ (dt.GetTimeOfDay ())
+            {
+            }
+            inline  DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD)
+                : fTimezone_ (dt.GetTimezone ())
+                , fDate_ (dt.GetDate ())
+                , fTimeOfDay_ (updateTOD)
+            {
+            }
             inline  DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
                 : fTimezone_ (tz)
                 , fDate_ (date)
