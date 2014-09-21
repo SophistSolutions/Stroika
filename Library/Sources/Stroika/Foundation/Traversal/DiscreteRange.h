@@ -183,6 +183,14 @@ namespace   Stroika {
                 nonvirtual  DiscreteRange<T, TRAITS>    UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const;
 
             public:
+                /**
+                 *  This returns the number of points from lower bound to upperbound inclusive.
+                 *  This equals GetDistancespanned () + 1 (roughly).
+                 *  If (empty ()) .... this returns 0;
+                 */
+                nonvirtual  typename TraitsType::UnsignedDifferenceType GetNumberOfContainedPoints () const;
+
+            public:
                 using   inherited_RangeType::Contains;
 
             public:

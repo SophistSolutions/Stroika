@@ -200,6 +200,16 @@ namespace   Stroika {
                 return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
             }
             template    <typename T, typename TRAITS>
+            typename DiscreteRange<T, TRAITS>::TraitsType::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
+            {
+                if (empty ()) {
+                    return 0;
+                }
+                else {
+                    return GetDistancespanned () + 1;
+                }
+            }
+            template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const
             {
                 Ensure (inherited_RangeType::empty () == Iterable<T>::empty ());
