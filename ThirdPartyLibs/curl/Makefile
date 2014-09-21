@@ -45,7 +45,7 @@ $(TRGDIR):	$(ZIPEDFILE)
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 
 $(BUILDS_DIR):	$(TRGDIR)
-	@echo Building libcurl $(VERSION): $(TRGDIR) to $(BUILDS_DIR)...
+	@echo Building libcurl $(TRGDIR) into $(BUILDS_DIR)...
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
