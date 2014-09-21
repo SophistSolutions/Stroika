@@ -463,7 +463,7 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "qHasLibrary_Xerces=0\n");
 	}	
 
-    print (OUT "qFeatureFlag_libcurl=$FEATUREFLAG_LIBCURL\n");
+    print (OUT "qFeatureFlag_libcurl='$FEATUREFLAG_LIBCURL'\n");
 
 	print (OUT "#Third Party Product Libs to Build:\n");
 	# VERY ROUGH DRAFT - NEED UPSTREAM BETTER INFO ABOUT WHAT TO BUILD
