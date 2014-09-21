@@ -206,7 +206,7 @@ namespace   Stroika {
                     return 0;
                 }
                 else {
-                    return GetDistancespanned () + 1;
+                    return this->GetDistancespanned () + 1;
                 }
             }
             template    <typename T, typename TRAITS>
