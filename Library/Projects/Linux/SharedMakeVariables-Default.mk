@@ -133,7 +133,8 @@ ifndef StroikaFoundationSupportLibs
 	endif
 
 	ifeq ($(qFeatureFlag_libcurl), 'use')
-		StroikaFoundationSupportLibs	+=  $(RelPathToStroikaDevRoot)ThirdPartyLibs/curl/Builds/lib/libcurl.a
+		StroikaFoundationSupportLibs += $(shell $(RelPathToStroikaDevRoot)ThirdPartyLibs/curl/Builds/bin/curl-config --static-lib)
+		#StroikaFoundationSupportLibs	+=  $(RelPathToStroikaDevRoot)ThirdPartyLibs/curl/Builds/lib/libcurl.a
 	endif
 	ifeq ($(qFeatureFlag_libcurl), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lcurl
