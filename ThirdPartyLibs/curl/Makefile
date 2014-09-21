@@ -32,31 +32,47 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@echo Building libcurl $(VERSION)...
-	@make --no-print-directory $(TRGDIR)
+	@make --no-print-directory doCreate
 	@make --no-print-directory doBuilds
 	@make --no-print-directory check
 
 $(ZIPEDFILE):
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
+
 $(TRGDIR):	$(ZIPEDFILE)
-	@echo Creating $(TRGDIR)...
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+	@make -f --no-print-directory doCreate
+
+
+doCreate:
+	@if [ -e  $(BUILDS_DIR) ]; then\
+		echo "   ...CURRENT dir already exists";\
+	else\
+		echo "   ...Creating $(TRGDIR)...";\
+		tar xf $(ZIPEDFILE) --no-same-owner;\
+		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
+	fi
 
 
 $(BUILDS_DIR):	$(TRGDIR)
 	make -f --no-print-directory doBuilds
 
+
 doBuilds:
-	@echo Building libcurl $(TRGDIR) into $(BUILDS_DIR)...
 ifneq (,$(findstring CYGWIN,$(UNAME)))
+	@echo "   ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 else
-	cd CURRENT && ./buildconf > BUILD-CONFIG.OUT 2>&1
-	@echo @TODO - fix to use my copy of ssl, if we build SSL...
-	cd CURRENT && ./configure --prefix=$(BUILDS_DIR) --without-openssl --disable-shared  > CONFIGURE.OUT 2>&1
-	make --directory CURRENT --no-print-directory install > CURRENT/MAKE.OUT 2>&1
+	@if [ -e  $(BUILDS_DIR) ]; then\
+		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
+	else\
+		echo "   ...Building libcurl $(TRGDIR) into $(BUILDS_DIR)...";\
+		cd CURRENT;\
+		./buildconf > BUILD-CONFIG.OUT 2>&1;\
+		echo "   ...TODO - fix to use my copy of ssl, if we build SSL...";\
+		./configure --prefix=$(BUILDS_DIR) --without-openssl --disable-shared  > CONFIGURE.OUT 2>&1;\
+		make --no-print-directory install > MAKE.OUT 2>&1;\
+	fi
 endif
 
 check:
