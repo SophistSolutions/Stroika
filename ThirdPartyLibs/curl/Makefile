@@ -45,7 +45,7 @@ $(TRGDIR):	$(ZIPEDFILE)
 
 
 doCreate:
-	@if [ -e  $(BUILDS_DIR) ]; then\
+	@if [ -e  $(TRGDIR) ]; then\
 		echo "   ...CURRENT dir already exists";\
 	else\
 		echo "   ...Creating $(TRGDIR)...";\
@@ -61,7 +61,11 @@ $(BUILDS_DIR):	$(TRGDIR)
 doBuilds:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo "   ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
+	@rm -rf $(BUILDS_DIR)
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
+	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
+
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR)/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
 else
 	@if [ -e  $(BUILDS_DIR) ]; then\
 		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
