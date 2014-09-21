@@ -41,8 +41,10 @@ ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 endif
 
 clobber:
+	@echo "ThirdPartyProducts clobber..."
 	@(cd doxygen; perl buildall.pl clobber)
 	@make --directory openssl --no-print-directory clobber
-	@make --directory libcurl --no-print-directory clobber
+	@make --directory curl --no-print-directory clobber
 	@make --directory Xerces --no-print-directory clobber
 	@make --directory zlib --no-print-directory clobber
+	@echo "ThirdPartyProducts clobber...done"
