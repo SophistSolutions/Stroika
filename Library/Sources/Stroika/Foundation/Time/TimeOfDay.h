@@ -156,7 +156,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy || 1
                 static  const   TimeOfDay   kMin;
 #else
-                static  constexpr   TimeOfDay   kMin (0);
+                static  constexpr   TimeOfDay   kMin { 0 };
 #endif
 
             public:
@@ -167,7 +167,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy || 1
                 static  const   TimeOfDay   kMax;
 #else
-                static  constexpr   TimeOfDay   kMax (kMaxSecondsPerDay - 1);
+                static  constexpr   TimeOfDay   kMax { kMaxSecondsPerDay - 1 };
 #endif
 
             public:
