@@ -45,7 +45,9 @@ namespace   Stroika {
              *          static de-initializaiton.
              */
             using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
-        }
+
+		
+		}
     }
 }
 
