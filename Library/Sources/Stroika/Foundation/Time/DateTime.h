@@ -41,7 +41,14 @@
  *
  *              <<< NOTE - DID DEPRECATE AND NEW CTOR 2014-09-21>>>
  *
+ *      @todo   ONCE we-ve gotten rid of SetDate/SetTimeOfDay () - ABOVE - 2014-09-21 -
+ *              Think about if DateTime::empty () should work with way it does? Allow empty date
+ *              but not empty time and still treat overall as empthy? Confusing and SB documented better!
  *
+ *              Probably REQUIRE that Date not empty if TiemOfDay empoty on CTOR, then can assert thorughotu.
+ *              OR - mahbe better to jsut fix CTORs to enforce this automatically (when date empty ignroe tod).
+ *
+ *              Probably better to assert, cuz probably confusing to silmently change.
  *
  *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
  *              use ModuleInit<> code to assure proper construction order.
