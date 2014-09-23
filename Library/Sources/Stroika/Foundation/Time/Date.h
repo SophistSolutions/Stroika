@@ -27,14 +27,6 @@
  *
  * TODO:
  *
- *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
- *              stuff for kMin/kMax
- *
- *              For now using ModuleInit<> code to assure proper construction order.
- *
- *              After I get this working, consider fixing derivitate classes like DateTime and
- *              DateRange, etc, to also use constexpr - but this one must work first!
- *
  *      @todo   See if Year should maybe be based on uint16_t.
  *
  *      @todo   Maybe get rid of eFirstDayOfWeek/eLastDayOfWeek, and eFirstDayOfMonth/...
@@ -291,18 +283,28 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  bool    empty () const;
+                /**
+                 */
+                nonvirtual  bool            empty () const;
 
             public:
+                /**
+                 */
                 nonvirtual  Year            GetYear () const;
 
             public:
+                /**
+                 */
                 nonvirtual  MonthOfYear     GetMonth () const;
 
             public:
+                /**
+                 */
                 nonvirtual  DayOfMonth      GetDayOfMonth () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
@@ -331,15 +333,19 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 */
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-
-            public:
                 nonvirtual  String Format (const locale& l) const;
+#if     qPlatform_Windows
+                nonvirtual  String Format (LCID lcid) const;
+                nonvirtual  String Format (const String& format, LCID lcid = LOCALE_USER_DEFAULT) const;              // See GetDateFormat () format args
+#endif
 
 #if     qPlatform_Windows
             public:
-                nonvirtual  String Format (LCID lcid) const;
-                nonvirtual  String Format (const String& format, LCID lcid = LOCALE_USER_DEFAULT) const;              // See GetDateFormat () format args
+                /**
+                 */
                 nonvirtual  String LongFormat (LCID lcid = LOCALE_USER_DEFAULT) const;
 #endif
 
@@ -372,8 +378,8 @@ namespace   Stroika {
 
             public:
                 /**
-                *  Syntactic sugar on Difference()
-                */
+                 *  Syntactic sugar on Difference()
+                 */
                 nonvirtual  Duration operator- (const Date& rhs) const;
 
             public:
