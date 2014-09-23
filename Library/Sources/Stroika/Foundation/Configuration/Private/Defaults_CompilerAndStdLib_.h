@@ -198,6 +198,22 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+@DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
+*/
+#ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+
+#if     qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#else
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      0
+#endif
+
+#endif
+
 
 
 

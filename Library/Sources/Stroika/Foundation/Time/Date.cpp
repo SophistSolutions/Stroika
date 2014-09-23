@@ -213,6 +213,7 @@ Date::FormatException::FormatException ()
 
 
 
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 /*
  ********************************************************************************
  ************************* Private_::Date_ModuleData_ ***************************
@@ -224,6 +225,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
     , fMax (Date::JulianRepType (UINT_MAX - 1))
 {
 }
+#endif
 
 
 /*
@@ -231,7 +233,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_constexpr_Buggy || 1
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif

@@ -272,20 +272,22 @@ namespace   Stroika {
 
             public:
                 /*
-                 * Date::kMin is the first date this Date class supports representing.
+                 *  Date::kMin is the first date this Date class supports representing.
+                 *  Defined constexpr if compiler supports.
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy && 0
-                static  constexpr   Date    kMin    { JulianRepType (kMinJulianRep) };
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const  Date&        kMin;
+#else
+                static  const   Date        kMin;
 #endif
+
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy && 0
-                static  constexpr   Date    kMax   { JulianRepType (UINT_MAX - 1) };
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const Date&         kMax;
+#else
+                static  constexpr   Date    kMax   { JulianRepType (UINT_MAX - 1) };
 #endif
 
             public:
