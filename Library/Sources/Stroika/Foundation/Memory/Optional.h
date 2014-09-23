@@ -149,13 +149,13 @@ namespace   Stroika {
                 *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
                 *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
                 */
-                nonvirtual  constexpr	bool    IsMissing () const; // means no value (it is optional!)
+                nonvirtual  constexpr   bool    IsMissing () const; // means no value (it is optional!)
 
             public:
                 /**
                  *  Returns true iff the Optional<T, TRAITS> has a valid value ( not IsMissing ());
                  */
-                nonvirtual  constexpr	bool    IsPresent () const;
+                nonvirtual  constexpr   bool    IsPresent () const;
 
 #if 0
             public:
