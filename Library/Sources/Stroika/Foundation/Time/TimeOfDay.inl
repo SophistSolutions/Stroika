@@ -105,6 +105,10 @@ namespace   Stroika {
             {
                 return Compare (rhs) != 0;
             }
+#if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+            constexpr   TimeOfDay   TimeOfDay::kMin { 0 };
+            constexpr   TimeOfDay   TimeOfDay::kMax { TimeOfDay::kMaxSecondsPerDay - 1 };
+#endif
 
 
         }
