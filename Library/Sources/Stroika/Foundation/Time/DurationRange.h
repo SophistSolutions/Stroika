@@ -46,8 +46,8 @@ namespace   Stroika {
             */
             using   DurationRange   =   Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
 
-		
-		}
+
+        }
     }
 }
 
