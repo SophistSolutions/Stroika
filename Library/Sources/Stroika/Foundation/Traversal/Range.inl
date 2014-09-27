@@ -56,6 +56,15 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
+            template    <typename T2, typename TRAITS2>
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            inline  Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
+                : Range (src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ())
+            {
+            }
+            template    <typename T, typename TRAITS>
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
 #endif
@@ -189,7 +198,8 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& rhs) const
+            template    <typename T2, typename TRAITS2>
+            inline  bool    Range<T, TRAITS>::Equals (const Range<T2, TRAITS2>& rhs) const
             {
                 if (empty ()) {
                     return rhs.empty ();
@@ -211,7 +221,8 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
-            bool    Range<T, TRAITS>::Intersects (const Range<T, TRAITS>& rhs) const
+            template    <typename T2, typename TRAITS2>
+            bool    Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
             {
                 if (empty () or rhs.empty ()) {
                     return false;

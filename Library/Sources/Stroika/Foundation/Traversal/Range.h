@@ -200,6 +200,11 @@ namespace   Stroika {
                 constexpr
 #endif
                 explicit Range ();
+                template    <typename T2, typename TRAITS2>
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                explicit Range (const Range<T2, TRAITS>& src);
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
 #endif
@@ -271,13 +276,15 @@ namespace   Stroika {
                 /**
                  *  If two ranges are both empty, they will both be equal.
                  */
-                nonvirtual  bool    Equals (const Range<T, TRAITS>& rhs) const;
+                template    <typename T2, typename TRAITS2>
+                nonvirtual  bool    Equals (const Range<T2, TRAITS2>& rhs) const;
 
             public:
                 /**
                  *  Returns true iff there are any points shared in common between this range and the rhs range.
                  */
-                nonvirtual  bool Intersects (const Range<T, TRAITS>& rhs) const;
+                template    <typename T2, typename TRAITS2>
+                nonvirtual  bool Intersects (const Range<T2, TRAITS2>& rhs) const;
 
             public:
                 /**
