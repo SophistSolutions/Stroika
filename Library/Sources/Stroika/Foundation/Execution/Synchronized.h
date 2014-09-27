@@ -18,6 +18,14 @@
  * Description:
  *
  * TODO:
+ *      @todo   Test that
+ *              Possible design flaw with new synchronized.
+ *
+ *              F(const container & )
+ *              Synchronized <container> g
+ *              F(g)
+ *
+ *              always works. We use operator T() to fix this but I'm not 100% sure that works.
  *
  */
 
