@@ -311,6 +311,33 @@ namespace {
 
 
 
+namespace {
+    namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
+        void    DoIt ()
+        {
+            struct  Base {
+                mutable bool    fCalledOp_ = false;
+            };
+            struct  Derived : Base {
+                operator Base () const
+                {
+                    fCalledOp_ = true;
+                }
+            };
+            Derived dd;
+            Base bb = dd;
+#if 0
+            // sadly this doesnt work
+            // --LGP 2014-09-27
+            VerifyTestResult (bb.fCalledOp_);
+#endif
+        }
+    }
+}
+
+
+
+
 
 
 namespace   {
@@ -319,6 +346,7 @@ namespace   {
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
         IterateWhileMutatingContainer_Test_2_::DoIt ();
         Test3_SynchonizedOptional_::DoIt_ ();
+        Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
     }
 }
 
