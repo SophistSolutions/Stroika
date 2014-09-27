@@ -251,11 +251,20 @@ namespace   Stroika {
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
-                static  const   DateTime&    kMin;
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+                static  const       DateTime&   kMin;
+#else
+                static  constexpr   DateTime    kMin    {   Date::kMin, TimeOfDay::kMin  };
+#endif
+
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const   DateTime&    kMax;
+#else
+                static  constexpr   DateTime    kMax    {   Date::kMax, TimeOfDay::kMax  };
+#endif
 
             public:
                 nonvirtual  Timezone    GetTimezone () const;

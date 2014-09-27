@@ -270,7 +270,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const  Date&        kMin;
 #else
-                static  const   Date        kMin;
+                static  constexpr   Date    kMin    { Date::JulianRepType (Date::kMinJulianRep) };
 #endif
 
                 /*
