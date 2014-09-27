@@ -39,16 +39,13 @@ namespace   Stroika {
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
             }
-            inline  bool    TimeOfDay::empty () const
+            inline  constexpr   bool    TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);
             }
-            inline  unsigned int    TimeOfDay::GetAsSecondsCount () const
+            inline  constexpr   unsigned int    TimeOfDay::GetAsSecondsCount () const
             {
-                if (empty ()) {
-                    return 0;
-                }
-                return fTime_;
+                return empty () ? 0 : fTime_;
             }
             inline  uint8_t TimeOfDay::GetHours () const
             {

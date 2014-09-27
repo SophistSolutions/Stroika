@@ -177,12 +177,12 @@ namespace   Stroika {
                 /**
                  * In special case of empty - this also returns 0
                  */
-                nonvirtual  uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
+                nonvirtual  constexpr   uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
 
             public:
                 /**
                  */
-                nonvirtual  bool        empty () const;
+                nonvirtual  constexpr   bool        empty () const;
 
             public:
                 /**
