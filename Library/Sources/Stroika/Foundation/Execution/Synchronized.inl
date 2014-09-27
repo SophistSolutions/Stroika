@@ -17,6 +17,48 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /*
+             ********************************************************************************
+             ********************************* Synchronized *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            inline  Synchronized<T>::Synchronized ()
+                : inherited ()
+                , fLock_ ()
+            {
+            }
+            template    <typename   T>
+            inline  Synchronized<T>::Synchronized (const T& from)
+                : inherited (from)
+                , fLock_ ()
+            {
+            }
+            template    <typename   T>
+            inline  Synchronized<T>::Synchronized (const Synchronized& from)
+                : inherited (static_cast<T> (from))
+                , fLock_ ()
+            {
+            }
+            template    <typename   T>
+            inline  const Synchronized<T>& Synchronized<T>::operator= (const Synchronized& rhs)
+            {
+                if (this != &rhs) {
+                    unique_lock<SpinLock> lock1 (from.fLock_, defer_lock);
+                    unique_lock<SpinLock> lock2 (fLock_, defer_lock);
+                    lock (lock1, lock2);
+                    inherited::operator= (rhs);
+                }
+                return *this;
+            }
+            template    <typename   T>
+            inline  Synchronized<T>::operator T () const
+            {
+                MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                return *static_cast<const inherited*> (this);
+            }
+
+
         }
     }
 }

@@ -1195,6 +1195,13 @@ namespace   Stroika {
             Synchronized (String&& from) noexcept  :
                 inherited (from) {}
                 explicit Synchronized (const Characters::Character& c)  : inherited (c) {}
+
+            public:
+                nonvirtual  operator inherited () const
+                {
+                    // need to lock
+                    return *static_cast<const inherited*> (this);
+                }
             };
 
 

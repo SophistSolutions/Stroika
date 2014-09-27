@@ -584,6 +584,12 @@ namespace   Stroika {
                 explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+            public:
+                nonvirtual  operator inherited () const
+                {
+                    // need to lock
+                    return *static_cast<const inherited*> (this);
+                }
             };
 
 

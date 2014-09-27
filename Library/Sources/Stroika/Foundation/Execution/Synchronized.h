@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "SpinLock.h"
+
 
 
 /**
@@ -73,10 +75,20 @@ namespace   Stroika {
              */
             template    <typename   T>
             class   Synchronized : public T {
+            private:
+                using   inherited = T;
+
             public:
-                Synchronized() = delete;
-                Synchronized(const Synchronized&) = delete;
-                const Synchronized& operator= (const Synchronized&) = delete;
+                Synchronized ();
+                Synchronized (const T& from);
+                Synchronized (const Synchronized& from);
+                const Synchronized& operator= (const Synchronized& rhs);
+
+            public:
+                nonvirtual  operator T () const;
+
+            private:
+                SpinLock    fLock_;
             };
 
 
