@@ -44,7 +44,7 @@ namespace   Stroika {
             inline  const Synchronized<T>& Synchronized<T>::operator= (const Synchronized& rhs)
             {
                 if (this != &rhs) {
-                    unique_lock<SpinLock> lock1 (from.fLock_, defer_lock);
+                    unique_lock<SpinLock> lock1 (rhs.fLock_, defer_lock);
                     unique_lock<SpinLock> lock2 (fLock_, defer_lock);
                     lock (lock1, lock2);
                     inherited::operator= (rhs);
