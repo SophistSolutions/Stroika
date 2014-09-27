@@ -50,7 +50,7 @@ namespace   Stroika {
              *
              *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
              *          static de-initializaiton (if qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy)
-            */
+             */
             using       DateRange       =   Traversal::Range<Date, Time::Private_::DateRangeTraitsType_>;
 
 

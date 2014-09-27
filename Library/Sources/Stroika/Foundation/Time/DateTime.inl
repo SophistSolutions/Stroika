@@ -55,7 +55,11 @@ namespace   Stroika {
                 , fTimeOfDay_ (updateTOD)
             {
             }
-            inline  DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
                 : fTimezone_ (tz)
                 , fDate_ (date)
                 , fTimeOfDay_ (timeOfDay)
@@ -72,11 +76,11 @@ namespace   Stroika {
                 // if the Date part is empty...
                 return fDate_.empty ();
             }
-            inline  Date    DateTime::GetDate () const
+            inline  constexpr   Date    DateTime::GetDate () const
             {
                 return fDate_;
             }
-            inline  TimeOfDay   DateTime::GetTimeOfDay () const
+            inline  constexpr   TimeOfDay   DateTime::GetTimeOfDay () const
             {
                 return fTimeOfDay_;
             }

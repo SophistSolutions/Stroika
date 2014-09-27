@@ -175,6 +175,9 @@ namespace   Stroika {
                 DateTime (const Date& d);
                 DateTime (const DateTime& dt, const Date& updateDate);
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD);
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown);
 
             public:
@@ -323,10 +326,10 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
+                nonvirtual  constexpr   Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
 
             public:
-                nonvirtual  TimeOfDay   GetTimeOfDay () const;  // ditto
+                nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const;  // ditto
 
             public:
                 _DeprecatedFunction_ (nonvirtual  void        SetDate (const Date& d), "d = DateTime (dt, d) - to be removed after v2.0a46");
