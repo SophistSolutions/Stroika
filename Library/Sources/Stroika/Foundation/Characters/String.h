@@ -1178,30 +1178,32 @@ namespace   Stroika {
 
             // early alpha placeholder test
             template    <>
-            class Synchronized<Characters::String> : public Characters::String {
+            class Synchronized<Characters::String> {
+            public:
+                using   ContainerType =     Characters::String;
+                using   ElementType   =     ContainerType::ElementType;
+            public:
+                Synchronized () : fDelegate_ () {}
+            Synchronized (const Synchronized& src) noexcept :
+                fDelegate_ (src) {}
+                Synchronized (const ContainerType& src) : fDelegate_ (src) {}
+            Synchronized (const ContainerType&& src) noexcept :
+                fDelegate_ (src) {}
+                Synchronized (const char16_t* cString) : fDelegate_ (cString) {}
+                Synchronized (const char32_t* cString) : fDelegate_ (cString) {}
+                Synchronized (const wchar_t* cString) : fDelegate_ (cString) {}
+                Synchronized (const wchar_t* from, const wchar_t* to) : fDelegate_ (from, to) {}
+                Synchronized (const Characters::Character* from, const Characters::Character* to) : fDelegate_ (from, to) {}
+                Synchronized (const wstring& r) : fDelegate_ (r) {}
+                Synchronized (const Traversal::Iterable<Characters::Character>& src)  : fDelegate_ (src) {}
+                explicit Synchronized (const Characters::Character& c)  : fDelegate_ (c) {}
+                const Synchronized& operator= (const Synchronized& rhs)     { fDelegate_ = rhs.fDelegate_; return *this; }
+                Traversal::Iterator<ElementType> begin () const             { return fDelegate_.begin (); }
+                Traversal::Iterator<ElementType> end () const               { return fDelegate_.end (); }
+                operator ContainerType () const                             { return fDelegate_;    }
             private:
-                using inherited = Characters::String;
-            public:
-                Synchronized () = default;
-                Synchronized (const char16_t* cString) : inherited (cString) {}
-                Synchronized (const char32_t* cString) : inherited (cString) {}
-                Synchronized (const wchar_t* cString) : inherited (cString) {}
-                Synchronized (const wchar_t* from, const wchar_t* to) : inherited (from, to) {}
-                Synchronized (const Characters::Character* from, const Characters::Character* to) : inherited (from, to) {}
-                Synchronized (const wstring& r) : inherited (r) {}
-                Synchronized (const Traversal::Iterable<Characters::Character>& src)  : inherited (src) {}
-            Synchronized (const String& from) noexcept  :
-                inherited (from) {}
-            Synchronized (String&& from) noexcept  :
-                inherited (from) {}
-                explicit Synchronized (const Characters::Character& c)  : inherited (c) {}
-
-            public:
-                nonvirtual  operator inherited () const
-                {
-                    // need to lock
-                    return *static_cast<const inherited*> (this);
-                }
+                ContainerType   fDelegate_;
+                mutex           fLock_;
             };
 
 
