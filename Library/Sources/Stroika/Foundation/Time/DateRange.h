@@ -39,8 +39,8 @@ namespace   Stroika {
                     static  const Date&     kLowerBound;
                     static  const Date&     kUpperBound;
 #else
-                    static  constexpr Date  kLowerBound =   Date::kMin;
-                    static  constexpr Date  kUpperBound =   Date::kMax;
+                    static  constexpr Date  kLowerBound     { Date::kMin };
+                    static  constexpr Date  kUpperBound     { Date::kMax };
 #endif
                 };
             };

@@ -17,6 +17,7 @@ namespace   Stroika {
         namespace   Time {
 
 
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             namespace Private_ {
                 struct DateTimeRange_ModuleData_ {
                     DateTimeRange_ModuleData_ ();
@@ -24,12 +25,15 @@ namespace   Stroika {
                     const DateTime  fUpperBound;
                 };
             }
+#endif
 
 
         }
     }
 }
+#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::DateTimeRange_ModuleData_>    _Stroika_Foundation_Time_DateTimeRange_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
+#endif
 #endif  /*_Stroika_Foundation_Time_DateTimeRange_inl_*/
