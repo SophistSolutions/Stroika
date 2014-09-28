@@ -527,25 +527,36 @@ namespace   Stroika {
 
             // early alpha placeholder test
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            class Synchronized<Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>> : public Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> {
-            private:
-                using inherited = Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
-
+            class Synchronized<Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>> {
             public:
-                Synchronized () = default;
-                Synchronized (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) : inherited (src) {}
-                Synchronized (Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) : inherited (move (src)) {}
-                Synchronized (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src) : inherited (src) {}
+                using   ContainerType = Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
+                using   ElementType   =   typename ContainerType::ElementType;
+            public:
+                Synchronized () : fDelegate_ () {}
+                Synchronized (const Synchronized& src) : fDelegate_ (src) {}
+                Synchronized (const ContainerType& src) : fDelegate_ (src) {}
+                Synchronized (Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) : fDelegate_ (move (src)) {}
+                Synchronized (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src) : fDelegate_ (src) {}
                 template <typename CONTAINER_OF_T>
-                explicit Synchronized (const CONTAINER_OF_T& src) : inherited (src) {}
+                explicit Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
+                const Synchronized& operator= (const Synchronized& rhs)
+                {
+                    fDelegate_ = rhs.fDelegate_;
+                    return *this;
+                }
+                typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
+                typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
             public:
-                nonvirtual  operator inherited () const
+                nonvirtual  operator ContainerType () const
                 {
                     // need to lock
-                    return *static_cast<const inherited*> (this);
+                    return fDelegate_;
                 }
+            private:
+                Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  fDelegate_;
+                mutex                                                   fLock_;
             };
 
 
