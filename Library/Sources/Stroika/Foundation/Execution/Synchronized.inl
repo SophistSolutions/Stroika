@@ -24,19 +24,19 @@ namespace   Stroika {
              */
             template    <typename   T>
             inline  Synchronized<T>::Synchronized ()
-                : inherited ()
+                : fDelegate_ ()
                 , fLock_ ()
             {
             }
             template    <typename   T>
             inline  Synchronized<T>::Synchronized (const T& from)
-                : inherited (from)
+                : fDelegate_ (from)
                 , fLock_ ()
             {
             }
             template    <typename   T>
             inline  Synchronized<T>::Synchronized (const Synchronized& from)
-                : inherited (static_cast<T> (from))
+                : fDelegate_ (static_cast<T> (from))
                 , fLock_ ()
             {
             }
@@ -47,7 +47,7 @@ namespace   Stroika {
                     unique_lock<SpinLock> lock1 (rhs.fLock_, defer_lock);
                     unique_lock<SpinLock> lock2 (fLock_, defer_lock);
                     lock (lock1, lock2);
-                    inherited::operator= (rhs);
+                    fDelegate_ = rhs.fDelegate_;
                 }
                 return *this;
             }
@@ -55,7 +55,7 @@ namespace   Stroika {
             inline  Synchronized<T>::operator T () const
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                return *static_cast<const inherited*> (this);
+                return fDelegate_;
             }
 
 

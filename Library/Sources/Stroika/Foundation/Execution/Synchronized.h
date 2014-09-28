@@ -83,10 +83,7 @@ namespace   Stroika {
              *  objects with methods.
              */
             template    <typename   T>
-            class   Synchronized : public T {
-            private:
-                using   inherited = T;
-
+            class   Synchronized {
             public:
                 Synchronized ();
                 Synchronized (const T& from);
@@ -97,6 +94,7 @@ namespace   Stroika {
                 nonvirtual  operator T () const;
 
             private:
+				T			fDelegate_;
                 SpinLock    fLock_;
             };
 
