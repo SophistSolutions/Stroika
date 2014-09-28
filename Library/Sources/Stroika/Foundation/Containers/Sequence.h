@@ -584,7 +584,7 @@ namespace   Stroika {
                 template <typename CONTAINER_OF_T>
                 explicit Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : inherited (start, end) {}
+                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
                 const Synchronized& operator= (const Synchronized& rhs)
                 {
                     fDelegate_ = rhs.fDelegate_;
