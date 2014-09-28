@@ -94,7 +94,7 @@ namespace   Stroika {
                 nonvirtual  operator T () const;
 
             private:
-				T			fDelegate_;
+                T           fDelegate_;
                 SpinLock    fLock_;
             };
 
