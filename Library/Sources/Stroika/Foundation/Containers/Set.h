@@ -418,20 +418,16 @@ namespace   Stroika {
                 explicit Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
-                const Synchronized& operator= (const Synchronized& rhs)
-                {
-                    fDelegate_ = rhs.fDelegate_;
-                    return *this;
-                }
-                typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
-                typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-                ContainerType   operator+ (const Traversal::Iterable<T>& rhs) const                     { return fDelegate_.operator + (rhs); }
+                const Synchronized& operator= (const Synchronized& rhs)                                 { fDelegate_ = rhs.fDelegate_; return *this; }
+                typename Traversal::Iterator<ElementType> begin () const                                { return fDelegate_.begin (); }
+                typename Traversal::Iterator<ElementType> end () const                                  { return fDelegate_.end (); }
+                ContainerType   operator+ (typename const Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator + (rhs); }
                 ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
                 ContainerType   operator^ (typename const Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
                 operator ContainerType () const                                                         { return fDelegate_;    }
             private:
-                Containers::Set<T, TRAITS>      fDelegate_;
-                mutex                           fLock_;
+                ContainerType   fDelegate_;
+                mutex           fLock_;
             };
 
 
