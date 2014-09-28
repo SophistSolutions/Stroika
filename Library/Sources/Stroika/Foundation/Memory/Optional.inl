@@ -309,7 +309,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (Synchronized<Memory::Optional<T, TRAITS>>&& from)
-                        : inherited ()
+                        : fDelegate_ ()
                         , fMutex_ ()
             {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
@@ -520,7 +520,7 @@ namespace   Stroika {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                return fDelegate_.Compare (*static_cast<inherited*> (&rhs));
+                return fDelegate_.Compare (rhs.fDelegate_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator< (const T& rhs) const
