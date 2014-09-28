@@ -287,10 +287,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T, typename TRAITS>
-            class   Synchronized<Memory::Optional<T, TRAITS>> : public Memory::Optional<T, TRAITS> {
-            private:
-                using   inherited = Memory::Optional<T, TRAITS>;
-
+            class   Synchronized<Memory::Optional<T, TRAITS>> {
             public:
                 /**
                  */
@@ -351,7 +348,7 @@ namespace   Stroika {
                 /**
                  *  Replace the default 'slicing' algorithm with one that locks this before copying.
                  */
-                nonvirtual  explicit operator Memory::Optional<T, TRAITS> () const;
+                nonvirtual  operator Memory::Optional<T, TRAITS> () const;
 
             private:
                 /**
@@ -411,9 +408,10 @@ namespace   Stroika {
                 nonvirtual  bool    operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
             private:
+                Memory::Optional<T, TRAITS> fDelegate_;
                 // nb: use SpinLock instead of mutex since faster and we essentially never hold the
                 // lock long enuf to keep others 'spinning'
-                mutable SpinLock       fMutex_;
+                mutable SpinLock            fMutex_;
             };
 
 

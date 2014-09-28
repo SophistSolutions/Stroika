@@ -281,31 +281,31 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized ()
-                        : inherited ()
+                        : fDelegate_ ()
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const T& from)
-                        : inherited (from)
+                        : fDelegate_ (from)
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (T&& from)
-                        : inherited (move (from))
+                        : fDelegate_ (move (from))
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const Synchronized<Memory::Optional<T, TRAITS>>& from)
-                        : inherited ()
+                        : fDelegate_ ()
                         , fMutex_ ()
             {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (from.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                *static_cast<Memory::Optional<T, TRAITS>*> (this) = *static_cast<const Memory::Optional<T, TRAITS>*> (&from);
+                fDelegate_ = *static_cast<const Memory::Optional<T, TRAITS>*> (&from);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (Synchronized<Memory::Optional<T, TRAITS>>&& from)
@@ -315,17 +315,17 @@ namespace   Stroika {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (from.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                *static_cast<Memory::Optional<T, TRAITS>*> (this) = move (*static_cast<const Memory::Optional<T, TRAITS>*> (&from));
+                fDelegate_ = move (*static_cast<const Memory::Optional<T, TRAITS>*> (&from));
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const Memory::Optional<T, TRAITS>& from)
-                        : inherited (from)
+                        : fDelegate_ (from)
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (Memory::Optional<T, TRAITS>&& from)
-                        : inherited (move (from))
+                        : fDelegate_ (move (from))
                         , fMutex_ ()
             {
                 // We dont need to lock this cuz we are constructing. We assume we dont need to lock from because
@@ -339,7 +339,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator= (rhs);
+                fDelegate_ = rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -350,7 +350,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator= (std::move (rhs));
+                fDelegate_ = std::move (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -359,7 +359,7 @@ namespace   Stroika {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                inherited::operator= (rhs);
+                fDelegate_ = rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -371,7 +371,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator= (move (rhs));
+                fDelegate_ = move (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -382,7 +382,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator= (rhs);
+                fDelegate_ = rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -394,8 +394,8 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                Require (inherited::IsPresent ());
-                return inherited::operator* ();
+                Require (fDelegate_.IsPresent ());
+                return *fDelegate_;
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
@@ -405,7 +405,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return *static_cast<const inherited*> (this);
+                return fDelegate_;
             }
             template    <typename T, typename TRAITS>
             inline  void    Synchronized<Memory::Optional<T, TRAITS>>::clear ()
@@ -415,7 +415,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::clear ();
+                fDelegate_.clear ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
@@ -425,7 +425,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return inherited::IsMissing ();
+                return fDelegate_.IsMissing ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
@@ -435,7 +435,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return inherited::IsPresent ();
+                return fDelegate_.IsPresent ();
             }
             template    <typename T, typename TRAITS>
             inline  T Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
@@ -445,7 +445,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return inherited::Value (defaultValue);
+                return fDelegate_.Value (defaultValue);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
@@ -455,7 +455,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator+= (rhs);
+                fDelegate_ += rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -466,7 +466,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator-= (rhs);
+                fDelegate_ -= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -477,7 +477,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator*= (rhs);
+                fDelegate_ *= (rhs);
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -488,7 +488,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                inherited::operator/= (rhs);
+                fDelegate_ /= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -499,7 +499,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return inherited::Compare (rhs);
+                return fDelegate_.Compare (rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
@@ -509,7 +509,7 @@ namespace   Stroika {
 #else
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
-                return inherited::Compare (rhs);
+                return fDelegate_.Compare (rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
@@ -520,7 +520,7 @@ namespace   Stroika {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                return inherited::Compare (*static_cast<inherited*> (&rhs));
+                return fDelegate_.Compare (*static_cast<inherited*> (&rhs));
             }
             template    <typename T, typename TRAITS>
             inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator< (const T& rhs) const
