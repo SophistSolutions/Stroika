@@ -410,8 +410,9 @@ namespace   Stroika {
             public:
                 Synchronized () : fDelegate_ () {}
                 Synchronized (const Synchronized& src) : fDelegate_ (src) {}
+                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                Synchronized (Containers::Set<T, TRAITS>&& src) : fDelegate_ (move (src)) {}
+                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
                 Synchronized (const set<T>& src) : fDelegate_ (src) {}
                 template <typename CONTAINER_OF_T>
@@ -421,9 +422,9 @@ namespace   Stroika {
                 const Synchronized& operator= (const Synchronized& rhs)                                 { fDelegate_ = rhs.fDelegate_; return *this; }
                 typename Traversal::Iterator<ElementType> begin () const                                { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const                                  { return fDelegate_.end (); }
-                ContainerType   operator+ (typename const Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator + (rhs); }
+                ContainerType   operator+ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator + (rhs); }
                 ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
-                ContainerType   operator^ (typename const Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
+                ContainerType   operator^ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
                 operator ContainerType () const                                                         { return fDelegate_;    }
             private:
                 ContainerType   fDelegate_;

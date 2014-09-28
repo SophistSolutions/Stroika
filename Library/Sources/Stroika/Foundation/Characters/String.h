@@ -1184,11 +1184,10 @@ namespace   Stroika {
                 using   ElementType   =     ContainerType::ElementType;
             public:
                 Synchronized () : fDelegate_ () {}
-            Synchronized (const Synchronized& src) noexcept :
-                fDelegate_ (src) {}
+                Synchronized (const Synchronized& src) : fDelegate_ (src) {}
+                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-            Synchronized (const ContainerType&& src) noexcept :
-                fDelegate_ (src) {}
+                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const char16_t* cString) : fDelegate_ (cString) {}
                 Synchronized (const char32_t* cString) : fDelegate_ (cString) {}
                 Synchronized (const wchar_t* cString) : fDelegate_ (cString) {}

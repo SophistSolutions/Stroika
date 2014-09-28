@@ -443,8 +443,9 @@ namespace   Stroika {
             public:
                 Synchronized () : fDelegate_ () {}
                 Synchronized (const Synchronized& src) : fDelegate_ (src) {}
+                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                Synchronized (Containers::MultiSet<T, TRAITS>&& src) : fDelegate_ (move (src)) {}
+                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
                 Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
                 Synchronized (const multiset<T>& src) : fDelegate_ (src) {}
                 template <typename CONTAINER_OF_T>
@@ -456,9 +457,9 @@ namespace   Stroika {
                     fDelegate_ = rhs.fDelegate_;
                     return *this;
                 }
-                typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
-                typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-                operator ContainerType () const                                         { return fDelegate_;    }
+                typename Traversal::Iterator<ElementType> begin () const                            { return fDelegate_.begin (); }
+                typename Traversal::Iterator<ElementType> end () const                              { return fDelegate_.end (); }
+                operator ContainerType () const                                                     { return fDelegate_;    }
             private:
                 Containers::MultiSet<T, TRAITS> fDelegate_;
                 mutex                           fLock_;
