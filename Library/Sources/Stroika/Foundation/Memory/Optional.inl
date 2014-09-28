@@ -315,7 +315,7 @@ namespace   Stroika {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (from.fMutex_, std::defer_lock);
                 lock (l1, l2);
-                fDelegate_ = move (*static_cast<const Memory::Optional<T, TRAITS>*> (&from));
+                fDelegate_ = move (from.fDelegate_);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const Memory::Optional<T, TRAITS>& from)
