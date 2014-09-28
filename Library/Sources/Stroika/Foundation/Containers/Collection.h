@@ -333,12 +333,7 @@ namespace   Stroika {
                 }
                 typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-            public:
-                nonvirtual  operator Containers::Collection<T> () const
-                {
-                    // need to lock
-                    return fDelegate_;
-                }
+                operator ContainerType () const                                         { return fDelegate_;    }
             private:
                 Containers::Collection<T>   fDelegate_;
                 mutex                       fLock_;

@@ -336,7 +336,19 @@ namespace {
 }
 
 
-
+namespace {
+    namespace   Test5_SetSpecificSyncMethods {
+        void    DoIt ()
+        {
+            Set<int>                                sensorsToActuallyRead       { 2, 3 };
+            static  const   Synchronized<Set<int>>  kACUSensors_                { 1, 2 };
+            Set<int>                                acufpgaSensors1     =   kACUSensors_ ^ sensorsToActuallyRead;
+            Set<int>                                acufpgaSensors2     =   sensorsToActuallyRead ^ kACUSensors_;
+            VerifyTestResult (acufpgaSensors1 == Set<int> ({ 2 }));
+            VerifyTestResult (acufpgaSensors2 == Set<int> ({ 2 }));
+        }
+    }
+}
 
 
 
@@ -347,6 +359,8 @@ namespace   {
         IterateWhileMutatingContainer_Test_2_::DoIt ();
         Test3_SynchonizedOptional_::DoIt_ ();
         Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
+        Test5_SetSpecificSyncMethods::DoIt ();
+
     }
 }
 

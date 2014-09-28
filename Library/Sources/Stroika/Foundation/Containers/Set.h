@@ -425,13 +425,10 @@ namespace   Stroika {
                 }
                 typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-            public:
-                nonvirtual  operator Containers::Set<T, TRAITS> () const
-                {
-                    // need to lock
-                    return fDelegate_;
-                }
-
+                ContainerType   operator+ (const Traversal::Iterable<T>& rhs) const                     { return fDelegate_.operator + (rhs); }
+                ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
+                ContainerType   operator^ (typename const Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
+                operator ContainerType () const                                                         { return fDelegate_;    }
             private:
                 Containers::Set<T, TRAITS>      fDelegate_;
                 mutex                           fLock_;

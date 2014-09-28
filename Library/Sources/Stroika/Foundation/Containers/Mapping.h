@@ -469,12 +469,7 @@ namespace   Stroika {
                 }
                 typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-            public:
-                nonvirtual  operator Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> () const
-                {
-                    // need to lock
-                    return fDelegate_;
-                }
+                operator ContainerType () const                                         { return fDelegate_;    }
             private:
                 Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   fDelegate_;
                 mutex                                               fLock_;

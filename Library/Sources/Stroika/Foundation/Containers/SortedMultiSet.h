@@ -168,12 +168,7 @@ namespace   Stroika {
                 }
                 typename Traversal::Iterator<ElementType> begin () const { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const { return fDelegate_.end (); }
-            public:
-                nonvirtual  operator Containers::SortedMultiSet<T, TRAITS> () const
-                {
-                    // need to lock
-                    return fDelegate_;
-                }
+                operator ContainerType () const                                                         { return fDelegate_;    }
             private:
                 Containers::SortedMultiSet<T, TRAITS>   fDelegate_;
                 mutex                                   fLock_;
