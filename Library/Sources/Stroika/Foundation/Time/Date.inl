@@ -45,11 +45,11 @@ namespace   Stroika {
             {
             }
 #endif
-            inline  Date::JulianRepType Date::GetJulianRep () const
+            inline  constexpr   Date::JulianRepType Date::GetJulianRep () const
             {
                 return (fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_);
             }
-            inline  bool    Date::empty () const
+            inline  constexpr   bool    Date::empty () const
             {
                 return fJulianDateRep_ == kEmptyJulianRep;
             }

@@ -285,7 +285,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool            empty () const;
+                nonvirtual  constexpr bool  empty () const;
 
             public:
                 /**
@@ -362,7 +362,7 @@ namespace   Stroika {
                 /**
                  * Note - in the special case of 'empty' - this returns Date::kMin.GetJulianRep ()
                  */
-                nonvirtual  JulianRepType   GetJulianRep () const;
+                nonvirtual  constexpr   JulianRepType   GetJulianRep () const;
 
             public:
                 /**
