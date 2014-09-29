@@ -233,7 +233,7 @@
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= 201103)
 #else
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    qCompilerAndStdLib_constexpr_Buggy
 #endif
 
 #endif
