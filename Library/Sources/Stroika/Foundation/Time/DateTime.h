@@ -217,7 +217,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum class  ParseFormat : uint8_t {
+                enum    class  ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -238,7 +238,7 @@ namespace   Stroika {
                  *  DateTime - use TimeOfDay by itself if thats what you want).
                  *  Timezone is ignored for the purpose of 'empty' check.
                  */
-                nonvirtual  bool    empty () const;
+                nonvirtual  constexpr   bool    empty () const;
 
             public:
                 // Return the current DateTime (in LocalTime)
