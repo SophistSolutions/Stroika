@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Configuration/Enumeration.h"
 #include    "../Debug/Assertions.h"
 #include    "Common.h"
 
@@ -47,7 +48,8 @@ namespace   Stroika {
                 )
             } {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                Require (AngleFormat::eSTART <= angle and angle < AngleFormat::eEND);
+                using   namespace   Configuration;
+                Require (ToInt (AngleFormat::eSTART) <= ToInt (angle) and ToInt (angle) < ToInt (AngleFormat::eEND));
 #endif
             }
             inline  constexpr   double  Angle::AsRadians () const
