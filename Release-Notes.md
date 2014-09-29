@@ -22,10 +22,13 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a46">v2.0a46x</a><br/>2014-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a46">v2.0a46</a><br/>2014-09-28</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Improved constexpr support, mostly with Time::Date/DateTime/etc..., as well as Math::Angle</li>
+	<li>Big change to Execution::Synchronized: instead of subclass use aggregation and operator T () conversion operator.</li>
+	<li>Small cleanups to Range/DiscreteRange</li>
+	<li>proto / 1/2 done build support improvements, tried out with libcurl - so can say --libcurl=no, or buildonly or build or usesystem</li>
 </ul>
 </td>
 </tr>
