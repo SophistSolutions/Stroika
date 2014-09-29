@@ -315,6 +315,7 @@ namespace {
     namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
         void    DoIt ()
         {
+#if 0
             struct  Base {
                 mutable bool    fCalledOp_ = false;
             };
@@ -326,7 +327,6 @@ namespace {
             };
             Derived dd;
             Base bb = dd;
-#if 0
             // sadly this doesnt work
             // --LGP 2014-09-27
             VerifyTestResult (bb.fCalledOp_);
