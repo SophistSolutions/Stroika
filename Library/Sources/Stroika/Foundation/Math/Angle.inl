@@ -23,115 +23,137 @@ namespace   Stroika {
              *********************************** Math::Angle ********************************
              ********************************************************************************
              */
-            inline  Angle::Angle ()
-                : fAngleInRadians_ (0)
-            {
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            Angle::Angle ()
+                : fAngleInRadians_ { 0 } {
             }
-            inline  Angle::Angle (double angle, AngleFormat angleFormat)
-                : fAngleInRadians_ (angle)
-            {
-                switch (angleFormat) {
-                    case AngleFormat::eRadians:
-                        break;
-
-                    case AngleFormat::eDegrees:
-                        fAngleInRadians_ *= (2 * kPi) / 360.0;
-                        break;
-
-                    case AngleFormat::eGradians:
-                        fAngleInRadians_ *= (2 * kPi) / 400.0;
-                        break;
-
-                    default:
-                        RequireNotReached ();
-                }
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            Angle::Angle (double angle, AngleFormat angleFormat)
+                : fAngleInRadians_ {
+                (angleFormat == AngleFormat::eRadians)
+                ? angle
+                : (
+                    (angleFormat == AngleFormat::eDegrees)
+                    ? (angle *  (2 * kPi) / 360.0)
+                    : (
+                        angle * (2 * kPi) / 400.0
+                    )
+                )
+            } {
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                Require (AngleFormat::eSTART <= angle and angle < AngleFormat::eEND);
+#endif
             }
-            inline  double  Angle::AsRadians () const
+            inline  constexpr   double  Angle::AsRadians () const
             {
-                return (fAngleInRadians_);
+                return fAngleInRadians_;
             }
-            inline  double  Angle::AsDegrees () const
+            inline  constexpr   double  Angle::AsDegrees () const
             {
-                return (fAngleInRadians_ * 360.0 / (2 * kPi));
+                return fAngleInRadians_ * 360.0 / (2 * kPi);
             }
-            inline  double  Angle::AsGradians () const
+            inline  constexpr   double  Angle::AsGradians () const
             {
-                return (fAngleInRadians_ * 400.0 / (2 * kPi));
+                return fAngleInRadians_ * 400.0 / (2 * kPi);
+            }
+            inline  Angle   Angle::operator+ (const Angle& rhs) const
+            {
+                return Angle (AsRadians () + rhs.AsRadians ());
+            }
+            inline  Angle   Angle::operator- (const Angle& rhs) const
+            {
+                return Angle (AsRadians () - rhs.AsRadians ());
+            }
+            inline  Angle   Angle::operator* (double rhs) const
+            {
+                return Angle (AsRadians () * rhs);
+            }
+            inline  Angle   Angle::operator/ (double rhs) const
+            {
+                return Angle (AsRadians () / rhs);
+            }
+            inline  bool    Angle::operator== (const Angle& rhs) const
+            {
+                return AsRadians () == rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator!= (const Angle& rhs) const
+            {
+                return AsRadians () != rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator< (const Angle& rhs) const
+            {
+                return AsRadians () < rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator<= (const Angle& rhs) const
+            {
+                return AsRadians () <= rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator> (const Angle& rhs) const
+            {
+                return AsRadians () > rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator>= (const Angle& rhs) const
+            {
+                return AsRadians () >= rhs.AsRadians ();
             }
             inline  const   Angle&  Angle::operator+= (const Angle& rhs)
             {
                 fAngleInRadians_ += rhs.AsRadians ();
-                return (*this);
+                return *this;
             }
             inline  const   Angle&  Angle::operator-= (const Angle& rhs)
             {
                 fAngleInRadians_ -= rhs.AsRadians ();
-                return (*this);
+                return *this;
             }
             inline  const   Angle&  Angle::operator*= (double rhs)
             {
                 fAngleInRadians_ *= rhs;
-                return (*this);
+                return *this;
             }
             inline  const   Angle&  Angle::operator/= (double rhs)
             {
                 fAngleInRadians_ /= rhs;
-                return (*this);
+                return *this;
             }
 
 
-
-            inline  Angle   operator+ (const Angle& lhs, const Angle& rhs)
-            {
-                return (Angle (lhs.AsRadians () + rhs.AsRadians ()));
-            }
-            inline  Angle   operator- (const Angle& lhs, const Angle& rhs)
-            {
-                return (Angle (lhs.AsRadians () - rhs.AsRadians ()));
-            }
-            inline  Angle   operator* (const Angle& lhs, double rhs)
-            {
-                return (Angle (lhs.AsRadians () * rhs));
-            }
+            /*
+             ********************************************************************************
+             ***************************** Math::operator* **********************************
+             ********************************************************************************
+             */
             inline  Angle   operator* (double lhs, const Angle& rhs)
             {
-                return (Angle (lhs * rhs.AsRadians ()));
+                return Angle (lhs * rhs.AsRadians ());
             }
-            inline  Angle   operator/ (const Angle& lhs, double rhs)
-            {
-                return (Angle (lhs.AsRadians () / rhs));
-            }
-            inline  bool    operator== (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () == rhs.AsRadians ());
-            }
-            inline  bool    operator!= (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () != rhs.AsRadians ());
-            }
-            inline  bool    operator< (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () < rhs.AsRadians ());
-            }
-            inline  bool    operator<= (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () <= rhs.AsRadians ());
-            }
-            inline  bool    operator> (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () > rhs.AsRadians ());
-            }
-            inline  bool    operator>= (const Angle& lhs, const Angle& rhs)
-            {
-                return (lhs.AsRadians () >= rhs.AsRadians ());
-            }
+
+
+            /*
+             ********************************************************************************
+             *********************************** Math::Min **********************************
+             ********************************************************************************
+             */
             inline  Angle   Min (const Angle& a1, const Angle& a2)
             {
-                return ((a1 < a2) ? a1 : a2);
+                return (a1 < a2) ? a1 : a2;
             }
+
+
+            /*
+             ********************************************************************************
+             *********************************** Math::Max **********************************
+             ********************************************************************************
+             */
             inline  Angle   Max (const Angle& a1, const Angle& a2)
             {
-                return ((a1 > a2) ? a1 : a2);
+                return (a1 > a2) ? a1 : a2;
             }
 
 

@@ -25,13 +25,48 @@ namespace   Stroika {
 
                     Stroika_Define_Enum_Bounds(eRadians, eGradians)
                 };
+
+            public:
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 Angle ();
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
                 Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);
 
-                nonvirtual  double  AsRadians () const;
-                nonvirtual  double  AsDegrees () const;
-                nonvirtual  double  AsGradians () const;
+            public:
+                nonvirtual  constexpr double  AsRadians () const;
 
+            public:
+                nonvirtual  constexpr double  AsDegrees () const;
+
+            public:
+                nonvirtual  constexpr double  AsGradians () const;
+
+            public:
+                /*
+                 * Arithmatic
+                 */
+                nonvirtual  Angle   operator+ (const Angle& rhs) const;
+                nonvirtual  Angle   operator- (const Angle& rhs) const;
+                nonvirtual  Angle   operator* (double rhs) const;
+                nonvirtual  Angle   operator* (Angle& rhs) const;
+                nonvirtual  Angle   operator/ (double rhs) const;
+
+            public:
+                /*
+                 * Comparisons
+                 */
+                nonvirtual  bool    operator== (const Angle& rhs) const;
+                nonvirtual  bool    operator!= (const Angle& rhs) const;
+                nonvirtual  bool    operator<  (const Angle& rhs) const;
+                nonvirtual  bool    operator<= (const Angle& rhs) const;
+                nonvirtual  bool    operator>  (const Angle& rhs) const;
+                nonvirtual  bool    operator>= (const Angle& rhs) const;
+
+            public:
                 nonvirtual  const   Angle&  operator+= (const Angle& rhs);
                 nonvirtual  const   Angle&  operator-= (const Angle& rhs);
                 nonvirtual  const   Angle&  operator*= (double rhs);
@@ -41,26 +76,10 @@ namespace   Stroika {
                 double  fAngleInRadians_;
             };
 
+            Angle   operator* (double lhs, const Angle& rhs);
 
-            /*
-             * Arithmatic
-             */
-            extern  Angle   operator+ (const Angle& lhs, const Angle& rhs);
-            extern  Angle   operator- (const Angle& lhs, const Angle& rhs);
-            extern  Angle   operator* (const Angle& lhs, double rhs);
-            extern  Angle   operator* (double lhs, const Angle& rhs);
-            extern  Angle   operator/ (const Angle& lhs, double rhs);
-
-
-            /*
-             * Comparisons
-             */
-            extern  bool    operator== (const Angle& lhs, const Angle& rhs);
-            extern  bool    operator!= (const Angle& lhs, const Angle& rhs);
-            extern  bool    operator<  (const Angle& lhs, const Angle& rhs);
-            extern  bool    operator<= (const Angle& lhs, const Angle& rhs);
-            extern  bool    operator>  (const Angle& lhs, const Angle& rhs);
-            extern  bool    operator>= (const Angle& lhs, const Angle& rhs);
+            Angle   Min (const Angle& a1, const Angle& a2);
+            Angle   Max (const Angle& a1, const Angle& a2);
 
 
         }
