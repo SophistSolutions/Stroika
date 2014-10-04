@@ -34,32 +34,9 @@ using   namespace   Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- *********************** Transfer::Request::Options *****************************
- ********************************************************************************
- */
-Request::Options::Options ()
-    : fReturnSSLInfo (false)
-{
-}
-
-
-
-
-
-
-/*
- ********************************************************************************
  ******************************* Transfer::Request *****************************
  ********************************************************************************
  */
-Request::Request ()
-    : fMethod ()
-    , fOverrideHeaders ()
-    , fData ()
-    , fOptions ()
-{
-}
-
 InternetMediaType   Request::GetContentType () const
 {
     Optional<String> i   =   fOverrideHeaders.Lookup (HTTP::HeaderName::kContentType);
@@ -73,28 +50,6 @@ void    Request::SetContentType (const InternetMediaType& ct)
 {
     fOverrideHeaders.Add (HTTP::HeaderName::kContentType, ct.As<String> ());
 }
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ****************** Transfer::Response::SSLResultInfo ***************************
- ********************************************************************************
- */
-
-Response::SSLResultInfo::SSLResultInfo ()
-    : fSubjectCommonName ()
-    , fSubjectCompanyName ()
-    , fStyleOfValidation ()
-    , fIssuer ()
-    , fValidationStatus (ValidationStatus::eNoSSL)
-{
-}
-
 
 
 

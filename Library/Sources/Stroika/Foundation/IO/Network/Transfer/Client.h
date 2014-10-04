@@ -12,6 +12,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Containers/Mapping.h"
 #include    "../../../DataExchange/InternetMediaType.h"
+#include    "../../../Memory/BLOB.h"
 #include    "../../../Memory/Optional.h"
 #include    "../URL.h"
 #include    "../HTTP/Status.h"
@@ -65,7 +66,9 @@ namespace   Stroika {
                     using   Characters::String;
                     using   Containers::Mapping;
                     using   DataExchange::InternetMediaType;
+                    using   Memory::BLOB;
                     using   Memory::Byte;
+                    using   Memory::Optional;
                     using   Time::DurationSecondsType;
 
 
@@ -77,8 +80,6 @@ namespace   Stroika {
                     /**
                      */
                     struct  Request {
-                        Request ();
-
                         String                  fMethod;
                         Mapping<String, String> fOverrideHeaders;
                         vector<Byte>            fData;  // usually empty, but provided for some methods like POST
@@ -89,8 +90,7 @@ namespace   Stroika {
                         nonvirtual  void                SetContentType (const InternetMediaType& ct);
 
                         struct  Options {
-                            Options ();
-                            bool    fReturnSSLInfo;
+                            bool    fReturnSSLInfo { false };
                         };
                         Options             fOptions;
                     };
@@ -102,30 +102,39 @@ namespace   Stroika {
                         struct  SSLResultInfo;
                         Response ();
 
-                        vector<Byte>                    fData;  // usually empty, but provided for some methods like POST
-                        Mapping<String, String>         fHeaders;
-                        HTTP::Status                    fStatus;
-                        Memory::Optional<SSLResultInfo> fServerEndpointSSLInfo;
+                        BLOB                        fData;  // usually empty, but provided for some methods like POST
+                        Mapping<String, String>     fHeaders;
+                        HTTP::Status                fStatus;
+                        Optional<SSLResultInfo>     fServerEndpointSSLInfo;
 
+                        /**
+                         */
                         nonvirtual  bool                GetSucceeded () const;
+
+                        /**
+                         */
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
+
+                        /**
+                         *  Throws HTTP::Exception if not 'GetSucceeded'
+                         */
                         nonvirtual  void    ThrowIfFailed () const;
                     };
 
 
-                    // This info is returned only for secure connections - and is an indicator of whether or
-                    // not the SSL connection was valid
-                    //
-                    // This system allows invalid SSL certs as the target - by default - and returns that info, so its up
-                    // to the caller to decide whether or not to accept the data from an invalid SSL cert
+                    /**
+                     *  This info is returned only for secure connections - and is an indicator of whether or
+                     *  not the SSL connection was valid
+                     *
+                     *  This system allows invalid SSL certs as the target - by default - and returns that info, so its up
+                     *  to the caller to decide whether or not to accept the data from an invalid SSL cert
+                     */
                     struct  Response::SSLResultInfo {
-                        SSLResultInfo ();
-
-                        wstring fSubjectCommonName;     // hostname declared
-                        wstring fSubjectCompanyName;
-                        wstring fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
-                        wstring fIssuer;
-                        enum class ValidationStatus : uint8_t {
+                        String  fSubjectCommonName;     // hostname declared
+                        String  fSubjectCompanyName;
+                        String  fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
+                        String  fIssuer;
+                        enum    class ValidationStatus : uint8_t {
                             eNoSSL,
                             eSSLOK,
                             eCertNotYetValid,   // start date too soon
@@ -135,7 +144,7 @@ namespace   Stroika {
 
                             Stroika_Define_Enum_Bounds(eNoSSL, eSSLFailure)
                         };
-                        ValidationStatus    fValidationStatus;
+                        ValidationStatus    fValidationStatus { ValidationStatus::eNoSSL };
                     };
 
 
@@ -146,47 +155,39 @@ namespace   Stroika {
                      */
                     class   Connection {
                     protected:
-                        class   _IRep {
-                        public:
-                            _IRep ();
-                            _IRep (const _IRep&) = delete;
-                            virtual ~_IRep ();
-
-                        public:
-                            nonvirtual  _IRep& operator= (const _IRep&) = delete;
-
-                        public:
-                            virtual URL                 GetURL () const                             =   0;
-                            virtual void                SetURL (const URL& url)                     =   0;
-                            virtual DurationSecondsType GetTimeout () const                         =   0;
-                            virtual void                SetTimeout (DurationSecondsType timeout)    =   0;
-                            virtual void                Close ()                                    =   0;
-                            virtual Response            Send (const Request& r)						=   0;
-                        };
+                        class   _IRep;
 
                     protected:
                         Connection (const shared_ptr<_IRep>& rep);
 
                     public:
-                        // Send should timeout after this amount of time. Note - the initial Send may do
-                        // much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
+                        /**
+                         * Send should timeout after this amount of time. Note - the initial Send may do
+                         * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
+                         */
                         nonvirtual  DurationSecondsType     GetTimeout () const;
                         nonvirtual  void                    SetTimeout (DurationSecondsType timeout);
 
                     public:
+                        /**
+                         */
                         nonvirtual  URL     GetURL () const;
+
+                    public:
+                        /**
+                         */
                         nonvirtual  void    SetURL (const URL& url);
 
                     public:
-                        // force closed Connection. Can still call Send again, but that autocreates new Connection
+                        /**
+                         *  force closed Connection. Can still call Send again, but that autocreates new Connection
+                         */
                         nonvirtual  void    Close ();
 
+                    public:
+                        _DeprecatedFunction_ (Response    SendAndRequest (const Request& r), "Use Send() - to be removed after v2.0a46");
 
-					
-					public:
-		                _DeprecatedFunction_ (Response    SendAndRequest (const Request& r), "Use Send() - to be removed after v2.0a46");
-
-					public:
+                    public:
                         nonvirtual  Response    Send (const Request& r);
 
                         // Simple wrappers, with hardwired methods
@@ -215,6 +216,27 @@ namespace   Stroika {
                      * to construct an unconnected object.
                      */
                     Connection  CreateConnection ();
+
+
+                    /**
+                     */
+                    class   Connection::_IRep {
+                    public:
+                        _IRep ();
+                        _IRep (const _IRep&) = delete;
+                        virtual ~_IRep ();
+
+                    public:
+                        nonvirtual  _IRep& operator= (const _IRep&) = delete;
+
+                    public:
+                        virtual URL                 GetURL () const                             =   0;
+                        virtual void                SetURL (const URL& url)                     =   0;
+                        virtual DurationSecondsType GetTimeout () const                         =   0;
+                        virtual void                SetTimeout (DurationSecondsType timeout)    =   0;
+                        virtual void                Close ()                                    =   0;
+                        virtual Response            Send (const Request& r)                     =   0;
+                    };
 
 
                 }
