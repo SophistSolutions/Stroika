@@ -30,6 +30,11 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
+// Uncomment this line to enable libcurl to print diagnostics to stderr
+//#define       USE_LIBCURL_VERBOSE_    1
+
+
+
 #if     qHasFeature_libcurl
 namespace   {
     struct  ModuleInit_ {
@@ -186,7 +191,7 @@ void    Connection_LibCurl::Rep_::Close ()
 
 size_t  Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
 {
-    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
+    return reinterpret_cast<Rep_*> (userP)->s_RequestPayloadReadHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
 }
 
 size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize)
@@ -250,6 +255,11 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     //grab useragent from request headers...
     //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
+    Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
+    if (request.fAssumeLCDHTTPServer) {
+        overrideHeaders.AddAll ({ pair<String, String> { L"Expect", L""}, pair<String, String> { L"Transfer-Encoding", L""}});
+    }
+
     if (request.fMethod == HTTP::Methods::kGet) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
             LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
@@ -263,13 +273,16 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
             fCURLCacheUTF8_Method_.clear ();
         }
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
     }
     else if (request.fMethod == HTTP::Methods::kPut) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
             LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
             fCURLCacheUTF8_Method_.clear ();
         }
-        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, 1));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE , fUploadData_.size ()));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
     }
     else {
@@ -283,7 +296,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH    =   nullptr;
-    for (auto i : request.fOverrideHeaders) {
+    for (auto i : overrideHeaders) {
         tmpH = curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
@@ -319,6 +332,10 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
          * Now setup COMMON options we ALWAYS set.
          */
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
+
+#if     USE_LIBCURL_VERBOSE_
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
+#endif
 
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));

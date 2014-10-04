@@ -96,6 +96,7 @@ namespace   Stroika {
                          */
                         struct  Options {
                             bool    fReturnSSLInfo { false };
+                            bool    fAssumeLCDHTTPServer { false };
                         };
                         Options             fOptions;
                     };
