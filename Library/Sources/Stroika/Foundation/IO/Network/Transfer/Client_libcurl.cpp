@@ -47,7 +47,6 @@ namespace   {
 #if     qHasFeature_libcurl
 class   Connection_LibCurl::Rep_ : public _IRep {
 public:
-    Rep_ ();
     Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
 
@@ -78,13 +77,14 @@ private:
     nonvirtual  size_t  ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
 
 private:
-    void*                   fCurlHandle_;
+    void*                   fCurlHandle_ { nullptr };
     string                  fCURLCacheUTF8_URL_;    // cuz of quirky memory management policies of libcurl
+    string                  fCURLCacheUTF8_Method_;     // cuz of quirky memory management policies of libcurl
     vector<Byte>            fUploadData_;
     size_t                  fUploadDataCursor_ {};
     vector<Byte>            fResponseData_;
     Mapping<String, String> fResponseHeaders_;
-    curl_slist*             fSavedHeaders_;
+    curl_slist*             fSavedHeaders_ { nullptr };
 };
 #endif
 
@@ -254,6 +254,37 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     //grab useragent from request headers...
     //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+    if (request.fMethod == HTTP::Methods::kGet) {
+        if (not fCURLCacheUTF8_Method_.empty ()) {
+            LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            fCURLCacheUTF8_Method_.clear ();
+        }
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 1));
+    }
+    else if (request.fMethod == HTTP::Methods::kPost) {
+        if (not fCURLCacheUTF8_Method_.empty ()) {
+            LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            fCURLCacheUTF8_Method_.clear ();
+        }
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
+    }
+    else if (request.fMethod == HTTP::Methods::kPut) {
+        if (not fCURLCacheUTF8_Method_.empty ()) {
+            LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , nullptr));
+            fCURLCacheUTF8_Method_.clear ();
+        }
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, 1));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
+    }
+    else {
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
+        if (not fCURLCacheUTF8_Method_.empty ()) {
+            fCURLCacheUTF8_Method_ = request.fMethod.AsUTF8 ();
+            LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , fCURLCacheUTF8_Method_.c_str ()));
+        }
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST , 1));
+    }
 
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH    =   nullptr;
