@@ -39,6 +39,8 @@ namespace   Stroika {
                         extern  const   wchar_t kUserAgent[];
                         extern  const   wchar_t kSOAPAction[];
                         extern  const   wchar_t kAcceptEncoding[];
+                        extern  const   wchar_t kExpect[];
+                        extern  const   wchar_t kTransferEncoding[];
 
 
                     }

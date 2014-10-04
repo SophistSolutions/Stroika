@@ -27,27 +27,33 @@
  *
  * TODO:
  *
+ *      @todo   tests with curl http://httpbin.org/ip
  *
  *      @todo   Add thread safety (locks/semaphores)
+ *
+ *                  Decide on and DOCUMENT threading policy. For example - do we need
+ *                  locks internally in the connection object or DEFINE that its
+ *                  the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
+ *
+ *                  ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+ *
+ *      @todo   Add (optionally callable) Connect() method. Send etc connect on-demand as needed
+ *              but sometimes its useful to pre-create connections (to reduce latnecy).
  *
  *      @todo   Add factory for 'CreateConnection'  - so you can do 'dependnecy injection' or other
  *              way to configure http client support library (winhttp versus libcurl or other).
  *
- *      (o)     Decide on and DOCUMENT threading policy. For example - do we need locks internally in the connection object or DEFINE that its
- *              the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
+ *      @todo   Progress Callbacks?
  *
- *      (o)     Progress Callbacks?
+ *      @todo   Fixup Requqest/Response code to just be driven off fHeaders  list -
+ *              and have Get/Set ContentType, etc - and other fields - which map to that list.
+ *              MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
  *
- *      (o)     ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
+ *      @todo   Redo response / src API using streams?
  *
- *      (o)     Fixup Requqest/Response code to just be driven off fHeaders  list - and have Get/Set ContentType, etc - and other fields -
- *              which map to that list. MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
+ *      @todo   Add Client side certs
  *
- *      (o)     Redo response / src API using streams?
- *
- *      (o)     Add Client side certs
- *
- *      (o)     Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
+ *      @todo   Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
  *              PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
  *              MAYBE just add FLAG saying whether to VALIDATE_HOST? Maybe callback API"?
  *
@@ -64,6 +70,10 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
                 namespace   Transfer {
+
+
+//avoid windows header clash...
+#undef DELETE
 
 
                     using   Characters::String;
@@ -227,8 +237,6 @@ namespace   Stroika {
                          */
                         nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
-//avoid windows header clash...
-#undef DELETE
                     public:
                         /*
                          *  Simple wrappers, with hardwired methods

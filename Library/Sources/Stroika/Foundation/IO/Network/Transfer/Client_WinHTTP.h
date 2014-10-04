@@ -32,7 +32,7 @@ namespace   Stroika {
                     // LibCurl connection rep objects
                     class   Connection_WinHTTP : public Connection {
                     public:
-                        Connection_WinHTTP (const Connection::Options& options);
+                        Connection_WinHTTP (const Options& options = Options ());
 
                     private:
                         class   Rep_;

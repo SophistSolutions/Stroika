@@ -62,7 +62,7 @@ namespace   Stroika {
                     // LibCurl connection rep objects
                     class   Connection_LibCurl : public Connection {
                     public:
-                        Connection_LibCurl (const Connection::Options& options);
+                        Connection_LibCurl (const Options& options = Options ());
 
                     private:
                         class   Rep_;

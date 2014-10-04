@@ -263,10 +263,11 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
-        overrideHeaders.AddAll (initializer_list<pair<String, String>> {
+        static  const   Syncrhonized<Mapping<String, String>>    kSilenceTheseHeaders_ = initializer_list<pair<String, String>> {
             { String_Constant (L"Expect"), String ()},
             { String_Constant (L"Transfer-Encoding"), String ()}
-        });
+        };
+        overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
 
     if (request.fMethod == HTTP::Methods::kGet) {
@@ -368,7 +369,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************** Transfer::Connection_LibCurl ****************************
  ********************************************************************************
  */
-Connection_LibCurl::Connection_LibCurl (const Connection::Options& options)
+Connection_LibCurl::Connection_LibCurl (const Options& options)
     : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ (options)))
 {
 }

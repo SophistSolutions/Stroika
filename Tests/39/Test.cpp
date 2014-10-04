@@ -70,14 +70,14 @@ namespace   {
     void    Test_1_SimpleFetch_Google_C_ (Connection c)
     {
         c.SetURL (URL (L"http://www.google.com"));
-        Response    r   =   c.Get ();
+        Response    r   =   c.GET ();
         VerifyTestResult (r.GetSucceeded ());
         VerifyTestResult (r.fData.size () > 1);
     }
     void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
     {
         c.SetURL (URL (L"https://www.google.com"));
-        Response    r   =   c.Get ();
+        Response    r   =   c.GET ();
         VerifyTestResult (r.GetSucceeded ());
         VerifyTestResult (r.fData.size () > 1);
     }
@@ -92,8 +92,8 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
     {
-        Test_1_SimpleFetch_Google_C_ ((factory) ());
-        Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
+        Test_1_SimpleFetch_Google_C_ (factory ());
+        Test_2_SimpleFetch_SSL_Google_C_ (factory ());
     }
 
     void    DoRegressionTests_ ()
@@ -101,7 +101,7 @@ namespace   {
         TestURLParsing_ ();
 
         try {
-            DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
