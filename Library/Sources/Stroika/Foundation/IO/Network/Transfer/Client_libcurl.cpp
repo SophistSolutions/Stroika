@@ -12,6 +12,8 @@
 #include    "../../../Debug/Trace.h"
 #include    "../../../Execution/Exceptions.h"
 
+#include    "../HTTP/Methods.h"
+
 #include    "Client_libcurl.h"
 
 using   namespace   Stroika::Foundation;
@@ -47,6 +49,7 @@ namespace   {
 #if     qHasFeature_libcurl
 class   Connection_LibCurl::Rep_ : public _IRep {
 public:
+    Rep_ () = default;
     Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
 
@@ -133,14 +136,6 @@ void    LibCurlException::DoThrowIfError (CURLcode status)
  ****************** Transfer::Connection_LibCurl::Rep_ **************************
  ********************************************************************************
  */
-Connection_LibCurl::Rep_::Rep_ ()
-    : fCurlHandle_ (nullptr)
-    , fCURLCacheUTF8_URL_ ()
-    , fResponseData_ ()
-    , fSavedHeaders_ (nullptr)
-{
-}
-
 Connection_LibCurl::Rep_::~Rep_ ()
 {
     if (fCurlHandle_ != nullptr) {
