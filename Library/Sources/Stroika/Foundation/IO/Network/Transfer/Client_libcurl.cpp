@@ -263,7 +263,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
-        static  const   Syncrhonized<Mapping<String, String>>    kSilenceTheseHeaders_ = initializer_list<pair<String, String>> {
+        static  const   Synchronized<Mapping<String, String>>    kSilenceTheseHeaders_ = initializer_list<pair<String, String>> {
             { String_Constant (L"Expect"), String ()},
             { String_Constant (L"Transfer-Encoding"), String ()}
         };
