@@ -339,6 +339,12 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+
+            public:
+                /**
+                 */
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
@@ -471,6 +477,8 @@ namespace   Stroika {
                 typename Traversal::Iterator<ElementType> begin () const                            { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const                              { return fDelegate_.end (); }
                 operator ContainerType () const                                                     { return fDelegate_;    }
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                ContainerType   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const              { return fDelegate_ + items;    }
             private:
                 Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   fDelegate_;
                 mutex                                               fLock_;

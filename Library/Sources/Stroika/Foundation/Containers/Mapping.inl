@@ -318,6 +318,14 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>       Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
+            {
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   result = *this;
+                result.AddAll (items);
+                return result;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 AddAll (items);
