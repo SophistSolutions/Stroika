@@ -22,7 +22,8 @@
 
 /**
  *
- * STATUS:     Draft API
+ *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *
  *
  * TODO:
  *
@@ -72,11 +73,6 @@ namespace   Stroika {
                     using   Time::DurationSecondsType;
 
 
-#if     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
-                    const   Mapping<String, String>   kEmptyMapString2MapVal_;
-#endif
-
-
                     /**
                      */
                     struct  Request {
@@ -84,11 +80,18 @@ namespace   Stroika {
                         Mapping<String, String> fOverrideHeaders;
                         vector<Byte>            fData;  // usually empty, but provided for some methods like POST
 
-                        // scans fOverrideHeaders
+						/**
+						 *	Scans fOverrideHeaders
+						 */
                         nonvirtual  InternetMediaType   GetContentType () const;
-                        // updates fOverrideHeaders
+
+						/**
+                         * updates fOverrideHeaders
+						 */
                         nonvirtual  void                SetContentType (const InternetMediaType& ct);
 
+						/**
+						 */
                         struct  Options {
                             bool    fReturnSSLInfo { false };
                         };
@@ -158,12 +161,19 @@ namespace   Stroika {
                         class   _IRep;
 
                     protected:
+                        /**
+                         */
                         Connection (const shared_ptr<_IRep>& rep);
 
                     public:
                         /**
                          * Send should timeout after this amount of time. Note - the initial Send may do
                          * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
+                         */
+                        nonvirtual  DurationSecondsType     GetTimeout () const;
+
+					public:
+                        /**
                          */
                         nonvirtual  DurationSecondsType     GetTimeout () const;
                         nonvirtual  void                    SetTimeout (DurationSecondsType timeout);
@@ -188,23 +198,39 @@ namespace   Stroika {
                         _DeprecatedFunction_ (Response    SendAndRequest (const Request& r), "Use Send() - to be removed after v2.0a46");
 
                     public:
+                        /*
+						 */
                         nonvirtual  Response    Send (const Request& r);
 
-                        // Simple wrappers, with hardwired methods
-                    public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
+					public:
+                        /*
+						 *	Simple wrappers, with hardwired methods
+						 */
                         nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+					public:
+                        /*
+						 *	Simple wrappers, with hardwired methods
+						 */
                         nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+					public:
+                        /*
+						 *	Simple wrappers, with hardwired methods
+						 */
                         nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+					public:
+                        /*
+						 *	Simple wrappers, with hardwired methods
+						 */
                         nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+					public:
+                        /*
+						 *	Simple wrappers, with hardwired methods
+						 */
                         nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-#else
-                        nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
-                        nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
-                        nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
-                        nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
-                        nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
-#endif
 
                     private:
                         shared_ptr<_IRep>    fRep_;
