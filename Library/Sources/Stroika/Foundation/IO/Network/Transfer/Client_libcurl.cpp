@@ -9,6 +9,7 @@
 
 #include    "../../../Characters/Format.h"
 #include    "../../../Characters/String_Constant.h"
+#include    "../../../Debug/Trace.h"
 #include    "../../../Execution/Exceptions.h"
 
 #include    "Client_libcurl.h"
@@ -22,6 +23,9 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 #if     qHasFeature_libcurl
@@ -71,7 +75,7 @@ private:
 
 private:
     void*                   fCurlHandle_;
-    string                  fCURLCache_URL_;    // cuz of quirky memory management policies of libcurl
+    string                  fCURLCacheUTF8_URL_;    // cuz of quirky memory management policies of libcurl
     vector<Byte>            fResponseData_;
     Mapping<String, String> fResponseHeaders_;
     curl_slist*             fSavedHeaders_;
@@ -104,6 +108,7 @@ LibCurlException::LibCurlException (CURLcode ccode)
 void    LibCurlException::DoThrowIfError (CURLcode status)
 {
     if (status != CURLE_OK) {
+        DbgTrace (L"In LibCurlException::DoThrowIfError: throwing status %d (%s)", status, LibCurlException (status).As<String> ().c_str ());
         Execution::DoThrow (LibCurlException (status));
     }
 }
@@ -124,7 +129,7 @@ void    LibCurlException::DoThrowIfError (CURLcode status)
  */
 Connection_LibCurl::Rep_::Rep_ ()
     : fCurlHandle_ (nullptr)
-    , fCURLCache_URL_ ()
+    , fCURLCacheUTF8_URL_ ()
     , fResponseData_ ()
     , fSavedHeaders_ (nullptr)
 {
@@ -157,14 +162,17 @@ void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 URL     Connection_LibCurl::Rep_::GetURL () const
 {
     // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
-    return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
+    return URL (String::FromUTF8 (fCURLCacheUTF8_URL_).As<wstring> ());
 }
 
 void    Connection_LibCurl::Rep_::SetURL (const URL& url)
 {
     MakeHandleIfNeeded_ ();
-    fCURLCache_URL_ = String (url.GetFullURL ()).AsUTF8 ();
-    LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
+    fCURLCacheUTF8_URL_ = String (url.GetFullURL ()).AsUTF8 ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("Connection_LibCurl::Rep_::SetURL ('%s')", fCURLCacheUTF8_URL_.c_str ());
+#endif
+    LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
 }
 
 void    Connection_LibCurl::Rep_::Close ()
@@ -208,6 +216,10 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
 
 Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::SendAndRequest"));
+    DbgTrace (L"(method='%s')", request.fMethod.c_str ());
+#endif
     MakeHandleIfNeeded_ ();
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
@@ -238,6 +250,9 @@ Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
     response.fStatus = resultCode;
     response.fHeaders = fResponseHeaders_;
     response.fData = fResponseData_;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning status = %d, dataLen = %d", response.fStatus, response.fData.size ());
+#endif
     return response;
 }
 
@@ -249,7 +264,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         /*
          * Now setup COMMON options we ALWAYS set.
          */
-        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
 
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));

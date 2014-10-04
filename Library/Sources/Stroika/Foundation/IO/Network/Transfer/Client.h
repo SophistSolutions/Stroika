@@ -74,6 +74,8 @@ namespace   Stroika {
 #endif
 
 
+                    /**
+                     */
                     struct  Request {
                         Request ();
 
@@ -94,6 +96,8 @@ namespace   Stroika {
                     };
 
 
+                    /**
+                     */
                     struct  Response {
                         struct  SSLResultInfo;
                         Response ();
@@ -134,9 +138,11 @@ namespace   Stroika {
                     };
 
 
-                    // TODO:
-                    //      Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
-                    //      Could be confusing! CONSIDER
+                    /**
+                     * TODO:
+                     *      Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
+                     *      Could be confusing! CONSIDER
+                     */
                     class   Connection {
                     protected:
                         class   _IRep {
@@ -198,7 +204,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
                      * to construct an unconnected object.
                      */
