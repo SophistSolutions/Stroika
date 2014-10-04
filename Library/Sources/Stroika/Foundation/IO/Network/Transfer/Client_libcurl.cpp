@@ -191,7 +191,7 @@ void    Connection_LibCurl::Rep_::Close ()
 
 size_t  Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
 {
-    return reinterpret_cast<Rep_*> (userP)->s_RequestPayloadReadHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
+    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
 }
 
 size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize)
@@ -256,8 +256,11 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
-    if (request.fAssumeLCDHTTPServer) {
-        overrideHeaders.AddAll ({ pair<String, String> { L"Expect", L""}, pair<String, String> { L"Transfer-Encoding", L""}});
+    if (request.fAssumeLowestCommonDenominatorHTTPServer) {
+        overrideHeaders.AddAll (initializer_list<pair<String, String>> {
+            { String_Constant (L"Expect"), String ()},
+            { String_Constant (L"Transfer-Encoding"), String ()}
+        });
     }
 
     if (request.fMethod == HTTP::Methods::kGet) {
