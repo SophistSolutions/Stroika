@@ -66,6 +66,10 @@ private:
     nonvirtual  void    MakeHandleIfNeeded_ ();
 
 private:
+    static      size_t  s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
+    nonvirtual  size_t  RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize);
+
+private:
     static      size_t  s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
     nonvirtual  size_t  ResponseWriteHandler_ (const Byte* ptr, size_t nBytes);
 
@@ -76,6 +80,8 @@ private:
 private:
     void*                   fCurlHandle_;
     string                  fCURLCacheUTF8_URL_;    // cuz of quirky memory management policies of libcurl
+    vector<Byte>            fUploadData_;
+    size_t                  fUploadDataCursor_ {};
     vector<Byte>            fResponseData_;
     Mapping<String, String> fResponseHeaders_;
     curl_slist*             fSavedHeaders_;
@@ -183,6 +189,26 @@ void    Connection_LibCurl::Rep_::Close ()
     }
 }
 
+size_t  Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
+{
+    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<Byte*> (buffer), size * nitems);
+}
+
+size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_"));
+#endif
+    size_t  bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
+    bytes2Copy = min (bytes2Copy, bufSize);
+    memcpy (buffer, &*begin (fUploadData_) +  fUploadDataCursor_, bytes2Copy);
+    fUploadDataCursor_ += bytes2Copy;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"bufSize = %d, bytes2Copy=%d", bufSize, bytes2Copy);
+#endif
+    return bytes2Copy;
+}
+
 size_t  Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
     return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
@@ -221,6 +247,8 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     DbgTrace (L"(method='%s')", request.fMethod.c_str ());
 #endif
     MakeHandleIfNeeded_ ();
+    fUploadData_ = request.fData.As<vector<Byte>> ();
+    fUploadDataCursor_ = 0;
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
 
@@ -266,6 +294,8 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
          */
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCacheUTF8_URL_.c_str ()));
 
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, s_ResponseHeaderWriteHandler_));

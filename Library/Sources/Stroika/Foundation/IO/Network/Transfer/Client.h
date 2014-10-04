@@ -28,6 +28,8 @@
  * TODO:
  *
  *
+ *      @todo   Add thread safety (locks/semaphores)
+ *
  *      @todo   Add factory for 'CreateConnection'  - so you can do 'dependnecy injection' or other
  *              way to configure http client support library (winhttp versus libcurl or other).
  *
