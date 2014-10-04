@@ -15,7 +15,8 @@
 
 /*
  * TODO:
- *      (o)     When we have a good C++ 'static string' class - maybe use that here. Maybe ONLY can do once we have compiler constexpr support?
+ *      @todo		When we have a good C++ 'static string' class - maybe use that here.
+ *					Maybe ONLY can do once we have compiler constexpr support?
  */
 
 
@@ -30,17 +31,30 @@ namespace   Stroika {
                     // standard HTTP headers one might want to access/retrieve
                     namespace   HeaderName {
 
+#if     qCompilerAndStdLib_constexpr_Buggy
+                        extern  const   wchar_t kContentType[13];
+                        extern  const   wchar_t kContentLength[15];
+                        extern  const   wchar_t kServer[7];
+                        extern  const   wchar_t kDate[5];
+                        extern  const   wchar_t kLastModified[14];
+                        extern  const   wchar_t kUserAgent[11];
+                        extern  const   wchar_t kSOAPAction[11];
+                        extern  const   wchar_t kAcceptEncoding[16];
+                        extern  const   wchar_t kExpect[7];
+                        extern  const   wchar_t kTransferEncoding[18];
+#else
+                        constexpr   wchar_t kContentType[]      =   L"Content-Type";
+                        constexpr   wchar_t kContentLength[]    =   L"Content-Length";
+                        constexpr   wchar_t kServer[]           =   L"Server";
+                        constexpr   wchar_t kDate[]             =   L"Date";
+                        constexpr   wchar_t kLastModified[]     =   L"Last-Modified";
+                        constexpr   wchar_t kUserAgent[]        =   L"User-Agent";
+                        constexpr   wchar_t kSOAPAction[]       =   L"SOAPAction";
+                        constexpr   wchar_t kAcceptEncoding[]   =   L"Accept-Encoding";
+                        constexpr   wchar_t kExpect[]           =   L"Expect";
+                        constexpr   wchar_t kTransferEncoding[] =   L"Transfer-Encoding";
+#endif
 
-                        extern  const   wchar_t kContentType[];
-                        extern  const   wchar_t kContentLength[];
-                        extern  const   wchar_t kServer[];
-                        extern  const   wchar_t kDate[];
-                        extern  const   wchar_t kLastModified[];
-                        extern  const   wchar_t kUserAgent[];
-                        extern  const   wchar_t kSOAPAction[];
-                        extern  const   wchar_t kAcceptEncoding[];
-                        extern  const   wchar_t kExpect[];
-                        extern  const   wchar_t kTransferEncoding[];
 
 
                     }

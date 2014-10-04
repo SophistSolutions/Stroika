@@ -45,10 +45,6 @@
  *
  *      @todo   Progress Callbacks?
  *
- *      @todo   Fixup Requqest/Response code to just be driven off fHeaders  list -
- *              and have Get/Set ContentType, etc - and other fields - which map to that list.
- *              MAYBE move request/repsonse stuff to HTTP module- so re-usable in framework code which does webserver??
- *
  *      @todo   Redo response / src API using streams?
  *
  *      @todo   Add Client side certs
@@ -86,6 +82,12 @@ namespace   Stroika {
 
 
                     /**
+                     *  \note  DESIGN-NOTE:
+                     *      Chose not move request/repsonse stuff to HTTP module- so re-usable in framework
+                     *      code which does webserver, because though the abstract API is identical, we
+                     *      have very differnt needs about to what to specify/retrieve in one case or the other.
+                     *
+                     *      @todo maybe reconsider?
                      */
                     struct  Request {
                         String                  fMethod;
