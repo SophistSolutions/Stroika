@@ -109,6 +109,7 @@ namespace   Stroika {
 
                         nonvirtual  bool                GetSucceeded () const;
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
+                        nonvirtual  void    ThrowIfFailed () const;
                     };
 
 

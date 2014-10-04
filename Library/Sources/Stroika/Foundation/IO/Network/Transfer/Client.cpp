@@ -125,6 +125,11 @@ InternetMediaType   Response::GetContentType () const
     return InternetMediaType ();
 }
 
+void    Response::ThrowIfFailed () const
+{
+    HTTP::Exception::DoThrowIfError (fStatus);
+}
+
 
 
 
