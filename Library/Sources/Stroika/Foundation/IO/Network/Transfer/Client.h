@@ -80,18 +80,18 @@ namespace   Stroika {
                         Mapping<String, String> fOverrideHeaders;
                         vector<Byte>            fData;  // usually empty, but provided for some methods like POST
 
-						/**
-						 *	Scans fOverrideHeaders
-						 */
+                        /**
+                         *  Scans fOverrideHeaders
+                         */
                         nonvirtual  InternetMediaType   GetContentType () const;
 
-						/**
+                        /**
                          * updates fOverrideHeaders
-						 */
+                         */
                         nonvirtual  void                SetContentType (const InternetMediaType& ct);
 
-						/**
-						 */
+                        /**
+                         */
                         struct  Options {
                             bool    fReturnSSLInfo { false };
                         };
@@ -172,10 +172,9 @@ namespace   Stroika {
                          */
                         nonvirtual  DurationSecondsType     GetTimeout () const;
 
-					public:
+                    public:
                         /**
                          */
-                        nonvirtual  DurationSecondsType     GetTimeout () const;
                         nonvirtual  void                    SetTimeout (DurationSecondsType timeout);
 
                     public:
@@ -199,37 +198,63 @@ namespace   Stroika {
 
                     public:
                         /*
-						 */
+                         *  This returns a response object, which possibly contains an http error.
+                         *
+                         *  Example usage:
+                         *      Request r = conn.Send (Request (...));
+                         *      r.ThrowIfFailed ();
+                         *      ...
+                         */
                         nonvirtual  Response    Send (const Request& r);
 
-					public:
+                    public:
                         /*
-						 *	Simple wrappers, with hardwired methods
-						 */
+                         *  Simple wrappers, with hardwired methods
+                         *
+                         *  Example usage:
+                         *      Request r = conn.Get ();
+                         *      r.ThrowIfFailed ();
+                         *      ...
+                         */
                         nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
-					public:
+                    public:
                         /*
-						 *	Simple wrappers, with hardwired methods
-						 */
+                         *  Simple wrappers, with hardwired methods
+                         *
+                         *  Example usage:
+                         *      Request r = conn.Post (data);
+                         *      r.ThrowIfFailed ();
+                         *      ...
+                         */
                         nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
-					public:
+                    public:
                         /*
-						 *	Simple wrappers, with hardwired methods
-						 */
+                         *  Simple wrappers, with hardwired methods
+                         *
+                         *  Example usage:
+                         *      Request r = conn.Delete ();
+                         *      r.ThrowIfFailed ();
+                         *      ...
+                         */
                         nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
-					public:
+                    public:
                         /*
-						 *	Simple wrappers, with hardwired methods
-						 */
+                         *  Simple wrappers, with hardwired methods
+                         *
+                         *  Example usage:
+                         *      Request r = conn.Put (data);
+                         *      r.ThrowIfFailed ();
+                         *      ...
+                         */
                         nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
-					public:
+                    public:
                         /*
-						 *	Simple wrappers, with hardwired methods
-						 */
+                         *  Simple wrappers, with hardwired methods
+                         */
                         nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     private:
