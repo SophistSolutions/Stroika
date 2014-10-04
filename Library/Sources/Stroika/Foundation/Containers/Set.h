@@ -426,6 +426,7 @@ namespace   Stroika {
                 ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
                 ContainerType   operator^ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
                 operator ContainerType () const                                                         { return fDelegate_;    }
+                bool    Contains (T item) const                                                         { return fDelegate_.Contains (item);    }
             private:
                 ContainerType   fDelegate_;
                 mutex           fLock_;
