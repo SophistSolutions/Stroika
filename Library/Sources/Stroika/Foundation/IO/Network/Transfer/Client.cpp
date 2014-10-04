@@ -145,7 +145,7 @@ Response    Connection::Get (const Mapping<String, String>& extraHeaders)
     Request r;
     r.fMethod = HTTP::Methods::kGet;
     r.fOverrideHeaders = extraHeaders;
-    return SendAndRequest (r);
+    return Send (r);
 }
 
 Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
@@ -155,7 +155,7 @@ Response    Connection::Post (const vector<Byte>& data, const InternetMediaType&
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
     r.SetContentType (contentType);
-    return SendAndRequest (r);
+    return Send (r);
 }
 
 Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
@@ -163,7 +163,7 @@ Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
     Request r;
     r.fMethod = HTTP::Methods::kDelete;
     r.fOverrideHeaders = extraHeaders;
-    return SendAndRequest (r);
+    return Send (r);
 }
 
 Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
@@ -173,7 +173,7 @@ Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& 
     r.fOverrideHeaders = extraHeaders;
     r.fData = data;
     r.SetContentType (contentType);
-    return SendAndRequest (r);
+    return Send (r);
 }
 
 Response    Connection::Options (const Mapping<String, String>& extraHeaders)
@@ -181,7 +181,7 @@ Response    Connection::Options (const Mapping<String, String>& extraHeaders)
     Request r;
     r.fMethod = HTTP::Methods::kOptions;
     r.fOverrideHeaders = extraHeaders;
-    return SendAndRequest (r);
+    return Send (r);
 }
 
 

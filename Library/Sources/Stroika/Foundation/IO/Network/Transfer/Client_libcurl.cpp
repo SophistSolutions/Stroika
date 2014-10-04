@@ -60,7 +60,7 @@ public:
     virtual URL                 GetURL () const override;
     virtual void                SetURL (const URL& url) override;
     virtual void                Close ()    override;
-    virtual Response            SendAndRequest (const Request& request) override;
+    virtual Response            Send (const Request& request) override;
 
 private:
     nonvirtual  void    MakeHandleIfNeeded_ ();
@@ -214,10 +214,10 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
     return nBytes;
 }
 
-Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
+Response    Connection_LibCurl::Rep_::Send (const Request& request)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::SendAndRequest"));
+    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::Send"));
     DbgTrace (L"(method='%s')", request.fMethod.c_str ());
 #endif
     MakeHandleIfNeeded_ ();

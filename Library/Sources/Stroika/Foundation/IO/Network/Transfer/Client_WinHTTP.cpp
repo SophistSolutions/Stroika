@@ -104,7 +104,7 @@ public:
     virtual URL                 GetURL () const override;
     virtual void                SetURL (const URL& url) override;
     virtual void                Close ()    override;
-    virtual Response            SendAndRequest (const Request& request) override;
+    virtual Response            Send (const Request& request) override;
 
 private:
     nonvirtual  void    AssureHasSessionHandle_ (const String& userAgent);
@@ -209,7 +209,7 @@ void    Connection_WinHTTP::Rep_::Close ()
     fSessionHandle_.reset ();
 }
 
-Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
+Response    Connection_WinHTTP::Rep_::Send (const Request& request)
 {
     Response    response;
 

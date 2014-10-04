@@ -161,14 +161,14 @@ namespace   Stroika {
                             virtual DurationSecondsType GetTimeout () const                         =   0;
                             virtual void                SetTimeout (DurationSecondsType timeout)    =   0;
                             virtual void                Close ()                                    =   0;
-                            virtual Response            SendAndRequest (const Request& r)           =   0;
+                            virtual Response            Send (const Request& r)						=   0;
                         };
 
                     protected:
                         Connection (const shared_ptr<_IRep>& rep);
 
                     public:
-                        // SendAndRequest should timeout after this amount of time. Note - the initial SendAndRequest may do
+                        // Send should timeout after this amount of time. Note - the initial Send may do
                         // much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
                         nonvirtual  DurationSecondsType     GetTimeout () const;
                         nonvirtual  void                    SetTimeout (DurationSecondsType timeout);
@@ -181,8 +181,13 @@ namespace   Stroika {
                         // force closed Connection. Can still call Send again, but that autocreates new Connection
                         nonvirtual  void    Close ();
 
-                    public:
-                        nonvirtual  Response    SendAndRequest (const Request& r);
+
+					
+					public:
+		                _DeprecatedFunction_ (Response    SendAndRequest (const Request& r), "Use Send() - to be removed after v2.0a46");
+
+					public:
+                        nonvirtual  Response    Send (const Request& r);
 
                         // Simple wrappers, with hardwired methods
                     public:
