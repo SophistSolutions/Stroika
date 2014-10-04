@@ -218,10 +218,10 @@ namespace   Stroika {
 
                     public:
                         /*
-                         *  Simple wrappers, with hardwired methods
+                         *  Simple wrapper on Send () for method GET
                          *
                          *  Example usage:
-                         *      Request r = conn.Get ();
+                         *      Request r = conn.GET ();
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
@@ -229,10 +229,10 @@ namespace   Stroika {
 
                     public:
                         /*
-                         *  Simple wrappers, with hardwired methods
+                         *  Simple wrapper on Send () for method POST
                          *
                          *  Example usage:
-                         *      Request r = conn.Post (data);
+                         *      Request r = conn.POST (data);
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
@@ -240,7 +240,7 @@ namespace   Stroika {
 
                     public:
                         /*
-                         *  Simple wrappers, with hardwired methods
+                         *  Simple wrapper on Send () for method DELETE
                          *
                          *  Example usage:
                          *      Request r = conn.Delete ();
@@ -251,10 +251,10 @@ namespace   Stroika {
 
                     public:
                         /*
-                         *  Simple wrappers, with hardwired methods
+                         *  Simple wrapper on Send () for method PUT
                          *
                          *  Example usage:
-                         *      Request r = conn.Put (data);
+                         *      Request r = conn.PUT (data);
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
@@ -263,6 +263,10 @@ namespace   Stroika {
                     public:
                         /*
                          *  Simple wrappers, with hardwired methods
+                         *
+                         *  Example usage:
+                         *      Request r = conn.OPTIONS ();
+                         *      r.ThrowIfFailed ();
                          */
                         nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
