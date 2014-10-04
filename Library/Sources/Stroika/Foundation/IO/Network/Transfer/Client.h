@@ -91,14 +91,6 @@ namespace   Stroika {
                          * updates fOverrideHeaders
                          */
                         nonvirtual  void                SetContentType (const InternetMediaType& ct);
-
-                        /**
-                         */
-                        struct  Options {
-                            bool    fReturnSSLInfo { false };
-                            bool    fAssumeLowestCommonDenominatorHTTPServer { false };
-                        };
-                        Options             fOptions;
                     };
 
 
@@ -163,6 +155,9 @@ namespace   Stroika {
                     protected:
                         class   _IRep;
 
+                    public:
+                        struct  Options;
+
                     protected:
                         /**
                          */
@@ -219,7 +214,7 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -230,8 +225,10 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Post (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
+//avoid windows header clash...
+#undef DELETE
                     public:
                         /*
                          *  Simple wrappers, with hardwired methods
@@ -241,7 +238,7 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -252,13 +249,13 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Put (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
                          *  Simple wrappers, with hardwired methods
                          */
-                        nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     private:
                         shared_ptr<_IRep>    fRep_;
@@ -266,10 +263,18 @@ namespace   Stroika {
 
 
                     /**
+                        */
+                    struct  Connection::Options {
+                        bool    fReturnSSLInfo { false };
+                        bool    fAssumeLowestCommonDenominatorHTTPServer { false };
+                    };
+
+
+                    /**
                      * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
                      * to construct an unconnected object.
                      */
-                    Connection  CreateConnection ();
+                    Connection  CreateConnection (const Connection::Options& options = Connection::Options ());
 
 
                     /**

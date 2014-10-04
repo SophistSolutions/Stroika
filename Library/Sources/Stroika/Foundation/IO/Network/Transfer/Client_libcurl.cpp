@@ -54,7 +54,13 @@ namespace   {
 #if     qHasFeature_libcurl
 class   Connection_LibCurl::Rep_ : public _IRep {
 public:
-    Rep_ () = default;
+    Connection::Options fOptions;
+
+public:
+    Rep_ (const Connection::Options& options)
+        : fOptions (options)
+    {
+    }
     Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
 
@@ -256,7 +262,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
-    if (request.fAssumeLowestCommonDenominatorHTTPServer) {
+    if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
         overrideHeaders.AddAll (initializer_list<pair<String, String>> {
             { String_Constant (L"Expect"), String ()},
             { String_Constant (L"Transfer-Encoding"), String ()}
@@ -362,8 +368,8 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************** Transfer::Connection_LibCurl ****************************
  ********************************************************************************
  */
-Connection_LibCurl::Connection_LibCurl ()
-    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ ()))
+Connection_LibCurl::Connection_LibCurl (const Connection::Options& options)
+    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ (options)))
 {
 }
 #endif

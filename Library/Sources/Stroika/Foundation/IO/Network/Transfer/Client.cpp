@@ -95,7 +95,7 @@ void    Response::ThrowIfFailed () const
  **************************** Transfer::Connection ******************************
  ********************************************************************************
  */
-Response    Connection::Get (const Mapping<String, String>& extraHeaders)
+Response    Connection::GET (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kGet;
@@ -103,7 +103,7 @@ Response    Connection::Get (const Mapping<String, String>& extraHeaders)
     return Send (r);
 }
 
-Response    Connection::Post (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response    Connection::POST (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPost;
@@ -113,7 +113,7 @@ Response    Connection::Post (const Memory::BLOB& data, const InternetMediaType&
     return Send (r);
 }
 
-Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
+Response    Connection::DELETE (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kDelete;
@@ -121,7 +121,7 @@ Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
     return Send (r);
 }
 
-Response    Connection::Put (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response    Connection::PUT (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPut;
@@ -131,7 +131,7 @@ Response    Connection::Put (const Memory::BLOB& data, const InternetMediaType& 
     return Send (r);
 }
 
-Response    Connection::Options (const Mapping<String, String>& extraHeaders)
+Response    Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kOptions;
@@ -149,13 +149,13 @@ Response    Connection::Options (const Mapping<String, String>& extraHeaders)
  ************************ Transfer::CreateConnection ****************************
  ********************************************************************************
  */
-Connection  Transfer::CreateConnection ()
+Connection  Transfer::CreateConnection (const Connection::Options& options)
 {
 #if     qHasFeature_libcurl
-    return Connection_LibCurl ();
+    return Connection_LibCurl (options);
 #endif
 #if     qHasFeature_WinHTTP
-    return Connection_WinHTTP ();
+    return Connection_WinHTTP (options);
 #endif
     Execution::DoThrow (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
 }

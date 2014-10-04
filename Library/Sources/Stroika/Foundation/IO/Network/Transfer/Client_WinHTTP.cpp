@@ -91,7 +91,10 @@ namespace   {
 #if     qHasFeature_WinHTTP
 class   Connection_WinHTTP::Rep_ : public _IRep {
 public:
-    Rep_ ();
+    Rep_ (const Connection::Options& options)
+        : fOptions_ (options)
+    {
+    }
     Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
 
@@ -111,7 +114,8 @@ private:
     nonvirtual  void    AssureHasConnectionHandle_ ();
 
 private:
-    DurationSecondsType             fTimeout_;
+    Connection::Options             fOptions_;
+    DurationSecondsType             fTimeout_ { Time::kInfinite };
     URL                             fURL_;
     shared_ptr<AutoWinHINTERNET>    fSessionHandle_;
     String                          fSessionHandle_UserAgent_;
@@ -165,15 +169,6 @@ namespace   {
  ***************** Transfer::Connection_WinHTTP::Rep_ ***************************
  ********************************************************************************
  */
-Connection_WinHTTP::Rep_::Rep_ ()
-    : fTimeout_ (Time::kInfinite)
-    , fURL_ ()
-    , fSessionHandle_ ()
-    , fSessionHandle_UserAgent_ ()
-    , fConnectionHandle_ ()
-{
-}
-
 Connection_WinHTTP::Rep_::~Rep_ ()
 {
     fConnectionHandle_.reset ();
@@ -376,7 +371,7 @@ RetryWithNoCERTCheck:
      * return that info - we could use this. BUT - we need to manually figure out if its expired or
      * whatever.
      */
-    if (useSecureHTTP and request.fOptions.fReturnSSLInfo) {
+    if (useSecureHTTP and fOptions_.fReturnSSLInfo) {
         WINHTTP_CERTIFICATE_INFO   certInfo;
         memset (&certInfo, 0, sizeof (certInfo));
         DWORD          dwCertInfoSize = sizeof (certInfo);
@@ -494,8 +489,8 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
  ********************** Transfer::Connection_WinHTTP ****************************
  ********************************************************************************
  */
-Connection_WinHTTP::Connection_WinHTTP ()
-    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ ()))
+Connection_WinHTTP::Connection_WinHTTP (const Connection::Options& options)
+    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ (options)))
 {
 }
 #endif
