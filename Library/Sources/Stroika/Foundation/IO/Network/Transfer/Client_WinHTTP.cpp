@@ -223,11 +223,11 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
         // appears to not decode (and neither do I).
-        useHeadersMap.Add (HeaderName::kAcceptEncoding, wstring ());
+        useHeadersMap.Add (String_Constant (HeaderName::kAcceptEncoding), wstring ());
     }
     {
-        if (useHeadersMap.Lookup (HeaderName::kUserAgent, &userAgent)) {
-            useHeadersMap.Remove (HeaderName::kUserAgent);
+        if (useHeadersMap.Lookup (String_Constant (HeaderName::kUserAgent), &userAgent)) {
+            useHeadersMap.Remove (String_Constant (HeaderName::kUserAgent));
         }
     }
     String  useHeaderStrBuf;

@@ -110,11 +110,10 @@ namespace   Stroika {
                      */
                     struct  Response {
                         struct  SSLResultInfo;
-                        Response ();
 
                         BLOB                        fData;  // usually empty, but provided for some methods like POST
                         Mapping<String, String>     fHeaders;
-                        HTTP::Status                fStatus;
+                        HTTP::Status                fStatus {};
                         Optional<SSLResultInfo>     fServerEndpointSSLInfo;
 
                         /**

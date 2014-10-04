@@ -4,6 +4,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Characters/Format.h"
+#include    "../../../Characters/String_Constant.h"
 #include    "../../../Execution/Exceptions.h"
 #include    "../../../Execution/RequiredComponentMissingException.h"
 #include    "../HTTP/Headers.h"
@@ -34,12 +35,12 @@ using   namespace   Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ******************************* Transfer::Request *****************************
+ ******************************* Transfer::Request ******************************
  ********************************************************************************
  */
 InternetMediaType   Request::GetContentType () const
 {
-    Optional<String> i   =   fOverrideHeaders.Lookup (HTTP::HeaderName::kContentType);
+    Optional<String> i   =   fOverrideHeaders.Lookup (String_Constant (HTTP::HeaderName::kContentType));
     if (i.get () != nullptr) {
         return InternetMediaType (*i);
     }
@@ -48,7 +49,7 @@ InternetMediaType   Request::GetContentType () const
 
 void    Request::SetContentType (const InternetMediaType& ct)
 {
-    fOverrideHeaders.Add (HTTP::HeaderName::kContentType, ct.As<String> ());
+    fOverrideHeaders.Add (String_Constant (HTTP::HeaderName::kContentType), ct.As<String> ());
 }
 
 
@@ -62,18 +63,9 @@ void    Request::SetContentType (const InternetMediaType& ct)
  ******************************* Transfer::Response *****************************
  ********************************************************************************
  */
-Response::Response ()
-    : fData ()
-    , fHeaders ()
-    , fStatus ()
-    , fServerEndpointSSLInfo ()
-
-{
-}
-
 InternetMediaType   Response::GetContentType () const
 {
-    Optional<String> i   =   fHeaders.Lookup (HTTP::HeaderName::kContentType);
+    Optional<String> i   =   fHeaders.Lookup (String_Constant (HTTP::HeaderName::kContentType));
     if (i.get () != nullptr) {
         return InternetMediaType (*i);
     }

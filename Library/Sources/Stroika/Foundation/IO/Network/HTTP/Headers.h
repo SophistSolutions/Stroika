@@ -15,8 +15,8 @@
 
 /*
  * TODO:
- *      @todo		When we have a good C++ 'static string' class - maybe use that here.
- *					Maybe ONLY can do once we have compiler constexpr support?
+ *      @todo       When we have a good C++ 'static string' class - maybe use that here.
+ *                  Maybe ONLY can do once we have compiler constexpr support?
  */
 
 
