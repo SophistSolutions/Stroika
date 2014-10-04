@@ -78,7 +78,7 @@ namespace   Stroika {
                     struct  Request {
                         String                  fMethod;
                         Mapping<String, String> fOverrideHeaders;
-                        vector<Byte>            fData;  // usually empty, but provided for some methods like POST
+                        BLOB                    fData;  // usually empty, but provided for some methods like POST
 
                         /**
                          *  Scans fOverrideHeaders
@@ -227,7 +227,7 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Post (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*
@@ -249,7 +249,7 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          */
-                        nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Put (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     public:
                         /*

@@ -285,7 +285,7 @@ RetryWithNoCERTCheck:
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
                                       hRequest,
                                       useHeaderStrBuf.c_str (), -1,
-                                      const_cast<Byte*> (Containers::Start (request.fData)), request.fData.size (),
+                                      const_cast<Byte*> (request.fData.begin ()), request.fData.size (),
                                       request.fData.size (),
                                       NULL
                                   )

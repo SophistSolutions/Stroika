@@ -103,7 +103,7 @@ Response    Connection::Get (const Mapping<String, String>& extraHeaders)
     return Send (r);
 }
 
-Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response    Connection::Post (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPost;
@@ -121,7 +121,7 @@ Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
     return Send (r);
 }
 
-Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response    Connection::Put (const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPut;
