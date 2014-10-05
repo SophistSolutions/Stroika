@@ -115,7 +115,9 @@ namespace   Stroika {
                         struct  SSLResultInfo;
 
                     public:
-                        Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo);
+                        Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo = Optional<SSLResultInfo> ());
+                        Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers);
+                        Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers, const Optional<SSLResultInfo>&& sslInfo);
 
                     public:
                         /**

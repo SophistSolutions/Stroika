@@ -31,6 +31,20 @@ namespace   Stroika {
                         , fServerEndpointSSLInfo (sslInfo)
                     {
                     }
+                    inline  Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers)
+                        : fData (move (data))
+                        , fHeaders (move (headers))
+                        , fStatus (status)
+                        , fServerEndpointSSLInfo ()
+                    {
+                    }
+                    inline  Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers, const Optional<SSLResultInfo>&& sslInfo)
+                        : fData (move (data))
+                        , fHeaders (move (headers))
+                        , fStatus (status)
+                        , fServerEndpointSSLInfo (move (sslInfo))
+                    {
+                    }
                     inline  BLOB    Response::GetData () const
                     {
                         return fData;

@@ -324,7 +324,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"returning status = %d, dataLen = %d", resultCode, fResponseData_.size ());
 #endif
-    return Response (fResponseData_, resultCode, fResponseHeaders_);
+    return Response (move (fResponseData_), resultCode, move (fResponseHeaders_));
 }
 
 void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()

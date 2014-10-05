@@ -458,7 +458,7 @@ RetryWithNoCERTCheck:
             i = endOfRegion + 1;
         }
     }
-    return Response (data, status, headers, serverEndpointSSLInfo);
+    return Response (move (data), status, move (headers), move (serverEndpointSSLInfo));
 }
 
 void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
