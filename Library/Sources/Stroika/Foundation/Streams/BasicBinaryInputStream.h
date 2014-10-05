@@ -70,6 +70,10 @@ namespace   Stroika {
 #endif
                 BasicBinaryInputStream (const Memory::BLOB& blob);
                 BasicBinaryInputStream (const Byte* start, const Byte* end);
+#if 0
+                template    <typename ITERATOR_TYPE>
+                BasicBinaryInputStream (const ITERATOR_TYPE& start, const ITERATOR_TYPE& end);
+#endif
             };
 
 
