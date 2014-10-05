@@ -24,6 +24,29 @@ namespace   Stroika {
                      ********************************* Transfer::Response ***************************
                      ********************************************************************************
                      */
+                    inline  Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo)
+                        : fData (data)
+                        , fHeaders (headers)
+                        , fStatus (status)
+                        , fServerEndpointSSLInfo (sslInfo)
+                    {
+                    }
+                    inline  BLOB    Response::GetData () const
+                    {
+                        return fData;
+                    }
+                    inline  Mapping<String, String>    Response::GetHeaders () const
+                    {
+                        return fHeaders;
+                    }
+                    inline  HTTP::Status    Response::GetStatus () const
+                    {
+                        return fStatus;
+                    }
+                    inline  Optional<Response::SSLResultInfo>    Response::GetSSLResultInfo () const
+                    {
+                        return fServerEndpointSSLInfo;
+                    }
                     inline  bool    Response::GetSucceeded () const
                     {
                         return HTTP::Exception::IsHTTPStatusOK (fStatus);

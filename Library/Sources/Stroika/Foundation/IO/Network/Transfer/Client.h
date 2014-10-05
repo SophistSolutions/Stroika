@@ -14,10 +14,11 @@
 #include    "../../../DataExchange/InternetMediaType.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Memory/Optional.h"
-#include    "../URL.h"
-#include    "../HTTP/Status.h"
+#include    "../../../Streams/BinaryInputStream.h"
 #include    "../../../Time/Realtime.h"
 
+#include    "../URL.h"
+#include    "../HTTP/Status.h"
 
 
 /**
@@ -78,6 +79,7 @@ namespace   Stroika {
                     using   Memory::BLOB;
                     using   Memory::Byte;
                     using   Memory::Optional;
+                    using   Streams::BinaryInputStream;
                     using   Time::DurationSecondsType;
 
 
@@ -108,26 +110,54 @@ namespace   Stroika {
 
                     /**
                      */
-                    struct  Response {
+                    class  Response {
+                    public:
                         struct  SSLResultInfo;
 
-                        BLOB                        fData;  // usually empty, but provided for some methods like POST
-                        Mapping<String, String>     fHeaders;
-                        HTTP::Status                fStatus {};
-                        Optional<SSLResultInfo>     fServerEndpointSSLInfo;
+                    public:
+                        Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo);
 
+                    public:
                         /**
                          */
                         nonvirtual  bool                GetSucceeded () const;
 
+                    public:
+                        /**
+                         */
+                        nonvirtual  BLOB                GetData () const;
+
+                    public:
+                        /**
+                         */
+                        nonvirtual  HTTP::Status        GetStatus () const;
+
+                    public:
+                        /**
+                         */
+                        nonvirtual  Optional<SSLResultInfo>     GetSSLResultInfo () const;
+
+                    public:
+                        /**
+                         */
+                        nonvirtual  Mapping<String, String>     GetHeaders () const;
+
+                    public:
                         /**
                          */
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
 
+                    public:
                         /**
                          *  Throws HTTP::Exception if not 'GetSucceeded'
                          */
                         nonvirtual  void    ThrowIfFailed () const;
+
+                    private:
+                        BLOB                        fData;  // usually empty, but provided for some methods like POST
+                        Mapping<String, String>     fHeaders;
+                        HTTP::Status                fStatus {};
+                        Optional<SSLResultInfo>     fServerEndpointSSLInfo;
                     };
 
 

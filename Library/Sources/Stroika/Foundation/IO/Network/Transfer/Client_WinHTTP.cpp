@@ -206,7 +206,10 @@ void    Connection_WinHTTP::Rep_::Close ()
 
 Response    Connection_WinHTTP::Rep_::Send (const Request& request)
 {
-    Response    response;
+    BLOB                        data;  // usually empty, but provided for some methods like POST
+    Mapping<String, String>     headers;
+    HTTP::Status                status {};
+    Optional<Response::SSLResultInfo>     serverEndpointSSLInfo;
 
     Time::DurationSecondsType   startOfSendAt   =   Time::GetTickCount ();
     Time::DurationSecondsType   endBy           =   fTimeout_ == Time::kInfinite ? Time::kInfinite : (startOfSendAt + fTimeout_);
@@ -347,13 +350,13 @@ RetryWithNoCERTCheck:
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             Containers::STL::Append (&bytesArray, *i);
         }
-        response.fData = bytesArray;
+        data = bytesArray;
     }
 
     {
         wstring statusStr   =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         wstring statusText  =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
-        int     status      =       _wtoi (statusStr.c_str ());
+        status      =       static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
         DbgTrace (_T ("Status = %d"), status);
         if (not HTTP::Exception::IsHTTPStatusOK (status)) {
             if (WINHTTP_ERROR_BASE <= status and status <= WINHTTP_ERROR_BASE) {
@@ -361,7 +364,6 @@ RetryWithNoCERTCheck:
             }
             HTTP::Exception::DoThrowIfError (status, statusText);
         }
-        response.fStatus = status;
     }
 
 
@@ -428,7 +430,7 @@ RetryWithNoCERTCheck:
             ::LocalFree (certInfo.lpszSignatureAlgName);
         }
 
-        response.fServerEndpointSSLInfo = resultSSLInfo;
+        serverEndpointSSLInfo = resultSSLInfo;
     }
 
     // copy/fill in result.fHeaders....
@@ -449,15 +451,14 @@ RetryWithNoCERTCheck:
                     wstring key =   Characters::CString::Trim (thisLine.substr (0, colonI));
                     wstring val =   Characters::CString::Trim (thisLine.substr (colonI + 1));
                     if (not key.empty ()) {
-                        response.fHeaders.Add (key, val);
+                        headers.Add (key, val);
                     }
                 }
             }
             i = endOfRegion + 1;
         }
     }
-
-    return response;
+    return Response (data, status, headers, serverEndpointSSLInfo);
 }
 
 void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)

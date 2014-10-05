@@ -72,14 +72,14 @@ namespace   {
         c.SetURL (URL (L"http://www.google.com"));
         Response    r   =   c.GET ();
         VerifyTestResult (r.GetSucceeded ());
-        VerifyTestResult (r.fData.size () > 1);
+        VerifyTestResult (r.GetData ().size () > 1);
     }
     void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
     {
         c.SetURL (URL (L"https://www.google.com"));
         Response    r   =   c.GET ();
         VerifyTestResult (r.GetSucceeded ());
-        VerifyTestResult (r.fData.size () > 1);
+        VerifyTestResult (r.GetData ().size () > 1);
     }
 }
 

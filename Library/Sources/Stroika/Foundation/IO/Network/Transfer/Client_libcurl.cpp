@@ -319,18 +319,12 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     LibCurlException::DoThrowIfError (:: curl_easy_perform (fCurlHandle_));
 
-    Response    response;
-    response.fData = fResponseData_;
-
     long    resultCode  =   0;
     LibCurlException::DoThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
-    response.fStatus = resultCode;
-    response.fHeaders = fResponseHeaders_;
-    response.fData = fResponseData_;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning status = %d, dataLen = %d", response.fStatus, response.fData.size ());
+    DbgTrace (L"returning status = %d, dataLen = %d", resultCode, fResponseData_.size ());
 #endif
-    return response;
+    return Response (fResponseData_, resultCode, fResponseHeaders_);
 }
 
 void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
