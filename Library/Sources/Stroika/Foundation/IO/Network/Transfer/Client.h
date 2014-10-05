@@ -131,6 +131,13 @@ namespace   Stroika {
 
                     public:
                         /**
+                         *  TBD how this will work - use with caution. Unclear if you call twice you get same stream. Want to evanutaly
+                         *  support delayed read (so return before all data read.
+                         */
+                        nonvirtual  BinaryInputStream       GetDataBinaryInputStream () const;
+
+                    public:
+                        /**
                          */
                         nonvirtual  HTTP::Status        GetStatus () const;
 

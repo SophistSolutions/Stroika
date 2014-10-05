@@ -77,6 +77,11 @@ void    Response::ThrowIfFailed () const
     HTTP::Exception::DoThrowIfError (fStatus);
 }
 
+BinaryInputStream       Response::GetDataBinaryInputStream () const
+{
+    return fData.As<BinaryInputStream> ();
+}
+
 
 
 
