@@ -345,12 +345,14 @@ RetryWithNoCERTCheck:
     //
     // probably shoudl check header content-type for codepage, but this SB OK for now...
     {
-        vector<Byte>    bytesArray;
-        bytesArray.reserve (totalBytes);
+        Memory::SmallStackBuffer<Byte>    bytesArray (totalBytes);
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
-            Containers::STL::Append (&bytesArray, *i);
+            auto v2 = *i;
+            for (auto ii = v2.begin (); ii != v2.end (); ++ii) {
+                bytesArray.push_back (*ii);
+            }
         }
-        data = bytesArray;
+        data = BLOB (bytesArray.begin (), bytesArray.end ());
     }
 
     {
