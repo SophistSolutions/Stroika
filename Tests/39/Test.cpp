@@ -6,6 +6,7 @@
 
 #include    <iostream>
 
+#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #if     qHasFeature_libcurl
@@ -21,6 +22,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::IO::Network::Transfer;
@@ -81,6 +83,19 @@ namespace   {
         VerifyTestResult (r.GetSucceeded ());
         VerifyTestResult (r.GetData ().size () > 1);
     }
+    void    Test_3_SimpleFetch_httpbin_ip_ (Connection c)
+    {
+        c.SetURL (URL (L"http://httpbin.org/get"));
+        Response    r   =   c.GET ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.GetData ().size () > 1);
+        {
+            VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+            Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
+            VerifyTestResult (vv.ContainsKey (L"args"));
+            VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get");
+        }
+    }
 }
 
 
@@ -94,6 +109,7 @@ namespace   {
     {
         Test_1_SimpleFetch_Google_C_ (factory ());
         Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+        Test_3_SimpleFetch_httpbin_ip_ (factory ());
     }
 
     void    DoRegressionTests_ ()
