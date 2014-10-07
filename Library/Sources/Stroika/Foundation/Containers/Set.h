@@ -425,10 +425,10 @@ namespace   Stroika {
                 ContainerType   operator+ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator + (rhs); }
                 ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
                 ContainerType   operator^ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
-				Synchronized&	operator+= (T item)														{ fDelegate_ += item; return *this; }
-				Synchronized&	operator+= (const Traversal::Iterable<T>& items)						{ fDelegate_ += items; return *this; }
-				Synchronized&	operator-= (T item)														{ fDelegate_ -= item; return *this; }
-				Synchronized&	operator-= (const Traversal::Iterable<T>& items)						{ fDelegate_ -= items; return *this; }
+                Synchronized&   operator+= (T item)                                                     { fDelegate_ += item; return *this; }
+                Synchronized&   operator+= (const Traversal::Iterable<T>& items)                        { fDelegate_ += items; return *this; }
+                Synchronized&   operator-= (T item)                                                     { fDelegate_ -= item; return *this; }
+                Synchronized&   operator-= (const Traversal::Iterable<T>& items)                        { fDelegate_ -= items; return *this; }
                 operator ContainerType () const                                                         { return fDelegate_;    }
                 bool    Contains (T item) const                                                         { return fDelegate_.Contains (item);    }
             private:
