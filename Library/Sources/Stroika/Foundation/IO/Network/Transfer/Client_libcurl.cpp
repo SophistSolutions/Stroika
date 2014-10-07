@@ -207,7 +207,7 @@ size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size
 #endif
     size_t  bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
     bytes2Copy = min (bytes2Copy, bufSize);
-    memcpy (buffer, Iterator2Address (begin (fUploadData_)) +  fUploadDataCursor_, bytes2Copy);
+    memcpy (buffer, Traversal::Iterator2Address (begin (fUploadData_)) +  fUploadDataCursor_, bytes2Copy);
     fUploadDataCursor_ += bytes2Copy;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"bufSize = %d, bytes2Copy=%d", bufSize, bytes2Copy);
