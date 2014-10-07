@@ -630,6 +630,14 @@ namespace   Stroika {
             };
 
 
+			/**
+			 */
+			template	<typename	ITERATOR>
+			typename iterator_traits<ITERATOR>::value_type*	Iterator2Address (ITERATOR& i);
+			template	<typename	ITERATOR>
+			const typename iterator_traits<ITERATOR>::value_type*	Iterator2Address (const ITERATOR& i);
+
+
         }
     }
 }

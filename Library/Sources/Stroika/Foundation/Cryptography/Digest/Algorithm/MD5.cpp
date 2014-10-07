@@ -6,6 +6,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Memory/BLOB.h"
+#include    "../../../Traversal/Iterator.h"
 
 #include    "MD5.h"
 
@@ -368,6 +369,8 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, Retur
 
     // No idea why array<> type sucks like this...--LGP 2014-07-28
     ReturnType  result {};
+	// @todo understand why Traversal::Iterator2Address() doesnt work here? fails to compile on msvc--LGP 2014-10-07
+    //(void)::memcpy (Traversal::Iterator2Address (result.begin ()), ctx.digest, 16);
     (void)::memcpy (&*result.begin (), ctx.digest, 16);
     return result;
 }

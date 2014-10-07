@@ -8,6 +8,7 @@
 #include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/BlockAllocated.h"
+#include	"../Traversal/Iterator.h"
 
 #include    "BasicBinaryInputOutputStream.h"
 
@@ -47,7 +48,7 @@ public:
         size_t  nAvail      =   fData_.end () - fReadCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
         if (nCopied != 0) {
-            (void)::memcpy (intoStart, &*fReadCursor_, nCopied);
+            (void)::memcpy (intoStart, Traversal::Iterator2Address (fReadCursor_), nCopied);
         }
         fReadCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
@@ -71,7 +72,7 @@ public:
                 fWriteCursor_ = fData_.begin () + curWriteOffset;
                 Assert (fWriteCursor_ < fData_.end ());
             }
-            (void)::memcpy (&*fWriteCursor_, start, roomRequired);
+            (void)::memcpy (Traversal::Iterator2Address (fWriteCursor_), start, roomRequired);
             fWriteCursor_ += roomRequired;
             Assert (fReadCursor_ <= fData_.end ());
             Assert (fWriteCursor_ <= fData_.end ());

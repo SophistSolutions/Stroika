@@ -198,7 +198,25 @@ namespace   Stroika {
             }
 
 
-        }
+            /*
+            ********************************************************************************
+            ***************************** Iterator2Address *********************************
+            ********************************************************************************
+            */
+			template	<typename	ITERATOR>
+			inline	typename iterator_traits<ITERATOR>::value_type*	Iterator2Address (ITERATOR& i)
+			{
+				// this overload wont always work.. I hope it gives good compiler error message??? --LGP 2014-10-07
+				return &*i;
+			}
+			template	<typename	ITERATOR>
+			inline	const typename iterator_traits<ITERATOR>::value_type*	Iterator2Address (const ITERATOR& i)
+			{
+				return &*i;
+			}
+
+		
+		}
     }
 }
 
