@@ -134,6 +134,7 @@ namespace {
         namespace Private_ {
             void    T1_httpbin_SimpleGET_ (Connection c)
             {
+                Debug::TraceContextBumper ctx (SDKSTR ("T1_httpbin_SimpleGET_"));
                 c.SetURL (URL (L"http://httpbin.org/get"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
@@ -147,6 +148,7 @@ namespace {
             }
             void    T2_httpbin_SimplePOST_ (Connection c)
             {
+                Debug::TraceContextBumper ctx (SDKSTR ("T2_httpbin_SimplePOST_"));
                 using   Memory::BLOB;
 
                 static   mt19937 sRNG_;
@@ -164,11 +166,9 @@ namespace {
                 {
                     VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
+                    DbgTrace ("POST parsed response:");
                     for (auto i : vv) {
-#if 0
-                        DbgTrace (L"i.frist=%s", i.fKey.c_str ());
-                        DbgTrace (L"i.second=%s", i.fValue.As<String> ().c_str ());
-#endif
+                        DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
                     String  dataValueString = vv.Lookup (L"data").Value ().As<String> ();
                     {
@@ -183,6 +183,7 @@ namespace {
             }
             void    T3_httpbin_SimplePUT_ (Connection c)
             {
+                Debug::TraceContextBumper ctx (SDKSTR ("T3_httpbin_SimplePUT_"));
                 using   Memory::BLOB;
 
                 static   mt19937 sRNG_;
@@ -200,11 +201,9 @@ namespace {
                 {
                     VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
+                    DbgTrace ("PUT parsed response:");
                     for (auto i : vv) {
-#if 0
-                        DbgTrace (L"i.frist=%s", i.fKey.c_str ());
-                        DbgTrace (L"i.second=%s", i.fValue.As<String> ().c_str ());
-#endif
+                        DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
                     String  dataValueString = vv.Lookup (L"data").Value ().As<String> ();
                     {
