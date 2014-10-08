@@ -24,10 +24,17 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a47">v2.0a47x</a><br/>2014-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a47">v2.0a47x</a><br/>2014-10-08</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Spotty here and there progress on new Synchonized<> deisgn - a few more methods forwarded (Set/?)</li>
+	<li>Major improvements to IO/Network/Transfer/Client code: especially libcurl code. Supported PUT and POST,
+	and much improved the regression tests for these. Used BLOBs and nicely integrated Streams (and added
+	some notes on future stream enhancements).</li>
+	<li>enhanced use of constexpr in a number of modules</li>
+	<li>Traversal::Iterator2Address</li>
+	<li>Small Stream improvements, like TextInputStream::ReadAll() using StringBuilder</li>
+	<li>Minor improvements to SmallStackBuffer and StringBuilder</li>
 </ul>
 </td>
 </tr>
