@@ -167,6 +167,7 @@ namespace   Stroika {
                          *  This is layered on top of GetDataBinaryInputStream(), but uses any Response headers, such as
                          *  content type, to help decode the text stream as best as possible.
                          *      (as of 2014-10-08 - this is PLANED decoding, and not necesarily fully implemented).
+                         *      @todo FIX to take into account codepage/etc from MIME content type!
                          *
                          *  Example usage:
                          *      Response r = clientConn.GET ();
