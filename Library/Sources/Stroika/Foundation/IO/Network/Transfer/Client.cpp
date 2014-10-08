@@ -7,6 +7,7 @@
 #include    "../../../Characters/String_Constant.h"
 #include    "../../../Execution/Exceptions.h"
 #include    "../../../Execution/RequiredComponentMissingException.h"
+#include    "../../../Streams/TextInputStreamBinaryAdapter.h"
 #include    "../HTTP/Headers.h"
 #include    "../HTTP/Methods.h"
 
@@ -65,7 +66,7 @@ void    Request::SetContentType (const InternetMediaType& ct)
  */
 InternetMediaType   Response::GetContentType () const
 {
-    Optional<String> i   =   fHeaders.Lookup (String_Constant (HTTP::HeaderName::kContentType));
+    Optional<String> i   =   fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType));
     if (i.get () != nullptr) {
         return InternetMediaType (*i);
     }
@@ -74,15 +75,24 @@ InternetMediaType   Response::GetContentType () const
 
 void    Response::ThrowIfFailed () const
 {
-    HTTP::Exception::DoThrowIfError (fStatus);
+    HTTP::Exception::DoThrowIfError (fStatus_);
 }
 
 BinaryInputStream       Response::GetDataBinaryInputStream () const
 {
-    return fData.As<BinaryInputStream> ();
+    if (fDataBinaryInputStream_.IsMissing ()) {
+        fDataBinaryInputStream_ = fData_.As<BinaryInputStream> ();
+    }
+    return *fDataBinaryInputStream_;
 }
 
-
+TextInputStream       Response::GetDataTextInputStream () const
+{
+    if (fDataTextInputStream_.IsMissing ()) {
+        fDataTextInputStream_ = Streams::TextInputStreamBinaryAdapter (GetDataBinaryInputStream ());
+    }
+    return *fDataTextInputStream_;
+}
 
 
 

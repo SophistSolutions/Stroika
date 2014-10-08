@@ -15,6 +15,7 @@
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Memory/Optional.h"
 #include    "../../../Streams/BinaryInputStream.h"
+#include    "../../../Streams/TextInputStream.h"
 #include    "../../../Time/Realtime.h"
 
 #include    "../URL.h"
@@ -80,6 +81,7 @@ namespace   Stroika {
                     using   Memory::Byte;
                     using   Memory::Optional;
                     using   Streams::BinaryInputStream;
+                    using   Streams::TextInputStream;
                     using   Time::DurationSecondsType;
 
 
@@ -109,6 +111,26 @@ namespace   Stroika {
 
 
                     /**
+                     *  DESIGN NOTES:
+                     *      The Response can be constructed with a BLOB of data, or a binary stream. If constructed
+                     *      with a blob of data, the binary stream returned will be a reference to this data, and can be used
+                     *      to page out the data.
+                     *
+                     *      If constructed with a BinaryStream (NYI) - then the caller (Client::Send) can return before all the data
+                     *      is available. Any future calls on teh Client may block (TBD???) or fail???
+                     *
+                     *      But then the data can be paged out without ever being accumulated into a single large buffer.
+                     *
+                     *      Note - if the use of a Response calls GetBLOB () - even if constructed with a stream - this will
+                     *      block reading in the stream.
+                     *
+                     *      If the caller gets GetResponseStream() - then calls to GetBLOB() will fail. Note - we COULD have
+                     *      kept the bytes around from the response stream as it came in, but that could in principle be large,
+                     *      and your probably using the Stream API to avoid having the entire thing in emmroy so we dont want
+                     *      to needlessly thwart that.
+                     *
+                     *      NOTE - as of 2014-10-08 - the only case thats implemented is the case of construction with a prefetched
+                     *      BLOB, and then repsenting THAT as a binary stream if requested.
                      */
                     class  Response {
                     public:
@@ -133,8 +155,24 @@ namespace   Stroika {
                         /**
                          *  TBD how this will work - use with caution. Unclear if you call twice you get same stream. Want to evanutaly
                          *  support delayed read (so return before all data read.
+                         *
+                         *  EXAMPLE USAGE:
+                         *      Response r = clientConn.GET ();
+                         *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                          */
                         nonvirtual  BinaryInputStream       GetDataBinaryInputStream () const;
+
+                    public:
+                        /**
+                         *  This is layered on top of GetDataBinaryInputStream(), but uses any Response headers, such as
+                         *  content type, to help decode the text stream as best as possible.
+                         *      (as of 2014-10-08 - this is PLANED decoding, and not necesarily fully implemented).
+                         *
+                         *  Example usage:
+                         *      Response r = clientConn.GET ();
+                         *      String answer = r.GetDataTextInputStream ().ReadAll ();
+                         */
+                        nonvirtual  TextInputStream       GetDataTextInputStream () const;
 
                     public:
                         /**
@@ -163,10 +201,12 @@ namespace   Stroika {
                         nonvirtual  void    ThrowIfFailed () const;
 
                     private:
-                        BLOB                        fData;  // usually empty, but provided for some methods like POST
-                        Mapping<String, String>     fHeaders;
-                        HTTP::Status                fStatus {};
-                        Optional<SSLResultInfo>     fServerEndpointSSLInfo;
+                        BLOB                                fData_;                     // usually empty, but provided for some methods like POST
+                        mutable Optional<BinaryInputStream> fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<TextInputStream>   fDataTextInputStream_;
+                        Mapping<String, String>             fHeaders_;
+                        HTTP::Status                        fStatus_ {};
+                        Optional<SSLResultInfo>             fServerEndpointSSLInfo_;
                     };
 
 

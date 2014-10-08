@@ -261,12 +261,63 @@ namespace {
 
 
 
+
+namespace {
+    namespace Test4_TextStreamResponse_ {
+        namespace Private_ {
+            void    Test_1_SimpleFetch_Google_C_ (Connection c)
+            {
+                c.SetURL (URL (L"http://www.google.com"));
+                Response    r   =   c.GET ();
+                VerifyTestResult (r.GetSucceeded ());
+                String responseText = r.GetDataTextInputStream ().ReadAll ();
+                DbgTrace (L"responseText = %s", responseText.c_str ());
+                VerifyTestResult (responseText.Contains (L"google"));
+            }
+            void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+            {
+                Test_1_SimpleFetch_Google_C_ (factory ());
+            }
+        }
+        void    DoTests_ ()
+        {
+            using namespace Private_;
+            try {
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
+            }
+            catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
+#else
+                Execution::DoReThrow ();
+#endif
+            }
+
+#if     qHasFeature_libcurl
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+#endif
+#if     qHasFeature_WinHTTP
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+#endif
+        }
+    }
+}
+
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_URL_Parsing_::DoTests_ ();
         Test2_SimpleConnnectionTests_::DoTests_ ();
         Test_3_SimpleFetch_httpbin_::DoTests_ ();
+        Test4_TextStreamResponse_::DoTests_ ();
     }
 }
 

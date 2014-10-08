@@ -25,45 +25,44 @@ namespace   Stroika {
                      ********************************************************************************
                      */
                     inline  Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo)
-                        : fData (data)
-                        , fHeaders (headers)
-                        , fStatus (status)
-                        , fServerEndpointSSLInfo (sslInfo)
+                        : fData_ (data)
+                        , fHeaders_ (headers)
+                        , fStatus_ (status)
+                        , fServerEndpointSSLInfo_ (sslInfo)
                     {
                     }
                     inline  Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers)
-                        : fData (move (data))
-                        , fHeaders (move (headers))
-                        , fStatus (status)
-                        , fServerEndpointSSLInfo ()
+                        : fData_ (move (data))
+                        , fHeaders_ (move (headers))
+                        , fStatus_ (status)
                     {
                     }
                     inline  Response::Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers, const Optional<SSLResultInfo>&& sslInfo)
-                        : fData (move (data))
-                        , fHeaders (move (headers))
-                        , fStatus (status)
-                        , fServerEndpointSSLInfo (move (sslInfo))
+                        : fData_ (move (data))
+                        , fHeaders_ (move (headers))
+                        , fStatus_ (status)
+                        , fServerEndpointSSLInfo_ (move (sslInfo))
                     {
                     }
                     inline  BLOB    Response::GetData () const
                     {
-                        return fData;
+                        return fData_;
                     }
                     inline  Mapping<String, String>    Response::GetHeaders () const
                     {
-                        return fHeaders;
+                        return fHeaders_;
                     }
                     inline  HTTP::Status    Response::GetStatus () const
                     {
-                        return fStatus;
+                        return fStatus_;
                     }
                     inline  Optional<Response::SSLResultInfo>    Response::GetSSLResultInfo () const
                     {
-                        return fServerEndpointSSLInfo;
+                        return fServerEndpointSSLInfo_;
                     }
                     inline  bool    Response::GetSucceeded () const
                     {
-                        return HTTP::Exception::IsHTTPStatusOK (fStatus);
+                        return HTTP::Exception::IsHTTPStatusOK (fStatus_);
                     }
 
 
