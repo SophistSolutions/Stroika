@@ -153,7 +153,7 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             inline  size_t  SmallStackBuffer<T, BUF_SIZE>::capacity () const
             {
-                static_assert (NEltsOf(fBuffer_) == BUF_SIZE, "fBuffer_/BUF_SIZE code assumption violated");
+                Assert (NEltsOf(fBuffer_) == BUF_SIZE);
                 return (fPointer_ == fBuffer_) ?  NEltsOf (fBuffer_) : *(size_t*)&fBuffer_;
             }
             template    <typename   T, size_t BUF_SIZE>
