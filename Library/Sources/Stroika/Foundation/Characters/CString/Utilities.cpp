@@ -48,7 +48,7 @@ string  Characters::CString::FormatV (const char* format, va_list argsList)
     va_list argListCopy ;
     va_copy(argListCopy, argsList);
 
-    while (::vsnprintf (msgBuf, msgBuf.GetSize (), format, argsList) < 0) {
+    while (::vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
@@ -140,7 +140,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
-    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argsList) < 0) {
+    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
