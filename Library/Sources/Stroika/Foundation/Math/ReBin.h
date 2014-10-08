@@ -29,6 +29,8 @@ namespace   Stroika {
 
                 /**
                  *  Utility to describe source data (bins) for use in the ReBin() API.
+                 *
+                 *  This is not needed explicitly for simple usage, but is just for complicated cases.
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 class   BasicDataDescriptor {
@@ -38,10 +40,10 @@ namespace   Stroika {
                     using   ValueType       =   VALUE_TYPE;
 
                 public:
-#if qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy
                     static const ValueType kZero;
 #else
-                    static constexpr ValueType kZero = 0;
+                    static constexpr ValueType kZero { 0 };
 #endif
 
                 public:
@@ -71,6 +73,7 @@ namespace   Stroika {
 
                 /**
                  *  Utility to describe target data (bins) for use in the ReBin() API.
+                 *  This is not needed explicitly for simple usage, but is just for complicated cases.
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 class   UpdatableDataDescriptor : public BasicDataDescriptor<X_TYPE, VALUE_TYPE> {
@@ -98,17 +101,30 @@ namespace   Stroika {
                  *  Re-binning means selecting a different (could be larger or smaller) bin count, and inferring the
                  *  curve from the source bins, and producing target bins that match that curve as best as possible.
                  *
-                 *  The new bins could also - have been offset slightly versus the new bins (that is the zeroth bin of the
-                 *  new set of bins need not start at the same x-value as the original set of bins).
+                 *  The new bins could also - have been offset slightly versus the new bins (that is the zeroth
+                 *  bin of the new set of bins need not start at the same x-value as the original set of bins).
                  *
                  *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
-                 *  As a future exercise, we may want to experiment  with different assumptions (like linear up/down according
-                 *  to prev and successive bins?).
+                 *  As a future exercise, we may want to experiment  with different assumptions (like linear
+                 *  up/down according to prev and successive bins?).
                  *
-                 *      @todo - ADD EXAMPLES
+                 *  EXAMPLE:
+                 *      uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
+                 *      double  resultData[4];
+                 *      ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+                 *      VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
+                 *      VerifyTestResult (0 == resultData[3]);
                  *
-                 *  EMBELLISH THE EXAMPLE...
+                 *  EXAMPLE:
+                 *      uint32_t srcBinData[] = { 3, 5, 19, 2 };
+                 *      double  resultData[8];
+                 *      ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+                 *      VerifyTestResult (NearlyEquals (1.5, resultData[0]));
+                 *      VerifyTestResult (NearlyEquals (1.5, resultData[1]));
+                 *      VerifyTestResult (NearlyEquals (2.5, resultData[2]));
+                 *      VerifyTestResult (NearlyEquals (2.5, resultData[3]));
                  *
+                 *  @todo SHOW MORE COMPLICATED EXAMPLE BASED ON:...
                  *      struct SRC_DATA_DESCRIPTOR : BasicDataDescriptor<double, double> {
                  *          ...
                  *          static  Range<XType>   GetBucketRange (unsigned int bucket) {
