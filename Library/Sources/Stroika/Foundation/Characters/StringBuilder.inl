@@ -204,6 +204,14 @@ namespace   Stroika {
             {
                 return As<wstring> ();
             }
+            inline  size_t  StringBuilder::length () const
+            {
+                return GetLength ();
+            }
+            inline  size_t  StringBuilder::size () const
+            {
+                return GetLength ();
+            }
 
 
         }

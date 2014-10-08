@@ -145,6 +145,18 @@ namespace   Stroika {
                  */
                 nonvirtual  String str () const;
 
+            public:
+                /**
+                 *  STL-ish alias for GetLength ()
+                 */
+                nonvirtual  size_t  length () const;
+
+            public:
+                /**
+                 *  STL-ish alias for GetLength ()
+                 */
+                nonvirtual  size_t  size () const;
+
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
