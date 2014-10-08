@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/StringBuilder.h"
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
 #include    "../Traversal/Generator.h"
@@ -71,7 +72,7 @@ Traversal::Iterable<String> TextInputStream::ReadLines () const
 
 String TextInputStream::ReadAll () const
 {
-    String      result;
+    Characters::StringBuilder result;
     while (true) {
         Character buf[1024];
         size_t n = Read (std::begin (buf), std::end (buf));
@@ -83,5 +84,5 @@ String TextInputStream::ReadAll () const
             result.Append (std::begin (buf), std::begin (buf) + n);
         }
     }
-    return result;
+    return result.str ();
 }

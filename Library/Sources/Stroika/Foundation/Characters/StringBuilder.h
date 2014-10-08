@@ -70,6 +70,7 @@ namespace   Stroika {
                 /**
                  *  add overloads
                  */
+                nonvirtual  void    Append (const Character* s, const Character* e);
                 nonvirtual  void    Append (const wchar_t* s, const wchar_t* e);
                 nonvirtual  void    Append (const wchar_t* s);
                 nonvirtual  void    Append (const wstring& s);

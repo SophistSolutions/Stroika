@@ -35,6 +35,11 @@ namespace   Stroika {
             {
                 operator+= (initialValue);
             }
+            inline  void    StringBuilder::Append (const Character* s, const Character* e)
+            {
+                static_assert (sizeof (Character) == sizeof (wchar_t), "assume wchar_t == Character roughly");  //tmphack
+                Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+            }
             inline  void    StringBuilder::Append (const wchar_t* s, const wchar_t* e)
             {
                 Require (s == e or (s != nullptr and e != nullptr));
