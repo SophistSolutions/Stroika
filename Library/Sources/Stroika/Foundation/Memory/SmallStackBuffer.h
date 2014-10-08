@@ -90,13 +90,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Returns the size of the buffer in ELEMENTS (not necessarily in bytes)
+                 *  Returns the 'size' the SmallStackBuffer can be resized up to without any additional memory allocations.
+                 *  This always returns a value at least as large as the BUF_SIZE template parameter.
+                 */
+                nonvirtual  size_t          capacity () const;
+
+            public:
+                /**
+                 *  Returns the size of the buffer in ELEMENTS (not necessarily in bytes).
+                 *
+                 *  \ensure GetSize () <= capacity ();
                  */
                 nonvirtual  size_t  GetSize () const;
 
             public:
                 /**
                  *  Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize ()
+                 *
+                 *  \ensure GetSize () <= capacity ();
                  */
                 nonvirtual  void    GrowToSize (size_t nElements);
 

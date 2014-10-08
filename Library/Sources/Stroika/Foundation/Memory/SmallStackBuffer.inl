@@ -38,6 +38,7 @@ namespace   Stroika {
                 if (nElements > (NEltsOf (fBuffer_))) {
                     GrowToSize_ (nElements);
                 }
+                Ensure (GetSize () <= capacity ());
             }
             template    <typename   T, size_t BUF_SIZE>
             void    SmallStackBuffer<T, BUF_SIZE>::GrowToSize_ (size_t nElements)
@@ -46,9 +47,7 @@ namespace   Stroika {
                 // if we were using buffer, then assume whole thing, and if we malloced, save
                 // size in unused buffer
                 Assert (sizeof (fBuffer_) >= sizeof (size_t));   // one customer changes the size of the buffer to 1, and wondered why it crashed...
-                size_t  oldEltCount =   (fPointer_ == fBuffer_) ?
-                                        NEltsOf (fBuffer_) :
-                                        *(size_t*)&fBuffer_;
+                size_t  oldEltCount =   capacity ();
                 if (nElements > oldEltCount) {
                     /*
                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
@@ -152,8 +151,15 @@ namespace   Stroika {
                 return fPointer_ + fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
+            inline  size_t  SmallStackBuffer<T, BUF_SIZE>::capacity () const
+            {
+                static_assert (NEltsOf(fBuffer_) == BUF_SIZE, "fBuffer_/BUF_SIZE code assumption violated");
+                return (fPointer_ == fBuffer_) ?  NEltsOf (fBuffer_) : *(size_t*)&fBuffer_;
+            }
+            template    <typename   T, size_t BUF_SIZE>
             inline  size_t  SmallStackBuffer<T, BUF_SIZE>::GetSize () const
             {
+                Ensure (fSize_ <= capacity ());
                 return fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
@@ -167,13 +173,13 @@ namespace   Stroika {
             inline  SmallStackBuffer<T, BUF_SIZE>::operator T* ()
             {
                 AssertNotNull (fPointer_);
-                return (fPointer_);
+                return fPointer_;
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::operator const T* () const
             {
                 AssertNotNull (fPointer_);
-                return (fPointer_);
+                return fPointer_;
             }
 #if     qDebug
 #if     qCompilerAndStdLib_constexpr_Buggy
