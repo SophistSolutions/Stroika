@@ -1079,6 +1079,20 @@ namespace {
 }
 
 
+namespace {
+    void    Test33_Append_ ()
+    {
+        String result;
+        Character buf[] { 'a', 'b', 'c', 'd' };
+        for (int i = 0; i < 10; ++i) {
+            result.Append (std::begin (buf), std::begin (buf) + NEltsOf (buf));
+        }
+        VerifyTestResult (result.size () == 4 * 10);
+        VerifyTestResult (result == L"abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+    }
+}
+
+
 
 
 
@@ -1126,6 +1140,7 @@ namespace   {
         Test30_LimitLength_ ();
         Test31_OperatorINSERT_ostream_ ();
         Test32_StringBuilder_ ();
+        Test33_Append_ ();
     }
 }
 
