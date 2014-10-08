@@ -5,7 +5,9 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <random>
 
+#include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
@@ -130,7 +132,7 @@ namespace {
 namespace {
     namespace Test_3_SimpleFetch_httpbin_ {
         namespace Private_ {
-            void    T1_httpbin_ip_ (Connection c)
+            void    T1_httpbin_SimpleGET_ (Connection c)
             {
                 c.SetURL (URL (L"http://httpbin.org/get"));
                 Response    r   =   c.GET ();
@@ -143,9 +145,91 @@ namespace {
                     VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get");
                 }
             }
+            void    T2_httpbin_SimplePOST_ (Connection c)
+            {
+                using   Memory::BLOB;
+
+                static   mt19937 sRNG_;
+
+                c.SetURL (URL (L"http://httpbin.org/post"));
+                BLOB    roundTripTestData = [] () {
+                    Memory::SmallStackBuffer<Byte> buf (1024);
+                    for (size_t i = 0; i < buf.GetSize (); ++i) {
+                        buf[i] = static_cast<Byte> (uniform_int_distribution<unsigned short>()(sRNG_));
+                    }
+                    return BLOB (buf.begin (), buf.end ());
+                } ();
+                Response    r   =   c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
+                VerifyTestResult (r.GetSucceeded ());
+                {
+                    VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                    Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
+                    for (auto i : vv) {
+#if 0
+                        DbgTrace (L"i.frist=%s", i.fKey.c_str ());
+                        DbgTrace (L"i.second=%s", i.fValue.As<String> ().c_str ());
+#endif
+                    }
+                    String  dataValueString = vv.Lookup (L"data").Value ().As<String> ();
+                    {
+                        size_t i = dataValueString.Find (',');
+                        if (i != -1) {
+                            dataValueString = dataValueString.SubString (i + 1);
+                        }
+                    }
+                    BLOB    resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
+                    VerifyTestResult (resultBLOB == roundTripTestData);
+                }
+            }
+            void    T3_httpbin_SimplePUT_ (Connection c)
+            {
+                using   Memory::BLOB;
+
+                static   mt19937 sRNG_;
+
+                c.SetURL (URL (L"http://httpbin.org/put"));
+                BLOB    roundTripTestData = [] () {
+                    Memory::SmallStackBuffer<Byte> buf (1024);
+                    for (size_t i = 0; i < buf.GetSize (); ++i) {
+                        buf[i] = static_cast<Byte> (uniform_int_distribution<unsigned short>()(sRNG_));
+                    }
+                    return BLOB (buf.begin (), buf.end ());
+                } ();
+                Response    r   =   c.PUT (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
+                VerifyTestResult (r.GetSucceeded ());
+                {
+                    VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                    Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
+                    for (auto i : vv) {
+#if 0
+                        DbgTrace (L"i.frist=%s", i.fKey.c_str ());
+                        DbgTrace (L"i.second=%s", i.fValue.As<String> ().c_str ());
+#endif
+                    }
+                    String  dataValueString = vv.Lookup (L"data").Value ().As<String> ();
+                    {
+                        size_t i = dataValueString.Find (',');
+                        if (i != -1) {
+                            dataValueString = dataValueString.SubString (i + 1);
+                        }
+                    }
+                    BLOB    resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
+                    VerifyTestResult (resultBLOB == roundTripTestData);
+                }
+            }
             void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
-                T1_httpbin_ip_ (factory ());
+                {
+                    T1_httpbin_SimpleGET_ (factory ());
+                    T2_httpbin_SimplePOST_ (factory ());
+                }
+                {
+                    // Connection re-use
+                    Connection conn = factory ();
+                    T1_httpbin_SimpleGET_ (conn);
+                    T2_httpbin_SimplePOST_ (conn);
+                    T3_httpbin_SimplePUT_ (conn);
+                }
             }
         }
         void    DoTests_ ()
