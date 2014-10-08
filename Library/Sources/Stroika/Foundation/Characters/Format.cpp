@@ -99,11 +99,20 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
     memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
 #endif
 
+    // SUBTLE: va_list looks like it is passed by value, but its not really,
+    // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
+    // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
+    va_list argListCopy ;
+    va_copy(argListCopy, argsList);
+
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
-    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argsList) < 0) {
+    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        va_end (argListCopy);
+        va_copy (argListCopy, argsList);
     }
+    va_end(argListCopy);
     Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
     return String (msgBuf);
 }
