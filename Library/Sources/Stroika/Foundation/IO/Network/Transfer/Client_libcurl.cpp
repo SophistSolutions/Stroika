@@ -284,7 +284,6 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
         }
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 1));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTFIELDSIZE, fUploadData_.size ()));
-        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
     }
     else if (request.fMethod == HTTP::Methods::kPut) {
         if (not fCURLCacheUTF8_Method_.empty ()) {
