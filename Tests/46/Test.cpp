@@ -954,8 +954,8 @@ namespace {
 namespace   {
     void    RunPerformanceTests_ ()
     {
-		DateTime	startedAt = DateTime::Now ();
-		GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
+        DateTime    startedAt = DateTime::Now ();
+        GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
             GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
         }
@@ -1160,9 +1160,9 @@ namespace   {
             &failedTests
         );
 
-        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]"<< endl << endl;
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl << endl;
 
-		if (not failedTests.empty ()) {
+        if (not failedTests.empty ()) {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
