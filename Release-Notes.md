@@ -24,7 +24,7 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a47">v2.0a47x</a><br/>2014-10-08</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a47">v2.0a47</a><br/>2014-10-08</td>
 <td>
 <ul>
 	<li>Spotty here and there progress on new Synchonized<> deisgn - a few more methods forwarded (Set/?)</li>
@@ -35,6 +35,7 @@ History
 	<li>Traversal::Iterator2Address</li>
 	<li>Small Stream improvements, like TextInputStream::ReadAll() using StringBuilder</li>
 	<li>Minor improvements to SmallStackBuffer and StringBuilder</li>
+	<li>Tested with clang++, gcc48, gcc47, msvc2k13-update3, and clean report card (one minor issue) from VALGRIND</li>
 </ul>
 </td>
 </tr>
