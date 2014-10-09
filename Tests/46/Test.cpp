@@ -30,6 +30,8 @@
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
+#include    "Stroika/Foundation/Time/DateTime.h"
+#include    "Stroika/Foundation/Time/Duration.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
@@ -952,6 +954,8 @@ namespace {
 namespace   {
     void    RunPerformanceTests_ ()
     {
+		DateTime	startedAt = DateTime::Now ();
+		GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
             GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
         }
@@ -1127,7 +1131,7 @@ namespace   {
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
         95700,
-        7.3,
+        7.7,
         &failedTests
         );
         Tester (
@@ -1156,8 +1160,9 @@ namespace   {
             &failedTests
         );
 
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]"<< endl << endl;
 
-        if (not failedTests.empty ()) {
+		if (not failedTests.empty ()) {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
