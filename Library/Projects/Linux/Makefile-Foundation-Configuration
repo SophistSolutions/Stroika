@@ -8,6 +8,7 @@ SrcDir					=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)ComputerName.o\
 	$(ObjDir)Enumeration.o\
 	$(ObjDir)Locale.o\
 	$(ObjDir)Platform.o\
