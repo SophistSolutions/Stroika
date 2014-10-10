@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.cpp" />
@@ -958,6 +959,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
@@ -1317,6 +1319,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl" />

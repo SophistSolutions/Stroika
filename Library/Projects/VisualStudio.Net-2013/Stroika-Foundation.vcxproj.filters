@@ -726,6 +726,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1677,6 +1680,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2543,6 +2549,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>
