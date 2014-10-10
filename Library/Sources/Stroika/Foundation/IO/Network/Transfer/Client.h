@@ -29,9 +29,9 @@
  *
  * TODO:
  *
- *		@todo	Probably should redo Request so it can optionally use a BLOB or
- *				Stream (like Response). DO NOW the header / class changes - making
- *				CTOR/accessors, so easiser to change funcitonality later!!!
+ *      @todo   Probably should redo Request so it can optionally use a BLOB or
+ *              Stream (like Response). DO NOW the header / class changes - making
+ *              CTOR/accessors, so easiser to change funcitonality later!!!
  *
  *      @todo   Add thread safety (locks/semaphores)
  *
@@ -47,9 +47,9 @@
  *      @todo   Add factory for 'CreateConnection'  - so you can do 'dependnecy injection' or other
  *              way to configure http client support library (winhttp versus libcurl or other).
  *
- *		@todo	Redo Response to fully/properly support incremental read through streams. Must do
- *				CTOR on response object taking a stream, and hten reasonably (tbd) how to handle
- *				calls to getResponseBLOB? (probably assert or except?)
+ *      @todo   Redo Response to fully/properly support incremental read through streams. Must do
+ *              CTOR on response object taking a stream, and hten reasonably (tbd) how to handle
+ *              calls to getResponseBLOB? (probably assert or except?)
  *
  *      @todo   Progress Callbacks?
  *

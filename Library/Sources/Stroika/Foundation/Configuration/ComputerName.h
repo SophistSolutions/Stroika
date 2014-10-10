@@ -30,19 +30,19 @@ namespace   Stroika {
         namespace   Configuration {
 
 
-			using	Characters::String;
+            using   Characters::String;
 
 
-			/**
-			 *	Returns the best OS dependent guess at a computer name we have.
-			 *
-			 *	On windows, this amounts to the NETBIOS name, and on UNIX, this amounts
-			 *	to the result of 'gethostname' (man 2 hostname).
-			 *
-			 *	This is very frequently NOT useful, not unique, but frequently desired/used,
-			 *	so at least you can get to it uniformly, cross-platform.
-			 */
-			String	GetComputerName ();
+            /**
+             *  Returns the best OS dependent guess at a computer name we have.
+             *
+             *  On windows, this amounts to the NETBIOS name, and on UNIX, this amounts
+             *  to the result of 'gethostname' (man 2 hostname).
+             *
+             *  This is very frequently NOT useful, not unique, but frequently desired/used,
+             *  so at least you can get to it uniformly, cross-platform.
+             */
+            String  GetComputerName ();
 
 
         }
