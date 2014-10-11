@@ -18,7 +18,6 @@ Objs	=	\
 	$(ObjDir)CommandLine.o\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)ErrNoException.o\
-	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
 	$(ObjDir)Finally.o\
 	$(ObjDir)Function.o\

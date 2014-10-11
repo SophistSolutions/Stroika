@@ -237,9 +237,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -890,9 +887,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h">
       <Filter>Sources\Execution</Filter>
@@ -1792,9 +1786,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl">
       <Filter>Sources\Execution</Filter>
