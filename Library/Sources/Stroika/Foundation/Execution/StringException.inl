@@ -24,6 +24,7 @@ namespace   Stroika {
              */
             inline  StringException::StringException (const Characters::String& reasonForError)
                 : fError_ (reasonForError)
+                , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
             {
             }
             template    <>
@@ -35,6 +36,10 @@ namespace   Stroika {
             inline  Characters::String StringException::As () const
             {
                 return fError_;
+            }
+            inline  const char* StringException::what () const noexcept
+            {
+                return fSDKCharString_.c_str ();
             }
 
 
