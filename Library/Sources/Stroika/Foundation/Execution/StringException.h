@@ -17,8 +17,8 @@
 
 /*
  * TODO:
- *          @todo   Consider if StringException should inherit from std::exception - and map its string value to 'what' char* value?
- *                  Not sure of the answer - about what our base SB, but char* should be ddefined to be a c-string in the PlatformSDK string codepage!
+ *          @todo   Consider if StringException should be templated, so it can be used to wrap as a C++ StirngException
+ *                  any base std::exception subclass.
  */
 
 
