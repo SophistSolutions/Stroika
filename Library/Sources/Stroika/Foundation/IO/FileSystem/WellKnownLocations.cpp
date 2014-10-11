@@ -79,6 +79,48 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 
 /*
  ********************************************************************************
+ ********* FileSystem::WellKnownLocations::GetSpoolDirectory ********************
+ ********************************************************************************
+ */
+String FileSystem::WellKnownLocations::GetSpoolDirectory ()
+{
+#if     qPlatform_Windows
+    /// Not sure what better than FOLDERID_ProgramData / "Spool"???
+    SDKChar   fileBuf[MAX_PATH];
+    memset (fileBuf, 0, sizeof (fileBuf));
+    Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
+    SDKString result = fileBuf;
+    // Assure non-empty result
+    if (result.empty ()) {
+        result = SDKSTR ("c:");   // shouldn't happen
+    }
+    // assure ends in '\'
+    if (result[result.size () - 1] != '\\') {
+        result += SDKSTR ("\\");
+    }
+    Ensure (result[result.size () - 1] == '\\');
+    if (Directory (String::FromSDKString (result)).Exists ()) {
+        return String::FromSDKString (result);
+    }
+    else {
+        return String ();
+    }
+#elif   qPlatform_POSIX
+    static  String  kVarSpool_  =   String_Constant (L"/var/spool/");
+    return kVarSpool_;
+#else
+    AssertNotImplemented ();
+    return String ();
+#endif
+}
+
+
+
+
+
+
+/*
+ ********************************************************************************
  ******** FileSystem::WellKnownLocations::GetApplicationData ********************
  ********************************************************************************
  */
