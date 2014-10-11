@@ -24,6 +24,13 @@
  *
  *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
+ *      @todo   Consider using
+ *                  http://en.cppreference.com/w/cpp/error/make_exception_ptr
+ *              to allow propagating excetions from the called thread to the calling thread.
+ *              Maybe API "WaitAndThrowAnyChildThreadExceptions", or make optional if
+ *              existing WAIT API throws child excpetions. Maybe paraemter in construction
+ *              of the thread?
+ *
  *      @todo   SuppressAbortInContext DTOR should CheckFor...Abort...
  *
  *      @todo   DOCUMENT:
