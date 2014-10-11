@@ -146,6 +146,10 @@ void    Execution::Platform::Windows::Exception::DoThrow (DWORD error)
                 DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileBusyException", error);
                 throw IO::FileBusyException ();
             }
+        case    ERROR_ACCESS_DENIED: {
+                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
+                throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
+            }
         case ERROR_FILE_NOT_FOUND: {
                 DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
                 throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
