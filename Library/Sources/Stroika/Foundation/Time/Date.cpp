@@ -484,13 +484,22 @@ String Date::Format (const locale& l) const
 #if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
+
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     tm when =   Date2TM_ (*this);
+#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
+    const time_put<char>& tmput = use_facet <time_put<char>> (l);
+    ostringstream oss;
+    const char kPattern[] = "%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::strlen (kPattern));
+    return String::FromNarrowString (oss.str (), l);
+#else
+    const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     wostringstream oss;
     const wchar_t kPattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
     tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
     return oss.str ();
+#endif
 }
 
 #if     qPlatform_Windows

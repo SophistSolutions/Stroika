@@ -462,6 +462,20 @@ String TimeOfDay::Format (const locale& l) const
         return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
+    // http://en.cppreference.com/w/cpp/locale/time_put/put
+#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
+    const time_put<char>& tmput = use_facet <time_put<char>> (l);
+    tm when;
+    memset (&when, 0, sizeof (when));
+    when.tm_hour = GetHours ();
+    when.tm_min = GetMinutes ();
+    when.tm_sec = GetSeconds ();
+    ostringstream oss;
+    //oss.imbue (l);        // not sure if/why needed/not/needed
+    const char kPattern[] = "%X";      // %X locale dependent
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::strlen (kPattern));
+    return String::FromNarrowString (oss.str (), l);
+#else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     tm when;
     memset (&when, 0, sizeof (when));
@@ -473,6 +487,7 @@ String TimeOfDay::Format (const locale& l) const
     const wchar_t kPattern[] = L"%X";      // %X locale dependent
     tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
     return oss.str ();
+#endif
 }
 
 #if     qPlatform_Windows

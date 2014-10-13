@@ -114,6 +114,25 @@
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
+@DESCRIPTION:   <p>Using tmput on Release, and 64bit builds core dumps. Just started. Not sure why.
+            But using narrow string succeeds so workaround.
+            </p>
+*/
+#ifndef qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+#else
+#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     0
+#endif
+
+#endif
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
 @DESCRIPTION:
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
