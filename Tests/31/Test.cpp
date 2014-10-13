@@ -14,6 +14,7 @@
 #endif
 
 #include    "Stroika/Foundation/Execution/Exceptions.h"
+#include    "Stroika/Foundation/Execution/StringException.h"
 #if     qPlatform_Windows
 #include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -45,12 +46,38 @@ namespace   {
 }
 
 
+namespace {
+    void    Test2_ThrowCatchStringException_ ()
+    {
+        {
+            try {
+                DoThrow (StringException (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const StringException& e) {
+                VerifyTestResult (e.As<wstring> () == L"HiMom");
+            }
+        }
+        {
+            try {
+                DoThrow (StringException (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const std::exception& e) {
+                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+            }
+        }
+    }
+}
+
+
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
         RegressionTest1_ ();
+        Test2_ThrowCatchStringException_ ();
     }
 
 }
