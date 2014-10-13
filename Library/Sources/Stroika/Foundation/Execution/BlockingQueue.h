@@ -143,8 +143,8 @@ namespace   Stroika {
                 nonvirtual  bool    empty () const;
 
             private:
-                WaitableEvent			fDataAvailable_;
-                Containers::Queue<T>	fQueue_;
+                WaitableEvent           fDataAvailable_;
+                Containers::Queue<T>    fQueue_;
             };
 
 
