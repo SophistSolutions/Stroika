@@ -1095,6 +1095,28 @@ namespace {
 
 
 
+namespace {
+    void    Test44_LocaleUNICODEConversions_ ()
+    {
+        VerifyTestResult (String::FromNarrowString ("fred", locale("C")) == L"fred");
+
+
+        auto testRoundtrip = [] (const char* localName, const string & localMBString, const wstring & wideStr) {
+            try {
+                locale l { localName };
+                VerifyTestResult (String::FromNarrowString (localMBString, l) == wideStr);
+                VerifyTestResult (String (wideStr).AsNarrowString (l) == localMBString);
+            }
+            catch (...) {
+                // if no such locale, just skip the test...
+            }
+        };
+        //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
+        testRoundtrip ("en_US.utf8", "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b", L"zß水𝄋");
+    }
+}
+
+
 
 
 namespace   {
@@ -1141,6 +1163,7 @@ namespace   {
         Test31_OperatorINSERT_ostream_ ();
         Test32_StringBuilder_ ();
         Test33_Append_ ();
+        Test44_LocaleUNICODEConversions_ ();
     }
 }
 
