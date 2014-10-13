@@ -571,7 +571,7 @@ namespace   Stroika {
                  *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
                  *  of the String.
                  *
-                 *  So for example, CircularSubString (0, -1) is equivlent to SubString (0, GetLength () - 1) - and so is an
+                 *  So for example, CircularSubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
                  *  error if the string is empty.
                  *
                  *  Similarly, CircularSubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
