@@ -675,6 +675,26 @@ EXAMPLE:
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#else
+#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_GCC_48_OptimizerBug

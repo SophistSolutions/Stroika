@@ -374,19 +374,22 @@ String  String::FromNarrowSDKString (const string& from)
 }
 
 namespace {
-    template<class Facet>
-    struct deletable_facet : Facet {
+    template    <typename FACET>
+    struct deletable_facet : FACET {
         template<class ...Args>
-        deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+        deletable_facet(Args&& ...args) : FACET (std::forward<Args>(args)...) {}
         ~deletable_facet() {}
     };
 }
 String  String::FromNarrowString (const char* from, const char* to, const locale& l)
 {
-
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+#if     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
+    Destructible_codecvt_byname cvt {l.name ().c_str () };
+#else
     Destructible_codecvt_byname cvt {l.name () };
+#endif
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t mbstate {};
