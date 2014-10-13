@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <locale>
 #include    <string>
 
 #include    "../Execution/ModuleInit.h"
@@ -422,6 +423,14 @@ namespace   Stroika {
                 static  String  FromNarrowSDKString (const char* from);
                 static  String  FromNarrowSDKString (const char* from, const char* to);
                 static  String  FromNarrowSDKString (const string& from);
+
+            public:
+                /**
+                 *  Create a String object from a 'char-based' on the encoding from the argument locale
+                 */
+                static  String  FromNarrowString (const char* from, const locale& l);
+                static  String  FromNarrowString (const char* from, const char* to, const locale& l);
+                static  String  FromNarrowString (const string& from, const locale& l);
 
             public:
                 /**

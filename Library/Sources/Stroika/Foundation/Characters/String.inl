@@ -144,6 +144,15 @@ namespace   Stroika {
             {
                 _AssertRepValidType ();
             }
+            inline  String  String::FromNarrowString (const char* from, const locale& l)
+            {
+                RequireNotNull (from);
+                return FromNarrowString (from, from + ::strlen (from), l);
+            }
+            inline  String  String::FromNarrowString (const string& from, const locale& l)
+            {
+                return FromNarrowString (from.c_str (), from.c_str () + from.length (), l);
+            }
             inline  const String::_IRep&    String::ConstGetRep_ () const
             {
                 EnsureMember (&inherited::_ConstGetRep (), String::_IRep);

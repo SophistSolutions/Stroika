@@ -373,6 +373,33 @@ String  String::FromNarrowSDKString (const string& from)
     return NarrowSDKStringToWide (from);
 }
 
+namespace {
+    template<class Facet>
+    struct deletable_facet : Facet {
+        template<class ...Args>
+        deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+        ~deletable_facet() {}
+    };
+}
+String  String::FromNarrowString (const char* from, const char* to, const locale& l)
+{
+
+    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
+    using Destructible_codecvt_byname = deletable_facet<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+    Destructible_codecvt_byname cvt {l.name () };
+
+    // http://en.cppreference.com/w/cpp/locale/codecvt/in
+    mbstate_t mbstate {};
+    size_t externalSize = to - from;
+    std::wstring internal(externalSize, '\0');
+    const char* from_next;
+    wchar_t* to_next;
+    cvt.in(mbstate, from, to, from_next, &internal[0], &internal[internal.size()], to_next);
+    // error checking skipped for brevity
+    internal.resize(to_next - &internal[0]);
+    return internal;
+}
+
 String  String::FromAscii (const char* from)
 {
     RequireNotNull (from);
