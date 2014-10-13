@@ -426,7 +426,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Create a String object from a 'char-based' on the encoding from the argument locale
+                 *  Create a String object from a 'char-based' on the encoding from the argument locale.
+                 *  This throws an exception if there is an error performing the conversion.
                  */
                 static  String  FromNarrowString (const char* from, const locale& l);
                 static  String  FromNarrowString (const char* from, const char* to, const locale& l);
@@ -844,6 +845,15 @@ namespace   Stroika {
                  */
                 template    <typename   T>
                 nonvirtual  explicit operator T () const;
+
+            public:
+                /**
+                 *  Create a narrow std::string object from this, based on the encoding from the argument locale.
+                 *  This throws an exception if there is an error performing the conversion, and the 'into' overload
+                 *  leaves 'into' in an undefined (but safe) state.
+                 */
+                nonvirtual  string  AsNarrowString (const locale& l) const;
+                nonvirtual  void    AsNarrowString (const locale& l, string* into) const;
 
             public:
                 /**

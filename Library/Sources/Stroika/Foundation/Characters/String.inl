@@ -445,6 +445,12 @@ namespace   Stroika {
             {
                 AsASCII<std::string> (into);
             }
+            inline  string  String::AsNarrowString (const locale& l) const
+            {
+                string result;
+                AsNarrowString (l, &result);
+                return result;
+            }
             inline  SDKString String::AsSDKString () const
             {
                 SDKString result;

@@ -12,6 +12,7 @@
 
 #include    "../Containers/Common.h"
 #include    "../Execution/Exceptions.h"
+#include    "../Execution/StringException.h"
 #include    "../Math/Common.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/BlockAllocated.h"
@@ -120,6 +121,16 @@ namespace   {
 
 
 
+
+
+namespace {
+    template    <typename FACET>
+    struct  deletable_facet_ : FACET {
+        template    <typename ...Args>
+        deletable_facet_ (Args&& ...args) : FACET (std::forward<Args> (args)...) {}
+        ~deletable_facet_() {}
+    };
+}
 
 
 
@@ -373,18 +384,10 @@ String  String::FromNarrowSDKString (const string& from)
     return NarrowSDKStringToWide (from);
 }
 
-namespace {
-    template    <typename FACET>
-    struct deletable_facet : FACET {
-        template<class ...Args>
-        deletable_facet(Args&& ...args) : FACET (std::forward<Args>(args)...) {}
-        ~deletable_facet() {}
-    };
-}
 String  String::FromNarrowString (const char* from, const char* to, const locale& l)
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
 #if     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
     Destructible_codecvt_byname cvt {l.name ().c_str () };
 #else
@@ -394,13 +397,15 @@ String  String::FromNarrowString (const char* from, const char* to, const locale
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t mbstate {};
     size_t externalSize = to - from;
-    std::wstring internal(externalSize, '\0');
+    std::wstring resultWStr(externalSize, '\0');
     const char* from_next;
     wchar_t* to_next;
-    cvt.in(mbstate, from, to, from_next, &internal[0], &internal[internal.size()], to_next);
-    // error checking skipped for brevity
-    internal.resize(to_next - &internal[0]);
-    return internal;
+    codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size()], to_next);
+    if (result != codecvt_base::ok) {
+        Execution::DoThrow (Execution::StringException (L"Error converting locale multibyte string to UNICODE"));
+    }
+    resultWStr.resize (to_next - &resultWStr[0]);
+    return resultWStr;
 }
 
 String  String::FromAscii (const char* from)
@@ -1035,6 +1040,27 @@ String  String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsi
     }
 }
 
+void    String::AsNarrowString (const locale& l, string* into) const
+{
+    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
+    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+#if     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
+    Destructible_codecvt_byname cvt {l.name ().c_str () };
+#else
+    Destructible_codecvt_byname cvt {l.name () };
+#endif
+    wstring wstr = As<wstring> ();
+    // http://en.cppreference.com/w/cpp/locale/codecvt/out
+    mbstate_t mbstate {};
+    into->resize (wstr.size () * cvt.max_length (), '\0');
+    const wchar_t* from_next;
+    char* to_next;
+    codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size()], from_next, &(*into)[0], &(*into)[into->size()], to_next);
+    if (result != codecvt_base::ok) {
+        Execution::DoThrow (Execution::StringException (L"Error converting locale multibyte string to UNICODE"));
+    }
+    into->resize (to_next - & (*into)[0]);
+}
 
 template    <>
 void    String::AsUTF8 (string* into) const
