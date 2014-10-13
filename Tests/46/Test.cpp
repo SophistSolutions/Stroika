@@ -1166,7 +1166,7 @@ namespace   {
             String listAsMsg;
             failedTests.Apply ([&listAsMsg] (String i) {if (not listAsMsg.empty ()) {listAsMsg += L", ";} listAsMsg += i; });
             if (sShowOutput_) {
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
                 Execution::DoThrow (StringException (L"At least one test failed expected time constaint (see above): " + listAsMsg));
 #endif
             }
@@ -1198,12 +1198,12 @@ int     main (int argc, const char* argv[])
             }
         }
     }
-    catch (const std::exception& e) {
-        cerr << "Usage: '" << e.what () << endl;
-        exit (EXIT_FAILURE);
-    }
     catch (const Execution::StringException& e) {
         cerr << "Usage: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
+        exit (EXIT_FAILURE);
+    }
+    catch (const std::exception& e) {
+        cerr << "Usage: '" << e.what () << endl;
         exit (EXIT_FAILURE);
     }
     catch (...) {
@@ -1215,4 +1215,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
     return EXIT_SUCCESS;
 }
-
