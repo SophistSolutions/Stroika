@@ -1099,13 +1099,16 @@ namespace {
     void    Test44_LocaleUNICODEConversions_ ()
     {
         auto testRoundtrip = [] (const char* localName, const string & localMBString, const wstring & wideStr) {
+            bool initializedLocale = false;
             try {
                 locale l { localName };
+                initializedLocale = true;
                 VerifyTestResult (String::FromNarrowString (localMBString, l) == wideStr);
                 VerifyTestResult (String (wideStr).AsNarrowString (l) == localMBString);
             }
             catch (...) {
                 // if no such locale, just skip the test...
+                VerifyTestResult (not initializedLocale);   // else means throw from conversion which would be bad
             }
         };
         //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
