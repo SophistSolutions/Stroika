@@ -282,18 +282,18 @@ int main (int argc, const char* argv[])
     catch (const Execution::InvalidCommandLineArgument& e) {
         ShowUsage_ (m, e);
     }
-    catch (const std::exception& e) {
-#if     qUseLogger
-        Logger::Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
-#endif
-        cerr << "FAILED: " << e.what () << endl;
-        return EXIT_FAILURE;
-    }
     catch (const Execution::StringException& e) {
 #if     qUseLogger
         Logger::Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
 #endif
         cerr << "FAILED: " << e.As<String> ().AsNarrowSDKString () << endl;
+        return EXIT_FAILURE;
+    }
+    catch (const std::exception& e) {
+#if     qUseLogger
+        Logger::Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
+#endif
+        cerr << "FAILED: " << e.what () << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
