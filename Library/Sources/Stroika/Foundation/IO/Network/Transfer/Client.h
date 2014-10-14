@@ -135,6 +135,15 @@ namespace   Stroika {
                      *
                      *      NOTE - as of 2014-10-08 - the only case thats implemented is the case of construction with a prefetched
                      *      BLOB, and then repsenting THAT as a binary stream if requested.
+                     *
+                     *  @todo    NOTE IMPLICATIONS ABOUT COIPYING.
+                     *          HAVE FLAG CALLED "STREAMED_RESPONSE".
+                     *
+                     *          CTOR specifies this value and it cannot change and generally comes from request options.
+                     *          if streamed response, ILLEGAL to call GETBLOB() (throws IsStreamedResponse).
+                     *          If streamed response, copy of Response object copies Stream itself, whcih is (cuz all streams are
+                     *          logcially smart poitners to data) - so multiple readers interfere with one another. threadsafe byt
+                     *          possibly not the expected behavior).
                      */
                     class  Response {
                     public:
