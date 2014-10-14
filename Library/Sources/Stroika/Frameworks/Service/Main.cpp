@@ -685,6 +685,7 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
+    sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
