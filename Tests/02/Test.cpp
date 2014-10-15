@@ -75,8 +75,18 @@ namespace {
      */
     String  s_TestEmptyString_;
     String  s_TestStringInit_ { L"my very good test" };
-    String  s_TestStringConstantInit_ { String_Constant { L"my very good test"} };
+    String  s_TestStringConstantInit_ { String_Constant { L"my very very good test"} };
     String  s_TestStringAssignInit_ { s_TestStringInit_ };
+
+    struct RunTest_VerifyStatics_ {
+        RunTest_VerifyStatics_ ()
+        {
+            VerifyTestResult (s_TestEmptyString_.empty ());
+            VerifyTestResult (s_TestStringInit_ == L"my very good test");
+            VerifyTestResult (s_TestStringConstantInit_ == L"my very very good test");
+            VerifyTestResult (s_TestStringAssignInit_ == s_TestStringInit_);
+        }
+    } _s_RunTest_VerifyStaticAssigns_;
 }
 
 
