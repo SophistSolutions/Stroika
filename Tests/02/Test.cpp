@@ -16,6 +16,7 @@
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
+#include    "Stroika/Foundation/Characters/String_Constant.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
 #include    "Stroika/Foundation/Containers/Common.h"
@@ -55,6 +56,28 @@ using   Containers::Sequence;
  *          Compare inserting into start of vector<STRINGTYPE> - to test copying.
  */
 
+
+
+
+
+
+
+namespace {
+    /*
+     * Test of STATIC FILE SCOPE INITIALIZATION
+     *
+     *      Really a test - but not a numbered test because this has to be done at file scope.
+     *      Assure that static construction (file scope) works OK
+     *
+     *  \note   This code ATTEMPTS to detect inter-obj module problems with the file scope string objects. But its not perfect,
+     *          and depends a bit on luck and undefined linker behavior. However, since we test on many platforms, the hope is
+     *          that IF this code is problematic, it will fail on at least one platform.
+     */
+    String  s_TestEmptyString_;
+    String  s_TestStringInit_ { L"my very good test" };
+    String  s_TestStringConstantInit_ { String_Constant { L"my very good test"} };
+    String  s_TestStringAssignInit_ { s_TestStringInit_ };
+}
 
 
 

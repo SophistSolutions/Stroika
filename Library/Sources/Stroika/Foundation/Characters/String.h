@@ -95,7 +95,7 @@
  *      @todo   Change APIs that return vector to return Iterable<> using CreateGenerator (). Tried once and worked
  *              very nicely.
  *
- *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
+ *      @todo   Annotate basic string aliases as (basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *
  *      @todo   Add AsSDKString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
@@ -267,12 +267,12 @@ namespace   Stroika {
 
 
             /**
-             *  The Stroika String class is an alternatve for the std::wstring class, which should be largely
+             *  The Stroika String class is an alternatve for the wstring class, which should be largely
              *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
              *  methods).
              *
              *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
-             *  no obvious way to map the Stroika String to a std::string. However, if you specify a codepage
+             *  no obvious way to map the Stroika String to a string. However, if you specify a codepage
              *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
              *
              *
@@ -331,6 +331,10 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *          Uses immutable string rep pattern.
              *
+             *  \note   Static Initialization, file scope variables, application lifetime variables.
+             *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to
+             *          operate properly, even if used at file scope, and to initialize other strings or objects.
+             *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
              */
             class   String : public Traversal::Iterable<Character> {
             private:
@@ -848,7 +852,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Create a narrow std::string object from this, based on the encoding from the argument locale.
+                 *  Create a narrow string object from this, based on the encoding from the argument locale.
                  *  This throws an exception if there is an error performing the conversion, and the 'into' overload
                  *  leaves 'into' in an undefined (but safe) state.
                  */
@@ -864,8 +868,8 @@ namespace   Stroika {
                 nonvirtual  T   AsUTF8 () const;
                 template    <typename   T>
                 nonvirtual  void    AsUTF8 (T* into) const;
-                nonvirtual  std::string AsUTF8 () const;
-                nonvirtual  void        AsUTF8 (std::string* into) const;
+                nonvirtual  string  AsUTF8 () const;
+                nonvirtual  void    AsUTF8 (string* into) const;
 
             public:
                 /**
@@ -888,8 +892,8 @@ namespace   Stroika {
                 nonvirtual  T   AsASCII () const;
                 template    <typename   T>
                 nonvirtual  void    AsASCII (T* into) const;
-                nonvirtual  std::string AsASCII () const;
-                nonvirtual  void        AsASCII (std::string* into) const;
+                nonvirtual  string  AsASCII () const;
+                nonvirtual  void    AsASCII (string* into) const;
 
             public:
                 /**
@@ -948,7 +952,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  std::basic_string alias for npos = kBadIndex
+                 *  basic_string alias for npos = kBadIndex
                  */
 #if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
                 static  constexpr size_t    npos   = kBadIndex;
@@ -958,13 +962,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  std::basic_string alias: size = GetLength
+                 *  basic_string alias: size = GetLength
                  */
                 nonvirtual  size_t          size () const;
 
             public:
                 /**
-                 *  std::basic_string alias: length = GetLength
+                 *  basic_string alias: length = GetLength
                  */
                 nonvirtual  size_t          length () const;
 

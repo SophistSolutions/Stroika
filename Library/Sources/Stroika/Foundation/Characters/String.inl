@@ -97,7 +97,7 @@ namespace   Stroika {
             }
             inline  String::String (String&& from) noexcept
 :
-            inherited (std::move (from))
+            inherited (move (from))
             {
             }
             inline  String::String (const _SharedPtrIRep& rep) noexcept
@@ -108,7 +108,7 @@ namespace   Stroika {
             }
             inline  String::String (_SharedPtrIRep&& rep) noexcept
 :
-            inherited (std::move (rep))
+            inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -139,7 +139,7 @@ namespace   Stroika {
                 Require (from != nullptr or from == to);
                 _AssertRepValidType ();
             }
-            inline  String::String (const std::wstring& r)
+            inline  String::String (const wstring& r)
                 : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
             {
                 _AssertRepValidType ();
@@ -422,13 +422,14 @@ namespace   Stroika {
                 AsUTF8 (&r);
                 return r;
             }
-            inline  std::string String::AsUTF8 () const
+            inline  string String::AsUTF8 () const
             {
-                return AsUTF8<std::string> ();
+                return AsUTF8<string> ();
             }
-            inline  void        String::AsUTF8 (std::string* into) const
+            inline  void        String::AsUTF8 (string* into) const
             {
-                AsUTF8<std::string> (into);
+                RequireNotNull (into);
+                AsUTF8<string> (into);
             }
             template    <>
             inline  string  String::AsASCII () const
@@ -437,13 +438,14 @@ namespace   Stroika {
                 AsASCII (&r);
                 return r;
             }
-            inline  std::string String::AsASCII () const
+            inline  string String::AsASCII () const
             {
-                return AsASCII<std::string> ();
+                return AsASCII<string> ();
             }
-            inline  void    String::AsASCII (std::string* into) const
+            inline  void    String::AsASCII (string* into) const
             {
-                AsASCII<std::string> (into);
+                RequireNotNull (into);
+                AsASCII<string> (into);
             }
             inline  string  String::AsNarrowString (const locale& l) const
             {
