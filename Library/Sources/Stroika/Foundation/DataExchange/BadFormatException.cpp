@@ -123,7 +123,7 @@ void    _NoReturn_  Execution::DoThrow (const DataExchange::BadFormatException& 
         DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), (int)lineNum.Value (-1), (int)colNumber.Value (-1));
     }
     else {
-        DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s)", e2Throw.GetDetails ().LimitLength (50).c_str ());
+        DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s')", e2Throw.GetDetails ().LimitLength (50).c_str ());
     }
 #endif
     throw e2Throw;

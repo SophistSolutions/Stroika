@@ -287,7 +287,7 @@ bool    VariantValue::As () const
                 return As<UnsignedIntegerType_> () != 0;
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to bool")));
             }
     }
 }
@@ -319,7 +319,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
                 return Characters::String2Int<IntegerType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to integer")));
             }
     }
 }
@@ -353,7 +353,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
                 return Characters::String2Int<UnsignedIntegerType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to unsigned integer")));
             }
     }
 }
@@ -386,7 +386,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
                 return Characters::String2Float<FloatType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to float")));
             }
     }
 }
@@ -414,7 +414,7 @@ Date VariantValue::As() const
                 return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to date")));
             }
     }
 }
@@ -442,7 +442,7 @@ DateTime VariantValue::As () const
                 return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to date-time")));
             }
     }
 }
@@ -529,7 +529,7 @@ String  VariantValue::AsString_ () const
                 return tmp.str ();
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to string")));
             }
     }
 }
@@ -551,7 +551,7 @@ map<wstring, VariantValue>   VariantValue::As () const
                 return tmp;
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to map")));
             }
     }
 }
@@ -569,7 +569,7 @@ Mapping<String, VariantValue>   VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to map")));
             }
     }
 }
@@ -593,7 +593,7 @@ Sequence<VariantValue> VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Execution::DoThrow (DataExchange::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to array")));
             }
     }
 }
