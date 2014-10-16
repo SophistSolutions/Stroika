@@ -444,13 +444,18 @@ namespace   Stroika {
                     eOmit,
                     eInclude
                 };
+                enum class ArrayElementHandling {
+                    eExact,
+                    eTryExtraArray
+                };
 
-                size_t              fOffset;
-                type_index          fTypeInfo;
-                String              fSerializedFieldName;
-                NullFieldHandling   fNullFields;
+                size_t                  fOffset;
+                type_index              fTypeInfo;
+                String                  fSerializedFieldName;
+                NullFieldHandling       fNullFields;
+                ArrayElementHandling    fSpecialArrayHandling;
 
-                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
             };
 
 

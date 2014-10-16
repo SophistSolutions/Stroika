@@ -375,7 +375,35 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.IsMissing ()) {
-                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+                switch (i.fSpecialArrayHandling) {
+                    case StructureFieldInfo::ArrayElementHandling::eExact: {
+                            mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+                        }
+                        break;
+                    case StructureFieldInfo::ArrayElementHandling::eTryExtraArray: {
+                            exception_ptr savedException;
+                            try {
+                                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+                            }
+                            catch (...) {
+                                // Because of ambiguity in xml between arrays and single elements, we optionally allow special mapping to array
+                                // but then if that fails, throw the original exception
+                                savedException = current_exception();
+                                Sequence<VariantValue> v;
+                                v.Append (*o);
+                                try {
+                                    mapper->ToObject (i.fTypeInfo, VariantValue (v), intoObjOfTypeT + i.fOffset);
+                                }
+                                catch (...) {
+                                    rethrow_exception (savedException);
+                                }
+                            }
+                        }
+                        break;
+                    default: {
+                            AssertNotReached ();
+                        }
+                }
             }
         }
     };
