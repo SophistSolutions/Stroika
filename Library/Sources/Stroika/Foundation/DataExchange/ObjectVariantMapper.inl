@@ -473,7 +473,7 @@ namespace   Stroika {
                     auto optVal = nameMap.InverseLookup (d.As<String> ());
                     if (optVal.IsMissing ())
                     {
-                        DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), d.As<String> ().c_str ());
+                        DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), d.As<String> ().AsUTF8 ().c_str ());
                         Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
                     * actualInto = *optVal;
