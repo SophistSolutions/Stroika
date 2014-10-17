@@ -504,14 +504,14 @@ String  VariantValue::AsString_ () const
                 auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
-                tmp << L"map[";
+                tmp << L"{";
                 for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
                     if (i != v->fVal.begin ()) {
                         tmp << L", ";
                     }
                     tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
                 }
-                tmp << L"]";
+                tmp << L"}";
                 return tmp.str ();
             }
         case    Type::eArray: {
@@ -529,6 +529,8 @@ String  VariantValue::AsString_ () const
                 return tmp.str ();
             }
         default: {
+                AssertNotImplemented(); // Should allow ALL types to be converted to string, if for nothing else,
+                // debugging purposes (AND DOC THIS)
                 Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to string")));
             }
     }
