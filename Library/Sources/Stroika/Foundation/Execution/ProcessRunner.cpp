@@ -649,6 +649,8 @@ DoneWithProcess:
             }
             // not sure we need?
             wait (NULL);                /* Wait for child */
+            CLOSE_ (useSTDOUT);
+            CLOSE_ (useSTDERR);
         }
 #endif
     });
