@@ -6,11 +6,12 @@
 #include    <sstream>
 
 #if     qPlatform_POSIX
-#include    <sys/types.h>
-#include    <unistd.h>
-#include    <sys/stat.h>
 #include    <fcntl.h>
+#include    <sys/resource.h>
+#include    <sys/stat.h>
+#include    <sys/types.h>
 #include    <sys/wait.h>
+#include    <unistd.h>
 #endif
 
 #include    "../Characters/CString/Utilities.h"
@@ -114,6 +115,23 @@ namespace {
     }
 }
 #endif
+
+#if     qPlatform_POSIX
+namespace {
+    static  const   int kMaxFD_ = [] {
+        struct rlimit fds;
+        memset (&fds);
+        if (getrlimit(RLIMIT_NOFILE, fds) == 0)
+        {
+            return fds.rlim_cur;
+        }
+        else {
+            return 1024;    // wag
+        }
+    } ();
+}
+#endif
+
 
 
 #if     qPlatform_Windows
@@ -576,6 +594,13 @@ DoneWithProcess:
                 CLOSE_ (jStdout[1]);
                 CLOSE_ (jStderr[0]);
                 CLOSE_ (jStderr[1]);
+            }
+            constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+            if (kCloseAllExtraneousFDsInChild_) {
+                // close all but stdin, stdout, and stderr in child fork
+                for (i = 3; i < kMaxFD_; ++i) {
+                    close(i);
+                }
             }
             Sequence<string>    tmpTStrArgs;
             for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
