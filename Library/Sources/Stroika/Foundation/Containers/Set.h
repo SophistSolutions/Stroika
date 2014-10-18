@@ -192,6 +192,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Add item if not already present, and return true if added, and false if already present.
+                 *  Note - we chose to return true in the case of addition because this is the case most likely
+                 *  when a caller would want to take action.
+                 *
+                 *  EXAMPLE:
+                 *      if (s.AddIf (n)) {
+                 *          write_to_disk(n);
+                 *      }
+                 */
+                nonvirtual  bool    AddIf (T item);
+
+            public:
+                /**
                  */
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
