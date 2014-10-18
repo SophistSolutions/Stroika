@@ -73,8 +73,12 @@ namespace {
 
 template    <typename T>
 struct  VariantValue::TIRep_ : VariantValue::IRep_ {
-    TIRep_ (T v)
+    inline TIRep_ (const T& v)
         : fVal (v)
+    {
+    }
+    inline TIRep_ (T&& v)
+        : fVal (move (v))
     {
     }
     virtual Type    GetType () const override
@@ -212,8 +216,18 @@ VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
 {
 }
 
+VariantValue::VariantValue (Mapping<String, VariantValue>&& val)
+    : fVal_ (DEBUG_NEW TIRep_<Mapping<String, VariantValue>> (move (val)))
+{
+}
+
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
     : fVal_ (DEBUG_NEW TIRep_<Sequence<VariantValue>> (val))
+{
+}
+
+VariantValue::VariantValue (Sequence<VariantValue>&& val)
+    : fVal_ (DEBUG_NEW TIRep_<Sequence<VariantValue>> (move (val)))
 {
 }
 

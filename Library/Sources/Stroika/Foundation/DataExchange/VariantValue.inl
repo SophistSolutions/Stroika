@@ -36,13 +36,18 @@ namespace   Stroika {
              ********************************** VariantValue ********************************
              ********************************************************************************
              */
-            inline  VariantValue::VariantValue ()
-                : fVal_ ()
-            {
-            }
             inline  VariantValue::VariantValue (const vector<VariantValue>& val)
                 : VariantValue (Sequence<VariantValue> (val))
             {
+            }
+            inline  VariantValue::VariantValue (VariantValue&& src)
+                : fVal_ (move (src.fVal_))
+            {
+            }
+            inline  VariantValue&   VariantValue::operator= (VariantValue && rhs)
+            {
+                fVal_ = move (rhs.fVal_);
+                return *this;
             }
             inline  VariantValue::Type  VariantValue::GetType () const
             {

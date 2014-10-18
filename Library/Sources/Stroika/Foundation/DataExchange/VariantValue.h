@@ -55,8 +55,6 @@
  *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
  *              warrent a careful review
  *
- *      @todo   Add r-value reference -- && -- overloads for CTORs (and more) - as performance hack
- *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
  *              Though probably not.
  */
@@ -159,7 +157,7 @@ namespace   Stroika {
                 };
 
             public:
-                VariantValue ();
+                VariantValue () = default;
                 VariantValue (bool val);
                 VariantValue (signed char val);
                 VariantValue (short int val);
@@ -181,12 +179,20 @@ namespace   Stroika {
                 VariantValue (const String& val);
                 VariantValue (const map<wstring, VariantValue>& val);
                 VariantValue (const Mapping<String, VariantValue>& val);
+                VariantValue (Mapping<String, VariantValue>&& val);
                 VariantValue (const vector<VariantValue>& val);
                 VariantValue (const Sequence<VariantValue>& val);
+                VariantValue (Sequence<VariantValue>&& val);
+                VariantValue (VariantValue&& src);
 
             private:
                 VariantValue (const string& val) = delete;
                 VariantValue (const char* val) = delete;
+
+
+            public:
+                nonvirtual  VariantValue&   operator= (const VariantValue& rhs) = default;
+                nonvirtual  VariantValue&   operator= (VariantValue && rhs);
 
             public:
                 nonvirtual  Type    GetType () const;
