@@ -108,7 +108,7 @@ namespace {
 
 #if     qPlatform_POSIX
 namespace {
-    void    CLOSE_(int fd)
+    inline  void    CLOSE_(int fd)
     {
         Execution::Handle_ErrNoResultInteruption ([fd] () -> int { return ::close (fd);});
     }
@@ -536,8 +536,8 @@ DoneWithProcess:
 
         // now write the temps to the stream
 #elif   qPlatform_POSIX
-        // first draft impl...-- 2014-02-05
         // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
+
         /*
          *  NOTE:
          *      From http://linux.die.net/man/2/pipe
@@ -548,7 +548,6 @@ DoneWithProcess:
         int  jStdin[2];
         int  jStdout[2];
         int  jStderr[2];
-        // @todo REDO USING pipe2 and set flags !!!
         Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
         Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
         Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
@@ -610,7 +609,22 @@ DoneWithProcess:
                 CLOSE_ (jStderr[1]);
             }
 
-            // really need to do peicemail like above to avoid deadlock
+            Execution::Finally cleanup1 ([] {
+                if (useSTDIN >= 0)
+                {
+                    CLOSE_ (useSTDIN);
+                }
+                if (useSTDOUT >= 0)
+                {
+                    CLOSE_ (useSTDOUT);
+                }
+                if (useSTDERR >= 0)
+                {
+                    CLOSE_ (useSTDERR);
+                }
+            });
+
+// really need to do peicemail like above to avoid deadlock
             {
                 const Byte* p   =   stdinBLOB.begin ();
                 const Byte* e   =   p + stdinBLOB.GetSize ();
@@ -620,11 +634,12 @@ DoneWithProcess:
                 }
                 // in case child process reads from its STDIN to EOF
                 CLOSE_ (useSTDIN);
+                useSTDIN = -1;
             }
             // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
             /*
-                *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-                */
+             *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
+             */
             if (not out.empty ()) {
                 Byte    buf[1024];
                 int   nBytesRead  =   0;
@@ -649,8 +664,6 @@ DoneWithProcess:
             }
             // not sure we need?
             wait (NULL);                /* Wait for child */
-            CLOSE_ (useSTDOUT);
-            CLOSE_ (useSTDERR);
         }
 #endif
     });
