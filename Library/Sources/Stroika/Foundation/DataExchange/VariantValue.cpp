@@ -453,20 +453,9 @@ String  VariantValue::AsString_ () const
         return String ();
     }
     switch (fVal_->GetType ()) {
-        case    Type::eDate: {
-                auto    v   =   dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal.Format (Date::PrintFormat::eISO8601);
-            }
-        case    Type::eDateTime: {
-                auto    v   =   dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal.Format (DateTime::PrintFormat::eISO8601);
-            }
-        case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
-                AssertNotNull (v);
-                return v->fVal;
+        case    Type::eNull: {
+                AssertNotReached();
+                return String ();
             }
         case    Type::eBoolean: {
                 auto    v   =   dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
@@ -500,19 +489,20 @@ String  VariantValue::AsString_ () const
                 static  const   Float2StringOptions kFmtOptions_ = Float2StringOptions (Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2));
                 return Float2String (v->fVal, kFmtOptions_);
             }
-        case    Type::eMap: {
-                auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+        case    Type::eDate: {
+                auto    v   =   dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
                 AssertNotNull (v);
-                wstringstream tmp;
-                tmp << L"{";
-                for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
-                    if (i != v->fVal.begin ()) {
-                        tmp << L", ";
-                    }
-                    tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
-                }
-                tmp << L"}";
-                return tmp.str ();
+                return v->fVal.Format (Date::PrintFormat::eISO8601);
+            }
+        case    Type::eDateTime: {
+                auto    v   =   dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
+                AssertNotNull (v);
+                return v->fVal.Format (DateTime::PrintFormat::eISO8601);
+            }
+        case    Type::eString: {
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+                AssertNotNull (v);
+                return v->fVal;
             }
         case    Type::eArray: {
                 auto    v   =   dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
@@ -528,10 +518,23 @@ String  VariantValue::AsString_ () const
                 tmp << L"]";
                 return tmp.str ();
             }
+        case    Type::eMap: {
+                auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+                AssertNotNull (v);
+                wstringstream tmp;
+                tmp << L"{";
+                for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
+                    if (i != v->fVal.begin ()) {
+                        tmp << L", ";
+                    }
+                    tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
+                }
+                tmp << L"}";
+                return tmp.str ();
+            }
         default: {
-                AssertNotImplemented(); // Should allow ALL types to be converted to string, if for nothing else,
-                // debugging purposes (AND DOC THIS)
-                Execution::DoThrow (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to string")));
+                AssertNotReached (); // That was all types enumerated, and all types convertable to string
+                return String ();
             }
     }
 }

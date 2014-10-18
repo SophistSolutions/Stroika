@@ -202,13 +202,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Only these (enum Type) types supported. No generic 'As<>' implementation.
+                 *  Only these (enum Type) types supported.
                  *  There is no generic As<T> implementation.
                  *
                  *  If the caller attempts a conversion that isn't supported, or doesn't make sense
                  *  then DataExchange::BadFormatException will be thrown.
                  *
-                 *      Supported types (RETURNTYPE) include:
+                 *      Supported (RETURNTYPE) types include:
                  *          o   bool
                  *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
                  *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsigned long long int (any of the 5 unsigned int types)
@@ -221,6 +221,19 @@ namespace   Stroika {
                  *          o   Sequence<VariantValue>
                  *          o   map<wstring, VariantValue>
                  *          o   vector<VariantValue>
+                 *
+                 *  \note   About As<String> () and As<wstring> ()
+                 *          Conversion to these types is ALWAYS supported, no matter what the source type.
+                 *          Coersion of Date/DateTime values uses ISO8601 format.
+                 *          Coersion of array and map values is vaguely json-ish in format, readable, but not intended
+                 *          to be regular enough to be parsable.
+                 *
+                 *  \note   About As<bool> ()
+                 *          Coerences String value 'true' - case sensative - to true, and any integer or unsigned intger value
+                 *          to true if non-zero.
+                 *
+                 *  \note   About As<DateTime> ()
+                 *          Coerences String value to dates assuming ISO8601 string format.
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
