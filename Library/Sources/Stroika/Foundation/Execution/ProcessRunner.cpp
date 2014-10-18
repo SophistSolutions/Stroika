@@ -118,10 +118,10 @@ namespace {
 
 #if     qPlatform_POSIX
 namespace {
-    static  const   int kMaxFD_ = [] {
+    static  const   int kMaxFD_ = [] () -> int {
         struct rlimit fds;
-        memset (&fds);
-        if (getrlimit(RLIMIT_NOFILE, fds) == 0)
+        memset (&fds, 0, sizeof (fds));
+        if (getrlimit(RLIMIT_NOFILE, &fds) == 0)
         {
             return fds.rlim_cur;
         }
@@ -598,8 +598,8 @@ DoneWithProcess:
             constexpr bool kCloseAllExtraneousFDsInChild_ = true;
             if (kCloseAllExtraneousFDsInChild_) {
                 // close all but stdin, stdout, and stderr in child fork
-                for (i = 3; i < kMaxFD_; ++i) {
-                    close(i);
+                for (int i = 3; i < kMaxFD_; ++i) {
+                    close (i);
                 }
             }
             Sequence<string>    tmpTStrArgs;
@@ -634,7 +634,7 @@ DoneWithProcess:
                 CLOSE_ (jStderr[1]);
             }
 
-            Execution::Finally cleanup1 ([] {
+            Execution::Finally cleanup1 ([useSTDIN, useSTDOUT, useSTDERR] {
                 if (useSTDIN >= 0)
                 {
                     CLOSE_ (useSTDIN);
