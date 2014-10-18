@@ -183,12 +183,12 @@ namespace   Stroika {
                 VariantValue (const vector<VariantValue>& val);
                 VariantValue (const Sequence<VariantValue>& val);
                 VariantValue (Sequence<VariantValue>&& val);
+                VariantValue (const VariantValue& src) = default;
                 VariantValue (VariantValue&& src);
 
             private:
                 VariantValue (const string& val) = delete;
                 VariantValue (const char* val) = delete;
-
 
             public:
                 nonvirtual  VariantValue&   operator= (const VariantValue& rhs) = default;
