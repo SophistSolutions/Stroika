@@ -634,18 +634,18 @@ DoneWithProcess:
                 CLOSE_ (jStderr[1]);
             }
 
-            Execution::Finally cleanup1 ([useSTDIN, useSTDOUT, useSTDERR] {
+            Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
                 if (useSTDIN >= 0)
                 {
-                    CLOSE_ (useSTDIN);
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
                 if (useSTDOUT >= 0)
                 {
-                    CLOSE_ (useSTDOUT);
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
                 if (useSTDERR >= 0)
                 {
-                    CLOSE_ (useSTDERR);
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
             });
 
