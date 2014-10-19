@@ -22,6 +22,7 @@
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "../../../Foundation/IO/FileSystem/FileSystem.h"
+#include    "../../../Foundation/IO/FileSystem/PathName.h"
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
@@ -174,7 +175,16 @@ namespace {
         }
         return results;
     }
-    // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exceptio logging
+
+    // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
+    Optional<String>    OptionallyReadFileString_(const String& fullPath)
+    {
+        if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (fullPath));
+        }
+        return Optional<String> ();
+    }
+    // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
     Optional<String>    OptionallyResolveShortcut_ (const String& shortcutPath)
     {
         if (IO::FileSystem::FileSystem::Default ().Access (shortcutPath)) {
@@ -182,6 +192,14 @@ namespace {
         }
         return Optional<String> ();
     }
+    Optional<Mapping<String, String>>  OptionallyReadFileStringsMap_(const String& fullPath)
+    {
+        if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            IgnoreExceptionsExceptThreadAbortForCall (return ReadFileStringsMap_ (fullPath));
+        }
+        return Optional<Mapping<String, String>> ();
+    }
+
     struct  StatFileInfo_ {
         //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
 
@@ -412,11 +430,11 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("reading for pid = %d", pid);
 #endif
-                String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
+                String  processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                 ProcessType processDetails;
-                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L"cmdline")));
+                processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
                 processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
-                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
+                processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
                 processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
                 processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
 
