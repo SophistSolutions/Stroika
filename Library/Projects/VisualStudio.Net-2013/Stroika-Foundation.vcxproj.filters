@@ -666,9 +666,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -723,7 +720,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1674,7 +1671,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2487,9 +2484,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl">
       <Filter>Sources\Cache</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
@@ -2541,7 +2535,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\ComputerName.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl">
       <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>

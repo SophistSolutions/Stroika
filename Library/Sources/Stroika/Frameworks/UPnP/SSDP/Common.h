@@ -9,7 +9,7 @@
 #include    "../../../Foundation/Characters/String.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Configuration/Common.h"
-#include    "../../../Foundation/Configuration/Platform.h"
+#include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/IO/Network/SocketAddress.h"
 
 
@@ -45,7 +45,7 @@ namespace   Stroika {
                 /**
                  *  MakeServerHeaderValue
                  */
-                String  MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::Platform::Get ().RFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = String_Constant (L"UPnP/1.0"));
+                String  MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::GetSystemConfiguration_OperatingSystem ().fRFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = String_Constant (L"UPnP/1.0"));
 
             }
         }

@@ -8,7 +8,7 @@
 
 #include    "../Characters/String.h"
 
-#include    "Common.h"
+#include    "SystemConfiguration.h"
 
 
 
@@ -31,7 +31,18 @@ namespace   Stroika {
 
             using   Characters::String;
 
-
+#if 1
+            struct  _DeprecatedClass_ (Platform , "DEPRECATED in v2.0a48 - use SystemConfiguration"): SystemConfiguration::OperatingSystem {
+                Platform (const OperatingSystem& o)
+                    : OperatingSystem (o)
+                {
+                }
+                static  Platform    Get ()
+                {
+                    return GetSystemConfiguration_OperatingSystem ();
+                }
+            };
+#else
             /**
              */
             struct  Platform {
@@ -68,6 +79,7 @@ namespace   Stroika {
                  */
                 static  Platform    Get ();
             };
+#endif
 
 
         }
@@ -81,6 +93,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "Platform.inl"
+//#include    "Platform.inl"
 
 #endif  /*_Stroika_Foundation_Configuration_Platform_h_*/
