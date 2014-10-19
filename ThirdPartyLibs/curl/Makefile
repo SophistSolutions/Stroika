@@ -71,11 +71,11 @@ else
 		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
 	else\
 		echo "   ...Building libcurl $(TRGDIR)...";\
+		echo "      ...into $(BUILDS_DIR)...";\
 		echo "      ...checking tools...";\
 		type automake > /dev/null || echo "......Missing automake";\
 		type libtool > /dev/null || echo "......Missing libtool";\
-		echo "      ... into $(BUILDS_DIR)...";\
-		echo "      ... see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
+		echo "      ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
 		echo "      ...TODO - fix to use my copy of ssl, if we build SSL...";\
