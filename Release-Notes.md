@@ -42,6 +42,8 @@ History
 	<li>minor cleanups to FileSystem::WellKnownLocations code (docs) and addition of FileSystem::WellKnownLocations::GetSpoolDirectory ()</li>
 	<li>StringException now inherites from std::exception</li>
 	<li>Map windows ERROR_ACCESS_DENIED to throw IO::FileAccessException ()</li>
+	<li>Quite a few libcurl makefile cleanups</li>
+	<li>Fixed serious bug with FileSystem::Access() check function (bacwards perm check)</li>
 </ul>
 </td>
 </tr>
