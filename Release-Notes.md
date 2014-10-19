@@ -23,7 +23,7 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a48">v2.0a48x</a><br/>2014-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a48">v2.0a48</a><br/>2014-10-19</td>
 <td>
 <ul>
 	<li>Refactored Configuration::Platform code into new Configuraiton::SystemConfiguration::OperatingSystem, and added tons
@@ -45,6 +45,7 @@ History
 	<li>Quite a few libcurl makefile cleanups</li>
 	<li>Fixed serious bug with FileSystem::Access() check function (bacwards perm check)</li>
 	<li>SystemPerformance/Instruments/ProcessDetails revisions to reduce dbgtrace noise about access errors (e.g. running as lewis and opening process data for root)</li>
+	<li>Tested MSVC.net 2k13Update 3, gcc47, gcc48, clang++ 3.4, and valgrind (just one longstanding issue with leak/thread/rare)</li>
 </ul>
 </td>
 </tr>
