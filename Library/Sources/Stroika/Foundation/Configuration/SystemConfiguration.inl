@@ -14,13 +14,13 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
 
-        
-			/*
-			 ********************************************************************************
-			 ****************** SystemConfiguration GetSystemConfiguration ******************
-			 ********************************************************************************
-			 */
-			inline  SystemConfiguration GetSystemConfiguration ()
+
+            /*
+             ********************************************************************************
+             ****************** SystemConfiguration GetSystemConfiguration ******************
+             ********************************************************************************
+             */
+            inline  SystemConfiguration GetSystemConfiguration ()
             {
                 return SystemConfiguration {
                     GetSystemConfiguration_CPU (),
@@ -31,7 +31,7 @@ namespace   Stroika {
             }
 
 
-		}
+        }
     }
 }
 #endif  /*_Stroika_Foundation_Configuration_SystemConfiguration_inl_*/

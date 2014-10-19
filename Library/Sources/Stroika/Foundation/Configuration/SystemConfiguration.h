@@ -17,11 +17,11 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *		@todo	Quite incomplete, but hopefully usable implementation. Implment the rest of the attributes provided.
- *				some using linux /procfs, etc.
+ *      @todo   Quite incomplete, but hopefully usable implementation. Implment the rest of the attributes provided.
+ *              some using linux /procfs, etc.
  *
- *		@todo	Review API provide, and document relationship with sysconf/etc (idea is simpler, and a bit more portable,
- *				but just subset).
+ *      @todo   Review API provide, and document relationship with sysconf/etc (idea is simpler, and a bit more portable,
+ *              but just subset).
  *
  */
 
@@ -35,8 +35,8 @@ namespace   Stroika {
             using   Characters::String;
 
 
-			/**
-			 */
+            /**
+             */
             struct  SystemConfiguration {
 
 
@@ -112,7 +112,7 @@ namespace   Stroika {
                  *  This is very frequently NOT useful, not unique, but frequently desired/used,
                  *  so at least you can get to it uniformly, cross-platform.
                  */
-                struct	ComputerNames {
+                struct  ComputerNames {
                     /**
                      *  Returns the best OS dependent guess at a computer name we have.
                      *
@@ -140,12 +140,12 @@ namespace   Stroika {
             SystemConfiguration::CPU GetSystemConfiguration_CPU ();
 
 
-			/**
+            /**
              */
             SystemConfiguration::Memory GetSystemConfiguration_Memory ();
 
-            
-			/**
+
+            /**
              */
             SystemConfiguration::OperatingSystem GetSystemConfiguration_OperatingSystem ();
 

@@ -9,7 +9,7 @@
 #include    <Windows.h>
 #endif
 
-#include	<thread>
+#include    <thread>
 
 #include    "../Characters/SDKString.h"
 #if     qPlatform_POSIX
@@ -68,7 +68,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
     using CPU = SystemConfiguration::CPU;
     CPU result;
-	result.fNumberOfLogicalCores = std::thread::hardware_concurrency();
+    result.fNumberOfLogicalCores = std::thread::hardware_concurrency();
     return result;
 }
 
@@ -84,7 +84,7 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 
     Memory  result;
 #if     qPlatform_POSIX
-	result.fTotalPhysicalRAM = sysconf(_SC_PHYS_PAGES)) * sysconf(_SC_PAGESIZE);
+    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
 #endif
     return result;
 }
@@ -171,11 +171,11 @@ namespace {
             }
             if (tmp.fShortPrettyName.empty ())
             {
-                tmp.fShortPrettyName = tmp.TokenName;
+                tmp.fShortPrettyName = tmp.fTokenName;
             }
             if (tmp.fPrettyNameWithMajorVersion.empty ())
             {
-                tmp.fPrettyNameWithMajorVersion = tmp.ShortPrettyName;
+                tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
             }
             if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
             {
