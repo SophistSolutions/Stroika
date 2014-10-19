@@ -174,6 +174,14 @@ namespace {
         }
         return results;
     }
+    // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exceptio logging
+    Optional<String>    OptionallyResolveShortcut_ (const String& shortcutPath)
+    {
+        if (IO::FileSystem::FileSystem::Default ().Access (shortcutPath)) {
+            IgnoreExceptionsExceptThreadAbortForCall (return IO::FileSystem::FileSystem::Default ().ResolveShortcut (shortcutPath));
+        }
+        return Optional<String> ();
+    }
     struct  StatFileInfo_ {
         //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
 
@@ -336,11 +344,11 @@ namespace {
             if (r.getline (buf, sizeof(buf))) {
                 const char kReadLbl_ [] = "read_bytes:";
                 const char kWriteLbl_ [] = "write_bytes:";
-                if (strncmp (buf, kReadLbl_, strlen(kReadLbl_)) == 0) {
-                    result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + strlen(kReadLbl_));
+                if (strncmp (buf, kReadLbl_, strlen (kReadLbl_)) == 0) {
+                    result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + strlen (kReadLbl_));
                 }
-                else if (strncmp (buf, kWriteLbl_, strlen(kWriteLbl_)) == 0) {
-                    result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + strlen(kWriteLbl_));
+                else if (strncmp (buf, kWriteLbl_, strlen (kWriteLbl_)) == 0) {
+                    result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + strlen (kWriteLbl_));
                 }
             }
         }
@@ -372,10 +380,10 @@ namespace {
                 const char kUidLbl [] = "Uid:";
                 if (strncmp (buf, kUidLbl, strlen(kUidLbl)) == 0) {
                     char* S = buf + strlen(kUidLbl);
-                    int ruid = strtol(S, &S, 10);
-                    int euid = strtol(S, &S, 10);
-                    int suid = strtol(S, &S, 10);
-                    int fuid = strtol(S, &S, 10);
+                    int ruid = strtol (S, &S, 10);
+                    int euid = strtol (S, &S, 10);
+                    int suid = strtol (S, &S, 10);
+                    int fuid = strtol (S, &S, 10);
                     result.ruid = ruid;
                 }
             }
@@ -407,10 +415,10 @@ namespace {
                 String  processDirPath = String_Constant (L"/proc/") + dir + String_Constant (L"/");
                 ProcessType processDetails;
                 IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCommandLine = ReadFileString_ (processDirPath + String_Constant (L"cmdline")));
-                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fCurrentWorkingDirectory = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"cwd")));
+                processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
                 IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEnvironmentVariables = ReadFileStringsMap_ (processDirPath + String_Constant (L"environ")));
-                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fEXEPath = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"exe")));
-                IgnoreExceptionsExceptThreadAbortForCall (processDetails.fRoot = IO::FileSystem::FileSystem::Default ().ResolveShortcut (processDirPath + String_Constant (L"root")));
+                processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
+                processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
 
                 static  const   double  kClockTick_ = sysconf (_SC_CLK_TCK);
 
