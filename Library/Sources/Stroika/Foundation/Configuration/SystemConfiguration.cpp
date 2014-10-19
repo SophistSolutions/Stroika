@@ -3,15 +3,18 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <thread>
+
 #if     qPlatform_POSIX
 #include    <unistd.h>
+#include    <fstream>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
 
-#include    <thread>
-
 #include    "../Characters/SDKString.h"
+#include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #if     qPlatform_POSIX
 #include    "../Execution/ErrNoException.h"
 #elif   qPlatform_Windows
@@ -22,18 +25,6 @@
 #include    "SystemConfiguration.h"
 
 
-
-
-
-
-#if     qPlatform_Windows
-#include    <Windows.h>
-#elif   qPlatform_POSIX
-#include    <fstream>
-#endif
-
-#include    "../Characters/Format.h"
-#include    "../Characters/String_Constant.h"
 
 #if     qPlatform_POSIX
 #include    "../DataExchange/INI/Reader.h"
@@ -49,10 +40,9 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
 
 
-
 using   Characters::String_Constant;
-
 using   Characters::SDKChar;
+
 
 
 
@@ -94,7 +84,7 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
  ******** Configuration::GetSystemConfiguration_OperatingSystem *****************
  ********************************************************************************
  */
-SystemConfiguration::OperatingSystem    GetSystemConfiguration_OperatingSystem ()
+SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_OperatingSystem ()
 {
     using   OperatingSystem =   SystemConfiguration::OperatingSystem;
     static  const   OperatingSystem    kCachedResult_ = []() ->OperatingSystem {
@@ -119,26 +109,17 @@ SystemConfiguration::OperatingSystem    GetSystemConfiguration_OperatingSystem (
         if (osvi.dwMajorVersion == 6)
         {
             if (osvi.dwMinorVersion == 0) {
-                if (osvi.wProductType == VER_NT_WORKSTATION )
-                    tmp.fShortPrettyName = L"Windows Vista";
-                else
-                    tmp.fShortPrettyName = L"Windows Server 2008";
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows Vista") : String_Constant (L"Windows Server 2008");
             }
             else if (osvi.dwMinorVersion == 1) {
-                if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = L"Windows 7";
-                else
-                    tmp.fShortPrettyName = L"Windows Server 2008 R2";
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows 7") : String_Constant (L"Windows Server 2008 R2");
             }
             else if (osvi.dwMinorVersion == 2) {
-                if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = L"Windows 8";
-                else
-                    tmp.fShortPrettyName = L"Windows Server 2012";
+                tmp.fShortPrettyName = osvi.wProductType == VER_NT_WORKSTATION ? String_Constant (L"Windows 8") : String_Constant (L"Windows Server 2012");
             }
             else if (osvi.dwMinorVersion == 3) {
                 if (osvi.wProductType == VER_NT_WORKSTATION)
-                    tmp.fShortPrettyName = L"Windows 8.1";
+                    tmp.fShortPrettyName = String_Constant (L"Windows 8.1");
             }
         }
         if (tmp.fShortPrettyName.empty ())
@@ -241,4 +222,3 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
 #endif
     return result;
 }
-
