@@ -162,7 +162,7 @@ namespace   Stroika {
             SystemConfiguration::ComputerNames GetSystemConfiguration_ComputerNames ();
 
 
-            inline  _DeprecatedFunction_ (String  GetComputerName (), "Instead use GetSystemConfiguration_ComputerNames() - to be removed after v2.0a48")
+            _DeprecatedFunction_ (inline  String  GetComputerName (), "Instead use GetSystemConfiguration_ComputerNames() - to be removed after v2.0a48")
             {
                 return GetSystemConfiguration_ComputerNames ().fHostname;
             }

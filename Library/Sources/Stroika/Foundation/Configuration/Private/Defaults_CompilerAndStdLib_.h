@@ -1396,7 +1396,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 /*
  *  Wrap this macro around entire declaration, as in:
- *      nonvirtual  _DeprecatedFunction_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+ *      _DeprecatedFunction_ (inline bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
  */
 #if     !defined (_DeprecatedFunction_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
