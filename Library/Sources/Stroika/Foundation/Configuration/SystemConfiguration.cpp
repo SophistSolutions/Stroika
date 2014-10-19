@@ -191,7 +191,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         // Quite uncertain - this is not a good reference
         //      --LGP 2014-10-18
         //
-        tmp.fOSBits = sysconf(_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
+        tmp.fBits = sysconf(_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
 #else
         AssertNotImplemented ();
 #endif
