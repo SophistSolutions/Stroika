@@ -58,7 +58,16 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
     using CPU = SystemConfiguration::CPU;
     CPU result;
-    result.fNumberOfLogicalCores = std::thread::hardware_concurrency();
+    // @todo fix - this is often about right, but is FAR from defined or gauranteed correct
+    result.fNumberOfLogicalCores = std::thread::hardware_concurrency ();
+
+#if     qPlatform_Windows
+    SYSTEM_INFO sysInfo;
+    ::GetNativeSystemInfo (&sysInfo);
+    //unclear if this is count of logical or physical cores, or how to compute the other.
+    result.fNumberOfLogicalCores = sysInfo.dwNumberOfProcessors;
+#endif
+
     return result;
 }
 
@@ -73,7 +82,18 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
     using   Memory = SystemConfiguration::Memory;
     Memory  result;
 #if     qPlatform_POSIX
-    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * sysconf (_SC_PAGESIZE);
+    result.fPageSize = sysconf (_SC_PAGESIZE);
+    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * result.fPageSize;
+#elif   qPlatform_Windows
+    SYSTEM_INFO sysInfo;
+    ::GetNativeSystemInfo (&sysInfo);
+    result.fPageSize = sysInfo.dwPageSize;
+
+    MEMORYSTATUSEX memStatus;
+    memStatus.dwLength = sizeof (memStatus);
+    Verify (::GlobalMemoryStatusEx (&memStatus));
+    result.fTotalPhysicalRAM = memStatus.ullTotalPhys;
+    result.fTotalVirtualRAM = memStatus.ullTotalVirtual;
 #endif
     return result;
 }

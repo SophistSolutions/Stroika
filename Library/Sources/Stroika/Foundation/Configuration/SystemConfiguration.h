@@ -42,7 +42,7 @@ namespace   Stroika {
 
                 /**
                  */
-                struct CPU {
+                struct  CPU {
                     /**
                      *  Number of Physical Cores
                      */
@@ -69,7 +69,6 @@ namespace   Stroika {
                  */
                 struct  Memory {
                     size_t      fPageSize {};
-                    //?             uint64_t    TotalPages;
                     uint64_t    fTotalPhysicalRAM {};
                     uint64_t    fTotalVirtualRAM {};
                 };
@@ -160,12 +159,6 @@ namespace   Stroika {
             /**
              */
             SystemConfiguration::ComputerNames GetSystemConfiguration_ComputerNames ();
-
-
-            _DeprecatedFunction_ (inline  String  GetComputerName (), "Instead use GetSystemConfiguration_ComputerNames() - to be removed after v2.0a48")
-            {
-                return GetSystemConfiguration_ComputerNames ().fHostname;
-            }
 
 
         }
