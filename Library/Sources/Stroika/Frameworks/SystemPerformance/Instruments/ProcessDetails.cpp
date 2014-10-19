@@ -347,12 +347,19 @@ namespace {
         unsigned long read_bytes;
         unsigned long write_bytes;
     };
-    proc_io_data_   Readproc_io_data_ (const String& fullPath)
+    Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_io_data_"));
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
+
+        if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Skipping read cuz no access");
+#endif
+            return Optional<proc_io_data_> ();
+        }
         proc_io_data_    result {};
         ifstream r;
         Streams::iostream::OpenInputFileStream (&r, fullPath);
@@ -496,20 +503,19 @@ namespace {
                 catch (...) {
                 }
 
-
-#if     qPlatform_POSIX
                 try {
                     proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
                     processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
                 }
                 catch (...) {
                 }
-#endif
 
                 try {
-                    proc_io_data_   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
-                    processDetails.fIOTotalReadBytes = stats.read_bytes;
-                    processDetails.fIOTotalWriteBytes = stats.write_bytes;
+                    Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
+                    if (stats.IsPresent ()) {
+                        processDetails.fIOTotalReadBytes = (*stats).read_bytes;
+                        processDetails.fIOTotalWriteBytes = (*stats).write_bytes;
+                    }
                 }
                 catch (...) {
                 }
