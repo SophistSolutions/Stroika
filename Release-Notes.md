@@ -44,6 +44,7 @@ History
 	<li>Map windows ERROR_ACCESS_DENIED to throw IO::FileAccessException ()</li>
 	<li>Quite a few libcurl makefile cleanups</li>
 	<li>Fixed serious bug with FileSystem::Access() check function (bacwards perm check)</li>
+	<li>SystemPerformance/Instruments/ProcessDetails revisions to reduce dbgtrace noise about access errors (e.g. running as lewis and opening process data for root)</li>
 </ul>
 </td>
 </tr>
