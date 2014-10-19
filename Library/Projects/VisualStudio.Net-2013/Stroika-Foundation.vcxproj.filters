@@ -522,9 +522,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
@@ -722,6 +719,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp">
+      <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1344,9 +1344,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
@@ -1673,6 +1670,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
       <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.h">
+      <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
