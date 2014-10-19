@@ -48,7 +48,6 @@ IO::FileSystem::FileSystem  IO::FileSystem::FileSystem::Default ()
 
 bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const
 {
-    // quick hack - not fully implemented - but since advsiory only - not too important...
 #if     qPlatform_Windows
     if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
@@ -66,12 +65,12 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
         if (access (fileFullPath.AsSDKString().c_str (), R_OK) != 0) {
             return false;
         }
     }
-    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eWrite) {
         if (access (fileFullPath.AsSDKString().c_str (), W_OK) != 0) {
             return false;
         }
