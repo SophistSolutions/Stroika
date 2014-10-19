@@ -70,13 +70,15 @@ else
 	@if [ -e  $(BUILDS_DIR) ]; then\
 		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
 	else\
-		echo "   ...Building libcurl $(TRGDIR)...checking tools...";\
+		echo "   ...Building libcurl $(TRGDIR)...";\
+		echo "      ...checking tools...";\
 		type automake > /dev/null || echo "......Missing automake";\
 		type libtool > /dev/null || echo "......Missing libtool";\
-		echo "   ...Building into $(BUILDS_DIR): SEE $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
+		echo "      ... into $(BUILDS_DIR)...";\
+		echo "      ... see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
-		echo "   ...TODO - fix to use my copy of ssl, if we build SSL...";\
+		echo "      ...TODO - fix to use my copy of ssl, if we build SSL...";\
 		./configure --prefix=$(BUILDS_DIR) --without-openssl --disable-shared  > CONFIGURE.OUT 2>&1;\
 		make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
