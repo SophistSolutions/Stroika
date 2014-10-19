@@ -105,6 +105,13 @@ namespace   Stroika {
                      *  e.g. MyProduct/1.0, Mozilla/3.5, etc
                      */
                     String  fRFC1945CompatProductTokenWithVersion;
+
+                    /**
+                     *  Number of bits the OS targets. Often a 64-bit OS will support 32-bits, and concievably other
+                     *  combinations are possible. But this value returns the principle / primary number of bits supported
+                     *  by the OS (bits of addressing).
+                     */
+                    unsigned int    fBits { 32 };
                 };
 
 

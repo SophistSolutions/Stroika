@@ -100,7 +100,6 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
          *  is a painful, and stupid alternative.
          */
         DISABLE_COMPILER_MSC_WARNING_START(4996)
-
         OSVERSIONINFOEX   osvi;
         memset(&osvi, 0, sizeof (osvi));
         osvi.dwOSVersionInfoSize = sizeof (osvi);
@@ -129,6 +128,27 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
         tmp.fMajorMinorVersionString = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+        if (sizeof (void*) == 4)
+        {
+            tmp.fBits = 32;
+            //IsWow64Process is not available on all supported versions of Windows.
+            //Use GetModuleHandle to get a handle to the DLL that contains the function
+            //and GetProcAddress to get a pointer to the function if available.
+            typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+            LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+            if(NULL != fnIsWow64Process) {
+                BOOL    isWOW64 = false;
+                (void)fnIsWow64Process (GetCurrentProcess(), &isWOW64);
+                if (isWOW64) {
+                    tmp.fBits = 64;
+                }
+            }
+        }
+        else {
+            // In windows, a 64 bit app cannot run on 32-bit windows
+            Assert (sizeof (void*) == 8);
+            tmp.fBits = 64;
+        }
 #elif   qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
         try {
@@ -164,6 +184,14 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
             }
         }
+        //
+        // @todo FIX/FIND BETTER WAY!
+        //
+        //http://docs.oracle.com/cd/E36784_01/html/E36874/sysconf-3c.html
+        // Quite uncertain - this is not a good reference
+        //      --LGP 2014-10-18
+        //
+        tmp.fOSBits = sysconf(_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
 #else
         AssertNotImplemented ();
 #endif
