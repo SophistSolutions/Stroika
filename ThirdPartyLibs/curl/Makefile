@@ -70,7 +70,7 @@ else
 	@if [ -e  $(BUILDS_DIR) ]; then\
 		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
 	else\
-		echo "   ...Building libcurl $(TRGDIR) into $(BUILDS_DIR)...";\
+		echo "   ...Building libcurl $(TRGDIR) into $(BUILDS_DIR): SEE $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
 		echo "   ...TODO - fix to use my copy of ssl, if we build SSL...";\
