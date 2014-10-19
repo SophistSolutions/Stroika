@@ -26,7 +26,22 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a48">v2.0a48x</a><br/>2014-10-??</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Refactored Configuration::Platform code into new Configuraiton::SystemConfiguration::OperatingSystem, and added tons
+		of functionaly to the reset of Configuraiton::SystemConfiguration</li>
+	<li>Several VariantValue improvements, including move constructors, and improved documentation and behavior
+	on the various As converters</li>
+	<li>Improvements to the POSIX ProcessRunner code - so closes unused (above 3 file) descriptors, and fixed
+	fd leak, and other cleanups</li>
+	<li>Set::AddIf()</li>
+	<li>Better exception logging for DataExchange::BadFormatException</li>
+	<li>Experiemental ObjectVariantMapper class support for ArrayElementHandling</li>
+	<li>std::hash cleanups/docs my hash code</li>
+	<li>Doc file scope / static Stroika Strings and regtest</li>
+	<li>New String support for String::FromNarrowString () and String::AsNarrowString ()</li>
+	<li>removed deprecated ExceptionPropagate code - intead use make_excpetion_ptr/current_exception</li>
+	<li>minor cleanups to FileSystem::WellKnownLocations code (docs) and addition of FileSystem::WellKnownLocations::GetSpoolDirectory ()</li>
+	<li>StringException now inherites from std::exception</li>
+	<li>Map windows ERROR_ACCESS_DENIED to throw IO::FileAccessException ()</li>
 </ul>
 </td>
 </tr>
