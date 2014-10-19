@@ -50,13 +50,13 @@ bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAcce
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 #if     qPlatform_Windows
-    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
         if (attribs == INVALID_FILE_ATTRIBUTES) {
             return false;
         }
     }
-    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eNoAccess) {
+    if ((accessMode & FileAccessMode::eWrite) == FileAccessMode::eWrite) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
         if ((attribs == INVALID_FILE_ATTRIBUTES) or (attribs & FILE_ATTRIBUTE_READONLY)) {
             return false;
