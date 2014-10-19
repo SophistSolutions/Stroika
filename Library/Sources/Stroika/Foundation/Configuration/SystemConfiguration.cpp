@@ -80,117 +80,115 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
  */
 SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 {
-    using Memory = SystemConfiguration::Memory;
-
+    using   Memory = SystemConfiguration::Memory;
     Memory  result;
 #if     qPlatform_POSIX
-    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE);
+    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * sysconf (_SC_PAGESIZE);
 #endif
     return result;
 }
 
 
-
-
-namespace {
-
-
-    SystemConfiguration::OperatingSystem    GetPlatform_ ()
-    {
-        using   OperatingSystem =   SystemConfiguration::OperatingSystem;
-        static  OperatingSystem    kCachedResult_ = []() ->OperatingSystem {
-            OperatingSystem    tmp;
+/*
+ ********************************************************************************
+ ******** Configuration::GetSystemConfiguration_OperatingSystem *****************
+ ********************************************************************************
+ */
+SystemConfiguration::OperatingSystem    GetSystemConfiguration_OperatingSystem ()
+{
+    using   OperatingSystem =   SystemConfiguration::OperatingSystem;
+    static  const   OperatingSystem    kCachedResult_ = []() ->OperatingSystem {
+        OperatingSystem    tmp;
 #if     qPlatform_Windows
-            tmp.fTokenName = String_Constant (L"Windows");
-            /*
-             *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
-             *
-             *  Sigh.
-             *
-             *  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429(v=vs.85).aspx -  GetFileVersionInfo (kernel32.dll)
-             *  is a painful, and stupid alternative.
-             */
-            DISABLE_COMPILER_MSC_WARNING_START(4996)
+        tmp.fTokenName = String_Constant (L"Windows");
+        /*
+         *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
+         *
+         *  Sigh.
+         *
+         *  http://msdn.microsoft.com/en-us/library/windows/desktop/ms724429(v=vs.85).aspx -  GetFileVersionInfo (kernel32.dll)
+         *  is a painful, and stupid alternative.
+         */
+        DISABLE_COMPILER_MSC_WARNING_START(4996)
 
-            OSVERSIONINFOEX   osvi;
-            memset(&osvi, 0, sizeof (osvi));
-            osvi.dwOSVersionInfoSize = sizeof (osvi);
-            Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
-            DISABLE_COMPILER_MSC_WARNING_END(4996)
-            if (osvi.dwMajorVersion == 6)
-            {
-                if (osvi.dwMinorVersion == 0) {
-                    if (osvi.wProductType == VER_NT_WORKSTATION )
-                        tmp.fShortPrettyName = L"Windows Vista";
-                    else
-                        tmp.fShortPrettyName = L"Windows Server 2008";
-                }
-                else if (osvi.dwMinorVersion == 1) {
-                    if (osvi.wProductType == VER_NT_WORKSTATION)
-                        tmp.fShortPrettyName = L"Windows 7";
-                    else
-                        tmp.fShortPrettyName = L"Windows Server 2008 R2";
-                }
-                else if (osvi.dwMinorVersion == 2) {
-                    if (osvi.wProductType == VER_NT_WORKSTATION)
-                        tmp.fShortPrettyName = L"Windows 8";
-                    else
-                        tmp.fShortPrettyName = L"Windows Server 2012";
-                }
-                else if (osvi.dwMinorVersion == 3) {
-                    if (osvi.wProductType == VER_NT_WORKSTATION)
-                        tmp.fShortPrettyName = L"Windows 8.1";
-                }
+        OSVERSIONINFOEX   osvi;
+        memset(&osvi, 0, sizeof (osvi));
+        osvi.dwOSVersionInfoSize = sizeof (osvi);
+        Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
+        DISABLE_COMPILER_MSC_WARNING_END(4996)
+        if (osvi.dwMajorVersion == 6)
+        {
+            if (osvi.dwMinorVersion == 0) {
+                if (osvi.wProductType == VER_NT_WORKSTATION )
+                    tmp.fShortPrettyName = L"Windows Vista";
+                else
+                    tmp.fShortPrettyName = L"Windows Server 2008";
             }
-            if (tmp.fShortPrettyName.empty ())
-            {
-                tmp.fShortPrettyName = Characters::Format (L"Windows %d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+            else if (osvi.dwMinorVersion == 1) {
+                if (osvi.wProductType == VER_NT_WORKSTATION)
+                    tmp.fShortPrettyName = L"Windows 7";
+                else
+                    tmp.fShortPrettyName = L"Windows Server 2008 R2";
             }
-            tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
-            tmp.fMajorMinorVersionString = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-            tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+            else if (osvi.dwMinorVersion == 2) {
+                if (osvi.wProductType == VER_NT_WORKSTATION)
+                    tmp.fShortPrettyName = L"Windows 8";
+                else
+                    tmp.fShortPrettyName = L"Windows Server 2012";
+            }
+            else if (osvi.dwMinorVersion == 3) {
+                if (osvi.wProductType == VER_NT_WORKSTATION)
+                    tmp.fShortPrettyName = L"Windows 8.1";
+            }
+        }
+        if (tmp.fShortPrettyName.empty ())
+        {
+            tmp.fShortPrettyName = Characters::Format (L"Windows %d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+        }
+        tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
+        tmp.fMajorMinorVersionString = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
+        tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
 #elif   qPlatform_POSIX
-            tmp.fTokenName = String_Constant (L"Unix");
-            try {
-                tmp.fTokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run (String ()).Trim ();
+        tmp.fTokenName = String_Constant (L"Unix");
+        try {
+            tmp.fTokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run (String ()).Trim ();
+        }
+        catch (...)
+        {
+            DbgTrace ("Failure running uname");
+        }
+        try {
+            ifstream s;
+            Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
+            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
+            tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
+            tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
+        }
+        catch (...)
+        {
+            DbgTrace ("Failure reading /etc/os-release");
+        }
+        if (tmp.fShortPrettyName.empty ())
+        {
+            tmp.fShortPrettyName = tmp.fTokenName;
+        }
+        if (tmp.fPrettyNameWithMajorVersion.empty ())
+        {
+            tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
+        }
+        if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
+        {
+            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
+            if (not tmp.fMajorMinorVersionString.empty ()) {
+                tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
             }
-            catch (...)
-            {
-                DbgTrace ("Failure running uname");
-            }
-            try {
-                ifstream s;
-                Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
-                DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
-                tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
-                tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
-            }
-            catch (...)
-            {
-                DbgTrace ("Failure reading /etc/os-release");
-            }
-            if (tmp.fShortPrettyName.empty ())
-            {
-                tmp.fShortPrettyName = tmp.fTokenName;
-            }
-            if (tmp.fPrettyNameWithMajorVersion.empty ())
-            {
-                tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
-            }
-            if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
-            {
-                tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
-                if (not tmp.fMajorMinorVersionString.empty ()) {
-                    tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
-                }
-            }
+        }
 #else
-            AssertNotImplemented ();
+        AssertNotImplemented ();
 #endif
-            return tmp;
-        } ();
-        return kCachedResult_;
-    }
+        return tmp;
+    } ();
+    return kCachedResult_;
 }
 
 
