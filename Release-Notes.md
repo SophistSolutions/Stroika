@@ -23,12 +23,13 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a49">v2.0a49x</a><br/>2014-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a49">v2.0a49</a><br/>2014-10-20</td>
 <td>
 <ul>
-	<li>TBD</li>
+	<li>Fixed dangerous deadlock bug with ProcessRunner(). (POSIX ONLY).</li>
 </ul>
-
+</td>
+</tr>
 
 
   
