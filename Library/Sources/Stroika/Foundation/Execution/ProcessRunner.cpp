@@ -302,7 +302,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
 
     return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
-        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::CString::LimitLength (cmdLine, 50, false).c_str ());
+        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::CString::LimitLength (cmdLine, 100, false).c_str ());
         DbgTrace (SDKSTR ("currentDir: %s"), Characters::CString::LimitLength (currentDir, 50, false).c_str ());
 
 
@@ -569,57 +569,66 @@ DoneWithProcess:
         Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
         Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
         Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
+        // assert cuz code below needs to be more careful if these can overlap 0..2
+        Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
+        Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
+        Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
         DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
+
         int cpid = ::fork ();
         Execution::ThrowErrNoIfNegative (cpid);
         if (cpid == 0) {
-            /*
-             *  In child process
-             */
-            // @todo we are the child - so close xxx and exec
-            {
-                // move arg stdin/out/err to 0/1/2 file-descriptors
-                int useSTDIN    =   jStdin[0];
-                int useSTDOUT   =   jStdout[1];
-                int useSTDERR   =   jStderr[1];
-                CLOSE_ (0);
-                CLOSE_ (1);
-                CLOSE_ (2);
-                Execution::Handle_ErrNoResultInteruption ([useSTDIN] () -> int { return ::dup2 (useSTDIN, 0);});
-                Execution::Handle_ErrNoResultInteruption ([useSTDOUT] () -> int { return ::dup2 (useSTDOUT, 1);});
-                Execution::Handle_ErrNoResultInteruption ([useSTDERR] () -> int { return ::dup2 (useSTDERR, 2);});
-                CLOSE_ (jStdin[0]);
-                CLOSE_ (jStdin[1]);
-                CLOSE_ (jStdout[0]);
-                CLOSE_ (jStdout[1]);
-                CLOSE_ (jStderr[0]);
-                CLOSE_ (jStderr[1]);
-            }
-            constexpr bool kCloseAllExtraneousFDsInChild_ = true;
-            if (kCloseAllExtraneousFDsInChild_) {
-                // close all but stdin, stdout, and stderr in child fork
-                for (int i = 3; i < kMaxFD_; ++i) {
-                    close (i);
+            try {
+                /*
+                 *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                 *  this would be bad...
+                 */
+                {
+                    /*
+                     *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                     */
+                    int useSTDIN    =   jStdin[0];
+                    int useSTDOUT   =   jStdout[1];
+                    int useSTDERR   =   jStderr[1];
+                    ::close (0);
+                    ::close (1);
+                    ::close (2);
+                    ::dup2 (useSTDIN, 0);
+                    ::dup2 (useSTDOUT, 1);
+                    ::dup2 (useSTDERR, 2);
+                    ::close (jStdin[0]);
+                    ::close (jStdin[1]);
+                    ::close (jStdout[0]);
+                    ::close (jStdout[1]);
+                    ::close (jStderr[0]);
+                    ::close (jStderr[1]);
                 }
+                constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+                if (kCloseAllExtraneousFDsInChild_) {
+                    // close all but stdin, stdout, and stderr in child fork
+                    for (int i = 3; i < kMaxFD_; ++i) {
+                        ::close (i);
+                    }
+                }
+                Sequence<string>    tmpTStrArgs;
+                for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
+                    tmpTStrArgs.push_back (i.AsNarrowSDKString ());
+                }
+                vector<char*>   useArgsV;
+                for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+                    // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+                    // their overwriting these strings!
+                    // -- LGP 2013-06-08
+                    useArgsV.push_back (const_cast<char*> (i->c_str ()));
+                }
+                useArgsV.push_back (nullptr);
+                string thisEXEPath = tmpTStrArgs[0];
+                int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+                _exit (EXIT_FAILURE);
             }
-            Sequence<string>    tmpTStrArgs;
-            for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
-                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
+            catch (...) {
+                _exit (EXIT_FAILURE);
             }
-            vector<char*>   useArgsV;
-            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-                // their overwriting these strings!
-                // -- LGP 2013-06-08
-                useArgsV.push_back (const_cast<char*> (i->c_str ()));
-            }
-            useArgsV.push_back (nullptr);
-            // throw if not long enuf
-            string thisEXEPath = tmpTStrArgs[0];
-            DbgTrace ("In Child  - exec '%s'", thisEXEPath.c_str ());   // not sure if/will work due to fork
-            int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
-            DbgTrace ("In Child - exec FAILED r = %d", r);
-            _exit (EXIT_FAILURE);
         }
         else {
             /*
