@@ -557,6 +557,11 @@ DoneWithProcess:
         // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
 
         /*
+         *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
+         *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
+         */
+
+        /*
          *  NOTE:
          *      From http://linux.die.net/man/2/pipe
          *          "The array pipefd is used to return two file descriptors referring to the ends
@@ -574,6 +579,30 @@ DoneWithProcess:
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
         Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
         DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
+
+        /*
+         *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
+         *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
+         *  fork, we are VERY limited as to what we can safely do.
+         */
+        Sequence<string>    tmpTStrArgs;    // Must keep out here because useArgsV keeps internal pointers to it
+        vector<char*>       useArgsV;
+        string              thisEXEPath;
+        {
+            for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
+                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
+            }
+            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+                // their overwriting these strings!
+                // -- LGP 2013-06-08
+                useArgsV.push_back (const_cast<char*> (i->c_str ()));
+            }
+            useArgsV.push_back (nullptr);
+            thisEXEPath = tmpTStrArgs[0];
+        }
+        const   char*       thisEXEPath_cstr    =   thisEXEPath.c_str ();
+        const   char* const* thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
 
         int cpid = ::fork ();
         Execution::ThrowErrNoIfNegative (cpid);
@@ -610,20 +639,7 @@ DoneWithProcess:
                         ::close (i);
                     }
                 }
-                Sequence<string>    tmpTStrArgs;
-                for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
-                    tmpTStrArgs.push_back (i.AsNarrowSDKString ());
-                }
-                vector<char*>   useArgsV;
-                for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-                    // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-                    // their overwriting these strings!
-                    // -- LGP 2013-06-08
-                    useArgsV.push_back (const_cast<char*> (i->c_str ()));
-                }
-                useArgsV.push_back (nullptr);
-                string thisEXEPath = tmpTStrArgs[0];
-                int r   =   execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+                int r   =   execvp (thisEXEPath_cstr, thisEXECArgv);
                 _exit (EXIT_FAILURE);
             }
             catch (...) {
