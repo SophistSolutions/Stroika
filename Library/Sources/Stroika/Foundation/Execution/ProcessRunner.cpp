@@ -601,8 +601,8 @@ DoneWithProcess:
             useArgsV.push_back (nullptr);
             thisEXEPath = tmpTStrArgs[0];
         }
-        const   char*	thisEXEPath_cstr    =   thisEXEPath.c_str ();
-        char*const*		thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
+        const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
+        char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
 
         int cpid = ::fork ();
         Execution::ThrowErrNoIfNegative (cpid);
