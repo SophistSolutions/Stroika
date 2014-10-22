@@ -204,6 +204,11 @@ namespace   Stroika {
                 return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
             }
             template    <>
+            std::chrono::seconds  Duration::As () const
+            {
+                return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
+            }
+            template    <>
             std::chrono::milliseconds  Duration::As () const
             {
                 return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));

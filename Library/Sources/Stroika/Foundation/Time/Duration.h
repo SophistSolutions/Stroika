@@ -68,6 +68,12 @@
  *          o   So .001 ‘precision’ means show 3.44444 as 3.444 and 60 means show 67 seconds as “one minute”
  *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
  *
+ *      @todo   template    <typename   DURATION_REP, typename DURATION_PERIOD>
+ *              chrono::duration<DURATION_REP, DURATION_PERIOD>  As () const;
+ *
+ *              Didn't work (at least on msvc). Try again, and see if I can combine template<> and template partial
+ *              specialization to do an As<> function for any duration template. Maybe use SFINAE tricks! Yes, thats
+ *              probably it...
  *
  */
 
@@ -167,6 +173,7 @@ namespace   Stroika {
                  *      float
                  *      double
                  *      long double
+                 *      std::chrono::seconds
                  *      std::chrono::milliseconds
                  *      std::chrono::microseconds
                  *      std::chrono::nanoseconds
@@ -302,6 +309,8 @@ namespace   Stroika {
             long double  Duration::As () const;
             template    <>
             chrono::duration<double>  Duration::As () const;
+            template    <>
+            chrono::seconds  Duration::As () const;
             template    <>
             chrono::milliseconds  Duration::As () const;
             template    <>
