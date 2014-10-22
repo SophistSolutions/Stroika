@@ -31,7 +31,10 @@
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
  *              Maybe Float2StringOptions is optional param to As<String> ()???
  *
- *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
+ *      @todo    Probably need to do DIFFERENNT BACKEND IMPL - NOT STRINGS - BUT float - maybe combo of the two
+ *              so possible to implemnt constexrp CTORS etc.
+ *
+ *              WAS: debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for kMin/kMax
  *
  *              For now using ModuleInit<> code to assure proper construction order.
@@ -173,6 +176,7 @@ namespace   Stroika {
                  *      float
                  *      double
                  *      long double
+                 *      chrono::duration<double>
                  *      std::chrono::seconds
                  *      std::chrono::milliseconds
                  *      std::chrono::microseconds
