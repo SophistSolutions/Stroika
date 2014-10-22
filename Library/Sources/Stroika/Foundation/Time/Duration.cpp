@@ -146,26 +146,6 @@ Duration::Duration (long double duration)
 {
 }
 
-Duration::Duration (const std::chrono::duration<double>& d)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
-{
-}
-
-Duration::Duration (const std::chrono::milliseconds& d)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / 1000.0))
-{
-}
-
-Duration::Duration (const std::chrono::microseconds& d)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / (1000.0 * 1000.0)))
-{
-}
-
-Duration::Duration (const std::chrono::nanoseconds& d)
-    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / (1000.0 * 1000.0 * 1000.0)))
-{
-}
-
 Duration    Duration::operator+ (const Duration& rhs) const
 {
     // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...

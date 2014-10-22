@@ -22,6 +22,11 @@ namespace   Stroika {
             ***************************** Implementation Details ***************************
             ********************************************************************************
             */
+            template    <typename   DURATION_REP, typename DURATION_PERIOD>
+            Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
+                : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (chrono::duration<InternalNumericFormatType_> (d).count ())))
+            {
+            }
             template    <typename T>
             T   Duration::As () const
             {

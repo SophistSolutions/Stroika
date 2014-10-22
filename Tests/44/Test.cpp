@@ -617,6 +617,7 @@ namespace   {
         VerifyTestResult (Duration (5.0).As<std::chrono::milliseconds> () == chrono::milliseconds (5000));
         VerifyTestResult (Duration (-5.0).As<std::chrono::milliseconds> () == chrono::milliseconds  (-5000));
         VerifyTestResult (Duration (1.0).As<std::chrono::nanoseconds> () == chrono::nanoseconds (1000 * 1000 * 1000));
+        VerifyTestResult (Duration (1) == Duration (chrono::seconds (1)));
     }
 }
 

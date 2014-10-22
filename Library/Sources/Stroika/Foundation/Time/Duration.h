@@ -132,10 +132,8 @@ namespace   Stroika {
                 explicit Duration (float duration);
                 explicit Duration (double duration);
                 explicit Duration (long double duration);
-                Duration (const std::chrono::milliseconds& d);
-                Duration (const std::chrono::microseconds& d);
-                Duration (const std::chrono::nanoseconds& d);
-                Duration (const std::chrono::duration<double>& d);
+                template    <typename   DURATION_REP, typename DURATION_PERIOD>
+                Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
 
             public:
                 /**
@@ -169,7 +167,6 @@ namespace   Stroika {
                  *      float
                  *      double
                  *      long double
-                 *      std::chrono::duration<double>
                  *      std::chrono::milliseconds
                  *      std::chrono::microseconds
                  *      std::chrono::nanoseconds
