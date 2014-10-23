@@ -37,6 +37,13 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, con
 }
 
 template    <>
+Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, char*> (char* from, const UTF8& extraData)
+{
+    // @todo no chekcing done yet...
+    return String::FromUTF8 (from);
+}
+
+template    <>
 Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, const string&> (const string& from, const ASCII& extraData)
 {
     for (auto i = from.begin (); i != from.end (); ++i) {
@@ -55,6 +62,18 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, st
 
 template    <>
 Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData)
+{
+    RequireNotNull (from);
+    for (auto i = from; *i != '\0'; ++i) {
+        if (not isascii (*i)) {
+            Execution::DoThrow (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));
+        }
+    }
+    return ASCIIStringToWide (from);
+}
+
+template    <>
+Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, char*> (char* from, const ASCII& extraData)
 {
     RequireNotNull (from);
     for (auto i = from; *i != '\0'; ++i) {
