@@ -52,6 +52,7 @@ namespace   Stroika {
                 using   Characters::String_Constant;
                 typename    RANGE_TYPE::ElementType useS    =   Private_::CheckedConverter_Range_Helper_Pinner_ (s, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
                 typename    RANGE_TYPE::ElementType useE    =   Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+                // Note: these checks MUST use <= and >= and IGNORE openness, because the bounds need not be in the range.
                 if (not (RANGE_TYPE::TraitsType::kLowerBound <= useS)) {
                     Execution::DoThrow (BadFormatException (String_Constant (L"Value < RangeType lower bounds")));
                 }
@@ -75,10 +76,10 @@ namespace   Stroika {
             {
                 using   Characters::String_Constant;
                 typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
-                if (not (RANGE_TYPE::TraitsType::kLowerBound <= useVal)) {
+                if (not (r.GetLowerBound () <= useVal)) {
                     Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (too low)")));
                 }
-                if (not (useVal <= RANGE_TYPE::TraitsType::kUpperBound)) {
+                if (not (useVal <= r.GetUpperBound ())) {
                     Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
                 }
                 return useVal;
