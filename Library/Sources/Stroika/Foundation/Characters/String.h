@@ -1223,6 +1223,10 @@ namespace   Stroika {
                 Traversal::Iterator<ElementType> begin () const             { return fDelegate_.begin (); }
                 Traversal::Iterator<ElementType> end () const               { return fDelegate_.end (); }
                 operator ContainerType () const                             { return fDelegate_;    }
+                String  operator+ (const String& rhs) const                 { return fDelegate_ + rhs; }
+                String  operator+ (const wchar_t* appendageCStr) const      { return fDelegate_ + appendageCStr; }
+                bool operator== (const String& rhs) const                   { return fDelegate_ == rhs; }
+                bool operator!= (const String& rhs) const                   { return fDelegate_ != rhs; }
             private:
                 ContainerType   fDelegate_;
                 mutex           fLock_;
