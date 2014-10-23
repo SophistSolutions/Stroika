@@ -43,7 +43,7 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, co
 template    <>
 Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData)
 {
-	RequireNotNull (from);
+    RequireNotNull (from);
     for (auto i = from; *i != '\0'; ++i) {
         if (not isascii (*i)) {
             Execution::DoThrow (BadFormatException (String_Constant (L"Cannot coerce string to ASCII")));

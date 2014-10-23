@@ -79,14 +79,14 @@ namespace   Stroika {
              *
              *  The 'range' defaults to the RANGE_TYPE::FullRange ().
              *
-             *  Note - for floating point ElementType - if the values are 'really close' - they are pinned to the min/max
-             *  and not treated as out of range.
+             *  Note - for floating point ElementType - if the value ('val') is 'really close' to an edge - it
+             *  will be pinned to the range edge, not treated as out of range.
              *
              *  The returned value is always at least nearly identical to the 'val' passed in, but could be slightly differnt due to
              *  the above floating point near-edge adjustment.
              */
             template    <typename   RANGE_TYPE>
-            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r = RANGE_TYPE::FullRange ());
+            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& range = RANGE_TYPE::FullRange ());
 
 
         }

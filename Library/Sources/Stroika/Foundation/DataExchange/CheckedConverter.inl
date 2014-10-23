@@ -72,15 +72,18 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   RANGE_TYPE>
-            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r)
+            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& range)
             {
                 using   Characters::String_Constant;
                 typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
-                if (not (r.GetLowerBound () <= useVal)) {
-                    Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (too low)")));
-                }
-                if (not (useVal <= r.GetUpperBound ())) {
-                    Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
+                if (not range.Contains (useVal)) {
+                    if (useVal <= range.GetLowerBound ()) {
+                        Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (too low)")));
+                    }
+                    else {
+                        Assert (useVal >= range.GetUpperBound ());
+                        Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
+                    }
                 }
                 return useVal;
             }
