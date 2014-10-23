@@ -48,9 +48,13 @@ namespace   Stroika {
             template    <>
             Characters::String  CheckedConverter<Characters::String, UTF8, const string&> (const string& from, const UTF8& extraData);
             template    <>
+            Characters::String  CheckedConverter<Characters::String, UTF8, string> (string from, const UTF8& extraData);
+            template    <>
             Characters::String  CheckedConverter<Characters::String, UTF8, const char*> (const char* from, const UTF8& extraData);
             template    <>
             Characters::String  CheckedConverter<Characters::String, ASCII, const string&> (const string& from, const ASCII& extraData);
+            template    <>
+            Characters::String  CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData);
             template    <>
             Characters::String  CheckedConverter<Characters::String, ASCII, const char*> (const char* from, const ASCII& extraData);
 

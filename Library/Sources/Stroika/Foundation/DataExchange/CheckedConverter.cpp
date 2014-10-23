@@ -23,6 +23,13 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, con
 }
 
 template    <>
+Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, string> (string from, const UTF8& extraData)
+{
+    // @todo no chekcing done yet...
+    return String::FromUTF8 (from);
+}
+
+template    <>
 Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, const char*> (const char* from, const UTF8& extraData)
 {
     // @todo no chekcing done yet...
@@ -38,6 +45,12 @@ Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, co
         }
     }
     return ASCIIStringToWide (from);
+}
+
+template    <>
+Characters::String  DataExchange::CheckedConverter<Characters::String, ASCII, string> (string from, const ASCII& extraData)
+{
+    return CheckedConverter<Characters::String, ASCII, const string&> (from, extraData);
 }
 
 template    <>

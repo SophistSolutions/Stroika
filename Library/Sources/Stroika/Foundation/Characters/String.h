@@ -1227,6 +1227,9 @@ namespace   Stroika {
                 ContainerType  operator+ (const wchar_t* appendageCStr) const   { return fDelegate_ + appendageCStr; }
                 bool operator== (const ContainerType& rhs) const                { return fDelegate_ == rhs; }
                 bool operator!= (const ContainerType& rhs) const                { return fDelegate_ != rhs; }
+                bool    empty () const											{ return fDelegate_.empty (); }
+				void    clear ()												{ fDelegate_.clear (); }
+
             private:
                 ContainerType   fDelegate_;
                 mutex           fLock_;
