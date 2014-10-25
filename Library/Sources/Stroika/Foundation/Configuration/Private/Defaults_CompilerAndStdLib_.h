@@ -774,13 +774,21 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
-//BinaryInputOutputStream::operator BinaryIn
+/*
+ *
+ *      class   Seekable {
+ *          protected:
+ *              class   _IRep;
+ *      ...
+ *
+ *      struct   InStr_IRep_ : BinaryInputStream::_IRep, Seekable::_IRep {
+ */
 #ifndef qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ == 9))
+#define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ == 9))
 #else
-#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            0
+#define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        0
 #endif
 
 #endif
