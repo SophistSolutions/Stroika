@@ -41,7 +41,7 @@
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.7")
 #endif
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 8))
+#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -393,7 +393,7 @@
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
@@ -723,7 +723,7 @@ EXAMPLE:
 #if     defined (__clang__)
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 6))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     0
 #endif
@@ -1210,7 +1210,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (__clang__)
 #define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 5))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_string_conversions_Buggy              0
 #endif
