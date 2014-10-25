@@ -7,7 +7,12 @@
 #include    <cstring>
 #include    <ctime>
 
+#if     qPlatform_POXIX
+#include    <time.h>
+#endif
+
 #include    "../Configuration/Common.h"
+#include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
 #include    "DateTime.h"
 
@@ -20,6 +25,36 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
+
+/*
+ ********************************************************************************
+ ********************************* Time::GetTimeZone ****************************
+ ********************************************************************************
+ */
+String    Time::GetTimeZone ()
+{
+#if     qPlatform_Windows
+    TIME_ZONE_INFORMATION   tzInfo;
+    memset (&tzInfo, 0, sizeof (tzInfo));
+    (void)::GetTimeZoneInformation (&tzInfo);
+    return String::FromSDKString (tzInfo.StandardName);
+#elif   qPlatform_POXIX
+    // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
+    return String::FromSDKString (IsDaylightSavingsTime () ? tzname[1] : tzname[0]);
+#else
+    AssertNotImplemented ();
+    return String ();
+#endif
+}
+
+
+
+
+/*
+ ********************************************************************************
+ *********************** Time::IsDaylightSavingsTime ****************************
+ ********************************************************************************
+ */
 bool    Time::IsDaylightSavingsTime ()
 {
     static  bool    sCalledOnce_ = false;
@@ -50,6 +85,11 @@ bool    Time::IsDaylightSavingsTime (const DateTime& d)
 
 
 
+/*
+ ********************************************************************************
+ ********************* Time::GetLocaltimeToGMTOffset ****************************
+ ********************************************************************************
+ */
 time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
 {
 #if     0

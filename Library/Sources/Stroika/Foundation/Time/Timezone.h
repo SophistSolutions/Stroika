@@ -28,6 +28,14 @@ namespace   Stroika {
 
 
             /**
+             * Returns the string (in what format???) identifying the current system timezone.
+             *
+             *  On UNIX, this amounts to TZ environment variable???Or tz from locale?
+             */
+            String    GetTimeZone ();
+
+
+            /**
              * Checks if it is NOW DaylightSavingsTime
              */
             bool    IsDaylightSavingsTime ();
