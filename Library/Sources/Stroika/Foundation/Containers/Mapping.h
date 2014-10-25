@@ -28,6 +28,10 @@
  *  TODO:
  *
  *
+ *      @todo   Add Values () - which returns a collection of all values (not necesarily unique) - just like
+ *              Keys(). MIGHT be nice to have Keys() return a Set<> but that implies values can be compared, which
+ *              isnt necesarily so. Instead - have it return Iterable() and if you wnat t set say Set<>(Values())
+ *
  *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
  *              like Equals()
  *

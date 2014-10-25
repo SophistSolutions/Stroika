@@ -68,8 +68,19 @@ namespace   Stroika {
                 /**
                  */
                 struct  Memory {
+                    /**
+                     *  Size in bytes
+                     */
                     size_t      fPageSize {};
+
+                    /**
+                     *  Size in bytes
+                     */
                     uint64_t    fTotalPhysicalRAM {};
+
+                    /**
+                     *  Size in bytes
+                     */
                     uint64_t    fTotalVirtualRAM {};
                 };
 
