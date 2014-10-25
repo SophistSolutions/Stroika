@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
                     /**
-                     *  For VolumeInfo and Sequence<VolumeInfo> types.
+                     *  For VolumeInfo, Collection<VolumeInfo>, and Sequence<VolumeInfo> types.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
