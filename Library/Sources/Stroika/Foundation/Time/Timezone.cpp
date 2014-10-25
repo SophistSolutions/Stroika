@@ -28,10 +28,10 @@ using   namespace   Stroika::Foundation::Time;
 
 /*
  ********************************************************************************
- ********************************* Time::GetTimeZone ****************************
+ ********************************* Time::GetTimezone ****************************
  ********************************************************************************
  */
-String    Time::GetTimeZone ()
+String    Time::GetTimezone ()
 {
 #if     qPlatform_Windows
     TIME_ZONE_INFORMATION   tzInfo;
