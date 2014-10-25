@@ -72,7 +72,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *   fails if exists after teh operaotion - Fails if doest exist
+                     *   fails if exists after the operaotion - Fails if doest exist
                      */
                     nonvirtual  void    Delete () const;
 
