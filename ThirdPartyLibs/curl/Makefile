@@ -5,7 +5,7 @@ DoCreateSymLink=0
 
 VERSION=7_38_0
 BASENAME=curl-curl-$(VERSION)
-ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
+ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
@@ -36,20 +36,21 @@ all:
 	@make --no-print-directory doBuilds
 	@make --no-print-directory check
 
-$(ZIPEDFILE):
-	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
+$(ZIPPEDFILE):
+	@echo -n "   ..."
+	wget --quiet --tries=10 --no-check-certificate -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
 
 
-$(TRGDIR):	$(ZIPEDFILE)
+$(TRGDIR):	$(ZIPPEDFILE)
 	@make --no-print-directory doCreate
 
 
-doCreate:	$(TRGDIR)
+doCreate:	$(ZIPPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
 		echo "   ...CURRENT dir already exists";\
 	else\
 		echo "   ...Creating $(TRGDIR)...";\
-		tar xf $(ZIPEDFILE) --no-same-owner;\
+		tar xf $(ZIPPEDFILE) --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 	fi
 
