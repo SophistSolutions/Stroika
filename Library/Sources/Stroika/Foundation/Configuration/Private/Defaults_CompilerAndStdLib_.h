@@ -965,7 +965,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug       0
 #endif
