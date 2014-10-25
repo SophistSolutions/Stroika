@@ -41,10 +41,10 @@ $(ZIPEDFILE):
 
 
 $(TRGDIR):	$(ZIPEDFILE)
-	@make -f --no-print-directory doCreate
+	@make --no-print-directory doCreate
 
 
-doCreate:
+doCreate:	$(TRGDIR)
 	@if [ -e  $(TRGDIR) ]; then\
 		echo "   ...CURRENT dir already exists";\
 	else\
@@ -55,7 +55,7 @@ doCreate:
 
 
 $(BUILDS_DIR):	$(TRGDIR)
-	make -f --no-print-directory doBuilds
+	make --no-print-directory doBuilds
 
 
 doBuilds:
