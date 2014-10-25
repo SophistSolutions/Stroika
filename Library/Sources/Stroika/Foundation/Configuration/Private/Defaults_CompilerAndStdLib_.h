@@ -338,7 +338,7 @@
 #ifndef qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     0
 #endif
