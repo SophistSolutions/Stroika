@@ -29,7 +29,12 @@ BinaryInputOutputStream::BinaryInputOutputStream (const _SharedIRep& rep)
 
 BinaryInputOutputStream::operator BinaryInputStream () const
 {
+#if     qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
+    using TMP = Seekable::_IRep;
+    struct   InStr_IRep_ : BinaryInputStream::_IRep, TMP {
+#else
     struct   InStr_IRep_ : BinaryInputStream::_IRep, Seekable::_IRep {
+#endif
         DECLARE_USE_BLOCK_ALLOCATION (InStr_IRep_);
         BinaryInputOutputStream::_SharedIRep    fMaster_;
         InStr_IRep_ (const BinaryInputOutputStream::_SharedIRep& masterRep)
@@ -54,7 +59,12 @@ BinaryInputOutputStream::operator BinaryInputStream () const
 
 BinaryInputOutputStream::operator BinaryOutputStream () const
 {
+#if     qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
+    using TMP = Seekable::_IRep;
+    struct   OutStr_IRep_ : BinaryOutputStream::_IRep, TMP {
+#else
     struct   OutStr_IRep_ : BinaryOutputStream::_IRep, Seekable::_IRep {
+#endif
         DECLARE_USE_BLOCK_ALLOCATION (OutStr_IRep_);
         BinaryInputOutputStream::_SharedIRep    fMaster_;
         OutStr_IRep_ (const BinaryInputOutputStream::_SharedIRep& masterRep)

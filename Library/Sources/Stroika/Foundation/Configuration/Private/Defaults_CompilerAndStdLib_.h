@@ -774,6 +774,19 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
+//BinaryInputOutputStream::operator BinaryIn
+#ifndef qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
+
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ == 9))
+#else
+#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            0
+#endif
+
+#endif
+
+
+
 // @todo - investigate this better
 /*
     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
@@ -1188,7 +1201,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (__clang__)
 #define qCompilerAndStdLib_deprecatedFeatureMissing             ((__clang_major__ == 3) && (__clang_minor__ <= 5))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
