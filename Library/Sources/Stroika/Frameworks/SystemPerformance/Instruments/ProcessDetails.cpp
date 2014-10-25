@@ -344,8 +344,8 @@ namespace {
     // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
     // search for 'cat /proc/3828/io'
     struct proc_io_data_ {
-        unsigned long read_bytes;
-        unsigned long write_bytes;
+        uint64_t read_bytes;
+        uint64_t write_bytes;
     };
     Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
     {
