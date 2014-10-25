@@ -31,6 +31,8 @@ namespace   Stroika {
              * Returns the string (in what format???) identifying the current system timezone.
              *
              *  On UNIX, this amounts to TZ environment variable???Or tz from locale?
+             *
+             *  @todo CLARIFY and think through better, but this is at least a start..
              */
             String    GetTimeZone ();
 
