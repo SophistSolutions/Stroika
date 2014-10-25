@@ -317,7 +317,7 @@
 #ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     0
 #endif
