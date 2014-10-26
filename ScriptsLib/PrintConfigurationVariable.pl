@@ -12,7 +12,8 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
-my $envVarName=$ARGV[0];
+my $configuratioName=$ARGV[0];
+my $envVarName=$ARGV[1];
 if ($envVarName eq "DefaultConfiguration") {
 	print "DefaultConfiguration";
 }

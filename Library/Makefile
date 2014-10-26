@@ -1,5 +1,5 @@
 ACTIVE_CONFIGURATION 	?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
-ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl ProjectPlatformSubdir)
+ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(ACTIVE_CONFIGURATION) ProjectPlatformSubdir)
 
 all:
 ifeq (,$(findstring CYGWIN,$(shell uname)))

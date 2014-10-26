@@ -1,3 +1,6 @@
+ACTIVE_CONFIGURATION 	?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(ACTIVE_CONFIGURATION) ProjectPlatformSubdir)
+
 .PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
 .FORCE:	apply-configurations
@@ -28,19 +31,19 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries t
 
 
 check:
-	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= check
-	@$(MAKE) --directory Library --no-print-directory MAKEFLAGS= check
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
 	@(cd Tools && perl checkall.pl)
-	@$(MAKE) --directory Samples --no-print-directory MAKEFLAGS= check
-	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= check
+	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
 
 
 clean:
-	@make --directory ThirdPartyLibs --no-print-directory clean
-	@(cd Library; perl buildall.pl clean)
+	@make --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) clean
+	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) clean
 	@(cd Tools; perl buildall.pl clean)
-	@$(MAKE) --directory Samples --no-print-directory MAKEFLAGS= clean
-	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= clean
+	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
 
 
 clobber:
@@ -56,11 +59,11 @@ documentation:
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
-	@$(MAKE) --directory Library --no-print-directory all
+	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
 third-party-libs:
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
 project-files:
@@ -72,13 +75,13 @@ tools:	libraries
 
 
 tests:	tools libraries
-	@$(MAKE) --directory Tests --no-print-directory tests
+	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) tests
 
 samples:	tools libraries
-	@$(MAKE) --directory Samples --no-print-directory samples
+	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) samples
 
 run-tests:	tests
-	@$(MAKE) --directory Tests --no-print-directory run-tests MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory run-tests ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS=
 
 ASTYLE_ARGS=
 ASTYLE_ARGS+=	--style=stroustrup
