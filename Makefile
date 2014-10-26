@@ -31,23 +31,23 @@ check:
 	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= check
 	@(cd Library && perl checkall.pl)
 	@(cd Tools && perl checkall.pl)
-	@($MAKE) --directory Samples --no-print-directory MAKEFLAGS= check
-	@($MAKE) --directory Tests --no-print-directory MAKEFLAGS= check
+	@$(MAKE) --directory Samples --no-print-directory MAKEFLAGS= check
+	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= check
 
 
 clean:
 	@make --directory ThirdPartyLibs --no-print-directory clean
 	@(cd Library; perl buildall.pl clean)
 	@(cd Tools; perl buildall.pl clean)
-	@($MAKE) --directory Samples --no-print-directory MAKEFLAGS= clean
-	@($MAKE) --directory Tests --no-print-directory MAKEFLAGS= clean
+	@$(MAKE) --directory Samples --no-print-directory MAKEFLAGS= clean
+	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= clean
 
 
 clobber:
 	@echo "Clobbering..."
 	@rm -rf IntermediateFiles
 	@rm -rf Builds
-	@($MAKE) --directory ThirdPartyLibs --no-print-directory clobber
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber
 	@#SHOULD DO BUT BROKEN NOW - @make --directory Tests --no-print-directory MAKEFLAGS= clobber
 
 
@@ -56,15 +56,15 @@ documentation:
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
-	@($MAKE) --directory Library --no-print-directory all
+	@$(MAKE) --directory Library --no-print-directory all
 
 
 third-party-libs:
-	@($MAKE) --directory ThirdPartyLibs --no-print-directory all
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all
 
 
 project-files:
-	@($MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
+	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
 
 
 tools:	libraries
@@ -72,13 +72,13 @@ tools:	libraries
 
 
 tests:	tools libraries
-	@($MAKE) --directory Tests --no-print-directory tests
+	@$(MAKE) --directory Tests --no-print-directory tests
 
 samples:	tools libraries
-	@($MAKE) --directory Samples --no-print-directory samples
+	@$(MAKE) --directory Samples --no-print-directory samples
 
 run-tests:	tests
-	@($MAKE) --directory Tests --no-print-directory run-tests MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory run-tests MAKEFLAGS=
 
 ASTYLE_ARGS=
 ASTYLE_ARGS+=	--style=stroustrup
