@@ -35,6 +35,8 @@ namespace   Stroika {
              *  @todo CLARIFY and think through better, but this is at least a start..
              */
             String    GetTimezone ();
+            String    GetTimezone (bool applyDST);
+            String    GetTimezone (const DateTime& d);
 
 
             /**

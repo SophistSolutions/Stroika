@@ -33,6 +33,11 @@ using   namespace   Stroika::Foundation::Time;
  */
 String    Time::GetTimezone ()
 {
+    return GetTimezone (DateTime::Now ());
+}
+
+String    Time::GetTimezone (bool applyDST)
+{
 #if     qPlatform_Windows
     TIME_ZONE_INFORMATION   tzInfo;
     memset (&tzInfo, 0, sizeof (tzInfo));
@@ -45,6 +50,11 @@ String    Time::GetTimezone ()
     AssertNotImplemented ();
     return String ();
 #endif
+}
+
+String    Time::GetTimezone (const DateTime& d)
+{
+    return GetTimezone (IsDaylightSavingsTime (d));
 }
 
 
