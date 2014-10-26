@@ -86,10 +86,8 @@ namespace   Stroika {
                  *  Helper detail class for analyzing and tuning cache statistics.
                  */
                 struct  Stats_Basic {
-                    Stats_Basic ();
-                    size_t      fCachedCollected_Hits;
-                    size_t      fCachedCollected_Misses;
-
+                    size_t      fCachedCollected_Hits { 0 };
+                    size_t      fCachedCollected_Misses { 0 };
                     void    IncrementHits ();
                     void    IncrementMisses ();
                 };
@@ -228,7 +226,7 @@ namespace   Stroika {
             private:
                 vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
                 CacheElement_*          fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
-                CacheElement_*          fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
+                CacheElement_*          fCachedElts_Last_[TRAITS::HASH_TABLE_SIZE];
 
             private:
                 nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
