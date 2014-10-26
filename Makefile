@@ -29,7 +29,7 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries t
 
 check:
 	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= check
-	@(cd Library && perl checkall.pl)
+	@$(MAKE) --directory Library --no-print-directory MAKEFLAGS= check
 	@(cd Tools && perl checkall.pl)
 	@$(MAKE) --directory Samples --no-print-directory MAKEFLAGS= check
 	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= check
