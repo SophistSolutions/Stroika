@@ -3,7 +3,7 @@
 #
 .PHONY:	all clean clobber check
 
-VERSION=1.0.1g
+VERSION=1.0.1j
 BASENAME=openssl-$(VERSION)
 TRGDIR=CURRENT
 EXTRACTED_DIRNAME=$(BASENAME)
