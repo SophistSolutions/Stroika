@@ -184,9 +184,9 @@ namespace   Stroika {
 #if     qDebug
 #if     qCompilerAndStdLib_constexpr_Buggy
             template    <typename   T, size_t BUF_SIZE>
-            constexpr   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
+            const   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
             template    <typename   T, size_t BUF_SIZE>
-            constexpr   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8]  =   { 0x15, 0x32, 0xa5, 0x16, 0x15, 0x7a, 0x90, 0x10, };
+            const   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8]  =   { 0x15, 0x32, 0xa5, 0x16, 0x15, 0x7a, 0x90, 0x10, };
 #elif   qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
             template    <typename   T, size_t BUF_SIZE>
             constexpr   Byte    SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
