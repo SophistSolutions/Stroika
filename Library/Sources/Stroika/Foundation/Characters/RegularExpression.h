@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 #include    <regex>
 #endif
 
@@ -33,7 +33,7 @@ namespace   Stroika {
         namespace   Characters {
 
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
             /**
              *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
              *

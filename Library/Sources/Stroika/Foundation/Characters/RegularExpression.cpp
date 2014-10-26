@@ -12,7 +12,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 
 
 namespace   {

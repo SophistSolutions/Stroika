@@ -15,7 +15,7 @@ namespace   Stroika {
         namespace   Characters {
 
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
             /*
              ********************************************************************************
              ********************** Characters::RegularExpression ***************************

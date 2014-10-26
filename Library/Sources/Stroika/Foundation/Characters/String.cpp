@@ -8,7 +8,7 @@
 #include    <climits>
 #include    <istream>
 #include    <string>
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 #include    <regex>
 #endif
 
@@ -140,7 +140,7 @@ namespace {
 
 
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 namespace   {
     inline  constexpr   regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
     {
@@ -632,7 +632,7 @@ nogood2:
     return kBadIndex;
 }
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
 {
     const String  threadSafeCopy  { *this };
@@ -659,7 +659,7 @@ vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions
     return result;
 }
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) const
 {
     vector<pair<size_t, size_t>>  result;
@@ -683,7 +683,7 @@ vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) 
 }
 #endif
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 vector<String>  String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String>  result;
@@ -804,7 +804,7 @@ bool    String::EndsWith (const String& subString, CompareOptions co) const
     return result;
 }
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 bool    String::Match (const RegularExpression& regEx) const
 {
     wstring tmp  { As<wstring> () };
@@ -812,7 +812,7 @@ bool    String::Match (const RegularExpression& regEx) const
 }
 #endif
 
-#if		!qCompilerAndStdLib_regex_Buggy
+#if     !qCompilerAndStdLib_regex_Buggy
 String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
     return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
