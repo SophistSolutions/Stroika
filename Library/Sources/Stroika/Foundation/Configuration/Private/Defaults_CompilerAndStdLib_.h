@@ -456,7 +456,7 @@ EXAMPLE:
 #if     defined (__clang__)
 // Dont know how to test for libstdc++ version, but that seems the problem. For example, though fixed with gcc 49, clang-34 not
 // compatible with that fix...
-#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 6))
 #elif   defined (__GNUC__)
 // Note - Verified FIXED in gcc 4.9, so it was gcc / libstdc++ bug
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
@@ -684,7 +684,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 6))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
@@ -766,7 +766,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ < 6))
 #else
 #define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   qCompilerAndStdLib_thread_local_keyword_Buggy
 #endif
@@ -1167,7 +1167,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 #if     defined (__clang__)
 // Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 6))
 #elif     defined (__GNUC__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
 #define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
