@@ -1,4 +1,4 @@
-ACTIVE_CONFIGURATION 	?=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl DefaultConfiguration)
+ACTIVE_CONFIGURATION 	?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl ProjectPlatformSubdir)
 
 all:
