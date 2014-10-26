@@ -40,7 +40,7 @@ String    Time::GetTimezone ()
     return String::FromSDKString (tzInfo.StandardName);
 #elif   qPlatform_POSIX
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
-    return String::FromSDKString (IsDaylightSavingsTime () ? tzname[1] : tzname[0]);
+    return String::FromSDKString (IsDaylightSavingsTime (DateTime::Now ()) ? tzname[1] : tzname[0]);
 #else
     AssertNotImplemented ();
     return String ();
@@ -50,25 +50,12 @@ String    Time::GetTimezone ()
 
 
 
+
 /*
  ********************************************************************************
  *********************** Time::IsDaylightSavingsTime ****************************
  ********************************************************************************
  */
-bool    Time::IsDaylightSavingsTime ()
-{
-    static  bool    sCalledOnce_ = false;
-    if (not sCalledOnce_) {
-        DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC warns tzset() unsafe, but I think the way I use it will be safe
-        tzset ();
-        DISABLE_COMPILER_MSC_WARNING_END(4996)
-        sCalledOnce_ = true;
-    }
-    DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC warns tzset() unsafe, but I think the way I use it will be safe
-    return !!daylight;
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-}
-
 bool    Time::IsDaylightSavingsTime (const DateTime& d)
 {
     struct  tm  asTM    =   d.As<struct tm> ();
@@ -117,4 +104,9 @@ time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
     tm.tm_isdst = applyDST;
     time_t  result  =   mktime (&tm);
     return result;
+}
+
+time_t  Time::GetLocaltimeToGMTOffset (const DateTime& forTime)
+{
+    return GetLocaltimeToGMTOffset (IsDaylightSavingsTime (forTime));
 }

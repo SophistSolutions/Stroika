@@ -357,7 +357,7 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
 DateTime    DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::eUTC) {
-        DateTime    tmp =   AddSeconds (-GetLocaltimeToGMTOffset ());
+        DateTime    tmp =   AddSeconds (-GetLocaltimeToGMTOffset (*this));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eLocalTime);
     }
     else {
@@ -372,7 +372,7 @@ DateTime    DateTime::AsUTC () const
         return *this;
     }
     else {
-        DateTime    tmp =   AddSeconds (GetLocaltimeToGMTOffset ());
+        DateTime    tmp =   AddSeconds (GetLocaltimeToGMTOffset (*this));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::eUTC);
     }
 }

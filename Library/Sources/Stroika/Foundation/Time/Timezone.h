@@ -38,13 +38,7 @@ namespace   Stroika {
 
 
             /**
-             * Checks if it is NOW DaylightSavingsTime
-             */
-            bool    IsDaylightSavingsTime ();
-
-
-            /**
-             * Checks if the given date is daylight savings time
+             * Checks if the given DateTime is daylight savings time
              */
             bool    IsDaylightSavingsTime (const DateTime& d);
 
@@ -52,7 +46,8 @@ namespace   Stroika {
             /**
              * Return the number of seconds which must be added to a LocalTime value to get GMT.
              */
-            time_t  GetLocaltimeToGMTOffset (bool applyDST = IsDaylightSavingsTime ());
+            time_t  GetLocaltimeToGMTOffset (bool applyDST/* = IsDaylightSavingsTime ()*/);
+            time_t  GetLocaltimeToGMTOffset (const DateTime& forTime);
 
 
         }
