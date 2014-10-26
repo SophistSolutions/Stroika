@@ -21,6 +21,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Use http://stackoverflow.com/questions/14264371/how-to-get-nic-details-from-a-c-program to grab ethernet speed
+ *              for inteface (bandwidth of network interface)
+ *
  *      @todo   IPV6 compat.
  *
  *      @todo   Handle case of multiple address bindings to a single interface (groupby).
