@@ -903,11 +903,13 @@ namespace {
 namespace {
     void    Test22_StartsWithEndsWithMatch_ ()
     {
+#if		!qCompilerAndStdLib_regex_Buggy
         VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
         VerifyTestResult (not (String (L"abc").Match (RegularExpression (L"bc"))));
         VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
-        VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));
+        VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));				/// LGP DONT UNDERSTAND - THIS SEEMS BACKWARDS?? -- LGP 2014-10-26
         VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello")));
+#endif
         VerifyTestResult (String (L"abc").StartsWith (L"AB", CompareOptions::eCaseInsensitive));
         VerifyTestResult (not String (L"abc").StartsWith (L"AB", CompareOptions::eWithCase));
         VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eCaseInsensitive));

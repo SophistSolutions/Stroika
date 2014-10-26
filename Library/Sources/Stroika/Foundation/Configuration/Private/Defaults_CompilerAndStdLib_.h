@@ -454,9 +454,11 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_regex_Buggy
 
 #if     defined (__clang__)
-// @todo - this seems broken with clang 3.4 - so probably MY bug - not gcc/clang bug... debug soon!
-#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 4))
+// Dont know how to test for libstdc++ version, but that seems the problem. For example, though fixed with gcc 49, clang-34 not
+// compatible with that fix...
+#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 5))
 #elif   defined (__GNUC__)
+// Note - Verified FIXED in gcc 4.9, so it was gcc / libstdc++ bug
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
 // Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
 #define qCompilerAndStdLib_regex_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))

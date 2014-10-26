@@ -15,6 +15,7 @@ namespace   Stroika {
         namespace   Characters {
 
 
+#if		!qCompilerAndStdLib_regex_Buggy
             /*
              ********************************************************************************
              ********************** Characters::RegularExpression ***************************
@@ -28,6 +29,7 @@ namespace   Stroika {
             {
                 return fCompiledRegExp_;
             }
+#endif
 
 
         }

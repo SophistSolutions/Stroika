@@ -12,6 +12,8 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
 
+#if		!qCompilerAndStdLib_regex_Buggy
+
 
 namespace   {
     regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st, CompareOptions co)
@@ -41,5 +43,4 @@ RegularExpression::RegularExpression (const String& re, CompareOptions co)
     :  fCompiledRegExp_ (re.As<wstring> (), mkOption_ (SyntaxType::eDEFAULT, co))
 {
 }
-
-
+#endif
