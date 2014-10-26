@@ -1,5 +1,5 @@
-ACTIVE_CONFIGURATION=DefaultConfiguration
-ProjectPlatformSubdir=VisualStudio.Net-2013
+ACTIVE_CONFIGURATION=$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl DefaultConfiguration)
+ProjectPlatformSubdir=$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl ProjectPlatformSubdir)
 
 all:
 ifeq (,$(findstring CYGWIN,$(shell uname)))
