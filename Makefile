@@ -56,7 +56,7 @@ documentation:
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
-	@cd Library; perl buildall.pl build
+	@($MAKE) --directory Library --no-print-directory all
 
 
 third-party-libs:
