@@ -48,7 +48,7 @@ namespace   Stroika {
             /**
              * Return the number of seconds which must be added to a LocalTime value to get GMT.
              */
-            time_t  GetLocaltimeToGMTOffset (bool applyDST/* = IsDaylightSavingsTime ()*/);
+            time_t  GetLocaltimeToGMTOffset (bool applyDST);
             time_t  GetLocaltimeToGMTOffset (const DateTime& forTime);
 
 
