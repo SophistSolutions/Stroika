@@ -111,6 +111,19 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *          It would have been impractical to make Optional<T, TRAITS> fully thread-safe, due to its returning
              *          of internal pointers.
+             *
+             *  \note   \em Design-Note - Optional<void>
+             *          I considered supporting Optional<void>, but there seemed no natural way to 'assign' something to it
+             *          to make it present. I found this might be useful, for situations like:
+             *              struct VariantFoo {
+             *                  Optional<infoa> a;
+             *                  Optional<extraInfoB> b;
+             *                  Optional<void>  c;
+             *              };
+             *              where VariantFoo was basically a variant union, where the variant present
+             *              was the one where the optional was there. But
+             *              this can be done - I think - just as easily using 'bool c' for the variants with
+             *              no extra data.
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
             class   Optional {
