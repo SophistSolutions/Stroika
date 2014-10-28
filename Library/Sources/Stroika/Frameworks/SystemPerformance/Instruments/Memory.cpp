@@ -42,7 +42,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
 #if 0
-			{ Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f1MinuteAve), String_Constant (L"1-minute") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f1MinuteAve), String_Constant (L"1-minute") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f5MinuteAve), String_Constant (L"5-minute") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f15MinuteAve), String_Constant (L"15-minute") },
 #endif
