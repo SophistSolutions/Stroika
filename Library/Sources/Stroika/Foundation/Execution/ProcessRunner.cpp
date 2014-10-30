@@ -49,6 +49,13 @@ using   Debug::TraceContextBumper;
 
 
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
 #if     qPlatform_Windows
 namespace {
     class   AutoHANDLE_ {
@@ -199,14 +206,21 @@ namespace {
 
 
 namespace {
-    SDKString GetCWD_ ()
+    String GetCWD_ ()
     {
 #if     qPlatform_Windows
         TCHAR pwd[MAX_PATH];
         GetCurrentDirectory(MAX_PATH, pwd);
-        return pwd;
+        return String::FromSDKString (pwd);
+#elif   qPlatform_POSIX
+        char pwd[PATH_MAX ];
+        if (getpwd (pwd, NEltsOf (pwd)) == nullptr) {
+            errno_ErrorException::DoThrow (errno);
+        }
+        return String::FromSDKString (pwd);
 #else
-        return SDKString ();  // NYI
+        AssertNotReached ();
+        return String ();  // NYI
 #endif
     }
 }
@@ -218,7 +232,7 @@ namespace {
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const SDKString& commandLine, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const String& commandLine, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -229,7 +243,7 @@ ProcessRunner::ProcessRunner (const SDKString& commandLine, Streams::BinaryInput
 {
 }
 
-ProcessRunner::ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
@@ -240,12 +254,12 @@ ProcessRunner::ProcessRunner (const SDKString& executable, const Containers::Seq
 {
 }
 
-SDKString ProcessRunner::GetWorkingDirectory ()
+String ProcessRunner::GetWorkingDirectory ()
 {
     return fWorkingDirectory_;
 }
 
-void    ProcessRunner::SetWorkingDirectory (const SDKString& d)
+void    ProcessRunner::SetWorkingDirectory (const String& d)
 {
     fWorkingDirectory_ = d;
 }
@@ -287,14 +301,8 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
 
 IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
-    SDKString cmdLine;
-    if (fCommandLine_.IsMissing ()) {
-    }
-    else {
-        cmdLine = *fCommandLine_;
-    }
-
-    SDKString currentDir  =   GetWorkingDirectory ();
+    String      cmdLine     =   fCommandLine_.Value ();
+    SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
 
     Streams::BinaryInputStream  in  =   GetStdIn ();
     Streams::BinaryOutputStream out =   GetStdOut ();
@@ -302,9 +310,10 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
 
     return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
-        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::CString::LimitLength (cmdLine, 100, false).c_str ());
+        DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (SDKSTR ("currentDir: %s"), Characters::CString::LimitLength (currentDir, 50, false).c_str ());
-
+#endif
 
         // Horrible implementation - just designed to be quickie get started...
         Memory::BLOB    stdinBLOB;
@@ -371,7 +380,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
             {
                 bool    bInheritHandles     =   true;
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
-                _tcscpy_s (cmdLineBuf, cmdLine.c_str ());
+                _tcscpy_s (cmdLineBuf, cmdLine.AsSDKString ().c_str ());
                 Execution::Platform::Windows::ThrowIfFalseGetLastError (
                     ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir.c_str (), &startInfo, &processInfo)
                 );
@@ -589,7 +598,7 @@ DoneWithProcess:
         vector<char*>       useArgsV;
         string              thisEXEPath;
         {
-            for (auto i : Execution::ParseCommandLine (String::FromSDKString (cmdLine))) {
+            for (auto i : Execution::ParseCommandLine (cmdLine)) {
                 tmpTStrArgs.push_back (i.AsNarrowSDKString ());
             }
             for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
@@ -647,6 +656,9 @@ DoneWithProcess:
             }
         }
         else {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("In Parent Fork: child process PID= %d", cpid);
+#endif
             /*
              * WE ARE PARENT
              */
@@ -694,12 +706,17 @@ DoneWithProcess:
                 Byte    buf[1024];
                 int   nBytesRead  =   0;
 
-                // @todo not quite right - unless we have blcokgin
+                // @todo not quite right - unless we have blocking
+                // (NOTE - pretty sure this is blocking - but must handle EINTR)
                 while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
+#endif
                     out.Write (buf, buf + nBytesRead);
                 }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("from stdout nBytesRead = %d, errno=%d", nBytesRead, errno);
+#endif
             }
             if (not err.empty ()) {
                 Byte    buf[1024];
@@ -707,10 +724,14 @@ DoneWithProcess:
 
                 // @todo not quite right - unless we have blcokgin
                 while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
+#endif
                     err.Write (buf, buf + nBytesRead);
                 }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
+#endif
             }
             // not sure we need?
             int status = 0;
@@ -718,6 +739,9 @@ DoneWithProcess:
             int result = waitpid (cpid, &status, flags);                /* Wait for child */
             if (result != cpid || status != 0) {
                 // @todo fix this message
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("cpid = %d, sresult = result=%d, status=%d", cpid, result, status);
+#endif
                 DoThrow (StringException (L"sub-process failed"));
             }
         }
