@@ -7,6 +7,7 @@
 #include    <Windows.h>
 #endif
 
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/Tokenize.h"
@@ -65,7 +66,7 @@ namespace {
                         result.push_back (v);
                     }
                     else {
-                        for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += wcslen(NameIdx) + 1) {
+                        for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
                             v.fMountedOnName = String::FromSDKString (NameIdx);
                             {
                                 ULARGE_INTEGER freeBytesAvailable;
@@ -74,7 +75,7 @@ namespace {
                                 memset (&freeBytesAvailable, 0, sizeof (freeBytesAvailable));
                                 memset (&totalNumberOfBytes, 0, sizeof (totalNumberOfBytes));
                                 memset (&totalNumberOfFreeBytes, 0, sizeof (totalNumberOfFreeBytes));
-                                DWORD xxx = GetDiskFreeSpaceEx (v.fMountedOnName.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                                DWORD xxx = GetDiskFreeSpaceEx (v.fMountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                                 v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                 v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
                             }
