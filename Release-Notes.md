@@ -25,10 +25,22 @@ History
   
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a50">v2.0a50x</a><br/>2014-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a50">v2.0a50</a><br/>2014-10-30</td>
 <td>
 <ul>
+	<li>Makefile cleanups, so make -j N works pretty well, $(MAKE), and much less noisy builds of most third-party-libs, losing a few more perl scripts. Also new GetDefaultConfiguration.pl and PrintConfigurationVariable.pl script in makefiles (work towards support of multiple configs)</li>
 	<li>Suport gcc-4.9, and clang++-3.5</li>
+	<li>use 1.0.1j openssl</li>
+	<li>Execution::ProcessRunner imporvements, including (incompatible) String args (instead of SDKString). Also, POSIX use waitpid() - still not 100% right but much closer, and throws if child returns status nonzero.</li>
+	<li>DataExchange::INI::Reader bug fix (last named section was lost)</li>
+	<li>Started  Framework_SystemPerformance_Instrumemnts_Memory</li>
+	<li>SystemPerformance/Instruments/MountedFilesystemUsage supports Collect…ion{VolumeInfo}</li>
+	<li>GetTimezone/IsDaylightSavings time fixes</li>
+	<li>more explicit DataExchange::CheckedConverter{Characters::String, </li>
+	<li>cleanups to CheckedConverter_ValueInRange</li>
+	<li> forward inlines for Synchonized{String}...</li>
+	<li>chrono::duration better integration with Stroika...Time::Duration</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
