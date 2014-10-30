@@ -101,7 +101,7 @@ namespace {
         //
         //  NEW NOTE - I THINK ITS IN THERE.... RE-EXAMINE proc/filesystems proc/partitions, and http://en.wikipedia.org/wiki/Procfs
         //      -- LGP 2014-08-01
-        ProcessRunner pr (SDKSTR ("/bin/df -k -T"));
+        ProcessRunner pr (L"/bin/df -k -T");
         Streams::BasicBinaryInputOutputStream   useStdOut;
         pr.SetStdOut (useStdOut);
         pr.Run ();

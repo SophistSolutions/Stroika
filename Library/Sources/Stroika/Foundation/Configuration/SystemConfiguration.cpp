@@ -172,7 +172,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
 #elif   qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
         try {
-            tmp.fTokenName = Execution::ProcessRunner (SDKSTR ("uname")).Run (String ()).Trim ();
+            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
         }
         catch (...)
         {
