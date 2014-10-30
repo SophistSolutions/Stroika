@@ -26,11 +26,11 @@ all:
 clean:
 	@rm -rf $(TRGDIR)
 
+clobber:	clean
+	@rm -f BUILD.OUT
+
 check:
 	@./checkall_.pl
-
-clobber:
-	@rm -rf $(TRGDIR) ORIG
 
 $(ZIPEDFILE):
 	@echo -n "   ..." 
@@ -40,11 +40,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate
 
 
-doCreate:	$(ZIPEDFILE)
-	@echo "   ...Extract $(ZIPEDFILE) to $(TRGDIR)..."
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+doPatch:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo "   ...Patching OpenSSL..."
 endif
@@ -61,9 +57,24 @@ ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 endif
 endif
 
+doCreate:	$(ZIPEDFILE)
+	@if [ -e  $(TRGDIR) ]; then\
+		echo "   ...CURRENT dir already exists";\
+	else\
+		echo "   ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
+		tar xf $(ZIPEDFILE) --no-same-owner;\
+		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
+		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
+		$(MAKE) --no-print-directory doPatch;\
+	fi
+
 doBuilds:
-	@echo "   ...Buidling, and redirecting messages to BUILD.OUT ..."
-	@./buildall_.pl > BUILD.OUT 2>&1
+	@if [ -e  BUILD.OUT ]; then\
+		echo "   ...BUILD.OUT already exists";\
+	else\
+		echo "   ...Buidling, and redirecting messages to BUILD.OUT ...";\
+		./buildall_.pl > BUILD.OUT 2>&1;\
+	fi
 
 
 ORIG:	$(ZIPEDFILE)
