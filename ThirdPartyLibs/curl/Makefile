@@ -31,7 +31,7 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@echo Building libcurl $(VERSION)...
+	@echo Building Stroika/ThirdPartyProducts/libcurl $(VERSION)...
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 	@$(MAKE) --no-print-directory check

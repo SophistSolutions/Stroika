@@ -18,7 +18,7 @@ UNAME := $(shell uname)
 STRIP_ANNOYING_MESSAGES=		1
 
 all:
-	@echo Building OpenSSL $(VERSION)...
+	@echo Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)...
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 	@$(MAKE) --no-print-directory check

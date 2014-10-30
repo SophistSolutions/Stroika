@@ -5,16 +5,16 @@
 all:
 	@(cd doxygen; perl buildall.pl Build)
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
-	@$(MAKE) --directory openssl all
+	@$(MAKE) --directory openssl --no-print-directory all
 endif
 ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
-	@$(MAKE) --directory curl all
+	@$(MAKE) --directory curl --no-print-directory all
 endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
-	@$(MAKE) --directory Xerces all
+	@$(MAKE) --directory Xerces --no-print-directory all
 endif
 ifeq ($(qBuildThirdPartyProducts_zlib), 1)
-	@$(MAKE) --directory zlib all
+	@$(MAKE) --directory zlib --no-print-directory all
 endif
 
 clean:
@@ -41,10 +41,10 @@ ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 endif
 
 clobber:
-	@echo "ThirdPartyProducts clobber..."
+	@echo "ThirdPartyLibs clobber..."
 	@(cd doxygen; perl buildall.pl clobber)
 	@$(MAKE) --directory openssl --no-print-directory clobber
 	@$(MAKE) --directory curl --no-print-directory clobber
 	@$(MAKE) --directory Xerces --no-print-directory clobber
 	@$(MAKE) --directory zlib --no-print-directory clobber
-	@echo "ThirdPartyProducts clobber...done"
+	@echo "ThirdPartyLibs clobber...done"

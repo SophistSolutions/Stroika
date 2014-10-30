@@ -13,7 +13,7 @@ my $libeay32_DBG;
 my $ssleay32;
 my $ssleay32_DBG;
 
-print "   Checking...";
+print "   ...Checking...\n";
 
 if ("$^O" eq "linux") {
 	###WRONG - MUST FIX
@@ -30,19 +30,19 @@ else {
 }
 
 if (! (-e "$libeay32")) {
-	print ("  openssl  [FAILED] - $libeay32 is missing\n");
+	print ("     openssl  [FAILED] - $libeay32 is missing\n");
 	exit (1);
 }
 if (! (-e "$libeay32_DBG")) {
-	print ("  openssl  [FAILED] - $libeay32_DBG is missing\n");
+	print ("     openssl  [FAILED] - $libeay32_DBG is missing\n");
 	exit (1);
 }
 if (! (-e "$ssleay32")) {
-	print ("  openssl  [FAILED] - $ssleay32 is missing\n");
+	print ("     openssl  [FAILED] - $ssleay32 is missing\n");
 	exit (1);
 }
 if (! (-e "$ssleay32_DBG")) {
-	print ("  openssl  [FAILED] - $ssleay32_DBG is missing\n");
+	print ("     openssl  [FAILED] - $ssleay32_DBG is missing\n");
 	exit (1);
 }
 
@@ -56,12 +56,12 @@ my $x1 = `diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
 my $x2 = `diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
 }
 if (trim ($x1) <= "44" and trim ($x2) <= "44") {
-	print ("  OpenSSL...       [SUCCEEDED]\n");
+	print ("     OpenSSL...       [SUCCEEDED]\n");
 }
 else {
-	print ("  openssl [FAILED]\n");
-	print ("  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
-	print ("  2 lines coming next - each should be less than 40/44 to be safe...\n");
-	print "  $x1\n";
-	print "  $x2\n";
+	print ("     openssl [FAILED]\n");
+	print ("        Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
+	print ("        2 lines coming next - each should be less than 40/44 to be safe...\n");
+	print "         $x1\n";
+	print "         $x2\n";
 }
