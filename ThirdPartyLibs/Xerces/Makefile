@@ -20,9 +20,9 @@ UNAME := $(shell uname)
 
 all:
 	@echo "Building Stroika/ThirdPartyLibs/xerces VERSION=$(VERSION)..."
-	@make --no-print-directory doCreate
-	@make --no-print-directory doBuild
-	@make --no-print-directory check
+	@$(MAKE) --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doBuild
+	@$(MAKE) --no-print-directory check
 
 clean:
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
