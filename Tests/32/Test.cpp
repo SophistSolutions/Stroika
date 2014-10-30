@@ -28,23 +28,23 @@ namespace   {
     {
         Streams::BasicBinaryOutputStream myStdOut;
         // quickie about to test..
-        ProcessRunner pr (SDKSTR ("echo hi mom"), nullptr, myStdOut);
+        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
         pr.Run ();
     }
     void    RegressionTest2_ ()
     {
         Streams::BasicBinaryOutputStream myStdOut;
         // quickie about to test..
-        ProcessRunner pr (SDKSTR ("echo hi mom"));
+        ProcessRunner pr (L"echo hi mom");
         String out = pr.Run (L"");
         VerifyTestResult (out.Trim () == L"hi mom");
     }
     void    RegressionTest3_Pipe_ ()
     {
         Streams::BasicBinaryOutputStream myStdOut;
-        ProcessRunner pr1 (SDKSTR ("echo hi mom"));
+        ProcessRunner pr1 (L"echo hi mom");
         Streams::BasicBinaryInputOutputStream pipe;
-        ProcessRunner pr2 (SDKSTR ("cat"));
+        ProcessRunner pr2 (L"cat");
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 
