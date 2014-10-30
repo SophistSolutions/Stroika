@@ -87,7 +87,8 @@ endif
 
 check:
 	@##THMPHACK
-	@echo "ThirdPartyLibs/curl - [Succeeded]"
+	@echo "   ...Checking..."
+	@echo "      ThirdPartyLibs/curl - [Succeeded]"
 
 clean:
 	@rm -rf $(TRGDIR)

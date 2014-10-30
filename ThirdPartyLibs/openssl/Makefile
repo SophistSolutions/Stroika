@@ -33,6 +33,7 @@ clobber:
 	@rm -rf $(TRGDIR) ORIG
 
 $(ZIPEDFILE):
+	@echo -n "   ..." 
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPPEDFILE)
@@ -45,7 +46,7 @@ doCreate:	$(ZIPEDFILE)
 	@sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@echo "Patching OpenSSL..."
+	@echo "   ...Patching OpenSSL..."
 endif
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@dos2unix -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH

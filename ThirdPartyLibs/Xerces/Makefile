@@ -19,15 +19,16 @@ UNAME := $(shell uname)
 
 
 all:
-	@echo "   ...Building Stroika/ThirdPartyLibs/xerces VERSION=$(VERSION)..."
+	@echo "Building Stroika/ThirdPartyLibs/xerces VERSION=$(VERSION)..."
 	@make --no-print-directory doCreate
 	@make --no-print-directory doBuild
+	@make --no-print-directory check
 
 clean:
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
 
 check:
-	@./checkall.pl
+	@./checkall_.pl
 
 clobber:
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
@@ -53,5 +54,5 @@ doCreate:	$(ZIPPEDFILE)
 	fi
 
 doBuild:
-	@echo "   ...Building REDIRECT to BUILD.OUT..."
+	@echo "   ...Compiling REDIRECT to BUILD.OUT..."
 	@./buildall_.pl build > BUILD.OUT 2>&1

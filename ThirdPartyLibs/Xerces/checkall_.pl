@@ -12,6 +12,8 @@ my $REL32_LIB;
 my $DBG64_LIB;
 my $REL64_LIB;
 
+print "   ...Checking...\n";
+
 if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	#
 	#for now seems to build just one lib...
@@ -39,19 +41,19 @@ else {
 }
 
 if (! (-e "$REL32_LIB")) {
-	print ("ThirdPartyLibs/Xerces - [FAILED] - $REL32_LIB is missing\n");
+	print ("      ThirdPartyLibs/Xerces - [FAILED] - $REL32_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$DBG32_LIB")) {
-	print ("ThirdPartyLibs/Xerces - [FAILED] - $DBG32_LIB is missing\n");
+	print ("      ThirdPartyLibs/Xerces - [FAILED] - $DBG32_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$REL64_LIB")) {
-	print ("ThirdPartyLibs/Xerces - [FAILED] - $REL64_LIB is missing\n");
+	print ("      ThirdPartyLibs/Xerces - [FAILED] - $REL64_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$DBG64_LIB")) {
-	print ("ThirdPartyLibs/Xerces - [FAILED] - $DBG64_LIB is missing\n");
+	print ("      ThirdPartyLibs/Xerces - [FAILED] - $DBG64_LIB is missing\n");
 	exit (1);
 }
-print ("ThirdPartyLibs/Xerces -  [SUCCEEDED]\n");
+print ("      ThirdPartyLibs/Xerces -  [SUCCEEDED]\n");
