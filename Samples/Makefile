@@ -3,6 +3,18 @@
 UNAME := $(shell uname)
 
 
+SUBPROJECTS=\
+	ActiveLedIt\
+	LedIt\
+	LedLineIt\
+	SimpleLedTest\
+	SSDPClient\
+	SSDPServer\
+	SimpleService\
+	SystemPerformanceClient\
+	WebServer	
+
+
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
@@ -34,14 +46,21 @@ check:
 	@perl checkall.pl
 
 clean:
-	@perl buildall.pl clean
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl clean);\
+	done	
 
-clobber:
-	@perl buildall.pl clobber
+clobber:	clean
+	@#skip cuz submnakefiles dont work
+	@#for SUBPROJ in $(SUBPROJECTS) ; do 
+	@#	(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl clobber);
+	@#done	
 
 samples:
-	@perl buildall.pl build
-
+	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl);\
+    	done	
 
 skel-usage_:
 	@echo "\tUsage: make skel SKEL_SRCPROJDIR=XX SKEL_TRGPROJDIR=XX SKEL_TRGPROJName=XX SKEL_PATH2Stroika=XX"

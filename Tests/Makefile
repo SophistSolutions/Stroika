@@ -70,9 +70,10 @@ project-files:
 	@(cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
 
 tests:
-	@perl ScriptsLib/_buildall.pl build
+	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
+	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
-run-tests:
+run-tests:	tests
 	@echo "Running Tests..."
 	@for i in $(TESTS);\
 	do\
