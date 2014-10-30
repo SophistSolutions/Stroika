@@ -17,15 +17,11 @@ UNAME := $(shell uname)
 # COULD make this conditional
 STRIP_ANNOYING_MESSAGES=		1
 
-all:	$(TRGDIR)
+all:
 	@echo Building OpenSSL $(VERSION)...
-ifeq (1,$(STRIP_ANNOYING_MESSAGES))
-	@./buildall_.pl | grep -v \.c$$
-else
-	@./buildall_.pl
-endif
-	@echo ...done - Built OpenSSL $(VERSION)
-	@make --no-print-directory check
+	@$(MAKE) --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory check
 
 clean:
 	@rm -rf $(TRGDIR)
@@ -39,8 +35,12 @@ clobber:
 $(ZIPEDFILE):
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
-$(TRGDIR):	$(ZIPEDFILE)
-	@echo Extract $(ZIPEDFILE) to $(TRGDIR)...
+$(TRGDIR):	$(ZIPPEDFILE)
+	@$(MAKE) --no-print-directory doCreate
+
+
+doCreate:	$(ZIPEDFILE)
+	@echo "   ...Extract $(ZIPEDFILE) to $(TRGDIR)..."
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
@@ -59,6 +59,11 @@ ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@unix2dos -q Patches/LosePRINTOfCopyingInUtils.PATCH
 endif
 endif
+
+doBuilds:
+	@echo "   ...Buidling, and redirecting messages to BUILD.OUT ..."
+	@./buildall_.pl > BUILD.OUT 2>&1
+
 
 ORIG:	$(ZIPEDFILE)
 	@tar xf $(ZIPEDFILE) --no-same-owner

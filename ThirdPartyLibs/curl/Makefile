@@ -32,9 +32,9 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@echo Building libcurl $(VERSION)...
-	@make --no-print-directory doCreate
-	@make --no-print-directory doBuilds
-	@make --no-print-directory check
+	@$(MAKE) --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory check
 
 $(ZIPPEDFILE):
 	@echo -n "   ..."
@@ -42,7 +42,7 @@ $(ZIPPEDFILE):
 
 
 $(TRGDIR):	$(ZIPPEDFILE)
-	@make --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doCreate
 
 
 doCreate:	$(ZIPPEDFILE)

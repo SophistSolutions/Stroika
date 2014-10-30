@@ -36,6 +36,10 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	else {
 		system ("make --directory CURRENT --no-print-directory -s all");
 	}
+	
+	print (" ...Running openssl tests...");
+	system ("make --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>& 1");
+	print ("\n");
 }
 else {if ("$^O" eq "cygwin") {
 	if ((-e 'CURRENT/Builds/Debug32') && (-e 'CURRENT/Builds/Release32')) {
