@@ -42,7 +42,7 @@ String    Time::GetTimezone (bool applyDST)
     TIME_ZONE_INFORMATION   tzInfo;
     memset (&tzInfo, 0, sizeof (tzInfo));
     (void)::GetTimeZoneInformation (&tzInfo);
-    return String::FromSDKString (tzInfo.StandardName);
+    return tzInfo.StandardName;
 #elif   qPlatform_POSIX
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     return String::FromSDKString (IsDaylightSavingsTime (DateTime::Now ()) ? tzname[1] : tzname[0]);
