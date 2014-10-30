@@ -24,7 +24,7 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 }
 
 
-print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
+#print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
 
 if ((lc ("$BLD_TRG") eq "clean") || (lc ("$BLD_TRG") eq "clobber")) {
 	system ("rm -rf $trgDirName CURRENT");
@@ -137,8 +137,8 @@ else {
 	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
 }
 
-system ("perl checkall.pl");
+#system ("perl checkall.pl");
 
 DONE:
-print (">>>>>>>>******************** ENDING ThirdPartyLibs/Xerces ******************\n");
+#print (">>>>>>>>******************** ENDING ThirdPartyLibs/Xerces ******************\n");
 
