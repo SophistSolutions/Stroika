@@ -27,7 +27,7 @@ help:
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
-	@make check
+	@$(MAKE) check
 
 
 check:
@@ -39,8 +39,8 @@ check:
 
 
 clean:
-	@make --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) clean
-	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) clean
+	@make --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
 	@(cd Tools; perl buildall.pl clean)
 	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
 	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
@@ -139,12 +139,12 @@ endif
 
 
 apply-configurations-if-needed:
-	@test -e ConfigurationFiles/DefaultConfiguration.xml || make default-configuration --no-print-directory
-	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || make apply-configurations --no-print-directory
+	@test -e ConfigurationFiles/DefaultConfiguration.xml || $(MAKE) default-configuration --no-print-directory
+	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || $(MAKE) apply-configurations --no-print-directory
 
 apply-configurations:
 	@#todo - must enahnce to support multiple configs
-	@# must check here/fail if zero configs and direct user to call make default-configuration
+	@# must check here/fail if zero configs and direct user to call (MAKE) default-configuration
 	@#@perl ApplyConfiguration.pl --only-if-unconfigured
 	@perl ScriptsLib/ApplyConfiguration.pl
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
