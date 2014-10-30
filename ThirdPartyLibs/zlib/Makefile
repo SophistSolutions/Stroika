@@ -47,7 +47,7 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@unix2dos -q CURRENT/win32/Makefile.msc
 else
 	@(cd CURRENT && ./configure)
-	@(cd CURRENT && make)
+	@$(MAKE) --directory CURRENT --no-print-directory
 endif
 
 ORIGS:	$(ZIPEDFILE)
