@@ -42,7 +42,7 @@ namespace   Stroika {
 
             /**
              *  Capture the bits from 'bitField' - starting at bit 'offset' (zero-based), and go for
-             *  'nBits'.
+             *  'nBits'. Bits are indexed from the low-order bit (starting with bit 0).
              *
              *  EXAMPLES:
              *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 0) == 1);
