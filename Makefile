@@ -1,6 +1,8 @@
 ACTIVE_CONFIGURATION 	?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(ACTIVE_CONFIGURATION) ProjectPlatformSubdir)
 
+
+.NOTPARALLEL: run-tests check apply-configurations third-party-libs
 .PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
 .FORCE:	apply-configurations
