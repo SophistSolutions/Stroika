@@ -78,6 +78,9 @@ public:
                 // @todo not sure what todo with other sorts of lines??
             }
         }
+        if (readingSection.IsPresent ()) {
+            p.fNamedSections.Add (*readingSection, currentSection);
+        }
         return Convert (p);
     }
 };
