@@ -62,7 +62,7 @@ libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-
 	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
-third-party-libs:
+third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
