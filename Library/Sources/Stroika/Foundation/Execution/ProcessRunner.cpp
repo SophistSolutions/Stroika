@@ -214,7 +214,7 @@ namespace {
         return String::FromSDKString (pwd);
 #elif   qPlatform_POSIX
         char pwd[PATH_MAX ];
-        if (getpwd (pwd, NEltsOf (pwd)) == nullptr) {
+        if (getcwd (pwd, NEltsOf (pwd)) == nullptr) {
             errno_ErrorException::DoThrow (errno);
         }
         return String::FromSDKString (pwd);
