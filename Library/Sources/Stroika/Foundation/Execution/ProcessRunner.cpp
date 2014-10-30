@@ -713,7 +713,13 @@ DoneWithProcess:
                 DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
             }
             // not sure we need?
-            wait (NULL);                /* Wait for child */
+            int status = 0;
+            int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
+            int result = waitpid (cpid, &status, flags);                /* Wait for child */
+            if (result != cpid || status != 0) {
+                // @todo fix this message
+                DoThrow (StringException (L"sub-process failed"));
+            }
         }
 #endif
     });
