@@ -839,12 +839,12 @@ Containers::Sequence<String>  String::Tokenize (const function<bool(Character)>&
     bool    inToken = false;
     StringBuilder curToken;
     size_t  len = tmp.size ();
-    for (size_t  i = 0; i != len) {
+    for (size_t  i = 0; i != len; ++i) {
         Character c = tmp[i];
         bool isSep = isTokenSeperator (c);
         if (inToken != isSep) {
             if (inToken) {
-                String  s = curToken;
+                String  s { curToken };
                 if (trim) {
                     s = s.Trim ();
                 }
@@ -861,7 +861,7 @@ Containers::Sequence<String>  String::Tokenize (const function<bool(Character)>&
         }
     }
     if (inToken) {
-        String  s = curToken;
+        String  s { curToken };
         if (trim) {
             s = s.Trim ();
         }
@@ -870,14 +870,14 @@ Containers::Sequence<String>  String::Tokenize (const function<bool(Character)>&
     return r;
 }
 
-Containers::Sequence<String>  String::Tokenize (const Containers::Set<Character>& delimiters, bool trim)
+Containers::Sequence<String>  String::Tokenize (const Containers::Set<Character>& delimiters, bool trim) const
 {
     /*
      *  @todo Inefficient impl, to encourage code saving. Do more efficently.
      */
     return Tokenize (
     [delimiters] (Character c) -> bool {
-        return delimiters.Contains (c)
+        return delimiters.Contains (c);
     },
     trim
            );;
