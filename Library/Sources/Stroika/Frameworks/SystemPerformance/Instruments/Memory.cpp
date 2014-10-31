@@ -47,12 +47,12 @@ namespace {
         {
         }
 
-
         Iterable<Sequence<String>>  ReadAs2DArray (const Streams::BinaryInputStream& in) const
         {
             Sequence<Sequence<String>>  result;
             for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
                 Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ', ':' }) };
+                result.Append (tokens);
             }
             return result;
         }
@@ -77,7 +77,14 @@ namespace {
         Instruments::Memory::Info   result;
 #if     qPlatform_Windows
 #elif   qPlatform_POSIX
-        //INI::Profile p = DataExchange::INI::Reader ().ReadProfile (IO::FileSystem::BinaryFileInputStream (L"/var/lib/connman/" + interfaceID + L"/settings"));
+        DelimitedLinereader_    reader;
+        for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (L"/proc/meminfo"))) {
+            if (line.size () >= 3 and line[0] == L"MemFree") {
+                String  unit = line[2];
+                double  factor = (unit == L"KB") ? 1024 : 1;
+                result. fFreePhysicalMemory = Characters::String2Float<double> (line[1])) * factor;
+            }
+        }
 #endif
         return result;
     }
