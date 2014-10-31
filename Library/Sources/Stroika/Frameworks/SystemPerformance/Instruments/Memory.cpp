@@ -8,6 +8,7 @@
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
 #include    "../CommonMeasurementTypes.h"
@@ -32,6 +33,8 @@ using   Containers::Set;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 ///
@@ -52,6 +55,13 @@ namespace {
             Sequence<Sequence<String>>  result;
             for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
                 Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ', ':' }) };
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"***in DelimitedLinereader_::ReadAs2DArray: line=%s, tokenCount=%d", tokens.size());
+                for (auto i : tokens) {
+                    DbgTrace (L"******t=%s", i.c_str ());
+                }
+
+#endif
                 result.Append (tokens);
             }
             return result;
@@ -79,10 +89,25 @@ namespace {
 #elif   qPlatform_POSIX
         DelimitedLinereader_    reader;
         for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (L"/proc/meminfo"))) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d", line.size());
+            if (l.size () >= 3) {
+                DbgTrace (L"***in Instruments::Memory::Info capture_/3 '%s', '%s', '%s'", line[0].c_str (), line[1].c_str (), line[2].c_str ());
+            }
+            else if (l.size () >= 2) {
+                DbgTrace (L"***in Instruments::Memory::Info capture_/2 '%s', '%s',", line[0].c_str (), line[1].c_str ());
+            }
+            else if (l.size () >= 1) {
+                DbgTrace (L"***in Instruments::Memory::Info capture_/1 '%s'", line[0].c_str ());
+            }
+#endif
             if (line.size () >= 3 and line[0] == L"MemFree") {
                 String  unit = line[2];
-                double  factor = (unit == L"KB") ? 1024 : 1;
+                double  factor = (unit == L"kB") ? 1024 : 1;
                 result. fFreePhysicalMemory = Characters::String2Float<double> (line[1])) * factor;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Set result. fFreePhysicalMemory = %f", *result. fFreePhysicalMemory);
+#endif
             }
         }
 #endif
