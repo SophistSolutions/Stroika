@@ -33,6 +33,12 @@ using   Containers::Set;
 
 
 
+
+///
+//tmhack ti L move delimverldinear...
+#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+
+
 namespace {
 
     struct DelimitedLinereader_  {
@@ -44,8 +50,11 @@ namespace {
 
         Iterable<Sequence<String>>  ReadAs2DArray (const Streams::BinaryInputStream& in) const
         {
-            //tmphack
-            return Sequence<Sequence<String>> ();
+            Sequence<Sequence<String>>  result;
+            for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
+                Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ', ':' }) };
+            }
+            return result;
         }
 
         // assumes 2D-array input, and creates key-value pairs
@@ -73,6 +82,11 @@ namespace {
         return result;
     }
 }
+
+
+
+
+const   MeasurementType Instruments::Memory::kSystemMemoryMeasurement = MeasurementType (String_Constant (L"System-Memory"));
 
 
 
@@ -119,21 +133,13 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
             InstrumentNameType (String_Constant (L"Memory")),
     [] () -> MeasurementSet {
         MeasurementSet    results;
-//        double loadAve[3];
         DateTime    before = DateTime::Now ();
-#if 0
-        int result = getloadavg(loadAve, 3);
-#endif
+        Instruments::Memory::Info rawMeasurement = capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
-#if 0
-        if (result == 3)
-        {
-            Measurement m;
-            m.fValue = GetObjectVariantMapper ().FromObject (Info { loadAve[0], loadAve[1], loadAve[2] });
-            m.fType = kMemory;
-            results.fMeasurements.Add (m);
-        }
-#endif
+        Measurement m;
+        m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
+        m.fType = kSystemMemoryMeasurement;
+        results.fMeasurements.Add (m);
         return results;
     },
     {kMemoryUsage}
