@@ -52,7 +52,7 @@ namespace {
         Mapping<String, String>  ReadAsMapping (const Streams::BinaryInputStream& in) const
         {
             //tmphack
-            return Sequence<Sequence<String>> ();
+            return Mapping<String, String> ();
         }
 
     };

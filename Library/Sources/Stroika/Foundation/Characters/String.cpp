@@ -874,8 +874,7 @@ Containers::Sequence<String>  String::Tokenize (const Containers::Set<Character>
 {
     /*
      *  @todo Inefficient impl, to encourage code saving. Do more efficently.
-     *
-    */
+     */
     return Tokenize (
     [delimiters] (Character c) -> bool {
         return delimiters.Contains (c)
