@@ -172,7 +172,7 @@ namespace   Stroika {
             {
                 RequireNotNull (to);
                 if (IsPresent ()) {
-                    *to = *this;
+                    *to = *fValue_->get ();
                 }
             }
             template    <typename T, typename TRAITS>
