@@ -9,6 +9,8 @@
 #include    <locale>
 #include    <string>
 
+#include    "../Containers/Sequence.h"
+#include    "../Containers/Set.h"
 #include    "../Execution/ModuleInit.h"
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/SharedByValue.h"
@@ -749,6 +751,29 @@ namespace   Stroika {
                  */
                 nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+
+            public:
+                /**
+                 *  Break this String into constituent parts. This is a simplistic API (@todo perhaps enahnce
+                 *  with regular expressions?) - but at least handy as is.
+                 *
+                 *      @todo   Perhaps make trim be a trim-lambda? Maybe just as overload
+                 *
+                 *  This is often called 'Split' in other APIs.
+                 *
+                 *  EXAMPLE USE:
+                 *      String  t { L"ABC DEF G" };
+                 *      Assert (t.Tokenize ().length () == 3);
+                 *      Assert (t.Tokenize ()[1] = L"DEF");
+                 *
+                 *  EXAMPLE USE:
+                 *      String  t { L"foo=   7" };
+                 *      auto    tt = t.Tokenize ({ '=' });
+                 *      Assert (t.length () == 2);
+                 *      Assert (t[1] == L"7");
+                 */
+                nonvirtual  Containers::Sequence<String>  Tokenize (const function<bool(Character)>& isTokenSeperator, bool trim = true) const;
+                nonvirtual  Containers::Sequence<String>  Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
             public:
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy

@@ -832,6 +832,58 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
     return result;
 }
 
+Containers::Sequence<String>  String::Tokenize (const function<bool(Character)>& isTokenSeperator, bool trim) const
+{
+    String  tmp = *this;    // quickie thread-safety - do diffenrtly soon with new thread safety model... -- LGP 2014-10-31
+    Containers::Sequence<String>    r;
+    bool    inToken = false;
+    StringBuilder curToken;
+    size_t  len = tmp.size ();
+    for (size_t  i = 0; i != len) {
+        Character c = tmp[i];
+        bool isSep = isTokenSeperator (c);
+        if (inToken != isSep) {
+            if (inToken) {
+                String  s = curToken;
+                if (trim) {
+                    s = s.Trim ();
+                }
+                r.Append (s);
+                curToken.clear ();
+                inToken = false;
+            }
+            else {
+                inToken = true;
+            }
+        }
+        if (inToken) {
+            curToken += c;
+        }
+    }
+    if (inToken) {
+        String  s = curToken;
+        if (trim) {
+            s = s.Trim ();
+        }
+        r.Append (s);
+    }
+    return r;
+}
+
+Containers::Sequence<String>  String::Tokenize (const Containers::Set<Character>& delimiters, bool trim)
+{
+    /*
+     *  @todo Inefficient impl, to encourage code saving. Do more efficently.
+     *
+    */
+    return Tokenize (
+    [delimiters] (Character c) -> bool {
+        return delimiters.Contains (c)
+    },
+    trim
+           );;
+}
+
 String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)
 {
     Require (from <= to);
