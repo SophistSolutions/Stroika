@@ -4,11 +4,13 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Characters/String_Constant.h"
+#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
+#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
 #include    "../CommonMeasurementTypes.h"
