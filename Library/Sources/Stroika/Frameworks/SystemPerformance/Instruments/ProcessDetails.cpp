@@ -130,13 +130,22 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 
 
 namespace {
+
+    template    <typename T>
+    Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream&)>& reader)
+    {
+        if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            IgnoreExceptionsExceptThreadAbortForCall (return reader (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath))));
+        }
+        return Optional<T> ();
+    }
+
     // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-    String  ReadFileString_(const String& fullPath)
+    String  ReadFileString_(const Streams::BinaryInputStream& in)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_"));
 #endif
-        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
         StringBuilder sb;
         for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
             if (*b == '\0') {
@@ -147,6 +156,10 @@ namespace {
             }
         }
         return (sb.As<String> ());
+    }
+    String  ReadFileString_(const String& fullPath)
+    {
+        return ReadFileString_ (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath)));
     }
     Sequence<String>  ReadFileStrings_(const String& fullPath)
     {
