@@ -106,7 +106,7 @@ namespace {
             if (line.size () >= 3 and line[0] == L"MemFree") {
                 String  unit = line[2];
                 double  factor = (unit == L"kB") ? 1024 : 1;
-                result. fFreePhysicalMemory = Characters::String2Float<double> (line[1])) * factor;
+                result. fFreePhysicalMemory = Characters::String2Float<double> (line[1]) * factor;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Set result. fFreePhysicalMemory = %f", *result. fFreePhysicalMemory);
 #endif
