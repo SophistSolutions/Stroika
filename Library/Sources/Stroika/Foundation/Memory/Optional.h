@@ -184,8 +184,32 @@ namespace   Stroika {
             public:
                 /**
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
+                 *
+                 *  @see AssignIf
                  */
                 nonvirtual  T   Value (T defaultValue = T {}) const;
+
+            public:
+                /**
+                 *  Assign the value held by this optional if one is present.
+                 *
+                 *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
+                 *  get an update. This function is ANALAGOUS to
+                 *      if (o.IsPresent()) {
+                 *          destVal = *o;
+                 *      }
+                 *
+                 *  but can be done in a single line.
+                 *
+                 *  EXAMPLE-USE:
+                 *      int curValue = 3;
+                 *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+                 *      oVal.AssignIf (&curValue);
+                 *
+                 *  @see Value
+                 */
+                template    <typename   CONVERTABLE_TO_TYPE = T>
+                nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
             public:
                 /**
@@ -347,6 +371,10 @@ namespace   Stroika {
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
                  */
                 nonvirtual  T   Value (T defaultValue = T {}) const;
+
+            public:
+                template    <typename   CONVERTABLE_TO_TYPE = T>
+                nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
             public:
                 /**

@@ -167,6 +167,15 @@ namespace   Stroika {
                 return IsMissing () ? defaultValue : *fValue_->get ();
             }
             template    <typename T, typename TRAITS>
+            template    <typename   CONVERTABLE_TO_TYPE>
+            nonvirtual  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            {
+                RequireNotNull (to);
+                if (IsPresent ()) {
+                    *to = *this;
+                }
+            }
+            template    <typename T, typename TRAITS>
             inline  const T* Optional<T, TRAITS>::operator-> () const
             {
                 Require (IsPresent ());
@@ -446,6 +455,17 @@ namespace   Stroika {
                 auto    critSec { make_unique_lock (fMutex_) };
 #endif
                 return fDelegate_.Value (defaultValue);
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename   CONVERTABLE_TO_TYPE>
+            inline  void    Synchronized<Memory::Optional<T, TRAITS>>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
+#else
+                auto    critSec { make_unique_lock (fMutex_) };
+#endif
+                return fDelegate_.AssignIf (to);
             }
             template    <typename T, typename TRAITS>
             inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
