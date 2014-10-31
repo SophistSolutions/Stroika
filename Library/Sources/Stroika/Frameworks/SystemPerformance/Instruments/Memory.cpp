@@ -4,7 +4,11 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Characters/String_Constant.h"
+#include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/Containers/Sequence.h"
+#include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Streams/BinaryInputStream.h"
 
 #include    "../CommonMeasurementTypes.h"
 
@@ -19,18 +23,63 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 
+
+using   Characters::Character;
 using   Characters::String_Constant;
+using   Containers::Mapping;
+using   Containers::Sequence;
+using   Containers::Set;
 
 
 
 
+namespace {
+
+    struct DelimitedLinereader_  {
+
+        DelimitedLinereader_ (Set<Character> columnDelimiters = { ' ', '\t' } )
+        {
+        }
+
+
+        Iterable<Sequence<String>>  ReadAs2DArray (const Streams::BinaryInputStream& in) const
+        {
+            //tmphack
+            return Sequence<Sequence<String>> ();
+        }
+
+        // assumes 2D-array input, and creates key-value pairs
+        Mapping<String, String>  ReadAsMapping (const Streams::BinaryInputStream& in) const
+        {
+            //tmphack
+            return Sequence<Sequence<String>> ();
+        }
+
+    };
+
+}
+
+
+
+
+namespace {
+    Instruments::Memory::Info capture_ ()
+    {
+        Instruments::Memory::Info   result;
+#if     qPlatform_Windows
+#elif   qPlatform_POSIX
+        //INI::Profile p = DataExchange::INI::Reader ().ReadProfile (IO::FileSystem::BinaryFileInputStream (L"/var/lib/connman/" + interfaceID + L"/settings"));
+#endif
+        return result;
+    }
+}
 
 
 
 
 /*
  ********************************************************************************
- ********************** Instruments::Memory::GetObjectVariantMapper *************
+ ******************** Instruments::Memory::GetObjectVariantMapper ***************
  ********************************************************************************
  */
 ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
@@ -41,11 +90,14 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-#if 0
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f1MinuteAve), String_Constant (L"1-minute") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f5MinuteAve), String_Constant (L"5-minute") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, f15MinuteAve), String_Constant (L"15-minute") },
-#endif
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVirtualMemory), String_Constant (L"Total-Virtual-Memory") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fUsedVirtualMemory), String_Constant (L"UsedV-irtual-Memory") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLargestAvailableVirtualChunk), String_Constant (L"Largest-Available-Virtual-Chunk") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsSinceBoot), String_Constant (L"Major-Page-Faults-Since-Boot") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Page-Faults-Since-Boot") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsPerSecond), String_Constant (L"Major-Page-Faults-Per-Second") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Page-Faults-Per-Second") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
