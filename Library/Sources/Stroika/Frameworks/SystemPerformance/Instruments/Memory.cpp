@@ -61,25 +61,60 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (SDKSTR ("Instruments::Memory::Info capture_"));
 #endif
+
+        constexpr   bool    kManuallyComputePagesPerSecond_ { true };
+
         Instruments::Memory::Info   result;
 #if     qPlatform_POSIX
-        DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
-        const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
-        //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
+        {
+            DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
+            const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
+            //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
 
-        // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
+            // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
 
-        for (Sequence<String> line : reader.ReadAs2DArray (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_)))) {
+            for (Sequence<String> line : reader.ReadAs2DArray (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_)))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-            ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-            ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
-            ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
-            ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
+                ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
+                ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
+                ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
+            }
+        }
+        {
+            DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
+            const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
+            Optional<uint64_t>  pgfault;
+            // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
+            for (Sequence<String> line : reader.ReadAs2DArray (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (kProcVMStatFileName_)))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                ReadX_ (&pgfault, String_Constant (L"pgfault"), line);
+                ReadX_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+            }
+            if (pgfault.IsPresent () and result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                result.fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
+            }
         }
 #elif   qPlatform_Windows
 #endif
+        if (kManuallyComputePagesPerSecond_) {
+            static  mutex                       s_Mutex_;
+            static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
+            static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
+            if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                Time::DurationSecondsType   now = Time::GetTickCount ();
+                auto    critSec { Execution::make_unique_lock (s_Mutex_) };
+                if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
+                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
+                }
+                s_Saved_MajorPageFaultsSinceBoot_At = *result.fMajorPageFaultsSinceBoot;
+                s_Saved_MajorPageFaultsSinceBoot_At = now;
+            }
+        }
         return result;
     }
 }

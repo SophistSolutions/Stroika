@@ -77,7 +77,7 @@ namespace   Stroika {
                          *  @see /proc/vmstat::pgmajfault
                          *  @see /proc/vmstat::pgfault
                          */
-                        Optional<double>    fMajorPageFaultsSinceBoot {};
+                        Optional<uint64_t>    fMajorPageFaultsSinceBoot {};
 
                         /**
                          *  @see http://en.wikipedia.org/wiki/Page_fault
@@ -88,7 +88,7 @@ namespace   Stroika {
                          *
                          *  @see /proc/vmstat::pgfault and proc/vmstat::pgmajfault (this is pgfault-pgmajfault)
                          */
-                        Optional<double>    fMinorPageFaultsSinceBoot {};
+                        Optional<uint64_t>    fMinorPageFaultsSinceBoot {};
 
                         /**
                          *  @see fMajorPageFaultsSinceBoot.
