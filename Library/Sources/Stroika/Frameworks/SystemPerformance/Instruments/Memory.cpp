@@ -45,12 +45,22 @@ using   Containers::Set;
 
 namespace {
     template <typename T>
-    void    ReadX_ (Optional<T>* result, const String& n, const Sequence<String>& line)
+    void    ReadMemInfoLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
     {
         if (line.size () >= 3 and line[0] == n) {
             String  unit = line[2];
             double  factor = (unit == L"kB") ? 1024 : 1;
             *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+        }
+    }
+    template <typename T>
+    void    ReadVMStatLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
+    {
+        if (line.size () >= 2 and line[0] == n) {
+            *result = Characters::String2Int<T> (line[1]);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
@@ -77,10 +87,10 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-                ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
-                ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
-                ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
+                ReadMemInfoLine_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                ReadMemInfoLine_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
+                ReadMemInfoLine_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
+                ReadMemInfoLine_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
             }
         }
         {
@@ -92,8 +102,8 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                ReadX_ (&pgfault, String_Constant (L"pgfault"), line);
-                ReadX_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+                ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
+                ReadVMStatLine_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
             }
             if (pgfault.IsPresent () and result.fMajorPageFaultsSinceBoot.IsPresent ()) {
                 result.fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
