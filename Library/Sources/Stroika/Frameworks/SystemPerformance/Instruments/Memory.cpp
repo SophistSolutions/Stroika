@@ -50,13 +50,16 @@ namespace {
             String  unit = line[2];
             double  factor = (unit == L"kB") ? 1024 : 1;
             *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
         }
     }
     Instruments::Memory::Info capture_ ()
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (SDKSTR ("Instruments::Memory::Info capture_"));
+#endif
         Instruments::Memory::Info   result;
 #if     qPlatform_POSIX
         DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
@@ -64,7 +67,7 @@ namespace {
         //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
         for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty ()? L"" : line[0].c_str ());
+            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
             ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
             ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
