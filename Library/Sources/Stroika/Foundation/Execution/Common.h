@@ -54,6 +54,10 @@ namespace   Stroika {
              *
              *  See:
              *      @see qCompilerAndStdLib_make_unique_lock_IsSlow
+             *
+             *  EXAMPLE USAGE:
+             *      static  SOME_MUTEXT_TYPE    sLock_;
+             *      auto    critSec { Execution::make_unique_lock (sLock_) };
              */
             template    <typename   MUTEX>
             inline  std::unique_lock<MUTEX>   make_unique_lock (MUTEX& m)
