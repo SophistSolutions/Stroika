@@ -86,6 +86,18 @@ namespace {
 
 
 namespace {
+    template <typename T>
+    void    ReadX_ (Optional<T>* result, const String& n, const Sequence<String>& line)
+    {
+        if (line.size () >= 3 and line[0] == n) {
+            String  unit = line[2];
+            double  factor = (unit == L"kB") ? 1024 : 1;
+            *result = Characters::String2Float<double> (line[1]) * factor;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+        }
+    }
     Instruments::Memory::Info capture_ ()
     {
         Instruments::Memory::Info   result;
@@ -105,17 +117,6 @@ namespace {
                 DbgTrace (L"***in Instruments::Memory::Info capture_/1 '%s'", line[0].c_str ());
             }
 #endif
-            template <typename T>
-            void    ReadX_ (Optional<T>* n, const String & n, const String & line) {
-                if (line.size () >= 3 and line[0] == n) {
-                    String  unit = line[2];
-                    double  factor = (unit == L"kB") ? 1024 : 1;
-                    *n = Characters::String2Float<double> (line[1]) * factor;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"Set %s = %ld", *result. fFreePhysicalMemory);
-#endif
-                }
-            }
             ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
             ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VMallocTotal"), line);
             ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VMallocUsed"), line);
