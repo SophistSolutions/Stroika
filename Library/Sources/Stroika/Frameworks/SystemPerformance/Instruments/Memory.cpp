@@ -111,7 +111,7 @@ namespace {
                 if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
                     result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
                 }
-                s_Saved_MajorPageFaultsSinceBoot_At = *result.fMajorPageFaultsSinceBoot;
+                s_Saved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
                 s_Saved_MajorPageFaultsSinceBoot_At = now;
             }
         }
