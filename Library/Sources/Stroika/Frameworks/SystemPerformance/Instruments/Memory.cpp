@@ -46,9 +46,11 @@ using   Containers::Set;
 
 namespace {
 
-    struct DelimitedLinereader_  {
+    struct  DelimitedLinereader_  {
+        Set<Character>  fDelimiters_;
 
         DelimitedLinereader_ (Set<Character> columnDelimiters = { ' ', '\t' } )
+            : fDelimiters_ (columnDelimiters)
         {
         }
 
@@ -56,7 +58,7 @@ namespace {
         {
             Sequence<Sequence<String>>  result;
             for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
-                Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ', ':' }) };
+                Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in DelimitedLinereader_::ReadAs2DArray: line=%s, tokenCount=%d", tokens.size());
                 for (auto i : tokens) {
@@ -93,24 +95,31 @@ namespace {
         for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (L"/proc/meminfo"))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d", line.size());
-            if (l.size () >= 3) {
+            if (line.size () >= 3) {
                 DbgTrace (L"***in Instruments::Memory::Info capture_/3 '%s', '%s', '%s'", line[0].c_str (), line[1].c_str (), line[2].c_str ());
             }
-            else if (l.size () >= 2) {
+            else if (line.size () >= 2) {
                 DbgTrace (L"***in Instruments::Memory::Info capture_/2 '%s', '%s',", line[0].c_str (), line[1].c_str ());
             }
-            else if (l.size () >= 1) {
+            else if (line.size () >= 1) {
                 DbgTrace (L"***in Instruments::Memory::Info capture_/1 '%s'", line[0].c_str ());
             }
 #endif
-            if (line.size () >= 3 and line[0] == L"MemFree") {
-                String  unit = line[2];
-                double  factor = (unit == L"kB") ? 1024 : 1;
-                result. fFreePhysicalMemory = Characters::String2Float<double> (line[1]) * factor;
+            template <typename T>
+            void    ReadX_ (Optional<T>* n, const String & n, const String & line) {
+                if (line.size () >= 3 and line[0] == n) {
+                    String  unit = line[2];
+                    double  factor = (unit == L"kB") ? 1024 : 1;
+                    *n = Characters::String2Float<double> (line[1]) * factor;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Set result. fFreePhysicalMemory = %f", *result. fFreePhysicalMemory);
+                    DbgTrace (L"Set %s = %ld", *result. fFreePhysicalMemory);
 #endif
+                }
             }
+            ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+            ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VMallocTotal"), line);
+            ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VMallocUsed"), line);
+            ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VMallocChunk"), line);
         }
 #endif
         return result;
