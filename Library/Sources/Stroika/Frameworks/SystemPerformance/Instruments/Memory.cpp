@@ -10,6 +10,7 @@
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
+#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
@@ -39,50 +40,6 @@ using   Containers::Set;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
-///
-//tmhack ti L move delimverldinear...
-#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
-
-
-namespace {
-
-    struct  DelimitedLinereader_  {
-        Set<Character>  fDelimiters_;
-
-        DelimitedLinereader_ (Set<Character> columnDelimiters = { ' ', '\t' } )
-            : fDelimiters_ (columnDelimiters)
-        {
-        }
-
-        Iterable<Sequence<String>>  ReadAs2DArray (const Streams::BinaryInputStream& in) const
-        {
-            Sequence<Sequence<String>>  result;
-            for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
-                Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in DelimitedLinereader_::ReadAs2DArray: line=%s, tokenCount=%d", line.c_str (), tokens.size());
-                for (auto i : tokens) {
-                    DbgTrace (L"******t=%s", i.c_str ());
-                }
-
-#endif
-                result.Append (tokens);
-            }
-            return result;
-        }
-
-        // assumes 2D-array input, and creates key-value pairs
-        Mapping<String, String>  ReadAsMapping (const Streams::BinaryInputStream& in) const
-        {
-            //tmphack
-            return Mapping<String, String> ();
-        }
-
-    };
-
-}
-
-
 
 
 namespace {
@@ -102,22 +59,12 @@ namespace {
     {
         Instruments::Memory::Info   result;
 #if     qPlatform_POSIX
-        DelimitedLinereader_    reader {{ ' ', '\t', ':' }};
-
+        DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
         const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
         //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
         for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_))) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d", line.size());
-            if (line.size () >= 3) {
-                DbgTrace (L"***in Instruments::Memory::Info capture_/3 '%s', '%s', '%s'", line[0].c_str (), line[1].c_str (), line[2].c_str ());
-            }
-            else if (line.size () >= 2) {
-                DbgTrace (L"***in Instruments::Memory::Info capture_/2 '%s', '%s',", line[0].c_str (), line[1].c_str ());
-            }
-            else if (line.size () >= 1) {
-                DbgTrace (L"***in Instruments::Memory::Info capture_/1 '%s'", line[0].c_str ());
-            }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty (): L"" : line[0].c_str ());
 #endif
             ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
             ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
@@ -148,7 +95,6 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
@@ -169,6 +115,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
     } ();
     return sMapper_;
 }
+
 
 
 
