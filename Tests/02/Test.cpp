@@ -1155,6 +1155,33 @@ namespace {
 
 
 
+namespace {
+    void    Test45_Tokenize_ ()
+    {
+        {
+            String  t { L"ABC DEF G" };
+            Sequence<String> tt { t.Tokenize () };
+            VerifyTestResult (tt.size () == 3);
+            VerifyTestResult (tt[1] == L"DEF");
+        }
+        {
+            String  t { L"foo=   7" };
+            auto    tt = t.Tokenize (Containers::Set<Character> { '=' });
+            VerifyTestResult (tt.length () == 2);
+            VerifyTestResult (tt[1] == L"7");
+        }
+        {
+            String  t { L"           \n foo=   7" };
+            auto    tt = t.Tokenize (Containers::Set<Character> { '=' });
+            VerifyTestResult (tt.length () == 2);
+            VerifyTestResult (tt[1] == L"7");
+        }
+    }
+}
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1200,6 +1227,7 @@ namespace   {
         Test32_StringBuilder_ ();
         Test33_Append_ ();
         Test44_LocaleUNICODEConversions_ ();
+        Test45_Tokenize_ ();
     }
 }
 

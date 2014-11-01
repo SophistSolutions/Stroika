@@ -764,22 +764,22 @@ namespace   Stroika {
                  *  EXAMPLE USE:
                  *      String  t { L"ABC DEF G" };
                  *      Assert (t.Tokenize ().length () == 3);
-                 *      Assert (t.Tokenize ()[1] = L"DEF");
+                 *      Assert (t.Tokenize ()[1] == L"DEF");
                  *
                  *  EXAMPLE USE:
                  *      String  t { L"foo=   7" };
-                 *      auto    tt = t.Tokenize ({ '=' });
+                 *      auto    tt = t.Tokenize (Set<Character> { '=' });
                  *      Assert (t.length () == 2);
                  *      Assert (t[1] == L"7");
                  */
-                nonvirtual  Containers::Sequence<String>  Tokenize (const function<bool(Character)>& isTokenSeperator, bool trim = true) const;
+                nonvirtual  Containers::Sequence<String>  Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
                 nonvirtual  Containers::Sequence<String>  Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
             public:
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 inline  static  bool    DefaultTrimArg_ (Character c)               {       return c.IsWhitespace ();       }
 #endif
-
+            public:
 #if     !qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 /**
                  * String LTrim () scans the characters form the left to right, and applies the given
