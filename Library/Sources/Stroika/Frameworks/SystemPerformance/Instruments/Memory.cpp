@@ -64,7 +64,7 @@ namespace {
         //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
         for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty (): L"" : line[0].c_str ());
+            DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty ()? L"" : line[0].c_str ());
 #endif
             ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
             ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);

@@ -95,6 +95,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312A
 		..\Linux\Makefile-Foundation-Cryptography-SSL = ..\Linux\Makefile-Foundation-Cryptography-SSL
 		..\Linux\Makefile-Foundation-Database = ..\Linux\Makefile-Foundation-Database
 		..\Linux\Makefile-Foundation-DataExchange = ..\Linux\Makefile-Foundation-DataExchange
+		..\Linux\Makefile-Foundation-DataExchange-CharacterDelimitedLines = ..\Linux\Makefile-Foundation-DataExchange-CharacterDelimitedLines
 		..\Linux\Makefile-Foundation-DataExchange-INI = ..\Linux\Makefile-Foundation-DataExchange-INI
 		..\Linux\Makefile-Foundation-DataExchange-JSON = ..\Linux\Makefile-Foundation-DataExchange-JSON
 		..\Linux\Makefile-Foundation-DataExchange-XML = ..\Linux\Makefile-Foundation-DataExchange-XML
