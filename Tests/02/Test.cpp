@@ -1168,6 +1168,7 @@ namespace {
             String  t { L"foo=   7" };
             auto    tt = t.Tokenize (Containers::Set<Character> { '=' });
             VerifyTestResult (tt.length () == 2);
+            VerifyTestResult (tt[0] == L"foo");
             VerifyTestResult (tt[1] == L"7");
         }
         {
@@ -1176,6 +1177,16 @@ namespace {
             VerifyTestResult (tt.length () == 2);
             VerifyTestResult (tt[1] == L"7");
         }
+        {
+            String  t { L"MemTotal:        3082000 kB" };
+            auto    tt = t.Tokenize (Containers::Set<Character> { ':', ' ', '\t' });
+            VerifyTestResult (tt.length () == 3);
+            VerifyTestResult (tt[0] == L"MemTotal");
+            VerifyTestResult (tt[1] == L"3082000");
+            VerifyTestResult (tt[2] == L"kB");
+        }
+
+
     }
 }
 
