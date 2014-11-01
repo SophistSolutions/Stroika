@@ -60,7 +60,7 @@ namespace {
             for (String line : Streams::TextInputStreamBinaryAdapter (in).ReadLines ()) {
                 Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in DelimitedLinereader_::ReadAs2DArray: line=%s, tokenCount=%d", tokens.size());
+                DbgTrace (L"***in DelimitedLinereader_::ReadAs2DArray: line=%s, tokenCount=%d", line.c_str (), tokens.size());
                 for (auto i : tokens) {
                     DbgTrace (L"******t=%s", i.c_str ());
                 }
@@ -92,7 +92,7 @@ namespace {
         if (line.size () >= 3 and line[0] == n) {
             String  unit = line[2];
             double  factor = (unit == L"kB") ? 1024 : 1;
-            *result = Characters::String2Float<double> (line[1]) * factor;
+            *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
@@ -101,10 +101,12 @@ namespace {
     Instruments::Memory::Info capture_ ()
     {
         Instruments::Memory::Info   result;
-#if     qPlatform_Windows
-#elif   qPlatform_POSIX
-        DelimitedLinereader_    reader;
-        for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (L"/proc/meminfo"))) {
+#if     qPlatform_POSIX
+        DelimitedLinereader_    reader {{ ' ', '\t', ':' }};
+
+        const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
+        //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
+        for (Sequence<String> line : reader.ReadAs2DArray (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d", line.size());
             if (line.size () >= 3) {
@@ -118,10 +120,11 @@ namespace {
             }
 #endif
             ReadX_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-            ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VMallocTotal"), line);
-            ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VMallocUsed"), line);
-            ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VMallocChunk"), line);
+            ReadX_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
+            ReadX_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
+            ReadX_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
         }
+#elif   qPlatform_Windows
 #endif
         return result;
     }
@@ -145,6 +148,9 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
+
+        mapper.AddCommonType<Optional<uint64_t>> ();
+        mapper.AddCommonType<Optional<double>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
