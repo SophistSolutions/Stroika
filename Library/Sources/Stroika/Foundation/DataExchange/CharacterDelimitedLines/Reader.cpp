@@ -68,7 +68,7 @@ public:
         for (String line : in.ReadLines ()) {
             Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray: line=%s, tokenCount=%d", tokens.size ());
+            DbgTrace (L"DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
             for (auto i : tokens) {
                 DbgTrace (L"token='%s'", i.c_str ());
             }
