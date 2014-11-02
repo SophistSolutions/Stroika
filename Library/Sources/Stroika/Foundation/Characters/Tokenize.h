@@ -31,7 +31,7 @@ namespace   Stroika {
             /**
              */
             template    <typename STRING>
-            vector<STRING> Tokenize (const STRING& str, const STRING& delimiters);
+            _DeprecatedFunction_  (vector<STRING> Tokenize (const STRING& str, const STRING& delimiters), "Deprecated in version 2.0a51 of Stoika: use String::Tokenize() instead");
 
 
         }

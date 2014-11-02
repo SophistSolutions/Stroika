@@ -11,7 +11,6 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Characters/StringBuilder.h"
-#include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
@@ -180,8 +179,8 @@ namespace {
     Mapping<String, String>  ReadFileStringsMap_(const String& fullPath)
     {
         Mapping<String, String>    results;
-        for (auto i : ReadFileStrings_ (fullPath)) {
-            auto tokens = Tokenize<String> (i, L"=");
+        for (String i : ReadFileStrings_ (fullPath)) {
+            auto tokens = i.Tokenize (Set<Character> { '=' });
             if (tokens.size () == 2) {
                 results.Add (tokens[0], tokens[1]);
             }

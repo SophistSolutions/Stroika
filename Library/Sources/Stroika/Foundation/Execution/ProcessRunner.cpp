@@ -17,7 +17,6 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
-#include    "../Characters/Tokenize.h"
 #include    "../Containers/Sequence.h"
 #include    "../Debug/Trace.h"
 #if     qPlatform_Windows
@@ -847,7 +846,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     String  exe;
     Sequence<String>    args;
 
-    vector<wstring> tmp =   Characters::Tokenize<wstring> (commandLine.As<wstring> (), L" ");
+    Sequence<String> tmp =   commandLine.Tokenize (Set<Character> { ' ' });
     if (tmp.size () == 0) {
         Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
     }

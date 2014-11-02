@@ -7,7 +7,6 @@
 #include    <cstdlib>
 
 #include    "../../Foundation/Characters/String_Constant.h"
-#include    "../../Foundation/Characters/Tokenize.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
@@ -59,7 +58,7 @@ void    Connection::ReadHeaders ()
     {
         // Read METHOD line
         String line = inTextStream.ReadLine ();
-        vector<String> tokens = Characters::Tokenize<String> (line, L" ");
+        Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ' }) };
         if (tokens.size () < 3) {
             Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
         }

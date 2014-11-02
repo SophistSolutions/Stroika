@@ -6,7 +6,6 @@
 #include    <algorithm>
 #include    <cstdlib>
 
-#include    "../../Foundation/Characters/Tokenize.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"

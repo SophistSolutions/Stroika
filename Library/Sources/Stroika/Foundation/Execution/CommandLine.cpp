@@ -6,7 +6,6 @@
 #include    "../Characters/SDKString.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Characters/String_Constant.h"
-#include    "../Characters/Tokenize.h"
 
 #include    "CommandLine.h"
 

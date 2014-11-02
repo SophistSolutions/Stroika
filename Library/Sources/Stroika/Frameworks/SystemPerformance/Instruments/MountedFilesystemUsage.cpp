@@ -10,7 +10,6 @@
 #include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
-#include    "../../../Foundation/Characters/Tokenize.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
@@ -113,7 +112,7 @@ namespace {
                 skippedHeader = true;
                 continue;
             }
-            Sequence<String>    l    =  Characters::Tokenize<String> (i, String_Constant (L" "));
+            Sequence<String>    l    =  i.Tokenize (Set<Character> { ' ' });
             if (l.size () < 7) {
                 DbgTrace ("skipping line cuz len=%d", l.size ());
                 continue;
