@@ -149,27 +149,6 @@
  *      @todo   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like
  *              "ToLowerCase" are AMBIGUOUS.
  *
- *      @todo   CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
- *              MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
- *              not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
- *              Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
- *              not totally clear what name is best (split or tokenize()).
- *
- *              Closely related to my existing FIND () API. Maybe this is just a comment?
- *
- *              But also review:
- *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
- *
- *                  especially:
- *                      QString line = "forename\tmiddlename  surname \t \t phone";
- *                      QRegularExpression sep("\\s+");
- *                      str = line.section(sep, 2, 2); // str == "surname"
- *                      str = line.section(sep, -3, -2); // str == "middlename  surname"
- *              Make sure our FIND is at least this simple, and maybe diff between find and split is FIND the regular expression names the things
- *              looked for and SPLIT() uses regexp to name the separators?
- *
- *              Add something like the above to the String String demo app (when it exists)
- *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
  *      @todo   Add overload for ReplaceAll() where first arg is a lambda on a character, so easier to generalzie to replace all whitespace, etc.
@@ -680,6 +659,7 @@ namespace   Stroika {
                  *
                  *  @see FindEach ()
                  *  @see FindEachString ()
+                 *  @see Tokenize
                  */
                 nonvirtual  size_t                  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  size_t                  Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
@@ -754,12 +734,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Break this String into constituent parts. This is a simplistic API (@todo perhaps enahnce
-                 *  with regular expressions?) - but at least handy as is.
+                 *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
                  *
-                 *      @todo   Perhaps make trim be a trim-lambda? Maybe just as overload
+                 *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
                  *
-                 *  This is often called 'Split' in other APIs.
+                 *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
+                 *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
                  *
                  *  EXAMPLE USE:
                  *      String  t { L"ABC DEF G" };
@@ -771,6 +751,24 @@ namespace   Stroika {
                  *      auto    tt = t.Tokenize (Set<Character> { '=' });
                  *      Assert (t.length () == 2);
                  *      Assert (t[1] == L"7");
+                 *
+                 *  @see Find
+                 *
+                 *  TODO:
+                 *      @todo   Consider adding overload that uses RegularExpression to define tokens.
+                 *
+                 *      @todo   Consider adding overload where trim is replaced with lambda saying 'isTrimmedCharacter')
+                 *
+                 *      @todo   Review:
+                 *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
+                 *              especially:
+                 *                  QString line = "forename\tmiddlename  surname \t \t phone";
+                 *                  QRegularExpression sep("\\s+");
+                 *                  str = line.section(sep, 2, 2); // str == "surname"
+                 *                  str = line.section(sep, -3, -2); // str == "middlename  surname"
+                 *              Make sure our Find/Tokenize is at least this simple, and maybe diff between find and split
+                 *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
+                 *              Add something like the above to the String String demo app (when it exists)
                  */
                 nonvirtual  Containers::Sequence<String>  Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
                 nonvirtual  Containers::Sequence<String>  Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
