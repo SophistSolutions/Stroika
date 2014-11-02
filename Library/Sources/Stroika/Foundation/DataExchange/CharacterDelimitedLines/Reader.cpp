@@ -77,11 +77,13 @@ public:
         }
         return result;
     }
+#if 0
     nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::TextInputStream& in) const
     {
         //tmphack
         return Mapping<String, String> ();
     }
+#endif
 
 };
 DataExchange::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
@@ -101,6 +103,7 @@ Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadA
     return reinterpret_cast<const Rep_*> (&baseRep)->ReadAs2DArray (in);
 }
 
+#if 0
 Mapping<String, String>  DataExchange::CharacterDelimitedLines::Reader::ReadAsMapping (const Streams::BinaryInputStream& in) const
 {
     return ReadAsMapping (Streams::TextInputStreamBinaryAdapter (in));
@@ -112,3 +115,4 @@ Mapping<String, String>  DataExchange::CharacterDelimitedLines::Reader::ReadAsMa
     AssertMember (&baseRep, Rep_);
     return reinterpret_cast<const Rep_*> (&baseRep)->ReadAsMapping (in);
 }
+#endif

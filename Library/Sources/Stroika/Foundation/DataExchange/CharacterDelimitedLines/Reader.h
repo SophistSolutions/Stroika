@@ -61,12 +61,14 @@ namespace   Stroika {
                     nonvirtual  Iterable<Sequence<String>>  ReadAs2DArray (const Streams::BinaryInputStream& in) const;
                     nonvirtual  Iterable<Sequence<String>>  ReadAs2DArray (const Streams::TextInputStream& in) const;
 
+#if 0
                 public:
                     /*
                      *  assumes 2D-array input, and creates key-value pairs
                      */
                     nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::BinaryInputStream& in) const;
                     nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::TextInputStream& in) const;
+#endif
                 };
 
 

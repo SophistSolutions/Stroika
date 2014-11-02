@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Early-Alpha">Early-Alpha</a>
+ *
  * TODO:
  *
  */
@@ -29,7 +31,7 @@ namespace   Stroika {
 
 
                 /**
-                 *
+                 *  NOT YET IMPLEMENTED
                  */
                 class Writer : public DataExchange::Writer {
                 private:
