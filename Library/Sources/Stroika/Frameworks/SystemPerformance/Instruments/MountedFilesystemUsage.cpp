@@ -112,7 +112,7 @@ namespace {
                 skippedHeader = true;
                 continue;
             }
-            Sequence<String>    l    =  i.Tokenize (Set<Character> { ' ' });
+            Sequence<String>    l    =  i.Tokenize (Set<Characters::Character> { ' ' });
             if (l.size () < 7) {
                 DbgTrace ("skipping line cuz len=%d", l.size ());
                 continue;
