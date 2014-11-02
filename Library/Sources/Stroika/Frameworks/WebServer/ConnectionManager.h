@@ -52,9 +52,9 @@ namespace   Stroika {
              */
             class   ConnectionManager {
             public:
-                ConnectionManager ();
+                ConnectionManager () = default;
                 ConnectionManager (const ConnectionManager&) = delete;
-                ~ConnectionManager ();
+                ~ConnectionManager () = default;
 
             public:
                 nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
