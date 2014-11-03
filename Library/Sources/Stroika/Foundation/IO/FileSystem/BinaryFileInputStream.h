@@ -53,6 +53,10 @@ namespace   Stroika {
                     class   Rep_;
                 public:
                     BinaryFileInputStream (const String& fileName);
+
+                public:
+                    enum BufferFlag { eBuffered, eUnbuffered };
+                    static  BinaryInputStream   mk (const String& fileName, BufferFlag bufferFlag = eBuffered);
                 };
 
 

@@ -19,6 +19,7 @@
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../Streams/BufferedBinaryInputStream.h"
 
 #include    "BinaryFileInputStream.h"
 
@@ -29,6 +30,7 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
 using   Execution::make_unique_lock;
+using   Streams::BinaryInputStream;
 
 
 
@@ -44,7 +46,6 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  *********************** FileSystem::BinaryFileInputStream **********************
  ********************************************************************************
  */
-
 class   BinaryFileInputStream::Rep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
     Rep_ () = delete;
@@ -156,8 +157,20 @@ private:
 
 
 
-
 BinaryFileInputStream::BinaryFileInputStream (const String& fileName)
     : inherited (_SharedIRep (new Rep_ (fileName)))
 {
+}
+
+BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
+{
+    BinaryInputStream   in  =   BinaryFileInputStream (fileName);
+    switch (bufferFlag) {
+        case eBuffered:
+            return Streams::BufferedBinaryInputStream (in);
+        case eUnbuffered:
+            return in;
+        default:
+            AssertNotReached ();
+    }
 }
