@@ -23,6 +23,9 @@
  * TODO:
  *
  *
+ *      @todo   Finmish constexpr work for kLocalhost (tricky for IPv4 localhost due to
+ *				queer way you have to setup - may need extra funny func to init?
+ *
  *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
  *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
@@ -32,8 +35,6 @@
  *
  *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
  *              and endianness. Only about 1/2 right...
- *
- *      @todo   It would be nice if we could find a reasonable way to make kAddrAny etc constexpr
  *
  */
 

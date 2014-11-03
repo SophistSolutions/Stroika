@@ -24,7 +24,6 @@ namespace {
     constexpr   in_addr     kV4AddrAny_ =   { };
     constexpr   in6_addr    kV6AddrAny_ =   { };
 }
-
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
 const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 #endif
