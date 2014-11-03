@@ -22,6 +22,9 @@
 /**
  * TODO:
  *
+ *
+ *		@todo	DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
+ *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
@@ -56,7 +59,7 @@ namespace   Stroika {
                     /**
                      *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
                      */
-                    enum class  AddressFamily {
+                    enum	class  AddressFamily {
                         UNKNOWN = AF_UNSPEC,
                         V4 = AF_INET,
                         V6 = AF_INET6,
@@ -171,7 +174,7 @@ namespace   Stroika {
 
                 private:
                     AddressFamily   fAddressFamily_;
-                    union {
+                    union	{
                         in_addr         fV4_;
                         in6_addr        fV6_;
                     };
