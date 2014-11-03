@@ -844,7 +844,7 @@ Containers::Sequence<String>  String::Tokenize (const function<bool(Character)>&
         bool    newInToken  =   not isTokenSeperator (c);
         if (inToken != newInToken) {
             if (inToken) {
-                String  s { curToken };
+                String  s { curToken.str () };
                 if (trim) {
                     s = s.Trim ();
                 }
