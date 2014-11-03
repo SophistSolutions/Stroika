@@ -125,10 +125,11 @@ namespace   Stroika {
 
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 namespace V4 {
-                    constexpr   InternetAddress kAddrAny    { in_addr { 0 } };
+                    constexpr   InternetAddress kAddrAny        { in_addr { } };
                 }
                 namespace V6 {
-                    constexpr   InternetAddress kAddrAny    { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
+                    constexpr   InternetAddress kAddrAny        { in6_addr { } };
+                    constexpr   InternetAddress kV6Localhost    { in6_addr { IN6ADDR_LOOPBACK_INIT } };
                 }
 #endif
 

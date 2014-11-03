@@ -23,7 +23,7 @@
  * TODO:
  *
  *
- *		@todo	DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
+ *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
  *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
@@ -59,7 +59,7 @@ namespace   Stroika {
                     /**
                      *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
                      */
-                    enum	class  AddressFamily {
+                    enum    class  AddressFamily {
                         UNKNOWN = AF_UNSPEC,
                         V4 = AF_INET,
                         V6 = AF_INET6,
@@ -174,7 +174,7 @@ namespace   Stroika {
 
                 private:
                     AddressFamily   fAddressFamily_;
-                    union	{
+                    union   {
                         in_addr         fV4_;
                         in6_addr        fV6_;
                     };
@@ -194,12 +194,13 @@ namespace   Stroika {
                 namespace V6 {
 #if     qCompilerAndStdLib_constexpr_Buggy
                     extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kLocalhost;
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
 #else
                     const   InternetAddress kAddrAny;
+                    const   InternetAddress kLocalhost;
 #endif
-                    extern  const   InternetAddress kLocalhost;
                 }
 
 

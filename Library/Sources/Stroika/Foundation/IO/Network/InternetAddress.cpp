@@ -21,8 +21,8 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 #if     qCompilerAndStdLib_constexpr_Buggy
 namespace {
-    constexpr   in_addr     kV4AddrAny_ =   { 0 };
-    constexpr   in6_addr    kV6AddrAny_ =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
+    constexpr   in_addr     kV4AddrAny_ =   { };
+    constexpr   in6_addr    kV6AddrAny_ =   { };
 }
 
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
@@ -39,11 +39,14 @@ namespace {
         p.s_addr = INADDR_LOOPBACK;
         return p;
     }
+#if     qCompilerAndStdLib_constexpr_Buggy
     constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
+#endif
 }
 const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_ ());
+#if     qCompilerAndStdLib_constexpr_Buggy
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
-
+#endif
 
 
 
