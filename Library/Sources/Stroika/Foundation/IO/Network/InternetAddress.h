@@ -27,6 +27,8 @@
  *              queer way you have to setup - may need extra funny func to init?
  *
  *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
+ *              I THINK (DEFAULT BUT DOC CLEARLY AND REVIEW) - WE ALWAYS use HOST byte order here!!! and maybe
+ *              add special API to generate as 'network' byte or let user call hton...
  *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
