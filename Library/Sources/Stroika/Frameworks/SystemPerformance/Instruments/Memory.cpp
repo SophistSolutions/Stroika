@@ -14,7 +14,6 @@
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
-#include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
 
 #include    "../CommonMeasurementTypes.h"
 
@@ -35,7 +34,7 @@ using   Characters::String_Constant;
 using   Containers::Mapping;
 using   Containers::Sequence;
 using   Containers::Set;
-
+using   IO::FileSystem::BinaryFileInputStream;
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -84,7 +83,7 @@ namespace {
 
             // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
 
-            for (Sequence<String> line : reader.ReadAs2DArray (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (kProcMemInfoFileName_)))) {
+            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eBuffered))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -99,7 +98,7 @@ namespace {
             const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
             Optional<uint64_t>  pgfault;
             // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
-            for (Sequence<String> line : reader.ReadAs2DArray (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (kProcVMStatFileName_)))) {
+            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eBuffered))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif

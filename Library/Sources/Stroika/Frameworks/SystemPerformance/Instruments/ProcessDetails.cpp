@@ -49,6 +49,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance::Instruments;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails;
 
 using   Characters::String_Constant;
+using   IO::FileSystem::BinaryFileInputStream;
 
 
 
@@ -134,7 +135,7 @@ namespace {
     Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream&)>& reader)
     {
         if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-            IgnoreExceptionsExceptThreadAbortForCall (return reader (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath))));
+            IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered)));
         }
         return Optional<T> ();
     }
@@ -158,12 +159,12 @@ namespace {
     }
     String  ReadFileString_(const String& fullPath)
     {
-        return ReadFileString_ (Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath)));
+        return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered));
     }
     Sequence<String>  ReadFileStrings_(const String& fullPath)
     {
         Sequence<String>    results;
-        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
+        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered);
         StringBuilder sb;
         for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
             if (*b == '\0') {
@@ -278,7 +279,7 @@ namespace {
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
         StatFileInfo_    result {};
-        Streams::BinaryInputStream   in = Streams::BufferedBinaryInputStream (IO::FileSystem::BinaryFileInputStream (fullPath));
+        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered);
         Byte    data[10 * 1024];
         size_t nBytes = in.Read (begin (data), end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
