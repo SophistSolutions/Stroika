@@ -227,8 +227,8 @@ namespace   Stroika {
                 if (empty () or rhs.empty ()) {
                     return false;
                 }
-                T   l   =   max (fBegin_, rhs.fBegin_);
-                T   r   =   min (fEnd_, rhs.fEnd_);
+                T   l   =   max (fBegin_, rhs.GetLowerBound ());
+                T   r   =   min (fEnd_, rhs.GetUpperBound ());
                 if (l < r) {
                     return true;
                 }
