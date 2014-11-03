@@ -31,7 +31,7 @@ namespace   Stroika {
                 }
 #if     qPlatform_POSIX
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress (const in_addr_t& i)

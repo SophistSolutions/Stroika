@@ -82,7 +82,7 @@ namespace   Stroika {
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
                      *  Note that provided in_addr must already be in network order.
                      */
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     constexpr
 #endif
                     InternetAddress (const in_addr_t& i);
