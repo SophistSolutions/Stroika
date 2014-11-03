@@ -27,8 +27,6 @@
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
- *      @todo   IsPrivateIP() NYI
- *
  *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
  *              and endianness. Only about 1/2 right...
  *
@@ -65,6 +63,9 @@ namespace   Stroika {
                     };
 
                 public:
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
                     InternetAddress ();
                     /**
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
@@ -83,10 +84,16 @@ namespace   Stroika {
                      *  Construct an InternetAddress from in_addr - V4 address.
                      *  Note that provided in_addr must already be in network order.
                      */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
                     InternetAddress (const in_addr& i);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
                     InternetAddress (const in6_addr& i);
 
                 public:
@@ -172,11 +179,11 @@ namespace   Stroika {
 
 
                 namespace V4 {
-                    extern  const   InternetAddress kAddrAny;
+                    constexpr   InternetAddress kAddrAny    { in_addr { 0 } };
                     extern  const   InternetAddress kLocalhost;
                 }
                 namespace V6 {
-                    extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kAddrAny        { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
                     extern  const   InternetAddress kLocalhost;
                 }
 

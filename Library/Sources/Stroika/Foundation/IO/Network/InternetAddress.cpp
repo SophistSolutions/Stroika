@@ -19,7 +19,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
-
+#if 0
 namespace {
     constexpr   in_addr     kV4AddrAny_ =   { 0 };
     constexpr   in6_addr    kV6AddrAny_ =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
@@ -28,7 +28,7 @@ namespace {
 
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
 const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
-
+#endif
 
 
 namespace {

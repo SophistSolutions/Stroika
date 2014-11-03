@@ -21,7 +21,11 @@ namespace   Stroika {
                  *********************** IO::Network::InternetAddress ***************************
                  ********************************************************************************
                  */
-                inline  InternetAddress::InternetAddress ()
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
                 {
                 }
@@ -32,12 +36,20 @@ namespace   Stroika {
                     fV4_.s_addr = i;
                 }
 #endif
-                inline  InternetAddress::InternetAddress (const in_addr& i)
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress (const in_addr& i)
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_ (i)
                 {
                 }
-                inline  InternetAddress::InternetAddress (const in6_addr& i)
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress (const in6_addr& i)
                     : fAddressFamily_ (AddressFamily::V6)
                     , fV6_ (i)
                 {
