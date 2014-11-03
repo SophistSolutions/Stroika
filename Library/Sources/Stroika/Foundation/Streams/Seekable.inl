@@ -16,7 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   Seekable
+
+            /*
+             ********************************************************************************
+             *********************************** Seekable ***********************************
+             ********************************************************************************
+             */
             inline  Seekable::Seekable (_IRep* rep)
                 : fSeekableRep_ (rep)
             {
@@ -44,6 +49,7 @@ namespace   Stroika {
                 RequireNotNull (fSeekableRep_);
                 return fSeekableRep_->Seek (whence, offset);
             }
+
 
         }
     }

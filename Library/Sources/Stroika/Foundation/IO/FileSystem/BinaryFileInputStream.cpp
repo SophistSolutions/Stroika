@@ -157,14 +157,19 @@ private:
 
 
 
-BinaryFileInputStream::BinaryFileInputStream (const String& fileName)
-    : inherited (_SharedIRep (new Rep_ (fileName)))
+BinaryFileInputStream::BinaryFileInputStream (const String& fileName, SeekableFlag seekable)
+    : BinaryFileInputStream (shared_ptr<Rep_> (new Rep_ (fileName)), seekable)
 {
 }
 
-BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
+BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep, SeekableFlag seekable)
+    : inherited (rep, seekable == eSeekable ? rep.get () : nullptr)
 {
-    BinaryInputStream   in  =   BinaryFileInputStream (fileName);
+}
+
+BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+{
+    BinaryInputStream   in  =   BinaryFileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedBinaryInputStream (in);

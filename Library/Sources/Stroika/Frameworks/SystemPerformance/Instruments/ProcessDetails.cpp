@@ -135,7 +135,7 @@ namespace {
     Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream&)>& reader)
     {
         if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-            IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered)));
+            IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered)));
         }
         return Optional<T> ();
     }
@@ -159,12 +159,12 @@ namespace {
     }
     String  ReadFileString_(const String& fullPath)
     {
-        return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered));
+        return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered));
     }
     Sequence<String>  ReadFileStrings_(const String& fullPath)
     {
         Sequence<String>    results;
-        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered);
+        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered);
         StringBuilder sb;
         for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
             if (*b == '\0') {
@@ -279,7 +279,7 @@ namespace {
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
         StatFileInfo_    result {};
-        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eBuffered);
+        Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered);
         Byte    data[10 * 1024];
         size_t nBytes = in.Read (begin (data), end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -16,6 +16,17 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
+                /*
+                 ********************************************************************************
+                 ***************************** Implementation Details ***************************
+                 ********************************************************************************
+                 */
+                inline  Streams::BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
+                {
+                    return mk (fileName, eSeekable, bufferFlag);
+                }
+
+
             }
         }
     }

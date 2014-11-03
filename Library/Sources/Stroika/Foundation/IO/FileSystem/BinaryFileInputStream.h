@@ -14,6 +14,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
  * TODO:
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interupts..
  *
@@ -51,12 +53,18 @@ namespace   Stroika {
                     using   inherited   =   BinaryInputStream;
                 private:
                     class   Rep_;
+
                 public:
-                    BinaryFileInputStream (const String& fileName);
+                    enum SeekableFlag { eSeekable, eNotSeekable };
+                    BinaryFileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
+
+                private:
+                    BinaryFileInputStream (const shared_ptr<Rep_>& rep, SeekableFlag seekable);
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };
-                    static  BinaryInputStream   mk (const String& fileName, BufferFlag bufferFlag = eBuffered);
+                    static  BinaryInputStream   mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  BinaryInputStream   mk (const String& fileName, BufferFlag bufferFlag);
                 };
 
 

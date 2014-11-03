@@ -125,7 +125,7 @@ namespace   Stroika {
                  * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 explicit BinaryInputStream (const _SharedIRep& rep);
-
+                explicit BinaryInputStream (const _SharedIRep& rep, Seekable::_IRep* seekable);
 
             protected:
                 /**

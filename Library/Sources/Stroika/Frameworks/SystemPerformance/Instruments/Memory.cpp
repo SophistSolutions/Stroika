@@ -80,10 +80,8 @@ namespace {
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
             //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
-
-            // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
-
-            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eBuffered))) {
+            // Note - /procfs files always unseekable
+            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -97,8 +95,8 @@ namespace {
             DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
             const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
             Optional<uint64_t>  pgfault;
-            // @todo - NOTE - MUST use Streams::BufferedBinaryInputStream because otherwise code will SEEK. REAL fix is to add attributes to BinaryFileInputStream saying if seekable, and /proc/xx files are NOT
-            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eBuffered))) {
+            // Note - /procfs files always unseekable
+            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable, BinaryFileInputStream::eBuffered))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif

@@ -50,6 +50,12 @@ namespace   Stroika {
                 , fRep_ (rep)
             {
             }
+            inline  BinaryStream::BinaryStream (const _SharedIRep& rep, Seekable::_IRep* seekable)
+                : Seekable (seekable)
+                , fRep_ (rep)
+            {
+                Require (seekable == nullptr or seekable == dynamic_cast<Seekable::_IRep*> (rep.get ()));
+            }
             inline  BinaryStream::_SharedIRep  BinaryStream::_GetRep () const
             {
                 return fRep_;
