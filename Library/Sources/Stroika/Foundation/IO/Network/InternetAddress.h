@@ -24,7 +24,7 @@
  *
  *
  *      @todo   Finmish constexpr work for kLocalhost (tricky for IPv4 localhost due to
- *				queer way you have to setup - may need extra funny func to init?
+ *              queer way you have to setup - may need extra funny func to init?
  *
  *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
  *
@@ -82,6 +82,9 @@ namespace   Stroika {
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
                      *  Note that provided in_addr must already be in network order.
                      */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
                     InternetAddress (const in_addr_t& i);
 #endif
                     /**

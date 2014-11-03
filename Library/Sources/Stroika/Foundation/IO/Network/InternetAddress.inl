@@ -30,7 +30,11 @@ namespace   Stroika {
                     , fV4_ {} {
                 }
 #if     qPlatform_POSIX
-                inline  InternetAddress::InternetAddress (const in_addr_t& i)
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
                 {
                     fV4_.s_addr = i;
@@ -129,7 +133,7 @@ namespace   Stroika {
                 }
                 namespace V6 {
                     constexpr   InternetAddress kAddrAny    { in6_addr { } };
-                    constexpr   InternetAddress kLocalhost	{ in6_addr { IN6ADDR_LOOPBACK_INIT } };
+                    constexpr   InternetAddress kLocalhost  { in6_addr IN6ADDR_LOOPBACK_INIT };
                 }
 #endif
 
