@@ -123,6 +123,16 @@ namespace   Stroika {
                 }
 
 
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                namespace V4 {
+                    constexpr   InternetAddress kAddrAny    { in_addr { 0 } };
+                }
+                namespace V6 {
+                    constexpr   InternetAddress kAddrAny        { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
+                }
+#endif
+
+
             }
         }
     }

@@ -179,11 +179,19 @@ namespace   Stroika {
 
 
                 namespace V4 {
-                    constexpr   InternetAddress kAddrAny    { in_addr { 0 } };
+#if     qCompilerAndStdLib_constexpr_Buggy
+                    extern  const   InternetAddress kAddrAny;
+#else
+                    const   InternetAddress kAddrAny;
+#endif
                     extern  const   InternetAddress kLocalhost;
                 }
                 namespace V6 {
-                    extern  const   InternetAddress kAddrAny        { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
+#if     qCompilerAndStdLib_constexpr_Buggy
+                    extern  const   InternetAddress kAddrAny;
+#else
+                    const   InternetAddress kAddrAny;
+#endif
                     extern  const   InternetAddress kLocalhost;
                 }
 

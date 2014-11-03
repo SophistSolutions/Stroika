@@ -19,7 +19,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
-#if 0
+#if     qCompilerAndStdLib_constexpr_Buggy
 namespace {
     constexpr   in_addr     kV4AddrAny_ =   { 0 };
     constexpr   in6_addr    kV6AddrAny_ =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
