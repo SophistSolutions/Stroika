@@ -181,6 +181,8 @@ namespace   Stroika {
                 namespace V4 {
 #if     qCompilerAndStdLib_constexpr_Buggy
                     extern  const   InternetAddress kAddrAny;
+#elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+                    //we cannot 'forward declare'
 #else
                     const   InternetAddress kAddrAny;
 #endif
@@ -189,6 +191,8 @@ namespace   Stroika {
                 namespace V6 {
 #if     qCompilerAndStdLib_constexpr_Buggy
                     extern  const   InternetAddress kAddrAny;
+#elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+                    //we cannot 'forward declare'
 #else
                     const   InternetAddress kAddrAny;
 #endif

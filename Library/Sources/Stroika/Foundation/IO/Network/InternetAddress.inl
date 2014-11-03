@@ -27,7 +27,7 @@ namespace   Stroika {
 #endif
                 InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
-                {
+                    , fV4_ {} {
                 }
 #if     qPlatform_POSIX
                 inline  InternetAddress::InternetAddress (const in_addr_t& i)
@@ -128,7 +128,7 @@ namespace   Stroika {
                     constexpr   InternetAddress kAddrAny    { in_addr { 0 } };
                 }
                 namespace V6 {
-                    constexpr   InternetAddress kAddrAny        { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
+                    constexpr   InternetAddress kAddrAny    { in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } };
                 }
 #endif
 

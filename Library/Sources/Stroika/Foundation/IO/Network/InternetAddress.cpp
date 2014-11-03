@@ -25,10 +25,10 @@ namespace {
     constexpr   in6_addr    kV6AddrAny_ =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
 }
 
-
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
 const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 #endif
+
 
 
 namespace {
@@ -296,6 +296,10 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
         return fAddressFamily_ < rhs.fAddressFamily_ ? -1 : 1;
     }
     switch (fAddressFamily_) {
+        case AddressFamily::UNKNOWN: {
+                return true;
+            }
+            break;
         case AddressFamily::V4: {
                 return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
             }
