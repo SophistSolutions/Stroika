@@ -236,6 +236,27 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_union_variants_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
+
+#if     qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy      1
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#else
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
+
 
 
 /*

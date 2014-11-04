@@ -19,31 +19,24 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_union_variants_Buggy
 namespace {
     constexpr   in_addr     kV4AddrAny_ =   { };
     constexpr   in6_addr    kV6AddrAny_ =   { };
 }
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
 const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
-#endif
-
-
 
 namespace {
-    inline  const   in_addr kV4Localhost_ ()
+    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
+    in_addr mk_in_addr_ (uint32_t a)
     {
-        // @todo - check if this localhost is right? May have byte order backwards - net or host byteorder???
         in_addr p;
-        p.s_addr = INADDR_LOOPBACK;
+        p.s_addr = a;
         return p;
     }
-#if     qCompilerAndStdLib_constexpr_Buggy
-    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
-#endif
 }
-const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_ ());
-#if     qCompilerAndStdLib_constexpr_Buggy
+const   InternetAddress V4::kLocalhost  =   InternetAddress (mk_in_addr_ (INADDR_LOOPBACK));
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
 #endif
 

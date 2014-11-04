@@ -30,6 +30,8 @@
  *              I THINK (DEFAULT BUT DOC CLEARLY AND REVIEW) - WE ALWAYS use HOST byte order here!!! and maybe
  *              add special API to generate as 'network' byte or let user call hton...
  *
+ *              NOTE - SOME of my comments insist the data must already be in network byte order!!!! SIGH....
+ *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
@@ -69,7 +71,7 @@ namespace   Stroika {
                     };
 
                 public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress ();
@@ -93,14 +95,14 @@ namespace   Stroika {
                      *  Construct an InternetAddress from in_addr - V4 address.
                      *  Note that provided in_addr must already be in network order.
                      */
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress (const in_addr& i);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress (const in6_addr& i);
@@ -179,6 +181,13 @@ namespace   Stroika {
                     nonvirtual  bool    operator!= (const InternetAddress& rhs) const;
 
                 private:
+                    static
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                    constexpr
+#endif
+                    in_addr     mk_in_addr_ (uint32_t a);
+
+                private:
                     AddressFamily   fAddressFamily_;
                     union   {
                         in_addr         fV4_;
@@ -188,17 +197,18 @@ namespace   Stroika {
 
 
                 namespace V4 {
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_union_variants_Buggy
                     extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kLocalhost;
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
 #else
                     const   InternetAddress kAddrAny;
+                    const   InternetAddress kLocalhost;
 #endif
-                    extern  const   InternetAddress kLocalhost;
                 }
                 namespace V6 {
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_union_variants_Buggy
                     extern  const   InternetAddress kAddrAny;
                     extern  const   InternetAddress kLocalhost;
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy

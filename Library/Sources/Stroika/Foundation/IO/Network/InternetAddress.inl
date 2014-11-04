@@ -22,7 +22,17 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                constexpr
+#endif
+                in_addr InternetAddress::mk_in_addr_ (uint32_t a)
+                {
+                    in_addr p;
+                    p.s_addr = a;
+                    return p;
+                }
+                inline
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress ()
@@ -41,7 +51,7 @@ namespace   Stroika {
                 }
 #endif
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress (const in_addr& i)
@@ -50,7 +60,7 @@ namespace   Stroika {
                 {
                 }
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress (const in6_addr& i)
@@ -127,9 +137,10 @@ namespace   Stroika {
                 }
 
 
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 namespace V4 {
                     constexpr   InternetAddress kAddrAny    { in_addr { } };
+                    constexpr   InternetAddress kLocalhost  { mk_in_addr_ (INADDR_LOOPBACK) };
                 }
                 namespace V6 {
                     constexpr   InternetAddress kAddrAny    { in6_addr { } };
