@@ -27,9 +27,14 @@ namespace   Stroika {
 #endif
                 in_addr InternetAddress::mk_in_addr_ (uint32_t a)
                 {
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                    Assert (sizeof (uint32_t) == sizeof (in_addr));
+                    return *reinterpret_cast<const in_addr*> (&a);
+#else
                     in_addr p;
                     p.s_addr = a;
                     return p;
+#endif
                 }
                 inline
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
