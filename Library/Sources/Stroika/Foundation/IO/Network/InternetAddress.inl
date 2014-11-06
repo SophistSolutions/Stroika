@@ -133,7 +133,7 @@ namespace   Stroika {
 #if     qPlatform_POSIX
                     constexpr   InternetAddress kLocalhost  { in_addr { INADDR_LOOPBACK } };
 #elif   qPlatform_Windows
-                    constexpr   InternetAddress kLocalhost  { in_addr { { { 0x7f, 0x0, 0x0, 0x1 } } } };
+                    constexpr   InternetAddress kLocalhost  { in_addr { { { 0x1, 0x0, 0x0, 0x7f } } } };
 #endif
 
                 }

@@ -32,7 +32,7 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 #if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
 #elif   qPlatform_Windows
-const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { { { 0x7f, 0x0, 0x0, 0x1 } } } );
+const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { { { 0x1, 0x0, 0x0, 0x7f } } } );
 #endif
 const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
 #endif
@@ -157,7 +157,8 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                return (::ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
+                //return (::ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
+                return (::ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
             }
             break;
         case AddressFamily::V6: {
