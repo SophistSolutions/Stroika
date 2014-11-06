@@ -146,7 +146,7 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                return (fV4_.s_addr & 0xff000000) == 0x7f000000;
+                return (::ntohl (fV4_.s_addr) & 0xff000000) == 0x7f000000;
             }
             break;
         case AddressFamily::V6: {
@@ -213,8 +213,8 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
                  *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
                  */
-                uint8_t net = (fV4_.s_addr >> 24);
-                uint8_t host = ((fV4_.s_addr >> 16) & 0xff);
+                uint8_t net = (ntohl (fV4_.s_addr) >> 24);
+                uint8_t host = ((ntohl (fV4_.s_addr) >> 16) & 0xff);
                 if (net == 10) {
 #if     defined (s_net)
                     Assert (ipv4Checker (fV4_));
@@ -267,7 +267,7 @@ bool    InternetAddress::IsMulticastAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // Not sure - might have byte order backwards??? or totally wrong - a bit of a guess?
-                return (fV4_.s_addr & 0xf0000000) == 0xe0000000;
+                return (ntohl (fV4_.s_addr) & 0xf0000000) == 0xe0000000;
             }
             break;
         case AddressFamily::V6: {

@@ -22,10 +22,6 @@
 /**
  * TODO:
  *
- *
- *      @todo   Finmish constexpr work for kLocalhost (tricky for IPv4 localhost due to
- *              queer way you have to setup - may need extra funny func to init?
- *
  *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
  *              I THINK (DEFAULT BUT DOC CLEARLY AND REVIEW) - WE ALWAYS use HOST byte order here!!! and maybe
  *              add special API to generate as 'network' byte or let user call hton...
@@ -203,6 +199,9 @@ namespace   Stroika {
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
 #else
+                    /**
+                     *  Declared const, but defined constexpr
+                     */
                     const   InternetAddress kAddrAny;
                     const   InternetAddress kLocalhost;
 #endif
@@ -214,6 +213,9 @@ namespace   Stroika {
 #elif   qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                     //we cannot 'forward declare'
 #else
+                    /**
+                     *  Declared const, but defined constexpr
+                     */
                     const   InternetAddress kAddrAny;
                     const   InternetAddress kLocalhost;
 #endif
