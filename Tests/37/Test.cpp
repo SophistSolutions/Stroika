@@ -34,12 +34,25 @@ namespace   {
     }
 }
 
+
+namespace   {
+    void    Test2_InternetAddress_ ()
+    {
+        {
+            VerifyTestResult (not V4::kAddrAny.IsLocalhostAddress ());
+            VerifyTestResult (V4::kLocalhost.IsLocalhostAddress ());
+            VerifyTestResult (not V6::kAddrAny.IsLocalhostAddress ());
+            VerifyTestResult (V6::kLocalhost.IsLocalhostAddress ());
+        }
+    }
+}
+
 #if 0
 #include <iostream>
 #endif
 
 namespace {
-    void    Test2_NetworkInterfaceList_ ()
+    void    Test3_NetworkInterfaceList_ ()
     {
         for (Interface iFace : Network::GetInterfaces ()) {
 #if 0
@@ -67,9 +80,10 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_URL_ ();
+        Test2_InternetAddress_ ();
 #if     qPlatform_POSIX
         // WINDOZE NYI
-        Test2_NetworkInterfaceList_ ();
+        Test3_NetworkInterfaceList_ ();
 #endif
     }
 }

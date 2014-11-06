@@ -26,15 +26,15 @@ namespace {
 const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
 const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 
-namespace {
-    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
-}
+//namespace {
+//    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
+//}
 #if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
 #elif   qPlatform_Windows
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { { { 0x7f, 0x0, 0x0, 0x1 } } } );
 #endif
-const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
+const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
 #endif
 
 
@@ -157,7 +157,7 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                return (::ntohl (fV4_.s_addr) & 0xff000000) == 0x7f000000;
+                return (::ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
             }
             break;
         case AddressFamily::V6: {
@@ -176,8 +176,8 @@ bool    InternetAddress::IsLocalhostAddress () const
                     fV6_.s6_addr[11] == 0 and
                     fV6_.s6_addr[12] == 0 and
                     fV6_.s6_addr[13] == 0 and
-                    fV6_.s6_addr[14] == 1 and
-                    fV6_.s6_addr[15] == 0
+                    fV6_.s6_addr[14] == 0 and
+                    fV6_.s6_addr[15] == 1
                     ;
             }
             break;
