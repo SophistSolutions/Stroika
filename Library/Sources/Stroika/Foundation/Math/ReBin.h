@@ -125,7 +125,7 @@ namespace   Stroika {
                  *      VerifyTestResult (NearlyEquals (2.5, resultData[3]));
                  *
                  *  EXAMPLE:
-                 *      // Shifting by 1/2 bin
+                 *      // Shifting by partial bin (1/10 of 4, or by 2/5)
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2 };
                  *      double  resultData[4];
                  *      using   SRC_DATA_DESCRIPTOR     =   BasicDataDescriptor<double, uint32_t>;
