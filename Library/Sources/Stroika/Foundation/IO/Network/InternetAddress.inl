@@ -130,7 +130,12 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 namespace V4 {
                     constexpr   InternetAddress kAddrAny    { in_addr { } };
+#if     qPlatform_POSIX
                     constexpr   InternetAddress kLocalhost  { in_addr { INADDR_LOOPBACK } };
+#elif   qPlatform_Windows
+                    constexpr   InternetAddress kLocalhost  { in_addr { { { 0x7f, 0x0, 0x0, 0x1 } } } };
+#endif
+
                 }
                 namespace V6 {
                     constexpr   InternetAddress kAddrAny    { in6_addr { } };

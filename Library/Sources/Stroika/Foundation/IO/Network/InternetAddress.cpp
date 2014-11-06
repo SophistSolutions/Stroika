@@ -16,7 +16,6 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
-
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
@@ -30,8 +29,20 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 namespace {
     constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
 }
+#if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
+#elif   qPlatform_Windows
+const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { { { 0x7f, 0x0, 0x0, 0x1 } } } );
+#endif
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
+#endif
+
+
+
+#if     qPlatform_Windows
+// Not sure why this is necessary, but we get link errors sometimes without it... Maybe a windows makefile issue on regtest apps?
+// -- LGP 2014-11-06
+#pragma comment(lib, "Ws2_32.lib")
 #endif
 
 
