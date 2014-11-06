@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/String_Constant.h"
+#include    "../../Debug/Trace.h"
 #include     "../../Execution/ErrNoException.h"
 
 #include    "InternetAddress.h"
@@ -19,16 +20,8 @@ using   namespace   Stroika::Foundation::IO::Network;
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
-namespace {
-    constexpr   in_addr     kV4AddrAny_ =   { };
-    constexpr   in6_addr    kV6AddrAny_ =   { };
-}
-const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
-const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
-
-//namespace {
-//    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
-//}
+const   InternetAddress V4::kAddrAny    =   InternetAddress (in_addr {});
+const   InternetAddress V6::kAddrAny    =   InternetAddress (in6_addr {});
 #if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
 #elif   qPlatform_Windows

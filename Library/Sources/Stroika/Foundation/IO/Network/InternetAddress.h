@@ -22,12 +22,6 @@
 /**
  * TODO:
  *
- *      @todo   DOCUMENT CLEARLY what values in in hton or ntoh (network or host) byte order!!!!
- *              I THINK (DEFAULT BUT DOC CLEARLY AND REVIEW) - WE ALWAYS use HOST byte order here!!! and maybe
- *              add special API to generate as 'network' byte or let user call hton...
- *
- *              NOTE - SOME of my comments insist the data must already be in network byte order!!!! SIGH....
- *
  *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
  *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
@@ -54,8 +48,25 @@ namespace   Stroika {
                  *  the variety of POSIX/Berkley socket formats.
                  *
                  *  InternetAddress supports either IPv4 or IPv6 format addresses.
+                 *
+                 *  InternetAddress objects can be rendered in either network byte order or host byte order, but overwhelmingly
+                 *  APIs use network byte order, so that is the default, and the internal representation.
+                 *
+                 *  Also, for IPv6 addresses, since they can be represented as bytes, or shorts, or longs, its ambiguous what
+                 *  host byte order might mean, so no 'host byte order' API is provided for IPv6 addresses: just network byte order.
                  */
                 class   InternetAddress {
+                public:
+                    /**
+                     */
+                    enum    class  ByteOrder {
+                        Network,
+                        Host,
+
+                        Stroika_Define_Enum_Bounds(Network, Host)
+                        eDEFAULT = Network,
+                    };
+
                 public:
                     /**
                      *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
@@ -80,12 +91,12 @@ namespace   Stroika {
 #if     qPlatform_POSIX
                     /**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
-                     *  Note that provided in_addr must already be in network order.
                      */
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     constexpr
 #endif
                     InternetAddress (const in_addr_t& i);
+                    InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
 #endif
                     /**
                      *  Construct an InternetAddress from in_addr - V4 address.
@@ -95,6 +106,7 @@ namespace   Stroika {
                     constexpr
 #endif
                     InternetAddress (const in_addr& i);
+                    InternetAddress (const in_addr& i, ByteOrder byteOrder);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
@@ -131,10 +143,14 @@ namespace   Stroika {
                      *      As<in_addr> ();         // GetAddressFamily () == V4 only
                      *      As<in6_addr> ();        // GetAddressFamily () == V6 only
                      *
-                     *  Note that returned in_addr, in_addr_t addresses already in network order.
+                     *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
+                     *
+                     *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determinted by the parameter.
                      */
                     template    <typename T>
                     nonvirtual  T   As () const;
+                    template    <typename T>
+                    nonvirtual  T   As (ByteOrder byteOrder) const;
 
                 public:
                     /**

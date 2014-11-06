@@ -44,6 +44,10 @@ namespace   {
             VerifyTestResult (not V6::kAddrAny.IsLocalhostAddress ());
             VerifyTestResult (V6::kLocalhost.IsLocalhostAddress ());
         }
+        {
+            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
+            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or ntohl (0x01020304) == 0x01020304);   // if big-endian machine, net byte order equals host byte order
+        }
     }
 }
 

@@ -36,8 +36,16 @@ namespace   Stroika {
 #endif
                 InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
+                    , fV4_ (i)
                 {
-                    fV4_.s_addr = i;
+                }
+                inline  InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
+                    : fAddressFamily_ (AddressFamily::V4)
+                    , fV4_ (i)
+                {
+                    if (byteOrder == ByteOrder::Host) {
+                        fV4_.s_addr = htonl (fV4_.s_addr);
+                    }
                 }
 #endif
                 inline
@@ -48,6 +56,14 @@ namespace   Stroika {
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_ (i)
                 {
+                }
+                inline InternetAddress::InternetAddress (const in_addr& i, ByteOrder byteOrder)
+                    : fAddressFamily_ (AddressFamily::V4)
+                    , fV4_ (i)
+                {
+                    if (byteOrder == ByteOrder::Host) {
+                        fV4_.s_addr = htonl (fV4_.s_addr);
+                    }
                 }
                 inline
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
@@ -100,6 +116,28 @@ namespace   Stroika {
                 {
                     Require (fAddressFamily_ == AddressFamily::V6);
                     return fV6_;
+                }
+                template    <>
+                inline  in_addr InternetAddress::As<in_addr> (ByteOrder byteOrder) const
+                {
+                    Require (fAddressFamily_ == AddressFamily::V4);
+                    if (byteOrder == ByteOrder::Network) {
+                        return fV4_;
+                    }
+                    else {
+                        in_addr tmp =   fV4_;
+                        tmp.s_addr = ntohl (tmp.s_addr);
+                        return tmp;
+                    }
+                }
+                template    <typename T>
+                T   InternetAddress::As (ByteOrder byteOrder) const
+                {
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                    RequireNotReached ();
+#else
+                    static_assert (false, "Only specifically specialized variants are supported");
+#endif
                 }
                 inline  bool    InternetAddress::operator< (const InternetAddress& rhs) const
                 {
