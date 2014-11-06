@@ -145,7 +145,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 namespace V4 {
                     constexpr   InternetAddress kAddrAny    { in_addr { } };
-                    constexpr   InternetAddress kLocalhost  { mk_in_addr_ (INADDR_LOOPBACK) };
+                    constexpr   InternetAddress kLocalhost  { InternetAddress::mk_in_addr_ (INADDR_LOOPBACK) };
                 }
                 namespace V6 {
                     constexpr   InternetAddress kAddrAny    { in6_addr { } };

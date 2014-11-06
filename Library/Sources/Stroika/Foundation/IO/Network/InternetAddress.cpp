@@ -29,14 +29,8 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 
 namespace {
     constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
-    in_addr mk_in_addr_ (uint32_t a)
-    {
-        in_addr p;
-        p.s_addr = a;
-        return p;
-    }
 }
-const   InternetAddress V4::kLocalhost  =   InternetAddress (mk_in_addr_ (INADDR_LOOPBACK));
+const   InternetAddress V4::kLocalhost  =   InternetAddress (InternetAddress::mk_in_addr_ (INADDR_LOOPBACK));
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
 #endif
 

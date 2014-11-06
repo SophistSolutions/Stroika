@@ -180,7 +180,7 @@ namespace   Stroika {
                     nonvirtual  bool    operator== (const InternetAddress& rhs) const;
                     nonvirtual  bool    operator!= (const InternetAddress& rhs) const;
 
-                private:
+                public:
                     static
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
