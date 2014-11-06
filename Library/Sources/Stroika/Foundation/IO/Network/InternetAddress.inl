@@ -28,7 +28,7 @@ namespace   Stroika {
                 in_addr InternetAddress::mk_in_addr_ (uint32_t a)
                 {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                    Assert (sizeof (uint32_t) == sizeof (in_addr));
+                    static_assert (sizeof (uint32_t) == sizeof (in_addr), "in_addr SB 4 bytes");
                     return *reinterpret_cast<const in_addr*> (&a);
 #else
                     in_addr p;
