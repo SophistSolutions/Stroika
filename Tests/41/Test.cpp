@@ -123,6 +123,17 @@ namespace {
             VerifyTestResult (NearlyEquals (2.5, resultData[2]));
             VerifyTestResult (NearlyEquals (2.5, resultData[3]));
         }
+        {
+            uint32_t srcBinData[] = { 3, 5, 19, 2 };
+            double  resultData[4];
+            using   SRC_DATA_DESCRIPTOR     =   ReBin::BasicDataDescriptor<double, uint32_t>;
+            using   TRG_DATA_DESCRIPTOR     =   ReBin::UpdatableDataDescriptor<double, double>;
+            SRC_DATA_DESCRIPTOR srcData (begin (srcBinData), end (srcBinData), 0, 10);
+            TRG_DATA_DESCRIPTOR trgData (begin (resultData), end (resultData), 1, 11);
+            ReBin (srcData, &trgData);
+            VerifyTestResult (NearlyEquals (3.8, resultData[0]));
+
+        }
     }
 }
 

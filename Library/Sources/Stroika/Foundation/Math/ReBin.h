@@ -124,6 +124,22 @@ namespace   Stroika {
                  *      VerifyTestResult (NearlyEquals (2.5, resultData[2]));
                  *      VerifyTestResult (NearlyEquals (2.5, resultData[3]));
                  *
+                 *  EXAMPLE:
+                 *      // Shifting by 1/2 bin
+                 *      uint32_t srcBinData[] = { 3, 5, 19, 2 };
+                 *      double  resultData[4];
+                 *      using   SRC_DATA_DESCRIPTOR     =   BasicDataDescriptor<double, uint32_t>;
+                 *      using   TRG_DATA_DESCRIPTOR     =   UpdatableDataDescriptor<double, double>;
+                 *      SRC_DATA_DESCRIPTOR srcData (srcStart, srcEnd, 0, 10);
+                 *      TRG_DATA_DESCRIPTOR trgData (trgStart, trgEnd, 1, 11);
+                 *      ReBin (srcData, &trgData);
+                 *
+                 *      // In src, srcBinData[0] extends from 0 .. 10/4 (ie 0..2.5), and srcBinData[1] extends from 2.5 to 5.0
+                 *      // In target, resultData[0] extends from 1 to (11-1)/4 + 1, or 1 to 3.5
+                 *      // SO... resultData[0] = 3 * (pct of src bucket 0) + 5 * (pct of src bucket 1)
+                 *      //                     = 3 * (1.5/2.5) + 5 * (1/2.5) = 1.8 + 2
+                 *      VerifyTestResult (NearlyEquals (3.8, resultData[0]));
+                 *
                  *  @todo SHOW MORE COMPLICATED EXAMPLE BASED ON:...
                  *      struct SRC_DATA_DESCRIPTOR : BasicDataDescriptor<double, double> {
                  *          ...
