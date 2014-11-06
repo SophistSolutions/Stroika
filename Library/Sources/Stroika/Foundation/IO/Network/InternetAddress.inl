@@ -25,23 +25,6 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
-                in_addr InternetAddress::mk_in_addr_ (uint32_t a)
-                {
-                    return in_addr { a };
-
-#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                    static_assert (sizeof (uint32_t) == sizeof (in_addr), "in_addr SB 4 bytes");
-                    return *reinterpret_cast<const in_addr*> (&a);
-#else
-                    in_addr p;
-                    p.s_addr = a;
-                    return p;
-#endif
-                }
-                inline
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                constexpr
-#endif
                 InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
                     , fV4_ {} {
@@ -147,7 +130,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 namespace V4 {
                     constexpr   InternetAddress kAddrAny    { in_addr { } };
-                    constexpr   InternetAddress kLocalhost  { InternetAddress::mk_in_addr_ (INADDR_LOOPBACK) };
+                    constexpr   InternetAddress kLocalhost  { in_addr { INADDR_LOOPBACK } };
                 }
                 namespace V6 {
                     constexpr   InternetAddress kAddrAny    { in6_addr { } };

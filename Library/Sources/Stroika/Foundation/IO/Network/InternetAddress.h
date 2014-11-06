@@ -176,13 +176,6 @@ namespace   Stroika {
                     nonvirtual  bool    operator== (const InternetAddress& rhs) const;
                     nonvirtual  bool    operator!= (const InternetAddress& rhs) const;
 
-                public:
-                    static
-#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    in_addr     mk_in_addr_ (uint32_t a);
-
                 private:
                     AddressFamily   fAddressFamily_;
                     union   {
