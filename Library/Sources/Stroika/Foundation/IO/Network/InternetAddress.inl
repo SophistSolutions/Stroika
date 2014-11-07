@@ -36,14 +36,13 @@ namespace   Stroika {
 #endif
                 InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_ (i)
-                {
+                    , fV4_ { i } {
                 }
                 inline  InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_ (i)
-                {
-                    if (byteOrder == ByteOrder::Host) {
+                    , fV4_ { i } {
+                    if (byteOrder == ByteOrder::Host)
+                    {
                         fV4_.s_addr = htonl (fV4_.s_addr);
                     }
                 }

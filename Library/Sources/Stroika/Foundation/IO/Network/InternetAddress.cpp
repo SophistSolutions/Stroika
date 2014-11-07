@@ -218,8 +218,9 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
                  *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
                  */
-                uint8_t net = (ntohl (fV4_.s_addr) >> 24);
-                uint8_t host = ((ntohl (fV4_.s_addr) >> 16) & 0xff);
+                uint32_t    hostByteOrderAddr = ::ntohl (fV4_.s_addr);
+                uint8_t net = (hostByteOrderAddr >> 24);
+                uint8_t host = ((hostByteOrderAddr >> 16) & 0xff);
                 if (net == 10) {
 #if     defined (s_net)
                     Assert (ipv4Checker (fV4_));

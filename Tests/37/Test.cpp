@@ -48,6 +48,12 @@ namespace   {
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or ntohl (0x01020304) == 0x01020304);   // if big-endian machine, net byte order equals host byte order
         }
+        {
+            const   InternetAddress kSSDPAddr_ { "239.255.255.250" };
+            VerifyTestResult (not kSSDPAddr_.IsLocalhostAddress ());
+            VerifyTestResult (not kSSDPAddr_.IsPrivateAddress ());
+            VerifyTestResult (kSSDPAddr_.IsMulticastAddress ());
+        }
     }
 }
 

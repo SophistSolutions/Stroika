@@ -28,7 +28,8 @@
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
  *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
- *              and endianness. Only about 1/2 right...
+ *              and endianness. Now about 80% sure right, and have some review code,
+ *              but could use more review.
  *
  */
 
