@@ -50,11 +50,17 @@ namespace   Stroika {
                  *
                  *  InternetAddress supports either IPv4 or IPv6 format addresses.
                  *
-                 *  InternetAddress objects can be rendered in either network byte order or host byte order, but overwhelmingly
-                 *  APIs use network byte order, so that is the default, and the internal representation.
+                 *  InternetAddress objects can be rendered in either network byte order or host byte order,
+                 *  but overwhelmingly APIs use network byte order, so that is the default, and the internal
+                 *  representation.
                  *
-                 *  Also, for IPv6 addresses, since they can be represented as bytes, or shorts, or longs, its ambiguous what
-                 *  host byte order might mean, so no 'host byte order' API is provided for IPv6 addresses: just network byte order.
+                 *  Also, for IPv6 addresses, since they can be represented as bytes, or shorts, or longs,
+                 *  its ambiguous what host byte order might mean, so no 'host byte order' API is provided
+                 *  for IPv6 addresses: just network byte order.
+                 *
+                 *  \note Site-Local addreses
+                 *      This class provides no support for site-local addresses because they have been deprecated
+                 *      in http://www.ietf.org/rfc/rfc3879.txt
                  */
                 class   InternetAddress {
                 public:
