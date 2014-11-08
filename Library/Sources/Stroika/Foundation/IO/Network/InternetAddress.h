@@ -168,14 +168,16 @@ namespace   Stroika {
                      *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
                      *      As<in_addr> ();                                 // GetAddressFamily () == V4 only
                      *      As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ();  // GetAddressFamily () == V4 only
+                     *      As<IPv4AddressOctets>                           // GetAddressFamily () == V4 only (alias)
                      *      As<in6_addr> ();                                // GetAddressFamily () == V6 only
                      *
                      *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
                      *
                      *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determinted by the parameter.
                      *
-                     *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the 'network' byte in the first part of the tuple, so
-                     *  Assert (std::get<0> (InternetAddress { 1, 2, 3, 4 }.As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ()) == 1);
+                     *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the high order (in this case 'network') byte
+                     *  in the first part of the tuple, so
+                     *      Assert (std::get<0> (InternetAddress { 1, 2, 3, 4 }.As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ()) == 1);
                      */
                     template    <typename T>
                     nonvirtual  T   As () const;

@@ -29,11 +29,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
 const   InternetAddress V4::kAddrAny    =   InternetAddress (in_addr {});
 const   InternetAddress V6::kAddrAny    =   InternetAddress (in6_addr {});
-#if     qPlatform_POSIX
-const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
-#elif   qPlatform_Windows
 const   InternetAddress V4::kLocalhost  =   InternetAddress { 0x7f, 0x0, 0x0, 0x1 };
-#endif
 const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
 #endif
 
@@ -200,7 +196,9 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                return (ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
+                IPv4AddressOctets   octets = As<IPv4AddressOctets> ();
+                return get<0> (octets) == 0x7f and get<1> (octets) == 0x0 and get<2> (octets) == 0x0;
+                //return (ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
                 //return (ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
             }
             break;
@@ -293,30 +291,16 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
                  *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
                  */
-                uint32_t    hostByteOrderAddr = ntohl (fV4_.s_addr);
-                uint8_t net = (hostByteOrderAddr >> 24);
-                uint8_t host = ((hostByteOrderAddr >> 16) & 0xff);
-                if (net == 10) {
-#if     defined (s_net)
-                    Assert (ipv4Checker (fV4_));
-#endif
+                IPv4AddressOctets   octets = As<IPv4AddressOctets> ();
+                if (get<0> (octets) == 10) {
                     return true;
                 }
-                else if (net == 172 and (16 <= host and host == 31)) {
-#if     defined (s_net)
-                    Assert (ipv4Checker (fV4_));
-#endif
+                if (get<0> (octets) == 172 and (get<1> (octets) & 0xf0) == 16) {
                     return true;
                 }
-                else if (net == 192 and host == 168) {
-#if     defined (s_net)
-                    Assert (ipv4Checker (fV4_));
-#endif
+                if (get<0> (octets) == 192 and get<1> (octets) == 168) {
                     return true;
                 }
-#if     defined (s_net)
-                Assert (not ipv4Checker (fV4_));
-#endif
                 return false;
             }
             break;

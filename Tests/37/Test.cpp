@@ -62,15 +62,22 @@ namespace   {
             const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
             const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9%4" };
             const Tester  kTests_ [] = {
-                //  ADDR                        localhost   linklocal   multicast   privateaddr
-                {   V4::kAddrAny,               false,      false,      false,      false       },
-                {   V6::kAddrAny,               false,      false,      false,      false       },
-                {   V4::kLocalhost,             true,       false,      false,      false       },
-                {   V6::kLocalhost,             true,       false,      false,      false       },
-                {   kSSDPAddr_,                 false,      false,      true,       false       },
-                {   kSomeIPV4LinkLocalAddr_,    false,      true,       false,      false       },
-                {   kSomeIPV6LinkLocalAddr_,    false,      true,       false,      false       },
-                {   kSamplePrivateAddr_,        false,      false,      false,      true        },
+                //  ADDR                                localhost   linklocal   multicast   privateaddr
+                {   V4::kAddrAny,                       false,      false,      false,      false       },
+                {   V6::kAddrAny,                       false,      false,      false,      false       },
+                {   V4::kLocalhost,                     true,       false,      false,      false       },
+                {   V6::kLocalhost,                     true,       false,      false,      false       },
+                {   kSSDPAddr_,                         false,      false,      true,       false       },
+                {   kSomeIPV4LinkLocalAddr_,            false,      true,       false,      false       },
+                {   kSomeIPV6LinkLocalAddr_,            false,      true,       false,      false       },
+                {   kSamplePrivateAddr_,                false,      false,      false,      true        },
+                {   InternetAddress{10, 0, 0, 0},          false,      false,      false,      true        },
+                {   InternetAddress{10, 255, 255, 255},    false,      false,      false,      true        },
+                {   InternetAddress{172, 16, 0, 1},        false,      false,      false,      true        },
+                {   InternetAddress{172, 16, 0, 3},        false,      false,      false,      true        },
+                {   InternetAddress{172, 31, 255, 255},    false,      false,      false,      true        },
+                {   InternetAddress{192, 168, 0, 0},       false,      false,      false,      true        },
+                {   InternetAddress{192, 168, 255, 255},   false,      false,      false,      true        },
             };
             for (auto i : kTests_) {
                 DbgTrace (L"i.addr=%s", i.addr.As<String> ().c_str ());
