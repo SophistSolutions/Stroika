@@ -125,7 +125,13 @@ namespace   Stroika {
                     /**
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
+#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                    constexpr
+#endif
                     InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                    constexpr
+#endif
                     InternetAddress (IPv4AddressOctets octets);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.

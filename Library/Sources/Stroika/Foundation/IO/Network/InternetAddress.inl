@@ -67,19 +67,31 @@ namespace   Stroika {
                         fV4_.s_addr = htonl (fV4_.s_addr);
                     }
                 }
-                inline  InternetAddress::InternetAddress (IPv4AddressOctets octets)
+                inline
+#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
+#if     qPlatform_POSIX
+                    , fV4_ { octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24) }
+#elif   qPlatform_Windows && !qCompilerAndStdLib_union_designators_Buggy
+                    , fV4_ ({{.S_addr = octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)}})
+#endif
                 {
                     //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
                     // in left-to-right order. Network order is big-endian
-                    fV4_.s_addr = get<0> (octets) + (get<1> (octets) << 8) + (get<2> (octets) << 16) + (get<3> (octets) << 24);
-                }
-                inline  InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
-                    : fAddressFamily_ (AddressFamily::V4)
-                {
-                    //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
-                    // in left-to-right order. Network order is big-endian
+#if     qPlatform_Windows && qCompilerAndStdLib_union_designators_Buggy
                     fV4_.s_addr = octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24);
+#endif
+                }
+                inline
+#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+                constexpr
+#endif
+                InternetAddress::InternetAddress (IPv4AddressOctets octets)
+                    : InternetAddress (get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets))
+                {
                 }
                 inline
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
