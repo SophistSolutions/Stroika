@@ -25,7 +25,7 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (in6_addr {});
 #if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
 #elif   qPlatform_Windows
-const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { { { 0x1, 0x0, 0x0, 0x7f } } } );
+const   InternetAddress V4::kLocalhost  =   InternetAddress { 0x7f , 0x0, 0x0, 0x1 };
 #endif
 const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
 #endif
@@ -186,6 +186,7 @@ bool    InternetAddress::IsLinkLocalAddress () const
         case AddressFamily::V4: {
                 static  const   InternetAddress kMinLinkLocal_  { "169.254.0.1" };
                 static  const   InternetAddress kMaxLinkLocal_  { "169.254.255.254" };
+                Assert (kMinLinkLocal_ < kMaxLinkLocal_);
                 return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
             }
             break;
@@ -346,7 +347,6 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
 #endif
                 AssertNotReached ();
                 return 0;
-                //return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
             }
             break;
         case AddressFamily::V6: {
@@ -355,5 +355,5 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
             break;
     }
     AssertNotReached ();
-    return false;
+    return 0;
 }

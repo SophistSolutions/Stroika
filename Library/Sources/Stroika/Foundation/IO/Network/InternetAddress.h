@@ -115,6 +115,10 @@ namespace   Stroika {
                     InternetAddress (const in_addr& i);
                     InternetAddress (const in_addr& i, ByteOrder byteOrder);
                     /**
+                     *  Construct an InternetAddress V4 address in A.B.C.D octet form.
+                     */
+                    InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+                    /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
