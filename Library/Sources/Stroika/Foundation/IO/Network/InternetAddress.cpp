@@ -323,6 +323,14 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
                 if (memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_)) == 0) {
                     return 0;
                 }
+#if     qPlatform_POSIX
+                if (inet_netof (fV4_) != inet_netof (rhs.fV4_)) {
+                    return inet_netof (fV4_) - inet_netof (rhs.fV4_);
+                }
+                if (inet_lnaof (fV4_) != inet_lnaof (rhs.fV4_)) {
+                    return inet_lnaof (fV4_) - inet_lnaof (rhs.fV4_);
+                }
+#elif   qPlatform_Windows
                 if (fV4_.s_net != rhs.fV4_.s_net) {
                     return static_cast<int> (fV4_.s_net) - static_cast<int> (rhs.fV4_.s_net);
                 }
@@ -335,6 +343,7 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
                 if (fV4_.s_impno != rhs.fV4_.s_impno) {
                     return static_cast<int> (fV4_.s_impno) - static_cast<int> (rhs.fV4_.s_impno);
                 }
+#endif
                 AssertNotReached ();
                 return 0;
                 //return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
