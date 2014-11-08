@@ -151,7 +151,7 @@ bool    InternetAddress::IsLocalhostAddress () const
         case AddressFamily::V4: {
                 // 127.0.0.x
                 //return (::ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
-                return (::ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
+                return (ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
             }
             break;
         case AddressFamily::V6: {
