@@ -10,6 +10,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../../Memory/Bits.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
@@ -64,6 +67,13 @@ namespace   Stroika {
                         fV4_.s_addr = htonl (fV4_.s_addr);
                     }
                 }
+                inline  InternetAddress::InternetAddress (IPv4AddressOctets octets)
+                    : fAddressFamily_ (AddressFamily::V4)
+                {
+                    //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
+                    // in left-to-right order. Network order is big-endian
+                    fV4_.s_addr = get<0> (octets) + (get<1> (octets) << 8) + (get<2> (octets) << 16) + (get<3> (octets) << 24);
+                }
                 inline  InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
                 {
@@ -116,6 +126,17 @@ namespace   Stroika {
                 {
                     Require (fAddressFamily_ == AddressFamily::V4);
                     return fV4_;
+                }
+                template    <>
+                inline  tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const
+                {
+                    Require (fAddressFamily_ == AddressFamily::V4);
+                    return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
+                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 0)),
+                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 8)),
+                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 16)),
+                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 24))
+                           );
                 }
                 template    <>
                 inline  in6_addr    InternetAddress::As<in6_addr> () const

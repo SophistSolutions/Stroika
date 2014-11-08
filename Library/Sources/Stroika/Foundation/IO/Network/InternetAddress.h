@@ -85,6 +85,14 @@ namespace   Stroika {
                     };
 
                 public:
+                    /**
+                     *  A handy way to access the octets of an IPv4 address without worry about endian stuff.
+                     *
+                     *  get<0> is always the high-order (most significant) octet
+                     */
+                    using   IPv4AddressOctets = tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
+
+                public:
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
@@ -118,6 +126,7 @@ namespace   Stroika {
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
                     InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
+                    InternetAddress (IPv4AddressOctets octets);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
@@ -150,13 +159,17 @@ namespace   Stroika {
                     /**
                      *  As<T> supported variants include:
                      *      As<String> ();
-                     *      As<in_addr_t> ();       // qPlatform_POSIX ONLY
-                     *      As<in_addr> ();         // GetAddressFamily () == V4 only
-                     *      As<in6_addr> ();        // GetAddressFamily () == V6 only
+                     *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
+                     *      As<in_addr> ();                                 // GetAddressFamily () == V4 only
+                     *      As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ();  // GetAddressFamily () == V4 only
+                     *      As<in6_addr> ();                                // GetAddressFamily () == V6 only
                      *
                      *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
                      *
                      *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determinted by the parameter.
+                     *
+                     *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the 'network' byte in the first part of the tuple, so
+                     *  Assert (std::get<0> (InternetAddress { 1, 2, 3, 4 }.As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ()) == 1);
                      */
                     template    <typename T>
                     nonvirtual  T   As () const;
