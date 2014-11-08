@@ -325,10 +325,10 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
                 }
 #if     qPlatform_POSIX
                 if (inet_netof (fV4_) != inet_netof (rhs.fV4_)) {
-                    return inet_netof (fV4_) - inet_netof (rhs.fV4_);
+                    return static_cast<int> (inet_netof (fV4_)) - static_cast<int> (inet_netof (rhs.fV4_));
                 }
                 if (inet_lnaof (fV4_) != inet_lnaof (rhs.fV4_)) {
-                    return inet_lnaof (fV4_) - inet_lnaof (rhs.fV4_);
+                    return static_cast<int> (inet_lnaof (fV4_)) - static_cast<int> (inet_lnaof (rhs.fV4_));
                 }
 #elif   qPlatform_Windows
                 if (fV4_.s_net != rhs.fV4_.s_net) {
