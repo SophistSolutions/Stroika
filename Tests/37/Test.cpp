@@ -39,37 +39,43 @@ namespace   {
     void    Test2_InternetAddress_ ()
     {
         {
-            VerifyTestResult (not V4::kAddrAny.IsLocalhostAddress ());
-            VerifyTestResult (V4::kLocalhost.IsLocalhostAddress ());
-            VerifyTestResult (not V4::kLocalhost.IsLinkLocalAddress ());
-            VerifyTestResult (not V6::kAddrAny.IsLocalhostAddress ());
-            VerifyTestResult (V6::kLocalhost.IsLocalhostAddress ());
-            VerifyTestResult (not V6::kLocalhost.IsLinkLocalAddress ());
+            struct tester {
+                InternetAddress addr;
+                bool    isLocalHost;
+                bool    isLinkLocal;
+                bool    isMulticast;
+                bool    isPrivate;
+            };
+
+            const   InternetAddress kSamplePrivateAddr_ { "192.168.244.121" };
+            const   InternetAddress kSSDPAddr_ { "239.255.255.250" };
+            const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
+#if     (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
+            const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9%4" };
+#endif
+            tester  kTests_ [] = {
+                {   V4::kAddrAny,               false,      false,      false,      false       },
+                {   V6::kAddrAny,               false,      false,      false,      false       },
+                {   V4::kLocalhost,             true,       false,      false,      false       },
+                {   V6::kLocalhost,             true,       false,      false,      false       },
+                {   kSSDPAddr_,                 false,      false,      false,      true        },
+                {   kSomeIPV4LinkLocalAddr_,    false,      true,       false,      false       },
+#if     (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
+                {   kSomeIPV6LinkLocalAddr_,    false,      true,       false,      false       },
+#endif
+                {   kSamplePrivateAddr_,        false,      false,      false,      true        },
+            };
+            for (auto i : kTests_) {
+                VerifyTestResult (i.addr.IsLocalhostAddress () == i.isLocalHost);
+                VerifyTestResult (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
+                VerifyTestResult (i.addr.IsMulticastAddress () == i.isMulticast);
+                VerifyTestResult (i.addr.IsPrivateAddress () == i.isPrivate);
+            }
         }
         {
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or ntohl (0x01020304) == 0x01020304);   // if big-endian machine, net byte order equals host byte order
         }
-        {
-            const   InternetAddress kSSDPAddr_ { "239.255.255.250" };
-            VerifyTestResult (not kSSDPAddr_.IsLocalhostAddress ());
-            VerifyTestResult (not kSSDPAddr_.IsPrivateAddress ());
-            VerifyTestResult (kSSDPAddr_.IsMulticastAddress ());
-        }
-        {
-            const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
-            VerifyTestResult (kSomeIPV4LinkLocalAddr_.IsLinkLocalAddress ());
-            VerifyTestResult (not  kSomeIPV4LinkLocalAddr_.IsLocalhostAddress ());
-            VerifyTestResult (not  kSomeIPV4LinkLocalAddr_.IsMulticastAddress ());
-        }
-#if     (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
-        {
-            const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9%4" };
-            VerifyTestResult (kSomeIPV6LinkLocalAddr_.IsLinkLocalAddress ());
-            VerifyTestResult (not kSomeIPV6LinkLocalAddr_.IsLocalhostAddress ());
-            VerifyTestResult (not kSomeIPV6LinkLocalAddr_.IsMulticastAddress ());
-        }
-#endif
     }
 }
 

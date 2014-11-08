@@ -184,8 +184,8 @@ bool    InternetAddress::IsLinkLocalAddress () const
     Require (not empty ());
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
-                static  const   InternetAddress kMinLinkLocal_  { "169.254.0.1" };
-                static  const   InternetAddress kMaxLinkLocal_  { "169.254.255.254" };
+                static  const   InternetAddress kMinLinkLocal_  { 169, 254, 0, 1 };
+                static  const   InternetAddress kMaxLinkLocal_  { 169, 254, 255, 254 };
                 Assert (kMinLinkLocal_ < kMaxLinkLocal_);
                 return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
             }
