@@ -41,10 +41,10 @@ namespace   {
         {
             VerifyTestResult (not V4::kAddrAny.IsLocalhostAddress ());
             VerifyTestResult (V4::kLocalhost.IsLocalhostAddress ());
-            VerifyTestResult (V4::kLocalhost.IsLinkLocalAddress ());
+            VerifyTestResult (not V4::kLocalhost.IsLinkLocalAddress ());
             VerifyTestResult (not V6::kAddrAny.IsLocalhostAddress ());
             VerifyTestResult (V6::kLocalhost.IsLocalhostAddress ());
-            VerifyTestResult (V6::kLocalhost.IsLinkLocalAddress ());
+            VerifyTestResult (not V6::kLocalhost.IsLinkLocalAddress ());
         }
         {
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);

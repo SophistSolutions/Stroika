@@ -25,7 +25,7 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (in6_addr {});
 #if     qPlatform_POSIX
 const   InternetAddress V4::kLocalhost  =   InternetAddress (in_addr { INADDR_LOOPBACK } );
 #elif   qPlatform_Windows
-const   InternetAddress V4::kLocalhost  =   InternetAddress { 0x7f , 0x0, 0x0, 0x1 };
+const   InternetAddress V4::kLocalhost  =   InternetAddress { 0x7f, 0x0, 0x0, 0x1 };
 #endif
 const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } } );
 #endif

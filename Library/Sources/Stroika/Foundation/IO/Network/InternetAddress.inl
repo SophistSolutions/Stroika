@@ -66,12 +66,8 @@ namespace   Stroika {
                 }
                 inline  InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
-#if     qPlatform_POSIX
-                    , fV4_ ({ htonl (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24))} )
-#elif   qPlatform_Windows
-                    , fV4_ ({ octet1 , octet2, octet3, octet4} )
-#endif
                 {
+                    fV4_.s_addr = htonl (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24));
                 }
                 inline
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
