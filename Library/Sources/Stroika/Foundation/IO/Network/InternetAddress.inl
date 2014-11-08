@@ -67,7 +67,9 @@ namespace   Stroika {
                 inline  InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
                 {
-                    fV4_.s_addr = htonl (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24));
+                    //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
+                    // in left-to-right order. Network order is big-endian
+                    fV4_.s_addr = octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24);
                 }
                 inline
 #if     !qCompilerAndStdLib_constexpr_union_variants_Buggy

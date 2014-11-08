@@ -3,9 +3,17 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#if     qPlatform_Windows
+#include    <winsock2.h>
+#include    <ws2tcpip.h>
+#endif
+
 #include    "../../Characters/String_Constant.h"
 #include    "../../Debug/Trace.h"
 #include     "../../Execution/ErrNoException.h"
+#if     qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include    "InternetAddress.h"
 
@@ -17,7 +25,6 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
-#define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
 #if     qCompilerAndStdLib_constexpr_union_variants_Buggy
 const   InternetAddress V4::kAddrAny    =   InternetAddress (in_addr {});
@@ -36,6 +43,73 @@ const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0
 // Not sure why this is necessary, but we get link errors sometimes without it... Maybe a windows makefile issue on regtest apps?
 // -- LGP 2014-11-06
 #pragma comment(lib, "Ws2_32.lib")
+#endif
+
+
+
+#if     qPlatform_Windows
+namespace {
+    void    CheckStarup_ ()
+    {
+        static  bool    sStartedUp_ = false;
+        if (not sStartedUp_) {
+            WSADATA wsaData;        // Initialize Winsock
+            int iResult = WSAStartup (MAKEWORD (2, 2), &wsaData);
+            if (iResult != 0) {
+                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+            }
+            sStartedUp_ = true;
+        }
+    }
+}
+#endif
+
+
+
+#if     qPlatform_Windows && (NTDDI_VERSION < NTDDI_VISTA)
+namespace {
+    int inet_pton (int af, const char* src, void* dst)
+    {
+        CheckStarup_ ();
+        struct sockaddr_storage ss {};
+        int size = sizeof(ss);
+        char src_copy[INET6_ADDRSTRLEN + 1];
+        /* stupid non-const API */
+        strncpy (src_copy, src, INET6_ADDRSTRLEN + 1);
+        src_copy[INET6_ADDRSTRLEN] = 0;
+        if (WSAStringToAddressA(src_copy, af, NULL, (struct sockaddr*)&ss, &size) == 0) {
+            switch(af) {
+                case AF_INET:
+                    *(struct in_addr*)dst = ((struct sockaddr_in*)&ss)->sin_addr;
+                    return 1;
+                case AF_INET6:
+                    *(struct in6_addr*)dst = ((struct sockaddr_in6*)&ss)->sin6_addr;
+                    return 1;
+            }
+        }
+        return 0;
+    }
+    const char* inet_ntop (int af, const void* src, char* dst, socklen_t size)
+    {
+        CheckStarup_ ();
+        struct sockaddr_storage ss {};
+        ss.ss_family = af;
+        unsigned long s = size;
+        switch(af) {
+            case AF_INET:
+                ((struct sockaddr_in*)&ss)->sin_addr = *(struct in_addr*)src;
+                break;
+            case AF_INET6:
+                ((struct sockaddr_in6*)&ss)->sin6_addr = *(struct in6_addr*)src;
+                break;
+            default:
+                return NULL;
+        }
+        /* cannot direclty use &size because of strict aliasing rules */
+        return (WSAAddressToStringA((struct sockaddr*)&ss, sizeof(ss), NULL, dst, &s) == 0) ? dst : NULL;
+    }
+
+}
 #endif
 
 
@@ -61,24 +135,12 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
         }
         switch (af) {
             case AddressFamily::V4: {
-#if     qSupportPTONAndPTON_
                     Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.c_str (), &fV4_));
-#elif   qPlatform_Windows
-                    DISABLE_COMPILER_MSC_WARNING_START(4996)    // msft doesnt have this on old platforms but still warns!
-                    fV4_.s_addr = ::inet_addr (s.c_str ());
-                    DISABLE_COMPILER_MSC_WARNING_END(4996)
-#else
-                    AssertNotImplemented ();
-#endif
                     fAddressFamily_ = af;
                 }
                 break;
             case AddressFamily::V6: {
-#if     qSupportPTONAndPTON_
                     Execution::ThrowErrNoIfNegative (inet_pton (AF_INET6, s.c_str (), &fV6_));
-#else
-                    AssertNotImplemented ();
-#endif
                     fAddressFamily_ = af;
                 }
                 break;
@@ -109,26 +171,15 @@ namespace   Stroika {
                             }
                             break;
                         case AddressFamily::V4: {
-#if     qSupportPTONAndPTON_
                                 char    buf[INET_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
-#else
-                                DISABLE_COMPILER_MSC_WARNING_START(4996)    // msft doesnt have this on old platforms but still warns!
-                                return String::FromUTF8 (::inet_ntoa (fV4_));
-                                DISABLE_COMPILER_MSC_WARNING_END(4996)
-#endif
                             }
                             break;
                         case AddressFamily::V6: {
-#if     qSupportPTONAndPTON_
                                 char    buf[INET6_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
-#else
-                                AssertNotImplemented ();
-                                return String ();
-#endif
                             }
                             break;
                         default: {
@@ -149,8 +200,8 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                //return (::ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
-                return (ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
+                return (ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
+                //return (ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
             }
             break;
         case AddressFamily::V6: {

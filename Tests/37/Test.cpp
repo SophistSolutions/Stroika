@@ -38,8 +38,15 @@ namespace   {
 namespace   {
     void    Test2_InternetAddress_ ()
     {
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Test2_InternetAddress_"));
         {
-            struct tester {
+            VerifyTestResult ((InternetAddress { 169, 254, 0, 1 }).As<String> () == L"169.254.0.1");
+            VerifyTestResult ((InternetAddress { 1, 2, 3, 4 }).As<String> () == L"1.2.3.4");
+            VerifyTestResult ((InternetAddress { L"1.2.3.4" }).As<String> () == L"1.2.3.4");
+            VerifyTestResult ((InternetAddress { "1.2.3.4" }).As<String> () == L"1.2.3.4");
+        }
+        {
+            struct  Tester {
                 InternetAddress addr;
                 bool    isLocalHost;
                 bool    isLinkLocal;
@@ -47,21 +54,18 @@ namespace   {
                 bool    isPrivate;
             };
             const   InternetAddress kSamplePrivateAddr_ { "192.168.244.121" };
-            const   InternetAddress kSSDPAddr_ { "239.255.255.250" };
+            const   InternetAddress kSSDPAddr_ { 239, 255, 255, 250 };
             const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
-#if     (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
             const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9%4" };
-#endif
-            tester  kTests_ [] = {
+            const Tester  kTests_ [] = {
+                //  ADDR                        localhost   linklocal   multicast   privateaddr
                 {   V4::kAddrAny,               false,      false,      false,      false       },
                 {   V6::kAddrAny,               false,      false,      false,      false       },
                 {   V4::kLocalhost,             true,       false,      false,      false       },
                 {   V6::kLocalhost,             true,       false,      false,      false       },
-                {   kSSDPAddr_,                 false,      false,      false,      true        },
+                {   kSSDPAddr_,                 false,      false,      true,       false       },
                 {   kSomeIPV4LinkLocalAddr_,    false,      true,       false,      false       },
-#if     (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
                 {   kSomeIPV6LinkLocalAddr_,    false,      true,       false,      false       },
-#endif
                 {   kSamplePrivateAddr_,        false,      false,      false,      true        },
             };
             for (auto i : kTests_) {
