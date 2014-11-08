@@ -279,7 +279,7 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      These addresses are called Unique Local Addresses (ULA).They are defined as being
                  *      unicast in character and contain a 40 - bit random number in the routing prefix.
                  */
-                bool result = fV6_.s6_addr[0] == 0xfc and fV6_.s6_addr[1] == 0x0;
+                bool result = (fV6_.s6_addr[0] == 0xfc or fV6_.s6_addr[0] == 0xfd) and fV6_.s6_addr[1] == 0x0;
 #if     defined (s6_words)
                 Assert (ipv6Checker (fV6_) == result);
 #endif

@@ -46,7 +46,6 @@ namespace   {
                 bool    isMulticast;
                 bool    isPrivate;
             };
-
             const   InternetAddress kSamplePrivateAddr_ { "192.168.244.121" };
             const   InternetAddress kSSDPAddr_ { "239.255.255.250" };
             const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
@@ -66,6 +65,7 @@ namespace   {
                 {   kSamplePrivateAddr_,        false,      false,      false,      true        },
             };
             for (auto i : kTests_) {
+                DbgTrace (L"i.addr=%s", i.addr.As<String> ().c_str ());
                 VerifyTestResult (i.addr.IsLocalhostAddress () == i.isLocalHost);
                 VerifyTestResult (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
                 VerifyTestResult (i.addr.IsMulticastAddress () == i.isMulticast);

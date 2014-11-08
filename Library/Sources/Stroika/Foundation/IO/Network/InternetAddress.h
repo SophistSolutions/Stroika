@@ -186,6 +186,7 @@ namespace   Stroika {
                     /**
                      *  \req not empty ()
                      *  Return true iff the given address is a private IP address (non-routable).
+                     *  This is sometimes also called Unique Local Addresses (especailly in IPv6).
                      */
                     nonvirtual  bool    IsPrivateAddress () const;
 
