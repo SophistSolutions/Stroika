@@ -143,7 +143,6 @@ namespace   Stroika {
     }
 }
 
-
 bool    InternetAddress::IsLocalhostAddress () const
 {
     Require (not empty ());
@@ -172,6 +171,31 @@ bool    InternetAddress::IsLocalhostAddress () const
                     fV6_.s6_addr[13] == 0 and
                     fV6_.s6_addr[14] == 0 and
                     fV6_.s6_addr[15] == 1
+                    ;
+            }
+            break;
+    }
+    AssertNotReached ();
+    return false;
+}
+
+bool    InternetAddress::IsLinkLocalAddress () const
+{
+    Require (not empty ());
+    switch (fAddressFamily_) {
+        case AddressFamily::V4: {
+                static  const   in_addr kMinLinkLocal_HO_ = InternetAddress ("169.254.0.1").As<in_addr> (InternetAddress::ByteOrder::Host);
+                static  const   in_addr kMaxLinkLocal_HO_ = InternetAddress ("169.254.255.254").As<in_addr> (InternetAddress::ByteOrder::Host);
+                uint32_t    addr = ntohl (fV4_.s_addr);
+                return kMinLinkLocal_HO_.s_addr <= addr and addr <= kMaxLinkLocal_HO_.s_addr;
+            }
+            break;
+        case AddressFamily::V6: {
+                return
+                    fV6_.s6_addr[0] == 0xfe and fV6_.s6_addr[1] == 0x80 and
+                    fV6_.s6_addr[2] == 0x0 and fV6_.s6_addr[3] == 0x0 and
+                    fV6_.s6_addr[4] == 0x0 and fV6_.s6_addr[5] == 0x0 and
+                    fV6_.s6_addr[6] == 0x0 and fV6_.s6_addr[7] == 0x0
                     ;
             }
             break;

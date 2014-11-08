@@ -156,10 +156,21 @@ namespace   Stroika {
                 public:
                     /**
                      *  \req not empty ()
+                     *
                      *  Return true iff the given address is a localhost IP address (typically 127.0.0.1, but can be anything
                      *  in that class C range, or ::1, for IPv6 or that range).
+                     *
+                     *  This might be better called 'loopback' address. This is NOT for link-local addresses.
                      */
                     nonvirtual  bool    IsLocalhostAddress () const;
+
+                public:
+                    /**
+                     *  Returns true iff the address is an 'link local' address. In IPv4 this means 169.254.0.1
+                     *  through 169.254.255.254, and in IPv6 these are fe80::/64. These are used for autoconf
+                     *  when there is no DHCP server, as in http://tools.ietf.org/html/rfc3927
+                     */
+                    nonvirtual  bool    IsLinkLocalAddress () const;
 
                 public:
                     /**
