@@ -196,6 +196,8 @@ namespace   Stroika {
                     /**
                      *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                      *  Treat any in_addr4 < in_addr6 (in other words fAddressFamily_ is high-order of compare).
+                     *  For IPv4 compares, compare logically in the form the ip addr would appear as text.
+                     *  For IPv6, compare as a byte string.
                      */
                     nonvirtual  int Compare (const InternetAddress& rhs) const;
 

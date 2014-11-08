@@ -184,10 +184,9 @@ bool    InternetAddress::IsLinkLocalAddress () const
     Require (not empty ());
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
-                static  const   in_addr kMinLinkLocal_HO_ = InternetAddress ("169.254.0.1").As<in_addr> (InternetAddress::ByteOrder::Host);
-                static  const   in_addr kMaxLinkLocal_HO_ = InternetAddress ("169.254.255.254").As<in_addr> (InternetAddress::ByteOrder::Host);
-                uint32_t    addr = ntohl (fV4_.s_addr);
-                return kMinLinkLocal_HO_.s_addr <= addr and addr <= kMaxLinkLocal_HO_.s_addr;
+                static  const   InternetAddress kMinLinkLocal_  { "169.254.0.1" };
+                static  const   InternetAddress kMaxLinkLocal_  { "169.254.255.254" };
+                return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
             }
             break;
         case AddressFamily::V6: {
@@ -316,11 +315,29 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
     }
     switch (fAddressFamily_) {
         case AddressFamily::UNKNOWN: {
-                return true;
+                return 0;
             }
             break;
         case AddressFamily::V4: {
-                return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
+                // if not equal, compare by net/host before other things so we get sensible intuitive ordering
+                if (memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_)) == 0) {
+                    return 0;
+                }
+                if (fV4_.s_net != rhs.fV4_.s_net) {
+                    return static_cast<int> (fV4_.s_net) - static_cast<int> (rhs.fV4_.s_net);
+                }
+                if (fV4_.s_host != rhs.fV4_.s_host) {
+                    return static_cast<int> (fV4_.s_host) - static_cast<int> (rhs.fV4_.s_host);
+                }
+                if (fV4_.s_lh != rhs.fV4_.s_lh) {
+                    return static_cast<int> (fV4_.s_lh) - static_cast<int> (rhs.fV4_.s_lh);
+                }
+                if (fV4_.s_impno != rhs.fV4_.s_impno) {
+                    return static_cast<int> (fV4_.s_impno) - static_cast<int> (rhs.fV4_.s_impno);
+                }
+                AssertNotReached ();
+                return 0;
+                //return memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_));
             }
             break;
         case AddressFamily::V6: {
