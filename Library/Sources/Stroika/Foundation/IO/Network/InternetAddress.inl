@@ -115,7 +115,7 @@ namespace   Stroika {
                     fAddressFamily_ = AddressFamily::UNKNOWN;
                 }
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::AddressFamily  InternetAddress::GetAddressFamily () const

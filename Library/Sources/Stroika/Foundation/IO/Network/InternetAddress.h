@@ -178,7 +178,7 @@ namespace   Stroika {
                      *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
                      */
                     nonvirtual
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     AddressFamily   GetAddressFamily () const;
