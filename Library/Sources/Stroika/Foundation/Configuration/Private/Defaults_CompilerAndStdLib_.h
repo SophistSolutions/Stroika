@@ -259,6 +259,25 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
+
+#if     qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      1
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
+#else
+#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      0
+#endif
+
+#endif
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_variants_Buggy
 @DESCRIPTION:
