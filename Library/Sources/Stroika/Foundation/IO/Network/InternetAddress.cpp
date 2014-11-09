@@ -64,6 +64,8 @@ namespace {
 
 
 
+
+
 #if     qPlatform_Windows && (NTDDI_VERSION < NTDDI_VISTA)
 namespace {
     int     inet_pton (int af, const char* src, void* dst)
@@ -222,8 +224,6 @@ bool    InternetAddress::IsLocalhostAddress () const
                 // 127.0.0.x
                 IPv4AddressOctets   octets = As<IPv4AddressOctets> ();
                 return get<0> (octets) == 0x7f and get<1> (octets) == 0x0 and get<2> (octets) == 0x0;
-                //return (ntohl (fV4_.s_addr) & 0xffffff00) == 0x7f000000;
-                //return (ntohl (fV4_.s_addr) & 0x00ffffff) == 0x00007f;
             }
             break;
         case AddressFamily::V6: {
