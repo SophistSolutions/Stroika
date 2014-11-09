@@ -50,6 +50,22 @@ namespace   {
             VerifyTestResult (std::get<2> (InternetAddress { 1, 2, 3, 4 } .As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 3);
         }
         {
+            auto    testRoundtrip = [] (const String & s) {
+                InternetAddress iaddr1 { s };
+                InternetAddress iaddr2 { s.As<wstring> () };
+                InternetAddress iaddr3 { s.AsASCII () };
+                VerifyTestResult (iaddr1 == iaddr2);
+                VerifyTestResult (iaddr2 == iaddr3);
+                VerifyTestResult (iaddr1.As<String> () == s);
+                VerifyTestResult (iaddr2.As<String> () == s);
+                VerifyTestResult (iaddr3.As<String> () == s);
+            };
+            testRoundtrip (L"192.168.131.3");
+            testRoundtrip (L"::");
+            testRoundtrip (L"fec0:0:0:ffff::1");
+            testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
+        }
+        {
             struct  Tester {
                 InternetAddress addr;
                 bool    isLocalHost;
@@ -60,7 +76,7 @@ namespace   {
             const   InternetAddress kSamplePrivateAddr_ { "192.168.244.121" };
             const   InternetAddress kSSDPAddr_ { 239, 255, 255, 250 };
             const   InternetAddress kSomeIPV4LinkLocalAddr_ { "169.254.0.1" };
-            const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9%4" };
+            const   InternetAddress kSomeIPV6LinkLocalAddr_ { "fe80::44de:4247:5b76:ddc9" };
             const Tester  kTests_ [] = {
                 //  ADDR                                localhost   linklocal   multicast   privateaddr
                 {   V4::kAddrAny,                       false,      false,      false,      false       },
