@@ -28,10 +28,23 @@
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
- *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
+ *      @todo   Endianness.
+ *
+ *              Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
  *              and endianness. Now about 80% sure right, and have some review code,
  *              but could use more review.
  *
+ *              Can do something like:
+ *                  union Mix {
+ *                      int sdat;
+ *                      char cdat[4];
+ *                  };
+ *                  static constexpr Mix mix { 0x1 };
+ *                  constexpr bool isLittleEndian() {
+ *                      return mix.cdat[0] == 1;
+ *                  }
+ *              to constexpr detect endianness, so we can do right thing and htonl, etc as needed.
+ *              But so far, doesnt appear needed.
  */
 
 
@@ -126,11 +139,11 @@ namespace   Stroika {
                     /**
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
-#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
-#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress (IPv4AddressOctets octets);

@@ -68,7 +68,7 @@ namespace   Stroika {
                     }
                 }
                 inline
-#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
@@ -86,7 +86,7 @@ namespace   Stroika {
 #endif
                 }
                 inline
-#if     !qCompilerAndStdLib_union_designators_Buggy || !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if     !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 InternetAddress::InternetAddress (IPv4AddressOctets octets)
