@@ -9,11 +9,13 @@
 #endif
 
 #include    "../../Characters/String_Constant.h"
+#include    "../../Characters/CString/Utilities.h"
 #include    "../../Debug/Trace.h"
 #include     "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include     "../../Memory/SmallStackBuffer.h"
 
 #include    "InternetAddress.h"
 
@@ -64,16 +66,23 @@ namespace {
 
 #if     qPlatform_Windows && (NTDDI_VERSION < NTDDI_VISTA)
 namespace {
-    int inet_pton (int af, const char* src, void* dst)
+    int     inet_pton (int af, const char* src, void* dst)
     {
         CheckStarup_ ();
         struct sockaddr_storage ss {};
         int size = sizeof(ss);
-        char src_copy[INET6_ADDRSTRLEN + 1];
-        /* stupid non-const API */
-        strncpy (src_copy, src, INET6_ADDRSTRLEN + 1);
-        src_copy[INET6_ADDRSTRLEN] = 0;
-        if (WSAStringToAddressA(src_copy, af, NULL, (struct sockaddr*)&ss, &size) == 0) {
+        wchar_t src_copy[INET6_ADDRSTRLEN + 1]; // stupid non-const API
+        {
+            const char* si = src;
+            for (; *si != '\0'; ++si) {
+                src_copy[si - src] = *si;
+                if (si - src >= INET6_ADDRSTRLEN) {
+                    break;
+                }
+            }
+            src_copy[si - src] = '\0';
+        }
+        if (::WSAStringToAddressW (src_copy, af, NULL, (struct sockaddr*)&ss, &size) == 0) {
             switch(af) {
                 case AF_INET:
                     *(struct in_addr*)dst = ((struct sockaddr_in*)&ss)->sin_addr;
@@ -90,7 +99,6 @@ namespace {
         CheckStarup_ ();
         struct sockaddr_storage ss {};
         ss.ss_family = af;
-        unsigned long s = size;
         switch(af) {
             case AF_INET:
                 ((struct sockaddr_in*)&ss)->sin_addr = *(struct in_addr*)src;
@@ -101,8 +109,24 @@ namespace {
             default:
                 return NULL;
         }
-        /* cannot direclty use &size because of strict aliasing rules */
-        return (WSAAddressToStringA((struct sockaddr*)&ss, sizeof(ss), NULL, dst, &s) == 0) ? dst : NULL;
+        Memory::SmallStackBuffer<wchar_t>   buf (size + 1);
+        unsigned long s = size;
+        DWORD   d = WSAAddressToStringW ((struct sockaddr*)&ss, sizeof(ss), NULL, buf.begin (), &s);
+        if (d == 0) {
+            const wchar_t* si = buf.begin ();
+            Assert (s <= size_t (size));
+            for (; si < buf.begin () + s; ++si) {
+                dst[si - buf.begin ()] = static_cast<char> (*si);
+                if (si - buf.begin () >= size) {
+                    break;
+                }
+            }
+            dst[si - buf.begin ()] = '\0';
+            return dst;
+        }
+        else {
+            return nullptr;
+        }
     }
 }
 #endif

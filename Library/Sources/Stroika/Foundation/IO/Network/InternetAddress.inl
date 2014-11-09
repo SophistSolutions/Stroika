@@ -74,15 +74,15 @@ namespace   Stroika {
                 InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
 #if     qPlatform_POSIX
-                    , fV4_ { octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24) }
+                    , fV4_ { static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) }
 #elif   qPlatform_Windows && !qCompilerAndStdLib_union_designators_Buggy
-                    , fV4_ ({{.S_addr = octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)}})
+                    , fV4_ ({{.S_addr = static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24))}})
 #endif
                 {
                     //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
                     // in left-to-right order. Network order is big-endian
 #if     qPlatform_Windows && qCompilerAndStdLib_union_designators_Buggy
-                    fV4_.s_addr = octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24);
+                    fV4_.s_addr = static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24));
 #endif
                 }
                 inline
