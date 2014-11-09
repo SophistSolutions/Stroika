@@ -103,7 +103,7 @@ namespace   Stroika {
                 {
                 }
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 bool    InternetAddress::empty () const

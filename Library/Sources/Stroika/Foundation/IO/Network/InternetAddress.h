@@ -161,7 +161,7 @@ namespace   Stroika {
                      *  @see clear()
                      */
                     nonvirtual
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     bool    empty () const;
