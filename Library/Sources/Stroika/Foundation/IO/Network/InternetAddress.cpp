@@ -104,9 +104,9 @@ namespace {
         /* cannot direclty use &size because of strict aliasing rules */
         return (WSAAddressToStringA((struct sockaddr*)&ss, sizeof(ss), NULL, dst, &s) == 0) ? dst : NULL;
     }
-
 }
 #endif
+
 
 
 
@@ -233,8 +233,8 @@ bool    InternetAddress::IsLinkLocalAddress () const
     Require (not empty ());
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
-                static  const   InternetAddress kMinLinkLocal_  { 169, 254, 0, 1 };
-                static  const   InternetAddress kMaxLinkLocal_  { 169, 254, 255, 254 };
+                static  constexpr   InternetAddress kMinLinkLocal_  { 169, 254, 0, 1 };
+                static  constexpr   InternetAddress kMaxLinkLocal_  { 169, 254, 255, 254 };
                 Assert (kMinLinkLocal_ < kMaxLinkLocal_);
                 return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
             }
@@ -255,28 +255,6 @@ bool    InternetAddress::IsLinkLocalAddress () const
 
 bool    InternetAddress::IsPrivateAddress () const
 {
-#if     qDebug && defined (s_net)
-    auto ipv4Checker = [](in_addr n) -> bool {
-        if (n.s_net == 10)
-        {
-            return true;
-        }
-        else if (n.s_net == 172 and (16 <= n.s_host and n.s_host == 31))
-        {
-            return true;
-        }
-        else if (n.s_net == 192 and n.s_host == 168)
-        {
-            return true;
-        }
-        return false;
-    };
-#endif
-#if     qDebug && defined (s6_words)
-    auto ipv6Checker = [](in6_addr n) -> bool {
-        return n.s6_words[0] == 0xfc00;
-    };
-#endif
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 /*
@@ -315,9 +293,6 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      unicast in character and contain a 40 - bit random number in the routing prefix.
                  */
                 bool result = (fV6_.s6_addr[0] == 0xfc or fV6_.s6_addr[0] == 0xfd) and fV6_.s6_addr[1] == 0x0;
-#if     defined (s6_words)
-                Assert (ipv6Checker (fV6_) == result);
-#endif
                 return result;
             }
             break;
@@ -331,12 +306,14 @@ bool    InternetAddress::IsMulticastAddress () const
     Require (not empty ());
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
-                // Not sure - might have byte order backwards??? or totally wrong - a bit of a guess?
-                return (ntohl (fV4_.s_addr) & 0xf0000000) == 0xe0000000;
+                // From http://en.wikipedia.org/wiki/Multicast_address :
+                // The group includes the addresses from 224.0.0.0 to 239.255.255.255
+                IPv4AddressOctets   octets = As<IPv4AddressOctets> ();
+                return 224 <= get<0> (octets) and get<0> (octets) <= 239;
             }
             break;
         case AddressFamily::V6: {
-                return (fV6_.s6_addr[0] == 0xff);
+                return fV6_.s6_addr[0] == 0xff;
             }
             break;
     }
@@ -359,27 +336,20 @@ int InternetAddress::Compare (const InternetAddress& rhs) const
                 if (memcmp (&fV4_, &rhs.fV4_, sizeof (fV4_)) == 0) {
                     return 0;
                 }
-#if     qPlatform_POSIX
-                if (inet_netof (fV4_) != inet_netof (rhs.fV4_)) {
-                    return static_cast<int> (inet_netof (fV4_)) - static_cast<int> (inet_netof (rhs.fV4_));
+                IPv4AddressOctets   lOctets = As<IPv4AddressOctets> ();
+                IPv4AddressOctets   rOctets = rhs.As<IPv4AddressOctets> ();
+                if (get<0> (lOctets) != get<0> (rOctets)) {
+                    return static_cast<int> (get<0> (lOctets)) - static_cast<int> (get<0> (rOctets));
                 }
-                if (inet_lnaof (fV4_) != inet_lnaof (rhs.fV4_)) {
-                    return static_cast<int> (inet_lnaof (fV4_)) - static_cast<int> (inet_lnaof (rhs.fV4_));
+                if (get<1> (lOctets) != get<1> (rOctets)) {
+                    return static_cast<int> (get<1> (lOctets)) - static_cast<int> (get<1> (rOctets));
                 }
-#elif   qPlatform_Windows
-                if (fV4_.s_net != rhs.fV4_.s_net) {
-                    return static_cast<int> (fV4_.s_net) - static_cast<int> (rhs.fV4_.s_net);
+                if (get<2> (lOctets) != get<2> (rOctets)) {
+                    return static_cast<int> (get<2> (lOctets)) - static_cast<int> (get<2> (rOctets));
                 }
-                if (fV4_.s_host != rhs.fV4_.s_host) {
-                    return static_cast<int> (fV4_.s_host) - static_cast<int> (rhs.fV4_.s_host);
+                if (get<3> (lOctets) != get<3> (rOctets)) {
+                    return static_cast<int> (get<3> (lOctets)) - static_cast<int> (get<3> (rOctets));
                 }
-                if (fV4_.s_lh != rhs.fV4_.s_lh) {
-                    return static_cast<int> (fV4_.s_lh) - static_cast<int> (rhs.fV4_.s_lh);
-                }
-                if (fV4_.s_impno != rhs.fV4_.s_impno) {
-                    return static_cast<int> (fV4_.s_impno) - static_cast<int> (rhs.fV4_.s_impno);
-                }
-#endif
                 AssertNotReached ();
                 return 0;
             }

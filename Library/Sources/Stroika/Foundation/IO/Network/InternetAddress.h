@@ -20,10 +20,11 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  * TODO:
- *
- *      @todo   IPV6 code not fully implemented on windows (pre-windows-vista)
- *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
@@ -58,7 +59,7 @@ namespace   Stroika {
                  *  its ambiguous what host byte order might mean, so no 'host byte order' API is provided
                  *  for IPv6 addresses: just network byte order.
                  *
-                 *  \note Site-Local addreses
+                 *  \note Site-Local addresses
                  *      This class provides no support for site-local addresses because they have been deprecated
                  *      in http://www.ietf.org/rfc/rfc3879.txt
                  */
@@ -146,7 +147,11 @@ namespace   Stroika {
                      *  Check if unspecified internet address.
                      *  @see clear()
                      */
-                    nonvirtual  bool    empty () const;
+                    nonvirtual
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
+                    bool    empty () const;
 
                 public:
                     /**
@@ -159,7 +164,11 @@ namespace   Stroika {
                     /**
                      *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
                      */
-                    nonvirtual  AddressFamily   GetAddressFamily () const;
+                    nonvirtual
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                    constexpr
+#endif
+                    AddressFamily   GetAddressFamily () const;
 
                 public:
                     /**

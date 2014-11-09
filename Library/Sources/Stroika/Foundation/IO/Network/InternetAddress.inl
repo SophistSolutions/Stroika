@@ -102,7 +102,11 @@ namespace   Stroika {
                     , fV6_ (i)
                 {
                 }
-                inline  bool    InternetAddress::empty () const
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                bool    InternetAddress::empty () const
                 {
                     return fAddressFamily_ == AddressFamily::UNKNOWN;
                 }
@@ -110,7 +114,11 @@ namespace   Stroika {
                 {
                     fAddressFamily_ = AddressFamily::UNKNOWN;
                 }
-                inline  InternetAddress::AddressFamily  InternetAddress::GetAddressFamily () const
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                InternetAddress::AddressFamily  InternetAddress::GetAddressFamily () const
                 {
                     return fAddressFamily_;
                 }
@@ -134,9 +142,15 @@ namespace   Stroika {
                 }
 #endif
                 template    <>
-                inline  in_addr InternetAddress::As<in_addr> () const
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                in_addr InternetAddress::As<in_addr> () const
                 {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V4);
+#endif
                     return fV4_;
                 }
                 template    <>
@@ -151,9 +165,15 @@ namespace   Stroika {
                            );
                 }
                 template    <>
-                inline  in6_addr    InternetAddress::As<in6_addr> () const
+                inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                in6_addr    InternetAddress::As<in6_addr> () const
                 {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V6);
+#endif
                     return fV6_;
                 }
                 template    <>
