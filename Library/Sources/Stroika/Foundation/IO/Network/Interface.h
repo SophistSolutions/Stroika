@@ -58,6 +58,8 @@ namespace   Stroika {
                         eWiredEthernet,
                         eWIFI,
                         eOther,
+
+                        Stroika_Define_Enum_Bounds(eLoopback, eOther)
                     };
                     Memory::Optional<Type>                      fType;
                     Containers::Set<InternetAddress>            fBindings;  // can be IPv4 or IPv6
@@ -66,6 +68,8 @@ namespace   Stroika {
                     enum    class   Status {
                         eConnected,
                         eRunning,
+
+                        Stroika_Define_Enum_Bounds(eConnected, eRunning)
                     };
                     Memory::Optional<Containers::Set<Status>>   fStatus;
                 };

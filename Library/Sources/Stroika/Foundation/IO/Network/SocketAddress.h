@@ -39,6 +39,12 @@ namespace   Stroika {
                     using   FamilyType  =   u_short;
 
                 public:
+                    /**
+                     *  any raw sock_addr, sockaddr_in, or sockaddr_storage arguments must already be in network order.
+                     *
+                     *  The overload with InternetAddress and portNumber, take care of this automatically, with the portNumber
+                     *  in host-byte-order.
+                     */
                     SocketAddress ();
                     SocketAddress (const sockaddr& iaddr);
                     SocketAddress (const sockaddr_in& iaddr);
