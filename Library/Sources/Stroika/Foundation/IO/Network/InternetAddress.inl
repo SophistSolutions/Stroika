@@ -143,7 +143,7 @@ namespace   Stroika {
 #endif
                 template    <>
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 in_addr InternetAddress::As<in_addr> () const
@@ -166,7 +166,7 @@ namespace   Stroika {
                 }
                 template    <>
                 inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_variants_Buggy
                 constexpr
 #endif
                 in6_addr    InternetAddress::As<in6_addr> () const
