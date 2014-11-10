@@ -27,7 +27,21 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a51">v2.0a51x</a><br/>2014-11-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added Optional<>::AssignIf(), and fixed Optional::Compare() code - including != etc - to work with synchonized 
+	Optional's by using an extra layer of member templates.</li>
+	<li>Refactored SystemPerformance::Instruments::ProcessDetails code</li>
+	<li>Fixes to SystemPerformance::Instruments::MountedFileSystem code</li>
+	<li>Implemented new SystemPerformance::Instruments::Memory code</li>
+	<li>New String::Tokenize() API and deprecated older Characters::Tokenize() API</li>
+	<li>New DataExcahnge::CharacterDelimitedLines reader</li>
+	<li>Docs</li>
+	<li>new BinaryFileInputStream::mk helper, to simplify buffering. And added support for not-seekable</li>
+	<li>Major rework of InternetAddress code: constexpr support, more constructors, fixed/documented net/host byte order issues,
+	and support for IPv6, and better Compare behavior, and accessors for IPv4 octets.</li>
+	<li>Small fixes to Range::CTOR templating</li>
+	<li>Regression tests and better docs for Math::Rebin code</li>
+	<li>Fixes to Network/Interfaces code for Linux, and GetInterfaces() impl for Windows: many new fields - much improved</li>
+	<li>Added SocketAddress overload taking WINDOWS SOCKET_ADDRESS</li>
 </ul>
 </td>
 </tr>
