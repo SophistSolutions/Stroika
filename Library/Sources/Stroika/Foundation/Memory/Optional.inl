@@ -246,32 +246,44 @@ namespace   Stroika {
                 return TRAITS::Compare (static_cast<T> (*fValue_), static_cast<T> (*rhs.fValue_));
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator< (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  int Optional<T, TRAITS>::Compare (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
+            {
+                return Compare (static_cast<Optional<T, TRAITS>> (rhs));
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  bool    Optional<T, TRAITS>::operator< (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) < 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator<= (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  bool    Optional<T, TRAITS>::operator<= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator> (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  bool    Optional<T, TRAITS>::operator> (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) > 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator>= (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  bool    Optional<T, TRAITS>::operator>= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator== (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            inline  bool    Optional<T, TRAITS>::operator== (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) == 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::operator!= (const Optional<T, TRAITS>& rhs) const
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+            nonvirtual  bool    Optional<T, TRAITS>::operator!= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
             {
                 return Compare (rhs) != 0;
             }

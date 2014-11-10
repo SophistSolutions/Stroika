@@ -352,6 +352,32 @@ namespace {
 
 
 
+
+
+namespace {
+    namespace   Test6_OverloadsWithSyncMethods_ {
+        void    DoIt ()
+        {
+            using   Memory::Optional;
+            String xx;
+            Synchronized<String> yy;
+            if (xx != yy) {
+            }
+            Optional<String> xxo;
+            if (xxo != yy) {
+            }
+            if (xxo == yy) {
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -360,6 +386,7 @@ namespace   {
         Test3_SynchonizedOptional_::DoIt_ ();
         Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
         Test5_SetSpecificSyncMethods::DoIt ();
+        Test6_OverloadsWithSyncMethods_::DoIt ();
 
     }
 }

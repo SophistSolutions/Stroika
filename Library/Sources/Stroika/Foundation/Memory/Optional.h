@@ -264,18 +264,26 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  int Compare (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
                 nonvirtual  int Compare (const Optional<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
                  */
-                nonvirtual  bool    operator< (const Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator<= (const Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator> (const Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator>= (const Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator== (const Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const Optional<T, TRAITS>& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator< (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator<= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator> (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator>= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator== (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
+                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
+                nonvirtual  bool    operator!= (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
 
             private:
                 /*
