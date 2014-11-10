@@ -25,6 +25,8 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   If possible (I think  yes) have method on InternetAddress() to return Scope (like local , global etc).
+ *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
