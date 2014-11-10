@@ -16,8 +16,11 @@
 /*
  *  \file
  *
- *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
+ * TODO:
+ *      @todo   Windows code is just a very rough draft and I'm not sure i have the underlying API to measure
+ *              by interface.
  */
 
 
