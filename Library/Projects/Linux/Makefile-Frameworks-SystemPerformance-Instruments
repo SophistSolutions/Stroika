@@ -11,6 +11,7 @@ Objs	=	\
 	$(ObjDir)LoadAverage.o\
 	$(ObjDir)Memory.o\
 	$(ObjDir)MountedFilesystemUsage.o\
+	$(ObjDir)NetworkInterfaces.o\
 	$(ObjDir)ProcessDetails.o\
 	$(ObjDir)SystemTimes.o\
 
