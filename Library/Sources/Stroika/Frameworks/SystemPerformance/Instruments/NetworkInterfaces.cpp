@@ -74,7 +74,7 @@ namespace {
             //const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
             // Note - /procfs files always unseekable
             unsigned int    nLine   = 0;
-            unsigned int    n2Skip  = 3;
+            unsigned int    n2Skip  = 2;
             for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::NetworkInterfaces::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
@@ -84,7 +84,7 @@ namespace {
                     --n2Skip;
                     continue;
                 }
-                if (line.size () < 17) {
+                if (line.size () >= 17) {
                     constexpr   int kOffset2XMit_ = 8;
                     InterfaceInfo   ii;
                     ii.fInterfaceID = line[0];
@@ -102,6 +102,22 @@ namespace {
             }
         }
 #elif   qPlatform_Windows
+
+        /*
+         *  TODO
+         *      @todo xxx
+                    Use the functions GetIfTable() or GetIfEntry() :
+
+                    http://msdn.microsoft.com/library/en-us/iphlp/iphlp/getiftable.asp?frame=true
+                    http://msdn.microsoft.com/library/en-us/iphlp/iphlp/getifentry.asp?frame=true
+
+                    which will return the MIB_IFROW object for the selected interface :
+
+                    http://msdn.microsoft.com/library/en-us/mib/mib/mib_ifrow.asp
+
+                    Specifically the dwInOctets and dwOutOctets will be important to you : they specify the received and sent number of bytes over that interface.
+         */
+
         MIB_IPSTATS stats {};
         Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
         InterfaceInfo   ii;
