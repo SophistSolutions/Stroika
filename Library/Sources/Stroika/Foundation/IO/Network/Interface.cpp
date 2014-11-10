@@ -31,6 +31,7 @@
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "Socket.h"
 
@@ -42,6 +43,11 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
+
+
+#if     qPlatform_Windows
+#pragma comment(lib, "iphlpapi.lib")
+#endif
 
 
 
@@ -101,6 +107,38 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         newInterface.fBindings.Add (InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
         result.Add (newInterface);
     }
+#elif   qPlatform_Windows
+// Make an initial call to GetInterfaceInfo to get
+// the necessary size in the ulOutBufLen variable
+    // Make a second call to GetInterfaceInfo to get
+    // the actual data we need
+    Memory::SmallStackBuffer<Byte>  buf(0);
+Again:
+    ULONG ulOutBufLen = buf.GetSize ();
+    PIP_INTERFACE_INFO pInfo = reinterpret_cast<IP_INTERFACE_INFO*> (buf.begin ());
+    DWORD dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
+    if (dwRetVal == NO_ERROR) {
+        for (ULONG i = 0; i < pInfo->NumAdapters; i++) {
+            Interface   newInterface;
+            newInterface.fInterfaceName = String::FromSDKString (pInfo->Adapter[i].Name);
+#if 0
+            printf("Adapter Index[%d]: %ld\n", i,
+                   pInfo->Adapter[i].Index);
+#endif
+            result.Add (newInterface);
+        }
+    }
+    else if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
+        buf.GrowToSize (ulOutBufLen);
+        goto Again;
+    }
+    else if (dwRetVal == ERROR_NO_DATA) {
+        DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
+    }
+    else {
+        printf("GetInterfaceInfo failed with error: %d\n", dwRetVal);
+    }
+
 #else
     AssertNotImplemented ();
 #endif

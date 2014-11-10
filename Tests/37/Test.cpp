@@ -169,29 +169,26 @@ namespace   {
     }
 }
 
-#if 0
-#include <iostream>
-#endif
+
 
 namespace {
     void    Test3_NetworkInterfaceList_ ()
     {
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Test3_NetworkInterfaceList_"));
         for (Interface iFace : Network::GetInterfaces ()) {
-#if 0
-            cout << "iface: " << endl;
-            cout << "  name: " << iFace.fInterfaceName.AsUTF8 () << endl;
+            Debug::TraceContextBumper trcCtx (SDKSTR ("iface"));
+            DbgTrace (L"name: %s", iFace.fInterfaceName.c_str ());
             if (iFace.fType.IsPresent ()) {
-                cout << "  type: " << (int)*iFace.fType << endl;
+                DbgTrace (L"type: %d",  (int)*iFace.fType);
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
-                cout << "  addr: " << ipAddr.As<String> ().AsUTF8 () << endl;
+                DbgTrace (L"addr: %s",  ipAddr.As<String> ().c_str ());
             }
             if (iFace.fStatus.IsPresent ()) {
                 for (Interface::Status s : *iFace.fStatus) {
-                    cout << "  status: " << (int)s << endl;
+                    DbgTrace (L"status: %d",  (int)s);
                 }
             }
-#endif
         }
     }
 }
@@ -203,10 +200,10 @@ namespace   {
     {
         Test1_URL_ ();
         Test2_InternetAddress_ ();
-#if     qPlatform_POSIX
+//#if     qPlatform_POSIX
         // WINDOZE NYI
         Test3_NetworkInterfaceList_ ();
-#endif
+//#endif
     }
 }
 
