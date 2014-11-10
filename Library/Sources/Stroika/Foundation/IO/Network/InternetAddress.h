@@ -27,6 +27,15 @@
  * TODO:
  *      @todo   If possible (I think  yes) have method on InternetAddress() to return Scope (like local , global etc).
  *
+ *              enum Scope {
+ *                  Interface-Local (0x1)
+ *                  Link-Local (0x2)
+ *                  Admin-Local (0x4)           // MULTICAST ONLY
+ *                  Site-Local (0x5)            (AKA - probably better name 'Unique Local Addresses')
+ *                  Organization-Local (0x8)    // MULTICAST ONLY
+ *                  Global (0xE)
+ *              };
+ *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
  *
