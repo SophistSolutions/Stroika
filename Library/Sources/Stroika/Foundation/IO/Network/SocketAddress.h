@@ -49,6 +49,9 @@ namespace   Stroika {
                     SocketAddress (const sockaddr& iaddr);
                     SocketAddress (const sockaddr_in& iaddr);
                     SocketAddress (const sockaddr_storage& iaddr);
+#if     qPlatform_Windows
+                    SocketAddress (const SOCKET_ADDRESS& sockaddr);
+#endif
                     SocketAddress (const InternetAddress& iaddr, uint16_t portNumber);
 
                 public:
