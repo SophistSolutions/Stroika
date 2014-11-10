@@ -8,6 +8,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Configuration/Enumeration.h"
 #include    "../../Containers/Set.h"
 #include    "../../Memory/Optional.h"
 
@@ -24,15 +25,10 @@
  *      @todo   Use http://stackoverflow.com/questions/14264371/how-to-get-nic-details-from-a-c-program to grab ethernet speed
  *              for inteface (bandwidth of network interface)
  *
- *      @todo   IPV6 compat.
- *
  *      @todo   Handle case of multiple address bindings to a single interface (groupby).
  *
  *      @todo   Incomplete POSIX IMPL
- *
- *      @todo   No Windoze impl
- *
- *      @todo   Weak API - just a rough first draft
+ *              IPV6 compat for POSIX (already done for windows)
  *
  *      @todo   Fix use of assert - SB exceptions mostly...
  */
@@ -49,7 +45,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  Very rough first draft!
+                 *  Capture details describing a network interface.
                  */
                 struct  Interface {
                     /**
@@ -73,7 +69,7 @@ namespace   Stroika {
 
                     /**
                      */
-                    enum class Type {
+                    enum    class   Type {
                         eLoopback,
                         eWiredEthernet,
                         eWIFI,
@@ -81,6 +77,10 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eLoopback, eOther)
                     };
+                    static  const Configuration::EnumNames<Type>   Stroika_Enum_Names(Type);
+
+                    /**
+                     */
                     Memory::Optional<Type>                      fType;
 
                     /**
@@ -106,6 +106,10 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eConnected, eRunning)
                     };
+                    static  const Configuration::EnumNames<Status>   Stroika_Enum_Names(Status);
+
+                    /**
+                     */
                     Memory::Optional<Containers::Set<Status>>   fStatus;
                 };
 

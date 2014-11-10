@@ -51,6 +51,34 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
+
+
+/*
+ ********************************************************************************
+ **************************** Network::Interface ********************************
+ ********************************************************************************
+ */
+const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status) = {
+    { Interface::Status::eConnected, L"Connected" },
+    { Interface::Status::eRunning, L"Running" },
+};
+
+const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type) = {
+    { Interface::Type::eLoopback, L"Loopback" },
+    { Interface::Type::eWiredEthernet, L"WiredEthernet" },
+    { Interface::Type::eWIFI, L"WIFI" },
+    { Interface::Type::eOther, L"Other" },
+};
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** Network::GetInterfaces ******************************
+ ********************************************************************************
+ */
 Traversal::Iterable<Interface>  Network::GetInterfaces ()
 {
     Collection<Interface>   result;
@@ -104,7 +132,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             }
             newInterface.fStatus = status;
         }
-        newInterface.fBindings.Add (InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
+        newInterface.fBindings.Add (InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));    // @todo fix so works for ipv6 addresses as well!
         result.Add (newInterface);
     }
 #elif   qPlatform_Windows

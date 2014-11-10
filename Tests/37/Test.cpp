@@ -187,14 +187,14 @@ namespace {
                 DbgTrace (L"description: %s", iFace.fDescription->c_str ());
             }
             if (iFace.fType.IsPresent ()) {
-                DbgTrace (L"type: %d",  (int)*iFace.fType);
+                DbgTrace (L"type: %s",  Interface::Stroika_Enum_Names(Type).GetName (*iFace.fType));
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
                 DbgTrace (L"addr: %s",  ipAddr.As<String> ().c_str ());
             }
             if (iFace.fStatus.IsPresent ()) {
                 for (Interface::Status s : *iFace.fStatus) {
-                    DbgTrace (L"status: %d",  (int)s);
+                    DbgTrace (L"status: %s",  Interface::Stroika_Enum_Names(Status).GetName (s));
                 }
             }
         }
@@ -208,10 +208,7 @@ namespace   {
     {
         Test1_URL_ ();
         Test2_InternetAddress_ ();
-//#if     qPlatform_POSIX
-        // WINDOZE NYI
         Test3_NetworkInterfaceList_ ();
-//#endif
     }
 }
 
