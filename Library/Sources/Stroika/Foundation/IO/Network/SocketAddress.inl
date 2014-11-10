@@ -44,16 +44,6 @@ namespace   Stroika {
                     static_assert (sizeof (iaddr) == sizeof (fSocketAddress_), "sizeof (iaddr) <= sizeof (fSocketAddress_)");
                     (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
-#if     qPlatform_Windows
-                inline  SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
-                    : fSocketAddress_ ()
-                {
-                    if (sockaddr.iSockaddrLength > sizeof (fSocketAddress_)) {
-                        Execution::DoThrow (Execution::StringException (L"bad socket address size"));
-                    }
-                    (void)::memcpy (&fSocketAddress_, sockaddr.lpSockaddr, sockaddr.iSockaddrLength);
-                }
-#endif
                 inline  SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
                     : fSocketAddress_ ()
                 {
