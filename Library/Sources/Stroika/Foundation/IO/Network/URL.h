@@ -18,7 +18,20 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  * TODO:
+ *
+ *      @todo   RENAME "Protocol" to "Scheme"
+ *
+ *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
+ *              we allow relative urls, etc.
+ *
+ *              We currently produce differnt answers than https://docs.python.org/2/library/urlparse.html for the case
+ *              of the url urlparse('help/Python.html'), where I treat help as a hostname, and python
+ *              as part of the path.
+ *
+ *              Maybe params to parser to say "strict", or "can-be-relative-url", or "best guess full url"
  *
  *      @todo   CLEANUP PROTOCOL AND HOSTNAME METHODS - ADD CLEAR REQUIREMENTS AND ENFORCE
  *              ESP FOR STUFF LIKE COLONS!!!
@@ -35,10 +48,7 @@
  *      @todo   Add Compare() method, and operator<, so we can easily add URL to
  *              sorted types.
  *
- *      @todo   Current implementation contains Windows code for assertion checking.
- *              Instead - move that to a regression test suite and pepper it with lots
- *              of tests. That cleanups up our portable implemenation (but requires lots
- *              of reg-tests tests!).
+ *      @todo   Need LOTS of reg-tests tests!.
  */
 
 

@@ -178,6 +178,17 @@ URL::URL (const String& w)
     , fQuery_ ()
     , fFragment_ ()
 {
+    // technically, according to http://www.ietf.org/rfc/rfc1738.txt, the BNF for url
+    // is
+    // genericurl     = scheme ":" schemepart
+    // url            = httpurl | ftpurl | newsurl |
+    //...
+    // httpurl        = "http://" hostport [ "/" hpath [ "?" search ]]
+    //
+    // however, its common practice to be more fliexible in interpretting urls.
+    // @todo EXPOSE THIS AS PARAMETER!!!
+    bool    flexibleURLParsingMode = true;
+
     if (w.empty ()) {
         return;
     }
@@ -190,32 +201,48 @@ URL::URL (const String& w)
      *  ever get diffs with the OLD_Cracker () reported.
      */
 
+    size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
     {
+        size_t  slashshash   =   w.Find (L"//");    // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t  e   =   w.find (':');
-        if (e != String::kBadIndex) {
+        if (e != String::kBadIndex and (slashshash == String::kBadIndex or e < slashshash)) {
             fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
-            ValidateScheme_ (fProtocol_);
+            hostNameStart = e + 1;
         }
+        else if (flexibleURLParsingMode) {
+            fProtocol_ = String_Constant (L"http");
+        }
+        else {
+            Execution::DoThrow (Execution::StringException (L"URL missing scheme"));
+        }
+        ValidateScheme_ (fProtocol_);
     }
 
     size_t i    =   0;
     {
         size_t  len             =   w.length ();
-        size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
-        size_t  e               =   w.find (':');
-        if (e != String::kBadIndex) {
-            hostNameStart = e + 1;
-        }
         i = hostNameStart;
 
-        // Look for // and assume whats after is a hostname, and otherwise, the rest is a relative url
-        // (REALLY UNSURE ABOUT THIS LOGIC - HAVENT FOUND GOOD DOCS ON THE NET FOR THIS FORMAT
-        //      -- LGP 2006-01-24
-
-        if (hostNameStart + 2 < len and w[hostNameStart] == '/' and w[hostNameStart + 1] == '/') {
-            // skip '//' before hostname
-            hostNameStart++;
-            hostNameStart++;
+        /*
+         *  According to they BFN in http://www.ietf.org/rfc/rfc1738.txt, the hostname is required, and must contain
+         *  at least one character. We interpret that spec loosely, but it appears also the practice of things like chrome in interpretting user typed urls.
+         *
+         *  The only exception is if the first character is /, but not //, then it really cannot be a hostname, and must be a host-relative pathname.
+         *
+         *  NOTE - before 2014-11-09, I just interpretted this as the host-relative url part, so this is an incompatible, but probably helpful
+         *  change:
+         *
+         *      OLD COMMENT:
+         *      // Look for // and assume whats after is a hostname, and otherwise, the rest is a relative url
+         *      // (REALLY UNSURE ABOUT THIS LOGIC - HAVENT FOUND GOOD DOCS ON THE NET FOR THIS FORMAT
+         *      //      -- LGP 2006-01-24
+         */
+        if (w.SubString (hostNameStart).StartsWith (L"//") or not w.SubString (hostNameStart).StartsWith (L"/")) {
+            if (w.SubString (hostNameStart).StartsWith (L"//") ) {
+                // skip '//' before hostname
+                hostNameStart++;
+                hostNameStart++;
+            }
 
             // then hostname extends to EOS, or first colon (for port#) or first '/'
             i = hostNameStart;
@@ -268,34 +295,6 @@ URL::URL (const String& w)
             fRelPath_.erase (startOfQuery);
         }
     }
-
-
-#if     qDebug && qPlatform_Windows
-    {
-        String testProtocol;
-        String testHost;
-        String testPort;
-        String testRelPath;
-        String testQuery;
-        OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-        Assert (testProtocol == fProtocol_);
-        if (testProtocol == L"http") {
-            Assert (testHost == fHost_.ToLowerCase ());
-            {
-                //Assert (testPort == fPort);
-                if (fPort_ == 80) {
-                    Assert (testPort == L"" or testPort == L"80");
-                }
-                else {
-                    // apparently never really implemented in old cracker...
-                    //Assert (fPort == ::_wtoi (testPort.c_str ()));
-                }
-            }
-            Assert (testRelPath == fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
-            Assert (testQuery == fQuery_ or not fFragment_.empty ()); // old code didn't check fragment
-        }
-    }
-#endif
 }
 
 URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber, const String& relPath, const String& query, const String& fragment)

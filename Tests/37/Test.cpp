@@ -20,6 +20,7 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
+
 namespace   {
     void    Test1_URL_ ()
     {
@@ -31,8 +32,66 @@ namespace   {
             VerifyTestResult (URL (kTestURL_).GetQueryString () == L"bar=3");
             VerifyTestResult (URL (kTestURL_) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
         }
+        {
+            URL url { L"localhost" };
+            VerifyTestResult (url.GetProtocol () == L"http");
+            VerifyTestResult (url.GetHost () == L"localhost");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.GetHostRelativePath () == L"");
+            VerifyTestResult (url.GetQueryString () == L"");
+            VerifyTestResult (url.GetFragment () == L"");
+            VerifyTestResult (url.GetFullURL () == L"http://localhost/");
+        }
+        {
+            // Test case/examples from:
+            //      https://docs.python.org/2/library/urlparse.html
+            //
+            //  Though the names of our attributes differ, and our results, somewhat differ...
+            {
+                URL url { L"http://www.cwi.nl:80/%7Eguido/Python.html" };
+                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");   // python includes leading / - we dont
+                VerifyTestResult (url.GetQueryString () == L"");
+                VerifyTestResult (url.GetFragment () == L"");
+                VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
+            }
+            {
+                URL url { L"//www.cwi.nl:80/%7Eguido/Python.html" };
+                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+                VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");   // python includes leading / - we dont
+                VerifyTestResult (url.GetQueryString () == L"");
+                VerifyTestResult (url.GetFragment () == L"");
+                VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
+            }
+        }
+        {
+            URL url { L"//www.cwi.nl:8080/%7Eguido/Python.html" };
+            VerifyTestResult (url.GetProtocol () == L"http");
+            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+            VerifyTestResult (url.GetEffectivePortNumber () == 8080);
+            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
+            VerifyTestResult (url.GetQueryString () == L"");
+            VerifyTestResult (url.GetFragment () == L"");
+            VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl:8080/%7Eguido/Python.html");
+        }
+        {
+            URL url { L"https://www.cwi.nl/%7Eguido/Python.html" };
+            VerifyTestResult (url.GetProtocol () == L"https");
+            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
+            VerifyTestResult (url.GetEffectivePortNumber () == 443);
+            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
+            VerifyTestResult (url.GetQueryString () == L"");
+            VerifyTestResult (url.GetFragment () == L"");
+            VerifyTestResult (url.GetFullURL () == L"https://www.cwi.nl/%7Eguido/Python.html");
+        }
     }
 }
+
+
 
 
 namespace   {
