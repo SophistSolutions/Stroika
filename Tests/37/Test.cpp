@@ -177,7 +177,15 @@ namespace {
         Debug::TraceContextBumper trcCtx (SDKSTR ("Test3_NetworkInterfaceList_"));
         for (Interface iFace : Network::GetInterfaces ()) {
             Debug::TraceContextBumper trcCtx (SDKSTR ("iface"));
-            DbgTrace (L"name: %s", iFace.fInterfaceName.c_str ());
+            if (iFace.fInterfaceName.IsPresent ()) {
+                DbgTrace (L"interface-name: %s", iFace.fInterfaceName->c_str ());
+            }
+            if (iFace.fFriendlyName.IsPresent ()) {
+                DbgTrace (L"friendly-name: %s", iFace.fFriendlyName->c_str ());
+            }
+            if (iFace.fDescription.IsPresent ()) {
+                DbgTrace (L"description: %s", iFace.fDescription->c_str ());
+            }
             if (iFace.fType.IsPresent ()) {
                 DbgTrace (L"type: %d",  (int)*iFace.fType);
             }

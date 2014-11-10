@@ -52,7 +52,27 @@ namespace   Stroika {
                  *  Very rough first draft!
                  */
                 struct  Interface {
-                    String  fInterfaceName;
+                    /**
+                     *  On unix, its the interface name, e.g. eth0, eth1, etc.
+                     *  On Windows, this is interface AdapterName, which is not particularly printable (usualy a GUID)
+                     */
+                    Memory::Optional<String>  fInterfaceName;
+
+                    /**
+                     *  On Windows, this is interface AdapterName, which is not particularly printable (usualy a GUID)
+                     */
+                    Memory::Optional<String>  fAdapterName;
+
+                    /**
+                     */
+                    Memory::Optional<String>    fFriendlyName;
+
+                    /**
+                     */
+                    Memory::Optional<String>    fDescription;
+
+                    /**
+                     */
                     enum class Type {
                         eLoopback,
                         eWiredEthernet,
@@ -62,9 +82,24 @@ namespace   Stroika {
                         Stroika_Define_Enum_Bounds(eLoopback, eOther)
                     };
                     Memory::Optional<Type>                      fType;
+
+                    /**
+                     *  bits per second
+                     */
+                    Memory::Optional<double>    fTransmitSpeedBaud;
+
+                    /**
+                     *  bits per second
+                     */
+                    Memory::Optional<double>    fReceiveLinkSpeed;
+
+                    /**
+                    */
                     Containers::Set<InternetAddress>            fBindings;  // can be IPv4 or IPv6
 
+                    /**
                     // @todo document these - 'eRunning' == LINUX RUNNING
+                    */
                     enum    class   Status {
                         eConnected,
                         eRunning,

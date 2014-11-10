@@ -108,27 +108,103 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         result.Add (newInterface);
     }
 #elif   qPlatform_Windows
-// Make an initial call to GetInterfaceInfo to get
-// the necessary size in the ulOutBufLen variable
-    // Make a second call to GetInterfaceInfo to get
-    // the actual data we need
+#if 0
+    if (false) {
+        // Make an initial call to GetInterfaceInfo to get
+        // the necessary size in the ulOutBufLen variable
+        // Make a second call to GetInterfaceInfo to get
+        // the actual data we need
+        Memory::SmallStackBuffer<Byte>  buf(0);
+xAgain:
+        ULONG ulOutBufLen = buf.GetSize ();
+        PIP_INTERFACE_INFO pInfo = reinterpret_cast<IP_INTERFACE_INFO*> (buf.begin ());
+        DWORD dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
+        if (dwRetVal == NO_ERROR) {
+            for (LONG i = 0; i < pInfo->NumAdapters; i++) {
+                Interface   newInterface;
+                newInterface.fInterfaceName = String::FromSDKString (pInfo->Adapter[i].Name);
+#if 0
+                printf("Adapter Index[%d]: %ld\n", i,  pInfo->Adapter[i].Index);
+#endif
+                result.Add (newInterface);
+            }
+        }
+        else if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
+            buf.GrowToSize (ulOutBufLen);
+            goto xAgain;
+        }
+        else if (dwRetVal == ERROR_NO_DATA) {
+            DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
+        }
+        else {
+            Execution::Platform::Windows::Exception::DoThrow (dwRetVal);
+        }
+    }
+#endif
+    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+    ULONG family = AF_UNSPEC;       // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte>  buf(0);
 Again:
     ULONG ulOutBufLen = buf.GetSize ();
-    PIP_INTERFACE_INFO pInfo = reinterpret_cast<IP_INTERFACE_INFO*> (buf.begin ());
-    DWORD dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
+    PIP_ADAPTER_ADDRESSES   pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
+    DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
-        for (ULONG i = 0; i < pInfo->NumAdapters; i++) {
+        for (PIP_ADAPTER_ADDRESSES currAddresses  = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
             Interface   newInterface;
-            newInterface.fInterfaceName = String::FromSDKString (pInfo->Adapter[i].Name);
-#if 0
-            printf("Adapter Index[%d]: %ld\n", i,
-                   pInfo->Adapter[i].Index);
+            newInterface.fAdapterName = String::FromNarrowSDKString (currAddresses->AdapterName);
+            newInterface.fFriendlyName = currAddresses->FriendlyName;
+            newInterface.fDescription = currAddresses->Description;
+            switch (currAddresses->IfType) {
+                case IF_TYPE_SOFTWARE_LOOPBACK:
+                    newInterface.fType = Interface::Type::eLoopback;
+                    break;
+                case IF_TYPE_IEEE80211:
+                    newInterface.fType = Interface::Type::eWIFI;
+                    break;
+                case IF_TYPE_ETHERNET_CSMACD:
+                    newInterface.fType = Interface::Type::eWiredEthernet;
+                    break;
+                default:
+                    newInterface.fType = Interface::Type::eOther;
+                    break;
+            }
+            switch (currAddresses->OperStatus) {
+                case IfOperStatusUp:
+                    newInterface.fStatus = Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
+                    break;
+                case IfOperStatusDown:
+                    newInterface.fStatus = Set<Interface::Status> ();
+                    break;
+                default:
+                    // Dont know how to interpret the other status states
+                    break;
+            }
+            for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
+                SocketAddress sa { pu->Address };
+                if (sa.IsInternetAddress ()) {
+                    newInterface.fBindings.Add (sa.GetInternetAddress ());
+                }
+            }
+            for (PIP_ADAPTER_ANYCAST_ADDRESS pa = currAddresses->FirstAnycastAddress; pa != nullptr; pa = pa->Next) {
+                SocketAddress sa { pa->Address };
+                if (sa.IsInternetAddress ()) {
+                    newInterface.fBindings.Add (sa.GetInternetAddress ());
+                }
+            }
+            for (PIP_ADAPTER_MULTICAST_ADDRESS  pm = currAddresses->FirstMulticastAddress; pm != nullptr; pm = pm->Next) {
+                SocketAddress sa { pm->Address };
+                if (sa.IsInternetAddress ()) {
+                    newInterface.fBindings.Add (sa.GetInternetAddress ());
+                }
+            }
+#if     (NTDDI_VERSION >= NTDDI_LONGHORN)
+            newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
+            newInterface.fReceiveLinkSpeed = currAddresses->ReceiveLinkSpeed;
 #endif
             result.Add (newInterface);
         }
     }
-    else if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
+    else if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
         buf.GrowToSize (ulOutBufLen);
         goto Again;
     }
@@ -136,12 +212,10 @@ Again:
         DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
     }
     else {
-        printf("GetInterfaceInfo failed with error: %d\n", dwRetVal);
+        Execution::Platform::Windows::Exception::DoThrow (dwRetVal);
     }
-
 #else
     AssertNotImplemented ();
 #endif
-
     return result;
 }
