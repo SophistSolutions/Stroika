@@ -61,6 +61,7 @@ namespace   Stroika {
                     void    ThrowIfFalseGetLastError (bool test);
                     void    ThrowIfFalseGetLastError (BOOL test);
                     void    ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
+                    void    ThrowIfNot_NO_ERROR (DWORD win32ErrCode);
                     void    ThrowIfShellExecError (HINSTANCE r);
 
 

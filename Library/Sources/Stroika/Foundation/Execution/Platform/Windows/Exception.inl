@@ -47,6 +47,12 @@ namespace   Stroika {
                             Exception::DoThrow (win32ErrCode);
                         }
                     }
+                    inline  void    ThrowIfNot_NO_ERROR (DWORD win32ErrCode)
+                    {
+                        if (win32ErrCode != NO_ERROR) {
+                            Exception::DoThrow (win32ErrCode);
+                        }
+                    }
                 }
             }
 
