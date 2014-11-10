@@ -37,7 +37,41 @@ namespace   Stroika {
 
                     /**
                      */
-                    struct  Info {
+                    struct  InterfaceInfo {
+                        /**
+                         *  For POSIX, this is the interface name (e.g. eth0)
+                         *
+                         *  For Windows, this is ???
+                         */
+                        String  fInterfaceID {};
+
+
+                        /**
+                         *  bytes
+                         *  The total number of bytes of data transmitted or received by the interface.
+                         */
+                        Optional<uint64_t>  fTotalBytesSent;
+                        Optional<uint64_t>  fTotalBytesRecieved;
+
+                        /**
+                         *  packets
+                         *  The total number of packets of data transmitted or received by the interface.
+                         */
+                        Optional<uint64_t>  fTotalPacketsSent;
+                        Optional<uint64_t>  fTotalPacketsRecieved;
+
+
+                        /**
+                         *  errs
+                         *  The total number of transmit or receive errors detected by the device driver.
+                         */
+                        Optional<uint64_t>  fTotalErrors;
+
+                        /**
+                         *  drop
+                         *  The total number of packets dropped by the device driver.
+                         */
+                        Optional<uint64_t>  fTotalPacketsDropped;
                     };
 
 

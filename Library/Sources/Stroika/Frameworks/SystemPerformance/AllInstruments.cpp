@@ -5,6 +5,7 @@
 
 #include    "Instruments/LoadAverage.h"
 #include    "Instruments/MountedFilesystemUsage.h"
+#include    "Instruments/NetworkInterfaces.h"
 #include    "Instruments/ProcessDetails.h"
 #include    "Instruments/SystemTimes.h"
 
@@ -37,6 +38,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
 #if     qSupport_SystemPerformance_Instruments_SystemTimes
         Instruments::SystemTimes::GetInstrument (),
 #endif
+        Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),
         Instruments::MountedFilesystemUsage::GetInstrument (),
     };
