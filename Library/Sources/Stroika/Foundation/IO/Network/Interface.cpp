@@ -136,39 +136,6 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         result.Add (newInterface);
     }
 #elif   qPlatform_Windows
-#if 0
-    if (false) {
-        // Make an initial call to GetInterfaceInfo to get
-        // the necessary size in the ulOutBufLen variable
-        // Make a second call to GetInterfaceInfo to get
-        // the actual data we need
-        Memory::SmallStackBuffer<Byte>  buf(0);
-xAgain:
-        ULONG ulOutBufLen = buf.GetSize ();
-        PIP_INTERFACE_INFO pInfo = reinterpret_cast<IP_INTERFACE_INFO*> (buf.begin ());
-        DWORD dwRetVal = GetInterfaceInfo(pInfo, &ulOutBufLen);
-        if (dwRetVal == NO_ERROR) {
-            for (LONG i = 0; i < pInfo->NumAdapters; i++) {
-                Interface   newInterface;
-                newInterface.fInterfaceName = String::FromSDKString (pInfo->Adapter[i].Name);
-#if 0
-                printf("Adapter Index[%d]: %ld\n", i,  pInfo->Adapter[i].Index);
-#endif
-                result.Add (newInterface);
-            }
-        }
-        else if (dwRetVal == ERROR_INSUFFICIENT_BUFFER) {
-            buf.GrowToSize (ulOutBufLen);
-            goto xAgain;
-        }
-        else if (dwRetVal == ERROR_NO_DATA) {
-            DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
-        }
-        else {
-            Execution::Platform::Windows::Exception::DoThrow (dwRetVal);
-        }
-    }
-#endif
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
     ULONG family = AF_UNSPEC;       // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte>  buf(0);
@@ -183,13 +150,13 @@ Again:
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
             switch (currAddresses->IfType) {
-                case IF_TYPE_SOFTWARE_LOOPBACK:
+                case    IF_TYPE_SOFTWARE_LOOPBACK:
                     newInterface.fType = Interface::Type::eLoopback;
                     break;
-                case IF_TYPE_IEEE80211:
+                case    IF_TYPE_IEEE80211:
                     newInterface.fType = Interface::Type::eWIFI;
                     break;
-                case IF_TYPE_ETHERNET_CSMACD:
+                case    IF_TYPE_ETHERNET_CSMACD:
                     newInterface.fType = Interface::Type::eWiredEthernet;
                     break;
                 default:
@@ -197,10 +164,10 @@ Again:
                     break;
             }
             switch (currAddresses->OperStatus) {
-                case IfOperStatusUp:
+                case    IfOperStatusUp:
                     newInterface.fStatus = Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                     break;
-                case IfOperStatusDown:
+                case    IfOperStatusDown:
                     newInterface.fStatus = Set<Interface::Status> ();
                     break;
                 default:
