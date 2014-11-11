@@ -33,59 +33,23 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
-namespace {
-    namespace Test1_URL_Parsing_ {
-        void    DoTests_ ()
-        {
-            {
-                URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
-                VerifyTestResult (url.GetEffectivePortNumber () == 80);
-                VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-                VerifyTestResult (url.GetHost ().empty ());
-                VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetProtocol () == L"http");
-            }
-            {
-                URL url (L"http://www.recordsforliving.com/");
-                VerifyTestResult (url.GetEffectivePortNumber () == 80);
-                VerifyTestResult (url.GetQueryString ().empty ());
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetHostRelativePath ().empty ());
-                VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-                VerifyTestResult (url.GetProtocol () == L"http");
-                VerifyTestResult (not url.IsSecure ());
-            }
-            {
-                URL url (L"https://xxx.recordsforliving.com/");
-                VerifyTestResult (url.GetEffectivePortNumber () == 443);
-                VerifyTestResult (url.GetQueryString ().empty ());
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetHostRelativePath ().empty ());
-                VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-                VerifyTestResult (url.GetProtocol () == L"https");
-                VerifyTestResult (url.IsSecure ());
-            }
-        }
-    }
-}
 
 
 
 
 namespace {
-    namespace Test2_SimpleConnnectionTests_ {
+    namespace Test_1_SimpleConnnectionTests_ {
         namespace Private_ {
             void    Test_1_SimpleFetch_Google_C_ (Connection c)
             {
-                c.SetURL (URL (L"http://www.google.com"));
+                c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
             }
             void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
             {
-                c.SetURL (URL (L"https://www.google.com"));
+                c.SetURL (URL::Parse (L"https://www.google.com"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
@@ -130,12 +94,12 @@ namespace {
 
 
 namespace {
-    namespace Test_3_SimpleFetch_httpbin_ {
+    namespace Test_2_SimpleFetch_httpbin_ {
         namespace Private_ {
             void    T1_httpbin_SimpleGET_ (Connection c)
             {
                 Debug::TraceContextBumper ctx (SDKSTR ("T1_httpbin_SimpleGET_"));
-                c.SetURL (URL (L"http://httpbin.org/get"));
+                c.SetURL (URL::Parse (L"http://httpbin.org/get"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
@@ -153,7 +117,7 @@ namespace {
 
                 static   mt19937 sRNG_;
 
-                c.SetURL (URL (L"http://httpbin.org/post"));
+                c.SetURL (URL::Parse (L"http://httpbin.org/post"));
                 BLOB    roundTripTestData = [] () {
                     Memory::SmallStackBuffer<Byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
@@ -188,7 +152,7 @@ namespace {
 
                 static   mt19937 sRNG_;
 
-                c.SetURL (URL (L"http://httpbin.org/put"));
+                c.SetURL (URL::Parse (L"http://httpbin.org/put"));
                 BLOB    roundTripTestData = [] () {
                     Memory::SmallStackBuffer<Byte> buf (1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
@@ -262,11 +226,11 @@ namespace {
 
 
 namespace {
-    namespace Test4_TextStreamResponse_ {
+    namespace Test3_TextStreamResponse_ {
         namespace Private_ {
             void    Test_1_SimpleFetch_Google_C_ (Connection c)
             {
-                c.SetURL (URL (L"http://www.google.com"));
+                c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
                 String responseText = r.GetDataTextInputStream ().ReadAll ();
@@ -313,10 +277,9 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test1_URL_Parsing_::DoTests_ ();
-        Test2_SimpleConnnectionTests_::DoTests_ ();
-        Test_3_SimpleFetch_httpbin_::DoTests_ ();
-        Test4_TextStreamResponse_::DoTests_ ();
+        Test_1_SimpleConnnectionTests_::DoTests_ ();
+        Test_2_SimpleFetch_httpbin_::DoTests_ ();
+        Test3_TextStreamResponse_::DoTests_ ();
     }
 }
 

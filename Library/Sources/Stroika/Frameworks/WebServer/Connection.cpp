@@ -67,7 +67,8 @@ void    Connection::ReadHeaders ()
             // should check if GET/PUT/DELETE etc...
             Execution::DoThrow (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
-        fRequest_.fURL = IO::Network::URL::ParseHostRelativeURL (tokens[1]);
+        using   IO::Network::URL;
+        fRequest_.fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
         if (fRequest_.fMethod.empty ()) {
             // should check if GET/PUT/DELETE etc...
             Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));

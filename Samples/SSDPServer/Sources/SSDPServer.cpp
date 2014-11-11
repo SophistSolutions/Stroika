@@ -84,15 +84,15 @@ int main (int argc, const char* argv[])
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String_Constant (L"315CAAE0-1335-57BF-A178-24C9EE756627"));
 
         DeviceDescription   deviceInfo;
-        deviceInfo.fPresentationURL = URL (String_Constant (L"http://www.sophists.com/"));
+        deviceInfo.fPresentationURL = URL::Parse (String_Constant (L"http://www.sophists.com/"));
         deviceInfo.fDeviceType = String_Constant (L"urn:sophists.com:device:deviceType:1.0");
         deviceInfo.fManufactureName = String_Constant (L"Sophist Solutions, Inc.");
         deviceInfo.fFriendlyName = String_Constant (L"Sophist Solutions fake device");
-        deviceInfo.fManufacturingURL = URL (String_Constant (L"http://www.sophists.com/"));
+        deviceInfo.fManufacturingURL = URL::Parse (String_Constant (L"http://www.sophists.com/"));
         deviceInfo.fModelDescription = String_Constant (L"long user-friendly title");
         deviceInfo.fModelName = String_Constant (L"model name");
         deviceInfo.fModelNumber = String_Constant (L"model number");
-        deviceInfo.fModelURL = URL (String_Constant (L"http://www.sophists.com/"));
+        deviceInfo.fModelURL = URL::Parse (String_Constant (L"http://www.sophists.com/"));
         deviceInfo.fSerialNumber = String_Constant (L"manufacturer's serial number");
 
         WebServerForDeviceDescription_  deviceWS (portForOurWS, d, deviceInfo);

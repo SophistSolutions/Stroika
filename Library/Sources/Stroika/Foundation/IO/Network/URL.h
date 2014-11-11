@@ -82,14 +82,18 @@ namespace   Stroika {
                     nonvirtual  String operator () (const string& idx) const;
                     nonvirtual  String operator () (const String& idx) const;
 
+                public:
                     nonvirtual  bool    HasField (const string& idx) const;
                     nonvirtual  bool    HasField (const String& idx) const;
 
+                public:
                     nonvirtual  void    AddField (const String& idx, const String& value);
 
+                public:
                     nonvirtual  void    RemoveFieldIfAny (const string& idx);
                     nonvirtual  void    RemoveFieldIfAny (const String& idx);
 
+                public:
                     // Return wide string, but all ascii characters
                     // http://tools.ietf.org/html/rfc3986
                     nonvirtual  String ComputeQueryString () const;
@@ -138,17 +142,45 @@ namespace   Stroika {
                      *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
                      */
                     URL ();
-                    explicit URL (const String& fullURL);
                     explicit URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
                     explicit URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
 
                 public:
                     /**
-                    *   TODO - DOCUMENT MUCH BETTER - I DONT UNDERSNTADN THIS!!!
-                    *
-                    // For example - the arg to GET in HTTP request - a regular URL but the part after the hostname
-                    */
-                    static  URL ParseHostRelativeURL (const String& w);
+                     *      @todo PRELIM!!!!
+                     *              PROABBLY NEED "FORCE_AS_GOOD_VALID_FULL_URL
+                     *              MAYBE FULL_OR_RELATIVE (as in webpage urls)
+                     *
+                     *      Maybe URL has method "IsRelative"?
+                     */
+                    enum    ParseOptions {
+                        /*
+                         *  Check for strict url conformance (scheme : data, or http://host/REL)
+                         *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
+                         *
+                         *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
+                         *      and see about whcih part - full url)
+                         */
+                        eAsFullURL,
+
+                        /*
+                         *  ???http://tools.ietf.org/html/rfc1808
+                         *
+                         *  ( MAYBE USE https://tools.ietf.org/html/rfc3986
+                         *      and see about whcih part - full url)
+                         */
+                        eAsRelativeURL,
+
+                        /**
+                         */
+                        eFlexiblyAsUI
+                    };
+                    /**
+                     */
+                    static  URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
+
+                private:
+                    static  URL ParseHostRelativeURL_ (const String& w);
 
                 public:
                     /**

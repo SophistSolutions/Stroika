@@ -170,14 +170,15 @@ namespace   {
     DISABLE_COMPILER_MSC_WARNING_END(6262)
 }
 #endif
-URL::URL (const String& w)
-    : fProtocol_ ()
-    , fHost_ ()
-    , fPort_ (kDefaultPortSentinal_)
-    , fRelPath_ ()
-    , fQuery_ ()
-    , fFragment_ ()
+
+URL URL::Parse (const String& w, ParseOptions po)
 {
+    if (po == URL::eAsRelativeURL) {
+        return ParseHostRelativeURL_ (w);
+    }
+
+    URL result;
+
     // technically, according to http://www.ietf.org/rfc/rfc1738.txt, the BNF for url
     // is
     // genericurl     = scheme ":" schemepart
@@ -187,10 +188,11 @@ URL::URL (const String& w)
     //
     // however, its common practice to be more fliexible in interpretting urls.
     // @todo EXPOSE THIS AS PARAMETER!!!
-    bool    flexibleURLParsingMode = true;
+    bool    flexibleURLParsingMode = (po != URL::eAsFullURL);
 
     if (w.empty ()) {
-        return;
+        Execution::DoThrow (Execution::StringException (L"Cannot parse empty URL"));
+        //return result;
     }
 
     /*
@@ -206,16 +208,16 @@ URL::URL (const String& w)
         size_t  slashshash   =   w.Find (L"//");    // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t  e   =   w.find (':');
         if (e != String::kBadIndex and (slashshash == String::kBadIndex or e < slashshash)) {
-            fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
+            result.fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
             hostNameStart = e + 1;
         }
         else if (flexibleURLParsingMode) {
-            fProtocol_ = String_Constant (L"http");
+            result.fProtocol_ = String_Constant (L"http");
         }
         else {
             Execution::DoThrow (Execution::StringException (L"URL missing scheme"));
         }
-        ValidateScheme_ (fProtocol_);
+        ValidateScheme_ (result.fProtocol_);
     }
 
     size_t i    =   0;
@@ -253,7 +255,7 @@ URL::URL (const String& w)
                 }
             }
             size_t  endOfHost       =   i;
-            fHost_ = w.SubString (hostNameStart, endOfHost);
+            result.fHost_ = w.SubString (hostNameStart, endOfHost);
 
             // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -265,7 +267,7 @@ URL::URL (const String& w)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        fPort_ = String2Int<PortType> (num);
+                        result.fPort_ = String2Int<PortType> (num);
                     }
                 }
             }
@@ -273,28 +275,29 @@ URL::URL (const String& w)
     }
 
     {
-        fRelPath_ = w.SubString (i);
+        result.fRelPath_ = w.SubString (i);
 
         // It should be RELATIVE to that hostname and the slash is the separator character
         // NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
         // on the leading slash!
         //      -- LGP 2008-09-04
-        if (not fRelPath_.empty () and fRelPath_[0] == '/') {
-            fRelPath_ = fRelPath_.SubString (1);
+        if (not result.fRelPath_.empty () and result.fRelPath_[0] == '/') {
+            result.fRelPath_ = result.fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   fRelPath_.find ('#');
+        size_t  startOfFragment =   result.fRelPath_.find ('#');
         if (startOfFragment != String::kBadIndex) {
-            fRelPath_ = fRelPath_.SubString (startOfFragment + 1);
-            fRelPath_.erase (startOfFragment);
+            result.fRelPath_ = result.fRelPath_.SubString (startOfFragment + 1);
+            result.fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   fRelPath_.find ('?');
+        size_t  startOfQuery    =   result.fRelPath_.find ('?');
         if (startOfQuery != String::kBadIndex) {
-            fQuery_ = fRelPath_.substr (startOfQuery + 1);
-            fRelPath_.erase (startOfQuery);
+            result.fQuery_ = result.fRelPath_.substr (startOfQuery + 1);
+            result.fRelPath_.erase (startOfQuery);
         }
     }
+    return result;
 }
 
 URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber, const String& relPath, const String& query, const String& fragment)
@@ -323,7 +326,7 @@ URL::URL (const SchemeType& protocol, const String& host, const String& relPath,
     ValidateScheme_ (fProtocol_);
 }
 
-URL URL::ParseHostRelativeURL (const String& w)
+URL URL::ParseHostRelativeURL_ (const String& w)
 {
     URL url;
     {
