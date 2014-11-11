@@ -8,7 +8,15 @@
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation2
    Memcheck:Leak
    fun:malloc
-   fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_ILm*EE8AllocateEm.isra.*
+   fun:_ZN7Stroika10Foundation6Memory8Private_*BlockAllocationPool_*
+}
+{
+   BLOCK_ALLOC_OPTIMIZED_G++_
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:GetMem_Util_
+   fun:_ZN7Stroika10Foundation6Memory8Private_20BlockAllocationPool_*.isra.*
 }
 {
    This_Is_To_Suppress_False_Warnings_About_Block_Allocation_Optimizer_
@@ -76,8 +84,6 @@
    fun:malloc
    fun:_ZN7Stroika10Foundation10Containers7Private19IteratorImplHelper_*ContainerRepLockDataSupport_*
 }
-
-
 {
    BlockAllocation_clang++
    Memcheck:Leak
@@ -111,7 +117,7 @@
    Memcheck:Leak
    match-leak-kinds: possible
    fun:malloc
-  fun:_ZN7Stroika10Foundation10Containers7Private14DataStructures10LinkedList*
+   fun:_ZN7Stroika10Foundation10Containers7Private14DataStructures10LinkedList*
 }
 {
    BlockAllocation_clang++_optimizer...
@@ -126,5 +132,13 @@
    match-leak-kinds: possible
    fun:malloc
    fun:_ZZN7Stroika10Foundation9Traversal15CreateGenerator*6Memory8Optional*MyIterableRep*
+}
+{
+   BLOCK_ALLOC_OPTIMIZED_G++_
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:GetMem_Util_
+   fun:Allocate
 }
 
