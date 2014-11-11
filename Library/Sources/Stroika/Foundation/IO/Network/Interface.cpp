@@ -150,13 +150,13 @@ Again:
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
             switch (currAddresses->IfType) {
-                case	IF_TYPE_SOFTWARE_LOOPBACK:
+                case    IF_TYPE_SOFTWARE_LOOPBACK:
                     newInterface.fType = Interface::Type::eLoopback;
                     break;
-                case	IF_TYPE_IEEE80211:
+                case    IF_TYPE_IEEE80211:
                     newInterface.fType = Interface::Type::eWIFI;
                     break;
-                case	IF_TYPE_ETHERNET_CSMACD:
+                case    IF_TYPE_ETHERNET_CSMACD:
                     newInterface.fType = Interface::Type::eWiredEthernet;
                     break;
                 default:
@@ -164,10 +164,10 @@ Again:
                     break;
             }
             switch (currAddresses->OperStatus) {
-                case	IfOperStatusUp:
+                case    IfOperStatusUp:
                     newInterface.fStatus = Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                     break;
-                case	IfOperStatusDown:
+                case    IfOperStatusDown:
                     newInterface.fStatus = Set<Interface::Status> ();
                     break;
                 default:
