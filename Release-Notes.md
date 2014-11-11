@@ -24,7 +24,7 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a51">v2.0a51x</a><br/>2014-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a51">v2.0a51</a><br/>2014-11-10</td>
 <td>
 <ul>
 	<li>Added Optional<>::AssignIf(), and fixed Optional::Compare() code - including != etc - to work with synchonized 
@@ -42,6 +42,7 @@ History
 	<li>Regression tests and better docs for Math::Rebin code</li>
 	<li>Fixes to Network/Interfaces code for Linux, and GetInterfaces() impl for Windows: many new fields - much improved</li>
 	<li>Added SocketAddress overload taking WINDOWS SOCKET_ADDRESS</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
