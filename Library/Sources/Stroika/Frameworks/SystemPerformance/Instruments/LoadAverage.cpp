@@ -82,7 +82,8 @@ Instrument  SystemPerformance::Instruments::LoadAverage::GetInstrument ()
         }
         return results;
     },
-    {kLoadAverage}
+    {kLoadAverage},
+    GetObjectVariantMapper ()
                                           );
     return kInstrument_;
 }
