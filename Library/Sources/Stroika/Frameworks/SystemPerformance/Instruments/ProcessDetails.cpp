@@ -78,6 +78,61 @@ const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunSta
 
 
 
+// consider using this as a backup if /procfs/ not present...
+#if   qPlatform_POSIX && 0
+namespace {
+    Collection<pair<pid_t, ProcessType>> capture_using_ps_ ()
+    {
+        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::capture_using_ps_"));
+        Collection<pair<pid_t, ProcessType>>   result;
+        ProcessRunner pr (L"ps -axl");
+        Streams::BasicBinaryInputOutputStream   useStdOut;
+        pr.SetStdOut (useStdOut);
+        pr.Run ();
+        String out;
+        Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
+        bool skippedHeader = false;
+        for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+            if (not skippedHeader) {
+                skippedHeader = true;
+                continue;
+            }
+            Sequence<String>    l    =  Characters::Tokenize<String> (i, String_Constant (L" "));
+            if (l.size () < 13) {
+                DbgTrace ("skipping line cuz len=%d", l.size ());
+                continue;
+            }
+            ProcessType p;
+            p.fUserID = Characters::String2Int<int> (l[1]);
+            pid_t   pid = Characters::String2Int<int> (l[2]);
+            p.fParentProcessID = Characters::String2Int<int> (l[3]);
+            {
+                string  tmp =   l[11].AsUTF8 ();
+                int minutes = 0;
+                int seconds = 0;
+                sscanf (tmp.c_str (), "%d:%d", &minutes, &seconds);
+                p.fCPUTimeUsed = minutes * 60 + seconds;
+            }
+            {
+                // wrong - must grab EVERYHTING from i past a certain point
+                const size_t kCmdNameStartsAt_ = 69;    // not sure this is always true? Empirical!
+                p.fCommandName = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_);
+            }
+            {
+                // Fake but usable answer
+                Sequence<String>    t    =  Characters::Tokenize<String> (p.fCommandName, String_Constant (L" "));
+                if (not t.empty ()) {
+                    p.fEXEPath = t[0];
+                }
+            }
+            result.Add ({pid, p});
+        }
+        return result;
+    }
+}
+#endif
+
+
 
 
 /*
