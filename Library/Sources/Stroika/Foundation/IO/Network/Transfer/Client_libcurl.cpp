@@ -174,7 +174,7 @@ void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 URL     Connection_LibCurl::Rep_::GetURL () const
 {
     // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
-    return URL (String::FromUTF8 (fCURLCacheUTF8_URL_).As<wstring> ());
+    return URL::Parse (String::FromUTF8 (fCURLCacheUTF8_URL_).As<wstring> ());
 }
 
 void    Connection_LibCurl::Rep_::SetURL (const URL& url)
