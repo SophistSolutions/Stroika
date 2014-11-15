@@ -138,19 +138,6 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  See SetProtocol () for handling of the 'protocol' parameter.
-                     *  See SetQuery() for setting the query parameter.
-                     *  See SetHostRelativePath for the 'relPath' restrictions.
-                     *  This Requires() its arguments are valid and in range. use
-                     *
-                     *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
-                     */
-                    URL ();
-                    explicit URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
-                    explicit URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
-
-                public:
-                    /**
                      *      @todo PRELIM!!!!
                      *              PROABBLY NEED "FORCE_AS_GOOD_VALID_FULL_URL
                      *              MAYBE FULL_OR_RELATIVE (as in webpage urls)
@@ -177,13 +164,34 @@ namespace   Stroika {
 
                         /**
                          */
-                        eFlexiblyAsUI
+                        eFlexiblyAsUI,
+
+                        /**
+                         */
+                        eStroikaPre20a50BackCompatMode,
                     };
+
+                public:
+                    /**
+                     *  See SetProtocol () for handling of the 'protocol' parameter.
+                     *  See SetQuery() for setting the query parameter.
+                     *  See SetHostRelativePath for the 'relPath' restrictions.
+                     *  This Requires() its arguments are valid and in range. use
+                     *
+                     *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
+                     */
+                    URL ();
+                    URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
+                    URL (const String& urlText, ParseOptions po);
+
+                public:
                     /**
                      */
                     static  URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
 
                 private:
+                    static  URL ParseHosteStroikaPre20a50BackCompatMode_ (const String& w);
                     static  URL ParseHostRelativeURL_ (const String& w);
 
                 public:

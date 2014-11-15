@@ -171,10 +171,18 @@ namespace   {
 }
 #endif
 
+URL::URL (const String& urlText, ParseOptions po)
+{
+    *this = Parse (urlText, po);
+}
+
 URL URL::Parse (const String& w, ParseOptions po)
 {
     if (po == URL::eAsRelativeURL) {
         return ParseHostRelativeURL_ (w);
+    }
+    if (po == URL::eStroikaPre20a50BackCompatMode) {
+        return ParseHosteStroikaPre20a50BackCompatMode_ (w);
     }
 
     URL result;
@@ -352,6 +360,132 @@ URL URL::ParseHostRelativeURL_ (const String& w)
             url.fRelPath_.erase (startOfQuery);
         }
     }
+    return url;
+}
+
+URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
+{
+    URL url;
+    url.fPort_ = kDefaultPortSentinal_;
+
+    if (w.empty ()) {
+        return url;
+    }
+
+    /*
+     *  We MIGHT need to canonicalize the URL:
+     *          ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
+     *  But empirically, so far, its slow, and doesn't appear to be doing anything. It MIGHT be used in case where we get a URL
+     *  with %nn encodings, and they need to be rewritten. But even that doesn't appear critical here. Consider doing that if we
+     *  ever get diffs with the OLD_Cracker () reported.
+     */
+
+    {
+        size_t  e   =   w.find (':');
+        if (e != String::kBadIndex) {
+            url.fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
+            ValidateScheme_ (url.fProtocol_);
+        }
+    }
+
+    size_t i    =   0;
+    {
+        size_t  len             =   w.length ();
+        size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
+        size_t  e               =   w.find (':');
+        if (e != String::kBadIndex) {
+            hostNameStart = e + 1;
+        }
+        i = hostNameStart;
+
+        // Look for // and assume whats after is a hostname, and otherwise, the rest is a relative url
+        // (REALLY UNSURE ABOUT THIS LOGIC - HAVENT FOUND GOOD DOCS ON THE NET FOR THIS FORMAT
+        //      -- LGP 2006-01-24
+
+        if (hostNameStart + 2 < len and w[hostNameStart] == '/' and w[hostNameStart + 1] == '/') {
+            // skip '//' before hostname
+            hostNameStart++;
+            hostNameStart++;
+
+            // then hostname extends to EOS, or first colon (for port#) or first '/'
+            i = hostNameStart;
+            for (; i != w.length (); ++i) {
+                wchar_t c   =   w[i].As<wchar_t> ();
+                if (c == ':' or c == '/' or c == '\\') {
+                    break;
+                }
+            }
+            size_t  endOfHost       =   i;
+            url.fHost_ = w.SubString (hostNameStart, endOfHost);
+
+            // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
+            if (i < w.length ()) {
+                if (w[i] == ':') {
+                    String num;
+                    ++i;
+                    while (i < w.length () && w[i].IsDigit ()) {
+                        num.push_back (w[i].As<wchar_t> ());
+                        ++i;
+                    }
+                    if (!num.empty ()) {
+                        url.fPort_ = String2Int<PortType> (num);
+                    }
+                }
+            }
+        }
+    }
+
+    {
+        url.fRelPath_ = w.SubString (i);
+
+        // It should be RELATIVE to that hostname and the slash is the separator character
+        // NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
+        // on the leading slash!
+        //      -- LGP 2008-09-04
+        if (not url.fRelPath_.empty () and url.fRelPath_[0] == '/') {
+            url.fRelPath_ = url.fRelPath_.SubString (1);
+        }
+
+        size_t  startOfFragment =   url.fRelPath_.find ('#');
+        if (startOfFragment != String::kBadIndex) {
+            url.fRelPath_ = url.fRelPath_.SubString (startOfFragment + 1);
+            url.fRelPath_.erase (startOfFragment);
+        }
+
+        size_t  startOfQuery    =   url.fRelPath_.find ('?');
+        if (startOfQuery != String::kBadIndex) {
+            url.fQuery_ = url.fRelPath_.substr (startOfQuery + 1);
+            url.fRelPath_.erase (startOfQuery);
+        }
+    }
+
+
+#if     qDebug && qPlatform_Windows
+    {
+        String testProtocol;
+        String testHost;
+        String testPort;
+        String testRelPath;
+        String testQuery;
+        OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
+        Assert (testProtocol == url.fProtocol_);
+        if (testProtocol == L"http") {
+            Assert (testHost == url.fHost_.ToLowerCase ());
+            {
+                //Assert (testPort == fPort);
+                if (url.fPort_ == 80) {
+                    Assert (testPort == L"" or testPort == L"80");
+                }
+                else {
+                    // apparently never really implemented in old cracker...
+                    //Assert (fPort == ::_wtoi (testPort.c_str ()));
+                }
+            }
+            Assert (testRelPath == url.fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + url.fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testQuery == url.fQuery_ or not url.fFragment_.empty ()); // old code didn't check fragment
+        }
+    }
+#endif
     return url;
 }
 
