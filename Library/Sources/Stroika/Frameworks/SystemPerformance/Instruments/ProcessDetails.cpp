@@ -633,7 +633,8 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
         results.fMeasurements.Add (m);
         return results;
     },
-    {kProcessMapMeasurement}
+    {kProcessMapMeasurement},
+    GetObjectVariantMapper ()
                                           );
     return kInstrument_;
 }

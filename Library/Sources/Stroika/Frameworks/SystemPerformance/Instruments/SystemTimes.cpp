@@ -103,7 +103,8 @@ Instrument  SystemPerformance::Instruments::SystemTimes::GetInstrument (Time::Du
         results.fMeasurements.Add (m);
         return results;
     },
-    {kPercentCPUUsage}
+    {kPercentCPUUsage},
+    DataExchange::ObjectVariantMapper ()
                                            );
     return systemTimesInstrument;
 }

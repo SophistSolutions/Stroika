@@ -193,7 +193,8 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
         results.fMeasurements.Add (m);
         return results;
     },
-    {kMountedVolumeUsage}
+    {kMountedVolumeUsage},
+    GetObjectVariantMapper ()
                                           );
     return kInstrument_;
 }

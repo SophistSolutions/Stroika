@@ -189,7 +189,8 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
         results.fMeasurements.Add (m);
         return results;
     },
-    {kMemoryUsage}
+    {kMemoryUsage},
+    GetObjectVariantMapper ()
                                           );
     return kInstrument_;
 }

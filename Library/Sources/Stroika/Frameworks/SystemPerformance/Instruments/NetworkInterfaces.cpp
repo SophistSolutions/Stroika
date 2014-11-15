@@ -223,7 +223,8 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument ()
         results.fMeasurements.Add (m);
         return results;
     },
-    {kNetworkInterfacesMeasurement}
+    {kNetworkInterfacesMeasurement},
+    GetObjectVariantMapper ()
                                           );
     return kInstrument_;
 }

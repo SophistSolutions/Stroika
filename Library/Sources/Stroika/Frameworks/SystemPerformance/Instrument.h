@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/DataExchange/Atom.h"
+#include    "../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../Foundation/Execution/Function.h"
 
 #include    "Measurement.h"
@@ -48,13 +49,21 @@ namespace   Stroika {
                 InstrumentNameType          fInstrumentName;
                 CapturerCallback            fCaptureFunction;
                 Set<MeasurementType>        fCapturedMeasurements;
+                DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
-                Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements);
+                Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
 
-                /*
+                /**
                  */
                 nonvirtual  MeasurementSet  Capture () const;
+
+
+                /**
+                 *  Require just one measurmenet
+                 */
+                template    <typename T>
+                nonvirtual    T CaptureOneMeasurement () const;
             };
 
 
