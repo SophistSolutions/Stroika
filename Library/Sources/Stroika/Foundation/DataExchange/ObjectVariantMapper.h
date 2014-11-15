@@ -124,38 +124,36 @@ namespace   Stroika {
              *
              *
              * EXAMPLE USAGE:
-             *      struct SharedContactsConfig_
-             *      {
+             *      struct  SharedContactsConfig_ {
              *          bool                    fEnabled = false;
              *          DateTime                fLastSynchronizedAt;
              *          Mapping<String,String>  fThisPHRsIDToSharedContactID;
              *      };
-             *...
              *
-             *  ObjectVariantMapper mapper;
+             *      ObjectVariantMapper mapper;
              *
-             *  // register each of your mappable (even private) types
-             *  mapper.AddClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({
+             *      // register each of your mappable (even private) types
+             *      mapper.AddClass<SharedContactsConfig_> ({
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
-             *  }));
+             *      });
              *
-             *  SharedContactsConfig_   tmp;
-             *  tmp.fEnabled = enabled;
-             *  VariantValue v = mapper.Serialize  (tmp);
+             *      SharedContactsConfig_   tmp;
+             *      tmp.fEnabled = enabled;
+             *      VariantValue v = mapper.Serialize  (tmp);
              *
-             *  // at this point - we should have VariantValue object with "Enabled" field.
-             *  // This can then be serialized using
+             *      // at this point - we should have VariantValue object with "Enabled" field.
+             *      // This can then be serialized using
              *
-             *  Streams::BasicBinaryInputOutputStream   tmpStream;
-             *  DataExchange::JSON::PrettyPrint (v, tmpStream);
+             *      Streams::BasicBinaryInputOutputStream   tmpStream;
+             *      DataExchange::JSON::PrettyPrint (v, tmpStream);
              *
-             *  // THEN deserialized, and mapped back to C++ object form
-             *  tmp = mapper.ToObject<SharedContactsConfig_> (DataExchange::JSON::Reader   (tmpStream));
-             *  if (tmp.fEnabled) {
-             *  ...
-             *  }
+             *      // THEN deserialized, and mapped back to C++ object form
+             *      tmp = mapper.ToObject<SharedContactsConfig_> (DataExchange::JSON::Reader (tmpStream));
+             *      if (tmp.fEnabled) {
+             *          ...
+             *      }
              *
              *
              */
