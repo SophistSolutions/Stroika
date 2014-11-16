@@ -122,21 +122,26 @@ namespace   Stroika {
                     ObjectVariantMapper GetObjectVariantMapper ();
 
 
-                    enum class CachePolicy {
+                    enum    class   CachePolicy {
                         eOmitUnchangedValues,
                         eIncludeAllRequestedValues,
                     };
 
 
                     /**
+                    */
+                    struct  Options {
+                        Optional<Set<Fields2Capture>>   fOnlyCaptureFields;
+                        Optional<Set<pid_t>>            fRestrictToPIDs;
+                        Optional<Set<pid_t>>            fOmitPIDs;
+                        CachePolicy                     fCachePolicy { CachePolicy::eIncludeAllRequestedValues };
+                    };
+
+
+                    /**
                      *  Instrument returning ProcessMapType measurements.
                      */
-                    Instrument          GetInstrument (
-                        const Optional<Set<Fields2Capture>>& onlyCaptureFields = Optional<Set<Fields2Capture>> (),
-                        const Optional<Set<pid_t>>& restrictToPIDs = Optional<Set<pid_t>> (),
-                        const Optional<Set<pid_t>>& omitPIDs = Optional<Set<pid_t>> (),
-                        CachePolicy cachePolicy = CachePolicy::eIncludeAllRequestedValues
-                    );
+                    Instrument  GetInstrument (const Options& options = Options ());
 
 
                 }

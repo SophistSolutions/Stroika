@@ -612,12 +612,7 @@ namespace {
  ************** Instruments::ProcessDetails::GetInstrument **********************
  ********************************************************************************
  */
-Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (
-    const Optional<Set<Fields2Capture>>& onlyCaptureFields,
-    const Optional<Set<pid_t>>& restrictToPIDs,
-    const Optional<Set<pid_t>>& omitPIDs,
-    CachePolicy cachePolicy
-)
+Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
 {
     // @todo can only use static one if right options passed in...
     static  Instrument  kInstrument_    = Instrument (
