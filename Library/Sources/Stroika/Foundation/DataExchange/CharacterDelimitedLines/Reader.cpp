@@ -62,13 +62,13 @@ public:
         AssertNotImplemented ();
         return VariantValue ();
     }
-    nonvirtual  Iterable<Sequence<String>>  ReadAs2DArray (const Streams::TextInputStream& in) const
+    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::TextInputStream& in) const
     {
         Sequence<Sequence<String>>  result;
         for (String line : in.ReadLines ()) {
             Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
+            DbgTrace (L"DataExchange::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
             for (auto i : tokens) {
                 DbgTrace (L"token='%s'", i.c_str ());
             }
@@ -91,28 +91,14 @@ DataExchange::CharacterDelimitedLines::Reader::Reader (const Set<Character>& col
 {
 }
 
-Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray (const Streams::BinaryInputStream& in) const
+Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::BinaryInputStream& in) const
 {
-    return ReadAs2DArray (Streams::TextInputStreamBinaryAdapter (in));
+    return ReadMatrix (Streams::TextInputStreamBinaryAdapter (in));
 }
 
-Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray (const Streams::TextInputStream& in) const
+Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::TextInputStream& in) const
 {
     const _IRep& baseRep = _GetRep ();
     AssertMember (&baseRep, Rep_);
-    return reinterpret_cast<const Rep_*> (&baseRep)->ReadAs2DArray (in);
+    return reinterpret_cast<const Rep_*> (&baseRep)->ReadMatrix (in);
 }
-
-#if 0
-Mapping<String, String>  DataExchange::CharacterDelimitedLines::Reader::ReadAsMapping (const Streams::BinaryInputStream& in) const
-{
-    return ReadAsMapping (Streams::TextInputStreamBinaryAdapter (in));
-}
-
-Mapping<String, String>  DataExchange::CharacterDelimitedLines::Reader::ReadAsMapping (const Streams::TextInputStream& in) const
-{
-    const _IRep& baseRep = _GetRep ();
-    AssertMember (&baseRep, Rep_);
-    return reinterpret_cast<const Rep_*> (&baseRep)->ReadAsMapping (in);
-}
-#endif

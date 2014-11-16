@@ -81,7 +81,7 @@ namespace {
             const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
             //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -96,7 +96,7 @@ namespace {
             const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
             Optional<uint64_t>  pgfault;
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadAs2DArray (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
