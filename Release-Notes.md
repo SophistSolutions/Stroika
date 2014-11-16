@@ -24,10 +24,16 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a52">v2.0a52x</a><br/>2014-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a52">v2.0a52</a><br/>2014-11-15</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added Set\<T, TRAITS\>::RemoveIf</li>
+	<li>SystemPerformance/Instruments/ProcessDetails minor improvements (like Options argument) - prelim</li>
+	<li>Renamed DataExchange::CharacterDelimitedLines::Reader::ReadAs2DArray to DataExchange::CharacterDelimitedLines::Reader::ReadMatrix</li>
+	<li>URL cleanups - relating to parsing. Migrated OLD_Cracker to regtests; parse cleanups to URL, incliuding new
+	URL::eStroikaPre20a50BackCompatMode</li>
+	<li>Instrument now aggregates  ObjectVariantMapper code and used that to provide nice CaptureOnce() method(s)</li>
+	<li>Very modest/incomplete testing</li>
 </ul>
 </td>
 </tr>
