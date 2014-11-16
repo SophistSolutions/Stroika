@@ -167,6 +167,11 @@ namespace   Stroika {
                         eFlexiblyAsUI,
 
                         /**
+                         *  @todo CLEANUP/FIX
+                         *
+                         *  I THINK The only quirk of this node is that
+                         *      dyn:/foo.html gets parsed as HOST=EMPTY; relativeURL= foo.html; That makes sense
+                         *      but doesnt apper to conform to spec for urls (rfs) above. Research/analyze...
                          */
                         eStroikaPre20a50BackCompatMode,
                     };
