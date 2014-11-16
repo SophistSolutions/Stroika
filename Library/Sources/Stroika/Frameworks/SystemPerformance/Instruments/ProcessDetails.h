@@ -21,7 +21,7 @@
  *      @todo   Eventually allow configuration of whether to use procfs or ps process grep, but default to
  *              procfs is available.
  *
- *      @todo   Do Windoze impl using windows APIs for process enumeration etc
+ *      @todo   Do Windoze impl using windows APIs for process enumeration etc (EnumProcesses)
  */
 
 
