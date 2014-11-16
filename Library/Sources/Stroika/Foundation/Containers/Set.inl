@@ -158,6 +158,22 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
+            inline  bool    Set<T, TRAITS>::RemoveIf (T item)
+            {
+                /*
+                 *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
+                 *  if someone calls RemoveIf() - they dont know/care if this call or another at the same time is doing the
+                 *  addition. Any 'race' would be in the logical of the calling code.
+                 */
+                if (Contains (item)) {
+                    Remove (item);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             void    Set<T, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {

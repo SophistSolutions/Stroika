@@ -218,6 +218,23 @@ namespace   Stroika {
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
+                /**
+                 *  RemoveIf item if not already present. Whether present or not it does the same thing and
+                 *  assures the item is no longer present, but returns true iff the call made a change (removed
+                 *  the item).
+                 *
+                 *  Note - we chose to return true in the case of removeal because this is the case most likely
+                 *  when a caller would want to take action.
+                 *
+                 *  EXAMPLE:
+                 *      if (s.RemoveIf (n)) {
+                 *          write_to_disk(n);
+                 *      }
+                 */
+                nonvirtual  bool    RemoveIf (T item);
+
+            public:
+            public:
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
