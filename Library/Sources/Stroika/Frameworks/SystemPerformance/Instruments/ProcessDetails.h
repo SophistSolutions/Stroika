@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Configuration/Enumeration.h"
+#include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Execution/Process.h"
@@ -129,12 +130,35 @@ namespace   Stroika {
 
 
                     /**
-                    */
+                     */
                     struct  Options {
                         Optional<Set<Fields2Capture>>   fOnlyCaptureFields;
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
                         CachePolicy                     fCachePolicy { CachePolicy::eIncludeAllRequestedValues };
+
+                        enum    Strategy {
+#if     qPlatform_POSIX
+                            eProcFS,
+                            ePS,
+#endif
+#if     qPlatform_Windows
+                            eWindows_EnumProcesses,
+#endif
+                        };
+
+#if 0
+                        //NYI on windows - init...
+                        Containers::Sequence<Strategy>  fStrategiesToTry {
+#if     qPlatform_POSIX
+                            eProcFS,
+                            ePS,
+#endif
+#if     qPlatform_Windows
+                            eWindows_EnumProcesses
+#endif
+                        };
+#endif
                     };
 
 
