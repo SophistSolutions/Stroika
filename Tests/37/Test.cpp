@@ -4,8 +4,19 @@
 //  TEST    Foundation::IO::Network
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#if     qPlatform_Windows
+#include    <atlbase.h>
+
+#include    <Windows.h>
+#include    <URLMon.h>
+#endif
+
+#include    "Stroika/Foundation/Characters/String_Constant.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/Interface.h"
 #include    "Stroika/Foundation/IO/Network/URL.h"
@@ -20,11 +31,125 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
+using   Characters::String_Constant;
+
+
+
+#if     qPlatform_Windows
+namespace   {
+    DISABLE_COMPILER_MSC_WARNING_START(6262)
+    void    OLD_Cracker (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
+    {
+        using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
+        RequireNotNull (protocol);
+        RequireNotNull (host);
+        RequireNotNull (relPath);
+        RequireNotNull (query);
+
+        DWORD   ingored =   0;
+        wchar_t outBuf[10 * 1024];
+
+        String canonical;
+        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
+        canonical = outBuf;
+
+        {
+            size_t  e   =   canonical.find (':');
+            if (e != String::kBadIndex) {
+                *protocol = canonical.SubString (0, e);
+            }
+        }
+
+        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, NEltsOf (outBuf), &ingored, 0))) {
+            *host = outBuf;
+        }
+
+        // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
+        {
+            String  matchStr        =   *protocol + String_Constant (L"://") + *host;
+            size_t  startOfPath     =   canonical.Find (matchStr);
+            if (startOfPath == String::kBadIndex) {
+                matchStr        =   *protocol + String_Constant (L":");
+                startOfPath     =   canonical.Find (matchStr);
+            }
+            if (startOfPath == String::kBadIndex) {
+                startOfPath = canonical.length ();
+            }
+            else {
+                startOfPath += matchStr.length ();
+            }
+            *relPath = canonical.SubString (startOfPath);
+
+            size_t  startOfQuery    =   relPath->find ('?');
+            if (startOfQuery != String::kBadIndex) {
+                *query = relPath->SubString (startOfQuery + 1);
+                relPath->erase (startOfQuery);
+            }
+        }
+    }
+    DISABLE_COMPILER_MSC_WARNING_END(6262)
+}
+#endif
+
+
+
+
 
 namespace {
     namespace Test1_URL_Parsing_ {
+        namespace Private_ {
+            void    TestOldWinCracker_ (const String& w, const URL& url)
+            {
+#if     qPlatform_Windows
+                {
+                    String testProtocol;
+                    String testHost;
+                    String testPort;
+                    String testRelPath;
+                    String testQuery;
+                    OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
+                    VerifyTestResult (testProtocol == url.GetProtocol ());
+                    if (testProtocol == L"http")
+                    {
+                        VerifyTestResult (testHost == url.GetHost ().ToLowerCase ());
+                        {
+                            //Assert (testPort == fPort);
+                            if (url.GetEffectivePortNumber () == 80) {
+                                VerifyTestResult (testPort == L"" or testPort == L"80");
+                            }
+                            else {
+                                // apparently never really implemented in old cracker...
+                                //Assert (fPort == ::_wtoi (testPort.c_str ()));
+                            }
+                        }
+                        VerifyTestResult (testRelPath == url.GetHostRelativePath () or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + url.GetHostRelativePath ()) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+                        VerifyTestResult (testQuery == url.GetQueryString () or not url.GetFragment ().empty ()); // old code didn't check fragment
+                    }
+                }
+#endif
+            }
+            void    TestOldWinCracker_ (const String& w)
+            {
+                TestOldWinCracker_ (w, URL (w, URL::eStroikaPre20a50BackCompatMode));
+            }
+            void    TestBackCompatURL_()
+            {
+                TestOldWinCracker_ (L"dyn:/Reminders/Home.htm");
+                TestOldWinCracker_ (L"dyn:/Startup.htm");
+                TestOldWinCracker_ (L"home:Home.htm");
+                {
+                    URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
+                    VerifyTestResult (url.GetProtocol () == L"dyn");
+                    VerifyTestResult (url.GetHost ().empty ());
+                    VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
+                    VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
+                }
+            }
+        }
         void    DoTests_ ()
         {
+            Private_::TestBackCompatURL_ ();
+
             {
                 URL url = URL::Parse (L"http:/StyleSheet.css?ThemeName=Cupertino", URL::eFlexiblyAsUI);
                 VerifyTestResult (url.GetEffectivePortNumber () == 80);

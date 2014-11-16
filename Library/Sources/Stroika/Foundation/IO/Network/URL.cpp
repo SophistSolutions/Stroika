@@ -3,33 +3,18 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <atlbase.h>
-
-#include    <Windows.h>
-#include    <URLMon.h>
-#endif
-
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
 #include    "../../Characters/String_Constant.h"
 #include    "../../Characters/String2Int.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/StringException.h"
-#if     qPlatform_Windows
-#include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
 
 #include    "URL.h"
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
-
-#if     qPlatform_Windows
-using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
-#endif
-
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -115,61 +100,6 @@ URL::URL ()
 {
     Ensure (empty ());
 }
-
-#if     qPlatform_Windows
-namespace   {
-    DISABLE_COMPILER_MSC_WARNING_START(6262)
-    void    OLD_Cracker (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
-    {
-        RequireNotNull (protocol);
-        RequireNotNull (host);
-        RequireNotNull (relPath);
-        RequireNotNull (query);
-
-        DWORD   ingored =   0;
-        wchar_t outBuf[10 * 1024];
-
-        String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
-        canonical = outBuf;
-
-        {
-            size_t  e   =   canonical.find (':');
-            if (e != String::kBadIndex) {
-                *protocol = canonical.SubString (0, e);
-            }
-        }
-
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, NEltsOf (outBuf), &ingored, 0))) {
-            *host = outBuf;
-        }
-
-        // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
-        {
-            String  matchStr        =   *protocol + String_Constant (L"://") + *host;
-            size_t  startOfPath     =   canonical.Find (matchStr);
-            if (startOfPath == String::kBadIndex) {
-                matchStr        =   *protocol + String_Constant (L":");
-                startOfPath     =   canonical.Find (matchStr);
-            }
-            if (startOfPath == String::kBadIndex) {
-                startOfPath = canonical.length ();
-            }
-            else {
-                startOfPath += matchStr.length ();
-            }
-            *relPath = canonical.SubString (startOfPath);
-
-            size_t  startOfQuery    =   relPath->find ('?');
-            if (startOfQuery != String::kBadIndex) {
-                *query = relPath->SubString (startOfQuery + 1);
-                relPath->erase (startOfQuery);
-            }
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END(6262)
-}
-#endif
 
 URL::URL (const String& urlText, ParseOptions po)
 {
@@ -458,34 +388,6 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
             url.fRelPath_.erase (startOfQuery);
         }
     }
-
-
-#if     qDebug && qPlatform_Windows
-    {
-        String testProtocol;
-        String testHost;
-        String testPort;
-        String testRelPath;
-        String testQuery;
-        OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-        Assert (testProtocol == url.fProtocol_);
-        if (testProtocol == L"http") {
-            Assert (testHost == url.fHost_.ToLowerCase ());
-            {
-                //Assert (testPort == fPort);
-                if (url.fPort_ == 80) {
-                    Assert (testPort == L"" or testPort == L"80");
-                }
-                else {
-                    // apparently never really implemented in old cracker...
-                    //Assert (fPort == ::_wtoi (testPort.c_str ()));
-                }
-            }
-            Assert (testRelPath == url.fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + url.fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
-            Assert (testQuery == url.fQuery_ or not url.fFragment_.empty ()); // old code didn't check fragment
-        }
-    }
-#endif
     return url;
 }
 
