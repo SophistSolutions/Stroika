@@ -399,10 +399,10 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
     if (absT < kShowHoursIfLess_) {
         return fmtDate (static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
     }
-    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, kSecondsPerWeek, 1)) {
+    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek), 1.0)) {
         return fmtDate (static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
     }
-    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, kSecondsPerMonth, 1)) {
+    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth), 1.0)) {
         return fmtDate (static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
     }
     if (absT < kShowMonthsIfLess_) {
