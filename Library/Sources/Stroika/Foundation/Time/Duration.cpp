@@ -382,31 +382,33 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
 
     Characters::String  suffix  =   isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
 
-    InternalNumericFormatType_  kHoursThreshold =       55 * kSecondsPerMinute;
-    if (absT < kHoursThreshold) {
-        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinutes.c_str (), suffix.c_str ());
-    }
+    auto fmtDate = [suffix] (int timeInSelectedUnit, const String & singularUnit,  const String & pluralUnit) -> String {
+        String label = Linguistics::PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
+        return Format (L"%d %s %s", timeInSelectedUnit, label.c_str (), suffix.c_str ());
+    };
 
-    InternalNumericFormatType_  kDaysThreshold_ =       23 * kSecondsPerHour;
-    if (absT < kDaysThreshold_) {
-        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHours.c_str (), suffix.c_str ());
-    }
+    constexpr   InternalNumericFormatType_  kShowAsMinutesIfLess_   =       55 * kSecondsPerMinute;
+    constexpr   InternalNumericFormatType_  kShowHoursIfLess_       =       23 * kSecondsPerHour;
+    constexpr   InternalNumericFormatType_  kShowDaysIfLess_        =       14 * kSecondsPerDay;
+    constexpr   InternalNumericFormatType_  kShowWeeksIfLess_       =       59 * kSecondsPerDay;
+    constexpr   InternalNumericFormatType_  kShowMonthsIfLess_      =       11 * kSecondsPerMonth;
 
-    InternalNumericFormatType_  kWeeksThreshold_    =       14 * kSecondsPerDay;
-    if (absT < kWeeksThreshold_) {
-        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDays.c_str (), suffix.c_str ());
+    if (absT < kShowAsMinutesIfLess_) {
+        return fmtDate (static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
     }
-
-    InternalNumericFormatType_  kMonthsThreshold_   =       59 * kSecondsPerDay;
-    if (absT < kWeeksThreshold_) {
-        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeeks.c_str (), suffix.c_str ());
+    if (absT < kShowHoursIfLess_) {
+        return fmtDate (static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
     }
-
-    InternalNumericFormatType_  kYearsThreshold_    =       11 * kSecondsPerMonth;
-    if (absT < kYearsThreshold_) {
-        return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerMonth)), prettyPrintInfo.fLabels.fMonths.c_str (), suffix.c_str ());
+    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, kSecondsPerWeek, 1)) {
+        return fmtDate (static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
     }
-    return Format (L"%d %s %s", static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYears.c_str (), suffix.c_str ());
+    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, kSecondsPerMonth, 1)) {
+        return fmtDate (static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
+    }
+    if (absT < kShowMonthsIfLess_) {
+        return fmtDate (static_cast<int> (round (absT / kSecondsPerMonth)), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
+    }
+    return fmtDate (static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
 }
 
 Duration    Duration::operator- () const

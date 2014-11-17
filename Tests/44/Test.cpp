@@ -537,6 +537,10 @@ namespace   {
             VerifyTestResult (Duration (L"P2Y").PrettyPrintAge () == L"2 years from now");
             VerifyTestResult (Duration (L"P2.4Y").PrettyPrintAge () == L"2 years from now");
             VerifyTestResult (Duration (L"P2.6Y").PrettyPrintAge () == L"3 years from now");
+            VerifyTestResult (Duration (L"-P1M").PrettyPrintAge () == L"1 month ago");
+            VerifyTestResult (Duration (L"-P2M").PrettyPrintAge () == L"2 months ago");
+            VerifyTestResult (Duration (L"-PT1Y").PrettyPrintAge () == L"1 year ago");
+            VerifyTestResult (Duration (L"-PT2Y").PrettyPrintAge () == L"2 years ago");
         }
     }
 
