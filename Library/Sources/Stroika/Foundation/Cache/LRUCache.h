@@ -321,7 +321,7 @@ namespace   Stroika {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
                     LEGACYLRUCACHEOBJ*  v   =   fRealCache_.LookupElement (key);
                     if (v == nullptr) {
-                        return Optional<VALUE> ();
+                        return Memory::Optional<VALUE> ();
                     }
                     return v->fValue;
                 }
@@ -337,7 +337,7 @@ namespace   Stroika {
             public:
                 VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
                 {
-                    Optional<VALUE> v = Lookup (key);
+                    Memory::Optional<VALUE> v = Lookup (key);
                     if (v.IsMissing ()) {
                         VALUE   newV = valueFetcher (key);
                         Add (key, newV);
