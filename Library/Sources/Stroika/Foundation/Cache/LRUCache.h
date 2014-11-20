@@ -9,6 +9,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Optional.h"
 
 
 
@@ -16,6 +17,11 @@
  *      \file
  *
  * TODO:
+ *
+ *      @todo   Look at nu_LRUCache<> and consider possability of migrating to it, or something like that
+ *              Much slower, but threadsafe, and simpler to use.
+ *
+ *              Probably migrate older code to class Legacy_LRUCache<>
  *
  *      @todo   TERRIBLE API!
  *                  LRUCache<string> tmp (3);
@@ -257,6 +263,92 @@ namespace   Stroika {
                 CacheElement_**  fEndV;
                 CacheElement_*   fCur;
             };
+
+
+
+
+
+
+
+/// DRAFT NEW API
+            template    <typename KEY, typename VALUE>
+            class   nu_LRUCache {
+            private:
+                struct  LEGACYLRUCACHEOBJ {
+                    KEY fKey;
+                    VALUE   fValue;
+                };
+                struct  LEGACYLRUCACHEOBJ_TRAITS : Cache::LRUCacheSupport::DefaultTraits<LEGACYLRUCACHEOBJ, KEY> {
+                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ& e)
+                    {
+                        return e.fKey;
+                    }
+                };
+                mutable Cache::LRUCache<LEGACYLRUCACHEOBJ, LEGACYLRUCACHEOBJ_TRAITS>  fRealCache_;
+                mutable mutex   fLock_;
+            public:
+                nu_LRUCache (size_t size = 1)
+                    : fRealCache_ (size)
+                    , fLock_ ()
+                {
+                }
+                nu_LRUCache (const nu_LRUCache& from)
+                    : fRealCache_ (1)
+                    , fLock_ ()
+                {
+                    auto    critSec { Execution::make_unique_lock (from.fLock_) };
+                    fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
+                    for (auto i : from.fRealCache_) {
+                        Add (i.fKey, i.fValue);
+                    }
+                }
+
+            public:
+                nonvirtual  size_t  GetMaxCacheSize () const
+                {
+                    return fRealCache_.GetMaxCacheSize ();
+                }
+
+            public:
+                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize)
+                {
+                    fRealCache_.SetMaxCacheSize (maxCacheSize);
+                }
+
+            public:
+                Memory::Optional<VALUE> Lookup (const KEY& key) const
+                {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
+                    LEGACYLRUCACHEOBJ*  v   =   fRealCache_.LookupElement (key);
+                    if (v == nullptr) {
+                        return Optional<VALUE> ();
+                    }
+                    return v->fValue;
+                }
+            public:
+                void Add (const KEY& key, const VALUE& value)
+                {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
+                    LEGACYLRUCACHEOBJ*  v   =   fRealCache_.AddNew (key);
+                    Assert (v->fKey == key);
+                    v->fValue = value;
+                }
+
+            public:
+                VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
+                {
+                    Optional<VALUE> v = Lookup (key);
+                    if (v.IsMissing ()) {
+                        VALUE   newV = valueFetcher (key);
+                        Add (key, newV);
+                        return newV;
+                    }
+                    else {
+                        return *v;
+                    }
+                }
+            };
+
 
 
         }

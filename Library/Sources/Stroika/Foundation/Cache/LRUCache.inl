@@ -148,7 +148,7 @@ namespace   Stroika {
             template    <typename   ELEMENT, typename TRAITS>
             inline  size_t  LRUCache<ELEMENT, TRAITS>::GetMaxCacheSize () const
             {
-                return TRAITS::HASH_TABLE_SIZE * fCachedElts_BUF_.size ();
+                return TRAITS::HASH_TABLE_SIZE * fCachedElts_BUF_[0].size ();
             }
             template    <typename   ELEMENT, typename TRAITS>
             void    LRUCache<ELEMENT, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
