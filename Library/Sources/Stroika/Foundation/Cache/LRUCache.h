@@ -9,6 +9,11 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+
+/// move these to .inl file when we move code for nu_LRUCache
+#include    "../Cryptography/Digest/Algorithm/Jenkins.h"
+#include    "../Cryptography/Hash.h"
+
 #include    "../Memory/Optional.h"
 
 
@@ -277,23 +282,58 @@ namespace   Stroika {
 
 
 
-
-
 /// DRAFT NEW API
-            template    <typename KEY, typename VALUE>
+            template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+            struct  nu_LRUCache_DefaultTraits {
+                // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+                DEFINE_CONSTEXPR_CONSTANT(uint8_t, kHashTableSize, HASH_TABLE_SIZE);
+
+                // If KeyType different type than ElementType we need a hash for that too
+                static  size_t  Hash (const KEY& e)
+                {
+                    using   Cryptography::Hash;
+                    using   Cryptography::Digest::Digester;
+                    using   Cryptography::Digest::Algorithm::Jenkins;
+                    using   USE_DIGESTER_     =   Digester<Jenkins>;
+                    return Hash<USE_DIGESTER_, KEY, size_t> (e);
+                }
+
+                // defaults to operator==
+                static  bool    Equals (const KEY& lhs, const KEY& rhs)
+                {
+                    return lhs == rhs;
+                }
+
+#if     qDebug
+                using   StatsType   =   LRUCacheSupport::Stats_Basic;
+#else
+                using   StatsType   =   LRUCacheSupport::Stats_Null;
+#endif
+            };
+
+            template    <typename KEY, typename VALUE, typename TRAITS = nu_LRUCache_DefaultTraits<KEY>>
             class   nu_LRUCache {
             private:
-                struct  LEGACYLRUCACHEOBJ {
+                struct  LEGACYLRUCACHEOBJ_ {
                     KEY fKey;
                     VALUE   fValue;
                 };
-                struct  LEGACYLRUCACHEOBJ_TRAITS : Cache::LRUCacheSupport::DefaultTraits<LEGACYLRUCACHEOBJ, KEY> {
-                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ& e)
+                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits<LEGACYLRUCACHEOBJ_, KEY> {
+                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ_& e)
                     {
                         return e.fKey;
                     }
+                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
+                    static  size_t  Hash (const KEY& e)
+                    {
+                        return TRAITS::Hash (e);
+                    }
+                    static  bool    Equal (const KEY& lhs, const KEY& rhs)
+                    {
+                        return TRAITS::Equals (lhs, rhs);
+                    }
                 };
-                mutable Cache::LRUCache<LEGACYLRUCACHEOBJ, LEGACYLRUCACHEOBJ_TRAITS>  fRealCache_;
+                mutable Cache::LRUCache<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
                 mutable mutex   fLock_;
             public:
                 nu_LRUCache (size_t size = 1)
@@ -305,22 +345,35 @@ namespace   Stroika {
                     : fRealCache_ (1)
                     , fLock_ ()
                 {
-                    auto    critSec { Execution::make_unique_lock (from.fLock_) };
                     fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
+                    auto    critSec { Execution::make_unique_lock (from.fLock_) };
                     for (auto i : from.fRealCache_) {
                         Add (i.fKey, i.fValue);
                     }
+                }
+                const nu_LRUCache& operator= (const nu_LRUCache& rhs)
+                {
+                    if (this != &rhs) {
+                        SetMaxCacheSize (rhs.GetMaxCacheSize ());
+                        auto    critSec { Execution::make_unique_lock (rhs.fLock_) };
+                        for (auto i : rhs.fRealCache_) {
+                            Add (i.fKey, i.fValue);
+                        }
+                    }
+                    return *this;
                 }
 
             public:
                 nonvirtual  size_t  GetMaxCacheSize () const
                 {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
                     return fRealCache_.GetMaxCacheSize ();
                 }
 
             public:
                 nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize)
                 {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
                     fRealCache_.SetMaxCacheSize (maxCacheSize);
                 }
 
@@ -328,7 +381,7 @@ namespace   Stroika {
                 Memory::Optional<VALUE> Lookup (const KEY& key) const
                 {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
-                    LEGACYLRUCACHEOBJ*  v   =   fRealCache_.LookupElement (key);
+                    LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
                     if (v == nullptr) {
                         return Memory::Optional<VALUE> ();
                     }
@@ -338,7 +391,7 @@ namespace   Stroika {
                 void Add (const KEY& key, const VALUE& value)
                 {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
-                    LEGACYLRUCACHEOBJ*  v   =   fRealCache_.AddNew (key);
+                    LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.AddNew (key);
                     v->fKey = key;
                     v->fValue = value;
                 }

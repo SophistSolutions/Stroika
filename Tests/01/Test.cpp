@@ -40,21 +40,46 @@ namespace   {
 
 namespace   {
     namespace    Test2_Simple_ {
+        namespace Private_ {
+            void    T1_ ()
+            {
+                nu_LRUCache<string, string> tmp (3);
+                tmp.Add("a", "1");
+                tmp.Add("b", "2");
+                tmp.Add("c", "3");
+                tmp.Add("d", "4");
+                VerifyTestResult (tmp.Lookup ("a").IsMissing ());
+                VerifyTestResult (tmp.Lookup ("b") == "2");
+                VerifyTestResult (tmp.Lookup ("d") == "4");
+
+                nu_LRUCache<string, string> tmp2 = tmp;
+                VerifyTestResult (tmp2.Lookup ("a").IsMissing ());
+                VerifyTestResult (tmp2.Lookup ("b") == "2");
+                VerifyTestResult (tmp2.Lookup ("d") == "4");
+            }
+            void    T2_ ()
+            {
+                using   CACHE = nu_LRUCache<string, string, nu_LRUCache_DefaultTraits<string, 10>>;
+                CACHE tmp (3);
+                tmp.Add("a", "1");
+                tmp.Add("b", "2");
+                tmp.Add("c", "3");
+                tmp.Add("d", "4");
+                VerifyTestResult (tmp.Lookup ("a").IsMissing () or * tmp.Lookup ("a") == "1");  // could be missing or found but if found same value
+                VerifyTestResult (tmp.Lookup ("b") == "2");
+                VerifyTestResult (tmp.Lookup ("d") == "4");
+
+                CACHE tmp2 = tmp;
+                VerifyTestResult (tmp2.Lookup ("a").IsMissing () or * tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (tmp2.Lookup ("b") == "2");
+                VerifyTestResult (tmp2.Lookup ("d") == "4");
+            }
+
+        }
         void    DoIt ()
         {
-            nu_LRUCache<string, string> tmp (3);
-            tmp.Add("a", "1");
-            tmp.Add("b", "2");
-            tmp.Add("c", "3");
-            tmp.Add("d", "4");
-            VerifyTestResult (tmp.Lookup ("a").IsMissing ());
-            VerifyTestResult (tmp.Lookup ("b") == "2");
-            VerifyTestResult (tmp.Lookup ("d") == "4");
-
-            nu_LRUCache<string, string> tmp2 = tmp;
-            VerifyTestResult (tmp2.Lookup ("a").IsMissing ());
-            VerifyTestResult (tmp2.Lookup ("b") == "2");
-            VerifyTestResult (tmp2.Lookup ("d") == "4");
+            Private_::T1_ ();
+            Private_::T2_ ();
         }
     }
 }
