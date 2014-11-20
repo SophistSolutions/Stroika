@@ -104,10 +104,13 @@ namespace   Stroika {
             inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator&    LRUCache<ELEMENT, TRAITS>::CacheIterator::operator++ ()
             {
                 RequireNotNull (fCur);
+                Require (fCurV != fEndV);
                 fCur = fCur->fNext;
-                if (fCur == nullptr and fCurV != fEndV) {
+                if (fCur == nullptr) {
                     fCurV++;
-                    fCur  = *fCurV;
+                    if (fCurV != fEndV) {
+                        fCur  = *fCurV;
+                    }
                 }
                 return *this;
             }

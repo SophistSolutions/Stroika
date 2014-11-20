@@ -21,24 +21,51 @@ using   namespace   Stroika::Foundation::Cache;
 
 
 namespace   {
-    void    Test1_Simple_ ()
-    {
-        LRUCache<string> tmp (3);
-        *tmp.AddNew ("x") = "x";
-        *tmp.AddNew ("y") = "y";
-        *tmp.AddNew ("z") = "z";
-        *tmp.AddNew ("a") = "a";
-        VerifyTestResult (tmp.LookupElement ("a") != nullptr);
-        VerifyTestResult (tmp.LookupElement ("z") != nullptr);
-        VerifyTestResult (tmp.LookupElement ("x") == nullptr);
+    namespace    Test1_Simple_Legacy_ {
+        void    DoIt ()
+        {
+            LRUCache_LEGACY<string> tmp (3);
+            *tmp.AddNew ("x") = "x";
+            *tmp.AddNew ("y") = "y";
+            *tmp.AddNew ("z") = "z";
+            *tmp.AddNew ("a") = "a";
+            VerifyTestResult (tmp.LookupElement ("a") != nullptr);
+            VerifyTestResult (tmp.LookupElement ("z") != nullptr);
+            VerifyTestResult (tmp.LookupElement ("x") == nullptr);
+        }
     }
 }
+
+
+
+namespace   {
+    namespace    Test2_Simple_ {
+        void    DoIt ()
+        {
+            nu_LRUCache<string, string> tmp (3);
+            tmp.Add("a", "1");
+            tmp.Add("b", "2");
+            tmp.Add("c", "3");
+            tmp.Add("d", "4");
+            VerifyTestResult (tmp.Lookup ("a").IsMissing ());
+            VerifyTestResult (tmp.Lookup ("b") == "2");
+            VerifyTestResult (tmp.Lookup ("d") == "4");
+
+            nu_LRUCache<string, string> tmp2 = tmp;
+            VerifyTestResult (tmp2.Lookup ("a").IsMissing ());
+            VerifyTestResult (tmp2.Lookup ("b") == "2");
+            VerifyTestResult (tmp2.Lookup ("d") == "4");
+        }
+    }
+}
+
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test1_Simple_ ();
+        Test1_Simple_Legacy_::DoIt ();
+        Test2_Simple_::DoIt ();
     }
 }
 

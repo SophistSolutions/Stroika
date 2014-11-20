@@ -268,6 +268,15 @@ namespace   Stroika {
 
 
 
+            /// MIGRATION STRATEGY FROM OLD TO NEW NAMES/DESIGN
+            template    <typename   ELEMENT, typename KEY = ELEMENT>
+            using  DefaultTraits_LEGACY = LRUCacheSupport::DefaultTraits<ELEMENT, KEY>;
+            template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY<ELEMENT>>
+            using   LRUCache_LEGACY  = LRUCache<ELEMENT, TRAITS>;
+
+
+
+
 
 
 /// DRAFT NEW API
@@ -330,7 +339,7 @@ namespace   Stroika {
                 {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
                     LEGACYLRUCACHEOBJ*  v   =   fRealCache_.AddNew (key);
-                    Assert (v->fKey == key);
+                    v->fKey = key;
                     v->fValue = value;
                 }
 
