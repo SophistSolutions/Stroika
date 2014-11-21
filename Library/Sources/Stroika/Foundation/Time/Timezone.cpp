@@ -13,7 +13,9 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Characters/String.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Debug/Assertions.h"
+#include    "../Debug/Trace.h"
 #include    "DateTime.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
@@ -22,6 +24,7 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Time;
 
 
@@ -47,10 +50,11 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
         result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
     }
     catch (...) {
+        DbgTrace ("Ignoring missing ID from /etc/timezone");
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fName = String::FromSDKString (tzname[0]);
-    result.fStandardTime.fName = String::FromSDKString (tzname[1]);
+    result.fDaylightSavingsTime.fName = String::FromSDKString (tzname[1]);
 #else
     AssertNotImplemented ();
     return String ();
