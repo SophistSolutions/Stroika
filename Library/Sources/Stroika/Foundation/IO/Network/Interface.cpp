@@ -17,6 +17,7 @@
 #include    <netinet/in.h>
 #include    <linux/netlink.h>
 #include    <linux/rtnetlink.h>
+#include    <linux/ethtool.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
@@ -92,7 +93,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 
         int r = ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         Assert (r == 0);
-        return (ifreq.ifr_flags);
+        return ifreq.ifr_flags;
     };
 
     struct ifreq ifreqs[64];
@@ -121,6 +122,78 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         else {
             // NYI
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
+        }
+
+        {
+            auto getSpeed = [] (int sd, const char* name) -> Optional<double> {
+                char buf[1024];
+
+                struct ifreq ifreq;
+                memset(&ifreq, 0, sizeof (ifreq));
+                strcpy (ifreq.ifr_name, name);
+                ifreq.ifr_data = &edata;
+
+                edata.cmd = ETHTOOL_GSET;
+                int r = ioctl(sock, SIOCETHTOOL, &ifreq);
+                Assert (r == 0);
+                constexpr double kMegabit_ = 1000 * 1000;
+                switch (ethtool_cmd_speed(&edata))
+                {
+                    case SPEED_10:
+                        return 10 * kMegabit_;
+                    case SPEED_100:
+                        preturn 100 * kMegabit_;
+                    case SPEED_1000:
+                        return 1000 * kMegabit_;
+                    case SPEED_2500:
+                        return 2500 * kMegabit_;
+                    case SPEED_10000:
+                        return 10000 * kMegabit_;
+                    default:
+                        return Optional<double> ();
+                }
+            };
+            struct ethtool_cmd edata;
+            ifr.ifr_data = &edata;
+#if 0
+            struct ifreq ifr;
+            int rc;
+            sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
+            if (sock < 0) {
+                perror("socket");
+                exit(1);
+            }
+            strncpy(ifr.ifr_name, "eth0", sizeof(ifr.ifr_name));
+            ifr.ifr_data = &edata;
+
+            edata.cmd = ETHTOOL_GSET;
+            rc = ioctl(sock, SIOCETHTOOL, &ifr);
+            if (rc < 0) {
+                perror("ioctl");
+                exit(1);
+            }
+            switch (ethtool_cmd_speed(&edata)) {
+                case SPEED_10:
+                    printf("10Mbps\n");
+                    break;
+                case SPEED_100:
+                    printf("100Mbps\n");
+                    break;
+                case SPEED_1000:
+                    printf("1Gbps\n");
+                    break;
+                case SPEED_2500:
+                    printf("2.5Gbps\n");
+                    break;
+                case SPEED_10000:
+                    printf("10Gbps\n");
+                    break;
+                default:
+                    printf("Speed returned is %d\n", edata.speed);
+            }
+#endif
+            fTransmitSpeedBaud = getSpeed (sd, ifreqs[i].ifr_name);
+            fReceiveLinkSpeedBaud = fTransmitSpeedBaud;
         }
 
         {
@@ -194,7 +267,7 @@ Again:
             }
 #if     (NTDDI_VERSION >= NTDDI_LONGHORN)
             newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
-            newInterface.fReceiveLinkSpeed = currAddresses->ReceiveLinkSpeed;
+            newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
             result.Add (newInterface);
         }
