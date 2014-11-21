@@ -8,6 +8,9 @@
 
 #include    <ctime>
 
+#include    "../Characters/String.h"
+#include    "../Memory/Optional.h"
+
 
 
 /**
@@ -26,6 +29,36 @@ namespace   Stroika {
 
             class   DateTime;
 
+
+            /**
+             *  Information about the current system timezone setting.
+             *
+             *  A timezone contains a name for BOTH 'standard time' - most of the year when you are in the nomral
+             *  time range - and 'daylight savings time' - a period of the year when you have an alternate timezone name
+             *  and offset.
+             *
+             *  @see http://en.wikipedia.org/wiki/Tz_database
+             *
+             *  e.g:
+             *      ID                  STD ABBR    STD NAME                DST ABBR    DST NAME                GMT offset  DST adjustment  DST Start Date rule     Start time  DST End date rule   End time
+             *
+             *      America/New_York    EST         Eastern Standard Time   EDT         Eastern Daylight Time   -05:00:00   +01:00:00       2;0;3                   +02:00:00   1;0;11              +02:00:00
+             *
+             */
+            struct  TimeZoneInformationType {
+                struct  Details {
+                    Memory::Optional<String>    fName;
+                    Memory::Optional<String>    fAbbreviation;
+                    Memory::Optional<int>       fBiasInMinutesFromUTC;
+                };
+                Details fStandardTime;
+                Details fDaylightSavingsTime;
+
+                // This is the 'olsen database name' (e..g. 'America/New_York')
+                Memory::Optional<String>    fID;
+            };
+
+            TimeZoneInformationType    GetTimezoneInfo ();
 
             /**
              * Returns the string (in what format???) identifying the current system timezone.

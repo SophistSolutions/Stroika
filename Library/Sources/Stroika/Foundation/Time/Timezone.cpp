@@ -15,6 +15,8 @@
 #include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
 #include    "DateTime.h"
+#include    "../IO/FileSystem/BinaryFileInputStream.h"
+#include    "../Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "Timezone.h"
 
@@ -24,6 +26,37 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
+
+
+/*
+ ********************************************************************************
+ ***************************** Time::GetTimezoneInfo ****************************
+ ********************************************************************************
+ */
+TimeZoneInformationType    Time::GetTimezoneInfo ()
+{
+    TimeZoneInformationType result;
+#if     qPlatform_Windows
+    TIME_ZONE_INFORMATION   tzInfo;
+    memset (&tzInfo, 0, sizeof (tzInfo));
+    (void)::GetTimeZoneInformation (&tzInfo);
+    result.fStandardTime.fName = tzInfo.StandardName;
+    result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
+#elif   qPlatform_POSIX
+    try {
+        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
+    }
+    catch (...) {
+    }
+    // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
+    result.fStandardTime.fName = String::FromSDKString (tzname[0]);
+    result.fStandardTime.fName = String::FromSDKString (tzname[1]);
+#else
+    AssertNotImplemented ();
+    return String ();
+#endif
+    return result;
+}
 
 
 /*
