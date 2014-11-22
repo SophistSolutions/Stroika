@@ -230,6 +230,7 @@ namespace {
             results = newV;
         }
         catch (...) {
+            DbgTrace ("Exception gathering procfs disk io stats");
         }
 #endif
         return results;
