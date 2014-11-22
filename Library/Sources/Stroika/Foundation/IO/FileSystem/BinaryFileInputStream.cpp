@@ -19,6 +19,7 @@
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../IO/FileAccessException.h"
 #include    "../../Streams/BufferedBinaryInputStream.h"
 
 #include    "BinaryFileInputStream.h"
@@ -54,15 +55,18 @@ public:
         : fCriticalSection_ ()
         , fFD_ (-1)
     {
+        try {
 #if     qPlatform_Windows
-        errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
-        if (e != 0) {
-            Execution::errno_ErrorException::DoThrow (e);
-        }
-        ThrowIfFalseGetLastError (fFD_ != -1);
+            errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+            if (e != 0) {
+                Execution::errno_ErrorException::DoThrow (e);
+            }
+            ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
+        }
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
     }
     ~Rep_ ()
     {

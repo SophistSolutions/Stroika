@@ -17,6 +17,12 @@ namespace   Stroika {
     namespace   Foundation  {
         namespace   IO {
 
+
+            /*
+             ********************************************************************************
+             ***************************** IO::FileAccessException **************************
+             ********************************************************************************
+             */
             inline  String         FileAccessException::GetFileName () const
             {
                 return fFileName_;
@@ -25,17 +31,24 @@ namespace   Stroika {
             {
                 return fFileAccessMode_;
             }
-        }
 
+
+        }
         namespace   Execution {
+
 
             template    <>
             inline  void    _NoReturn_  DoThrow (const IO::FileAccessException& e2Throw)
             {
-                DbgTrace (SDKSTR ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.GetFileName ().c_str (), e2Throw.GetFileAccessMode ());
+                DbgTrace (L"Throwing FileAccessException: fFileName='%s'; FileAccessMode=%s", e2Throw.GetFileName ().c_str (), IO::Stroika_Enum_Names(FileAccessMode).GetName (e2Throw.GetFileAccessMode ()));
                 throw e2Throw;
             }
+
+
         }
+
+
+
     }
 }
 #endif  /*_Stroika_Foundation_IO_FileAccessException_inl_*/

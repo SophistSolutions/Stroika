@@ -21,13 +21,15 @@ namespace   Stroika {
             using   Characters::String;
 
 
-            // This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
-            // file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
-            // on a given file (which is usually given in the object). It also is the result of a perticular operation/access
-            // failure (like read, write, or list).
-            //
-            // For now inherits from StringException so places that currently don't refer to this will still be caught in a
-            // list of exceptions. Probably should do separate handler so can customize messages...
+            /**
+             * This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
+             * file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
+             * on a given file (which is usually given in the object). It also is the result of a perticular operation/access
+             * failure (like read, write, or list).
+             *
+             * For now inherits from StringException so places that currently don't refer to this will still be caught in a
+             * list of exceptions. Probably should do separate handler so can customize messages...
+             */
             class   FileAccessException : public Execution::StringException {
             public:
                 FileAccessException (const String& fileName = String (), FileAccessMode fileAccessMode = FileAccessMode::eReadWrite);
@@ -41,9 +43,7 @@ namespace   Stroika {
                 FileAccessMode  fFileAccessMode_;
             };
 
-
-            // Use can use this utility macro to 'fill in' the filename for a block of code that could throw a FileAccessException
-            // on a given filename (but where that code may not know the filename)
+#if 0
 #define FileAccessException_FILENAME_UPDATE_HELPER(_FILENAME_,_CODE_)\
     try {\
         _CODE_;\
@@ -55,6 +55,34 @@ namespace   Stroika {
         Execution::DoReThrow ();\
     }\
      
+#endif
+
+            /*
+             *  It often happens that you know a filename in one context, but call something that throws
+             *  a file access exception. This helpful macro can rebild the filename, so its captured in the
+             *  exception.
+             */
+#define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME,USEACCESSMODE) \
+    catch (const FileAccessException& e) {  \
+        if (e.GetFileName ().empty ()) {\
+            Execution::DoThrow (FileAccessException (USEFILENAME, e.USEACCESSMODE));\
+        }\
+        Execution::DoReThrow ();\
+    }
+
+            /*
+             *  It often happens that you know a filename in one context, but call something that throws
+             *  a file access exception. This helpful macro can rebild the filename, so its captured in the
+             *  exception.
+             */
+#define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME) \
+    catch (const FileAccessException& e) {  \
+        if (e.GetFileName ().empty ()) {\
+            Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
+        }\
+        Execution::DoReThrow ();\
+    }
+
 
         }
     }
