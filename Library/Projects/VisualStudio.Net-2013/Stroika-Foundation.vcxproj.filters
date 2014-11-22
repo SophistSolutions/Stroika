@@ -2541,5 +2541,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl">
       <Filter>Sources\Configuration</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
   </ItemGroup>
 </Project>

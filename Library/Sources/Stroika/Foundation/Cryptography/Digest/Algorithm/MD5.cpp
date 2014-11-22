@@ -157,7 +157,7 @@ namespace   {
         (a) += (b); \
     }
 
-    void MD5Init (MD5_CTX* mdContext)
+    void MD5Init_ (MD5_CTX* mdContext)
     {
         mdContext->i[0] = mdContext->i[1] = (UINT4)0;
 
@@ -169,7 +169,7 @@ namespace   {
         mdContext->buf[3] = (UINT4)0x10325476;
     }
 
-    void MD5Update (MD5_CTX* mdContext, const unsigned char* inBuf, unsigned int inLen)
+    void MD5Update_ (MD5_CTX* mdContext, const unsigned char* inBuf, unsigned int inLen)
     {
         UINT4 in[16];
         int mdi;
@@ -201,7 +201,7 @@ namespace   {
         }
     }
 
-    void MD5Final (MD5_CTX* mdContext)
+    void MD5Final_ (MD5_CTX* mdContext)
     {
         UINT4 in[16];
         int mdi;
@@ -217,7 +217,7 @@ namespace   {
 
         /* pad out to 56 mod 64 */
         padLen = (mdi < 56) ? (56 - mdi) : (120 - mdi);
-        MD5Update (mdContext, PADDING, padLen);
+        MD5Update_ (mdContext, PADDING, padLen);
 
         /* append length in bits and transform */
         for (i = 0, ii = 0; i < 14; i++, ii += 4)
@@ -363,9 +363,9 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, Retur
     Require (from == to or to != nullptr);
     MD5_CTX ctx;
     memset (&ctx, 0, sizeof (ctx));
-    MD5Init (&ctx);
-    MD5Update (&ctx, from, static_cast<unsigned int> (to - from));
-    MD5Final (&ctx);
+    MD5Init_ (&ctx);
+    MD5Update_ (&ctx, from, static_cast<unsigned int> (to - from));
+    MD5Final_ (&ctx);
 
     // No idea why array<> type sucks like this...--LGP 2014-07-28
     ReturnType  result {};

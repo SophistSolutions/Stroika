@@ -125,8 +125,8 @@ namespace  {
                 inline  void    VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
                 {
 #if     qPlatform_Windows
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline  void    VERIFY_ATL_DECODE_ ()

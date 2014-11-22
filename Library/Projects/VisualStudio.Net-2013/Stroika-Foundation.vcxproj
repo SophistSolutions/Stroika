@@ -1567,6 +1567,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />

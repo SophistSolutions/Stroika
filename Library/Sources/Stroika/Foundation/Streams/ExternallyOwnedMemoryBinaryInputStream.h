@@ -62,9 +62,9 @@ namespace   Stroika {
             private:
                 class   IRep_;
             public:
-                ExternallyOwnedMemoryBinaryInputStream (const Memory::BLOB& b);
-                ExternallyOwnedMemoryBinaryInputStream (const vector<Byte>& v);
                 ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end);
+                template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
+                ExternallyOwnedMemoryBinaryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end);
             };
 
 
@@ -79,5 +79,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "ExternallyOwnedMemoryBinaryInputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_ExternallyOwnedMemoryBinaryInputStream_h_*/

@@ -12,7 +12,7 @@
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+//#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
