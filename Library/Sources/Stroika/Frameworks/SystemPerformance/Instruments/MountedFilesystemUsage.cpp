@@ -206,7 +206,7 @@ namespace {
         try {
             Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
             Sequence<VolumeInfo>    newV;
-            for (VolumneInfo v : results) {
+            for (VolumeInfo v : results) {
                 if (v.fDeviceOrVolumeName.IsPresent ()) {
                     String  devNameLessSlashes = *v.fDeviceOrVolumeName;
                     size_t i = devNameLessSlashes.RFind ('/');
@@ -221,8 +221,8 @@ namespace {
                         v.fWriteIOStats.fBytes = o->fSectorsWritten * kSectorSizeTmpHack_;
                         v.fWriteIOStats.fTimeTransfering = o->fTimeSpentReading;
 
-                        v.fIOStats.fBytes = v.fReadIOStats.fBytes + v.fWriteIOStats.fBytes;
-                        v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering + v.fWriteIOStats.fTimeTransfering;
+                        v.fIOStats.fBytes = *v.fReadIOStats.fBytes + *v.fWriteIOStats.fBytes;
+                        v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
                     }
                 }
                 newV.Append (v);
