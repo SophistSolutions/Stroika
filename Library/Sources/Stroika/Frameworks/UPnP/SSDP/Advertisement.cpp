@@ -77,7 +77,7 @@ void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisemen
     RequireNotNull (advertisement);
     *advertisement = Advertisement ();
 
-    TextInputStreamBinaryAdapter in = TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (b));
+    TextInputStreamBinaryAdapter in = TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (b.begin (), b.end ()));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {
