@@ -183,10 +183,10 @@ Again:
             try {
                 Byte    buf[4 * 1024];  // not sure of max packet size
                 SocketAddress   from;
-                size_t nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
+                size_t nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), advertisements, s, from);
+                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();

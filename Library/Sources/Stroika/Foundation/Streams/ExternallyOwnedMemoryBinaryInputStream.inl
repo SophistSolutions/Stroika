@@ -24,8 +24,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
-            inline  ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const BYTE_RANDOM_ACCESS_ITERATOR& start, const BYTE_RANDOM_ACCESS_ITERATOR& end)
-                : ExternallyOwnedMemoryBinaryInputStream (Traversal::Iterator2Address (start), Traversal::Iterator2Address (start) + (end - start))
+            inline  ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end)
+                : ExternallyOwnedMemoryBinaryInputStream (static_cast<const Byte*> (Traversal::Iterator2Address (start)), static_cast<const Byte*> (Traversal::Iterator2Address (start) + (end - start)))
             {
             }
 
