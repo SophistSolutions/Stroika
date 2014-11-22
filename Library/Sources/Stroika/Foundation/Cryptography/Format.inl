@@ -26,7 +26,7 @@ namespace   Stroika {
                 inline  string      Format_ (const array<uint8_t, N>& arr, const string*)
                 {
                     static_assert (N >= 1, "N >= 1");
-                    return mkArrayFmt_ (Traversal::Iterator2Address (arr.begin ()), Traversal::Iterator2Address (arr.begin ()) + N);
+                    return mkArrayFmt_ (Traversal::Iterator2Pointer (arr.begin ()), Traversal::Iterator2Pointer (arr.begin ()) + N);
                 }
                 inline  string      Format_ (unsigned int n, const string*)
                 {

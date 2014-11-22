@@ -53,7 +53,7 @@ public:
                 fCursor_ = fData_.begin () + curOffset;
                 Assert (fCursor_ < fData_.end ());
             }
-            (void)::memcpy (Traversal::Iterator2Address (fCursor_), start, roomRequired * sizeof (Character));
+            (void)::memcpy (Traversal::Iterator2Pointer (fCursor_), start, roomRequired * sizeof (Character));
             fCursor_ += roomRequired;
             Assert (fCursor_ <= fData_.end ());
         }

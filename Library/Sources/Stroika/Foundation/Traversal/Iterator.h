@@ -631,11 +631,13 @@ namespace   Stroika {
 
 
             /**
+             *  Sometimes (especially when interacting with low level code) its handy to convert an iterator
+             *  to a pointer. This is always legal for a short period (@todo reference to docs/why).
+             *
+             *  But the idiom is somewhat queer, and wrapping in this method makes it a bit more clear.
              */
             template    <typename   ITERATOR>
-            typename iterator_traits<ITERATOR>::value_type* Iterator2Address (ITERATOR& i);
-            template    <typename   ITERATOR>
-            const typename iterator_traits<ITERATOR>::value_type*   Iterator2Address (const ITERATOR& i);
+            typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
 
 
         }

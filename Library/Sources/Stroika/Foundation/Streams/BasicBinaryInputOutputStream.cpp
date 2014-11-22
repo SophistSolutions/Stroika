@@ -48,7 +48,7 @@ public:
         size_t  nAvail      =   fData_.end () - fReadCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
         if (nCopied != 0) {
-            (void)::memcpy (intoStart, Traversal::Iterator2Address (fReadCursor_), nCopied);
+            (void)::memcpy (intoStart, Traversal::Iterator2Pointer (fReadCursor_), nCopied);
         }
         fReadCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
@@ -72,7 +72,7 @@ public:
                 fWriteCursor_ = fData_.begin () + curWriteOffset;
                 Assert (fWriteCursor_ < fData_.end ());
             }
-            (void)::memcpy (Traversal::Iterator2Address (fWriteCursor_), start, roomRequired);
+            (void)::memcpy (Traversal::Iterator2Pointer (fWriteCursor_), start, roomRequired);
             fWriteCursor_ += roomRequired;
             Assert (fReadCursor_ <= fData_.end ());
             Assert (fWriteCursor_ <= fData_.end ());
