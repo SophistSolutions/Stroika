@@ -47,9 +47,18 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
+
+
+/*
+ ********************************************************************************
+ ************************** IO::FileSystem::Directory ***************************
+ ********************************************************************************
+ */
 Directory::Directory (const String& fileFullPath)
     : fFileFullPath_ (fileFullPath)
 {
