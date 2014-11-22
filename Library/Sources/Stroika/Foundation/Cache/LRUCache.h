@@ -315,7 +315,7 @@ namespace   Stroika {
             class   nu_LRUCache {
             private:
                 struct  LEGACYLRUCACHEOBJ_ {
-                    KEY fKey;
+                    KEY     fKey;
                     VALUE   fValue;
                 };
                 struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits<LEGACYLRUCACHEOBJ_, KEY> {
@@ -378,6 +378,13 @@ namespace   Stroika {
                 }
 
             public:
+                void    clear ()
+                {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
+                    fRealCache_.ClearCache ();
+                }
+
+            public:
                 Memory::Optional<VALUE> Lookup (const KEY& key) const
                 {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
@@ -385,6 +392,7 @@ namespace   Stroika {
                     if (v == nullptr) {
                         return Memory::Optional<VALUE> ();
                     }
+                    Ensure (TRAITS::Equals (key, v->fKey));
                     return v->fValue;
                 }
             public:
