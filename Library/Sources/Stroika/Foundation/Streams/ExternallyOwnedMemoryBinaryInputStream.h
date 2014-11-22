@@ -64,7 +64,7 @@ namespace   Stroika {
             public:
                 ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end);
                 template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
-                ExternallyOwnedMemoryBinaryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end);
+                ExternallyOwnedMemoryBinaryInputStream (const BYTE_RANDOM_ACCESS_ITERATOR& start, const BYTE_RANDOM_ACCESS_ITERATOR& end);
             };
 
 

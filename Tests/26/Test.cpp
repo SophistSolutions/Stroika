@@ -140,14 +140,14 @@ namespace  {
             namespace   {
                 void    VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes))) == bytes);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
             namespace   {
                 void    DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
                 {
-                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (originalUnEncodedBytes)) == base64EncodedString);
+                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     Verify (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
