@@ -88,42 +88,42 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  BLOB::BLOB ()
-                : fRep_ (DEBUG_NEW ZeroRep_ ())
+                : fRep_ (new ZeroRep_ ())
             {
             }
             inline  BLOB::BLOB (const initializer_list<Byte>& data)
-                : fRep_ (DEBUG_NEW BasicRep_ (data.begin (), data.end ()))
+                : fRep_ (new BasicRep_ (data.begin (), data.end ()))
             {
             }
             template    <typename CONTAINER_OF_BYTE>
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-                : fRep_ (DEBUG_NEW BasicRep_ (data.begin (), data.end ()))
+                : fRep_ (new BasicRep_ (data.begin (), data.end ()))
             {
             }
             template    <size_t SIZE>
             inline  BLOB::BLOB (const Byte (&data)[SIZE])
-                : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
             {
             }
             template    <size_t SIZE>
             inline  BLOB::BLOB (const array<Byte, SIZE>& data)
-                : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
             {
             }
             inline  BLOB::BLOB (const vector<Byte>& data)
-                : fRep_ (DEBUG_NEW BasicRep_ (Containers::Start (data), Containers::End (data)))
+                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::End (data)))
             {
             }
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
-                : fRep_ (DEBUG_NEW BasicRep_ (start, end))
+                : fRep_ (new BasicRep_ (start, end))
             {
             }
             inline  BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-                : fRep_ (DEBUG_NEW BasicRep_ (startEndPairs))
+                : fRep_ (new BasicRep_ (startEndPairs))
             {
             }
             inline  BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
-                : fRep_ (DEBUG_NEW BasicRep_ (list2Concatenate))
+                : fRep_ (new BasicRep_ (list2Concatenate))
             {
             }
             inline  BLOB::BLOB (const SharedIRep& rep)
@@ -136,11 +136,11 @@ namespace   Stroika {
             }
             inline  BLOB    BLOB::Attach (const Byte* start, const Byte* end)
             {
-                return BLOB (SharedIRep (DEBUG_NEW AdoptRep_ (start, end)));
+                return BLOB (SharedIRep (new AdoptRep_ (start, end)));
             }
             inline  BLOB    BLOB::AttachApplicationLifetime (const Byte* start, const Byte* end)
             {
-                return BLOB (SharedIRep (DEBUG_NEW AdoptAppLifetimeRep_ (start, end)));
+                return BLOB (SharedIRep (new AdoptAppLifetimeRep_ (start, end)));
             }
             template    <size_t SIZE>
             inline  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE])

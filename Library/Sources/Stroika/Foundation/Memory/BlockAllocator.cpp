@@ -32,7 +32,7 @@ Private_::LockType_*    Private_::sLock_  =   nullptr;
 BlockAllocator_ModuleInit_::BlockAllocator_ModuleInit_ ()
 {
     Require (sLock_ == nullptr);
-    sLock_ = DEBUG_NEW Private_::LockType_ ();
+    sLock_ = new Private_::LockType_ ();
 }
 
 BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()

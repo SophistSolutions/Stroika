@@ -515,13 +515,13 @@ Thread::Thread ()
 }
 
 Thread::Thread (const function<void()>& fun2CallOnce)
-    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (mkIRunnablePtr (fun2CallOnce))))
+    : fRep_ (shared_ptr<Rep_> (new Rep_ (mkIRunnablePtr (fun2CallOnce))))
 {
     Rep_::DoCreate (&fRep_);
 }
 
 Thread::Thread (const IRunnablePtr& runnable)
-    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (runnable)))
+    : fRep_ (shared_ptr<Rep_> (new Rep_ (runnable)))
 {
     Rep_::DoCreate (&fRep_);
 }

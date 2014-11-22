@@ -17,7 +17,7 @@
 
 #include    "../Debug/Assertions.h"
 #include    "Common.h"
-#include    "LeakChecker.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -54,7 +54,7 @@ namespace   Stroika {
                     */
                     nElements = max (nElements, oldEltCount * 2);
 
-                    T*  newPtr = DEBUG_NEW T [nElements];           // NB: We are careful not to update our size field til this has succeeded (exception safety)
+                    T*  newPtr = new T [nElements];           // NB: We are careful not to update our size field til this has succeeded (exception safety)
 
                     // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
                     // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever

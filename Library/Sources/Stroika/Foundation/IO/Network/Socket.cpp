@@ -304,7 +304,7 @@ Socket::Socket (SocketKind socketKind)
 #else
     Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #endif
-    fRep_ = std::move (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sfd)));
+    fRep_ = std::move (shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sfd)));
 }
 
 Socket::Socket (const shared_ptr<_Rep>& rep)
@@ -325,7 +325,7 @@ Socket::Socket (shared_ptr<_Rep>&&  rep)
 
 Socket  Socket::Attach (PlatformNativeHandle sd)
 {
-    return Socket (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)));
+    return Socket (shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sd)));
 }
 
 Socket::PlatformNativeHandle    Socket::Detach ()
@@ -416,7 +416,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 
     Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
-    fRep_  = shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
+    fRep_  = shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sd));
 }
 #endif
 

@@ -12,14 +12,6 @@
 
 
 /*
- * See DOCS in Stroika/Foundation/Memory/LeakChecker.h
- */
-#if     !defined (qMSVisualStudioCRTMemoryDebug)
-#define qMSVisualStudioCRTMemoryDebug   0
-#endif
-
-
-/*
  * See DOCS in Stroika/Foundation/Memory/Common.h
  */
 #if     !defined (qSupportValgrindQuirks)

@@ -496,7 +496,7 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
  ********************************************************************************
  */
 Connection_WinHTTP::Connection_WinHTTP (const Options& options)
-    : Connection (shared_ptr<_IRep> (DEBUG_NEW Rep_ (options)))
+    : Connection (shared_ptr<_IRep> (new Rep_ (options)))
 {
 }
 #endif

@@ -26,7 +26,8 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a53">v2.0a53x</a><br/>2014-11-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Lose LeakChecker module, and DEBUG_NEW. It caused troubles, and was on balance not worth the trouble.
+	On unix Valgrind seems to work well, and for windows, I can try Dr Memory (http://drmemory.org/)</li>
 </ul>
 </td>
 </tr>

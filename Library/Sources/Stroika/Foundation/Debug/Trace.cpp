@@ -177,14 +177,14 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
 {
     CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
-    sEmitTraceCritSec_ = DEBUG_NEW recursive_mutex ();
+    sEmitTraceCritSec_ = new recursive_mutex ();
 #if     qDefaultTracingOn
     Assert (sCounts_ == nullptr);
-    sCounts_ = DEBUG_NEW map<Thread::IDType, unsigned int> ();
+    sCounts_ = new map<Thread::IDType, unsigned int> ();
 #endif
 #if     qTraceToFile
     Assert (sTraceFile == nullptr);
-    sTraceFile = DEBUG_NEW ofstream ();
+    sTraceFile = new ofstream ();
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
 }

@@ -477,9 +477,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
@@ -1184,9 +1181,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
       <Filter>Sources\Configuration</Filter>
@@ -2063,9 +2057,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.inl">
       <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
       <Filter>Sources\Configuration</Filter>

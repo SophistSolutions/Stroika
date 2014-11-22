@@ -72,7 +72,7 @@ namespace   Stroika {
                                 }
 #endif
                                 if (newBuf == nullptr) {
-                                    newBuf = DEBUG_NEW wchar_t [newCapacity];
+                                    newBuf = new wchar_t [newCapacity];
                                 }
                                 if (len != 0) {
                                     (void)::memcpy (newBuf, _fStart, len * sizeof (wchar_t));

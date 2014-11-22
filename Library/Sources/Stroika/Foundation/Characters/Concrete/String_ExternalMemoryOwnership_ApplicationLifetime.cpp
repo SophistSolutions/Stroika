@@ -48,7 +48,7 @@ namespace   {
         {
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -74,7 +74,7 @@ public:
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
-        return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override
     {
@@ -100,7 +100,7 @@ public:
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
-    : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (start, end)))
+    : inherited (_SharedPtrIRep (new MyRep_ (start, end)))
 {
     Require (*end == '\0');
     Require (end == start + ::wcslen (start));  // require standard C-string

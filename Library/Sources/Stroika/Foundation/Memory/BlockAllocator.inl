@@ -16,7 +16,6 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Common.h"
-#include    "../Memory/LeakChecker.h"
 
 #include    "Common.h"
 
@@ -129,7 +128,7 @@ namespace   Stroika {
                     void**  newLinks    =   (void**)malloc (kChunks * sz);
                     Execution::ThrowIfNull (newLinks);
 #else
-                    void**  newLinks    =   (void**)DEBUG_NEW char [kChunks * sz];
+                    void**  newLinks    =   (void**)new char [kChunks * sz];
 #endif
                     void**  curLink     =   newLinks;
                     for (size_t i = 1; i < kChunks; i++) {

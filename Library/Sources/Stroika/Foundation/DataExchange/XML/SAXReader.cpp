@@ -349,7 +349,7 @@ namespace   {
                 fUseXercesMemoryManager (nullptr)
             {
 #if     qUseMyXMLDBMemManager
-                fUseXercesMemoryManager = DEBUG_NEW MyXercesMemMgr_ ();
+                fUseXercesMemoryManager = new MyXercesMemMgr_ ();
 #endif
                 XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
             }
@@ -401,7 +401,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 #if     qHasLibrary_Xerces
     TraceContextBumper ctx (SDKSTR ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_"));
     Require (sUsingLibInterHelper == nullptr);
-    sUsingLibInterHelper = DEBUG_NEW UsingLibInterHelper ();
+    sUsingLibInterHelper = new UsingLibInterHelper ();
 #endif
 }
 

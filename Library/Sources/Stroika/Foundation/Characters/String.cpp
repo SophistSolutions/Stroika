@@ -71,7 +71,7 @@ namespace   {
             AssertNotReached ();    // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -110,7 +110,7 @@ namespace   {
             virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
                 AssertNotReached ();    // Since Strings now immutable, this should never be called
-                return _IterableSharedPtrIRep (DEBUG_NEW MyRep_ (*this));
+                return _IterableSharedPtrIRep (new MyRep_ (*this));
             }
         private:
             _SafeReadRepAccessor  fSaved_;
@@ -442,19 +442,19 @@ String::_SharedPtrIRep  String::mkEmpty_ ()
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
 {
-    return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end));
+    return _SharedPtrIRep (new String_BufferedArray_Rep_ (start, end));
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen)
 {
-    return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (start, end, reserveLen));
+    return _SharedPtrIRep (new String_BufferedArray_Rep_ (start, end, reserveLen));
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
 {
     size_t  len1        =   end1 - start1;
     size_t  totalLen    =   len1 + (end2 - start2);
-    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (start1, end1, totalLen) };
+    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (start1, end1, totalLen) };
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -522,7 +522,7 @@ String    String::InsertAt (const Character* from, const Character* to, size_t a
     }
     _SafeReadRepAccessor copyAccessor { this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
     sRep->InsertAt (from, to, at);
     return String (sRep);
 }
@@ -911,7 +911,7 @@ String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thi
 #endif
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
     // This is mostly a win if it saves a malloc() (and the copy of the start...end char data)
-    return String (_SharedPtrIRep (DEBUG_NEW String_Substring_::MyRep_ (thisAccessor, start, end)));
+    return String (_SharedPtrIRep (new String_Substring_::MyRep_ (thisAccessor, start, end)));
 #else
     // really just to test - if qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_ not true, it doesnt bump refcount so really unsafe todo this way
     return mk_ (start, end);
@@ -1215,7 +1215,7 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-    String::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+    String::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }

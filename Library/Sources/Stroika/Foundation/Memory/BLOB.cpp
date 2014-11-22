@@ -173,7 +173,7 @@ namespace {
     // @todo - add seekability to this helper!!!
     struct BLOBBINSTREAM_ : BinaryInputStream {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
-            : BinaryInputStream (_SharedIRep (DEBUG_NEW REP (b)))
+            : BinaryInputStream (_SharedIRep (new REP (b)))
         {
         }
         struct REP : BinaryInputStream::_IRep, public Seekable::_IRep  {

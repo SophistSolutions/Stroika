@@ -153,7 +153,7 @@ public:
     }
 };
 Database::DBConnection::DBConnection (const wstring& dsn):
-    fRep (DEBUG_NEW Rep (dsn))
+    fRep (new Rep (dsn))
 {
 }
 
