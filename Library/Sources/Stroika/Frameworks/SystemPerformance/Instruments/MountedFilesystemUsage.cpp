@@ -11,8 +11,10 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Containers/Sequence.h"
+#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
+#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
@@ -37,11 +39,11 @@ using   Characters::String_Constant;
 
 
 
+#if     qPlatform_Windows
 namespace {
-    Sequence<VolumeInfo> capture_ ()
+    Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
     {
         Sequence<VolumeInfo>   result;
-#if     qPlatform_Windows
         TCHAR volumeNameBuf[1024];
         for (HANDLE hVol = FindFirstVolume (volumeNameBuf, NEltsOf(volumeNameBuf)); hVol != INVALID_HANDLE_VALUE; ) {
             DWORD lpMaximumComponentLength;
@@ -93,7 +95,17 @@ namespace {
                 hVol = INVALID_HANDLE_VALUE;
             }
         }
-#elif   qPlatform_POSIX
+        return result;
+    }
+}
+#endif
+
+
+#if     qPlatform_POSIX
+namespace {
+    Sequence<VolumeInfo> capture_Process_Run_DF_ ()
+    {
+        Sequence<VolumeInfo>   result;
         //
         // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
         // run def with ProcessRunner
@@ -130,11 +142,98 @@ namespace {
             v.fUsedSizeInBytes = Characters::String2Float<double> (l[3]) * 1024;
             result.Append (v);
         }
-#endif
         return result;
     }
 }
+#endif
 
+
+#if     qPlatform_POSIX
+namespace {
+    struct PerfStats_ {
+        double  fSectorsRead {};
+        double  fTimeSpentReading {};
+        double  fSectorsWritten {};
+        double  fTimeSpentWritingMS {};
+    };
+    Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
+    {
+        using   IO::FileSystem::BinaryFileInputStream;
+        using   Characters::String2Float;
+        Mapping<String, PerfStats_>   result;
+        DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+        const   String_Constant kProcMemInfoFileName_ { L"/proc/diskstats" };
+        // Note - /procfs files always unseekable
+        for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"***in Instruments::MountedFilesystemUsage::capture_ProcFSDiskStats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+            //
+            // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
+            //
+            //  3 - device name
+            //  6 - sectors read
+            //  7 - time spent reading (ms)
+            //  10 - sectors written
+            //  11 - time spent writing (ms)
+            //
+            if (line.size () >= 13) {
+                String  devName = line[3 - 1];
+                String  sectorsRead = line[6 - 1];
+                String  timeSpentReadingMS = line[7 - 1];
+                String  sectorsWritten = line[10 - 1];
+                String  timeSpentWritingMS = line[11 - 1];
+                result.Add (
+                    devName,
+                    PerfStats_ { String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000 }
+                );
+            }
+        }
+        return result;
+    }
+}
+#endif
+
+
+namespace {
+    Sequence<VolumeInfo> capture_ ()
+    {
+        Sequence<VolumeInfo>   results;
+#if     qPlatform_Windows
+        results = capture_Windows_GetVolumeInfo_ ();
+#elif   qPlatform_POSIX
+        results = capture_Process_Run_DF_ ();
+        try {
+            Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
+            Sequence<VolumeInfo>    newV;
+            for (VolumneInfo v : results) {
+                if (v.fDeviceOrVolumeName.IsPresent ()) {
+                    String  devNameLessSlashes = *v.fDeviceOrVolumeName;
+                    size_t i = d.RFind ('/');
+                    if (i != string::npos) {
+                        devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
+                    }
+                    Optional<PerfStats_>    o = diskStats.Lookup (devNameLessSlashes);
+                    if (o.IsPresent ()) {
+                        v.fReadIOStats.fBytes = a;
+                        v.fReadIOStats.fTimeTransfering = a;
+                        v.fWriteIOStats.fBytes = a;
+                        v.fWriteIOStats.fTimeTransfering = fTimeTransfering;
+
+                        v.fIOStats.fBytes = v.fReadIOStats.fBytes + v.fWriteIOStats.fBytes;
+                        v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering + v.fWriteIOStats.fTimeTransfering;
+                    }
+                }
+                newV.Append (v);
+            }
+            results = newV;
+        }
+        catch (...) {
+        }
+#endif
+        return results;
+    }
+}
 
 
 
@@ -154,6 +253,10 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         mapper.AddCommonType<Optional<String>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fBytes), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTimeTransfering), String_Constant (L"Time-Transfering"), StructureFieldInfo::NullFieldHandling::eOmit },
+        });
         mapper.AddClass<VolumeInfo> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -161,6 +264,9 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), String_Constant (L"Mounted-On") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), String_Constant (L"Disk-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Disk-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"fReadIOStats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"fWriteIOStats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOStats), String_Constant (L"fIOStats") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");

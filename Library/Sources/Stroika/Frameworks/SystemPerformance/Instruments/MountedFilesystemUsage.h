@@ -46,6 +46,23 @@ namespace   Stroika {
                         String              fMountedOnName;
                         Optional<double>    fDiskSizeInBytes;
                         Optional<double>    fUsedSizeInBytes;
+
+                        /**
+                         * @see https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
+                         *
+                         *  From total bytes read, and total 'time spent transfering' you can compute time
+                         *  spent reading and time spent writing and total time.
+                         *
+                         *  The reason total time is returned redundantly, is because some system may only be able
+                         *  to report totals, and not read/write breakdown.
+                         */
+                        struct  IOStats {
+                            Optional<double>    fBytes;
+                            Optional<double>    fTimeTransfering;
+                        };
+                        IOStats fReadIOStats;
+                        IOStats fWriteIOStats;
+                        IOStats fIOStats;
                     };
 
 
