@@ -81,16 +81,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template     <typename ENUM_TYPE>
-            inline  EnumNames<ENUM_TYPE>::EnumNames (const EnumNames<ENUM_TYPE>& src)
-                : fEnumNames_ (src.fEnumNames_)
-            {
-            }
-            template     <typename ENUM_TYPE>
-            inline  EnumNames<ENUM_TYPE>::EnumNames (EnumNames<ENUM_TYPE>&& src)
-                : fEnumNames_ (move (src.fEnumNames_))
-            {
-            }
-            template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
                 : fEnumNames_ (origEnumNames)
             {

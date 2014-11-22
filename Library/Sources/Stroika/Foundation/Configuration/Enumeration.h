@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <array>
 #include    <type_traits>
 #include    <utility>
 #include    <vector>
@@ -20,6 +21,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Tried getting EnumNames<> to use constexpr array<> intead of vector<>. Got close, and keep trying.
+ *              May save a little app startup time space.
+ *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
@@ -116,7 +120,7 @@ namespace   Stroika {
             /**
              */
             template <typename ENUM_TYPE>
-            using EnumName = pair<ENUM_TYPE, const wchar_t*>;
+            using   EnumName = pair<ENUM_TYPE, const wchar_t*>;
 
 
             /**
@@ -130,20 +134,22 @@ namespace   Stroika {
             template <typename ENUM_TYPE>
             class   EnumNames {
             private:
-                vector<EnumName<ENUM_TYPE>>   fEnumNames_;
+                //using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
+                using   EnumNamesHolderType_ = vector<EnumName<ENUM_TYPE>>;
+                EnumNamesHolderType_   fEnumNames_;
 
             public:
                 /**
                  */
                 EnumNames () = delete;
-                EnumNames (const EnumNames& src);
-                EnumNames (EnumNames&& src);
+                EnumNames (const EnumNames& src) = delete;
+                EnumNames (EnumNames&& src) = delete;
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
 
             public:
                 /**
                  */
-                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = default;
+                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = delete;
 
             public:
                 /**
@@ -151,7 +157,7 @@ namespace   Stroika {
                 explicit operator initializer_list<EnumName<ENUM_TYPE>> () const;
 
             public:
-                using   const_iterator  =   typename vector<EnumName<ENUM_TYPE>>::const_iterator;
+                using   const_iterator  =   typename EnumNamesHolderType_::const_iterator;
 
             public:
                 /**
