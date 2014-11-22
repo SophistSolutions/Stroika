@@ -57,31 +57,22 @@ namespace   Stroika {
      
 #endif
 
-            /*
+            /**
              *  It often happens that you know a filename in one context, but call something that throws
              *  a file access exception. This helpful macro can rebild the filename, so its captured in the
              *  exception.
              */
 #define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME,USEACCESSMODE) \
-    catch (const FileAccessException& e) {  \
-        if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileAccessException (USEFILENAME, e.USEACCESSMODE));\
-        }\
-        Execution::DoReThrow ();\
+    catch (const Stroika::Foundation::IO::FileAccessException& e) {\
+        Stroika::Foundation::Execution::DoThrow (Stroika::Foundation::IO::FileAccessException ((e.GetFileName ().empty ()? USEFILENAME:e.GetFileName ()), USEACCESSMODE));\
     }
 
-            /*
-             *  It often happens that you know a filename in one context, but call something that throws
-             *  a file access exception. This helpful macro can rebild the filename, so its captured in the
-             *  exception.
+            /**
+             *  Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER()
+             *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
              */
 #define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME) \
-    catch (const FileAccessException& e) {  \
-        if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
-        }\
-        Execution::DoReThrow ();\
-    }
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME,e.GetFileAccessMode())
 
 
         }
