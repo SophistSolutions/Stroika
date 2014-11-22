@@ -37,7 +37,7 @@ namespace   Stroika {
              *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtod etc directly to see if the string parsed properly.
              */
-            template    <typename T>
+            template    <typename T = double>
             T  String2Float (const String& s);
 
 
