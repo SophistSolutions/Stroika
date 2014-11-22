@@ -74,7 +74,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \req IsAscii()
+                 *  \req IsASCII()
                  */
                 nonvirtual  char    GetAsciiCode () const;
 
@@ -91,19 +91,40 @@ namespace   Stroika {
                 nonvirtual  T   As () const;
 
             public:
-                nonvirtual  bool    IsAscii () const;
+                nonvirtual  bool    IsASCII () const;
+
+            public:
+                _DeprecatedFunction_ (inline  bool    IsAscii () const , "Instead use IsASCII() - to be removed after v2.0a53") {return IsASCII ();};
+
+            public:
                 nonvirtual  bool    IsWhitespace () const;
+
+            public:
                 nonvirtual  bool    IsDigit () const;
+
+            public:
                 nonvirtual  bool    IsHexDigit () const;
+
+            public:
                 nonvirtual  bool    IsAlphabetic () const;
+
+            public:
                 // Checks if the given character is uppper case. Can be called on any character.
                 // Returns false if not alphabetic
                 nonvirtual  bool    IsUpperCase () const;
+
+            public:
                 // Checks if the given character is lower case. Can be called on any character.
                 // Returns false if not alphabetic
                 nonvirtual  bool    IsLowerCase () const;
+
+            public:
                 nonvirtual  bool    IsAlphaNumeric () const;
+
+            public:
                 nonvirtual  bool    IsPunctuation () const;
+
+            public:
                 nonvirtual  bool    IsControl () const;
 
             public:

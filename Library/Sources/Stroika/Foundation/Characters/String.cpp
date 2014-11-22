@@ -1159,7 +1159,7 @@ void    String::AsASCII (string* into) const
     size_t                  len =   accessor._ConstGetRep ().GetLength ();
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
-        Assert (accessor._ConstGetRep ().GetAt (i).IsAscii ());
+        Assert (accessor._ConstGetRep ().GetAt (i).IsASCII ());
         into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
     }
 }

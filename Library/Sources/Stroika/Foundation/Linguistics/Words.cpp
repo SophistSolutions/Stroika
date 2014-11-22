@@ -93,7 +93,7 @@ String  Linguistics::MungeStringSoSingular (const String& s)
             r = s.substr (0, s.length () - 1);
         }
         // because of diabets mellitus - (and others???? - don't map trailing 'us' to 'u'
-        else if (s[s.length () - 1] == 's' and s[s.length () - 2].IsAscii () and s[s.length () - 2].IsAlphabetic () and (s[s.length () - 2] != 's' and s[s.length () - 2] != 'u')) {
+        else if (s[s.length () - 1] == 's' and s[s.length () - 2].IsASCII () and s[s.length () - 2].IsAlphabetic () and (s[s.length () - 2] != 's' and s[s.length () - 2] != 'u')) {
             r = s.substr (0, s.length () - 1);
         }
     }

@@ -51,7 +51,7 @@ namespace   Stroika {
             }
             inline  char    Character::GetAsciiCode () const
             {
-                Require (IsAscii ());
+                Require (IsASCII ());
                 return static_cast<char> (fCharacterCode_);
             }
             inline  wchar_t Character::GetCharacterCode () const
@@ -63,7 +63,7 @@ namespace   Stroika {
             {
                 return GetCharacterCode ();
             }
-            inline  bool    Character::IsAscii () const
+            inline  bool    Character::IsASCII () const
             {
                 return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
             }
