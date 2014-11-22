@@ -341,10 +341,6 @@ namespace   Stroika {
                 nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const;  // ditto
 
             public:
-                _DeprecatedFunction_ (nonvirtual  void        SetDate (const Date& d), "d = DateTime (dt, d) - to be removed after v2.0a46");
-                _DeprecatedFunction_ (nonvirtual  void        SetTimeOfDay (const TimeOfDay& tod), "dt = DateTime (dt, tod) - to be removed after v2.0a46");
-
-            public:
                 /*
                  * Add the given amount of time to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.

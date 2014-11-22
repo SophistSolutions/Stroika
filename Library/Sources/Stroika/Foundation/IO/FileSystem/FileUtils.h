@@ -65,7 +65,6 @@ namespace   Stroika {
 
                 String GetVolumeName (const String& driveLetterAbsPath);
 
-                _DeprecatedFunction_ (bool    FileExists  (const String& filePath), "Use FileSystem::FileSystem::Access or CheckAccess() - to be removed after v2.0a34");
 
                 vector<String> FindFiles (const String& path, const String& fileNameToMatch = L"*.*");
 

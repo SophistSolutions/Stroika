@@ -380,20 +380,6 @@ namespace   Stroika {
                 template    <typename RANGE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
 
-
-            public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                // by default serialize as an array (cuz serializing as mapping only works if LHS is
-                // string).
-                //
-                // For that case - SHOULD use partial specializaiton (not sure how)
-                //
-                //  NB: To use this - you must add to your typemapper a mapping from KEY_TYPE to/from String (unless it is String).
-                template    <typename KEY_TYPE, typename VALUE_TYPE>
-                static  _DeprecatedFunction_ (ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey (), "Instead use MakeCommonSerializer_ContainerWithStringishKey() - to be removed after v2.0a28");
-
             private:
                 nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const;
                 nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const;

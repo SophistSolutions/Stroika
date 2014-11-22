@@ -603,16 +603,6 @@ namespace Stroika {
     }
 }
 
-void    DateTime::SetDate (const Date& d)
-{
-    fDate_ = d;
-}
-
-void        DateTime::SetTimeOfDay (const TimeOfDay& tod)
-{
-    fTimeOfDay_ = tod;
-}
-
 DateTime    DateTime::Add (const Duration& d) const
 {
     return AddSeconds (d.As<time_t> ());

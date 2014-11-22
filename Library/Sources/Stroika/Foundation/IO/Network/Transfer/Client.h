@@ -296,9 +296,6 @@ namespace   Stroika {
                         nonvirtual  void    Close ();
 
                     public:
-                        _DeprecatedFunction_ (Response    SendAndRequest (const Request& r), "Use Send() - to be removed after v2.0a46");
-
-                    public:
                         /*
                          *  This returns a response object, which possibly contains an http error.
                          *

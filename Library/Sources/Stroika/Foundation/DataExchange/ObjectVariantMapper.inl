@@ -561,11 +561,6 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
-            {
-                return MakeCommonSerializer_ContainerWithStringishKey<Mapping<KEY_TYPE, VALUE_TYPE>> ();
-            }
 
 
         }

@@ -1611,9 +1611,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Platform.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>

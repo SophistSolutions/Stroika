@@ -353,69 +353,6 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 
 
 
-
-/*
- ********************************************************************************
- ***************************** FileSystem::FileExists ***************************
- ********************************************************************************
- */
-bool    IO::FileSystem::FileExists (const String& filePath)
-{
-#if     qPlatform_Windows
-    DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
-    if (attribs == INVALID_FILE_ATTRIBUTES) {
-        return false;
-    }
-    return not (attribs & FILE_ATTRIBUTE_DIRECTORY);
-#elif   qPlatform_POSIX
-    // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
-    //http://linux.die.net/man/2/access
-    return access (filePath.AsSDKString().c_str (), R_OK) == 0;
-#else
-    AssertNotImplemented ();
-    return false;
-#endif
-}
-
-
-
-
-
-
-#if 0
-/*
- ********************************************************************************
- ************************** FileSystem::DirectoryExists *************************
- ********************************************************************************
- */
-bool    FileSystem::DirectoryExists (const String& filePath)
-{
-#if     qPlatform_Windows
-    RequireNotNull (filePath);
-    DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
-    if (attribs == INVALID_FILE_ATTRIBUTES) {
-        return false;
-    }
-    return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
-#elif   qPlatform_POSIX
-    struct  stat    s;
-    if (::stat (filePath.AsSDKString ().c_str (), &s) < 0) {
-        // If file doesn't exist - or other error reading, just say not exist
-        return false;
-    }
-    return S_ISDIR (s.st_mode);
-#else
-    AssertNotImplemented ();
-    return false;
-#endif
-}
-#endif
-
-
-
-
-
-
 /*
  ********************************************************************************
  ******************************* FileSystem::CopyFile ***************************
