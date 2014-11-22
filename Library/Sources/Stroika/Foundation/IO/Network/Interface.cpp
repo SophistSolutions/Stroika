@@ -135,13 +135,15 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
                 ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
                 edata.cmd = ETHTOOL_GSET;
                 int r = ioctl(sd, SIOCETHTOOL, &ifreq);
-                if (r != 0) {
+                if (r != 0)
+                {
                     DbgTrace ("No speed for interface %s, errno=%d", name, errno);
                     return Optional<double> ();;
                 }
                 constexpr double kMegabit_ = 1000 * 1000;
                 DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
-                switch (ethtool_cmd_speed (&edata)) {
+                switch (ethtool_cmd_speed (&edata))
+                {
                     case SPEED_10:
                         return 10 * kMegabit_;
                     case SPEED_100:
