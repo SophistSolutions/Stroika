@@ -47,7 +47,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
 #elif   qPlatform_POSIX
     try {
-        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
+        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
