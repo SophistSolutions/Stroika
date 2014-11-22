@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Configuration/Enumeration.h"
 
 
 namespace   Stroika {
@@ -16,16 +17,24 @@ namespace   Stroika {
             // First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
             // But this will do for now...
             //      -- LGP 2009-08-15
-            enum class FileAccessMode : uint8_t {
+            enum    class FileAccessMode : uint8_t {
                 eNoAccess,
                 eRead   = 0x1,
                 eWrite  = 0x2,
 
                 // composite values
                 eReadWrite  = eRead | eWrite,
+
+                Stroika_Define_Enum_Bounds(eNoAccess, eReadWrite)
             };
-            FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
-            FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
+
+            // TEMPORARILY STORED IN FileAccessException.cpp - because we hope to soon have
+            // constexr for EnumNames<>
+            // search IO::Stroika_Enum_Names(FileAccessMode)
+            extern  const Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode);
+
+            FileAccessMode  operator& (FileAccessMode l, FileAccessMode r);
+            FileAccessMode  operator| (FileAccessMode l, FileAccessMode r);
 
 
         }

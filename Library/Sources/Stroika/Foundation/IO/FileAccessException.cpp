@@ -14,6 +14,18 @@ using   namespace   Stroika::Foundation::IO;
 
 
 
+
+
+/// TMPHACK - PUT HERE TIL WE HAVE CONSTEXPR WORKING
+const Configuration::EnumNames<FileAccessMode>   IO::Stroika_Enum_Names(FileAccessMode) = {
+    { FileAccessMode::eNoAccess, L"No-Access" },
+    { FileAccessMode::eRead, L"Read" },
+    { FileAccessMode::eWrite, L"Write" },
+    { FileAccessMode::eReadWrite, L"Read-Write" },
+};
+
+
+
 /*
  ********************************************************************************
  **************************** IO::FileAccessException ***************************
