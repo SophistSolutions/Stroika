@@ -21,16 +21,31 @@ History
 
 
   
+
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a53">v2.0a53x</a><br/>2014-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a53">v2.0a53</a><br/>2014-11-22</td>
 <td>
 <ul>
 	<li>Lose LeakChecker module, and DEBUG_NEW. It caused troubles, and was on balance not worth the trouble.
 	On unix Valgrind seems to work well, and for windows, I can try Dr Memory (http://drmemory.org/)</li>
+	<li>renamed Iterator2Address -> Iterator2Pointer (and fixed)</li>
+	<li>Stricter CTOR for  ExternallyOwnedMemoryBinaryInputStream</li>
+	<li>new and use more Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_... to improve error message reporting</li>
+	<li>Configuration::EnumNames cleanups (and more use)</li>
+	<li>default type args for String2Int template</li>
+	<li>Lose DEBUG_NEW and LeackChecker module</li>
+	<li>nu_LRUCache - started LARGE revisions</li>
+	<li>new TimeZone support</li>
+	<li>Improved SystemConfigruation stats gathering code (linux)</li>
+	<li>tweaks to Duration::PrintAge code</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
+
+
+
 
 
 
