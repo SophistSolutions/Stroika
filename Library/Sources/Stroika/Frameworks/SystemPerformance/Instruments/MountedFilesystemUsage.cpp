@@ -151,10 +151,10 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct PerfStats_ {
-        double  fSectorsRead {};
-        double  fTimeSpentReading {};
-        double  fSectorsWritten {};
-        double  fTimeSpentWritingMS {};
+        double  fSectorsRead;
+        double  fTimeSpentReading;
+        double  fSectorsWritten;
+        double  fTimeSpentWritingMS;
     };
     Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
     {
@@ -209,16 +209,17 @@ namespace {
             for (VolumneInfo v : results) {
                 if (v.fDeviceOrVolumeName.IsPresent ()) {
                     String  devNameLessSlashes = *v.fDeviceOrVolumeName;
-                    size_t i = d.RFind ('/');
+                    size_t i = devNameLessSlashes.RFind ('/');
                     if (i != string::npos) {
                         devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
                     }
                     Optional<PerfStats_>    o = diskStats.Lookup (devNameLessSlashes);
                     if (o.IsPresent ()) {
-                        v.fReadIOStats.fBytes = a;
-                        v.fReadIOStats.fTimeTransfering = a;
-                        v.fWriteIOStats.fBytes = a;
-                        v.fWriteIOStats.fTimeTransfering = fTimeTransfering;
+                        const unsigned int kSectorSizeTmpHack_ = 4 * 1024;  // @todo GET from disk stats
+                        v.fReadIOStats.fBytes = o->fSectorsRead * kSectorSizeTmpHack_;
+                        v.fReadIOStats.fTimeTransfering = o->fTimeSpentReading;
+                        v.fWriteIOStats.fBytes = o->fSectorsWritten * kSectorSizeTmpHack_;
+                        v.fWriteIOStats.fTimeTransfering = o->fTimeSpentReading;
 
                         v.fIOStats.fBytes = v.fReadIOStats.fBytes + v.fWriteIOStats.fBytes;
                         v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering + v.fWriteIOStats.fTimeTransfering;
