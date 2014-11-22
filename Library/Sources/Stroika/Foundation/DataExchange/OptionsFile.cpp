@@ -188,7 +188,7 @@ OptionsFile::OptionsFile (
 
 BLOB    OptionsFile::ReadRaw () const
 {
-    return IO::FileSystem::BinaryFileInputStream (GetReadFilePath_ ()).ReadAll ();
+    return IO::FileSystem::BinaryFileInputStream::mk (GetReadFilePath_ ()).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
