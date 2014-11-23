@@ -53,13 +53,14 @@
 #define _MS_VS_2k13_Update1_FULLVER_    180021005
 #define _MS_VS_2k13_Update2_FULLVER_    180030501
 #define _MS_VS_2k13_Update3_FULLVER_    180030723
+#define _MS_VS_2k13_Update4_FULLVER_    180031101
 
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
 #endif
 #if      _MSC_VER > _MS_VS_2k13_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
-#elif    _MSC_FULL_VER > _MS_VS_2k13_Update3_FULLVER_
+#elif    _MSC_FULL_VER > _MS_VS_2k13_Update4_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
 #endif
 
@@ -122,7 +123,7 @@
 #ifndef qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     0
 #endif
@@ -146,7 +147,8 @@
 #if   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     0
 #endif
@@ -168,7 +170,8 @@
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
 #endif
@@ -213,7 +216,8 @@
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
 #endif
@@ -231,7 +235,8 @@
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_Buggy      0
 #endif
@@ -341,7 +346,8 @@
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
 #endif
@@ -556,6 +562,7 @@ EXAMPLE:
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // Still broken in _MS_VS_2k13_Update3_FULLVER_
+// Still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          qCompilerAndStdLib_constexpr_Buggy
 #else
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          0
@@ -576,7 +583,8 @@ EXAMPLE:
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_noexcept_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_noexcept_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_noexcept_Buggy       0
 #endif
@@ -598,7 +606,8 @@ EXAMPLE:
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_make_unique_lock_IsSlow      (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// ASSUME still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_make_unique_lock_IsSlow      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_make_unique_lock_IsSlow      0
 #endif
@@ -623,7 +632,8 @@ EXAMPLE:
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    0
 #endif
@@ -694,7 +704,8 @@ EXAMPLE:
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
 #endif
@@ -813,7 +824,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #elif     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #else
@@ -888,7 +900,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qTemplateAccessCheckConfusionProtectedNeststingBug   0
 #endif
@@ -920,7 +933,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
 #endif
@@ -1064,7 +1078,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   0
 #endif
@@ -1094,7 +1109,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    0
 #endif
@@ -1185,7 +1201,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        0
 #endif
@@ -1212,6 +1229,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
+// still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #else
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
@@ -1279,7 +1297,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
-#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_FULL_VER <= _MS_VS_2k13_Update3_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_deprecatedFeatureMissing              0
 #endif

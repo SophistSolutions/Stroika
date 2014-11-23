@@ -181,5 +181,6 @@ BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, SeekableF
             return in;
         default:
             AssertNotReached ();
+            return in;
     }
 }

@@ -233,12 +233,15 @@ namespace   {
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
-        {
+        try {
             Date    d   =   Date::Parse (L"09/14/1752", locale::classic ());
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d == Date::kMin);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        catch (...) {
+            VerifyTestResult (false);   // check qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy or qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
         }
         {
             Date    d;
