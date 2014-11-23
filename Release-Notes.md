@@ -23,10 +23,10 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a54">v2.0a54x</a><br/>2014-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a54">v2.0a54</a><br/>2014-11-23</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Updated to support Visual Studio.net 2k13 Update 4. Ran those regtests, but thats all that changed so just release.</li>
 </ul>
 </td>
 </tr>
