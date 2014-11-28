@@ -135,6 +135,9 @@ namespace   Stroika {
                     /**
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
                      *  If the address is unparsable according to the rules specified, an exception will be thrown.
+                     *
+                     *  Note - this does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
+                     *  form of an internet address.
                      */
                     InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
