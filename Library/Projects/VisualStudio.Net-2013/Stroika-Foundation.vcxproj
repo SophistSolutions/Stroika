@@ -1007,6 +1007,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h" />
@@ -1014,6 +1015,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.h" />
