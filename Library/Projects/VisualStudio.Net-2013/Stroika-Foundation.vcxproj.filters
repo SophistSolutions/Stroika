@@ -729,6 +729,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Writer.cpp">
       <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp">
+      <Filter>Sources\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2543,6 +2546,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl">
+      <Filter>Sources\IO</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)FileAccessException.o\
+	$(ObjDir)FileAccessMode.o\
 	$(ObjDir)FileBusyException.o\
 	$(ObjDir)FileFormatException.o\
 
