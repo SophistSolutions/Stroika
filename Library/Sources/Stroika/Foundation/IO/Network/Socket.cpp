@@ -56,6 +56,40 @@ namespace   {
 
 
 
+namespace {
+    template    <typename   T>
+    void    BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t(const T*, const T*)>& writeFunc)
+    {
+        ptrdiff_t   amountToSend = end - start;
+        ptrdiff_t   amountRemainingToSend = amountToSend;
+        const T*    remainingSendFrom = start;
+        while (amountRemainingToSend > 0) {
+            size_t  amountToSend    =   min<size_t> (maxSendAtATime, amountRemainingToSend);
+            size_t  amountSent  =   writeFunc (remainingSendFrom, remainingSendFrom + amountToSend);
+            Assert (amountSent <= amountToSend);
+            Assert (static_cast<size_t> (amountRemainingToSend) >= amountSent);
+            amountRemainingToSend -= amountSent;
+            remainingSendFrom += amountSent;
+        }
+    }
+}
+
+#if     qPlatform_Windows
+namespace {
+    template    <typename N>
+    inline  void    ThrowIf_Windows_SOCKET_ERROR_ (N returnCode)
+    {
+        if (returnCode == SOCKET_ERROR ) {
+            Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+        }
+    }
+}
+#endif
+
+
+
+
+
 #if     qPlatform_Windows
 namespace {
     bool    sStartedUp_ =   false;
@@ -132,9 +166,28 @@ namespace   {
             {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
-                int flags = 0;
-                int n = ::send (fSD_, reinterpret_cast<const char*> (start), end - start, flags);
-                //int       n   =   ::_write (fSD_, start, end - start);
+                /*
+                 *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
+                 *  file descriptors in windows implemenation.
+                 *      WONT WORK:
+                 *          int       n   =   ::_write (fSD_, start, end - start);
+                 */
+                size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
+                BreakWriteIntoParts_<Byte> (
+                    start,
+                    end,
+                    maxSendAtATime,
+                [this, maxSendAtATime] (const Byte * start, const Byte * end) -> size_t {
+                    Require (static_cast<size_t> (end - start) <= maxSendAtATime);
+                    Assert ((end - start) < numeric_limits<int>::max ());
+                    int len  = static_cast<int> (end - start);
+                    int flags = 0;
+                    int n = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
+                    ThrowIf_Windows_SOCKET_ERROR_ (n);
+                    Assert (0 <= n and n <= (end - start));
+                    return static_cast<size_t> (n);
+                }
+                );
 #elif   qPlatform_POSIX
                 int     n   =   Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
 #else
@@ -233,22 +286,16 @@ AGAIN:
             }
             virtual uint8_t     GetMulticastTTL ()  const override
             {
-                char ttl    =   0;
-                socklen_t size    =   sizeof (ttl);
-                Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &ttl, &size));
-                return ttl;
+                return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
             }
             virtual void        SetMulticastTTL (uint8_t ttl)  override
             {
                 char useTTL =   ttl;
-                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &useTTL, sizeof (useTTL)));
+                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
             }
             virtual bool        GetMulticastLoopMode ()  const override
             {
-                char loop   =   0;
-                socklen_t size    =   sizeof (loop);
-                Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, &size));
-                return !!loop;
+                return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
             }
             virtual void        SetMulticastLoopMode (bool loopMode)  override
             {
@@ -258,6 +305,20 @@ AGAIN:
             virtual Socket::PlatformNativeHandle    GetNativeSocket () const override
             {
                 return fSD_;
+            }
+            virtual void                    getsockopt (int level, int optname, void* optval, socklen_t* optlen) const override
+            {
+                // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
+                RequireNotNull (optval);
+                Execution::ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+            }
+            template    <typename RESULT_TYPE>
+            inline  RESULT_TYPE getsockopt (int level, int optname) const
+            {
+                RESULT_TYPE r {};
+                socklen_t   roptlen = sizeof (r);
+                this->getsockopt (level, optname, &r, &roptlen);
+                return r;
             }
         };
     };

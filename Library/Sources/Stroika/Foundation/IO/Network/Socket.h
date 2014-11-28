@@ -248,6 +248,14 @@ namespace   Stroika {
                      */
                     nonvirtual  PlatformNativeHandle    GetNativeSocket () const;
 
+                public:
+                    /**
+                     *  Usually the return value is an int, but the caller must specify the right type. This is a simple,
+                     *  low level, wrapper on 'man 2 getsockopt'.
+                     */
+                    template    <typename RESULT_TYPE>
+                    nonvirtual  RESULT_TYPE getsockopt (int level, int optname);
+
                 private:
                     shared_ptr<_Rep> fRep_;
                 };
@@ -272,6 +280,7 @@ namespace   Stroika {
                     virtual bool                    GetMulticastLoopMode () const = 0;
                     virtual void                    SetMulticastLoopMode (bool loopMode) = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
+                    virtual void                    getsockopt (int level, int optname, void* optval, socklen_t* optlen) const = 0;
                 };
 
 

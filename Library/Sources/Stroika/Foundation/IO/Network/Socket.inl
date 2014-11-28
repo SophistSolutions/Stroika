@@ -113,6 +113,15 @@ namespace   Stroika {
                 {
                     return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress);
                 }
+                template    <typename RESULT_TYPE>
+                inline  RESULT_TYPE Socket::getsockopt (int level, int optname)
+                {
+                    RESULT_TYPE r {};
+                    socklen_t   roptlen = sizeof (r);
+                    fRep_->getsockopt (level, optname, &r, &roptlen);
+                    return r;
+                }
+
 
 
             }
