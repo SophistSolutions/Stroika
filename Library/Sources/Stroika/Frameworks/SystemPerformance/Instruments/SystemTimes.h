@@ -42,11 +42,6 @@ namespace   Stroika {
                 }
 
 
-#if     qSupport_SystemPerformance_Instruments_SystemTimes
-                _DeprecatedFunction_ (Instrument  GetSystemTimes (Time::DurationSecondsType measureInterval = 5.0), "Deprecated in v2.0a36; instead use SystemTimes::GetInstrument ()");
-#endif
-
-
             }
         }
     }

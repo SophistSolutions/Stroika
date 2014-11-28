@@ -306,8 +306,3 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
                                           );
     return kInstrument_;
 }
-
-Instrument  SystemPerformance::Instruments::GetMountedFilesystemUsage ()
-{
-    return MountedFilesystemUsage::GetInstrument ();
-}

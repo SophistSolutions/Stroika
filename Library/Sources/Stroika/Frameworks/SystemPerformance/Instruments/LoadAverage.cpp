@@ -87,11 +87,4 @@ Instrument  SystemPerformance::Instruments::LoadAverage::GetInstrument ()
                                           );
     return kInstrument_;
 }
-
-
-
-Instrument  SystemPerformance::Instruments::GetLoadAverage ()
-{
-    return LoadAverage::GetInstrument ();
-}
 #endif

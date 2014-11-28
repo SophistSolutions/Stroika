@@ -81,9 +81,6 @@ namespace   Stroika {
                 }
 
 
-                _DeprecatedFunction_ (Instrument  GetMountedFilesystemUsage (), "Deprecated in v2.0a36; instead use MountedFilesystemUsage::GetInstrument ()");
-
-
             }
         }
     }

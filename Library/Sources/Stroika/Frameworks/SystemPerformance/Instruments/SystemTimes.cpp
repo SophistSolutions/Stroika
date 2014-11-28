@@ -108,9 +108,4 @@ Instrument  SystemPerformance::Instruments::SystemTimes::GetInstrument (Time::Du
                                            );
     return systemTimesInstrument;
 }
-
-Instrument  SystemPerformance::Instruments::GetSystemTimes (Time::DurationSecondsType measureInterval)
-{
-    return SystemTimes::GetInstrument (measureInterval);
-}
 #endif

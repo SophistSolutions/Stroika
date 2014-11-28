@@ -65,11 +65,6 @@ namespace   Stroika {
                 }
 
 
-#if     qSupport_SystemPerformance_Instruments_LoadAverage
-                _DeprecatedFunction_ (Instrument  GetLoadAverage (), "Deprecated in v2.0a36; instead use LoadAverage::GetInstrument ()");
-#endif
-
-
             }
         }
     }
