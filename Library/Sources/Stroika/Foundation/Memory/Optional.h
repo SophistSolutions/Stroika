@@ -66,8 +66,8 @@ namespace   Stroika {
              *  \note   To use Optional with un-copyable things, use:
              *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
              *
-             *  \note   C++14 will be introducing std::optional<> which may possibly make this obsolete.
-             *          We'll see.
+             *  \note   After C++14, C++ will be introducing std::optional<> which may possibly make this
+             *          obsolete. We'll see.
              *
              *  \note   \em Design-Note - why not SharedByValue<T>
              *      -   We considered using the SharedByValue<T> template which would be more efficient
@@ -129,6 +129,8 @@ namespace   Stroika {
             class   Optional {
             public:
                 /**
+                 *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
+                 *  derefrence and copy. Experiemental cuz could mess up type deducation of Optional<T>...
                  */
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
@@ -138,6 +140,7 @@ namespace   Stroika {
                 Optional (T&&  from);
                 Optional (const Optional<T, TRAITS>& from);
                 Optional (Optional<T, TRAITS>&& from);
+                explicit Optional (const T* from);
 
             public:
                 ~Optional ();
@@ -149,6 +152,7 @@ namespace   Stroika {
                 nonvirtual  Optional<T, TRAITS>& operator= (T && rhs);
                 nonvirtual  Optional<T, TRAITS>& operator= (const Optional<T, TRAITS>& rhs);
                 nonvirtual  Optional<T, TRAITS>& operator= (Optional<T, TRAITS> && rhs);
+                nonvirtual  Optional<T, TRAITS>& operator= (const T* rhs);
 
             public:
                 /**

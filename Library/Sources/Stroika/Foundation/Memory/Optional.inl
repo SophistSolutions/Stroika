@@ -73,6 +73,11 @@ namespace   Stroika {
                 from.fValue_ = nullptr;
             }
             template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (const T* from)
+                : fValue_ (from == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
+            {
+            }
+            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
             {
                 delete fValue_;
@@ -132,6 +137,18 @@ namespace   Stroika {
                     delete fValue_;
                     fValue_ = rhs.fValue_;
                     rhs.fValue_ = nullptr;
+                }
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
+            {
+                if (fValue_->get () != rhs) {
+                    delete fValue_;
+                    fValue_ = nullptr;
+                    if (rhs != nullptr) {
+                        fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
+                    }
                 }
                 return *this;
             }
