@@ -732,6 +732,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1692,6 +1695,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2561,6 +2567,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
       <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
 </Project>

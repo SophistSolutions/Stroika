@@ -45,27 +45,8 @@
  *              IPAddress.IsIPv6LinkLocal
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.isipv6linklocal(v=vs.110).aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-1
 
- *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
- *
- *      @todo   Endianness.
- *
- *              Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
- *              and endianness. Now about 80% sure right, and have some review code,
- *              but could use more review.
- *
- *              Can do something like:
- *                  union Mix {
- *                      int sdat;
- *                      char cdat[4];
- *                  };
- *                  static constexpr Mix mix { 0x1 };
- *                  constexpr bool isLittleEndian() {
- *                      return mix.cdat[0] == 1;
- *                  }
- *              to constexpr detect endianness, so we can do right thing and htonl, etc as needed.
- *              But so far, doesnt appear needed.
  */
 
 

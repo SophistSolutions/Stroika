@@ -793,6 +793,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
@@ -1211,6 +1212,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
@@ -1524,6 +1526,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
