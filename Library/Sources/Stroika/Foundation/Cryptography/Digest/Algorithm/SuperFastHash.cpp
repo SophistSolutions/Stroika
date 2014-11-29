@@ -62,11 +62,20 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType  Digester<Algorithm::Su
         return 0;
     }
 
-    uint32_t len = to - from;
+    size_t len = static_cast<size_t> (to - from);
 
     const Byte* data = from;
 
-    uint32_t hash = len;
+	/*
+	 *	Require() here cuz of following cast. 
+	 *	NB: apparently broken if large data input! > 4gig on 64bit machine.
+	 *	But this still produces a reasonable hashed result, and this misfeature
+	 *	of ignoring higher order bits appears implied by the reference algorithm
+	 *	on http://www.azillionmonkeys.com/qed/hash.html
+	 */
+    Require (len < numeric_limits<uint32_t>::max ());
+    uint32_t hash = static_cast<uint32_t> (len);
+
     uint32_t tmp;
     int rem;
 
