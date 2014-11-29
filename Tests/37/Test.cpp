@@ -18,6 +18,7 @@
 #include    "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/IO/Network/DNS.h"
 #include    "Stroika/Foundation/IO/Network/Interface.h"
 #include    "Stroika/Foundation/IO/Network/URL.h"
 
@@ -368,6 +369,28 @@ namespace {
 }
 
 
+namespace {
+    namespace Test4_DNS_ {
+        void        DoTests_ ()
+        {
+            {
+                DNS::HostEntry  e   =   DNS::Default ().GetHostEntry (L"www.sophists.com");
+                VerifyTestResult (e.fCanonicalName == L"outer5.sophists.com");
+                VerifyTestResult (e.fAddressList.size () >= 1);
+            }
+            {
+                DNS::HostEntry  e   =   DNS::Default ().GetHostEntry (L"www.google.com");
+                VerifyTestResult (e.fAddressList.size () >= 1);
+            }
+            {
+                DNS::HostEntry  e   =   DNS::Default ().GetHostEntry (L"www.cnn.com");
+                VerifyTestResult (e.fAddressList.size () >= 1);
+            }
+        }
+    }
+}
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -375,6 +398,7 @@ namespace   {
         Test1_URL_Parsing_::DoTests_ ();
         Test2_InternetAddress_ ();
         Test3_NetworkInterfaceList_ ();
+        Test4_DNS_::DoTests_ ();
     }
 }
 

@@ -8,6 +8,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Containers/Collection.h"
+#include    "../../Memory/Optional.h"
 
 #include    "InternetAddress.h"
 
@@ -19,6 +20,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   add CTOR args for DNS resolve isntances with params like timeouts.
+ *
+ *      @todo   add ctor params for prefer IPV4, IPV6 or both
  */
 
 
@@ -31,12 +35,13 @@ namespace   Stroika {
 
                 using   Characters::String;
                 using   Containers::Collection;
+                using   Memory::Optional;
 
 
                 /**
                  *  DNS (Domain Name Service) Resolver.
                  */
-                class DNS {
+                class   DNS {
                 public:
                     /**
                      *  Returns the default dns resolver.
@@ -49,7 +54,7 @@ namespace   Stroika {
                     struct  HostEntry {
                         Collection<InternetAddress> fAddressList;
                         Collection<String>          fAliases;
-                        String                      fHostname;
+                        String                      fCanonicalName; // aka hostname?
                     };
 
                 public:

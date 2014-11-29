@@ -9,33 +9,19 @@
 #include    <unistd.h>
 #include    <sys/types.h>
 #include    <sys/socket.h>
-#include    <sys/ioctl.h>
-#include    <net/if.h>
-#include    <netinet/in.h>
 #include    <netdb.h>
-#include    <arpa/inet.h>
-#include    <netinet/in.h>
-#include    <linux/netlink.h>
-#include    <linux/rtnetlink.h>
-#include    <linux/ethtool.h>
-#include    <linux/sockios.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
-#include    <Iphlpapi.h>
-#include    <netioapi.h>
 #endif
 
-#include    "../../Characters/CString/Utilities.h"
 #include    "../../Containers/Collection.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Finally.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
-#include    "../../Memory/SmallStackBuffer.h"
-
-#include    "Socket.h"
+#include    "SocketAddress.h"
 
 #include    "DNS.h"
 
@@ -46,3 +32,87 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+/*
+ ********************************************************************************
+ ************************** Network::GetInterfaces ******************************
+ ********************************************************************************
+ */
+DNS DNS::Default ()
+{
+    static  DNS sDefaultDNS_;
+    return sDefaultDNS_;
+}
+
+DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
+{
+    HostEntry   result;
+
+    addrinfo hints;
+    addrinfo* res = nullptr;
+    memset ((void*)&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_CANONNAME;
+#if defined (AI_IDN)
+    hints.ai_flags |= AI_IDN;
+#endif
+#if defined (AI_CANONIDN)
+    hints.ai_flags |= AI_CANONIDN;
+#endif
+    string  tmp =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
+    Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
+    AssertNotNull (res);
+    Execution::Finally cleanup ([res] {
+        freeaddrinfo (res);
+    });
+
+    // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
+    // See http://linux.die.net/man/3/getaddrinfo for info on glibc support for AI_IDN etc..
+    // and how todo on windows (or do myself portably?)
+    // MAYBER done OK?
+
+    if (res->ai_canonname != nullptr) {
+        // utf8 part a WAG
+        result.fCanonicalName = String::FromUTF8 (res->ai_canonname);
+    }
+
+    for (addrinfo* i = res; i != nullptr; i = i->ai_next) {
+        if (i != res and i->ai_canonname != nullptr and i->ai_canonname[0] != '\0') {
+            result.fAliases.Add (String::FromUTF8 (i->ai_canonname));
+        }
+        SocketAddress sa { *i->ai_addr };
+        if (sa.IsInternetAddress ()) {
+            result.fAddressList.Add (sa.GetInternetAddress ());
+        }
+    }
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Lookup(%s)", hostNameOrAddress.c_str ());
+    DbgTrace (L"CANONNAME: %s", result.fCanonicalName.c_str ());
+    for (String i : result.fAliases) {
+        DbgTrace (L" ALIAS: %s", i.c_str ());
+    }
+    for (InternetAddress i : result.fAddressList) {
+        DbgTrace (L" ADDR: %s", i.As<String> ().c_str ());
+    }
+#endif
+    return result;
+}
+
+Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
+{
+    AssertNotImplemented ();
+    return Optional<String> ();
+}
+
+Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
+{
+    return GetHostEntry (hostNameOrAddress).fAddressList;
+}
