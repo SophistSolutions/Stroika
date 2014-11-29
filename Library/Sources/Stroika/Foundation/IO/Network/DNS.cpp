@@ -15,19 +15,23 @@
 #include    <WS2tcpip.h>
 #endif
 
+#include    "../../Characters/Format.h"
 #include    "../../Containers/Collection.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Finally.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../Execution/StringException.h"
 #include    "SocketAddress.h"
 
 #include    "DNS.h"
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
@@ -67,11 +71,14 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
     hints.ai_flags |= AI_CANONIDN;
 #endif
     string  tmp =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
-    Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
+    int errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     AssertNotNull (res);
     Execution::Finally cleanup ([res] {
         freeaddrinfo (res);
     });
+    if (errCode != 0) {
+        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
+    }
 
     // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
     // See http://linux.die.net/man/3/getaddrinfo for info on glibc support for AI_IDN etc..

@@ -23,6 +23,8 @@
  *      @todo   add CTOR args for DNS resolve isntances with params like timeouts.
  *
  *      @todo   add ctor params for prefer IPV4, IPV6 or both
+ *
+ *      @todo   Possibly support async lookup - getaddrinfo_a() or Windows variation doing async lookup
  */
 
 
