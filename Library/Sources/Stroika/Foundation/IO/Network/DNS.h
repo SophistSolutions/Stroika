@@ -59,6 +59,13 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Lookup the dns name associated with the given ip address. This uses internet
+                     *  DNS PTR records.
+                     */
+                    nonvirtual  Optional<String>   ReverseLookup (const InternetAddress& address) const;
+
+                public:
+                    /**
                      */
                     nonvirtual  Collection<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
                 };
