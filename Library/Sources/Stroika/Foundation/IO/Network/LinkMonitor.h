@@ -59,6 +59,8 @@ namespace   Stroika {
                 // This isn't always well defined, but is typically. This is the primary ip address used to address this machine.
                 // This CAN return an empty address if none available (like not connected to a network).
                 //. (if no net do we return localhost?))
+                //
+                //  @todo THIS WHOLE API SUCKS (IPV4 or IPV6, and what doees this man for multihomed devices?
                 InternetAddress GetPrimaryInternetAddress ();
 
 

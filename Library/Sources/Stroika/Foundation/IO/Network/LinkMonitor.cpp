@@ -31,6 +31,7 @@
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../IO/Network/DNS.h"
 
 #include    "Socket.h"
 
@@ -156,6 +157,12 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     if (gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
         return InternetAddress ();
     }
+#if 1
+    // WAG at charset - whole thing not well done!
+	for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
+        return i;
+    }
+#else
     struct hostent* phe = gethostbyname (ac);
     if (phe == nullptr) {
     return InternetAddress ();
@@ -165,6 +172,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         (void)::memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
         return InternetAddress (addr);
     }
+#endif
     return InternetAddress ();
 #elif   qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) {
