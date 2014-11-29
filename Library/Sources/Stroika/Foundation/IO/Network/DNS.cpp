@@ -84,6 +84,11 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
     // See http://linux.die.net/man/3/getaddrinfo for info on glibc support for AI_IDN etc..
     // and how todo on windows (or do myself portably?)
     // MAYBER done OK?
+    //
+    //  NI_IDN -- If this flag is used, then the name found in the lookup process is converted from IDN format
+    //  to the locale's encoding if necessary. ASCII-only names are not affected by the conversion, which makes
+    //  this flag usable in existing programs and environments.
+    //
 
     if (res->ai_canonname != nullptr) {
         // utf8 part a WAG
@@ -117,41 +122,24 @@ Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
 {
     char hbuf[NI_MAXHOST];
     SocketAddress   sa { address, 0 };
-    switch (address.GetAddressFamily ()) {
-        case InternetAddress::AddressFamily::V4: {
-                sockaddr_in sa4 = sa.As<sockaddr_in> ();
-                int flags = NI_NAMEREQD;
+    sockaddr_storage sadata = sa.As<sockaddr_storage> ();
+    int flags = NI_NAMEREQD;
 #if     defined (NI_IDN)
-                flags |= NI_IDN;
+    flags |= NI_IDN;
 #endif
-                int errCode = getnameinfo (reinterpret_cast<const sockaddr*> (&sa4), sizeof (sa4), hbuf, sizeof(hbuf),  NULL, 0, flags);
-				if (errCode == EAI_NONAME) {
-					return Optional<String> ();
-				}
-                if (errCode != 0) {
-                    DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
-                }
-                //@todo handle I18N more carefully
-                return String::FromUTF8 (hbuf);
-            }
-        case InternetAddress::AddressFamily::V6: {
-                sockaddr_in6 sa6 = sa.As<sockaddr_in6> ();
-                int flags = NI_NAMEREQD;
-#if     defined (NI_IDN)
-                flags |= NI_IDN;
-#endif
-                int errCode = getnameinfo (reinterpret_cast<const sockaddr*> (&sa6), sizeof (sa6), hbuf, sizeof(hbuf),  NULL, 0, flags);
-				if (errCode == EAI_NONAME) {
-					return Optional<String> ();
-				}
-                if (errCode != 0) {
-                    DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
-                }
-                //@todo handle I18N more carefully
-                return String::FromUTF8 (hbuf);
-            }
+    int errCode = getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof(hbuf),  NULL, 0, flags);
+    switch (errCode) {
+        case 0:
+            //@todo handle I18N more carefully
+            //  NI_IDN -- If this flag is used, then the name found in the lookup process is converted from IDN format
+            //  to the locale's encoding if necessary. ASCII-only names are not affected by the conversion, which makes
+            //  this flag usable in existing programs and environments.
+            return String::FromUTF8 (hbuf);
+        case EAI_NONAME:
+            return Optional<String> ();
+        default:
+            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
     }
-    return Optional<String> ();
 }
 
 Collection<InternetAddress> DNS::GetHostAddresses (const String& hostNameOrAddress) const
