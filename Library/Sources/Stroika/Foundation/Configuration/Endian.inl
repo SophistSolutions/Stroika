@@ -17,17 +17,19 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** Configuration::GetEndianness *********************
+             *************************** Configuration::GetEndianness ***********************
              ********************************************************************************
              */
-            inline  constexpr   Endian  GetEndianness ()
-            {
+			namespace Private_ {
                 union Mix {
                     int sdat;
                     char cdat[4];
                 };
-                static constexpr Mix mix { 0x1 };
-                return mix.cdat[0] == 1 ? Endian::eLittle : Endian::eBig;
+                static constexpr Mix kMix_ { 0x1 };
+			}
+            inline  constexpr   Endian  GetEndianness ()
+            {
+                return Private_::kMix_.cdat[0] == 1 ? Endian::eLittle : Endian::eBig;
             }
 
 
