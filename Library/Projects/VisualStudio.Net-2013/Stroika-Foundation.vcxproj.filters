@@ -1689,6 +1689,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2555,6 +2558,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl">
       <Filter>Sources\IO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>

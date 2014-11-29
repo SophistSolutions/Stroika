@@ -960,6 +960,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h" />
@@ -1321,6 +1322,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md" />
