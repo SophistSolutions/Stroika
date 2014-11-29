@@ -159,7 +159,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     }
 #if 1
     // WAG at charset - whole thing not well done!
-	for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
+for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
         return i;
     }
 #else

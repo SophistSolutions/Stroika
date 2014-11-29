@@ -47,6 +47,7 @@ namespace {
                 result = 0;
         }
         Ensure (get16bits_ref_ (p) == result);
+        return result;
     }
 }
 
