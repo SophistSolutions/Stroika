@@ -386,6 +386,10 @@ namespace {
                 DNS::HostEntry  e   =   DNS::Default ().GetHostEntry (L"www.cnn.com");
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
+            {
+                Memory::Optional<String>    aaa =   DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
+                DbgTrace (L"reverselookup %s", aaa.Value ().c_str ());
+            }
         }
     }
 }
