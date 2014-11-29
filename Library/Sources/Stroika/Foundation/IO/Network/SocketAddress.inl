@@ -159,6 +159,11 @@ namespace   Stroika {
                     return *reinterpret_cast<const sockaddr*> (&fSocketAddress_);
                 }
                 template    <>
+                inline  sockaddr_storage   SocketAddress::As<sockaddr_storage> () const
+                {
+                    return fSocketAddress_;
+                }
+                template    <>
                 inline  sockaddr_in   SocketAddress::As<sockaddr_in> () const
                 {
                     Require (fSocketAddress_.ss_family == AF_INET or fSocketAddress_.ss_family == AF_UNSPEC);

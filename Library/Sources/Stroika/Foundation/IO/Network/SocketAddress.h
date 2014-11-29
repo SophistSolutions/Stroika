@@ -96,6 +96,7 @@ namespace   Stroika {
                     /**
                      *  As<T> supported variants include:
                      *      As<sockaddr> ();
+                     *      As<sockaddr_storage> ()
                      *      As<sockaddr_in> ();        // requires GetAddressFamily() == AF_INET
                      *      As<sockaddr_in6> ();       // requires GetAddressFamily() == AF_INET6
                      */
@@ -109,11 +110,13 @@ namespace   Stroika {
 
                 // Supported specializations
                 template    <>
-                sockaddr        SocketAddress::As<sockaddr> () const;
+                sockaddr            SocketAddress::As<sockaddr> () const;
                 template    <>
-                sockaddr_in     SocketAddress::As<sockaddr_in> () const;
+                sockaddr_storage    SocketAddress::As<sockaddr_storage> () const;
                 template    <>
-                sockaddr_in6    SocketAddress::As<sockaddr_in6> () const;
+                sockaddr_in         SocketAddress::As<sockaddr_in> () const;
+                template    <>
+                sockaddr_in6        SocketAddress::As<sockaddr_in6> () const;
 
 
             }
