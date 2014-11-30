@@ -31,31 +31,58 @@ BUILDS_DIR=	CURRENT/Builds/
 
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
-all:	$(TRGDIR)
+all:
+	@echo Building Stroika/ThirdPartyLibs/zlib $(VERSION)...
+	@$(MAKE) --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory check
 
 $(ZIPEDFILE):
+	@echo -n "   ..." 
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
-$(TRGDIR):	$(ZIPEDFILE)
-	@echo Building $(TRGDIR)...
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+$(TRGDIR):	$(ZIPPEDFILE)
+	@$(MAKE) --no-print-directory doCreate
+
+doPatch:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@dos2unix -q CURRENT/win32/Makefile.msc
-	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH
-	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH
-	@unix2dos -q CURRENT/win32/Makefile.msc
-else
-	@(cd CURRENT && ./configure)
-	@$(MAKE) --directory CURRENT --no-print-directory
+	@echo -n "   ...Patching"
+	@rm -f PATCHING.OUT
+	@dos2unix -q CURRENT/win32/Makefile.msc > PATCHING.OUT
+	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> PATCHING.OUT
+	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> PATCHING.OUT
+	@unix2dos -q CURRENT/win32/Makefile.msc >> PATCHING.OUT
+	@echo "   ...done"
 endif
 
-ORIGS:	$(ZIPEDFILE)
-	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
-	@unix2dos ORIGS/win32/Makefile.msc
+doConfigure:
+	@echo -n "   ...Configuring..."
+ifeq (,$(findstring CYGWIN,$(UNAME)))
+	@(cd CURRENT && ./configure)
+endif
+	@echo "   ...done"
 
-all:	$(TRGDIR)
+doCreate:	$(ZIPEDFILE)
+	@if [ -e  $(TRGDIR) ]; then\
+		echo "   ...CURRENT dir already exists";\
+	else\
+		echo "   ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
+		tar xf $(ZIPEDFILE) --no-same-owner;\
+		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
+		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
+		$(MAKE) --no-print-directory doPatch;\
+		$(MAKE) --no-print-directory doConfigure;\
+	fi
+
+doBuilds:
+	@if [ -e  BUILD.OUT ]; then\
+		echo "   ...BUILD.OUT already exists";\
+	else\
+		echo "   ...Buidling, and redirecting messages to BUILD.OUT ...";\
+		make doBuildInternal_ > BUILD.OUT 2>&1;\
+	fi
+	
+doBuildInternal_:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@rm -rf $(BUILDS_DIR)
 	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
@@ -67,14 +94,32 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MT -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' 'CC=$(WIN_CC32)' 'AR=$(WIN_LIB32)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Release32
 	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release32
+else
+	@$(MAKE) --directory CURRENT --no-print-directory
 endif
-	
+
+
+ORIGS:	$(ZIPEDFILE)
+	@tar xf $(ZIPEDFILE) --no-same-owner
+	@mv $(EXTRACTED_DIRNAME) ORIGS
+	@unix2dos ORIGS/win32/Makefile.msc
+
 check:
-	@##THMPHACK
+ifeq (,$(findstring CYGWIN,$(UNAME)))
 	@echo "ThirdPartyLibs/zlib - [Succeeded]"
+else
+	@if [ ! -e CURRENT/Builds/Debug32/zlib.lib ]; then\
+		echo "FAILED: missing CURRENT/Builds/Debug32/zlib.lib";\
+	elif [ ! -e CURRENT/Builds/Release32/zlib.lib ]; then\
+		echo "FAILED: missing CURRENT/Builds/Release32/zlib.lib";\
+	else\
+		echo "ThirdPartyLibs/zlib - [Succeeded]";\
+	fi
+endif
 
 clean:
 	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
 
 clobber:
 	@rm -rf $(TRGDIR)
+	@rm -f BUILD.OUT
