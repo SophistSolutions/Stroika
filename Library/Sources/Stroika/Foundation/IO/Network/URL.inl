@@ -61,7 +61,7 @@ namespace   Stroika {
                 inline  URL::PortType     URL::GetPortValue () const
                 {
                     if (fPort_ == kDefaultPortSentinal_) {
-                        return GetDefaultPortForProtocol (fProtocol_);
+                        return GetDefaultPortForScheme (fProtocol_);
                     }
                     else {
                         return fPort_;

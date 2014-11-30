@@ -26,7 +26,13 @@
  *              That way - we capture just what the user said, and only when he askes for info, do we use the Value() variant
  *              that plugs in defaults.
  *
- *      @todo   RENAME "Protocol" to "Scheme"
+ *              (partly/maybe done?)
+ *
+ *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
+ *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
+ *
+ *      @todo   MABYE "SCHEMEREGISTER"
+ *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
  *
  *      @todo   Review http://tools.ietf.org/html/rfc1808.html and see if we want params to parser to say if
  *              we allow relative urls, etc.
@@ -69,7 +75,7 @@ namespace   Stroika {
                 /**
                  *  Probably should define standard protos here - with named constants - like http/ftp/https etc
                  */
-                uint16_t     GetDefaultPortForProtocol (const String& proto);
+                uint16_t     GetDefaultPortForScheme (const String& proto);
 
 
                 /**
@@ -179,7 +185,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  See SetScheme () for handling of the 'protocol' parameter.
+                     *  See SetScheme () for handling of the 'scheme' parameter.
                      *  See SetQuery() for setting the query parameter.
                      *  See SetHostRelativePath for the 'relPath' restrictions.
                      *  This Requires() its arguments are valid and in range. use
@@ -187,8 +193,8 @@ namespace   Stroika {
                      *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
                      */
                     URL ();
-                    URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
-                    URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
+                    URL (const SchemeType& scheme, const String& host, const Memory::Optional<PortType>& portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
                     URL (const String& urlText, ParseOptions po);
 
                 public:
@@ -202,7 +208,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Returns if the URL protocol is secure (SSL-based).
+                     *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
                      */
                     nonvirtual  bool    IsSecure () const;
 

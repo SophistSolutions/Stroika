@@ -63,10 +63,10 @@ namespace   {
 
 /*
  ********************************************************************************
- ********************* Network::GetDefaultPortForProtocol ***********************
+ ********************* Network::GetDefaultPortForScheme *************************
  ********************************************************************************
  */
-uint16_t     Network::GetDefaultPortForProtocol (const String& proto)
+uint16_t     Network::GetDefaultPortForScheme (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
     if (proto == String ())                     {   return 80; }
@@ -238,8 +238,8 @@ URL URL::Parse (const String& w, ParseOptions po)
     return result;
 }
 
-URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (NormalizeScheme_ (protocol))
+URL::URL (const SchemeType& scheme, const String& host, const Memory::Optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
+    : fProtocol_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
     , fPort_ (portNumber.Value (kDefaultPortSentinal_))
     , fRelPath_ (relPath)
@@ -251,8 +251,8 @@ URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortT
     ValidateScheme_ (fProtocol_);
 }
 
-URL::URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (NormalizeScheme_ (protocol))
+URL::URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query, const String& fragment)
+    : fProtocol_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
     , fPort_ (kDefaultPortSentinal_)
     , fRelPath_ (relPath)
@@ -416,7 +416,7 @@ String URL::GetFullURL () const
 
     if (not fHost_.empty ()) {
         result += String_Constant (L"//") + fHost_;
-        if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
+        if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForScheme (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
         result += String_Constant (L"/");
