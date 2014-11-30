@@ -273,9 +273,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClCompile>
@@ -940,9 +937,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h">
@@ -1836,9 +1830,6 @@
       <Filter>Sources\Time</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl">
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl">

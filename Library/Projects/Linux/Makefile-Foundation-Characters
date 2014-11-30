@@ -19,7 +19,6 @@ Objs	=	\
 	$(ObjDir)String2Float.o\
 	$(ObjDir)String2Int.o\
 	$(ObjDir)RegularExpression.o\
-	$(ObjDir)Tokenize.o\
 
 SubDirs	=	\
 	Concrete \

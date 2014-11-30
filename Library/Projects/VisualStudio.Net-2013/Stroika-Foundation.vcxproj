@@ -167,7 +167,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
@@ -956,7 +955,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
@@ -1319,7 +1317,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
