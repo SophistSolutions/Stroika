@@ -179,7 +179,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     ULONG family = AF_UNSPEC;       // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte>  buf(0);
 Again:
-    ULONG ulOutBufLen = buf.GetSize ();
+    ULONG ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
     PIP_ADAPTER_ADDRESSES   pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
     DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
