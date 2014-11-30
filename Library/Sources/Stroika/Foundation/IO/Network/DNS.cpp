@@ -38,6 +38,14 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
+#if     qPlatform_Windows
+// API should return char* but MSFT returns WIDECHARS sometimes - undo that
+#undef gai_strerror
+#define gai_strerror    gai_strerrorA
+#endif // qW
+
+
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -77,7 +85,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
         freeaddrinfo (res);
     });
     if (errCode != 0) {
-        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
+        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (gai_strerror (errCode)).c_str (), errCode)));
     }
 
     // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
@@ -138,7 +146,7 @@ Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return Optional<String> ();
         default:
-            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", gai_strerror (errCode), errCode)));
+            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (gai_strerror (errCode)).c_str (), errCode)));
     }
 }
 
