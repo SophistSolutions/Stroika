@@ -20,16 +20,45 @@ namespace   Stroika {
              *************************** Configuration::GetEndianness ***********************
              ********************************************************************************
              */
-            namespace Private_ {
-                union Mix {
-                    int sdat;
-                    char cdat[4];
+#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+            namespace   Private_ {
+                union   EndianTester_ {
+                    uint32_t    sdat;
+                    uint8_t     cdat[4];
                 };
-                static constexpr Mix kMix_ { 0x1 };
+                static constexpr EndianTester_ kMix_ { 0x01020304 };
             }
+#endif
             inline  constexpr   Endian  GetEndianness ()
             {
-                return Private_::kMix_.cdat[0] == 1 ? Endian::eLittle : Endian::eBig;
+#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+                return
+                    (Private_::kMix_.cdat[0] == 4) ?
+                    Endian::eLittleByte :                   // aka little endian
+                    (Private_::kMix_.cdat[0] == 1) ?
+                    Endian::eBigByte :                      // aka big endian
+                    (Private_::kMix_.cdat[0] == 2) ?
+                    Endian::eLittleWord :                   // aka little PDP
+                    Endian::eBigWord
+                    ;
+#else
+#if     defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
+    defined(__BIG_ENDIAN__) || \
+    defined(__ARMEB__) || \
+    defined(__THUMBEB__) || \
+    defined(__AARCH64EB__) || \
+    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+                return Endian::eBigByte;
+#endif
+#if     defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+    defined(__LITTLE_ENDIAN__) || \
+    defined(__ARMEL__) || \
+    defined(__THUMBEL__) || \
+    defined(__AARCH64EL__) || \
+    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+                return Endian::eLittle;
+#endif
+#endif
             }
 
 

@@ -12,9 +12,16 @@ namespace   Stroika {
             /**
              *  @see http://en.wikipedia.org/wiki/Endianness
              */
-            enum class Endian {
-                eBig,
-                eLittle
+            enum    class Endian {
+                eBigByte,       // byte-swapped big-endian
+                eBigWord,       // word-swapped big-endian
+
+                eLittleByte,    // byte-swapped little-endian
+                eLittleWord,    // word-swapped little-endian
+
+                eBig = eBigByte,
+                eLittle = eLittleByte,
+                ePDP = eLittleWord,
             };
 
 

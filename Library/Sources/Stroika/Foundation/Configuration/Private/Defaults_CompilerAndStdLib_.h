@@ -331,6 +331,31 @@
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+* NOTE sure if this is a bug or my misunderstanding.
+*/
+#ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+
+#if     qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      1
+#elif   defined (__clang__)
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#else
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if     qDebug && !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
