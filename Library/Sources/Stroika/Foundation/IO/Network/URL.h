@@ -67,7 +67,7 @@ namespace   Stroika {
 
 
                 /**
-                 * probably should define standard protos here - with named constnats - like http/ftp/https etc
+                 *  Probably should define standard protos here - with named constants - like http/ftp/https etc
                  */
                 uint16_t     GetDefaultPortForProtocol (const String& proto);
 
@@ -127,9 +127,10 @@ namespace   Stroika {
                      *  ("."), and hyphen ("-") are allowed. For resiliency, programs
                      *  interpreting URLs should treat upper case letters as equivalent to
                      *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
+                     *
+                     *  AKA PROTOCOL.
                      */
-                    using   SchemeType  =   String; // AKA PROTOCOL
-
+                    using   SchemeType  =   String;
 
                 public:
                     /**
@@ -178,7 +179,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  See SetProtocol () for handling of the 'protocol' parameter.
+                     *  See SetScheme () for handling of the 'protocol' parameter.
                      *  See SetQuery() for setting the query parameter.
                      *  See SetHostRelativePath for the 'relPath' restrictions.
                      *  This Requires() its arguments are valid and in range. use
@@ -213,13 +214,23 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *      If port# not specified, returns detault given the protocol.
                      */
-                    nonvirtual  URL::PortType     GetEffectivePortNumber () const;    // if port# not specified, returns detault given the protocol
+                    nonvirtual  PortType     GetPortValue () const;
+
+                public:
+                    _DeprecatedFunction_ (inline  PortType  GetEffectivePortNumber () const, "Instead use GetPortValue() - to be removed after v2.0a55")
+                    {
+                        return GetPortValue ();
+                    }
 
                 public:
                     /**
-                     *  If the result is empty () - then the value returned by GetEffectivePortNumber() will be determinted automtically
-                     *  based on the current 'protocol'.
+                     *  This value overrides the port# used by the protocol. This can be empty, implying the URL refers to the default
+                     *  port for the given URL scheme.
+                     *
+                     *  @see GetPortValue
+                     *  @see SetPortNumber
                      */
                     nonvirtual  Memory::Optional<PortType>     GetPortNumber () const;
 
@@ -243,6 +254,7 @@ namespace   Stroika {
                      *  same string
                      *
                      *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
+                     *          PROTOCOL SB case INsensitiatve, and if there is a hostame, that should be comapred case insenswative. But rest is case sensative.
                      */
                     nonvirtual  bool    Equals (const URL& rhs) const;
 
@@ -261,14 +273,24 @@ namespace   Stroika {
                     /**
                      *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
                      */
-                    nonvirtual  SchemeType  GetProtocol () const;
+                    nonvirtual  SchemeType  GetScheme () const;
 
                 public:
                     /**
                      *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
                      *  But other violations in teh format of a protocol generate exceptions.
                      */
-                    nonvirtual  void    SetProtocol (const SchemeType& protocol);
+                    nonvirtual  void    SetScheme (const SchemeType& scheme);
+
+                public:
+                    _DeprecatedFunction_ (inline  SchemeType  GetProtocol () const, "Instead use GetScheme() - to be removed after v2.0a55")
+                    {
+                        return GetScheme();
+                    }
+                    _DeprecatedFunction_ (inline  void    SetProtocol (const SchemeType& protocol), "Instead use SetScheme() - to be removed after v2.0a55")
+                    {
+                        SetScheme (protocol);
+                    }
 
                 public:
                     /**

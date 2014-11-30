@@ -391,9 +391,9 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
     return url;
 }
 
-void    URL::SetProtocol (const SchemeType& protocol)
+void    URL::SetScheme (const SchemeType& scheme)
 {
-    fProtocol_ = NormalizeScheme_ (protocol);
+    fProtocol_ = NormalizeScheme_ (scheme);
     ValidateScheme_ (fProtocol_);
 }
 
