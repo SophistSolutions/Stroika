@@ -12,7 +12,7 @@ my $REL32_LIB;
 my $DBG64_LIB;
 my $REL64_LIB;
 
-print "   ...Checking...\n";
+print "   ...Checking...";
 
 if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	#

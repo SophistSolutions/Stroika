@@ -13,7 +13,7 @@ my $libeay32_DBG;
 my $ssleay32;
 my $ssleay32_DBG;
 
-print "   ...Checking...\n";
+print "   ...Checking...";
 
 if ("$^O" eq "linux") {
 	###WRONG - MUST FIX

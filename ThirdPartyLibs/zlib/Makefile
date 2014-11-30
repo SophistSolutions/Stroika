@@ -105,15 +105,20 @@ ORIGS:	$(ZIPEDFILE)
 	@unix2dos ORIGS/win32/Makefile.msc
 
 check:
+	@echo -n "   ...Checking..."
 ifeq (,$(findstring CYGWIN,$(UNAME)))
-	@echo "ThirdPartyLibs/zlib - [Succeeded]"
+	@if [ ! -e CURRENT/zlib.a ]; then\
+		echo "   FAILED: missing CURRENT/zlib.a";\
+	else\
+		echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";\
+	fi
 else
 	@if [ ! -e CURRENT/Builds/Debug32/zlib.lib ]; then\
-		echo "FAILED: missing CURRENT/Builds/Debug32/zlib.lib";\
+		echo "   FAILED: missing CURRENT/Builds/Debug32/zlib.lib";\
 	elif [ ! -e CURRENT/Builds/Release32/zlib.lib ]; then\
-		echo "FAILED: missing CURRENT/Builds/Release32/zlib.lib";\
+		echo "   FAILED: missing CURRENT/Builds/Release32/zlib.lib";\
 	else\
-		echo "ThirdPartyLibs/zlib - [Succeeded]";\
+		echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";\
 	fi
 endif
 
