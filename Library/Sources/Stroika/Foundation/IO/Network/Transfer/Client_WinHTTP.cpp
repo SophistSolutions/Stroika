@@ -481,7 +481,7 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_.get ());
     if (fConnectionHandle_.get () == nullptr) {
-        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetEffectivePortNumber (), 0)));
+        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0)));
     }
 }
 #endif
