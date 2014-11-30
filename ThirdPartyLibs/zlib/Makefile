@@ -45,15 +45,15 @@ $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate
 
 doPatch:
-ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo -n "   ...Patching"
+ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@rm -f PATCHING.OUT
 	@dos2unix -q CURRENT/win32/Makefile.msc > PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> PATCHING.OUT
 	@unix2dos -q CURRENT/win32/Makefile.msc >> PATCHING.OUT
-	@echo "   ...done"
 endif
+	@echo "   ...done"
 
 doConfigure:
 	@echo -n "   ...Configuring..."

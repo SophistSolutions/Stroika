@@ -41,9 +41,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 
 doPatch:
-ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo "   ...Patching OpenSSL..."
-endif
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@dos2unix -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 	@patch -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
@@ -56,6 +54,7 @@ ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@unix2dos -q Patches/LosePRINTOfCopyingInUtils.PATCH
 endif
 endif
+	@echo "   ...done"
 
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
