@@ -56,9 +56,9 @@ endif
 	@echo "   ...done"
 
 doConfigure:
-	@echo -n "   ...Configuring..."
+	@echo -n "   ...Configuring redirecting messages to CONFIGURE.OUT..."
 ifeq (,$(findstring CYGWIN,$(UNAME)))
-	@(cd CURRENT && ./configure)
+	@(cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
 endif
 	@echo "   ...done"
 

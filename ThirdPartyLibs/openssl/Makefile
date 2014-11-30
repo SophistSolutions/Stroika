@@ -41,7 +41,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 
 doPatch:
-	@echo "   ...Patching OpenSSL..."
+	@echo -n "   ...Patching OpenSSL..."
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@dos2unix -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 	@patch -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH

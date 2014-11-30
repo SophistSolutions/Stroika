@@ -19,7 +19,7 @@ UNAME := $(shell uname)
 
 
 all:
-	@echo "Building Stroika/ThirdPartyLibs/xerces VERSION=$(VERSION)..."
+	@echo "Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuild
 	@$(MAKE) --no-print-directory check
