@@ -31,6 +31,9 @@
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
+ *      @todo   Read http://tools.ietf.org/html/rfc1808.html section "Resolving Relative URLs"
+ *              Maybe add method (resolverelative)? - that performns this logic.
+ *
  *      @todo   MABYE "SCHEMEREGISTER"
  *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
  *

@@ -109,13 +109,13 @@ namespace {
                     String testRelPath;
                     String testQuery;
                     OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-                    VerifyTestResult (testProtocol == url.GetProtocol ());
+                    VerifyTestResult (testProtocol == url.GetScheme ());
                     if (testProtocol == L"http")
                     {
                         VerifyTestResult (testHost == url.GetHost ().ToLowerCase ());
                         {
                             //Assert (testPort == fPort);
-                            if (url.GetEffectivePortNumber () == 80) {
+                            if (url.GetPortValue () == 80) {
                                 VerifyTestResult (testPort == L"" or testPort == L"80");
                             }
                             else {
@@ -140,7 +140,7 @@ namespace {
                 TestOldWinCracker_ (L"home:Home.htm");
                 {
                     URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-                    VerifyTestResult (url.GetProtocol () == L"dyn");
+                    VerifyTestResult (url.GetScheme () == L"dyn");
                     VerifyTestResult (url.GetHost ().empty ());
                     VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
                     VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
@@ -153,31 +153,31 @@ namespace {
 
             {
                 URL url = URL::Parse (L"http:/StyleSheet.css?ThemeName=Cupertino", URL::eFlexiblyAsUI);
-                VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                VerifyTestResult (url.GetPortValue () == 80);
                 VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
                 VerifyTestResult (url.GetHost ().empty ());
                 VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
                 VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetScheme () == L"http");
             }
             {
                 URL url = URL::Parse (L"http://www.recordsforliving.com/");
-                VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                VerifyTestResult (url.GetPortValue () == 80);
                 VerifyTestResult (url.GetQueryString ().empty ());
                 VerifyTestResult (url.GetFragment ().empty ());
                 VerifyTestResult (url.GetHostRelativePath ().empty ());
                 VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetScheme () == L"http");
                 VerifyTestResult (not url.IsSecure ());
             }
             {
                 URL url = URL::Parse (L"https://xxx.recordsforliving.com/");
-                VerifyTestResult (url.GetEffectivePortNumber () == 443);
+                VerifyTestResult (url.GetPortValue () == 443);
                 VerifyTestResult (url.GetQueryString ().empty ());
                 VerifyTestResult (url.GetFragment ().empty ());
                 VerifyTestResult (url.GetHostRelativePath ().empty ());
                 VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-                VerifyTestResult (url.GetProtocol () == L"https");
+                VerifyTestResult (url.GetScheme () == L"https");
                 VerifyTestResult (url.IsSecure ());
             }
             for (auto po : { URL::eAsFullURL, URL::eFlexiblyAsUI }) {
@@ -190,9 +190,9 @@ namespace {
             }
             {
                 URL url { URL::Parse (L"localhost", URL::eFlexiblyAsUI) };
-                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetScheme () == L"http");
                 VerifyTestResult (url.GetHost () == L"localhost");
-                VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                VerifyTestResult (url.GetPortValue () == 80);
                 VerifyTestResult (url.GetHostRelativePath () == L"");
                 VerifyTestResult (url.GetQueryString () == L"");
                 VerifyTestResult (url.GetFragment () == L"");
@@ -205,9 +205,9 @@ namespace {
                 //  Though the names of our attributes differ, and our results, somewhat differ...
                 {
                     URL url { URL::Parse (L"http://www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                    VerifyTestResult (url.GetProtocol () == L"http");
+                    VerifyTestResult (url.GetScheme () == L"http");
                     VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                    VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                    VerifyTestResult (url.GetPortValue () == 80);
                     VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");   // python includes leading / - we dont
                     VerifyTestResult (url.GetQueryString () == L"");
                     VerifyTestResult (url.GetFragment () == L"");
@@ -215,9 +215,9 @@ namespace {
                 }
                 {
                     URL url { URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                    VerifyTestResult (url.GetProtocol () == L"http");
+                    VerifyTestResult (url.GetScheme () == L"http");
                     VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                    VerifyTestResult (url.GetEffectivePortNumber () == 80);
+                    VerifyTestResult (url.GetPortValue () == 80);
                     VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");   // python includes leading / - we dont
                     VerifyTestResult (url.GetQueryString () == L"");
                     VerifyTestResult (url.GetFragment () == L"");
@@ -226,9 +226,9 @@ namespace {
             }
             {
                 URL url { URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                VerifyTestResult (url.GetProtocol () == L"http");
+                VerifyTestResult (url.GetScheme () == L"http");
                 VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                VerifyTestResult (url.GetEffectivePortNumber () == 8080);
+                VerifyTestResult (url.GetPortValue () == 8080);
                 VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
                 VerifyTestResult (url.GetQueryString () == L"");
                 VerifyTestResult (url.GetFragment () == L"");
@@ -236,9 +236,9 @@ namespace {
             }
             {
                 URL url { URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                VerifyTestResult (url.GetProtocol () == L"https");
+                VerifyTestResult (url.GetScheme () == L"https");
                 VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-                VerifyTestResult (url.GetEffectivePortNumber () == 443);
+                VerifyTestResult (url.GetPortValue () == 443);
                 VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
                 VerifyTestResult (url.GetQueryString () == L"");
                 VerifyTestResult (url.GetFragment () == L"");
