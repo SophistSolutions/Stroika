@@ -107,8 +107,8 @@ ORIGS:	$(ZIPEDFILE)
 check:
 	@echo -n "   ...Checking..."
 ifeq (,$(findstring CYGWIN,$(UNAME)))
-	@if [ ! -e CURRENT/zlib.a ]; then\
-		echo "   FAILED: missing CURRENT/zlib.a";\
+	@if [ ! -e CURRENT/libz.a ]; then\
+		echo "   FAILED: missing CURRENT/libz.a";\
 	else\
 		echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";\
 	fi
