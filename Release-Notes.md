@@ -23,7 +23,13 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a55">v2.0a55x</a><br/>2014-11-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Minor URL class cleanups (name changes, docs etc)</li>
+	<li>New Configuration::Endian support</li>
+	<li>New IO::Neworking::DNS module</li>
+	<li>Placeholder for new Set_SparseArray, and Sequence_ChunkedArray</li>
+	<li>Socket code cleanups (and fixes)</li>
+	<li>Added experimental const T* CTOR (explicit) for Optional</li>
+	<li>Lose some deprecated functions</li>
 </ul>
 </td>
 </tr>
