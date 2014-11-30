@@ -5,6 +5,9 @@
 #define _Stroika_Foundation_Configuration_Endian_inl_   1
 
 
+#include    <cstdint>
+
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
