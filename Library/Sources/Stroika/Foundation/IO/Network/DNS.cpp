@@ -85,7 +85,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
         freeaddrinfo (res);
     });
     if (errCode != 0) {
-        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (gai_strerror (errCode)).c_str (), errCode)));
+        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 
     // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
@@ -135,7 +135,7 @@ Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
 #if     defined (NI_IDN)
     flags |= NI_IDN;
 #endif
-    int errCode = getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof(hbuf),  NULL, 0, flags);
+    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof(hbuf),  NULL, 0, flags);
     switch (errCode) {
         case 0:
             //@todo handle I18N more carefully
@@ -146,7 +146,7 @@ Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return Optional<String> ();
         default:
-            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (gai_strerror (errCode)).c_str (), errCode)));
+            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 }
 
