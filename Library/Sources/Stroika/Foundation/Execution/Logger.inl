@@ -20,6 +20,19 @@ namespace   Stroika {
              ********************************* Logger ***************************************
              ********************************************************************************
              */
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)
+            {
+                { Logger::Priority::eDebug, L"Debug" },
+                { Logger::Priority::eInfo, L"Info" },
+                { Logger::Priority::eNotice, L"Notice" },
+                { Logger::Priority::eWarning, L"Warning" },
+                { Logger::Priority::eError, L"Error" },
+                { Logger::Priority::eCriticalError, L"CriticalError" },
+                { Logger::Priority::eAlertError, L"AlertError" },
+                { Logger::Priority::eEmergency, L"Emergency" },
+            };
+#endif
             inline  Logger& Logger::Get ()
             {
                 return sThe_;
