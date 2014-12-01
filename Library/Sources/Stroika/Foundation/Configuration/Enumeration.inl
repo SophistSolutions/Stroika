@@ -99,7 +99,11 @@ namespace   Stroika {
             }
             template     <typename ENUM_TYPE>
             template     <size_t N>
-            inline  constexpr EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
             }

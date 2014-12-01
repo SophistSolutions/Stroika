@@ -29,14 +29,12 @@ namespace   Stroika {
             {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
-#if 0
 #if     qCompilerAndStdLib_constexpr_Buggy
             static
-#endif
+#else
             constexpr
-            @todo - fix constexpr for EnumNames
 #endif
-            static  const   Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode)
+            Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode)
             {
                 { FileAccessMode::eNoAccess, L"No-Access" },
                 { FileAccessMode::eRead, L"Read" },
