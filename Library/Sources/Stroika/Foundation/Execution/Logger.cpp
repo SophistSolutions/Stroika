@@ -34,7 +34,6 @@ using   Time::DurationSecondsType;
  */
 Logger  Logger::sThe_;
 
-#if     qCompilerAndStdLib_constexpr_Buggy
 const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)
 {
     { Logger::Priority::eDebug, L"Debug" },
@@ -46,7 +45,6 @@ const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)
     { Logger::Priority::eAlertError, L"AlertError" },
     { Logger::Priority::eEmergency, L"Emergency" },
 };
-#endif
 
 
 

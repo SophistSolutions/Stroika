@@ -32,9 +32,11 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy
             // NB: we put this here instead of CPP file since sometimes accessed before main and to avoid moduleinit complexity (beacuse we soon will
             // support constexpr on MSVC)
-            static
+            static  const
 #else
-            constexpr
+            static  const
+            // DAMN! NOT WORKING YET!!!
+            //constexpr
 #endif
             Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode)
             {
