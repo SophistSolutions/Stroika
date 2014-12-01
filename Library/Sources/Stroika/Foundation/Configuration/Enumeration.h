@@ -143,6 +143,17 @@ namespace   Stroika {
                 EnumNames (const EnumNames& src) = default;
                 EnumNames (EnumNames&& src);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
+                template     <size_t N>
+                constexpr EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
+
+#if 0
+                template     <typename  ARRAY_OF_ENUMNAME_INITIALIZER>
+                inline  EnumNames (ARRAY_OF_ENUMNAME_INITIALIZER origEnumNames)
+                    : fEnumNames_ (origEnumNames)
+                {
+                }
+#endif
+
 
             public:
                 /**

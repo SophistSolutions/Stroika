@@ -87,7 +87,7 @@ namespace   Stroika {
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
-//                : fEnumNames_ (origEnumNames)
+                : fEnumNames_ ()
             {
                 // @todo find some way to INITIALZIE the static array.... - needed for constexpr function!
                 auto oi = fEnumNames_.begin ();
@@ -96,6 +96,12 @@ namespace   Stroika {
                     *oi = i;
                     ++oi;
                 }
+            }
+            template     <typename ENUM_TYPE>
+            template     <size_t N>
+            inline  constexpr EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
+                : fEnumNames_ (origEnumNames)
+            {
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
