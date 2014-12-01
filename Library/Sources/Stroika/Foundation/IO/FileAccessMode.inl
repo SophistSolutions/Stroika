@@ -30,6 +30,8 @@ namespace   Stroika {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
 #if     qCompilerAndStdLib_constexpr_Buggy
+            // NB: we put this here instead of CPP file since sometimes accessed before main and to avoid moduleinit complexity (beacuse we soon will
+            // support constexpr on MSVC)
             static
 #else
             constexpr
