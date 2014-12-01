@@ -21,8 +21,7 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Tried getting EnumNames<> to use constexpr array<> intead of vector<>. Got close, and keep trying.
- *              May save a little app startup time space.
+ *      @todo   Tried getting EnumNames<> to use constexpr: save a little app startup time space.
  *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
@@ -134,22 +133,21 @@ namespace   Stroika {
             template <typename ENUM_TYPE>
             class   EnumNames {
             private:
-                //using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
-                using   EnumNamesHolderType_ = vector<EnumName<ENUM_TYPE>>;
+                using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
                 EnumNamesHolderType_   fEnumNames_;
 
             public:
                 /**
                  */
-                EnumNames () = delete;
-                EnumNames (const EnumNames& src) = delete;
-                EnumNames (EnumNames&& src) = delete;
+                EnumNames () = default;
+                EnumNames (const EnumNames& src) = default;
+                EnumNames (EnumNames&& src);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
 
             public:
                 /**
                  */
-                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = delete;
+                nonvirtual  EnumNames& operator= (const EnumNames& rhs) = default;
 
             public:
                 /**

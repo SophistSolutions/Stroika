@@ -34,7 +34,8 @@ using   Time::DurationSecondsType;
  */
 Logger  Logger::sThe_;
 
-const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = {
+const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)
+{
     { Logger::Priority::eDebug, L"Debug" },
     { Logger::Priority::eInfo, L"Info" },
     { Logger::Priority::eNotice, L"Notice" },

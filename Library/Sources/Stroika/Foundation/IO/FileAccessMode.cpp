@@ -22,7 +22,8 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 #if 0
-const Configuration::EnumNames<FileAccessMode>   IO::Stroika_Enum_Names(FileAccessMode) = {
+const Configuration::EnumNames<FileAccessMode>   IO::Stroika_Enum_Names(FileAccessMode)
+{
     { FileAccessMode::eNoAccess, L"No-Access" },
     { FileAccessMode::eRead, L"Read" },
     { FileAccessMode::eWrite, L"Write" },

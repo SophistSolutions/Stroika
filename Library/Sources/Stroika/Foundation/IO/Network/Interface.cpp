@@ -60,12 +60,14 @@ using   namespace   Stroika::Foundation::IO::Network;
  **************************** Network::Interface ********************************
  ********************************************************************************
  */
-const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status) = {
+const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status)
+{
     { Interface::Status::eConnected, L"Connected" },
     { Interface::Status::eRunning, L"Running" },
 };
 
-const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type) = {
+const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type)
+{
     { Interface::Type::eLoopback, L"Loopback" },
     { Interface::Type::eWiredEthernet, L"WiredEthernet" },
     { Interface::Type::eWIFI, L"WIFI" },

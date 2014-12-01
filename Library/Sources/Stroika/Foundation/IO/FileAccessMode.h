@@ -30,7 +30,7 @@ namespace   Stroika {
                 Stroika_Define_Enum_Bounds(eNoAccess, eReadWrite)
             };
 
-#if		!qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_Buggy
             const Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode);
 #endif
 

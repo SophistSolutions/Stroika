@@ -65,7 +65,8 @@ const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = Me
 
 
 
-const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus) = {
+const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)
+{
     { ProcessType::RunStatus::eRunning, L"Running" },
     { ProcessType::RunStatus::eSleeping, L"Sleeping" },
     { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
