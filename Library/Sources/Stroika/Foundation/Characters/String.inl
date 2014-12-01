@@ -197,6 +197,27 @@ namespace   Stroika {
                 size_t  useLength  =   (to - from);
                 return SubString_ (accessor, myLength, from, from + useLength);
             }
+            inline  String  String::SafeSubString (size_t from) const
+            {
+                _SafeReadRepAccessor    accessor { this };
+                size_t                  myLength { accessor._ConstGetRep ()._GetLength () };
+                from = min (from, myLength);
+                Assert (from <= myLength);
+                size_t  useLength  { myLength - from };
+                return SubString_ (accessor, myLength, from, from + useLength);
+            }
+            inline  String  String::SafeSubString (size_t from, size_t to) const
+            {
+                _SafeReadRepAccessor    accessor { this };
+                size_t                  myLength { accessor._ConstGetRep ()._GetLength () };
+                from = min (from, myLength);
+                to = min (to, myLength);
+                to = max (to, from);
+                Assert (from <= to);
+                Assert (to <= myLength);
+                size_t  useLength  =   (to - from);
+                return SubString_ (accessor, myLength, from, from + useLength);
+            }
             inline  String      String::CircularSubString (ptrdiff_t from) const
             {
                 _SafeReadRepAccessor    accessor { this };

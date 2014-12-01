@@ -546,10 +546,23 @@ namespace   Stroika {
                  *  \req  (to <= GetLength ());     // for 2-arg variant
                  *
                  *  @see substr
-                 *  @see CircustlarSubString
+                 *  @see SafeSubString
+                 *  @see CircularSubString
                  */
                 nonvirtual  String      SubString (size_t from) const;
                 nonvirtual  String      SubString (size_t from, size_t to) const;
+
+            public:
+                /**
+                 *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
+                 *  if the exceed those endpoints.
+                 *
+                 *  @see substr
+                 *  @see SubString
+                 *  @see CircularSubString
+                 */
+                nonvirtual  String      SafeSubString (size_t from) const;
+                nonvirtual  String      SafeSubString (size_t from, size_t to) const;
 
             public:
                 /**
@@ -562,9 +575,16 @@ namespace   Stroika {
                  *  Similarly, CircularSubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
                  *  to grab the end of a string.
                  *
+                 *  \req  (adjustedFrom <= adjustedTo);
+                 *  \req  (adjustedTo <= GetLength ());     // for 2-arg variant
+                 *
                  *  \note \em Design Note
                  *      We chose not to overload SubString() with this functionality because it would have been to easy
                  *      to mask bugs.
+                 *
+                 *  @see substr
+                 *  @see SubString
+                 *  @see SafeSubString
                  */
                 nonvirtual  String      CircularSubString (ptrdiff_t from) const;
                 nonvirtual  String      CircularSubString (ptrdiff_t from, ptrdiff_t to) const;
