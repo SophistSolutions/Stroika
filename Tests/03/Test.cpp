@@ -42,8 +42,10 @@ namespace {
         enum class fooEnum {
             eOne,
             eTwo,
+            Stroika_Define_Enum_Bounds(eOne, eTwo)
         };
-        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum)
+        {
             { fooEnum::eOne, L"eOne" },
             { fooEnum::eTwo, L"eTwo" },
         };
@@ -55,7 +57,7 @@ namespace {
         Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
         Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         {
-            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
@@ -63,7 +65,7 @@ namespace {
             Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         }
         {
-            static  const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) = {
+            static  const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
