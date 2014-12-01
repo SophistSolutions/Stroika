@@ -30,6 +30,7 @@ History
 	<li>Socket code cleanups (and fixes)</li>
 	<li>Added experimental const T* CTOR (explicit) for Optional</li>
 	<li>Lose some deprecated functions</li>
+	<li>ThirdPartyProducts makefile cleanups, including LOSE doxygen - just use system installed version</li>
 </ul>
 </td>
 </tr>

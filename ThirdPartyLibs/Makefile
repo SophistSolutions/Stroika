@@ -3,7 +3,6 @@
 .PHONY:	all clean clobber check
 
 all:
-	@(cd doxygen; perl buildall.pl Build)
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory all
 endif
@@ -18,7 +17,6 @@ ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 endif
 
 clean:
-	@(cd doxygen; perl buildall.pl clean)
 	@$(MAKE) --directory openssl --no-print-directory clean
 	@$(MAKE) --directory zlib --no-print-directory clean
 	@$(MAKE) --directory Xerces --no-print-directory clean
@@ -26,7 +24,6 @@ clean:
 
 check:
 	@echo Checking ThirdPartyLibs...
-	@(cd doxygen; perl checkall.pl)
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory check
 endif
@@ -42,7 +39,6 @@ endif
 
 clobber:
 	@echo "ThirdPartyLibs clobber..."
-	@(cd doxygen; perl buildall.pl clobber)
 	@$(MAKE) --directory openssl --no-print-directory clobber
 	@$(MAKE) --directory curl --no-print-directory clobber
 	@$(MAKE) --directory Xerces --no-print-directory clobber

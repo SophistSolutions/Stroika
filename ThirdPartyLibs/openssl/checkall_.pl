@@ -56,7 +56,7 @@ my $x1 = `diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
 my $x2 = `diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
 }
 if (trim ($x1) <= "44" and trim ($x2) <= "44") {
-	print ("      OpenSSL...       [SUCCEEDED]\n");
+	print ("      OpenSSL...       [Succeeded]\n");
 }
 else {
 	print ("      openssl [FAILED]\n");

@@ -56,4 +56,4 @@ if (! (-e "$DBG64_LIB")) {
 	print ("      ThirdPartyLibs/Xerces - [FAILED] - $DBG64_LIB is missing\n");
 	exit (1);
 }
-print ("      ThirdPartyLibs/Xerces -  [SUCCEEDED]\n");
+print ("      ThirdPartyLibs/Xerces -  [Succeeded]\n");

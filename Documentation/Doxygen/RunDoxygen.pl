@@ -4,7 +4,7 @@
 
 my $Path2StroikaRoot = "../../";
 
-my $doxygen = "";
+my $doxygen = "doxygen";
 
 #my $latexMake = "";
 
@@ -12,15 +12,15 @@ if ("$^O" eq "linux") {
 	$doxygen = "doxygen";
 #	$latexMake = "make";
 }
-if ("$^O" eq "cygwin") {
-	my $doxygenFile = "$Path2StroikaRoot/ThirdPartyLibs/doxygen/CURRENT/bin/doxygen.exe";
-	unless (-e $doxygenFile) {
-		print "Error: $doxygenFile Doesn't Exist!\r\n";
-		exit(1);
-	}
-	$doxygen =$doxygenFile;
- #	$latexMake = "make.bat";
-}
+#if ("$^O" eq "cygwin") {
+#	my $doxygenFile = "$Path2StroikaRoot/ThirdPartyLibs/doxygen/CURRENT/bin/doxygen.exe";
+#	unless (-e $doxygenFile) {
+#		print "Error: $doxygenFile Doesn't Exist!\r\n";
+#		exit(1);
+#	}
+#	$doxygen =$doxygenFile;
+#	$latexMake = "make.bat";
+#}
 
 my $doxyArgs = "Stroika-Library.cfg";
 
