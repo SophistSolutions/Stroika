@@ -20,7 +20,7 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a55">v2.0a55x</a><br/>2014-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a55">v2.0a55</a><br/>2014-12-01</td>
 <td>
 <ul>
 	<li>Minor URL class cleanups (name changes, docs etc)</li>
@@ -31,6 +31,10 @@ History
 	<li>Added experimental const T* CTOR (explicit) for Optional</li>
 	<li>Lose some deprecated functions</li>
 	<li>ThirdPartyProducts makefile cleanups, including LOSE doxygen - just use system installed version</li>
+	<li>Incomplete attempts at getting constexpr working for EnumNames<> template. But at least got 
+	FileAccessMode table created before main, to workaround bug / issue with HealthFrameWorksServer, which 
+	generates calls to this dumptrace code before main()</li>
+	<li>Quickie mini-release with limited testing, due to workaroudn for FileAccessMode EnumNames code</li>
 </ul>
 </td>
 </tr>
