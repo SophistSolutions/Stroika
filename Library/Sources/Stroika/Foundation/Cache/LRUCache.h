@@ -378,7 +378,14 @@ namespace   Stroika {
                 }
 
             public:
-                void    clear ()
+                nonvirtual  typename TRAITS::StatsType  GetStats () const
+                {
+                    auto    critSec { Execution::make_unique_lock (fLock_) };
+                    return fRealCache_.fStats;
+                }
+
+            public:
+                nonvirtual  void    clear ()
                 {
                     auto    critSec { Execution::make_unique_lock (fLock_) };
                     fRealCache_.ClearCache ();
