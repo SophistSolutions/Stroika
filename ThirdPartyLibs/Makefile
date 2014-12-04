@@ -38,9 +38,9 @@ ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 endif
 
 clobber:
-	@echo "ThirdPartyLibs clobber..."
+	@echo -n "ThirdPartyLibs clobber..."
 	@$(MAKE) --directory openssl --no-print-directory clobber
 	@$(MAKE) --directory curl --no-print-directory clobber
 	@$(MAKE) --directory Xerces --no-print-directory clobber
 	@$(MAKE) --directory zlib --no-print-directory clobber
-	@echo "ThirdPartyLibs clobber...done"
+	@echo "   ...done"
