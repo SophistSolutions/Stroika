@@ -80,7 +80,6 @@ namespace   Stroika {
              ************************ Configuration::EnumNames ******************************
              ********************************************************************************
              */
-#if 1
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
                 : fEnumNames_ ()
@@ -93,7 +92,6 @@ namespace   Stroika {
                     ++oi;
                 }
             }
-#endif
             template     <typename ENUM_TYPE>
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
@@ -103,7 +101,6 @@ namespace   Stroika {
                 : fEnumNames_ (init)
             {
             }
-#if 0
             template     <typename ENUM_TYPE>
             template     <size_t N>
             inline
@@ -114,7 +111,6 @@ namespace   Stroika {
                 : fEnumNames_ (origEnumNames)
             {
             }
-#endif
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
             {
@@ -131,7 +127,7 @@ namespace   Stroika {
                 return fEnumNames_.end ();
             }
             template     <typename ENUM_TYPE>
-            inline  constexpr	size_t  EnumNames<ENUM_TYPE>::size () const
+            inline  constexpr   size_t  EnumNames<ENUM_TYPE>::size () const
             {
                 return fEnumNames_.size ();
             }

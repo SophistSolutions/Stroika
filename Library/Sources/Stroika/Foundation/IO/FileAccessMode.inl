@@ -29,37 +29,22 @@ namespace   Stroika {
             {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
-
-            namespace {
-//                      static  constexpr Configuration::EnumName<FileAccessMode>   FileAccessMode_InitHelper_[4] =
-                static  constexpr array<Configuration::EnumName<FileAccessMode>, size_t(FileAccessMode::eCOUNT)>  FileAccessMode_InitHelper_ = {
-                    {
-                        Configuration::EnumName<FileAccessMode>{ FileAccessMode::eNoAccess, L"No-Access" },
-                        Configuration::EnumName<FileAccessMode>{ FileAccessMode::eRead, L"Read" },
-                        Configuration::EnumName<FileAccessMode>{ FileAccessMode::eWrite, L"Write" },
-                        Configuration::EnumName<FileAccessMode>{ FileAccessMode::eReadWrite, L"Read-Write" },
-                    }
-                };
-
-            }
 #if     qCompilerAndStdLib_constexpr_Buggy
             // NB: we put this here instead of CPP file since sometimes accessed before main and to avoid moduleinit complexity (beacuse we soon will
             // support constexpr on MSVC)
-            static  const
-#else
-            //static  const
-            // DAMN! NOT WORKING YET!!!
-            constexpr
+            static
 #endif
-            Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode) { FileAccessMode_InitHelper_ };
-#if 0
+            constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
             {
-                { FileAccessMode::eNoAccess, L"No-Access" },
-                { FileAccessMode::eRead, L"Read" },
-                { FileAccessMode::eWrite, L"Write" },
-                { FileAccessMode::eReadWrite, L"Read-Write" },
+                Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
+                    {
+                        { FileAccessMode::eNoAccess, L"No-Access" },
+                        { FileAccessMode::eRead, L"Read" },
+                        { FileAccessMode::eWrite, L"Write" },
+                        { FileAccessMode::eReadWrite, L"Read-Write" },
+                    }
+                }
             };
-#endif
 
 
         }

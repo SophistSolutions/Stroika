@@ -23,14 +23,20 @@
  * TODO:
  *      @todo   Tried getting EnumNames<> to use constexpr: save a little app startup time space.
  *
- *		@todo	Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
- *				to do binary search (or maybe array indexing?)
+ *      @todo   Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
+ *              to do binary search (or maybe array indexing?)
  *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
  *              to copy. That maybe a poor tradeoff. The only reason for not using aliases was to add
  *              the Peek/GetName methods, but those could have been global functions? Hmmm.
+ *
+ *      @todo   Figure out why we need todo
+ *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer arg to CTOR - see
+ *                  constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode) {
+ *                      Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
+ *                      {
  */
 
 
@@ -146,13 +152,13 @@ namespace   Stroika {
                  */
                 EnumNames () = delete;
                 constexpr EnumNames (const EnumNames& src) = default;
-                EnumNames (EnumNames&& src) = delete;
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr EnumNames (EnumNames&& src) = default;
+#endif
                 constexpr EnumNames (const BasicArrayInitializer& init);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
-#if 0
                 template     <size_t N>
                 constexpr   EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
-#endif
 
             public:
                 /**
@@ -180,7 +186,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  constexpr	size_t  size () const;
+                nonvirtual  constexpr   size_t  size () const;
 
             public:
                 /**
