@@ -21,7 +21,7 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Tried getting EnumNames<> to use constexpr: save a little app startup time space.
+ *      @todo   Improve EnumNames<> constexpr support (works somewhat now).
  *
  *      @todo   Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
  *              to do binary search (or maybe array indexing?)
