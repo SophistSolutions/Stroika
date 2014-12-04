@@ -23,6 +23,9 @@
  * TODO:
  *      @todo   Tried getting EnumNames<> to use constexpr: save a little app startup time space.
  *
+ *		@todo	Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
+ *				to do binary search (or maybe array indexing?)
+ *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
@@ -134,17 +137,22 @@ namespace   Stroika {
             class   EnumNames {
             private:
                 using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
-                EnumNamesHolderType_   fEnumNames_;
+
+            public:
+                using BasicArrayInitializer = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
             public:
                 /**
                  */
-                EnumNames () = default;
-                EnumNames (const EnumNames& src) = default;
-                EnumNames (EnumNames&& src);
+                EnumNames () = delete;
+                constexpr EnumNames (const EnumNames& src) = default;
+                EnumNames (EnumNames&& src) = delete;
+                constexpr EnumNames (const BasicArrayInitializer& init);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
+#if 0
                 template     <size_t N>
-                constexpr EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
+                constexpr   EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N]);
+#endif
 
             public:
                 /**
@@ -172,7 +180,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  size_t  size () const;
+                nonvirtual  constexpr	size_t  size () const;
 
             public:
                 /**
@@ -183,6 +191,9 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const;
+
+            private:
+                EnumNamesHolderType_   fEnumNames_;
             };
 
 
