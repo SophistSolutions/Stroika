@@ -23,10 +23,12 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a56">v2.0a56x</a><br/>2014-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a56">v2.0a56</a><br/>2014-12-04</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Configuration::EnumNames constexpr improevements</li>
+	<li>DateRange difftype is duration</li>
+	<li>Quickie mini-release with limited testing, due to workaround for FileAccessMode Configuration::EnumNames code</li>
 </ul>
 </td>
 </tr>
@@ -51,7 +53,7 @@ History
 	<li>Incomplete attempts at getting constexpr working for EnumNames<> template. But at least got 
 	FileAccessMode table created before main, to workaround bug / issue with HealthFrameWorksServer, which 
 	generates calls to this dumptrace code before main()</li>
-	<li>Quickie mini-release with limited testing, due to workaroudn for FileAccessMode EnumNames code</li>
+	<li>Quickie mini-release with limited testing, due to workaround for FileAccessMode EnumNames code</li>
 </ul>
 </td>
 </tr>
