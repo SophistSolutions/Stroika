@@ -62,7 +62,8 @@ namespace   Stroika {
             template    <typename   MUTEX, typename ...ARGS>
             inline  std::unique_lock<MUTEX>   make_unique_lock (MUTEX& m, ARGS&& ...args)
             {
-                return std::unique_lock<MUTEX> (m, forward<ARGS> (args)...);
+                using   namespace   std;
+                return unique_lock<MUTEX> (m, forward<ARGS> (args)...);
             }
 
 
