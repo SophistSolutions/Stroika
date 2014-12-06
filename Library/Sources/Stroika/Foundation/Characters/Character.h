@@ -94,9 +94,6 @@ namespace   Stroika {
                 nonvirtual  bool    IsASCII () const;
 
             public:
-                _DeprecatedFunction_ (inline  bool    IsAscii () const , "Instead use IsASCII() - to be removed after v2.0a53") {return IsASCII ();};
-
-            public:
                 nonvirtual  bool    IsWhitespace () const;
 
             public:
