@@ -840,6 +840,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
@@ -1220,6 +1221,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
@@ -1531,6 +1533,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />

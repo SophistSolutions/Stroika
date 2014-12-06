@@ -9,6 +9,9 @@
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Execution/ErrNoException.h"
+#if     qPlatform_Windows
+#include    "Platform/Windows/WinSock.h"
+#endif
 
 #include    "SocketAddress.h"
 
@@ -75,7 +78,6 @@ namespace   Stroika {
                         RAW     =   SOCK_RAW,
                     };
 
-
                 public:
                     /**
                      *  Note - socket is CLOSED (filesystem close for now) in DTOR
@@ -87,7 +89,7 @@ namespace   Stroika {
                      */
                     Socket ();
                     Socket (SocketKind socketKind);
-                    Socket (Socket&&  s);
+                    Socket (Socket&& s);
                     Socket (const Socket& s);
 
                 protected:
@@ -137,7 +139,6 @@ namespace   Stroika {
                      *  @see POSIX bind()
                      */
                     nonvirtual void   Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
-
 
                 public:
                     /**
@@ -193,14 +194,12 @@ namespace   Stroika {
                      */
                     nonvirtual  Socket  Accept ();
 
-
                 public:
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      */
                     nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
-
 
                 public:
                     /**
@@ -291,7 +290,17 @@ namespace   Stroika {
                  *
                  *  This defaults to ON
                  */
-                void    AutosetupWinsock(bool setup);
+                _DeprecatedFunction_ (inline void    AutosetupWinsock(bool setup), "Instead use WinSock() - to be removed after v2.0a57")
+                {
+                    using IO::Network::Platform::Windows::WinSock;
+                    if (setup) {
+                        WinSock::AssureStarted ();
+                    }
+                    else {
+                        Require (WinSock::IsStarted ());
+                        WinSock::NoteExternallyStarted ();
+                    }
+                }
 #endif
 
 

@@ -30,6 +30,7 @@
 #include    "../../Execution/Thread.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Platform/Windows/WinSock.h"
 #endif
 #include    "../../IO/Network/DNS.h"
 
@@ -125,31 +126,12 @@ int main (void)
 
 
 
-#if     qPlatform_Windows
-namespace {
-    bool    sStartedUp_ = false;
-    bool    sAutoSetup_ =   true;
-
-    void    CheckStarup_ ()
-    {
-        if (not sStartedUp_) {
-            WSADATA wsaData;        // Initialize Winsock
-            int iResult = WSAStartup (MAKEWORD (2, 2), &wsaData);
-            if (iResult != 0) {
-                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
-            }
-            sStartedUp_ = true;
-        }
-    }
-}
-#endif
-
 
 InternetAddress Network::GetPrimaryInternetAddress ()
 {
     /// HORRIBLY KLUDGY BAD IMPL!!!
 #if     qPlatform_Windows
-    CheckStarup_ ();
+    IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #if 0
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
 #endif

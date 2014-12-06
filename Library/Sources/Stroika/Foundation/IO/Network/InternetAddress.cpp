@@ -13,7 +13,8 @@
 #include    "../../Debug/Trace.h"
 #include     "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Platform/Windows/WinSock.h"
 #endif
 #include     "../../Memory/SmallStackBuffer.h"
 
@@ -45,23 +46,6 @@ const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0
 
 
 
-#if     qPlatform_Windows
-namespace {
-    void    CheckStarup_ ()
-    {
-        static  bool    sStartedUp_ = false;
-        if (not sStartedUp_) {
-            WSADATA wsaData;        // Initialize Winsock
-            int iResult = WSAStartup (MAKEWORD (2, 2), &wsaData);
-            if (iResult != 0) {
-                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
-            }
-            sStartedUp_ = true;
-        }
-    }
-}
-#endif
-
 
 
 
@@ -70,7 +54,7 @@ namespace {
 namespace {
     int     inet_pton (int af, const char* src, void* dst)
     {
-        CheckStarup_ ();
+        IO::Network::Platform::Windows::WinSock::AssureStarted ();
         struct sockaddr_storage ss {};
         int size = sizeof(ss);
         wchar_t src_copy[INET6_ADDRSTRLEN + 1]; // stupid non-const API
@@ -98,7 +82,7 @@ namespace {
     }
     const char* inet_ntop (int af, const void* src, char* dst, socklen_t size)
     {
-        CheckStarup_ ();
+        IO::Network::Platform::Windows::WinSock::AssureStarted ();
         struct sockaddr_storage ss {};
         ss.ss_family = af;
         switch(af) {

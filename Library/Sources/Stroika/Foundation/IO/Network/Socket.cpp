@@ -24,6 +24,7 @@
 #include    "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Platform/Windows/WinSock.h"
 #endif
 #include    "../../Memory/BlockAllocated.h"
 
@@ -86,28 +87,6 @@ namespace {
 }
 #endif
 
-
-
-
-
-#if     qPlatform_Windows
-namespace {
-    bool    sStartedUp_ =   false;
-    bool    sAutoSetup_ =   true;
-
-    void    CheckStarup_ ()
-    {
-        if (not sStartedUp_) {
-            WSADATA wsaData;        // Initialize Winsock
-            int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-            if (iResult != 0) {
-                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
-            }
-            sStartedUp_ = true;
-        }
-    }
-}
-#endif
 
 
 
@@ -356,7 +335,7 @@ Socket::Socket (SocketKind socketKind)
     : fRep_ ()
 {
 #if     qPlatform_Windows
-    CheckStarup_ ();
+    IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
 
     Socket::PlatformNativeHandle    sfd;
@@ -372,7 +351,7 @@ Socket::Socket (const shared_ptr<_Rep>& rep)
     : fRep_ (rep)
 {
 #if     qPlatform_Windows
-    CheckStarup_ ();
+    IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
 }
 
@@ -380,7 +359,7 @@ Socket::Socket (shared_ptr<_Rep>&&  rep)
     : fRep_ (std::move (rep))
 {
 #if     qPlatform_Windows
-    CheckStarup_ ();
+    IO::Network::Platform::Windows::WinSock::AssureStarted ();
 #endif
 }
 
@@ -501,23 +480,6 @@ bool    Socket::IsOpen () const
 
 
 
-
-
-
-
-#if     qPlatform_Windows
-/**
- * This must be called before any Sockets are created, otherwise its
- *  an erorr (requirement failure).
- *
- *  This defaults to ON
- */
-void    IO::Network::AutosetupWinsock (bool setup)
-{
-    Require (not sStartedUp_);
-    sAutoSetup_ =   setup;
-}
-#endif
 
 
 
