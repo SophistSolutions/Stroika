@@ -357,9 +357,10 @@ namespace   Stroika {
                     /**
                      */
                     nonvirtual  String  GetFragment () const;
+
                 public:
                     /**
-                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+                     *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
                     nonvirtual  void    SetFragment (const String& frag);
 
