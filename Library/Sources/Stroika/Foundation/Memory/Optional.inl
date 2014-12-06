@@ -169,12 +169,12 @@ namespace   Stroika {
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const
+            inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
             {
                 return fValue_ == nullptr;
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   bool    Optional<T, TRAITS>::IsPresent () const
+            inline  constexpr   bool    Optional<T, TRAITS>::IsPresent () const noexcept
             {
                 return fValue_ != nullptr;
             }
