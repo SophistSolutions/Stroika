@@ -30,9 +30,12 @@ namespace   Stroika {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
 #if     qCompilerAndStdLib_constexpr_Buggy
-            // NB: we put this here instead of CPP file since sometimes accessed before main and to avoid moduleinit complexity (beacuse we soon will
-            // support constexpr on MSVC)
-            static
+            namespace Private_ {
+                struct  FileAccessModeData {
+                    FileAccessModeData ();
+                    Configuration::EnumNames<FileAccessMode>    fFileAccessModeConfigNames;
+                };
+            }
 #endif
             constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
             {
@@ -50,4 +53,22 @@ namespace   Stroika {
         }
     }
 }
+
+
+
+#if     qCompilerAndStdLib_constexpr_Buggy
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::Private_::FileAccessModeData> _Stroika_Foundation_IO_FileAccessModeData_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
+}
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   IO {
+            inline  constexpr   Configuration::EnumNames<FileAccessMode>    Get_FileAccessMode_BWA ()
+            {
+                return Execution::ModuleInitializer<Private_::FileAccessModeData>::Actual ().fFileAccessModeConfigNames;
+            }
+        }
+    }
+}
+#endif
 #endif  /*_Stroika_Foundation_IO_FileAccessMode_inl_*/
