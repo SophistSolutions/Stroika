@@ -24,10 +24,14 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a57">v2.0a57x</a><br/>2014-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a57">v2.0a57</a><br/>2014-12-06</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Fixed Bits assertion checks</li>
+	<li>Lose deprecated functions</li>
+	<li>New IO::Network::Platoform::Windows::WinSock module to share code, and make easier to override startup</li>
+	<li>variadic template pass extra params to make_unique_lock</li>
+	<li>Ran most regtests (including valgrind)</li>
 </ul>
 </td>
 </tr>
