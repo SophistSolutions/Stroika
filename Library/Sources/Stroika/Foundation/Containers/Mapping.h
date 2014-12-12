@@ -483,6 +483,9 @@ namespace   Stroika {
                 operator ContainerType () const                                                     { return fDelegate_;    }
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 ContainerType   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const              { return fDelegate_ + items;    }
+                void    Add (KEY_TYPE key, VALUE_TYPE newElt)                                       { return fDelegate_.Add (key, newElt);    }
+                void    Add (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> p)                          { return fDelegate_.Add (p);    }
+
             private:
                 Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   fDelegate_;
                 mutex                                               fLock_;
