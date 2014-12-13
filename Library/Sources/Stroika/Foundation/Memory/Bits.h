@@ -49,12 +49,8 @@ namespace   Stroika {
              *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
              *      VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
              *      VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
-             &&&
-             second byte....
-             ***see if this is right - and add to retest
              *      VerifyTestResult (TakeNBitsFrom (0xff, 8, 0) == 0xff);
              *      VerifyTestResult (TakeNBitsFrom (0xff, 8, 8) == 0x0);
-             &&&&
              */
             template    <typename INT_TYPE>
             constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset);

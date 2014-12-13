@@ -266,6 +266,8 @@ namespace {
             VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
             VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
             VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
+            VerifyTestResult (TakeNBitsFrom (0xff, 8, 0) == 0xff);
+            VerifyTestResult (TakeNBitsFrom (0xff, 8, 8) == 0x0);
         }
         {
             VerifyTestResult (Bit (0) == 0x1);

@@ -1269,6 +1269,12 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
 @DESCRIPTION:
+
+
+&&&& see http://stackoverflow.com/questions/25830111/constexpr-static-data-member-giving-undefined-reference-error
+	maybne not buggy - maybe my umuisertaning.... try 
+	defining (but with no args) - and see if uses one from deeclaratiton
+
 */
 #ifndef qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
 
