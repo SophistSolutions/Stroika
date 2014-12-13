@@ -1267,37 +1267,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
-@DESCRIPTION:
-see http://stackoverflow.com/questions/25830111/constexpr-static-data-member-giving-undefined-reference-error
-
-IT EXPALINS MY BUG
-
-*/
-#ifndef qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
-
-#if 0
-#if     defined (__clang__)
-// Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 6))
-#elif     defined (__GNUC__)
-// Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
-#else
-#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       qCompilerAndStdLib_constexpr_Buggy
-#endif
-#endif
-#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       qCompilerAndStdLib_constexpr_Buggy
-
-#endif
-
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
 @DESCRIPTION:
 */
