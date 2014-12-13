@@ -376,6 +376,39 @@ namespace {
 
 
 
+namespace {
+    namespace   Test7_nuSynchonized_ {
+        void    DoIt ()
+        {
+            using   namespace Execution;
+            {
+                nu_Synchronized<int>    tmp;
+                tmp = 4;
+                int a = tmp;
+                VerifyTestResult (a == 4);
+            }
+            {
+                nu_Synchronized<int>    tmp { 4 };
+                int a = tmp;
+                VerifyTestResult (a == 4);
+            }
+            {
+                nu_Synchronized<String>    tmp { L"x" };
+                String a = tmp;
+                VerifyTestResult (a == L"x");
+
+                // figure why fails below...
+                VerifyTestResult (tmp->find ('z') == string::npos);
+                VerifyTestResult (tmp->find ('x') == 0);
+            }
+            {
+                //@todo next - test with the debugging mutex on an object, and accessed from thwo threads
+            }
+        }
+    }
+}
+
+
 
 
 namespace   {
@@ -387,7 +420,7 @@ namespace   {
         Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
         Test5_SetSpecificSyncMethods::DoIt ();
         Test6_OverloadsWithSyncMethods_::DoIt ();
-
+        Test7_nuSynchonized_::DoIt ();
     }
 }
 

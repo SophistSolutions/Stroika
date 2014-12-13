@@ -99,6 +99,115 @@ namespace   Stroika {
             };
 
 
+
+
+            template    <typename   T, typename MUTEX = SpinLock>
+            struct  nu_Synchronized_Traits {
+                using  MutexType = MUTEX;
+            };
+
+            template    <typename   T, typename TRAITS = nu_Synchronized_Traits<T>>
+            class   nu_Synchronized {
+            public:
+                using   MutexType = typename TRAITS::MutexType;
+            public:
+                struct  WritableReference {
+                    T* fT;
+                    unique_lock<MutexType> l;
+                    WritableReference (T* t, MutexType* m)
+                        : fT (t)
+                        , l (*m)
+                    {
+                    }
+                    WritableReference (const WritableReference& src) = default;
+                    WritableReference (WritableReference&& src)
+                        : fT (src.fT)
+                        , l { move (src.l) } {
+                        src.fT = nullptr;
+                    }
+                    const WritableReference& operator= (const WritableReference& rhs) = delete;
+                    T* operator-> ()
+                    {
+                        return fT;
+                    }
+                    const T* operator-> () const
+                    {
+                        return fT;
+                    }
+                    operator T& ()
+                    {
+                        return *fT;
+                    }
+                    operator const T& () const
+                    {
+                        return *fT;
+                    }
+                };
+
+            public:
+                template    <typename ...ARGUMENT_TYPES>
+                nu_Synchronized (ARGUMENT_TYPES&& ...args)
+                    : fDelegate_ (std::forward<ARGUMENT_TYPES> (args)...)
+                {
+                }
+
+            public:
+                // use template forwarding variadic CTOR formward
+                const nu_Synchronized& operator= (const T& rhs)
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    fDelegate_ = rhs;
+                    return *this;
+                }
+
+            public:
+                nonvirtual  operator T () const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_;
+                }
+
+            public:
+                nonvirtual  WritableReference GetTempLock ()
+                {
+                    return move (WritableReference (&fDelegate_, &fLock_));
+                }
+
+            public:
+                nonvirtual  const WritableReference GetTempLock () const
+                {
+                    return move (WritableReference (&fDelegate_, &fLock_));
+                }
+
+            public:
+                nonvirtual  const WritableReference operator-> () const
+                {
+                    return move (WritableReference (&fDelegate_, &fLock_));
+                }
+            public:
+                nonvirtual  WritableReference operator-> ()
+                {
+                    return move (WritableReference (&fDelegate_, &fLock_));
+                }
+#if 0
+            public:
+                void    lock ()
+                {
+                    fLock_.lock ();
+                }
+
+            public:
+                void    unlock ()
+                {
+                    fLock_.unlock ();
+                }
+#endif
+            private:
+                T                   fDelegate_;
+                mutable MutexType   fLock_;
+            };
+
+
         }
     }
 }
