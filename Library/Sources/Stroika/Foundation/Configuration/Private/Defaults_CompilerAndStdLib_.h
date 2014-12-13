@@ -1269,15 +1269,14 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
 @DESCRIPTION:
+see http://stackoverflow.com/questions/25830111/constexpr-static-data-member-giving-undefined-reference-error
 
-
-&&&& see http://stackoverflow.com/questions/25830111/constexpr-static-data-member-giving-undefined-reference-error
-	maybne not buggy - maybe my umuisertaning.... try 
-	defining (but with no args) - and see if uses one from deeclaratiton
+IT EXPALINS MY BUG
 
 */
 #ifndef qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
 
+#if 0
 #if     defined (__clang__)
 // Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
 #define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 6))
@@ -1287,6 +1286,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #else
 #define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       qCompilerAndStdLib_constexpr_Buggy
 #endif
+#endif
+#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       qCompilerAndStdLib_constexpr_Buggy
 
 #endif
 
@@ -1574,7 +1575,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
  *  work pefrectly - since it doesnt create a name of the desired type, but its usually
  *  pretty close.
  */
-#if     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     enum  { NAME = static_cast<TYPE> (VALUE) };
 #else

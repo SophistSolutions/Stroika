@@ -94,12 +94,12 @@ namespace   Stroika {
                  */
                 template    <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-#if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
-                    static  constexpr T kLowerBound    =   MIN;
-                    static  constexpr T kUpperBound    =   MAX;
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy
                     static  const T kLowerBound;
                     static  const T kUpperBound;
+#else
+                    static  constexpr T kLowerBound    =   MIN;
+                    static  constexpr T kUpperBound    =   MAX;
 #endif
                 };
 
@@ -137,12 +137,12 @@ namespace   Stroika {
                         is_arithmetic<T>::value,
                 ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T {} - T {}), Private_::UnsignedDifferenceType_<T> >
                 >::type {
-#if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
-                    static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
-                    static  constexpr T kUpperBound    =   numeric_limits<T>::max ();
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy
                     static  const T kLowerBound;
                     static  const T kUpperBound;
+#else
+                    static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
+                    static  constexpr T kUpperBound    =   numeric_limits<T>::max ();
 #endif
                 };
 
