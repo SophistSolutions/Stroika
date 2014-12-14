@@ -77,7 +77,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************ Configuration::EnumNames ******************************
+             ************************** Configuration::EnumNames ****************************
              ********************************************************************************
              */
             template     <typename ENUM_TYPE>
@@ -91,6 +91,7 @@ namespace   Stroika {
                     *oi = i;
                     ++oi;
                 }
+                RequireItemsOrderedByEnumValue_ ();
             }
             template     <typename ENUM_TYPE>
             inline
@@ -100,6 +101,7 @@ namespace   Stroika {
             EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
                 : fEnumNames_ (init)
             {
+                RequireItemsOrderedByEnumValue_ ();
             }
             template     <typename ENUM_TYPE>
             template     <size_t N>
@@ -110,6 +112,7 @@ namespace   Stroika {
             EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
+                RequireItemsOrderedByEnumValue_ ();
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
@@ -147,6 +150,44 @@ namespace   Stroika {
                 auto tmp = PeekName (e);
                 RequireNotNull (tmp);
                 return tmp;
+            }
+            template     <typename ENUM_TYPE>
+            const ENUM_TYPE*  EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
+            {
+                for (auto i : fEnumNames_) {
+                    if (::wcscmp (i.second, name) == 0) {
+                        return i.first;
+                    }
+                }
+                return nullptr;
+            }
+            template     <typename ENUM_TYPE>
+            inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name) const
+            {
+                const ENUM_TYPE* tmp = PeekValue (e);
+                RequireNotNull (tmp);
+                return *tmp;
+            }
+            template     <typename ENUM_TYPE>
+            template    <typename   NOT_FOUND_EXCEPTION>
+            inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const
+            {
+                const ENUM_TYPE* tmp = PeekValue (e);
+                if (tmp == nullptr) {
+                    Execution::DoThrow (notFoundException);
+                }
+                return *tmp;
+            }
+            template     <typename ENUM_TYPE>
+            inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
+            {
+#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+                Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
+                for (size_t i = 0; i < fEnumNames_.size (); ++i) {
+                    Require (fEnumNames_[i].first == ToEnum<ENUM_TYPE> (i));
+                }
+#endif
+
             }
 
 

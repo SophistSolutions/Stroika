@@ -57,8 +57,8 @@
  *
  * TODO:
  *
- *		@todo	Started switch to global (characeters namespace) oeprator==/operator!=. Experimenting to see if works
- *				better or worse (2014-12-13). If works well, switch operator<, operator>, etc...
+ *      @todo   Started switch to global (characeters namespace) oeprator==/operator!=. Experimenting to see if works
+ *              better or worse (2014-12-13). If works well, switch operator<, operator>, etc...
  *
  *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesnt! Or - change it!

@@ -198,6 +198,24 @@ namespace   Stroika {
                  */
                 nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const;
 
+            public:
+                /**
+                 *  Returns nullptr if not found.
+                 */
+                nonvirtual  const ENUM_TYPE*  PeekValue (const wchar_t* name) const;
+
+            public:
+                /**
+                 *  The /1 overload requires the name is present, and asserts if not found.
+                 *  The /2 overload throws the argument exceptio iff the name is not found.
+                 */
+                nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name) const;
+                template    <typename   NOT_FOUND_EXCEPTION>
+                nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
+
+            private:
+                nonvirtual  constexpr   void    RequireItemsOrderedByEnumValue_ () const;
+
             private:
                 EnumNamesHolderType_   fEnumNames_;
             };
