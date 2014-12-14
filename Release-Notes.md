@@ -25,7 +25,7 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a58">v2.0a58x</a><br/>2014-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a58">v2.0a58</a><br/>2014-12-14</td>
 <td>
 <ul>
 	<li>EnumNames&lt;&gt; constexpr support, as well as support for GetValue() and assertions to enforce CTOR arg order.</li>
@@ -34,6 +34,7 @@ History
 	<li>operator bool Optional&lt;&gt;</li>
 	<li>qCompilerAndStdLib_constexpr_StaticDataMember_Buggy</li>
 	<li>constexpr Version support</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
