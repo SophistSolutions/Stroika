@@ -59,6 +59,27 @@ namespace   {
             VerifyTestResult (n2.IsPresent ());
         };
         testOptionalOfThingNotCopyable ();
+        {
+            Optional<int> x;
+            if (x) {
+                VerifyTestResult (false);
+            }
+        }
+        {
+            Optional<int> x;
+            if (Optional<int> y = x) {
+                VerifyTestResult (false);
+            }
+        }
+        {
+            Optional<int> x = 3;
+            if (Optional<int> y = x) {
+                VerifyTestResult (y == 3);
+            }
+            else {
+                VerifyTestResult (false);
+            }
+        }
     }
     void    Test2_SharedByValue ()
     {
