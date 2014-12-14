@@ -157,7 +157,7 @@ using   Debug::TraceContextBumper;
 
 #if     qPlatform_POSIX
 namespace   {
-    nu_Synchronized<bool, nu_Synchronized_Traits<bool,recursive_mutex>>  sHandlerInstalled_      { false };
+    nu_Synchronized<bool, nu_Synchronized_Traits<bool, recursive_mutex>>  sHandlerInstalled_      { false };
 }
 #endif
 

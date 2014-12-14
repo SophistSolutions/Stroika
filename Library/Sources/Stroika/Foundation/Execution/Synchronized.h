@@ -19,6 +19,8 @@
  * Description:
  *
  * TODO:
+ *		@todo	Testing new nu_Synchronized design and if it works, covnert everything!
+ *
  *      @todo   Test that
  *              Possible design flaw with new synchronized.
  *
@@ -162,7 +164,7 @@ namespace   Stroika {
                 // use template forwarding variadic CTOR formward
                 const nu_Synchronized& operator= (const T& rhs)
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     fDelegate_ = rhs;
                     return *this;
                 }
@@ -170,7 +172,7 @@ namespace   Stroika {
             public:
                 nonvirtual  operator T () const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_;
                 }
 
@@ -200,32 +202,32 @@ namespace   Stroika {
             public:
                 bool operator== (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ == rhs;
                 }
                 bool operator!= (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ != rhs;
                 }
                 bool operator< (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ < rhs;
                 }
                 bool operator<= (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ <= rhs;
                 }
                 bool operator> (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ > rhs;
                 }
                 bool operator>= (T rhs) const
                 {
-                    lock_guard<MutexType> l { fLock_ };
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ >= rhs;
                 }
 #if 1
