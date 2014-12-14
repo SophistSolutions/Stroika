@@ -13,7 +13,6 @@
 #include    <atomic>
 #include    <list>
 #include    "WaitableEvent.h"
-#include    "Lockable.h"
 #include    "ThreadAbortException.h"
 
 namespace   Stroika {

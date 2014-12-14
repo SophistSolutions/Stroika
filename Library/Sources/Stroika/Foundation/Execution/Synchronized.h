@@ -118,8 +118,8 @@ namespace   Stroika {
                         : fT (t)
                         , l (*m)
                     {
-						RequireNotNull (t);
-						RequireNotNull (m);
+                        RequireNotNull (t);
+                        RequireNotNull (m);
                     }
                     WritableReference (const WritableReference& src) = default;
                     WritableReference (WritableReference&& src)
@@ -128,24 +128,25 @@ namespace   Stroika {
                         src.fT = nullptr;
                     }
                     const WritableReference& operator= (const WritableReference& rhs) = delete;
+                    const WritableReference& operator= (T rhs)
+                    {
+                        RequireNotNull (fT);
+                        *fT = rhs;
+                        return *this;
+                    }
                     T* operator-> ()
                     {
-						EnsureNotNull (fT);
+                        EnsureNotNull (fT);
                         return fT;
                     }
                     const T* operator-> () const
                     {
-						EnsureNotNull (fT);
+                        EnsureNotNull (fT);
                         return fT;
-                    }
-                    operator T& ()
-                    {
-						EnsureNotNull (fT);
-                        return *fT;
                     }
                     operator const T& () const
                     {
-						EnsureNotNull (fT);
+                        EnsureNotNull (fT);
                         return *fT;
                     }
                 };

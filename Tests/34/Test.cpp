@@ -9,9 +9,9 @@
 
 #include    "Stroika/Foundation/Execution/BlockingQueue.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
-#include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Execution/SpinLock.h"
+#include    "Stroika/Foundation/Execution/Synchronized.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/ThreadPool.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -24,10 +24,10 @@ using   namespace   Stroika::Foundation;
 
 
 using   Execution::BlockingQueue;
-using   Execution::Lockable;
 using   Execution::Thread;
 using   Execution::Finally;
 using   Execution::SpinLock;
+using   Execution::Synchronized;
 using   Execution::ThreadPool;
 using   Execution::WaitableEvent;
 
@@ -294,35 +294,48 @@ namespace   {
 
 namespace   {
     struct  data_ {};
-    void    RegressionTest4_Lockable_ ()
+    void    RegressionTest4_Synchronized_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest4_Lockable_"));
+        //template <typename T> using Synchonized = nu_Synchronized<T, nu_Synchronized_Traits<T,recursive_mutex>>;
+        using namespace Execution;
+        using syncofdata = nu_Synchronized<data_, nu_Synchronized_Traits<data_, recursive_mutex>>;
+        using syncofint = nu_Synchronized<int, nu_Synchronized_Traits<int, recursive_mutex>>;
+
+
+        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest4_Synchronized_"));
         {
-            Lockable<data_> x;
-            Lockable<data_> y = data_ ();
+            syncofdata x;
+            syncofdata y = data_ ();
             x = data_ ();
         }
         {
-            Lockable<int>   x;
-            Lockable<int>   y = 3;
+            syncofint   x;
+            syncofint   y = 3;
             x = 4;
         }
         {
-            // Make 2 concurrent threads, which update a lockable variable
+            // Make 2 concurrent threads, which update a lynchronized variable
             struct  FRED {
                 static  void    DoIt (void* ignored)
                 {
-                    Lockable<int>*  argP    =   reinterpret_cast<Lockable<int>*> (ignored);
+                    syncofint*  argP    =   reinterpret_cast<syncofint*> (ignored);
                     for (int i = 0; i < 10; i++) {
+                        syncofint::WritableReference r =    argP->GetReference ();
+                        int tmp = r;
+                        Execution::Sleep (.01);
+                        //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                        r = tmp + 1;
+#if 0
                         lock_guard<recursive_mutex> critSect (*argP);
                         int tmp = *argP;
                         Execution::Sleep (.01);
                         //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                         *argP = tmp + 1;
+#endif
                     }
                 }
             };
-            Lockable<int>   updaterValue    =   0;
+            Synchronized<int>   updaterValue    =   0;
             Thread  thread1 (bind (&FRED::DoIt, &updaterValue));
             Thread  thread2 (bind (&FRED::DoIt, &updaterValue));
             thread1.Start ();
@@ -721,7 +734,7 @@ namespace   {
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();
-        RegressionTest4_Lockable_ ();
+        RegressionTest4_Synchronized_ ();
         RegressionTest5_Aborting_ ();
         RegressionTest6_ThreadWaiting_ ();
         RegressionTest7_SimpleThreadPool_ ();

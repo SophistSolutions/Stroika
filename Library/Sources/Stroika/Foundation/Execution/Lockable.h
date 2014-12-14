@@ -41,7 +41,7 @@ namespace   Stroika {
              *      @note this works with POD-types like bool etc, only through explicit template specialization.
              */
             template    <typename BASE, typename LOCKTYPE = std::recursive_mutex>
-            class   Lockable : public BASE, public LOCKTYPE {
+            class   _DeprecatedClass_ (Lockable, "DEPRECATED in v2.0a58 - use Synchonized or briefly nu_Synchonized") : public BASE, public LOCKTYPE {
             public:
                 Lockable ();
                 Lockable (const BASE& from);
