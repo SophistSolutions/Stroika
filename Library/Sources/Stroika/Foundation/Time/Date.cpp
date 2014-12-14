@@ -68,7 +68,7 @@ namespace   {
      *
      * (This code originally from NIHCL)
      */
-	inline	Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
+    inline  Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
@@ -92,7 +92,7 @@ namespace   {
 }
 
 namespace   {
-	inline	Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+    inline  Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
@@ -239,8 +239,8 @@ const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Da
 #endif
 
 #if     !qCompilerAndStdLib_constexpr_Buggy
-constexpr	Date::JulianRepType    Date::kMinJulianRep;
-constexpr	Date::JulianRepType    Date::kEmptyJulianRep;
+constexpr   Date::JulianRepType    Date::kMinJulianRep;
+constexpr   Date::JulianRepType    Date::kEmptyJulianRep;
 #endif
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
