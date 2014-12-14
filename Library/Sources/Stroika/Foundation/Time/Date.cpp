@@ -68,11 +68,7 @@ namespace   {
      *
      * (This code originally from NIHCL)
      */
-	inline
-#if		qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-	constexpr
-#endif
-    Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
+	inline	Date::JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
@@ -96,11 +92,7 @@ namespace   {
 }
 
 namespace   {
-	inline
-#if		qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-	constexpr
-#endif
-    Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+	inline	Date::JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
