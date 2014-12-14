@@ -174,16 +174,13 @@ namespace   Stroika {
                  */
                 nonvirtual  constexpr   bool    IsPresent () const noexcept;
 
-#if 0
             public:
                 /**
-                 *  Unsure if I want this?
+                 *  Return true iff IsPresent ().
+                 *
+                 *  @todo   Unsure if I want this?
                  */
-                nonvirtual  explicit operator bool () const noexcept
-                {
-                    return IsPresent ();
-                }
-#endif
+                nonvirtual  explicit operator bool () const noexcept;
 
             public:
                 /**
