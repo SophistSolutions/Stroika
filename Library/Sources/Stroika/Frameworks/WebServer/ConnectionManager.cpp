@@ -55,16 +55,15 @@ void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeou
 
 void    ConnectionManager::AddHandler (const shared_ptr<RequestHandler>& h)
 {
-    auto    critSec { make_unique_lock (fHandlers_) };
-    fHandlers_.push_back (h);
+    fHandlers_->push_back (h);
 }
 
 void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 {
-    auto    critSec { make_unique_lock (fHandlers_) };
-    for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+    auto    readWriteObj = fHandlers_.GetReference ();
+    for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
         if (*i == h) {
-            fHandlers_.erase (i);
+            readWriteObj->erase (i);
             return;
         }
     }
@@ -73,8 +72,7 @@ void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 
 void    ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 {
-    auto    critSec { make_unique_lock (fActiveConnections_) };
-    fActiveConnections_.push_back (conn);
+    fActiveConnections_->push_back (conn);
 }
 
 void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
@@ -89,9 +87,9 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
         Execution::Sleep (0.1); // hack - need smarter wait on available data
         shared_ptr<Connection>   conn;
         {
-            auto    critSec { make_unique_lock (fActiveConnections_) };
-            if (fActiveConnections_.empty ()) {
-                conn = fActiveConnections_.front ();
+            auto    readWriteObj = fActiveConnections_.GetReference ();
+            if (readWriteObj->empty ()) {
+                conn = readWriteObj->front ();
             }
         }
 
@@ -100,10 +98,10 @@ void    ConnectionManager::DoMainConnectionLoop_ ()
 // REALLY should create NEW TASK we subbit to the threadpool...
             DoOneConnection_ (conn);
 
-            auto    critSec { make_unique_lock (fActiveConnections_) };
-            for (auto i = fActiveConnections_.begin (); i != fActiveConnections_.end (); ++i) {
+            auto    readWriteObj = fActiveConnections_.GetReference ();
+            for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
                 if (*i == conn) {
-                    fActiveConnections_.erase (i);
+                    readWriteObj->erase (i);
                     break;
                 }
             }
@@ -121,8 +119,8 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
 
         shared_ptr<RequestHandler>   h;
         {
-            auto    critSec { make_unique_lock (fHandlers_) };
-            for (auto i = fHandlers_.begin (); i != fHandlers_.end (); ++i) {
+            auto    readWriteObj = fHandlers_.GetReference ();
+            for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
                 if ((*i)->CanHandleRequest (*c)) {
                     h = *i;
                 }

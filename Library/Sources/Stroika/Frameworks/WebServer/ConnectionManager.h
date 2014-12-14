@@ -9,7 +9,7 @@
 #include    <list>
 #include    <memory>
 
-#include    "../../Foundation/Execution/Lockable.h"
+#include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/Execution/ThreadPool.h"
 
 #include    "Request.h"
@@ -88,8 +88,8 @@ namespace   Stroika {
 
             private:
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-                Execution::Lockable<list<shared_ptr<RequestHandler>>>    fHandlers_;
-                Execution::Lockable<list<shared_ptr<Connection>>>        fActiveConnections_;
+                Execution::nu_Synchronized<list<shared_ptr<RequestHandler>>>    fHandlers_;
+                Execution::nu_Synchronized<list<shared_ptr<Connection>>>        fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
