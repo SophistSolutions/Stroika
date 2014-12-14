@@ -94,7 +94,9 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
-            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
+            constexpr   typename make_unsigned<typename underlying_type<ENUM>::type>::type  OffsetFromStart (ENUM e);
+            template    <typename   ENUM>
+            constexpr   ENUM                                                                OffsetFromStart (typename make_unsigned<typename underlying_type<ENUM>::type>::type offset);
 
 
             /**

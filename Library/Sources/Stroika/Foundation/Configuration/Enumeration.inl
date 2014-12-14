@@ -72,6 +72,11 @@ namespace   Stroika {
 #endif
                 return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
             }
+            template    <typename   ENUM>
+            inline  constexpr   ENUM                                                                OffsetFromStart (typename make_unsigned<typename underlying_type<ENUM>::type>::type offset)
+            {
+                ToEnum<ENUM> (offset + ENUM::eSTART);
+            }
 
 
 
@@ -192,8 +197,9 @@ namespace   Stroika {
             inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
                 Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
-                for (size_t i = 0; i < fEnumNames_.size (); ++i) {
-                    Require (fEnumNames_[i].first == static_cast<ENUM_TYPE> (i));
+                using IndexType = typename make_unsigned<typename underlying_type<ENUM_TYPE>::type>::type;
+                for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
+                    Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
                 }
             }
 #endif
