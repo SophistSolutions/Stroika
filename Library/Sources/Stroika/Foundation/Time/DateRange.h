@@ -16,13 +16,6 @@
  *  \file
  *
  *  \version    <a href="code_status.html">Alpha-Early</a>
- *
- * TODO:
- *      @todo   IF we ever fix Date to use constexpr for its kMin/kMax, then we can consider doing likewise here, and
- *              losing the ModuleInit<> code (using static  constexpr Date      kLowerBound)
- *
- *              If we fix, lose note about kLowerBound/etc on DateTimeRange type.
- *
  */
 
 
@@ -47,9 +40,6 @@ namespace   Stroika {
 
 
             /**
-             *
-             *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-             *          static de-initializaiton (if qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy)
              */
             using       DateRange       =   Traversal::Range<Date, Time::Private_::DateRangeTraitsType_>;
 

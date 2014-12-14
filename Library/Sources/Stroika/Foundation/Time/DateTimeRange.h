@@ -19,10 +19,6 @@
  *  \version    <a href="code_status.html">Alpha-Early</a>
  *
  * TODO:
- *      @todo   IF we ever fix DateTime to use constexpr for its kMin/kMax, then we can consider doing likewise here, and
- *              losing the ModuleInit<> code (instead using static  constexpr DateTime  kLowerBound;).
- *
- *              If we fix, lose note about kLowerBound/etc on DateTimeRange type.
  *
  */
 
@@ -47,8 +43,6 @@ namespace   Stroika {
 
 
             /**
-             *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-             *          static de-initializaiton.
              */
             using       DateTimeRange       =   Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
 
