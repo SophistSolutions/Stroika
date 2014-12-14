@@ -613,6 +613,7 @@ namespace   Stroika {
             {
                 return Compare (rhs) >= 0;
             }
+#if 0
             inline  bool String::operator== (const String& rhs) const
             {
                 return Compare (rhs) == 0;
@@ -621,6 +622,7 @@ namespace   Stroika {
             {
                 return Compare (rhs) != 0;
             }
+#endif
             inline  bool String::operator<= (const Character* rhs) const
             {
                 return Compare (rhs) <= 0;
@@ -661,6 +663,7 @@ namespace   Stroika {
             {
                 return Compare (rhs) >= 0;
             }
+#if 0
             inline  bool String::operator== (const wchar_t* rhs) const
             {
                 return Equals (rhs);
@@ -669,6 +672,7 @@ namespace   Stroika {
             {
                 return not Equals (rhs);
             }
+#endif
 
 
             /*

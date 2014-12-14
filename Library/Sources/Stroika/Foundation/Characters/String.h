@@ -57,6 +57,10 @@
  *
  * TODO:
  *
+ *		@todo	Started switch to global (characeters namespace) oeprator==/operator!=. Experimenting to see if works
+ *				better or worse (2014-12-13). If works well, switch operator<, operator>, etc...
+ *
+ *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesnt! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
  *              and it can be done safely.
@@ -978,8 +982,10 @@ namespace   Stroika {
                 nonvirtual  bool operator<= (const String& rhs) const;
                 nonvirtual  bool operator> (const String& rhs) const;
                 nonvirtual  bool operator>= (const String& rhs) const;
+#if 0
                 nonvirtual  bool operator== (const String& rhs) const;
                 nonvirtual  bool operator!= (const String& rhs) const;
+#endif
                 nonvirtual  bool operator< (const Character* rhs) const;
                 nonvirtual  bool operator<= (const Character* rhs) const;
                 nonvirtual  bool operator> (const Character* rhs) const;
@@ -990,8 +996,10 @@ namespace   Stroika {
                 nonvirtual  bool operator<= (const wchar_t* rhs) const;
                 nonvirtual  bool operator> (const wchar_t* rhs) const;
                 nonvirtual  bool operator>= (const wchar_t* rhs) const;
+#if 0
                 nonvirtual  bool operator== (const wchar_t* rhs) const;
                 nonvirtual  bool operator!= (const wchar_t* rhs) const;
+#endif
 
             public:
                 /**
@@ -1228,6 +1236,36 @@ namespace   Stroika {
              *          but that failed (maybe doable but overloading was trickier).
              */
             wostream&    operator<< (wostream& out, const String& s);
+
+
+
+            //template  <typename RHSType>
+            inline  bool operator==(const String& lhs, const String& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            inline  bool operator==(const wchar_t* lhs, const String& rhs)
+            {
+                return rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
+            }
+            inline  bool operator!=(const String& lhs, const String& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            inline  bool operator!=(const wchar_t* lhs, const String& rhs)
+            {
+                return not rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
+            }
+#if 0
+            nonvirtual  bool operator< (const wchar_t* rhs) const;
+            nonvirtual  bool operator<= (const wchar_t* rhs) const;
+            nonvirtual  bool operator> (const wchar_t* rhs) const;
+            nonvirtual  bool operator>= (const wchar_t* rhs) const;
+            nonvirtual  bool operator== (const wchar_t* rhs) const;
+            nonvirtual  bool operator!= (const wchar_t* rhs) const;
+#endif
+
+
 
 
             /**

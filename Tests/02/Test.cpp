@@ -1193,6 +1193,25 @@ namespace {
 
 
 
+namespace {
+    void    Test46_CompareLHSRHS_ ()
+    {
+        const   wchar_t*    i = L"One";
+        Characters::String n = L"Two";
+        if (i == n) {
+            VerifyTestResult (false);
+        }
+        if (n == i) {
+            VerifyTestResult (false);
+        }
+        VerifyTestResult (i != n);
+        VerifyTestResult (n != i);
+    }
+}
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1239,6 +1258,7 @@ namespace   {
         Test33_Append_ ();
         Test44_LocaleUNICODEConversions_ ();
         Test45_Tokenize_ ();
+        Test46_CompareLHSRHS_ ();
     }
 }
 
