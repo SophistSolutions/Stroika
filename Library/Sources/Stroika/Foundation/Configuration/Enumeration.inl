@@ -91,7 +91,9 @@ namespace   Stroika {
                     *oi = i;
                     ++oi;
                 }
+#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
+#endif
             }
             template     <typename ENUM_TYPE>
             inline
@@ -101,7 +103,9 @@ namespace   Stroika {
             EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
                 : fEnumNames_ (init)
             {
+#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
+#endif
             }
             template     <typename ENUM_TYPE>
             template     <size_t N>
@@ -112,7 +116,9 @@ namespace   Stroika {
             EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
+#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
+#endif
             }
             template     <typename ENUM_TYPE>
             inline  EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
@@ -174,20 +180,21 @@ namespace   Stroika {
             {
                 const ENUM_TYPE* tmp = PeekValue (name);
                 if (tmp == nullptr) {
-                    Execution::DoThrow (notFoundException);
+                    //Execution::DoThrow (notFoundException);
+                    throw (notFoundException);
                 }
                 return *tmp;
             }
+#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
             template     <typename ENUM_TYPE>
             inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
                 for (size_t i = 0; i < fEnumNames_.size (); ++i) {
                     Require (fEnumNames_[i].first == ToEnum<ENUM_TYPE> (i));
                 }
-#endif
             }
+#endif
 
 
         }
