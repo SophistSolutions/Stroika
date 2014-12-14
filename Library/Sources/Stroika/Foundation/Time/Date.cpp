@@ -238,6 +238,11 @@ const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Da
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif
 
+#if     !qCompilerAndStdLib_constexpr_Buggy
+constexpr JulianRepType    Date::kMinJulianRep;
+constexpr JulianRepType    Date::kEmptyJulianRep;
+#endif
+
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
     : fJulianDateRep_ (jday_ (month, day, year))
 {

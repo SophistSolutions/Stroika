@@ -212,8 +212,20 @@ namespace   Stroika {
             class   Date {
             public:
                 using   JulianRepType       =   unsigned int;
+
+            public:
+#if     qCompilerAndStdLib_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
+#else
+                static  constexpr JulianRepType    kMinJulianRep   = 2361222;       // This number corresponds to 1752-09-14
+#endif
+
+            public:
+#if     qCompilerAndStdLib_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
+#else
+                static  constexpr JulianRepType    kEmptyJulianRep   = UINT_MAX;
+#endif
 
             public:
                 class   FormatException;
