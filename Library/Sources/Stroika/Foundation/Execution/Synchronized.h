@@ -228,7 +228,7 @@ namespace   Stroika {
                     lock_guard<MutexType> l { fLock_ };
                     return fDelegate_ >= rhs;
                 }
-#if 0
+#if 1
             public:
                 void    lock ()
                 {

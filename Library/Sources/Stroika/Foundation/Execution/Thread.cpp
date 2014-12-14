@@ -157,7 +157,7 @@ using   Debug::TraceContextBumper;
 
 #if     qPlatform_POSIX
 namespace   {
-    nu_Synchonized<bool>  sHandlerInstalled_      { false };
+    nu_Synchronized<bool, nu_Synchronized_Traits<bool,recursive_mutex>>  sHandlerInstalled_      { false };
 }
 #endif
 
@@ -421,7 +421,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 #if     qPlatform_POSIX
         {
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
-            if (not * sHandlerInstalled_)
+            if (not sHandlerInstalled_)
             {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
@@ -592,13 +592,13 @@ void    Thread::SetThreadPriority (Priority priority)
 void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 {
     auto    critSec { make_unique_lock (sHandlerInstalled_) };
-    if (*sHandlerInstalled_) {
+    if (sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;
     }
     sSignalUsedForThreadAbort_ = signalNumber;
     // install new handler
-    if (not * sHandlerInstalled_) {
+    if (not sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = true;
     }
