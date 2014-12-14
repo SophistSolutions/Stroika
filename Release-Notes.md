@@ -28,7 +28,12 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a58">v2.0a58x</a><br/>2014-12-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>EnumNames&lt;&gt; constexpr support, as well as support for GetValue() and assertions to enforce CTOR arg order.</li>
+	<li>Experimental String operator== / etc support</li>
+	<li>MAJOR new code appraoch - experimental nu_Synchonized</li>
+	<li>operator bool Optional&lt;&gt;</li>
+	<li>qCompilerAndStdLib_constexpr_StaticDataMember_Buggy</li>
+	<li>constexpr Version support</li>
 </ul>
 </td>
 </tr>
