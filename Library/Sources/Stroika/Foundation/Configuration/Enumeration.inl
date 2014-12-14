@@ -160,6 +160,7 @@ namespace   Stroika {
             template     <typename ENUM_TYPE>
             const ENUM_TYPE*  EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
             {
+                RequireNotNull (name);
                 for (auto i : fEnumNames_) {
                     if (::wcscmp (i.second, name) == 0) {
                         return i.first;
@@ -178,6 +179,7 @@ namespace   Stroika {
             template    <typename   NOT_FOUND_EXCEPTION>
             inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const
             {
+                RequireNotNull (name);
                 const ENUM_TYPE* tmp = PeekValue (name);
                 if (tmp == nullptr) {
                     //Execution::DoThrow (notFoundException);
@@ -191,7 +193,7 @@ namespace   Stroika {
             {
                 Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
                 for (size_t i = 0; i < fEnumNames_.size (); ++i) {
-                    Require (fEnumNames_[i].first == ToEnum<ENUM_TYPE> (i));
+                    Require (fEnumNames_[i].first == static_cast<ENUM_TYPE> (i));
                 }
             }
 #endif

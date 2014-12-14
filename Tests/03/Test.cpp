@@ -57,7 +57,7 @@ namespace {
         Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
         Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         {
-            constexpr EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
+            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
@@ -65,7 +65,7 @@ namespace {
             Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         }
         {
-            constexpr EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
+            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
