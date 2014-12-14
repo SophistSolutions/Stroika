@@ -335,7 +335,7 @@ namespace   {
                     }
                 }
             };
-            Synchronized<int>   updaterValue    =   0;
+            syncofint   updaterValue    =   0;
             Thread  thread1 (bind (&FRED::DoIt, &updaterValue));
             Thread  thread2 (bind (&FRED::DoIt, &updaterValue));
             thread1.Start ();
