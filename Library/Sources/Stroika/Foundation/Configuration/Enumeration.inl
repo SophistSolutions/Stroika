@@ -164,7 +164,7 @@ namespace   Stroika {
             template     <typename ENUM_TYPE>
             inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name) const
             {
-                const ENUM_TYPE* tmp = PeekValue (e);
+                const ENUM_TYPE* tmp = PeekValue (name);
                 RequireNotNull (tmp);
                 return *tmp;
             }
@@ -172,7 +172,7 @@ namespace   Stroika {
             template    <typename   NOT_FOUND_EXCEPTION>
             inline  ENUM_TYPE  EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const
             {
-                const ENUM_TYPE* tmp = PeekValue (e);
+                const ENUM_TYPE* tmp = PeekValue (name);
                 if (tmp == nullptr) {
                     Execution::DoThrow (notFoundException);
                 }
@@ -187,7 +187,6 @@ namespace   Stroika {
                     Require (fEnumNames_[i].first == ToEnum<ENUM_TYPE> (i));
                 }
 #endif
-
             }
 
 

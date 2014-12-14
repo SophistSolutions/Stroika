@@ -21,6 +21,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   ONCE we have RequireItemsOrderedByEnumValue_ () passing for a release or two, then
+ *              re-implement lookup routines by value to use indexing, and make it constexpr.
+ *
  *      @todo   Improve EnumNames<> constexpr support (works somewhat now).
  *
  *      @todo   Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
