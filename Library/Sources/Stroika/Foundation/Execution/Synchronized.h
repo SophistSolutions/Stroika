@@ -19,7 +19,7 @@
  * Description:
  *
  * TODO:
- *		@todo	Testing new nu_Synchronized design and if it works, covnert everything!
+ *      @todo   Testing new nu_Synchronized design and if it works, covnert everything!
  *
  *      @todo   Test that
  *              Possible design flaw with new synchronized.
