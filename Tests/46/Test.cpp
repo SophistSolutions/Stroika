@@ -1071,7 +1071,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
         184000,
-        3.8,
+        3.9,
         &failedTests
         );
 #endif
@@ -1148,7 +1148,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             1390000,
-            1.5,
+            2.1,
             &failedTests
         );
         Tester (
@@ -1156,7 +1156,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             6440,
-            0.25,
+            0.26,
             &failedTests
         );
 
