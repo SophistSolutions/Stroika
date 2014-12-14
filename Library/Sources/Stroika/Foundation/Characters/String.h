@@ -322,10 +322,10 @@ namespace   Stroika {
                 using   inherited   =   Iterable<Character>;
 
             public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                static  constexpr size_t    kBadIndex   = wstring::npos;
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
+#else
+                static  constexpr size_t    kBadIndex   = wstring::npos;
 #endif
 
             public:
