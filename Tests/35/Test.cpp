@@ -378,32 +378,74 @@ namespace {
 
 namespace {
     namespace   Test7_nuSynchonized_ {
+        namespace Private_ {
+            void    TestBasics_ ()
+            {
+                using   namespace Execution;
+                {
+                    nu_Synchronized<int>    tmp;
+                    tmp = 4;
+                    int a = tmp;
+                    VerifyTestResult (a == 4);
+                }
+                {
+                    nu_Synchronized<int>    tmp { 4 };
+                    int a = tmp;
+                    VerifyTestResult (a == 4);
+                }
+                {
+                    nu_Synchronized<String>    tmp { L"x" };
+                    String a = tmp;
+                    VerifyTestResult (a == L"x");
+                    VerifyTestResult (tmp->find ('z') == string::npos);
+                    VerifyTestResult (tmp->find ('x') == 0);
+                }
+            }
+            template <typename INTISH_TYPE>
+            void    DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
+            {
+                using   namespace Execution;
+                constexpr   int     kMaxTimes_ = 100 * 1000;
+                INTISH_TYPE s   =   0;
+                Thread incrementer ([&s, increment, kMaxTimes_] () {
+                    for (int i = 0; i < kMaxTimes_; ++i) {
+                        increment (&s);
+                    }
+                });
+                Thread decrementer ([&s, decrement, kMaxTimes_] () {
+                    for (int i = 0; i < kMaxTimes_; ++i) {
+                        decrement (&s);
+                    }
+                });
+                incrementer.Start();
+                decrementer.Start();
+                incrementer.WaitForDone();
+                decrementer.WaitForDone();
+                VerifyTestResult (s == INTISH_TYPE (0));
+            }
+            void    DoThreadTest_ ()
+            {
+                using   namespace Execution;
+                if (false) {
+                    // Fails cuz no synchonization
+                    DoInterlocktest_<int> ([] (int* i) {(*i)++;} , [] (int* i) {(*i)--;});
+                }
+                struct intish_object1 {
+                    int fVal;
+                    intish_object1 (int i) : fVal (i) {}
+                    bool operator == (const intish_object1& rhs) const { return rhs.fVal == fVal; }
+                };
+                if (false) {
+                    // Fails cuz no synchonization
+                    DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;} , [] (intish_object1 * i) {(i->fVal)--;});
+                }
+                DoInterlocktest_<nu_Synchronized<intish_object1>> ([] (nu_Synchronized<intish_object1>* i) {((*i)->fVal)++;} , [] (nu_Synchronized<intish_object1>* i) {((*i)->fVal)--;});
+            }
+        }
         void    DoIt ()
         {
-            using   namespace Execution;
-            {
-                nu_Synchronized<int>    tmp;
-                tmp = 4;
-                int a = tmp;
-                VerifyTestResult (a == 4);
-            }
-            {
-                nu_Synchronized<int>    tmp { 4 };
-                int a = tmp;
-                VerifyTestResult (a == 4);
-            }
-            {
-                nu_Synchronized<String>    tmp { L"x" };
-                String a = tmp;
-                VerifyTestResult (a == L"x");
-
-                // figure why fails below...
-                VerifyTestResult (tmp->find ('z') == string::npos);
-                VerifyTestResult (tmp->find ('x') == 0);
-            }
-            {
-                //@todo next - test with the debugging mutex on an object, and accessed from thwo threads
-            }
+            Private_::TestBasics_ ();
+            Private_::DoThreadTest_ ();
         }
     }
 }

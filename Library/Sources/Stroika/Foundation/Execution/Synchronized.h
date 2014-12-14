@@ -118,6 +118,8 @@ namespace   Stroika {
                         : fT (t)
                         , l (*m)
                     {
+						RequireNotNull (t);
+						RequireNotNull (m);
                     }
                     WritableReference (const WritableReference& src) = default;
                     WritableReference (WritableReference&& src)
@@ -128,18 +130,22 @@ namespace   Stroika {
                     const WritableReference& operator= (const WritableReference& rhs) = delete;
                     T* operator-> ()
                     {
+						EnsureNotNull (fT);
                         return fT;
                     }
                     const T* operator-> () const
                     {
+						EnsureNotNull (fT);
                         return fT;
                     }
                     operator T& ()
                     {
+						EnsureNotNull (fT);
                         return *fT;
                     }
                     operator const T& () const
                     {
+						EnsureNotNull (fT);
                         return *fT;
                     }
                 };
@@ -168,13 +174,13 @@ namespace   Stroika {
                 }
 
             public:
-                nonvirtual  WritableReference GetTempLock ()
+                nonvirtual  WritableReference GetReference ()
                 {
                     return move (WritableReference (&fDelegate_, &fLock_));
                 }
 
             public:
-                nonvirtual  const WritableReference GetTempLock () const
+                nonvirtual  const WritableReference GetReference () const
                 {
                     return move (WritableReference (&fDelegate_, &fLock_));
                 }
@@ -182,12 +188,44 @@ namespace   Stroika {
             public:
                 nonvirtual  const WritableReference operator-> () const
                 {
-                    return move (WritableReference (&fDelegate_, &fLock_));
+                    return GetReference ();
                 }
             public:
                 nonvirtual  WritableReference operator-> ()
                 {
-                    return move (WritableReference (&fDelegate_, &fLock_));
+                    return GetReference ();
+                }
+
+            public:
+                bool operator== (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ == rhs;
+                }
+                bool operator!= (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ != rhs;
+                }
+                bool operator< (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ < rhs;
+                }
+                bool operator<= (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ <= rhs;
+                }
+                bool operator> (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ > rhs;
+                }
+                bool operator>= (T rhs) const
+                {
+                    lock_guard<MutexType> l { fLock_ };
+                    return fDelegate_ >= rhs;
                 }
 #if 0
             public:
