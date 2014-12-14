@@ -239,8 +239,8 @@ const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Da
 #endif
 
 #if     !qCompilerAndStdLib_constexpr_Buggy
-constexpr JulianRepType    Date::kMinJulianRep;
-constexpr JulianRepType    Date::kEmptyJulianRep;
+constexpr	Date::JulianRepType    Date::kMinJulianRep;
+constexpr	Date::JulianRepType    Date::kEmptyJulianRep;
 #endif
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
