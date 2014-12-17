@@ -19,12 +19,27 @@ History
 
 
 
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a60">v2.0a60x</a><br/>2014-12-??</td>
+<td>
+<ul>
+	<li>TODO</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a59">v2.0a59</a><br/>2014-12-17</td>
 <td>
 <ul>
-	<li>Patch release with fix for EnumNames<ENUM_TYPE>::PeekValue()</li>
+	<li>Patch release with fix for EnumNames&lt;ENUM_TYPE&gt;::PeekValue()</li>
 </ul>
 </td>
 </tr>
