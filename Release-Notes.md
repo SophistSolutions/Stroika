@@ -18,11 +18,26 @@ History
 
 
 
+  
+
 
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a60">v2.0a60</a><br/>2014-17-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a61">v2.0a61x</a><br/>2014-12-??</td>
+<td>
+<ul>
+	<li>TODO</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a60">v2.0a60</a><br/>2014-12-17</td>
 <td>
 <ul>
 	<li>Patch release with fix for Queue&lt;ENUM_TYPE&gt;::length()</li>
