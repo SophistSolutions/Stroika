@@ -67,6 +67,16 @@ namespace   Stroika {
             {
                 return fQueue_.empty ();
             }
+            template    <typename T>
+            inline  size_t      BlockingQueue<T>::GetLength () const
+            {
+                return fQueue_.GetLength ();
+            }
+            template    <typename T>
+            inline  size_t      BlockingQueue<T>::length () const
+            {
+                return GetLength ();
+            }
 
 
         }

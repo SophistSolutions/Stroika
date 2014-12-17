@@ -142,6 +142,18 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    empty () const;
 
+            public:
+                /**
+                 *  Returns the number of elements in the blocking queue (zero if empty).
+                 */
+                nonvirtual  size_t      GetLength () const;
+
+            public:
+                /**
+                 *  Alias for GetLength()
+                 */
+                nonvirtual  size_t      length () const;
+
             private:
                 WaitableEvent           fDataAvailable_;
                 Containers::Queue<T>    fQueue_;
