@@ -22,10 +22,10 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a60">v2.0a60x</a><br/>2014-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a60">v2.0a60</a><br/>2014-17-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Patch release with fix for Queue&lt;ENUM_TYPE&gt;::length()</li>
 </ul>
 </td>
 </tr>
