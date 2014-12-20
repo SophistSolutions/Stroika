@@ -57,9 +57,11 @@
  *
  * TODO:
  *
- *      @todo   Started switch to global (characeters namespace) oeprator==/operator!=. Experimenting to see if works
- *              better or worse (2014-12-13). If works well, switch operator<, operator>, etc...
- *
+ *      @todo   PROBALY get rid of
+ *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
+ *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
+ *              (or can be) safe, and is just wildly helpful, so proabby keep that. But document rationale!
+ *              (well - .clear() is also mutaotr and operator= obvously).
  *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesnt! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
@@ -313,6 +315,13 @@ namespace   Stroika {
              *      For now - stick to simple impl - of just copy on start of iteration.
              *          -- LGP 2013-12-17
              *
+             *  \note   Design Note: operator overloads
+             *      We use non-member function operator overloads for comparisons and +, so that
+             *      things like L"fred" != String(L"banry") works.
+             *
+             *      Since the enclosing namespace of both arguments is considered in lookups this should generally work
+             *      pretty well, I think. At least we are testing this as of 2014-12-20.
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *          Uses immutable string rep pattern.
              *
@@ -441,8 +450,11 @@ namespace   Stroika {
                 nonvirtual  String& operator+= (const wchar_t* appendageCStr);
 
             public:
-                nonvirtual  String  operator+ (const String& rhs) const;
-                nonvirtual  String  operator+ (const wchar_t* appendageCStr) const;
+                /**
+                 *  @see    Append() for a similar function that modifies 'this'
+                 */
+                nonvirtual  String  Concatenate (const String& rhs) const;
+                nonvirtual  String  Concatenate (const wchar_t* appendageCStr) const;
 
             public:
                 /**
@@ -504,6 +516,8 @@ namespace   Stroika {
                  *      using StringBuilder.
                  *
                  *  \em Note that it is legal, but pointless to pass in an empty string to insert
+                 *
+                 *  @see    Concatenate() for a similar function that doesn't modify the source
                  */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
@@ -976,39 +990,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
-                 */
-                nonvirtual  bool operator< (const String& rhs) const;
-                nonvirtual  bool operator<= (const String& rhs) const;
-                nonvirtual  bool operator> (const String& rhs) const;
-                nonvirtual  bool operator>= (const String& rhs) const;
-#if 0
-                nonvirtual  bool operator== (const String& rhs) const;
-                nonvirtual  bool operator!= (const String& rhs) const;
-#endif
-                nonvirtual  bool operator< (const Character* rhs) const;
-                nonvirtual  bool operator<= (const Character* rhs) const;
-                nonvirtual  bool operator> (const Character* rhs) const;
-                nonvirtual  bool operator>= (const Character* rhs) const;
-                nonvirtual  bool operator== (const Character* rhs) const;
-                nonvirtual  bool operator!= (const Character* rhs) const;
-                nonvirtual  bool operator< (const wchar_t* rhs) const;
-                nonvirtual  bool operator<= (const wchar_t* rhs) const;
-                nonvirtual  bool operator> (const wchar_t* rhs) const;
-                nonvirtual  bool operator>= (const wchar_t* rhs) const;
-#if 0
-                nonvirtual  bool operator== (const wchar_t* rhs) const;
-                nonvirtual  bool operator!= (const wchar_t* rhs) const;
-#endif
-
-            public:
-                /**
                  *  basic_string alias for npos = kBadIndex
                  */
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                static  constexpr size_t    npos   = kBadIndex;
-#else
                 DEFINE_CONSTEXPR_CONSTANT (size_t, npos, kBadIndex);
+#else
+                static  constexpr size_t    npos   = kBadIndex;
 #endif
 
             public:
@@ -1212,18 +1199,6 @@ namespace   Stroika {
 
 
             /**
-             *  Return the concatenation of these two strings.
-             *
-             *  EXPERIMENTAL AS OF 2014-02-11 - unsure how this works with namespace imports (requires using Foundation::Characters) and not totally
-             *  clear how overloading interacts with String::operator+ .. so fiddle a bit and see..
-             *
-             *  But advantage of this CAN be that L"x" + String () works, and doesnt work with member operator+.
-             *      -- LGP 2014-02-11
-             */
-            String  operator+ (const wchar_t* lhs, const String& rhs);
-
-
-            /**
              *  Use Stroika String more easily with std::ostream.
              *
              *  \note   EXPERIMENTAL API (added /as of 2014-02-15 - Stroika 2.0a21)
@@ -1238,32 +1213,54 @@ namespace   Stroika {
             wostream&    operator<< (wostream& out, const String& s);
 
 
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             */
+            bool    operator<(const String& lhs, const String& rhs);
+            bool    operator<(const String& lhs, const wchar_t* rhs);
+            bool    operator<(const wchar_t* lhs, const String& rhs);
 
-            //template  <typename RHSType>
-            inline  bool operator==(const String& lhs, const String& rhs)
-            {
-                return lhs.Equals (rhs);
-            }
-            inline  bool operator==(const wchar_t* lhs, const String& rhs)
-            {
-                return rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
-            }
-            inline  bool operator!=(const String& lhs, const String& rhs)
-            {
-                return not lhs.Equals (rhs);
-            }
-            inline  bool operator!=(const wchar_t* lhs, const String& rhs)
-            {
-                return not rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
-            }
-#if 0
-            nonvirtual  bool operator< (const wchar_t* rhs) const;
-            nonvirtual  bool operator<= (const wchar_t* rhs) const;
-            nonvirtual  bool operator> (const wchar_t* rhs) const;
-            nonvirtual  bool operator>= (const wchar_t* rhs) const;
-            nonvirtual  bool operator== (const wchar_t* rhs) const;
-            nonvirtual  bool operator!= (const wchar_t* rhs) const;
-#endif
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             */
+            bool    operator<=(const String& lhs, const String& rhs);
+            bool    operator<=(const String& lhs, const wchar_t* rhs);
+            bool    operator<=(const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
+             */
+            bool    operator==(const String& lhs, const String& rhs);
+            bool    operator==(const String& lhs, const wchar_t* rhs);
+            bool    operator==(const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
+             */
+            bool    operator!=(const String& lhs, const String& rhs);
+            bool    operator!=(const String& lhs, const wchar_t* rhs);
+            bool    operator!=(const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             */
+            bool    operator>=(const String& lhs, const String& rhs);
+            bool    operator>=(const String& lhs, const wchar_t* rhs);
+            bool    operator>=(const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             */
+            bool    operator>(const String& lhs, const String& rhs);
+            bool    operator>(const String& lhs, const wchar_t* rhs);
+            bool    operator>(const wchar_t* lhs, const String& rhs);
+
+            /**
+             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)
+             */
+            String  operator+(const String& lhs, const wchar_t* rhs);
+            String  operator+(const String& lhs, const String& rhs);
+            String  operator+(const wchar_t* lhs, const String& rhs);
 
 
 

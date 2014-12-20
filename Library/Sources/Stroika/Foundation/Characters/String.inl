@@ -597,82 +597,151 @@ namespace   Stroika {
             {
                 return Compare (rhs, co) == 0;
             }
-            inline  bool String::operator<= (const String& rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator< **********************************
+            ********************************************************************************
+            */
+            inline  bool    operator< (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool String::operator< (const String& rhs) const
+            inline  bool    operator< (const String& lhs, const wchar_t* rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool String::operator> (const String& rhs) const
+            inline  bool    operator< (const wchar_t* lhs, const String& rhs)
             {
-                return Compare (rhs) > 0;
+                RequireNotNull (lhs);
+                bool    result { rhs.Compare (lhs) >= 0 };  // reversed order to avoid construction of extra object
+                Assert ((String (lhs).Compare (rhs) < 0) == result);
+                return result;
             }
-            inline  bool String::operator>= (const String& rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator<= *********************************
+            ********************************************************************************
+            */
+            inline  bool    operator<= (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) <= 0;
             }
-#if 0
-            inline  bool String::operator== (const String& rhs) const
+            inline  bool    operator<= (const String& lhs, const wchar_t* rhs)
             {
-                return Compare (rhs) == 0;
+                return lhs.Compare (rhs) <= 0;
             }
-            inline  bool String::operator!= (const String& rhs) const
+            inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
             {
-                return Compare (rhs) != 0;
+                RequireNotNull (lhs);
+                bool    result { rhs.Compare (lhs) > 0 };   // reversed order to avoid construction of extra object
+                Assert ((String (lhs).Compare (rhs) <= 0) == result);
+                return result;
             }
-#endif
-            inline  bool String::operator<= (const Character* rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator== *********************************
+            ********************************************************************************
+            */
+            inline  bool    operator== (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Equals (rhs);
             }
-            inline  bool String::operator< (const Character* rhs) const
+            inline  bool    operator== (const String& lhs, const wchar_t* rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Equals (rhs);
             }
-            inline  bool String::operator> (const Character* rhs) const
+            inline  bool    operator== (const wchar_t* lhs, const String& rhs)
             {
-                return Compare (rhs) > 0;
+                RequireNotNull (lhs);
+                return rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
             }
-            inline  bool String::operator>= (const Character* rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator!= *********************************
+            ********************************************************************************
+            */
+            inline  bool    operator!= (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) >= 0;
+                return not lhs.Equals (rhs);
             }
-            inline  bool String::operator== (const Character* rhs) const
+            inline  bool    operator!= (const String& lhs, const wchar_t* rhs)
             {
-                return Compare (rhs) == 0;
+                return not lhs.Equals (rhs);
             }
-            inline  bool String::operator!= (const Character* rhs) const
+            inline  bool    operator!= (const wchar_t* lhs, const String& rhs)
             {
-                return Compare (rhs) != 0;
+                RequireNotNull (lhs);
+                return not rhs.Equals (lhs);    // revsered to avoid construction and because operator== is commutative
             }
-            inline  bool String::operator<= (const wchar_t* rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator>= *********************************
+            ********************************************************************************
+            */
+            inline  bool    operator>= (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool String::operator< (const wchar_t* rhs) const
+            inline  bool    operator>= (const String& lhs, const wchar_t* rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool String::operator> (const wchar_t* rhs) const
+            inline  bool    operator>= (const wchar_t* lhs, const String& rhs)
             {
-                return Compare (rhs) > 0;
+                RequireNotNull (lhs);
+                bool    result { rhs.Compare (lhs) < 0 };   // reversed order to avoid construction of extra object
+                Assert ((String (lhs).Compare (rhs) >= 0) == result);
+                return result;
             }
-            inline  bool String::operator>= (const wchar_t* rhs) const
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator> **********************************
+            ********************************************************************************
+            */
+            inline  bool    operator> (const String& lhs, const String& rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) > 0;
             }
-#if 0
-            inline  bool String::operator== (const wchar_t* rhs) const
+            inline  bool    operator> (const String& lhs, const wchar_t* rhs)
             {
-                return Equals (rhs);
+                return lhs.Compare (rhs) > 0;
             }
-            inline  bool String::operator!= (const wchar_t* rhs) const
+            inline  bool    operator> (const wchar_t* lhs, const String& rhs)
             {
-                return not Equals (rhs);
+                RequireNotNull (lhs);
+                bool    result { rhs.Compare (lhs) <= 0 };  // reversed order to avoid construction of extra object
+                Assert ((String (lhs).Compare (rhs) > 0) == result);
+                return result;
             }
-#endif
+
+
+
+            /*
+            ********************************************************************************
+            *********************************** operator+ **********************************
+            ********************************************************************************
+            */
+            inline  String  operator+ (const String& lhs, const wchar_t* rhs)
+            {
+                RequireNotNull (rhs);
+                return lhs.Concatenate (rhs);
+            }
+            inline  String  operator+ (const String& lhs, const String& rhs)
+            {
+                return lhs.Concatenate (rhs);
+            }
 
 
             /*

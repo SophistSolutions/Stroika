@@ -462,7 +462,7 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
     return sRep;
 }
 
-String  String::operator+ (const String& rhs) const
+String  String::Concatenate (const String& rhs) const
 {
     _SafeReadRepAccessor    thisAccessor { this };
     pair<const Character*, const Character*> lhsD   =   thisAccessor._ConstGetRep ().GetData ();
@@ -483,7 +483,7 @@ String  String::operator+ (const String& rhs) const
            );
 }
 
-String  String::operator+ (const wchar_t* appendageCStr) const
+String  String::Concatenate (const wchar_t* appendageCStr) const
 {
     RequireNotNull (appendageCStr);
     _SafeReadRepAccessor    thisAccessor { this };
@@ -1202,11 +1202,6 @@ void    String::erase (size_t from, size_t count)
 
 
 
-
-
-
-
-
 /*
  ********************************************************************************
  *********************************** operator+ **********************************
@@ -1214,6 +1209,7 @@ void    String::erase (size_t from, size_t count)
  */
 String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
+    RequireNotNull (lhs);
     String::_SafeReadRepAccessor    rhsAccessor { &rhs };
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
@@ -1222,7 +1218,6 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     return String (sRep);
 }
-
 
 
 
