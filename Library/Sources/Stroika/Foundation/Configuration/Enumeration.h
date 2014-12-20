@@ -21,13 +21,7 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   ONCE we have RequireItemsOrderedByEnumValue_ () passing for a release or two, then
- *              re-implement lookup routines by value to use indexing, and make it constexpr.
- *
- *      @todo   Improve EnumNames<> constexpr support (works somewhat now).
- *
- *      @todo   Fix EnumNames<> to require args to be sorted by enumerator, and to use lowerbound()
- *              to do binary search (or maybe array indexing?)
+ *      @todo   Make EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) constexpr;
  *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
@@ -195,11 +189,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  The argument 'e' must be a valid enumerator entry. If its 'eEND' this function will return nullptr;
+                 *  Otherwise it will return a valid const wchar_t* pointer to that enumerators name.
+                 *
+                 *  @see GetName ();
                  */
                 nonvirtual  const wchar_t*  PeekName (ENUM_TYPE e) const;
 
             public:
                 /**
+                 *  The argument 'e' must be a valid enumerator entry between eSTART, and eEND (not including eEND).
+                 *  It returns a pointer to a valid const wchar_t* string of the name of the enumerator.
+                 *
+                 *  @see PeekName ();
                  */
                 nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const;
 

@@ -79,7 +79,6 @@ namespace   Stroika {
             }
 
 
-
             /*
              ********************************************************************************
              ************************** Configuration::EnumNames ****************************
@@ -146,14 +145,25 @@ namespace   Stroika {
                 return fEnumNames_.size ();
             }
             template     <typename ENUM_TYPE>
-            const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
+            inline  const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
             {
-                for (auto i : fEnumNames_) {
-                    if (i.first == e) {
-                        return i.second;
-                    }
+                if (e == ENUM_TYPE::eEND) {
+                    return nullptr;
                 }
-                return nullptr;
+#if     qDebug
+//#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+                Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
+                auto refImpl = [this] (ENUM_TYPE e) -> const wchar_t* {
+                    for (auto i : fEnumNames_) {
+                        if (i.first == e) {
+                            return i.second;
+                        }
+                    }
+                    return nullptr;
+                };
+                Ensure (refImpl (e) == fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second);
+#endif
+                return fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
             }
             template     <typename ENUM_TYPE>
             inline  const wchar_t*  EnumNames<ENUM_TYPE>::GetName (ENUM_TYPE e) const
