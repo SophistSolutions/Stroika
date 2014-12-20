@@ -12,6 +12,7 @@
  */
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Common.h"
+#include    "../Execution/Exceptions.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -193,8 +194,7 @@ namespace   Stroika {
             inline  T   Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
             {
                 if (IsMissing ()) {
-                    // Don't use Execution::DoThrow() to avoid include dependencies?? Maybe should?
-                    throw exception2ThrowIfMissing;
+                    Execution::DoThrow (exception2ThrowIfMissing);
                 }
                 else {
                     return *fValue_->get ();
