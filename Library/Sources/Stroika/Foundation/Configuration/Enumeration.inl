@@ -75,7 +75,7 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  constexpr   ENUM                                                                OffsetFromStart (typename make_unsigned<typename underlying_type<ENUM>::type>::type offset)
             {
-                ToEnum<ENUM> (offset + ENUM::eSTART);
+                return ToEnum<ENUM> (offset + ENUM::eSTART);
             }
 
 
