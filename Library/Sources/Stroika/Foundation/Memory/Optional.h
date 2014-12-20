@@ -187,8 +187,19 @@ namespace   Stroika {
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
                  *
                  *  @see AssignIf
+                 *  @see CheckedValue
                  */
                 nonvirtual  T   Value (T defaultValue = T {}) const;
+
+            public:
+                /**
+                 *  Always safe to call. If IsMissing, throws argument exception2ThrowIfMissing.
+                 *
+                 *  @see AssignIf
+                 *  @see Value
+                 */
+                template    <typename   THROW_IF_MISSING_TYPE>
+                nonvirtual  T   CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing = THROW_IF_MISSING_TYPE ()) const;
 
             public:
                 /**

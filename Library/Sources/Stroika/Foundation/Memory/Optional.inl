@@ -189,6 +189,18 @@ namespace   Stroika {
                 return IsMissing () ? defaultValue : *fValue_->get ();
             }
             template    <typename T, typename TRAITS>
+            template    <typename   THROW_IF_MISSING_TYPE>
+            inline  T   Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
+            {
+                if (IsMissing ()) {
+                    // Don't use Execution::DoThrow() to avoid include dependencies?? Maybe should?
+                    throw exception2ThrowIfMissing;
+                }
+                else {
+                    return *fValue_->get ();
+                }
+            }
+            template    <typename T, typename TRAITS>
             template    <typename   CONVERTABLE_TO_TYPE>
             nonvirtual  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
