@@ -433,32 +433,32 @@ namespace   Stroika {
 
             // early alpha placeholder test
             template    <typename T, typename TRAITS>
-            class Synchronized<Containers::Set<T, TRAITS>> {
+            class LEGACY_Synchronized<Containers::Set<T, TRAITS>> {
             public:
                 using   ContainerType =     Containers::Set<T, TRAITS>;
                 using   ElementType   =     typename ContainerType::ElementType;
             public:
-                Synchronized () : fDelegate_ () {}
-                Synchronized (const Synchronized& src) : fDelegate_ (src) {}
-                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
-                Synchronized (const set<T>& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized () : fDelegate_ () {}
+                LEGACY_Synchronized (const LEGACY_Synchronized& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (LEGACY_Synchronized&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const ContainerType& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (const set<T>& src) : fDelegate_ (src) {}
                 template <typename CONTAINER_OF_T>
-                explicit Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
+                explicit LEGACY_Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
-                const Synchronized& operator= (const Synchronized& rhs)                                 { fDelegate_ = rhs.fDelegate_; return *this; }
+                explicit LEGACY_Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
+                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs)                                 { fDelegate_ = rhs.fDelegate_; return *this; }
                 typename Traversal::Iterator<ElementType> begin () const                                { return fDelegate_.begin (); }
                 typename Traversal::Iterator<ElementType> end () const                                  { return fDelegate_.end (); }
                 ContainerType   operator+ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator + (rhs); }
                 ContainerType   operator- (const ContainerType& rhs) const                              { return fDelegate_.operator - (rhs); }
                 ContainerType   operator^ (const typename Traversal::Iterable<ElementType>& rhs) const  { return fDelegate_.operator ^ (rhs); }
-                Synchronized&   operator+= (T item)                                                     { fDelegate_ += item; return *this; }
-                Synchronized&   operator+= (const Traversal::Iterable<T>& items)                        { fDelegate_ += items; return *this; }
-                Synchronized&   operator-= (T item)                                                     { fDelegate_ -= item; return *this; }
-                Synchronized&   operator-= (const Traversal::Iterable<T>& items)                        { fDelegate_ -= items; return *this; }
+                LEGACY_Synchronized&   operator+= (T item)                                                     { fDelegate_ += item; return *this; }
+                LEGACY_Synchronized&   operator+= (const Traversal::Iterable<T>& items)                        { fDelegate_ += items; return *this; }
+                LEGACY_Synchronized&   operator-= (T item)                                                     { fDelegate_ -= item; return *this; }
+                LEGACY_Synchronized&   operator-= (const Traversal::Iterable<T>& items)                        { fDelegate_ -= items; return *this; }
                 operator ContainerType () const                                                         { return fDelegate_;    }
                 bool    Contains (T item) const                                                         { return fDelegate_.Contains (item);    }
             private:

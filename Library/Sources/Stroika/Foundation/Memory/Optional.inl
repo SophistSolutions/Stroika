@@ -331,29 +331,29 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************** Synchronized<Memory::Optional<T, TRAITS>> *********************
+             **************** LEGACY_Synchronized<Memory::Optional<T, TRAITS>> *********************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized ()
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized ()
                         : fDelegate_ ()
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const T& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (const T& from)
                         : fDelegate_ (from)
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (T&& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (T&& from)
                         : fDelegate_ (move (from))
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const Synchronized<Memory::Optional<T, TRAITS>>& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& from)
                         : fDelegate_ ()
                         , fMutex_ ()
             {
@@ -363,7 +363,7 @@ namespace   Stroika {
                 fDelegate_ = from.fDelegate_;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (Synchronized<Memory::Optional<T, TRAITS>>&& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&& from)
                         : fDelegate_ ()
                         , fMutex_ ()
             {
@@ -373,13 +373,13 @@ namespace   Stroika {
                 fDelegate_ = move (from.fDelegate_);
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (const Memory::Optional<T, TRAITS>& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (const Memory::Optional<T, TRAITS>& from)
                         : fDelegate_ (from)
                         , fMutex_ ()
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::Synchronized (Memory::Optional<T, TRAITS>&& from)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::LEGACY_Synchronized (Memory::Optional<T, TRAITS>&& from)
                         : fDelegate_ (move (from))
                         , fMutex_ ()
             {
@@ -387,7 +387,7 @@ namespace   Stroika {
                 // its assumed std::move() - no lock is needed
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const T& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -398,7 +398,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (T && rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator= (T && rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -409,7 +409,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs)
             {
                 unique_lock<decltype (fMutex_)> l1 (fMutex_, std::defer_lock);
                 unique_lock<decltype (fMutex_)> l2 (rhs.fMutex_, std::defer_lock);
@@ -418,7 +418,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (Synchronized<Memory::Optional<T, TRAITS>> && rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator= (LEGACY_Synchronized<Memory::Optional<T, TRAITS>> && rhs)
             {
                 // We assume we dont need to lock from because its assumed std::move() - no lock is needed
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -430,7 +430,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&   Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Memory::Optional<T, TRAITS>& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator= (const Memory::Optional<T, TRAITS>& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -441,7 +441,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  T   Synchronized<Memory::Optional<T, TRAITS>>::operator* () const
+            inline  T   LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator* () const
             {
                 Require (IsPresent ());
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -453,7 +453,7 @@ namespace   Stroika {
                 return *fDelegate_;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator Memory::Optional<T, TRAITS> () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -463,7 +463,7 @@ namespace   Stroika {
                 return fDelegate_;
             }
             template    <typename T, typename TRAITS>
-            inline  void    Synchronized<Memory::Optional<T, TRAITS>>::clear ()
+            inline  void    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::clear ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -473,7 +473,7 @@ namespace   Stroika {
                 fDelegate_.clear ();
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::IsMissing () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -483,7 +483,7 @@ namespace   Stroika {
                 return fDelegate_.IsMissing ();
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::IsPresent () const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -493,7 +493,7 @@ namespace   Stroika {
                 return fDelegate_.IsPresent ();
             }
             template    <typename T, typename TRAITS>
-            inline  T Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
+            inline  T LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::Value (T defaultValue) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -504,7 +504,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename   CONVERTABLE_TO_TYPE>
-            inline  void    Synchronized<Memory::Optional<T, TRAITS>>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            inline  void    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -514,7 +514,7 @@ namespace   Stroika {
                 return fDelegate_.AssignIf (to);
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator+= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -525,7 +525,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator-= (const T& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator-= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -536,7 +536,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator*= (const T& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator*= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -547,7 +547,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Synchronized<Memory::Optional<T, TRAITS>>&    Synchronized<Memory::Optional<T, TRAITS>>::operator/= (const T& rhs)
+            inline  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator/= (const T& rhs)
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -558,7 +558,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const T& rhs) const
+            inline  int LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::Compare (const T& rhs) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -568,7 +568,7 @@ namespace   Stroika {
                 return fDelegate_.Compare (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  int LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Memory::Optional<T, TRAITS>& rhs) const
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
@@ -578,7 +578,7 @@ namespace   Stroika {
                 return fDelegate_.Compare (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  int Synchronized<Memory::Optional<T, TRAITS>>::Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  int LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::Compare (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 if (this == &rhs) {
                     return 0;   // avoid double mutex lock
@@ -589,92 +589,92 @@ namespace   Stroika {
                 return fDelegate_.Compare (rhs.fDelegate_);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator< (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator< (const T& rhs) const
             {
                 return Compare (rhs) < 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator< (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator< (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) < 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator< (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator< (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) < 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const T& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator<= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator> (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator> (const T& rhs) const
             {
                 return Compare (rhs) > 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator> (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator> (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) > 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator> (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator> (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) > 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const T& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator>= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator== (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator== (const T& rhs) const
             {
                 return Compare (rhs) == 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator== (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator== (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) == 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator== (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator== (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) == 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const T& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const T& rhs) const
             {
                 return Compare (rhs) != 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const
             {
                 return Compare (rhs) != 0;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const Memory::Optional<T, TRAITS>& rhs) const
+            inline  bool    LEGACY_Synchronized<Memory::Optional<T, TRAITS>>::operator!= (const Memory::Optional<T, TRAITS>& rhs) const
             {
                 return Compare (rhs) != 0;
             }

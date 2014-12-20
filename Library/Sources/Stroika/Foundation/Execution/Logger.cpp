@@ -53,7 +53,7 @@ namespace {
     Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
+    LEGACY_Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         mutex                               fMutex_;     // mutex so we can update related variables together

@@ -85,12 +85,12 @@ namespace   Stroika {
              *  objects with methods.
              */
             template    <typename   T>
-            class   Synchronized {
+            class   LEGACY_Synchronized {
             public:
-                Synchronized ();
-                Synchronized (const T& from);
-                Synchronized (const Synchronized& from);
-                const Synchronized& operator= (const Synchronized& rhs);
+                LEGACY_Synchronized ();
+                LEGACY_Synchronized (const T& from);
+                LEGACY_Synchronized (const LEGACY_Synchronized& from);
+                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs);
 
             public:
                 nonvirtual  operator T () const;

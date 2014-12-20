@@ -36,7 +36,7 @@ using   Execution::Thread;
 using   Execution::WaitableEvent;
 
 template    <typename T>
-using   Synchronized    =   Execution::Synchronized<T>;
+using   Synchronized    =   Execution::LEGACY_Synchronized<T>;
 
 
 

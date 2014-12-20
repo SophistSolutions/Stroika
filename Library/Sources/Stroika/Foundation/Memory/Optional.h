@@ -344,27 +344,27 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T, typename TRAITS>
-            class   Synchronized<Memory::Optional<T, TRAITS>> {
+            class   LEGACY_Synchronized<Memory::Optional<T, TRAITS>> {
             public:
                 /**
                  */
-                Synchronized ();
-                Synchronized (const T& from);
-                Synchronized (T&&  from);
-                Synchronized (const Synchronized<Memory::Optional<T, TRAITS>>& from);
-                Synchronized (Synchronized<Memory::Optional<T, TRAITS>>&& from);
-                Synchronized (const Memory::Optional<T, TRAITS>& from);
-                Synchronized (Memory::Optional<T, TRAITS>&& from);
+                LEGACY_Synchronized ();
+                LEGACY_Synchronized (const T& from);
+                LEGACY_Synchronized (T&&  from);
+                LEGACY_Synchronized (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& from);
+                LEGACY_Synchronized (LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&& from);
+                LEGACY_Synchronized (const Memory::Optional<T, TRAITS>& from);
+                LEGACY_Synchronized (Memory::Optional<T, TRAITS>&& from);
 
             public:
                 /**
                  */
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const T& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (T && rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (Synchronized<Memory::Optional<T, TRAITS>> && rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (const Memory::Optional<T, TRAITS>& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>& operator= (Memory::Optional<T, TRAITS> && rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (const T& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (T && rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (LEGACY_Synchronized<Memory::Optional<T, TRAITS>> && rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (const Memory::Optional<T, TRAITS>& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& operator= (Memory::Optional<T, TRAITS> && rhs);
 
             public:
                 /**
@@ -431,10 +431,10 @@ namespace   Stroika {
                  *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
                  */
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator+= (const T& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator-= (const T& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator*= (const T& rhs);
-                nonvirtual  Synchronized<Memory::Optional<T, TRAITS>>&    operator/= (const T& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    operator+= (const T& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    operator-= (const T& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    operator*= (const T& rhs);
+                nonvirtual  LEGACY_Synchronized<Memory::Optional<T, TRAITS>>&    operator/= (const T& rhs);
 
             public:
                 /**
@@ -443,7 +443,7 @@ namespace   Stroika {
                  */
                 nonvirtual  int Compare (const T& rhs) const;
                 nonvirtual  int Compare (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  int Compare (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  int Compare (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
             public:
                 /**
@@ -451,22 +451,22 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    operator< (const T& rhs) const;
                 nonvirtual  bool    operator< (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator< (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator< (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
                 nonvirtual  bool    operator<= (const T& rhs) const;
                 nonvirtual  bool    operator<= (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator<= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator<= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
                 nonvirtual  bool    operator> (const T& rhs) const;
                 nonvirtual  bool    operator> (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator> (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator> (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
                 nonvirtual  bool    operator>= (const T& rhs) const;;
                 nonvirtual  bool    operator>= (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator>= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator>= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
                 nonvirtual  bool    operator== (const T& rhs) const;
                 nonvirtual  bool    operator== (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator== (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator== (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
                 nonvirtual  bool    operator!= (const T& rhs) const;
                 nonvirtual  bool    operator!= (const Memory::Optional<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
+                nonvirtual  bool    operator!= (const LEGACY_Synchronized<Memory::Optional<T, TRAITS>>& rhs) const;
 
             private:
                 Memory::Optional<T, TRAITS> fDelegate_;

@@ -1279,25 +1279,25 @@ namespace   Stroika {
 
             // early alpha placeholder test
             template    <>
-            class Synchronized<Characters::String> {
+            class LEGACY_Synchronized<Characters::String> {
             public:
                 using   ContainerType =     Characters::String;
                 using   ElementType   =     ContainerType::ElementType;
             public:
-                Synchronized () : fDelegate_ () {}
-                Synchronized (const Synchronized& src) : fDelegate_ (src) {}
-                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const char16_t* cString) : fDelegate_ (cString) {}
-                Synchronized (const char32_t* cString) : fDelegate_ (cString) {}
-                Synchronized (const wchar_t* cString) : fDelegate_ (cString) {}
-                Synchronized (const wchar_t* from, const wchar_t* to) : fDelegate_ (from, to) {}
-                Synchronized (const Characters::Character* from, const Characters::Character* to) : fDelegate_ (from, to) {}
-                Synchronized (const wstring& r) : fDelegate_ (r) {}
-                Synchronized (const Traversal::Iterable<Characters::Character>& src)  : fDelegate_ (src) {}
-                explicit Synchronized (const Characters::Character& c)  : fDelegate_ (c) {}
-                const Synchronized& operator= (const Synchronized& rhs)         { fDelegate_ = rhs.fDelegate_; return *this; }
+                LEGACY_Synchronized () : fDelegate_ () {}
+                LEGACY_Synchronized (const LEGACY_Synchronized& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (LEGACY_Synchronized&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const ContainerType& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const char16_t* cString) : fDelegate_ (cString) {}
+                LEGACY_Synchronized (const char32_t* cString) : fDelegate_ (cString) {}
+                LEGACY_Synchronized (const wchar_t* cString) : fDelegate_ (cString) {}
+                LEGACY_Synchronized (const wchar_t* from, const wchar_t* to) : fDelegate_ (from, to) {}
+                LEGACY_Synchronized (const Characters::Character* from, const Characters::Character* to) : fDelegate_ (from, to) {}
+                LEGACY_Synchronized (const wstring& r) : fDelegate_ (r) {}
+                LEGACY_Synchronized (const Traversal::Iterable<Characters::Character>& src)  : fDelegate_ (src) {}
+                explicit LEGACY_Synchronized (const Characters::Character& c)  : fDelegate_ (c) {}
+                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs)         { fDelegate_ = rhs.fDelegate_; return *this; }
                 Traversal::Iterator<ElementType> begin () const                 { return fDelegate_.begin (); }
                 Traversal::Iterator<ElementType> end () const                   { return fDelegate_.end (); }
                 operator ContainerType () const                                 { return fDelegate_;  }

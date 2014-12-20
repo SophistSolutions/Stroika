@@ -312,22 +312,22 @@ namespace   Stroika {
 
             // early alpha placeholder test
             template    <typename T>
-            class Synchronized<Containers::Collection<T>> {
+            class LEGACY_Synchronized<Containers::Collection<T>> {
             public:
                 using   ContainerType =     Containers::Collection<T>;
                 using   ElementType   =     typename ContainerType::ElementType;
             public:
-                Synchronized () : fDelegate_ () {}
-                Synchronized (const Synchronized& src) : fDelegate_ (src) {}
-                Synchronized (Synchronized&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
-                Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized () : fDelegate_ () {}
+                LEGACY_Synchronized (const LEGACY_Synchronized& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (LEGACY_Synchronized&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const ContainerType& src) : fDelegate_ (src) {}
+                LEGACY_Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
+                LEGACY_Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
                 template <typename CONTAINER_OF_T>
-                explicit Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
+                explicit LEGACY_Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
-                const Synchronized& operator= (const Synchronized& rhs)
+                explicit LEGACY_Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
+                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs)
                 {
                     fDelegate_ = rhs.fDelegate_;
                     return *this;

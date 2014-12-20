@@ -19,29 +19,29 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************************* Synchronized *********************************
+             ********************************* LEGACY_Synchronized *********************************
              ********************************************************************************
              */
             template    <typename   T>
-            inline  Synchronized<T>::Synchronized ()
+            inline  LEGACY_Synchronized<T>::LEGACY_Synchronized ()
                 : fDelegate_ ()
                 , fLock_ ()
             {
             }
             template    <typename   T>
-            inline  Synchronized<T>::Synchronized (const T& from)
+            inline  LEGACY_Synchronized<T>::LEGACY_Synchronized (const T& from)
                 : fDelegate_ (from)
                 , fLock_ ()
             {
             }
             template    <typename   T>
-            inline  Synchronized<T>::Synchronized (const Synchronized& from)
+            inline  LEGACY_Synchronized<T>::LEGACY_Synchronized (const LEGACY_Synchronized& from)
                 : fDelegate_ (static_cast<T> (from))
                 , fLock_ ()
             {
             }
             template    <typename   T>
-            inline  const Synchronized<T>& Synchronized<T>::operator= (const Synchronized& rhs)
+            inline  const LEGACY_Synchronized<T>& LEGACY_Synchronized<T>::operator= (const LEGACY_Synchronized& rhs)
             {
                 if (this != &rhs) {
                     unique_lock<SpinLock> lock1 (rhs.fLock_, defer_lock);
@@ -52,7 +52,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename   T>
-            inline  Synchronized<T>::operator T () const
+            inline  LEGACY_Synchronized<T>::operator T () const
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
                 return fDelegate_;
