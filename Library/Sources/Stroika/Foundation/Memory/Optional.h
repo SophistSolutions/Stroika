@@ -54,11 +54,11 @@ namespace   Stroika {
 #else
                 static  int     Compare (T lhs, T rhs)
                 {
-                    return Common::ComparerWithWellOrder::Compare (lhs, rhs);
+                    return Common::ComparerWithWellOrder<T>::Compare (lhs, rhs);
                 }
                 static  bool    Equals (T lhs, T rhs)
                 {
-                    return Common::ComparerWithEquals::Equals (lhs, rhs);
+                    return Common::ComparerWithEquals<T>::Equals (lhs, rhs);
                 }
 #endif
             };
