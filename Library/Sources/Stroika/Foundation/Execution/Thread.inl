@@ -181,11 +181,14 @@ namespace   Stroika {
             template    <unsigned int kEveryNTimes>
             void    CheckForThreadAborting ()
             {
+                // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
                 static  unsigned int    n   =   0;
                 if (++n % kEveryNTimes == kEveryNTimes - 1) {
                     CheckForThreadAborting ();
                 }
             }
+
+
         }
     }
 }
