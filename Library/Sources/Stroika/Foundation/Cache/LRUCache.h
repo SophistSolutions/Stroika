@@ -117,7 +117,7 @@ namespace   Stroika {
                  * The DefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
                  */
                 template    <typename   ELEMENT, typename KEY = ELEMENT>
-                struct  DefaultTraits {
+                struct  DefaultTraits_ {
                     using   ElementType =   ELEMENT;
                     using   KeyType     =   KEY;
 
@@ -177,19 +177,19 @@ namespace   Stroika {
                 * template more easily - for second argument. Otherwise, its really not needed and must agree with
                 * the elemnt in TRAITS::ElementType;
             */
-            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT>>
-            class   LRUCache {
+            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits_<ELEMENT>>
+            class   LRUCache_ {
             public:
                 using   ElementType     =   typename TRAITS::ElementType;
                 using   KeyType         =   typename TRAITS::KeyType;
 
             public:
-                LRUCache (size_t maxCacheSize);
-                LRUCache () = delete;
-                LRUCache (const LRUCache&) = delete;
+                LRUCache_ (size_t maxCacheSize);
+                LRUCache_ () = delete;
+                LRUCache_ (const LRUCache_&) = delete;
 
             public:
-                nonvirtual  LRUCache& operator= (const LRUCache&) = delete;
+                nonvirtual  LRUCache_& operator= (const LRUCache_&) = delete;
 
             public:
                 nonvirtual  size_t  GetMaxCacheSize () const;
@@ -254,7 +254,7 @@ namespace   Stroika {
                 //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
             */
             template    <typename   ELEMENT, typename TRAITS>
-            struct  LRUCache<ELEMENT, TRAITS>::CacheIterator {
+            struct  LRUCache_<ELEMENT, TRAITS>::CacheIterator {
                 explicit CacheIterator (CacheElement_** start, CacheElement_** end);
 
             public:
@@ -275,9 +275,9 @@ namespace   Stroika {
 
             /// MIGRATION STRATEGY FROM OLD TO NEW NAMES/DESIGN
             template    <typename   ELEMENT, typename KEY = ELEMENT>
-            using  DefaultTraits_LEGACY = LRUCacheSupport::DefaultTraits<ELEMENT, KEY>;
+            using  DefaultTraits_LEGACY = LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>;
             template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY<ELEMENT>>
-            using   LRUCache_LEGACY  = LRUCache<ELEMENT, TRAITS>;
+            using   LRUCache_LEGACY  = LRUCache_<ELEMENT, TRAITS>;
 
 
 
@@ -318,7 +318,7 @@ namespace   Stroika {
                     KEY     fKey;
                     VALUE   fValue;
                 };
-                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits<LEGACYLRUCACHEOBJ_, KEY> {
+                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits_<LEGACYLRUCACHEOBJ_, KEY> {
                     static  KEY ExtractKey (const LEGACYLRUCACHEOBJ_& e)
                     {
                         return e.fKey;
@@ -333,7 +333,7 @@ namespace   Stroika {
                         return TRAITS::Equals (lhs, rhs);
                     }
                 };
-                mutable Cache::LRUCache<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
+                mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
                 mutable mutex   fLock_;
             public:
                 nu_LRUCache (size_t size = 1)

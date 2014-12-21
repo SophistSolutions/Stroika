@@ -352,7 +352,7 @@ namespace   Stroika {
                     friend  struct  CacheEltLRUCacheTraits;
                     friend  class   PartitioningTextImager::MeasureTextCache;
                 };
-                struct  CacheEltLRUCacheTraits : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt, CacheElt::COMPARE_ITEM> {
+                struct  CacheEltLRUCacheTraits : Foundation::Cache::DefaultTraits_LEGACY<CacheElt, CacheElt::COMPARE_ITEM> {
                     static  KeyType ExtractKey (const ElementType& e)
                     {
                         return e.fValidFor;
@@ -369,7 +369,7 @@ namespace   Stroika {
                 };
 
             private:
-                mutable Foundation::Cache::LRUCache<CacheElt, CacheEltLRUCacheTraits>  fCache;
+                mutable Foundation::Cache::LRUCache_LEGACY<CacheElt, CacheEltLRUCacheTraits>  fCache;
 
             public:
                 nonvirtual  void            ClearAll ();

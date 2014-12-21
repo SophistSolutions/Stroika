@@ -49,26 +49,26 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********** LRUCacheSupport::DefaultTraits<ELEMENT,TRAITS> *********************
+             *********** LRUCacheSupport::DefaultTraits_<ELEMENT,TRAITS> *********************
              ********************************************************************************
              */
             template    <typename   ELEMENT, typename KEY>
-            inline  typename    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::KeyType LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::ExtractKey (const ElementType& e)
+            inline  typename    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::KeyType LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::ExtractKey (const ElementType& e)
             {
                 return e;
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  size_t  LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Hash (const KeyType& e)
+            inline  size_t  LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Hash (const KeyType& e)
             {
                 return 0;
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  void    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Clear (ElementType* element)
+            inline  void    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Clear (ElementType* element)
             {
                 (*element) = ElementType ();
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  bool    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
+            inline  bool    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
             {
                 return lhs == rhs;
             }
@@ -80,7 +80,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache<ELEMENT, TRAITS>::CacheElement_::CacheElement_ ()
+            inline  LRUCache_<ELEMENT, TRAITS>::CacheElement_::CacheElement_ ()
                 : fNext (nullptr)
                 , fPrev (nullptr)
                 , fElement ()
@@ -90,18 +90,18 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *************** LRUCache<ELEMENT,TRAITS>::CacheIterator ************************
+             *************** LRUCache_<ELEMENT,TRAITS>::CacheIterator ************************
              ********************************************************************************
              */
             template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement_** start, CacheElement_** end)
+            inline  LRUCache_<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement_** start, CacheElement_** end)
                 : fCurV (start)
                 , fEndV (end)
                 , fCur (start == end ? nullptr : *fCurV)
             {
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator&    LRUCache<ELEMENT, TRAITS>::CacheIterator::operator++ ()
+            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator&    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator++ ()
             {
                 RequireNotNull (fCur);
                 Require (fCurV != fEndV);
@@ -115,18 +115,18 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  ELEMENT&    LRUCache<ELEMENT, TRAITS>::CacheIterator::operator* ()
+            inline  ELEMENT&    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator* ()
             {
                 RequireNotNull (fCur);
                 return fCur->fElement;
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  bool LRUCache<ELEMENT, TRAITS>::CacheIterator::operator== (CacheIterator rhs)
+            inline  bool LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator== (CacheIterator rhs)
             {
                 return fCur == rhs.fCur;
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  bool LRUCache<ELEMENT, TRAITS>::CacheIterator::operator!= (CacheIterator rhs)
+            inline  bool LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator!= (CacheIterator rhs)
             {
                 return fCur != rhs.fCur;
             }
@@ -134,11 +134,11 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****************************** LRUCache<ELEMENT,TRAITS> ************************
+             ****************************** LRUCache_<ELEMENT,TRAITS> ************************
              ********************************************************************************
              */
             template    <typename   ELEMENT, typename TRAITS>
-            LRUCache<ELEMENT, TRAITS>::LRUCache (size_t maxCacheSize)
+            LRUCache_<ELEMENT, TRAITS>::LRUCache_ (size_t maxCacheSize)
                 : fStats ()
             {
                 // TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
@@ -149,12 +149,12 @@ namespace   Stroika {
                 SetMaxCacheSize (maxCacheSize);
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  size_t  LRUCache<ELEMENT, TRAITS>::GetMaxCacheSize () const
+            inline  size_t  LRUCache_<ELEMENT, TRAITS>::GetMaxCacheSize () const
             {
                 return TRAITS::HASH_TABLE_SIZE * fCachedElts_BUF_[0].size ();
             }
             template    <typename   ELEMENT, typename TRAITS>
-            void    LRUCache<ELEMENT, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
+            void    LRUCache_<ELEMENT, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
             {
                 Require (maxCacheSize >= 1);
                 maxCacheSize =  ((maxCacheSize + TRAITS::HASH_TABLE_SIZE - 1) / TRAITS::HASH_TABLE_SIZE);   // divide size over number of hash chains
@@ -175,17 +175,17 @@ namespace   Stroika {
                 }
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator LRUCache<ELEMENT, TRAITS>::begin ()
+            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator LRUCache_<ELEMENT, TRAITS>::begin ()
             {
                 return CacheIterator (std::begin (fCachedElts_First_), std::end (fCachedElts_First_));
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator LRUCache<ELEMENT, TRAITS>::end ()
+            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator LRUCache_<ELEMENT, TRAITS>::end ()
             {
                 return CacheIterator (nullptr, nullptr);
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  void    LRUCache<ELEMENT, TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
+            inline  void    LRUCache_<ELEMENT, TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
             {
                 Require (chainIdx < TRAITS::HASH_TABLE_SIZE);
                 RequireNotNull (b);
@@ -217,7 +217,7 @@ namespace   Stroika {
                 Ensure (fCachedElts_First_[chainIdx] != nullptr and fCachedElts_First_[chainIdx] == b and fCachedElts_First_[chainIdx]->fPrev == nullptr and fCachedElts_First_[chainIdx]->fNext != nullptr);
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  void    LRUCache<ELEMENT, TRAITS>::ClearCache ()
+            inline  void    LRUCache_<ELEMENT, TRAITS>::ClearCache ()
             {
                 for (size_t hi = 0; hi < TRAITS::HASH_TABLE_SIZE; hi++) {
                     for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
@@ -227,13 +227,13 @@ namespace   Stroika {
             }
             template    <typename   ELEMENT, typename TRAITS>
             /*
-            @METHOD:        LRUCache<ELEMENT>::LookupElement
+            @METHOD:        LRUCache_<ELEMENT>::LookupElement
             @DESCRIPTION:   <p>Check and see if the given element is in the cache. Return that element if its tehre, and nullptr otherwise.
                         Note that this routine re-orders the cache so that the most recently looked up element is first, and because
-                        of this re-ordering, its illegal to do a Lookup while a @'LRUCache<ELEMENT>::CacheIterator' exists
-                        for this LRUCache.</p>
+                        of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
+                        for this LRUCache_.</p>
             */
-            inline  ELEMENT*    LRUCache<ELEMENT, TRAITS>::LookupElement (const KeyType& item)
+            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::LookupElement (const KeyType& item)
             {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
@@ -248,13 +248,13 @@ namespace   Stroika {
             }
             template    <typename   ELEMENT, typename TRAITS>
             /*
-            @METHOD:        LRUCache<ELEMENT>::AddNew
-            @DESCRIPTION:   <p>Create a new LRUCache element (potentially bumping some old element out of the cache). This new element
+            @METHOD:        LRUCache_<ELEMENT>::AddNew
+            @DESCRIPTION:   <p>Create a new LRUCache_ element (potentially bumping some old element out of the cache). This new element
                         will be considered most recently used. Note that this routine re-orders the cache so that the most recently looked
                         up element is first, and because of this re-ordering, its illegal to do a Lookup while
-                        a @'LRUCache<ELEMENT>::CacheIterator' exists for this LRUCache.</p>
+                        a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
-            inline  ELEMENT*    LRUCache<ELEMENT, TRAITS>::AddNew (const KeyType& item)
+            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::AddNew (const KeyType& item)
             {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
