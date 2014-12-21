@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/SpinLock.h"
 #include    "../Execution/Synchronized.h"
@@ -47,8 +48,19 @@ namespace   Stroika {
              */
             template    <typename T>
             struct   Optional_DefaultTraits {
-                static  int     Compare (T lhs, T rhs);
-                static  bool    Equals (T lhs, T rhs);
+#if 0
+                using   Common::ComparerWithWellOrder<T>::Compare;
+                using   Common::ComparerWithEquals<T>::Equals;
+#else
+                static  int     Compare (T lhs, T rhs)
+                {
+                    return Common::ComparerWithWellOrder::Compare (lhs, rhs);
+                }
+                static  bool    Equals (T lhs, T rhs)
+                {
+                    return Common::ComparerWithEquals::Equals (lhs, rhs);
+                }
+#endif
             };
 
 
@@ -71,7 +83,7 @@ namespace   Stroika {
              *  \note   To use Optional with un-copyable things, use:
              *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
              *
-             *  \note   After C++14, C++ will be introducing std::optional<> which may possibly make this
+             *  \note   After C++14, C++ may be introducing std::optional<> which may possibly make this
              *          obsolete. We'll see.
              *
              *  \note   \em Design-Note - why not SharedByValue<T>
@@ -378,7 +390,7 @@ namespace   Stroika {
              *  \note   To use Optional with un-copyable things, use:
              *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
              *
-             *  \note   C++14 will be introducing std::optional<> which may possibly make this obsolete.
+             *  \note   C++14 may be introducing std::optional<> which may possibly make this obsolete.
              *          We'll see.
              *
              *  \note   \em Design-Note - why no operator T()

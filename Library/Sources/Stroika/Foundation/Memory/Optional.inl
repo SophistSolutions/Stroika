@@ -24,6 +24,7 @@ namespace   Stroika {
              *********************** Optional_DefaultTraits<T> ******************************
              ********************************************************************************
              */
+#if 0
             template    <typename T>
             inline  int     Optional_DefaultTraits<T>::Compare (T lhs, T rhs)
             {
@@ -41,7 +42,7 @@ namespace   Stroika {
             {
                 return lhs == rhs;
             }
-
+#endif
 
             /*
              ********************************************************************************
