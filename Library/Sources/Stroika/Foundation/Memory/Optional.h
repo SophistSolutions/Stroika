@@ -22,10 +22,8 @@
  *  TODO:
  *
  *      @todo   COULD make operator==, operator<, etc compares more efficeint when comparing with T
- *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE)
- *
- *      @todo   Redo TRAITS for Optional using new Common/Compare trait code (in Optional_DefaultTraits)
- *              (or document why not)
+ *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE); And could improve iterop
+ *              by adding operator XXX (where XXX is ==, etc) with (T, OPTIONAL);
  *
  *      @todo   Condsider (maybe test) if implemenation using member buffer Byte buf[sizeof(T)]; with appropriate alignof stuff -
  *              would perform better than BlockAllocated? It's important that this class be low-cost, low-overhead!
@@ -48,19 +46,8 @@ namespace   Stroika {
              */
             template    <typename T>
             struct   Optional_DefaultTraits {
-#if 0
-                using   Common::ComparerWithWellOrder<T>::Compare;
-                using   Common::ComparerWithEquals<T>::Equals;
-#else
-                static  int     Compare (T lhs, T rhs)
-                {
-                    return Common::ComparerWithWellOrder<T>::Compare (lhs, rhs);
-                }
-                static  bool    Equals (T lhs, T rhs)
-                {
-                    return Common::ComparerWithEquals<T>::Equals (lhs, rhs);
-                }
-#endif
+                static  int     Compare (T lhs, T rhs);
+                static  bool    Equals (T lhs, T rhs);
             };
 
 

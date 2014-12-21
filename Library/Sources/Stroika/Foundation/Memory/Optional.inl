@@ -24,25 +24,17 @@ namespace   Stroika {
              *********************** Optional_DefaultTraits<T> ******************************
              ********************************************************************************
              */
-#if 0
             template    <typename T>
             inline  int     Optional_DefaultTraits<T>::Compare (T lhs, T rhs)
             {
-                if (lhs < rhs) {
-                    return -1;
-                }
-                else if (rhs < lhs) {
-                    return 1;
-                }
-                Assert (lhs == rhs);
-                return 0;
+                return Common::ComparerWithWellOrder<T>::Compare (lhs, rhs);
             }
             template    <typename T>
             inline  bool    Optional_DefaultTraits<T>::Equals (T lhs, T rhs)
             {
-                return lhs == rhs;
+                return Common::ComparerWithEquals<T>::Equals (lhs, rhs);
             }
-#endif
+
 
             /*
              ********************************************************************************
