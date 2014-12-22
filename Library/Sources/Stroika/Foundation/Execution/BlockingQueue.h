@@ -21,9 +21,7 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
- *
- *      @todo   Make BlockingQueue<T>::RemoveHeadIfPossible() not use exceptions - if not too hard - since
- *              timeout exceptions turn up in tracelog and could be confusing.
+ *      @todo   Add method to "CopyQueue" which takes a SNAPSHOT of the current Queue and returns it.
  *
  *      @todo   Add clear example of usage...
  *
