@@ -6,8 +6,10 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "Common.h"
-#include    "SpinLock.h"
+#include    "SpinLock.h"        // just needed while we support LEGACY_Synchronized
 
 
 
@@ -101,9 +103,16 @@ namespace   Stroika {
             };
 
 
-
-
-            template    <typename   T, typename MUTEX = SpinLock>
+            /*
+             *  MUTEX:
+             *      We chose to make the default MUTEX recursive_mutex - since most patterns of use will be supported
+             *      by this safely.
+             *
+             *      To use timed-locks, use timed_recursive_mutex.
+             *
+             *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
+             */
+            template    <typename   T, typename MUTEX = recursive_mutex>
             struct  nu_Synchronized_Traits {
                 using  MutexType = MUTEX;
             };
