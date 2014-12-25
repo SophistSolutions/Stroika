@@ -18,6 +18,12 @@
 #include    "../Time/Realtime.h"
 
 
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
+ */
 
 namespace   Stroika {
     namespace   Foundation {
