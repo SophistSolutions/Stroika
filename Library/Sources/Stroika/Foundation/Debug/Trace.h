@@ -174,6 +174,28 @@ namespace   Stroika {
 #endif
 
 
+            /**
+             *  Simple utility to print debug trace timing values for procedures (or contexts).
+             */
+            struct  TimingTrace {
+            public:
+                /**
+                 */
+                TimingTrace (const TimingTrace&) = delete;
+                TimingTrace (Time::DurationSecondsType warnIfLongerThan = 0);
+                TimingTrace (const SDKChar* msg, Time::DurationSecondsType warnIfLongerThan = 0);
+
+            public:
+                /**
+                 */
+                ~TimingTrace ();
+
+            private:
+                Time::DurationSecondsType fStartedAt_;
+                Time::DurationSecondsType fMinTime2Report_;
+            };
+
+
         }
     }
 }

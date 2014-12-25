@@ -49,6 +49,33 @@ namespace   Stroika {
             }
 #endif
 
+
+            /*
+             ********************************************************************************
+             ******************************** TimingTrace ***********************************
+             ********************************************************************************
+             */
+            inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan)
+                : fStartedAt_ (Time::GetTickCount ())
+                , fMinTime2Report_ (warnIfLongerThan)
+            {
+            }
+            inline   TimingTrace::TimingTrace (const SDKChar* msg, Time::DurationSecondsType warnIfLongerThan)
+                : fStartedAt_ (Time::GetTickCount ())
+                , fMinTime2Report_ (warnIfLongerThan)
+            {
+            }
+            inline    TimingTrace::~TimingTrace ()
+            {
+                Time::DurationSecondsType timeTaken = Time::GetTickCount () - fStartedAt_;
+                if (timeTaken >= fMinTime2Report_) {
+                    DbgTrace("(timeTaken=%f seconds)", timeTaken);
+                }
+            }
+
+
+
+
             Execution::ModuleDependency MakeModuleDependency_Trace ();
 
             namespace Private_ {
