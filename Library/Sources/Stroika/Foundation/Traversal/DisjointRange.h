@@ -68,6 +68,15 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Range::Contains.
+                 *
+                 *  This returns true if r is contained in some sub-element range. This is only the smae as
+                 *  GetBounds().Contains() if GetSubRanges ().size () <= 1.
+                 */
+                nonvirtual  bool    Contains (ElementType elt) const;
+
+            public:
+                /**
                  * if empty, returns empty range()
                  */
                 nonvirtual  RangeType   GetBounds () const;

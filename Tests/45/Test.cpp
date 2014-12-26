@@ -414,6 +414,15 @@ namespace {
             VerifyTestResult (dr.empty ());
             VerifyTestResult (dr.GetBounds ().empty ());
             VerifyTestResult (dr.GetSubRanges ().empty ());
+            VerifyTestResult (not dr.Contains (3));
+        }
+        {
+            DisjointRange<Range<float>> dr {Range<float> (2.1f, 5.0f)};
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == Range<float> (2.1f, 5.0f));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.Contains (3));
+            VerifyTestResult (not dr.Contains (2));
         }
     }
 }
