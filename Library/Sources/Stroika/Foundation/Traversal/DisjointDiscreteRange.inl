@@ -21,32 +21,32 @@ namespace   Stroika {
                 auto srs { this->GetSubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
                 for (Iterator<RangeType> i = srs.begin (); i != srs.end (); ++i) {
-                    if (s < i->GetLowerBound ()) {
+                    if (elt < i->GetLowerBound ()) {
                         // then either extend by one or insert new item
-                        if (s == i->GetLowerBound () - 1) {
-                            srs.Update (i, DiscreteRange<ElementType> (s, i->GetUpperBound ()));
+                        if (elt == i->GetLowerBound () - 1) {
+                            srs.Update (i, DiscreteRange<ElementType> (elt, i->GetUpperBound ()));
                             //@todo in this case we should check for merge adjacent, but not critical
                         }
                         else {
-                            srs.insert (i, DiscreteRange<ElementType> (s, s));
+                            srs.insert (i, DiscreteRange<ElementType> (elt, elt));
                         }
                         *this = srs;
                         return;
                     }
-                    if (i->Contains (s)) {
+                    if (i->Contains (elt)) {
                         return;
                     }
                 }
                 // if not less than any there, we must append new item
-                srs.push_back (DiscreteRange<ElementType> (s, s));
+                srs.push_back (DiscreteRange<ElementType> (elt, elt));
                 *this = srs;
             }
             template    <typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType s) const -> Memory::Optional<ElementType> {
+            auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
                 for (DiscreteRange<ElementType> i : this->GetSubRanges ())
                 {
-                    if (i.Contains (s + 1)) {
-                        return s + 1;
+                    if (i.Contains (elt + 1)) {
+                        return elt + 1;
                     }
                     //                    if (i.GetUpperBound () < s) {
                     //                        break;
@@ -55,13 +55,13 @@ namespace   Stroika {
                 return Memory::Optional<ElementType> ();
             }
             template    <typename RANGE_TYPE>
-            auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType s) const -> Memory::Optional<ElementType> {
+            auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
                 for (DiscreteRange<ElementType> i : this->GetSubRanges ())
                 {
-                    if (i.Contains (s - 1)) {
-                        return s - 1;
+                    if (i.Contains (elt - 1)) {
+                        return elt - 1;
                     }
-                    if (i.GetUpperBound () <= s) {
+                    if (i.GetUpperBound () <= elt) {
                         break;
                     }
                 }

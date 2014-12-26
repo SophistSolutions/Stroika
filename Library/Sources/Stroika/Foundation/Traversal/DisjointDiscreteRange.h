@@ -43,10 +43,10 @@ namespace   Stroika {
                 nonvirtual  void    Add (ElementType elt);
 
             public:
-                nonvirtual  Memory::Optional<ElementType> GetNext (ElementType s) const;
+                nonvirtual  Memory::Optional<ElementType> GetNext (ElementType elt) const;
 
             public:
-                nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType s) const;
+                nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType elt) const;
             };
 
 
