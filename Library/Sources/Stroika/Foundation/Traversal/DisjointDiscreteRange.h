@@ -33,8 +33,8 @@ namespace   Stroika {
 
             template    <typename RANGE_TYPE>
             class   DisjointDiscreteRange : public DisjointRange<RANGE_TYPE> {
-			public:
-				using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
+            public:
+                using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
 
             public:
                 nonvirtual  void    Add (ElementType elt);
@@ -46,8 +46,8 @@ namespace   Stroika {
                 nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType s) const;
             };
 
-		
-		}
+
+        }
     }
 }
 

@@ -52,7 +52,7 @@ namespace   Stroika {
                     //                        break;
                     //                    }
                 }
-                return Optional<ElementType> ();
+                return Memory::Optional<ElementType> ();
             }
             template    <typename RANGE_TYPE>
             auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType s) const -> Memory::Optional<ElementType> {
@@ -65,7 +65,7 @@ namespace   Stroika {
                         break;
                     }
                 }
-                return Optional<ElementType> ();
+                return Memory::Optional<ElementType> ();
             }
 
 

@@ -407,9 +407,9 @@ namespace {
 
 
 namespace {
-	void	Test13_DisjointRange_ ()
-	{
-	}
+    void    Test13_DisjointRange_ ()
+    {
+    }
 }
 
 
@@ -430,7 +430,7 @@ namespace   {
         Test10_MakeIterableFromIterator_ ();
         Test11_GetDistanceSpanned_ ();
         Test12_RangeConstExpr_ ();
-		Test13_DisjointRange_ ();
+        Test13_DisjointRange_ ();
     }
 }
 
