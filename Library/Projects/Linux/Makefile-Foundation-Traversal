@@ -9,6 +9,8 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Trave
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)DisjointDiscreteRange.o\
+	$(ObjDir)DisjointRange.o\
 	$(ObjDir)Range.o\
 
 

@@ -12,7 +12,7 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ***************** DisjointRange<RANGE_TYPE>::DisjointRange *********************
+            ************************* DisjointRange<RANGE_TYPE> ****************************
             ********************************************************************************
             */
             template    <typename RANGE_TYPE>
@@ -26,7 +26,8 @@ namespace   Stroika {
             {
             }
             template    <typename RANGE_TYPE>
-            inline  auto    DisjointRange<RANGE_TYPE>::GetSubRanges () const -> Containers::Sequence<RangeType> {
+            inline  auto    DisjointRange<RANGE_TYPE>::GetSubRanges () const -> Containers::Sequence<RangeType> 
+			{
                 return fSubRanges_;
             }
             template    <typename RANGE_TYPE>
@@ -52,7 +53,6 @@ namespace   Stroika {
                         return DisjointRange<RangeType> {RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.GetLast ().GetUpperBound ())  };
                 }
             }
-
 
 
         }
