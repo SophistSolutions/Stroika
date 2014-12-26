@@ -930,6 +930,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1285,6 +1287,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h" />
@@ -1595,6 +1599,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl" />

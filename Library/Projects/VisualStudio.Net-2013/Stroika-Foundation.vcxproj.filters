@@ -741,6 +741,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp">
       <Filter>Sources\IO\Network\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.cpp">
+      <Filter>Sources\Traversal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.cpp">
+      <Filter>Sources\Traversal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1704,6 +1710,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h">
       <Filter>Sources\IO\Network\Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2576,6 +2588,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.inl">
       <Filter>Sources\IO\Network\Platform\Windows</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.inl">
+      <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
 </Project>
