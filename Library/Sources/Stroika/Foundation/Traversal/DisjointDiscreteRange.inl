@@ -20,7 +20,7 @@ namespace   Stroika {
             {
                 auto srs { this->GetSubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
-                for (Iterator<RangeType> i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
+                for (Iterator<RangeType> i = srs.begin (); i != srs.end (); ++i) {
                     if (s < i->GetLowerBound ()) {
                         // then either extend by one or insert new item
                         if (s == i->GetLowerBound () - 1) {

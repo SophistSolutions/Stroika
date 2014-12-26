@@ -37,6 +37,9 @@ namespace   Stroika {
                 using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
 
             public:
+                using RangeType = typename DisjointRange<RANGE_TYPE>::RangeType;
+
+            public:
                 nonvirtual  void    Add (ElementType elt);
 
             public:
