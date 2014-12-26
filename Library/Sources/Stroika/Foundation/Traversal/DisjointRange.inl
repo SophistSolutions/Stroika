@@ -45,11 +45,11 @@ namespace   Stroika {
                 size_t  n   =   fSubRanges_.size ();
                 switch (n) {
                     case 0:
-                        return DisjointRange<RangeType> {};
+                        return RangeType {};
                     case 1:
-                        return DisjointRange<RangeType> {fSubRanges_[0]};
+                        return fSubRanges_[0];
                     default:
-                        return DisjointRange<RangeType> {RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.GetLast ().GetUpperBound ())  };
+                        return RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.GetLast ().GetUpperBound ());
                 }
             }
 

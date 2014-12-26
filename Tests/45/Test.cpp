@@ -409,6 +409,12 @@ namespace {
 namespace {
     void    Test13_DisjointRange_ ()
     {
+        {
+            DisjointRange<Range<float>> dr {};
+            VerifyTestResult (dr.empty ());
+            VerifyTestResult (dr.GetBounds ().empty ());
+            VerifyTestResult (dr.GetSubRanges ().empty ());
+        }
     }
 }
 
