@@ -185,6 +185,14 @@ namespace   Stroika {
                 return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
+            inline  void    Sequence<T>::Insert (const Iterator<T>& i, T item)
+            {
+                _SafeReadWriteRepAccessor<_IRep> accessor { this };
+                size_t idx = accessor._ConstGetRep ().IndexOf (i);
+                Require (idx <= accessor._ConstGetRep ().GetLength ());     //  if equals end, we append
+                return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
+            }
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {

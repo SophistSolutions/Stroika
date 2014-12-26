@@ -366,6 +366,7 @@ namespace   Stroika {
                  *  what the iterator says is the current item.
                  */
                 nonvirtual  void    Insert (size_t i, T item);
+                nonvirtual  void    Insert (const Iterator<T>& i, T item);
 
             public:
                 /**
