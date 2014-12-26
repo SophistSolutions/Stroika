@@ -31,9 +31,11 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-
             template    <typename RANGE_TYPE>
             class   DisjointDiscreteRange : public DisjointRange<RANGE_TYPE> {
+			public:
+				using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
+
             public:
                 nonvirtual  void    Add (ElementType elt);
 
@@ -43,12 +45,9 @@ namespace   Stroika {
             public:
                 nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType s) const;
             };
-#if 0
-public:
-            nonvirtual  void    Add (ElementType elt);
 
-#endif
-        }
+		
+		}
     }
 }
 

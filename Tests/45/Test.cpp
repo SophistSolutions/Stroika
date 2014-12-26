@@ -10,6 +10,8 @@
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include    "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
+#include    "Stroika/Foundation/Traversal/DisjointRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
@@ -404,6 +406,14 @@ namespace {
 
 
 
+namespace {
+	void	Test13_DisjointRange_ ()
+	{
+	}
+}
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -420,6 +430,7 @@ namespace   {
         Test10_MakeIterableFromIterator_ ();
         Test11_GetDistanceSpanned_ ();
         Test12_RangeConstExpr_ ();
+		Test13_DisjointRange_ ();
     }
 }
 
