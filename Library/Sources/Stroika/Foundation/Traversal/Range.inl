@@ -24,25 +24,25 @@ namespace   Stroika {
             template    <typename SFINAE>
             inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
             {
-                return static_cast<ElementType> (i + 1);
+                return i == numeric_limits<ElementType>::max () ? i : static_cast<ElementType> (i + 1);
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
             inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
             {
-                return nextafter (i, numeric_limits<ElementType>::max ());
+                return i == numeric_limits<ElementType>::max () ? i : nextafter (i, numeric_limits<ElementType>::max ());
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
             inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
             {
-                return static_cast<ElementType> (i - 1);
+                return i == numeric_limits<ElementType>::min () ? i : static_cast<ElementType> (i - 1);
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
             inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
             {
-                return nextafter (i, numeric_limits<ElementType>::min ());
+                return i == numeric_limits<ElementType>::min () ? i : nextafter (i, numeric_limits<ElementType>::min ());
             }
 
 
