@@ -84,6 +84,16 @@ namespace   Stroika {
 
                     static  constexpr   Openness    kLowerBoundOpenness     =   LOWER_BOUND_OPEN;
                     static  constexpr   Openness    kUpperBoundOpenness     =   UPPER_BOUND_OPEN;
+
+                    template    <typename SFINAE = ElementType>
+                    static  ElementType GetNext (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = ElementType>
+                    static  ElementType GetNext (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+
+                    template    <typename SFINAE = ElementType>
+                    static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = ElementType>
+                    static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
                 };
 
 
