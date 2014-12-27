@@ -34,6 +34,9 @@
  *          -- LGP 2013-10-17
  *
  *  TODO:
+ *          @todo   Correct the implementation of Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee)
+ *                  for openness. And if possible, make it constexpr.
+ *
  *          @todo   Range<T, TRAITS>::Format() should take into account openness
  *
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
@@ -274,6 +277,7 @@ namespace   Stroika {
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
                 nonvirtual  constexpr   bool    Contains (const T& r) const;
+                nonvirtual  bool    Contains (const Range<T, TRAITS>& containee) const;
 
 #if 0
             public:

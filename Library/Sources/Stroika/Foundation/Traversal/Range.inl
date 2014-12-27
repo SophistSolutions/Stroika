@@ -241,6 +241,25 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
+            inline  bool    Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee) const
+            {
+                // @todo fix - NOT QUITE RIGHT!!!
+                if (containee.empty ()) {
+                    return true;        // \forall A: \emptyset  \subseteq A
+                }
+                if (GetLowerBound () < containee.GetLowerBound () and containee.GetUpperBound () < GetUpperBound ()) {
+                    return true;
+                }
+                // @todo fix - NOT QUITE RIGHT!!!
+                // NOT quite right because of openness
+#if 0
+                if (fBeginOpenness_ == Openness::eClosed and r == fBegin_) {
+                    return true;
+                }
+#endif
+                return GetLowerBound () <= containee.GetLowerBound () and containee.GetUpperBound () <= GetUpperBound ();
+            }
+            template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2>
             inline  bool    Range<T, TRAITS>::Equals (const Range<T2, TRAITS2>& rhs) const
             {
