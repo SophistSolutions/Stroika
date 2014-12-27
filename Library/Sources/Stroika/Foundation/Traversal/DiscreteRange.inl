@@ -165,6 +165,7 @@ namespace   Stroika {
                 : inherited_RangeType (begin, end)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (begin, end)))
             {
+                Require (begin <= end);
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)

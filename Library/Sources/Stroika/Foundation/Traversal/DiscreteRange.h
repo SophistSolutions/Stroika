@@ -162,6 +162,8 @@ namespace   Stroika {
             public:
                 /**
                  *  DiscreteRange () with no arguments produces an empty sequence.
+                 *
+                 *  \req begin <= end (after substitution of optional values)
                  */
                 explicit DiscreteRange ();
                 explicit DiscreteRange (T begin, T end);
