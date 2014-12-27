@@ -16,9 +16,31 @@ namespace   Stroika {
             ********************************************************************************
             */
             template    <typename RANGE_TYPE>
+            inline  DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
+                : inherited (from)
+            {
+            }
+            template    <typename RANGE_TYPE>
+            inline  DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const initializer_list<RangeType>& from)
+                : inherited (from)
+            {
+            }
+            template    <typename RANGE_TYPE>
+            template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
+            DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
+                : inherited (from)
+            {
+            }
+            template    <typename RANGE_TYPE>
+            template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+            DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end)
+                : inherited (start, end)
+            {
+            }
+            template    <typename RANGE_TYPE>
             void    DisjointDiscreteRange<RANGE_TYPE>::Add (ElementType elt)
             {
-                auto srs { this->GetSubRanges () };
+                Containers::Sequence<RangeType> srs { this->GetSubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
                 for (Iterator<RangeType> i = srs.begin (); i != srs.end (); ++i) {
                     if (elt < i->GetLowerBound ()) {
@@ -28,9 +50,9 @@ namespace   Stroika {
                             //@todo in this case we should check for merge adjacent, but not critical
                         }
                         else {
-                            srs.insert (i, DiscreteRange<ElementType> (elt, elt));
+                            srs.Insert (i, DiscreteRange<ElementType> (elt, elt));
                         }
-                        *this = srs;
+                        *this = THIS_CLASS_ (srs);
                         return;
                     }
                     if (i->Contains (elt)) {
@@ -39,10 +61,11 @@ namespace   Stroika {
                 }
                 // if not less than any there, we must append new item
                 srs.push_back (DiscreteRange<ElementType> (elt, elt));
-                *this = srs;
+                *this = THIS_CLASS_ { srs };
             }
             template    <typename RANGE_TYPE>
             auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
+                // @todo WRONG
                 for (DiscreteRange<ElementType> i : this->GetSubRanges ())
                 {
                     if (i.Contains (elt + 1)) {
@@ -56,6 +79,7 @@ namespace   Stroika {
             }
             template    <typename RANGE_TYPE>
             auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
+                // @todo WRONG
                 for (DiscreteRange<ElementType> i : this->GetSubRanges ())
                 {
                     if (i.Contains (elt - 1)) {

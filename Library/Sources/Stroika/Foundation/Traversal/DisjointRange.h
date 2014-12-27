@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   better document threadsafety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
+ *              from multiple threads.
  */
 
 
@@ -29,6 +31,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
 
+
+            /**
+             *
+             *  \note   NOT internally threadsafe. To use from multiple threads, use Synchonized<DisjointRange>, or otherwise protect.
+             */
             template    <typename RANGE_TYPE>
             class   DisjointRange {
             public:
@@ -42,13 +49,21 @@ namespace   Stroika {
                 using   ElementType     =   typename RangeType::ElementType;
 
             public:
+                /**
+                 *  You can pass in empty Ranges, ranges out of order, and overlaping ranges, and the constructor
+                 *  always filters out empty ranges, and re-order so subranges well-ordered and disjoint.
+                 */
                 DisjointRange () = default;
                 DisjointRange (const DisjointRange&) = default;
                 DisjointRange (const RangeType& from);
                 DisjointRange (const initializer_list<RangeType>& from);
+                template    <typename CONTAINER_OF_RANGE_OF_T>
+                explicit DisjointRange (const CONTAINER_OF_RANGE_OF_T& from);
+                template    <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
+                explicit DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end);
 
             public:
-                DisjointRange& operator= (const DisjointRange& rhs) = default;
+                nonvirtual  DisjointRange& operator= (const DisjointRange& rhs) = default;
 
             public:
                 /**
@@ -57,7 +72,8 @@ namespace   Stroika {
 
             public:
                 /**
-                ***NYI
+                 *  A disjoint range is made up of a fininte number of disjoint (non-overlapping) subranges, which are arranged
+                 *  following the natural ordering intrinsic to the ElementType. This returns those subranges.
                  */
                 nonvirtual  Containers::Sequence<RangeType>    GetSubRanges () const;
 
@@ -112,6 +128,13 @@ namespace   Stroika {
                 ***NYI
                  */
                 nonvirtual  RangeType    UnionBounds (const DisjointRange<RangeType>& rhs) const;
+
+
+            private:
+                nonvirtual  void    MergeIn_ (const RangeType& r);
+
+            private:
+                nonvirtual  void    AssertInternalRepValid_ ();
 
             private:
                 Containers::Sequence<RangeType> fSubRanges_;

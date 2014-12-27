@@ -32,14 +32,37 @@ namespace   Stroika {
 
 
             /**
+             *  @todo Add CONCEPT to require RANGE_TYPE subtype of DiscreteRange
              */
             template    <typename RANGE_TYPE>
             class   DisjointDiscreteRange : public DisjointRange<RANGE_TYPE> {
+            private:
+                using inherited = DisjointRange<RANGE_TYPE>;
+                using THIS_CLASS_ = DisjointDiscreteRange<RANGE_TYPE>;
+
             public:
                 using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
 
             public:
                 using RangeType = typename DisjointRange<RANGE_TYPE>::RangeType;
+
+            public:
+                /**
+                 *  You can pass in empty Ranges, and ranges out of order, but the constructor always filters out
+                 *  empty ranges, and re-orders so subranges well-ordered.
+                 ***    @todo make it so!
+                 */
+                DisjointDiscreteRange () = default;
+                DisjointDiscreteRange (const DisjointDiscreteRange&) = default;
+                DisjointDiscreteRange (const RangeType& from);
+                DisjointDiscreteRange (const initializer_list<RangeType>& from);
+                template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
+                explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
+                template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end);
+
+            public:
+                nonvirtual  DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;
 
             public:
                 /**
