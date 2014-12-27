@@ -111,7 +111,7 @@ namespace   Stroika {
                 , fBeginOpenness_ (lhsOpen)
                 , fEndOpenness_ (rhsOpen)
             {
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
                 Require (TRAITS::kLowerBound <= begin);
                 Require (begin <= end);
