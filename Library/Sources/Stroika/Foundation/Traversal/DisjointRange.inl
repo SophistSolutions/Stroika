@@ -85,7 +85,7 @@ namespace   Stroika {
                          *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
                          *  EX 1 ^                                    ^
                          *  BECOMES:
-                         *       [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXSXXXXXXXXXXX]
+                         *       [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX]
                          *
                          *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
                          *  EX 2               ^                          ^
@@ -98,7 +98,6 @@ namespace   Stroika {
                          *  Then grab the last block on the right (starting before rEnd) of the defined range,
                          *  and stetch its right side to the right. Then delete all those in between.
                          */
-                        // @todo tricky - VERY INCOMPLETE
                         Assert (fSubRanges_.size () >= 1);
 
                         // tmphack - need random-access iterators !!! for sequence at least!
@@ -115,11 +114,16 @@ namespace   Stroika {
                         };
 
                         Iterator<RangeType> startI   =   fSubRanges_.FindFirstThat ([rStart] (const RangeType & r) -> bool {return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                        if (false && /*NOTWORKING*/startI == fSubRanges_.end ()) {
+                            // @todo rethink - not sure this is exactly right...
+                            ElementType prevVal = RangeType::TraitsType::GetPrevious (rStart);
+                            startI = fSubRanges_.FindFirstThat ([prevVal] (const RangeType & r) -> bool {return r.GetUpperBound () == prevVal; });
+                        }
                         if (startI == fSubRanges_.end ()) {
                             DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
                                       static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
                                      );
-                            // cuz this means no ranges to the right contianing rStart
+                            // cuz this means no ranges to the right containing rStart
                             fSubRanges_.Append (r);
                         }
                         else if (r.Intersects (*startI)) {
@@ -150,27 +154,42 @@ namespace   Stroika {
                             endI = prevOfIterator (fSubRanges_.end ());
                         }
                         Assert (endI != fSubRanges_.end ());
-                        //2debug
-                        ElementType aa1 = endI->GetLowerBound ();
-                        ElementType aa2 = endI->GetUpperBound ();
                         if (endI->GetLowerBound () >= rStart) {
-                            fSubRanges_.Update (endI, RangeType (endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ())));
+                            RangeType newValue { endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ()) };
+                            DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
+                                      fSubRanges_.IndexOf (endI),
+                                      static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
+                                      static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
+                                     );
+                            fSubRanges_.Update (endI, newValue);
                         }
                         else {
+                            DbgTrace ("Appending RHS subrange element %f/%f",
+                                      static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
+                                     );
                             fSubRanges_.Append (r);
                         }
 
                         // then merge out uneeded items in between
-#if 0
-                        for (auto i = startI; i != endI; ++i) {
-                            if (i != startI and i != endI) {
-                                fSubRanges_.Remove (i);
+                        // @todo/CLEANUP/REVIEW - not sure we always have startI <= endI...
+                        if (startI != fSubRanges_.end ()) {
+                            for (auto i = startI; i != endI and i != fSubRanges_.end (); ++i) {
+                                if (i != startI and i != endI) {
+                                    DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
+                                              fSubRanges_.IndexOf (i),
+                                              static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ())
+                                             );
+                                    fSubRanges_.Remove (i);
+                                }
                             }
                         }
-#endif
                     }
                 }
                 AssertInternalRepValid_ ();
+                //Ensure (Contains (r); NYI so do below tmphack alternative
+                Ensure (r.GetLowerBoundOpenness () == Openness::eOpen or Contains (r.GetLowerBound ()));
+                Ensure (r.GetUpperBoundOpenness () == Openness::eOpen or Contains (r.GetUpperBound ()));
+                Ensure (GetBounds ().Contains (r));
             }
             template    <typename RANGE_TYPE>
             inline  void    DisjointRange<RANGE_TYPE>::AssertInternalRepValid_ ()
@@ -182,6 +201,9 @@ namespace   Stroika {
                     if (lastRangeSeenSoFar) {
                         Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ());    // equal maybe bad but check that case with itersects which pays attention to openness
                         Assert (not lastRangeSeenSoFar->Intersects (r));
+                        // and make sure we merge together adjacent points
+                        ElementType nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
+                        //sadly not working yet...Assert (nextVal < r.GetLowerBound ());
                     }
                     lastRangeSeenSoFar = r;
                 }

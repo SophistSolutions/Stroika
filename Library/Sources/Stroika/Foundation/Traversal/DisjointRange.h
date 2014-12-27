@@ -23,6 +23,16 @@
  *  TODO:
  *      @todo   better document threadsafety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
  *              from multiple threads.
+ *
+ *      @todo   Proplery handle edge conditions for open/closed stuff - adding open/closed intervals and doing unions properly.
+ *              I think all the bugs in MergeIn_();
+ *
+ *      @todo   Add overload of Contains() taking RANGETYPE, and ensure it does more than test Contains of the endpoints
+ *              (contains all points in range).
+ *
+ *              THEN use that in Ensure() at end of DisjointRange<RANGE_TYPE>::MergeIn_();
+ *
+ *      @todo   Add Contains() overload taking Range (and maybe disjoint range)?
  */
 
 
