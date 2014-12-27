@@ -462,6 +462,7 @@ namespace   Stroika {
                  *              If there is a need to do this, just use explicit iteration instead.
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
+                nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (const T& item)>& doToElement) const;
 
             public:
                 /**

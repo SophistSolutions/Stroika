@@ -144,6 +144,17 @@ namespace   Stroika {
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
+            inline   Iterator<T>   Iterator<T>::operator+ (int i) const
+            {
+                Require (i >= 0);
+                Iterator<T> tmp { *this };
+                while (i > 0) {
+                    --i;
+                    ++tmp;
+                }
+                return tmp;
+            }
+            template    <typename T>
             inline  Iterator<T>::operator bool () const
             {
                 return not Done ();

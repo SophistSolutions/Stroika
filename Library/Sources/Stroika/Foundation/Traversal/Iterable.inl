@@ -296,6 +296,16 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<> { this } ._ConstGetRep ().FindFirstThat (doToElement, this);
             }
             template    <typename T>
+            inline  Iterator<T>    Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool(const T& item)>& doToElement) const
+            {
+                for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {
+                    if ((doToElement) (*i)) {
+                        return i;
+                    }
+                }
+                return end ();
+            }
+            template    <typename T>
             template    <typename CONTAINER_OF_T>
             CONTAINER_OF_T    Iterable<T>::As () const
             {

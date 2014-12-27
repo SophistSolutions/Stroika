@@ -371,6 +371,14 @@ namespace   Stroika {
 
             public:
                 /*
+                 *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
+                 *
+                 *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
+                 */
+                nonvirtual  Iterator<T> operator+ (int i) const;
+
+            public:
+                /*
                  *  \em Design Note:
                  *      I HATE type punning - which this is. And I may want to lose this.
                  *
