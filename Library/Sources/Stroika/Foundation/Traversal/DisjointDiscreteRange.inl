@@ -83,29 +83,30 @@ namespace   Stroika {
                 Iterator<RangeType> i { subRanges.FindFirstThat ([prev] (const RangeType & r) -> bool {return r.GetUpperBound () >= prev;}) };
                 if (i)
                 {
-                    if (i->Contains (next)) {
-                        return next;
+                    if (i->Contains (prev)) {
+                        return prev;
                     }
+                }
 
-                    // tmphack - need random-access iterators !!! for sequence at least!
-                    auto prevOfIterator = [subRanges] (const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
-                        Iterator<RangeType> result = Iterator<RangeType>::GetEmptyIterator ();
-                        for (Iterator<RangeType> i = subRanges.begin (); i != subRanges.end (); ++i)
-                        {
-                            if (i == pOfI) {
-                                return result;
-                            }
-                            result = i;
+                // tmphack - need random-access iterators !!! for sequence at least!
+                auto prevOfIterator = [&subRanges] (const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
+                    Iterator<RangeType> result = Iterator<RangeType>::GetEmptyIterator ();
+                    for (Iterator<RangeType> i = subRanges.begin (); i != subRanges.end (); ++i)
+                    {
+                        if (i == pOfI) {
+                            return result;
                         }
-                        return result;
-                    };
-
-                    // it next is NOT in this cell, take the first element of the next range
-                    i = prevOfIterator (i);
-                    if (i) {
-                        Ensure (i->GetUpperBound () < elt);
-                        return i->GetUpperBound ();
+                        result = i;
                     }
+                    return result;
+                };
+
+                // if none contain next, find the last before we pass prev
+                i  = prevOfIterator (subRanges.FindFirstThat ([prev] (const RangeType & r) -> bool {return r.GetUpperBound () > prev;}));
+                if (i)
+                {
+                    Ensure (i->GetUpperBound () < prev);
+                    return i->GetUpperBound ();
                 }
                 return Memory::Optional<ElementType> ();
             }

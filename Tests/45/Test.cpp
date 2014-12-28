@@ -553,10 +553,13 @@ namespace {
             VerifyTestResult (dr.GetNext (3) == 5);
             VerifyTestResult (dr.GetNext (4) == 5);
             VerifyTestResult (dr.GetNext (5).IsMissing ());
-#if 0
             VerifyTestResult (dr.GetPrevious (1).IsMissing ());
             VerifyTestResult (dr.GetPrevious (2) == 1);
-#endif
+            VerifyTestResult (dr.GetPrevious (3) == 1);
+            VerifyTestResult (dr.GetPrevious (4) == 3);
+            VerifyTestResult (dr.GetPrevious (5) == 3);
+            VerifyTestResult (dr.GetPrevious (6) == 5);
+            VerifyTestResult (dr.GetPrevious (7) == 5);
         }
         {
             using RT = DiscreteRange<int>;
@@ -575,6 +578,15 @@ namespace {
             VerifyTestResult (dr.GetNext (7) == 8);
             VerifyTestResult (dr.GetNext (8).IsMissing ());
             VerifyTestResult (dr.GetNext (99).IsMissing ());
+            VerifyTestResult (dr.GetPrevious (1).IsMissing ());
+            VerifyTestResult (dr.GetPrevious (2) == 1);
+            VerifyTestResult (dr.GetPrevious (3) == 2);
+            VerifyTestResult (dr.GetPrevious (4) == 2);
+            VerifyTestResult (dr.GetPrevious (5) == 4);
+            VerifyTestResult (dr.GetPrevious (6) == 5);
+            VerifyTestResult (dr.GetPrevious (7) == 5);
+            VerifyTestResult (dr.GetPrevious (8) == 7);
+            VerifyTestResult (dr.GetPrevious (9) == 8);
         }
     }
 }
