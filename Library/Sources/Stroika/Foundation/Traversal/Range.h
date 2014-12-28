@@ -193,9 +193,9 @@ namespace   Stroika {
              *  Since a range is half/open/closed by default, this means that
              *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
              *
-			 *	@see DiscreteRange
-			 *	@see DisjointRange
-			 *	@see DisjointDiscreteRange
+             *  @see DiscreteRange
+             *  @see DisjointRange
+             *  @see DisjointDiscreteRange
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
             class   Range {
