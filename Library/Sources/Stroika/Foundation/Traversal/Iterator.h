@@ -254,10 +254,10 @@ namespace   Stroika {
              *
              *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              */
-            template    <typename T>
-            class   Iterator : public std::iterator<input_iterator_tag, T>, public IteratorBase {
+            template    <typename T, typename BASE_ITERATOR = std::iterator<input_iterator_tag, T>>
+            class   Iterator : public BASE_ITERATOR, public IteratorBase {
             private:
-                using   inherited   =   typename    std::iterator<input_iterator_tag, T>;
+                using   inherited   =   BASE_ITERATOR;
 
             public:
                 /**
@@ -301,7 +301,7 @@ namespace   Stroika {
                  *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
-                Iterator (const Iterator<T>& from);
+                Iterator (const Iterator& from);
                 Iterator () = delete;
 
             private:
@@ -311,7 +311,7 @@ namespace   Stroika {
                 /**
                  *  \brief  Iterators are safely copyable, preserving their current position.
                  */
-                nonvirtual  Iterator<T>&    operator= (const Iterator<T>& rhs);
+                nonvirtual  Iterator&    operator= (const Iterator& rhs);
 
             public:
                 /**
@@ -375,7 +375,7 @@ namespace   Stroika {
                  *
                  *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
                  */
-                nonvirtual  Iterator<T> operator+ (int i) const;
+                nonvirtual  Iterator    operator+ (int i) const;
 
             public:
                 /*
@@ -537,7 +537,7 @@ namespace   Stroika {
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
                  */
-                static  Iterator<T>     GetEmptyIterator ();
+                static  Iterator    GetEmptyIterator ();
 
             public:
                 /**
@@ -585,8 +585,8 @@ namespace   Stroika {
              *          (note that for performance and thread safety reasons the iterator envelope
              *           actually passes fCurrent_ into More when implenenting ++it
              */
-            template    <typename T>
-            class   Iterator<T>::IRep {
+            template    <typename T, typename BASE_ITERATOR>
+            class   Iterator<T, BASE_ITERATOR>::IRep {
             protected:
                 IRep ();
 
@@ -594,7 +594,7 @@ namespace   Stroika {
                 virtual ~IRep ();
 
             public:
-                using  SharedIRepPtr    =   typename Iterator<T>::SharedIRepPtr;
+                using  SharedIRepPtr    =   typename Iterator<T, BASE_ITERATOR>::SharedIRepPtr;
 
             public:
                 /**

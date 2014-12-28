@@ -24,11 +24,13 @@ namespace   Stroika {
                 , fExtraData (extraData)
             {
             }
+#if     !qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
             template    <typename T, typename EXTRA_DATA>
             typename    Iterator<T>::SharedIRepPtr   DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
             {
                 return SharedIRepPtr (new Rep (*this));
             }
+#endif
             template    <typename T, typename EXTRA_DATA>
             IteratorOwnerID DelegatedIterator<T, EXTRA_DATA>::Rep::GetOwner () const
             {

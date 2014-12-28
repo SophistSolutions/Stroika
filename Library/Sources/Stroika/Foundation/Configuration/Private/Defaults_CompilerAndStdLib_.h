@@ -606,6 +606,25 @@ EXAMPLE:
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
+
+#if   defined (_MSC_VER)
+// Still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          0
+#endif
+
+#endif
+
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_noexcept_Buggy
 @DESCRIPTION:   Defined 0 if the compiler supports noexcept
 */

@@ -41,7 +41,14 @@ namespace   Stroika {
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
+#if     qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
+                    virtual SharedIRepPtr       Clone () const override
+                    {
+                        return SharedIRepPtr (new Rep (*this));
+                    }
+#else
                     virtual SharedIRepPtr       Clone () const override;
+#endif
                     virtual IteratorOwnerID     GetOwner () const override;
                     virtual void                More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool                Equals (const IRep* rhs) const override;
