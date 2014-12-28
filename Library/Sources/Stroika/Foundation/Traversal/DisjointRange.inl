@@ -114,17 +114,23 @@ namespace   Stroika {
                         };
 
                         Iterator<RangeType> startI   =   fSubRanges_.FindFirstThat ([rStart] (const RangeType & r) -> bool {return r.GetLowerBound () >= rStart or r.Contains (rStart); });
-                        if (false && /*NOTWORKING*/startI == fSubRanges_.end ()) {
-                            // @todo rethink - not sure this is exactly right...
-                            ElementType prevVal = RangeType::TraitsType::GetPrevious (rStart);
-                            startI = fSubRanges_.FindFirstThat ([prevVal] (const RangeType & r) -> bool {return r.GetUpperBound () == prevVal; });
-                        }
                         if (startI == fSubRanges_.end ()) {
                             DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
                                       static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
                                      );
                             // cuz this means no ranges to the right containing rStart
-                            fSubRanges_.Append (r);
+                            //
+                            // when appending, we can sometimes extend the last item
+                            ElementType prevVal = RangeType::TraitsType::GetPrevious (rStart);
+                            Iterator<RangeType> i = fSubRanges_.FindFirstThat ([prevVal] (const RangeType & r) -> bool {return r.GetUpperBound () == prevVal; });
+                            if (i) {
+                                Assert (i->GetUpperBound () == prevVal);
+                                RangeType newValue { i->GetLowerBound (), rStart };
+                                fSubRanges_.Update (i, newValue);
+                            }
+                            else {
+                                fSubRanges_.Append (r);
+                            }
                         }
                         else if (r.Intersects (*startI)) {
                             RangeType newValue { min (rStart, startI->GetLowerBound ()), startI->GetUpperBound () };
@@ -149,12 +155,12 @@ namespace   Stroika {
                         /*
                          *  Next adjust RHS of rhs-most element.
                          */
-                        Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType & r) -> bool {return r.GetLowerBound () <= rEnd;}));
+                        Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType & r) -> bool {return rEnd < r.GetLowerBound ();}));
                         if (endI == fSubRanges_.end ()) {
                             endI = prevOfIterator (fSubRanges_.end ());
                         }
                         Assert (endI != fSubRanges_.end ());
-                        if (endI->GetLowerBound () >= rStart) {
+                        if (endI->GetLowerBound () <= rEnd) {
                             RangeType newValue { endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ()) };
                             DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
                                       fSubRanges_.IndexOf (endI),
@@ -203,7 +209,7 @@ namespace   Stroika {
                         Assert (not lastRangeSeenSoFar->Intersects (r));
                         // and make sure we merge together adjacent points
                         ElementType nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
-                        //sadly not working yet...Assert (nextVal < r.GetLowerBound ());
+                        Assert (nextVal < r.GetLowerBound ());
                     }
                     lastRangeSeenSoFar = r;
                 }

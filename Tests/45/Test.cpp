@@ -478,13 +478,13 @@ namespace {
                 dr.Add (i);
             }
             VerifyTestResult (dr.GetBounds () == RT (4, 100));
-//tmphack            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
             for (int i = 501; i < 600; ++i) {
                 dr.Add (4);
                 dr.Add (i);
             }
             dr.Add (3);
-//tmphack             VerifyTestResult (dr.GetSubRanges ().size () == 2);
+            VerifyTestResult (dr.GetSubRanges ().size () == 2);
             VerifyTestResult (dr.GetBounds () == RT (3, 600 - 1));
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (not dr.Contains (300));
