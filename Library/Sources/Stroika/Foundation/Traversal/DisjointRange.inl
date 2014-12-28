@@ -267,7 +267,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename RANGE_TYPE>
-            inline  DisjointRange<RANGE_TYPE>   operator== (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            inline  bool   operator== (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
             {
                 return lhs.Equals (rhs);
             }
@@ -279,7 +279,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename RANGE_TYPE>
-            inline  DisjointRange<RANGE_TYPE>   operator!= (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            inline  bool   operator!= (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
             {
                 return not lhs.Equals (rhs);
             }

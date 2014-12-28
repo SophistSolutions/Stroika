@@ -169,8 +169,12 @@ namespace   Stroika {
             }
 
 
+            template    <typename RANGE_TYPE>
+            class   DisjointRange;
+
+
             /**
-             *  A Range<> is analagous to a mathematical range. It's left and and its right side can
+             *  A Range<> is analagous to a mathematical range. It's left and and its right sides can
              *  be optionally open or closed.
              *
              *  This Range<> template is similar to Ruby range.
@@ -189,6 +193,9 @@ namespace   Stroika {
              *  Since a range is half/open/closed by default, this means that
              *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
              *
+			 *	@see DiscreteRange
+			 *	@see DisjointRange
+			 *	@see DisjointDiscreteRange
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
             class   Range {
@@ -304,12 +311,18 @@ namespace   Stroika {
                  *  Returns true iff there are any points shared in common between this range and the rhs range.
                  */
                 template    <typename T2, typename TRAITS2>
-                nonvirtual  bool Intersects (const Range<T2, TRAITS2>& rhs) const;
+                nonvirtual  bool    Intersects (const Range<T2, TRAITS2>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  Range<T, TRAITS>    Intersection (const Range<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 * if two regions are disjoint, this can encompass a larger region than the actual union would
+                 */
+                nonvirtual  DisjointRange<Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -347,19 +360,40 @@ namespace   Stroika {
                 template    <typename... ARGS>
                 nonvirtual  Characters::String  Format (ARGS&& ... args) const;
 
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Range<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const Range<T, TRAITS>& rhs) const;
-
             private:
                 T           fBegin_;
                 T           fEnd_;
                 Openness    fBeginOpenness_;
                 Openness    fEndOpenness_;
             };
+
+
+            /**
+             *  Union ()
+             */
+            template    <typename T, typename TRAITS>
+            DisjointRange<Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+
+
+            /**
+             *  Intersection ()
+             */
+            template    <typename T, typename TRAITS>
+            Range<T, TRAITS>   operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+
+
+            /**
+             *      Syntactic sugar on Equals()
+             */
+            template    <typename T, typename TRAITS>
+            bool    operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+
+
+            /**
+             *      Syntactic sugar on Equals()
+             */
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 
         }

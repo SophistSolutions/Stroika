@@ -6,6 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Math/Overlap.h"
+#include    "DisjointRange.h"
 
 
 namespace   Stroika {
@@ -322,6 +323,11 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
+            inline   DisjointRange<Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range<T, TRAITS>& rhs) const
+            {
+                return DisjointRange<Range<T, TRAITS>> { { *this, rhs } };
+            }
+            template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
             {
                 if (empty ()) {
@@ -386,17 +392,54 @@ namespace   Stroika {
                     return GetLowerBound ().Format (forward<ARGS> (args)...) + L" - " + GetUpperBound  ().Format (forward<ARGS> (args)...);
                 }
             }
+
+
+            /*
+             ********************************************************************************
+             *********************************** operator+ **********************************
+             ********************************************************************************
+             */
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const
+            inline  DisjointRange<Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
             {
-                return Equals (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::operator!= (const Range<T, TRAITS>& rhs) const
-            {
-                return not Equals (rhs);
+                return lhs.Union (rhs);
             }
 
+
+            /*
+             ********************************************************************************
+             *********************************** operator^ **********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>   operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+            {
+                return lhs.Intersection (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************** operator== **********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  bool   operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************** operator!= **********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  bool   operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
 
         }
     }
