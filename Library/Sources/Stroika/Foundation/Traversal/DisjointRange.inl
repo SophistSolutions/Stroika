@@ -71,6 +71,26 @@ namespace   Stroika {
                 }
             }
             template    <typename RANGE_TYPE>
+            template    <typename RANGE_TYPE2>
+            bool    DisjointRange<RANGE_TYPE>::Equals (const DisjointRange<RANGE_TYPE2>& rhs) const
+            {
+                Containers::Sequence<RangeType>                                         lhsR = GetSubRanges ();
+                Containers::Sequence<typename DisjointRange<RANGE_TYPE2>::RangeType>    rhsR = rhs.GetSubRanges ();
+                if (lhs.size () != rhs.size ()) {
+                    return false;
+                }
+                auto i = lhsR.begin ();
+                auto ri = rhsR.begin ();
+                while (i != lhsR.end ()) {
+                    if (*i != *ri) {
+                        return false;
+                    }
+                    ++i;
+                    ++ri;
+                }
+                return true;
+            }
+            template    <typename RANGE_TYPE>
             void    DisjointRange<RANGE_TYPE>::MergeIn_ (const RangeType& r)
             {
                 AssertInternalRepValid_ ();
@@ -209,11 +229,59 @@ namespace   Stroika {
                         Assert (not lastRangeSeenSoFar->Intersects (r));
                         // and make sure we merge together adjacent points
                         ElementType nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
-                        Assert (nextVal < r.GetLowerBound ());
+                        Assert (nextVal < r.GetLowerBound ());  // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
                     }
                     lastRangeSeenSoFar = r;
                 }
 #endif
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************************** operator+ **********************************
+             ********************************************************************************
+             */
+            template    <typename RANGE_TYPE>
+            inline  DisjointRange<RANGE_TYPE>   operator+ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            {
+                return lhs.Union (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************************** operator^ **********************************
+             ********************************************************************************
+             */
+            template    <typename RANGE_TYPE>
+            inline  DisjointRange<RANGE_TYPE>   operator^ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            {
+                return lhs.Intersection (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************** operator== **********************************
+             ********************************************************************************
+             */
+            template    <typename RANGE_TYPE>
+            inline  DisjointRange<RANGE_TYPE>   operator== (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************** operator!= **********************************
+             ********************************************************************************
+             */
+            template    <typename RANGE_TYPE>
+            inline  DisjointRange<RANGE_TYPE>   operator!= (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 

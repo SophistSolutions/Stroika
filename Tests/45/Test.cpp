@@ -519,6 +519,15 @@ namespace {
             VerifyTestResult (dr.GetSubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
+        {
+            using RT = Range<float>;
+            using DRT = DisjointRange<RT>;
+            DRT dr {RT {1, 5}, RT {2, 2} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.Contains (3));
+        }
     }
 }
 

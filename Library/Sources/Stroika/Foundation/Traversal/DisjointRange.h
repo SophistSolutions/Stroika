@@ -109,7 +109,8 @@ namespace   Stroika {
 
             public:
                 /**
-                ***NYI
+                 *  This returns true if the constituent subranges are all equal. This amounts to checking
+                 *  if the 'covered points' are all equal.
                  */
                 template    <typename RANGE_TYPE2>
                 nonvirtual  bool    Equals (const DisjointRange<RANGE_TYPE2>& rhs) const;
@@ -149,6 +150,30 @@ namespace   Stroika {
             private:
                 Containers::Sequence<RangeType> fSubRanges_;
             };
+
+
+            /**
+             */
+            template    <typename RANGE_TYPE>
+            DisjointRange<RANGE_TYPE>   operator+ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+
+
+            /**
+             */
+            template    <typename RANGE_TYPE>
+            DisjointRange<RANGE_TYPE>   operator^ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+
+
+            /**
+             */
+            template    <typename RANGE_TYPE>
+            bool    operator== (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+
+
+            /**
+             */
+            template    <typename RANGE_TYPE>
+            bool    operator!= (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
 
 
         }
