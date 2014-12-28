@@ -47,7 +47,7 @@ namespace   Stroika {
                         // then either extend by one or insert new item
                         if (elt == i->GetLowerBound () - 1) {
                             srs.Update (i, DiscreteRange<ElementType> (elt, i->GetUpperBound ()));
-                            //@todo in this case we should check for merge adjacent, but not critical
+                            // No need to check for merge adjacent cuz done by constructor
                         }
                         else {
                             srs.Insert (i, DiscreteRange<ElementType> (elt, elt));
@@ -65,28 +65,46 @@ namespace   Stroika {
             }
             template    <typename RANGE_TYPE>
             auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
-                // @todo WRONG
-                for (DiscreteRange<ElementType> i : this->GetSubRanges ())
+                Containers::Sequence<RangeType> subRanges { this->GetSubRanges () };
+                // Find the first subrange which might contain elt, or successors
+                ElementType next = RANGE_TYPE::TraitsType::GetNext (elt);
+                Iterator<RangeType> i { subRanges.FindFirstThat ([next] (const RangeType & r) -> bool {return r.GetUpperBound () >= next;}) };
+                if (i)
                 {
-                    if (i.Contains (elt + 1)) {
-                        return elt + 1;
-                    }
-                    //                    if (i.GetUpperBound () < s) {
-                    //                        break;
-                    //                    }
+                    return max (next, i->GetLowerBound ());
                 }
                 return Memory::Optional<ElementType> ();
             }
             template    <typename RANGE_TYPE>
             auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
-                // @todo WRONG
-                for (DiscreteRange<ElementType> i : this->GetSubRanges ())
+                Containers::Sequence<RangeType> subRanges { this->GetSubRanges () };
+                // Find the first subrange which might contain elt, or predecessors
+                ElementType prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
+                Iterator<RangeType> i { subRanges.FindFirstThat ([prev] (const RangeType & r) -> bool {return r.GetUpperBound () >= prev;}) };
+                if (i)
                 {
-                    if (i.Contains (elt - 1)) {
-                        return elt - 1;
+                    if (i->Contains (next)) {
+                        return next;
                     }
-                    if (i.GetUpperBound () <= elt) {
-                        break;
+
+                    // tmphack - need random-access iterators !!! for sequence at least!
+                    auto prevOfIterator = [subRanges] (const Iterator<RangeType>& pOfI) -> Iterator<RangeType> {
+                        Iterator<RangeType> result = Iterator<RangeType>::GetEmptyIterator ();
+                        for (Iterator<RangeType> i = subRanges.begin (); i != subRanges.end (); ++i)
+                        {
+                            if (i == pOfI) {
+                                return result;
+                            }
+                            result = i;
+                        }
+                        return result;
+                    };
+
+                    // it next is NOT in this cell, take the first element of the next range
+                    i = prevOfIterator (i);
+                    if (i) {
+                        Ensure (i->GetUpperBound () < elt);
+                        return i->GetUpperBound ();
                     }
                 }
                 return Memory::Optional<ElementType> ();

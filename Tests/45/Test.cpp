@@ -528,6 +528,54 @@ namespace {
             VerifyTestResult (dr.GetSubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
+        {
+            using RT = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT>;
+            DRT dr {RT {1, 4}, RT {5, 9} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 9));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.Contains (3));
+            dr.Add (10);
+            VerifyTestResult (dr.GetBounds () == RT (1, 10));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+        }
+        {
+            using RT = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT>;
+            DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (dr.Contains (3));
+            VerifyTestResult (dr.GetNext (1) == 3);
+            VerifyTestResult (dr.GetNext (2) == 3);
+            VerifyTestResult (dr.GetNext (3) == 5);
+            VerifyTestResult (dr.GetNext (4) == 5);
+            VerifyTestResult (dr.GetNext (5).IsMissing ());
+#if 0
+            VerifyTestResult (dr.GetPrevious (1).IsMissing ());
+            VerifyTestResult (dr.GetPrevious (2) == 1);
+#endif
+        }
+        {
+            using RT = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT>;
+            DRT dr {RT {1, 2}, RT {4, 5}, RT {7, 8} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 8));
+            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (not dr.Contains (3));
+            VerifyTestResult (dr.GetNext (1) == 2);
+            VerifyTestResult (dr.GetNext (2) == 4);
+            VerifyTestResult (dr.GetNext (3) == 4);
+            VerifyTestResult (dr.GetNext (4) == 5);
+            VerifyTestResult (dr.GetNext (5) == 7);
+            VerifyTestResult (dr.GetNext (6) == 7);
+            VerifyTestResult (dr.GetNext (7) == 8);
+            VerifyTestResult (dr.GetNext (8).IsMissing ());
+            VerifyTestResult (dr.GetNext (99).IsMissing ());
+        }
     }
 }
 
