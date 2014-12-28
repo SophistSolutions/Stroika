@@ -76,7 +76,7 @@ namespace   Stroika {
             {
                 Containers::Sequence<RangeType>                                         lhsR = GetSubRanges ();
                 Containers::Sequence<typename DisjointRange<RANGE_TYPE2>::RangeType>    rhsR = rhs.GetSubRanges ();
-                if (lhs.size () != rhs.size ()) {
+                if (lhsR.size () != rhsR.size ()) {
                     return false;
                 }
                 auto i = lhsR.begin ();
