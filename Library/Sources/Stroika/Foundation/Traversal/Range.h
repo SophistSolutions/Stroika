@@ -283,7 +283,7 @@ namespace   Stroika {
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */
                 nonvirtual  constexpr   bool    Contains (const T& r) const;
-                nonvirtual  bool    Contains (const Range<T, TRAITS>& containee) const;
+                nonvirtual  bool                Contains (const Range<T, TRAITS>& containee) const;
 
 #if 0
             public:
