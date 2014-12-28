@@ -491,6 +491,34 @@ namespace {
             VerifyTestResult (dr.Contains (599));
             VerifyTestResult (not  dr.Contains (600));
         }
+        {
+            using RT = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT>;
+            DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (not dr.Contains (4));
+            VerifyTestResult (dr.Contains (3));
+        }
+        {
+            using RT = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT>;
+            DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 9));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.Contains (3));
+        }
+        {
+            using RT = Range<float>;
+            using DRT = DisjointRange<RT>;
+            DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
+            VerifyTestResult (not dr.empty ());
+            VerifyTestResult (dr.GetBounds () == RT (1, 9));
+            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.Contains (3));
+        }
     }
 }
 
