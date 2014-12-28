@@ -233,6 +233,10 @@ namespace {
                 c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
+                for (auto i : r.GetHeaders ()) {
+                    DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
+                }
+                InternetMediaType contentType = r.GetContentType ();
                 String responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 VerifyTestResult (responseText.Contains (L"google"));
