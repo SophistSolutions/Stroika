@@ -499,7 +499,7 @@ void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharC
             break;
     }
 
-#if     qDebug && qPlatform_Windows
+#if     qDebug && qPlatform_Windows && 0
     // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
     {
         size_t  tstCharCnt  =   *outCharCnt;
