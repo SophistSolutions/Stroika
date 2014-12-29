@@ -457,18 +457,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  operator== is a shorthand for Equals() - but frequently performs better
-                 */
-                nonvirtual  bool    operator== (const Iterator& rhs) const;
-
-            public:
-                /**
-                 *  \brief  Returns not (operator==())
-                 */
-                nonvirtual  bool    operator!= (const Iterator& rhs) const;
-
-            public:
-                /**
                  *  \brief
                  *  Returns the value of the current item visited by the Iterator<T>, and is illegal to call if Done()
                  *
@@ -636,6 +624,20 @@ namespace   Stroika {
                  */
                 virtual bool    Equals (const IRep* rhs) const            = 0;
             };
+
+
+            /**
+             *  \brief  operator== is a shorthand for Equals() - but frequently performs better
+             */
+            template    <typename T, typename BASE_ITERATOR>
+            bool    operator== (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
+
+
+            /**
+             *  \brief  Returns not (operator==())
+             */
+            template    <typename T, typename BASE_ITERATOR>
+            bool    operator!= (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
 
 
             /**

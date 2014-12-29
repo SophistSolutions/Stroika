@@ -188,16 +188,6 @@ namespace   Stroika {
                 return lhsRep->Equals (rhsRep);
             }
             template    <typename T, typename BASE_ITERATOR>
-            inline  bool   Iterator<T, BASE_ITERATOR>::operator== (const Iterator& rhs)  const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T, typename BASE_ITERATOR>
-            inline bool   Iterator<T, BASE_ITERATOR>::operator!= (const Iterator& rhs)  const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename T, typename BASE_ITERATOR>
             inline  typename Iterator<T, BASE_ITERATOR>::SharedIRepPtr   Iterator<T, BASE_ITERATOR>::Clone_ (const typename Iterator<T, BASE_ITERATOR>::IRep& rep)
             {
                 return rep.Clone ();
@@ -210,10 +200,34 @@ namespace   Stroika {
 
 
             /*
-            ********************************************************************************
-            ***************************** Iterator2Pointer *********************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ******************************** operator== ************************************
+             ********************************************************************************
+             */
+            template    <typename T, typename BASE_ITERATOR>
+            inline  bool   operator== (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************* operator!= ***********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename BASE_ITERATOR>
+            inline bool   operator!= (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
+             ***************************** Iterator2Pointer *********************************
+             ********************************************************************************
+             */
             template    <typename   ITERATOR>
             inline  typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
             {
