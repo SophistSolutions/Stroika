@@ -23,10 +23,20 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a62">v2.0a62x</a><br/>2014-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a62">v2.0a62</a><br/>2014-12-29</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Fixup (name progress) on LRUCache and Synchonized (minor)</li>
+	<li>New DisjointRange, and DisjointDiscreteRange classes</li>
+	<li>New DiscreteRange::Elements() method, in preps for losing base class iterable</li>
+	<li>new draft BidirectionalIterator and RandomAccessIterator, with revised templating for Iterator to support this</li>
+	<li>restructuring operator==/!= etc for many classes, like Range, Iterator, etc, to support better LHS/RHS support</li>
+	<li>get rid of CodePageConverter::MapToUNICODE assertion</li>
+	<li>RangeTraits::ExplicitRangeTraitsWithoutMinMax<>::GetPrevious/GetNext()</li>
+	<li>Added overload of Iterable<T>::FindFirstThat (const Iterator<T>& startAt...</li>
+	<li>Added Sequence&lt;T&gt;::Insert (const Iterator<T>& i, T item) overload</li>
+	<li>added TimingTrace helper (Debug module)</li>
+	<li>Synchonized<> uses recursive_mutex by default</li>
 </ul>
 </td>
 </tr>
