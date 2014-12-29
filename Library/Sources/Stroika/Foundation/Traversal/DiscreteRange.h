@@ -203,6 +203,23 @@ namespace   Stroika {
                 nonvirtual  UnsignedDifferenceType GetNumberOfContainedPoints () const;
 
             public:
+                /**
+                 *  Use Example:
+                 *      DisjointDiscreteRange<DiscreteRange<int>> t;
+                 *      for (T i : t.Elements ()) {
+                 *      }
+                 *
+                 *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
+                 *  appear in the Elements() Iterable<T>.
+
+                 ///NYI
+                 */
+                nonvirtual  Iterable<T>   Elements () const
+                {
+                    return *this;   //tmphack - later remove baseclass iterable!
+                }
+
+            public:
                 using   inherited_RangeType::Contains;
 
             public:
