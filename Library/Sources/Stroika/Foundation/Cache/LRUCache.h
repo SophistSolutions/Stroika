@@ -281,38 +281,39 @@ namespace   Stroika {
 
 
 
-
 /// DRAFT NEW API
-            template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
-            struct  nu_LRUCache_DefaultTraits {
-                // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                DEFINE_CONSTEXPR_CONSTANT(uint8_t, kHashTableSize, HASH_TABLE_SIZE);
+            namespace   LRUCacheSupport {
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+                struct  LRUCache_DefaultTraits {
+                    // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, kHashTableSize, HASH_TABLE_SIZE);
 
-                // If KeyType different type than ElementType we need a hash for that too
-                static  size_t  Hash (const KEY& e)
-                {
-                    using   Cryptography::Hash;
-                    using   Cryptography::Digest::Digester;
-                    using   Cryptography::Digest::Algorithm::Jenkins;
-                    using   USE_DIGESTER_     =   Digester<Jenkins>;
-                    return Hash<USE_DIGESTER_, KEY, size_t> (e);
-                }
+                    // If KeyType different type than ElementType we need a hash for that too
+                    static  size_t  Hash (const KEY& e)
+                    {
+                        using   Cryptography::Hash;
+                        using   Cryptography::Digest::Digester;
+                        using   Cryptography::Digest::Algorithm::Jenkins;
+                        using   USE_DIGESTER_     =   Digester<Jenkins>;
+                        return Hash<USE_DIGESTER_, KEY, size_t> (e);
+                    }
 
-                // defaults to operator==
-                static  bool    Equals (const KEY& lhs, const KEY& rhs)
-                {
-                    return lhs == rhs;
-                }
+                    // defaults to operator==
+                    static  bool    Equals (const KEY& lhs, const KEY& rhs)
+                    {
+                        return lhs == rhs;
+                    }
 
 #if     qDebug
-                using   StatsType   =   LRUCacheSupport::Stats_Basic;
+                    using   StatsType   =   LRUCacheSupport::Stats_Basic;
 #else
-                using   StatsType   =   LRUCacheSupport::Stats_Null;
+                    using   StatsType   =   LRUCacheSupport::Stats_Null;
 #endif
-            };
+                };
+            }
 
-            template    <typename KEY, typename VALUE, typename TRAITS = nu_LRUCache_DefaultTraits<KEY>>
-            class   nu_LRUCache {
+            template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::LRUCache_DefaultTraits<KEY>>
+            class   LRUCache {
             private:
                 struct  LEGACYLRUCACHEOBJ_ {
                     KEY     fKey;
@@ -336,12 +337,12 @@ namespace   Stroika {
                 mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
                 mutable mutex   fLock_;
             public:
-                nu_LRUCache (size_t size = 1)
+                LRUCache (size_t size = 1)
                     : fRealCache_ (size)
                     , fLock_ ()
                 {
                 }
-                nu_LRUCache (const nu_LRUCache& from)
+                LRUCache (const LRUCache& from)
                     : fRealCache_ (1)
                     , fLock_ ()
                 {
@@ -351,7 +352,7 @@ namespace   Stroika {
                         Add (i.fKey, i.fValue);
                     }
                 }
-                const nu_LRUCache& operator= (const nu_LRUCache& rhs)
+                const LRUCache& operator= (const LRUCache& rhs)
                 {
                     if (this != &rhs) {
                         SetMaxCacheSize (rhs.GetMaxCacheSize ());
@@ -425,6 +426,16 @@ namespace   Stroika {
                     }
                 }
             };
+
+
+
+
+#if 1
+            template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+            using   nu_LRUCache_DefaultTraits  = LRUCacheSupport::LRUCache_DefaultTraits<KEY, HASH_TABLE_SIZE>;
+            template    <typename KEY, typename VALUE, typename TRAITS = nu_LRUCache_DefaultTraits<KEY>>
+            using   nu_LRUCache = LRUCache<KEY, VALUE, TRAITS>;
+#endif
 
 
 
