@@ -35,11 +35,11 @@ namespace   Stroika {
             template    <typename T, typename BASE_STD_ITERATOR = std::iterator<bidirectional_iterator_tag, T>>
             class   BidirectionalIterator : public Iterator<T, BASE_STD_ITERATOR> {
             private:
-                using   inherited   =   typename    Iterator<T, BASE_STD_ITERATOR>;
+                using   inherited   =   Iterator<T, BASE_STD_ITERATOR>;
 
             public:
                 class   IRep;
-                using   SharedIRepPtr   =   SharedPtrImplementationTemplate<IRep>;
+                using   SharedIRepPtr   =  typename inherited::template SharedPtrImplementationTemplate<IRep>;
 
             public:
                 /**
