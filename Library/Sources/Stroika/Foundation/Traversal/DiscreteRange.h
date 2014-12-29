@@ -17,6 +17,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   Consider if clearer having DiscreteRange aggregate Elements() instead of inheriting from
+ *              Iterable. Would make construction, and coipying etc cheaper (esp when that feature
+ *              is not used).
+ *
  *      @todo   Understand what you must do DiscreteRange<int> (1,10) instead of just DiscreteRange (1,10),
  *              and if something reasonable to be done about it - do so (compiler bug or ambiguity due to optional)
  *              or just that template inference of types doesnt work as well as I thought...
@@ -168,6 +172,7 @@ namespace   Stroika {
                 explicit DiscreteRange ();
                 explicit DiscreteRange (T begin, T end);
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+                explicit DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
 
             public:
                 /**
@@ -207,6 +212,13 @@ namespace   Stroika {
                  */
                 nonvirtual  bool empty () const;
             };
+
+
+            /**
+             *  Intersection ()
+             */
+            template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>   operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
 
 
         }

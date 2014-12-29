@@ -174,6 +174,16 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
+                : inherited_RangeType ()
+                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ()))
+            {
+                // Could do more efficiently
+                if (not r.empty ()) {
+                    *this = DiscreteRange (r.GetLowerBound (), r.GetUpperBound ());
+                }
+            }
+            template    <typename T, typename TRAITS>
             inline  DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::FullRange ()
             {
                 return DiscreteRange<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
@@ -186,8 +196,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange<T, TRAITS>& rhs) const
             {
-                auto    r   =   inherited_RangeType::Intersection (rhs);
-                return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
+                return DiscreteRange<T, TRAITS> (inherited_RangeType::Intersection (rhs));
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
@@ -215,6 +224,18 @@ namespace   Stroika {
             {
                 Ensure (inherited_RangeType::empty () == Iterable<T>::empty ());
                 return inherited_RangeType::empty ();
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************************** operator^ **********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  DiscreteRange<T, TRAITS>   operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs)
+            {
+                return lhs.Intersection (rhs);
             }
 
 
