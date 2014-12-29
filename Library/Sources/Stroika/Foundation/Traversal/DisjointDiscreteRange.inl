@@ -12,33 +12,33 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ************************ DisjointDiscreteRange<RANGE_TYPE> *********************
+            ********************* DisjointDiscreteRange<T, RANGE_TYPE> *********************
             ********************************************************************************
             */
-            template    <typename RANGE_TYPE>
-            inline  DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
+            template    <typename T, typename RANGE_TYPE>
+            inline  DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
                 : inherited (from)
             {
             }
-            template    <typename RANGE_TYPE>
-            inline  DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const initializer_list<RangeType>& from)
+            template    <typename T, typename RANGE_TYPE>
+            inline  DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const initializer_list<RangeType>& from)
                 : inherited (from)
             {
             }
-            template    <typename RANGE_TYPE>
+            template    <typename T, typename RANGE_TYPE>
             template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
                 : inherited (from)
             {
             }
-            template    <typename RANGE_TYPE>
+            template    <typename T, typename RANGE_TYPE>
             template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end)
                 : inherited (start, end)
             {
             }
-            template    <typename RANGE_TYPE>
-            void    DisjointDiscreteRange<RANGE_TYPE>::Add (ElementType elt)
+            template    <typename T, typename RANGE_TYPE>
+            void    DisjointDiscreteRange<T, RANGE_TYPE>::Add (ElementType elt)
             {
                 Containers::Sequence<RangeType> srs { this->SubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
@@ -63,18 +63,20 @@ namespace   Stroika {
                 srs.push_back (DiscreteRange<ElementType> (elt, elt));
                 *this = THIS_CLASS_ { srs };
             }
-            template    <typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointDiscreteRange<RangeType> {
+            template    <typename T, typename RANGE_TYPE>
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointDiscreteRange
+            {
                 // @todo could do more efficiently
-                return DisjointDiscreteRange<RangeType> { inherited::Intersection (rhs).SubRanges () };
+                return DisjointDiscreteRange { inherited::Intersection (rhs).SubRanges () };
             }
-            template    <typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<RANGE_TYPE>::Intersection (const DisjointDiscreteRange<RangeType>& rhs) const -> DisjointDiscreteRange<RangeType> {
+            template    <typename T, typename RANGE_TYPE>
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::Intersection (const DisjointDiscreteRange& rhs) const -> DisjointDiscreteRange
+            {
                 // @todo could do more efficiently
-                return DisjointDiscreteRange<RangeType> { inherited::Intersection (rhs).SubRanges () };
+                return DisjointDiscreteRange { inherited::Intersection (rhs).SubRanges () };
             }
-            template    <typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
+            template    <typename T, typename RANGE_TYPE>
+            auto   DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or successors
                 ElementType next = RANGE_TYPE::TraitsType::GetNext (elt);
@@ -85,8 +87,8 @@ namespace   Stroika {
                 }
                 return Memory::Optional<ElementType> ();
             }
-            template    <typename RANGE_TYPE>
-            auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
+            template    <typename T, typename RANGE_TYPE>
+            auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or predecessors
                 ElementType prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
@@ -120,8 +122,8 @@ namespace   Stroika {
                 }
                 return Memory::Optional<ElementType> ();
             }
-            template    <typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
+            template    <typename T, typename RANGE_TYPE>
+            auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
                 // HORIBLE but for now hopefully adequate implementation
                 // @todo see MultiSet::ElementsIteratorHelper_ for better impl strategy...
                 Containers::Sequence<RangeType>     subRanges { this->SubRanges () };

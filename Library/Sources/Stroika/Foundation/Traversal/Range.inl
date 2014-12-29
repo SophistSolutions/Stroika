@@ -323,9 +323,9 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline   DisjointRange<Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range<T, TRAITS>& rhs) const
+            inline   DisjointRange<T, Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range<T, TRAITS>& rhs) const
             {
-                return DisjointRange<Range<T, TRAITS>> { { *this, rhs } };
+                return DisjointRange<T, Range<T, TRAITS>> { { *this, rhs } };
             }
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
@@ -400,7 +400,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  DisjointRange<Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+            inline  DisjointRange<T, Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
             {
                 return lhs.Union (rhs);
             }

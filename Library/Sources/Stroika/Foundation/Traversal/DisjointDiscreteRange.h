@@ -22,7 +22,7 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *      @todo   More efficient DisjointDiscreteRange<RANGE_TYPE>::Elements () implementation
+ *      @todo   More efficient DisjointDiscreteRange<T, RANGE_TYPE>::Elements () implementation
  */
 
 
@@ -35,17 +35,17 @@ namespace   Stroika {
             /**
              *  @todo Add CONCEPT to require RANGE_TYPE subtype of DiscreteRange
              */
-            template    <typename RANGE_TYPE>
-            class   DisjointDiscreteRange : public DisjointRange<RANGE_TYPE> {
+            template    <typename T, typename RANGE_TYPE = DiscreteRange<T>>
+            class   DisjointDiscreteRange : public DisjointRange<T, RANGE_TYPE> {
             private:
-                using inherited = DisjointRange<RANGE_TYPE>;
-                using THIS_CLASS_ = DisjointDiscreteRange<RANGE_TYPE>;
+                using inherited = DisjointRange<T, RANGE_TYPE>;
+                using THIS_CLASS_ = DisjointDiscreteRange<T, RANGE_TYPE>;
 
             public:
-                using ElementType = typename DisjointRange<RANGE_TYPE>::ElementType;
+                using ElementType = typename DisjointRange<T, RANGE_TYPE>::ElementType;
 
             public:
-                using RangeType = typename DisjointRange<RANGE_TYPE>::RangeType;
+                using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
 
             public:
                 /**
@@ -73,8 +73,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  DisjointDiscreteRange<RangeType>    Intersection (const RangeType& rhs) const;
-                nonvirtual  DisjointDiscreteRange<RangeType>    Intersection (const DisjointDiscreteRange<RangeType>& rhs) const;
+                nonvirtual  DisjointDiscreteRange       Intersection (const RangeType& rhs) const;
+                nonvirtual  DisjointDiscreteRange       Intersection (const DisjointDiscreteRange& rhs) const;
 
             public:
                 /**

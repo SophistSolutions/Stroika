@@ -32,7 +32,7 @@
  *      @todo   Add overload of Contains() taking RANGETYPE, and ensure it does more than test Contains of the endpoints
  *              (contains all points in range).
  *
- *              THEN use that in Ensure() at end of DisjointRange<RANGE_TYPE>::MergeIn_();
+ *              THEN use that in Ensure() at end of DisjointRange<T, RANGE_TYPE>::MergeIn_();
  *
  *      @todo   Add Contains() overload taking Range (and maybe disjoint range)?
  */
@@ -48,7 +48,7 @@ namespace   Stroika {
              *
              *  \note   NOT internally threadsafe. To use from multiple threads, use Synchonized<DisjointRange>, or otherwise protect.
              */
-            template    <typename RANGE_TYPE>
+            template    <typename T, typename RANGE_TYPE = Range<T>>
             class   DisjointRange {
             public:
                 /**
@@ -80,7 +80,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  DisjointRange<RangeType> FullRange ();
+                static  DisjointRange   FullRange ();
 
             public:
                 /**
@@ -114,32 +114,32 @@ namespace   Stroika {
                  *  This returns true if the constituent subranges are all equal. This amounts to checking
                  *  if the 'covered points' are all equal.
                  */
-                template    <typename RANGE_TYPE2>
-                nonvirtual  bool    Equals (const DisjointRange<RANGE_TYPE2>& rhs) const;
+                template    <typename T2, typename RANGE_TYPE2>
+                nonvirtual  bool    Equals (const DisjointRange<T2, RANGE_TYPE2>& rhs) const;
 
             public:
                 /**
                  */
                 nonvirtual  bool    Intersects (const RangeType& rhs) const;
-                nonvirtual  bool    Intersects (const DisjointRange<RangeType>& rhs) const;
+                nonvirtual  bool    Intersects (const DisjointRange& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  DisjointRange<RangeType>    Intersection (const RangeType& rhs) const;
-                nonvirtual  DisjointRange<RangeType>    Intersection (const DisjointRange<RangeType>& rhs) const;
-
-            public:
-                /**
-                ***NYI
-                 */
-                nonvirtual  DisjointRange<RangeType>    Union (const DisjointRange<RangeType>& rhs) const;
+                nonvirtual  DisjointRange    Intersection (const RangeType& rhs) const;
+                nonvirtual  DisjointRange    Intersection (const DisjointRange& rhs) const;
 
             public:
                 /**
                 ***NYI
                  */
-                nonvirtual  RangeType    UnionBounds (const DisjointRange<RangeType>& rhs) const;
+                nonvirtual  DisjointRange   Union (const DisjointRange& rhs) const;
+
+            public:
+                /**
+                ***NYI
+                 */
+                nonvirtual  RangeType    UnionBounds (const DisjointRange& rhs) const;
 
 
             private:
@@ -155,26 +155,26 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename RANGE_TYPE>
-            DisjointRange<RANGE_TYPE>   operator+ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+            template    <typename T, typename RANGE_TYPE>
+            DisjointRange<T, RANGE_TYPE>   operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 
             /**
              */
-            template    <typename RANGE_TYPE>
-            DisjointRange<RANGE_TYPE>   operator^ (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+            template    <typename T, typename RANGE_TYPE>
+            DisjointRange<T, RANGE_TYPE>   operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 
             /**
              */
-            template    <typename RANGE_TYPE>
-            bool    operator== (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+            template    <typename T, typename RANGE_TYPE>
+            bool    operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 
             /**
              */
-            template    <typename RANGE_TYPE>
-            bool    operator!= (const DisjointRange<RANGE_TYPE>& lhs, const DisjointRange<RANGE_TYPE>& rhs);
+            template    <typename T, typename RANGE_TYPE>
+            bool    operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 
         }

@@ -169,7 +169,7 @@ namespace   Stroika {
             }
 
 
-            template    <typename RANGE_TYPE>
+            template    <typename T, typename RANGE_TYPE>
             class   DisjointRange;
 
 
@@ -322,7 +322,7 @@ namespace   Stroika {
                 /**
                  * if two regions are disjoint, this can encompass a larger region than the actual union would
                  */
-                nonvirtual  DisjointRange<Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  DisjointRange<T, Range<T, TRAITS>> Union (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -372,7 +372,7 @@ namespace   Stroika {
              *  Union ()
              */
             template    <typename T, typename TRAITS>
-            DisjointRange<Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+            DisjointRange<T, Range<T, TRAITS>>   operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 
             /**
