@@ -254,7 +254,7 @@ namespace   Stroika {
              *
              *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              */
-            template    <typename T, typename BASE_ITERATOR = std::iterator<input_iterator_tag, T>>
+            template    <typename T, typename BASE_ITERATOR = std::iterator<forward_iterator_tag, T>>
             class   Iterator : public BASE_ITERATOR, public IteratorBase {
             private:
                 using   inherited   =   BASE_ITERATOR;
