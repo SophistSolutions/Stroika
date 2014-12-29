@@ -258,6 +258,14 @@ namespace   Stroika {
             };
 
 
+
+            //migrate names support
+            template    <typename   T, typename MUTEX = recursive_mutex>
+            using Synchronized_Traits =   nu_Synchronized_Traits<T, MUTEX>;
+            template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
+            using   Synchronized  = nu_Synchronized<T, TRAITS>;
+
+
         }
     }
 }
