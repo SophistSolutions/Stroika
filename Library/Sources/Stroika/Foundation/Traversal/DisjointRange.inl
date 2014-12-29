@@ -39,7 +39,7 @@ namespace   Stroika {
                 }
             }
             template    <typename RANGE_TYPE>
-            inline  auto    DisjointRange<RANGE_TYPE>::GetSubRanges () const -> Containers::Sequence<RangeType> {
+            inline  auto    DisjointRange<RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType> {
                 return fSubRanges_;
             }
             template    <typename RANGE_TYPE>
@@ -74,8 +74,8 @@ namespace   Stroika {
             template    <typename RANGE_TYPE2>
             bool    DisjointRange<RANGE_TYPE>::Equals (const DisjointRange<RANGE_TYPE2>& rhs) const
             {
-                Containers::Sequence<RangeType>                                         lhsR = GetSubRanges ();
-                Containers::Sequence<typename DisjointRange<RANGE_TYPE2>::RangeType>    rhsR = rhs.GetSubRanges ();
+                Containers::Sequence<RangeType>                                         lhsR = SubRanges ();
+                Containers::Sequence<typename DisjointRange<RANGE_TYPE2>::RangeType>    rhsR = rhs.SubRanges ();
                 if (lhsR.size () != rhsR.size ()) {
                     return false;
                 }

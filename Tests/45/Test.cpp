@@ -413,14 +413,14 @@ namespace {
             DisjointRange<Range<float>> dr {};
             VerifyTestResult (dr.empty ());
             VerifyTestResult (dr.GetBounds ().empty ());
-            VerifyTestResult (dr.GetSubRanges ().empty ());
+            VerifyTestResult (dr.SubRanges ().empty ());
             VerifyTestResult (not dr.Contains (3));
         }
         {
             DisjointRange<Range<float>> dr {Range<float> (2.1f, 5.0f)};
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == Range<float> (2.1f, 5.0f));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (not dr.Contains (2));
         }
@@ -430,7 +430,7 @@ namespace {
             DRT dr {};
             VerifyTestResult (dr.empty ());
             VerifyTestResult (dr.GetBounds ().empty ());
-            VerifyTestResult (dr.GetSubRanges ().empty ());
+            VerifyTestResult (dr.SubRanges ().empty ());
             VerifyTestResult (not dr.Contains (3));
         }
         {
@@ -439,7 +439,7 @@ namespace {
             DRT dr {RT (2, 5)};
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (2, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (not dr.Contains (1));
         }
@@ -448,7 +448,7 @@ namespace {
             using DRT = DisjointDiscreteRange<RT>;
             DRT dr {RT {1, 2}, RT {4, 5}};
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 2);
+            VerifyTestResult (dr.SubRanges ().size () == 2);
             VerifyTestResult (dr.Contains (2));
             VerifyTestResult (not dr.Contains (3));
             VerifyTestResult (dr.Contains (4));
@@ -458,7 +458,7 @@ namespace {
             using DRT = DisjointDiscreteRange<RT>;
             DRT dr {RT {4, 5}, RT {1, 2}};
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 2);
+            VerifyTestResult (dr.SubRanges ().size () == 2);
             VerifyTestResult (dr.Contains (2));
             VerifyTestResult (not dr.Contains (3));
             VerifyTestResult (dr.Contains (4));
@@ -470,7 +470,7 @@ namespace {
             VerifyTestResult (dr.empty ());
             dr.Add (4);
             VerifyTestResult (dr.GetBounds () == RT (4, 4));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (not dr.Contains (3));
             VerifyTestResult ( dr.Contains (4));
             for (int i = 5; i <= 100; ++i) {
@@ -478,13 +478,13 @@ namespace {
                 dr.Add (i);
             }
             VerifyTestResult (dr.GetBounds () == RT (4, 100));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             for (int i = 501; i < 600; ++i) {
                 dr.Add (4);
                 dr.Add (i);
             }
             dr.Add (3);
-            VerifyTestResult (dr.GetSubRanges ().size () == 2);
+            VerifyTestResult (dr.SubRanges ().size () == 2);
             VerifyTestResult (dr.GetBounds () == RT (3, 600 - 1));
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (not dr.Contains (300));
@@ -497,7 +497,7 @@ namespace {
             DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (dr.SubRanges ().size () == 3);
             VerifyTestResult (not dr.Contains (4));
             VerifyTestResult (dr.Contains (3));
         }
@@ -507,7 +507,7 @@ namespace {
             DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
         {
@@ -516,7 +516,7 @@ namespace {
             DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
         {
@@ -525,7 +525,7 @@ namespace {
             DRT dr {RT {1, 5}, RT {2, 2} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
         {
@@ -534,11 +534,11 @@ namespace {
             DRT dr {RT {1, 4}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
             dr.Add (10);
             VerifyTestResult (dr.GetBounds () == RT (1, 10));
-            VerifyTestResult (dr.GetSubRanges ().size () == 1);
+            VerifyTestResult (dr.SubRanges ().size () == 1);
         }
         {
             using RT = DiscreteRange<int>;
@@ -546,7 +546,7 @@ namespace {
             DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
-            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (dr.SubRanges ().size () == 3);
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (dr.GetNext (1) == 3);
             VerifyTestResult (dr.GetNext (2) == 3);
@@ -567,7 +567,7 @@ namespace {
             DRT dr {RT {1, 2}, RT {4, 5}, RT {7, 8} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 8));
-            VerifyTestResult (dr.GetSubRanges ().size () == 3);
+            VerifyTestResult (dr.SubRanges ().size () == 3);
             VerifyTestResult (not dr.Contains (3));
             VerifyTestResult (dr.GetNext (1) == 2);
             VerifyTestResult (dr.GetNext (2) == 4);
@@ -587,6 +587,29 @@ namespace {
             VerifyTestResult (dr.GetPrevious (7) == 5);
             VerifyTestResult (dr.GetPrevious (8) == 7);
             VerifyTestResult (dr.GetPrevious (9) == 8);
+            {
+                // test iterate over ranges
+                int timeThru = 0;
+                for (RT rng : dr.SubRanges ()) {
+                    switch (timeThru++) {
+                        case 0:
+                            VerifyTestResult ((rng == RT {1, 2}));
+                            break;
+                        case 1:
+                            VerifyTestResult ((rng == RT {4, 5}));
+                            break;
+                        case 2:
+                            VerifyTestResult ((rng == RT {7, 8}));
+                            break;
+                        default:
+                            VerifyTestResult (false);
+                    }
+                }
+            }
+            {
+                // test iterate over elements
+                VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({1, 2, 4, 5, 7, 8}));
+            }
         }
     }
 }

@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   Consider if we should subclass from Iterable<Range> or return one?
+ *
  *      @todo   better document threadsafety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
  *              from multiple threads.
  *
@@ -85,7 +87,7 @@ namespace   Stroika {
                  *  A disjoint range is made up of a fininte number of disjoint (non-overlapping) subranges, which are arranged
                  *  following the natural ordering intrinsic to the ElementType. This returns those subranges.
                  */
-                nonvirtual  Containers::Sequence<RangeType>    GetSubRanges () const;
+                nonvirtual  Containers::Sequence<RangeType>    SubRanges () const;
 
             public:
                 /**
@@ -97,7 +99,7 @@ namespace   Stroika {
                  *  @see Range::Contains.
                  *
                  *  This returns true if r is contained in some sub-element range. This is only the smae as
-                 *  GetBounds().Contains() if GetSubRanges ().size () <= 1.
+                 *  GetBounds().Contains() if SubRanges ().size () <= 1.
                  */
                 nonvirtual  bool    Contains (ElementType elt) const;
 

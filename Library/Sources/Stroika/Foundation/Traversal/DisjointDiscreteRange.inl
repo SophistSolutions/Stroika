@@ -40,7 +40,7 @@ namespace   Stroika {
             template    <typename RANGE_TYPE>
             void    DisjointDiscreteRange<RANGE_TYPE>::Add (ElementType elt)
             {
-                Containers::Sequence<RangeType> srs { this->GetSubRanges () };
+                Containers::Sequence<RangeType> srs { this->SubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
                 for (Iterator<RangeType> i = srs.begin (); i != srs.end (); ++i) {
                     if (elt < i->GetLowerBound ()) {
@@ -65,7 +65,7 @@ namespace   Stroika {
             }
             template    <typename RANGE_TYPE>
             auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
-                Containers::Sequence<RangeType> subRanges { this->GetSubRanges () };
+                Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or successors
                 ElementType next = RANGE_TYPE::TraitsType::GetNext (elt);
                 Iterator<RangeType> i { subRanges.FindFirstThat ([next] (const RangeType & r) -> bool {return r.GetUpperBound () >= next;}) };
@@ -77,7 +77,7 @@ namespace   Stroika {
             }
             template    <typename RANGE_TYPE>
             auto DisjointDiscreteRange<RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
-                Containers::Sequence<RangeType> subRanges { this->GetSubRanges () };
+                Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or predecessors
                 ElementType prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
                 Iterator<RangeType> i { subRanges.FindFirstThat ([prev] (const RangeType & r) -> bool {return r.GetUpperBound () >= prev;}) };
@@ -109,6 +109,20 @@ namespace   Stroika {
                     return i->GetUpperBound ();
                 }
                 return Memory::Optional<ElementType> ();
+            }
+            template    <typename RANGE_TYPE>
+            auto   DisjointDiscreteRange<RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
+                // HORIBLE but for now hopefully adequate implementation
+                // @todo see MultiSet::ElementsIteratorHelper_ for better impl strategy...
+                Containers::Sequence<RangeType>     subRanges { this->SubRanges () };
+                Containers::Sequence<ElementType>   result {};
+                for (RangeType ri : subRanges)
+                {
+                    for (ElementType rri : ri) {
+                        result.Append (rri);
+                    }
+                }
+                return result;
             }
 
 
