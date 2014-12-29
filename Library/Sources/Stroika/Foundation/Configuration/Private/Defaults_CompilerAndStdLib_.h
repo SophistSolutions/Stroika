@@ -1310,6 +1310,26 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 /*
+@CONFIGVAR:     qDecoratedNameLengthExceeded_Buggy
+@DESCRIPTION:
+		C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xrefwrap(173): warning C4503: 'Stroik...
+		...: decorated name length exceeded, name was truncated []
+*/
+#ifndef qDecoratedNameLengthExceeded_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qDecoratedNameLengthExceeded_Buggy      0
+#endif
+
+#endif
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
 @DESCRIPTION:
     To test if fixed, set to zero and stroika lib will fail to compile.
@@ -1603,6 +1623,12 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #endif
 
 
+
+
+
+#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && qDecoratedNameLengthExceeded_Buggy
+    __pragma ( warning (disable : 4503) )
+#endif
 
 
 
