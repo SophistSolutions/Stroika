@@ -627,14 +627,14 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  operator== is a shorthand for Equals() - but frequently performs better
+             *  \brief  operator== is a shorthand for lhs.Equals (rhs)
              */
             template    <typename T, typename BASE_ITERATOR>
             bool    operator== (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
 
 
             /**
-             *  \brief  Returns not (operator==())
+             *  \brief  operator== is a shorthand for not lhs.Equals (rhs)
              */
             template    <typename T, typename BASE_ITERATOR>
             bool    operator!= (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
