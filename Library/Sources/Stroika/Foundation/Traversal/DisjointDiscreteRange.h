@@ -78,6 +78,20 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType elt) const;
+
+            public:
+                /**
+                 *  Use Example:
+                 *      DisjointDiscreteRange<DiscreteRange<int>> t;
+                 *      for (T i : t.Elements ()) {
+                 *      }
+                 *
+                 *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
+                 *  appear in the Elements() Iterable<T>.
+
+                 ///NYI
+                 */
+                nonvirtual  Iterable<ElementType>   Elements () const;
             };
 
 
