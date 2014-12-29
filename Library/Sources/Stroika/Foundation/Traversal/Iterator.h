@@ -108,6 +108,11 @@ namespace   Stroika {
              *  Though the type is a pointer, its not mean to ever be cast or dereferenced -
              *  just compared (usually for equality, but also < maybe used for things like tree structure).
              *
+             *  The motivation for having an iterator owner is to enforce (at least in debug code) the rule that
+             *  you can only compare iterators that are derived from the same container. This is also
+             *  a requirement of STL (I believe) but I'm not sure ever explicitly stated. Anyhow, even if
+             *  I'm wrong about that, its a good idea ;-).
+             *
              *  @see kUnknownIteratorOwnerID
              */
             using   IteratorOwnerID =    const void* ;
@@ -254,10 +259,10 @@ namespace   Stroika {
              *
              *          <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              */
-            template    <typename T, typename BASE_ITERATOR = std::iterator<forward_iterator_tag, T>>
-            class   Iterator : public BASE_ITERATOR, public IteratorBase {
+            template    <typename T, typename BASE_STD_ITERATOR = std::iterator<forward_iterator_tag, T>>
+            class   Iterator : public BASE_STD_ITERATOR, public IteratorBase {
             private:
-                using   inherited   =   BASE_ITERATOR;
+                using   inherited   =   BASE_STD_ITERATOR;
 
             public:
                 /**
@@ -573,8 +578,8 @@ namespace   Stroika {
              *          (note that for performance and thread safety reasons the iterator envelope
              *           actually passes fCurrent_ into More when implenenting ++it
              */
-            template    <typename T, typename BASE_ITERATOR>
-            class   Iterator<T, BASE_ITERATOR>::IRep {
+            template    <typename T, typename BASE_STD_ITERATOR>
+            class   Iterator<T, BASE_STD_ITERATOR>::IRep {
             protected:
                 IRep ();
 
@@ -582,7 +587,7 @@ namespace   Stroika {
                 virtual ~IRep ();
 
             public:
-                using  SharedIRepPtr    =   typename Iterator<T, BASE_ITERATOR>::SharedIRepPtr;
+                using  SharedIRepPtr    =   typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr;
 
             public:
                 /**
@@ -629,15 +634,15 @@ namespace   Stroika {
             /**
              *  \brief  operator== is a shorthand for lhs.Equals (rhs)
              */
-            template    <typename T, typename BASE_ITERATOR>
-            bool    operator== (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
+            template    <typename T, typename BASE_STD_ITERATOR>
+            bool    operator== (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
 
 
             /**
              *  \brief  operator== is a shorthand for not lhs.Equals (rhs)
              */
-            template    <typename T, typename BASE_ITERATOR>
-            bool    operator!= (const Iterator<T, BASE_ITERATOR>& lhs, const Iterator<T, BASE_ITERATOR>& rhs);
+            template    <typename T, typename BASE_STD_ITERATOR>
+            bool    operator!= (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
 
 
             /**

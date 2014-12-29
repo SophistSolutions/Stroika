@@ -15,7 +15,7 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
-#include    "../Traversal/Iterator.h"
+#include    "../Traversal/RandomAccessIterator.h"
 
 #include    "UpdatableIterable.h"
 

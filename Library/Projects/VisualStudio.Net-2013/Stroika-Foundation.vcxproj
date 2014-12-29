@@ -1285,6 +1285,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.h" />
@@ -1597,6 +1598,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.inl" />
