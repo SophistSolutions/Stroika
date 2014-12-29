@@ -610,6 +610,10 @@ namespace {
                 // test iterate over elements
                 VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({1, 2, 4, 5, 7, 8}));
             }
+            {
+                // Test intersection
+                VerifyTestResult (Containers::Sequence<int> (dr.Intersection (RT {2, 4}).Elements ()) == Containers::Sequence<int> ({2, 4}));
+            }
         }
     }
 }

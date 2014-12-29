@@ -73,6 +73,12 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  DisjointDiscreteRange<RangeType>    Intersection (const RangeType& rhs) const;
+                nonvirtual  DisjointDiscreteRange<RangeType>    Intersection (const DisjointDiscreteRange<RangeType>& rhs) const;
+
+            public:
+                /**
+                 */
                 nonvirtual  Memory::Optional<ElementType> GetNext (ElementType elt) const;
 
             public:

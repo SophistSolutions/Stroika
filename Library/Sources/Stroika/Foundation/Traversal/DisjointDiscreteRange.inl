@@ -64,6 +64,16 @@ namespace   Stroika {
                 *this = THIS_CLASS_ { srs };
             }
             template    <typename RANGE_TYPE>
+            auto    DisjointDiscreteRange<RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointDiscreteRange<RangeType> {
+                // @todo could do more efficiently
+                return DisjointDiscreteRange<RangeType> { inherited::Intersection (rhs).SubRanges () };
+            }
+            template    <typename RANGE_TYPE>
+            auto    DisjointDiscreteRange<RANGE_TYPE>::Intersection (const DisjointDiscreteRange<RangeType>& rhs) const -> DisjointDiscreteRange<RangeType> {
+                // @todo could do more efficiently
+                return DisjointDiscreteRange<RangeType> { inherited::Intersection (rhs).SubRanges () };
+            }
+            template    <typename RANGE_TYPE>
             auto   DisjointDiscreteRange<RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or successors

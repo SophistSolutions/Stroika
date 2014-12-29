@@ -119,15 +119,14 @@ namespace   Stroika {
 
             public:
                 /**
-                ***NYI
                  */
-                template    <typename RANGE_TYPE2>
-                nonvirtual  bool    Intersects (const DisjointRange<RANGE_TYPE2>& rhs) const;
+                nonvirtual  bool    Intersects (const RangeType& rhs) const;
+                nonvirtual  bool    Intersects (const DisjointRange<RangeType>& rhs) const;
 
             public:
                 /**
-                ***NYI
                  */
+                nonvirtual  DisjointRange<RangeType>    Intersection (const RangeType& rhs) const;
                 nonvirtual  DisjointRange<RangeType>    Intersection (const DisjointRange<RangeType>& rhs) const;
 
             public:

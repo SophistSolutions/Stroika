@@ -91,6 +91,38 @@ namespace   Stroika {
                 return true;
             }
             template    <typename RANGE_TYPE>
+            inline  bool    DisjointRange<RANGE_TYPE>::Intersects (const RangeType& rhs) const
+            {
+                // @todo could do more efficiently
+                return not Intersection (rhs).empty ();
+            }
+            template    <typename RANGE_TYPE>
+            inline  bool    DisjointRange<RANGE_TYPE>::Intersects (const DisjointRange<RangeType>& rhs) const
+            {
+                // @todo could do more efficiently
+                return not Intersection (rhs).empty ();
+            }
+            template    <typename RANGE_TYPE>
+            auto    DisjointRange<RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointRange<RangeType> {
+                // @todo could do more efficiently
+                return Intersection (DisjointRange<RANGE_TYPE> { rhs });
+            }
+            template    <typename RANGE_TYPE>
+            auto    DisjointRange<RANGE_TYPE>::Intersection (const DisjointRange<RangeType>& rhs) const -> DisjointRange<RangeType> {
+                // @todo could do more efficiently
+                Containers::Sequence<RangeType> disjointRanges {};
+                for (RangeType rri : rhs.SubRanges ())
+                {
+                    for (RangeType mySR : this->SubRanges ()) {
+                        RangeType intersectedSubPart = rri ^ mySR;
+                        if (not intersectedSubPart.empty ()) {
+                            disjointRanges.Append (intersectedSubPart);
+                        }
+                    }
+                }
+                return DisjointRange<RangeType> { disjointRanges };
+            }
+            template    <typename RANGE_TYPE>
             void    DisjointRange<RANGE_TYPE>::MergeIn_ (const RangeType& r)
             {
                 AssertInternalRepValid_ ();
