@@ -150,6 +150,9 @@ namespace   Stroika {
 
             private:
                 Containers::Sequence<RangeType> fSubRanges_;
+
+            private:
+                static  constexpr   bool    sNoisyDebugTrace_ = false;
             };
 
 

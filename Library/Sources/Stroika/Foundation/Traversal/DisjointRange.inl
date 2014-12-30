@@ -168,9 +168,11 @@ namespace   Stroika {
 
                         Iterator<RangeType> startI   =   fSubRanges_.FindFirstThat ([rStart] (const RangeType & r) -> bool {return r.GetLowerBound () >= rStart or r.Contains (rStart); });
                         if (startI == fSubRanges_.end ()) {
-                            DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
-                                      static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                     );
+                            if (sNoisyDebugTrace_) {
+                                DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
+                                );
+                            }
                             // cuz this means no ranges to the right containing rStart
                             //
                             // when appending, we can sometimes extend the last item
@@ -187,21 +189,25 @@ namespace   Stroika {
                         }
                         else if (r.Intersects (*startI)) {
                             RangeType newValue { min (rStart, startI->GetLowerBound ()), startI->GetUpperBound () };
-                            DbgTrace ("Updating subrange element %d from %f/%f to %f/%f",
-                                      fSubRanges_.IndexOf (startI),
-                                      static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
-                                      static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                     );
+                            if (sNoisyDebugTrace_) {
+                                DbgTrace ("Updating subrange element %d from %f/%f to %f/%f",
+                                          fSubRanges_.IndexOf (startI),
+                                          static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
+                                          static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
+                                );
+                            }
                             if (*startI != newValue) {
                                 fSubRanges_.Update (startI, newValue);
                             }
                         }
                         else {
-                            DbgTrace ("Inserting subrange element %d from %f/%f to %f/%f",
-                                      fSubRanges_.IndexOf (startI),
-                                      static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
-                                      static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                     );
+                            if (sNoisyDebugTrace_) {
+                                DbgTrace ("Inserting subrange element %d from %f/%f to %f/%f",
+                                          fSubRanges_.IndexOf (startI),
+                                          static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
+                                );
+                            }
                             fSubRanges_.Insert (startI, r);
                         }
 
@@ -215,17 +221,21 @@ namespace   Stroika {
                         Assert (endI != fSubRanges_.end ());
                         if (endI->GetLowerBound () <= rEnd) {
                             RangeType newValue { endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ()) };
-                            DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
-                                      fSubRanges_.IndexOf (endI),
-                                      static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
-                                      static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                     );
+                            if (sNoisyDebugTrace_) {
+                                DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
+                                          fSubRanges_.IndexOf (endI),
+                                          static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
+                                          static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
+                                );
+                            }
                             fSubRanges_.Update (endI, newValue);
                         }
                         else {
-                            DbgTrace ("Appending RHS subrange element %f/%f",
-                                      static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                     );
+                            if (sNoisyDebugTrace_) {
+                                DbgTrace ("Appending RHS subrange element %f/%f",
+                                          static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
+                                );
+                            }
                             fSubRanges_.Append (r);
                         }
 
@@ -234,10 +244,12 @@ namespace   Stroika {
                         if (startI != fSubRanges_.end ()) {
                             for (auto i = startI; i != endI and i != fSubRanges_.end (); ++i) {
                                 if (i != startI and i != endI) {
-                                    DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
-                                              fSubRanges_.IndexOf (i),
-                                              static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ())
-                                             );
+                                    if (sNoisyDebugTrace_) {
+                                        DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
+                                                  fSubRanges_.IndexOf (i),
+                                                  static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ())
+                                        );
+                                    }
                                     fSubRanges_.Remove (i);
                                 }
                             }
