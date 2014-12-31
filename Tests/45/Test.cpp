@@ -615,6 +615,16 @@ namespace {
                 VerifyTestResult (Containers::Sequence<int> (dr.Intersection (RT {2, 4}).Elements ()) == Containers::Sequence<int> ({2, 4}));
             }
         }
+        {
+            using DRT = DisjointDiscreteRange<int>;
+            DRT dr;
+            constexpr size_t kMax_ = 10000;
+            for (int i = 0; i < kMax_; ++i) {
+                dr.Add (i);
+            }
+            VerifyTestResult (dr.SubRanges ().size () == 1);
+            VerifyTestResult (dr.Elements ().size () == kMax_);
+        }
     }
 }
 

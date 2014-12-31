@@ -21,8 +21,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *      @todo   Consider if we should subclass from Iterable<Range> or return one?
- *
  *      @todo   better document threadsafety stuff and use AssertExternallyLocked locker crap to assert/assure only used at same time
  *              from multiple threads.
  *
@@ -34,7 +32,10 @@
  *
  *              THEN use that in Ensure() at end of DisjointRange<T, RANGE_TYPE>::MergeIn_();
  *
- *      @todo   Add Contains() overload taking Range (and maybe disjoint range)?
+ *              And have Contains() overload that takes DisjointRange(), as alias for Intersects(); I think?
+ *              Maybe Contains ALWAYS is just alias for Intersects?
+ *
+ *              DOCUMENT that Contains() is ContainsOrEquals () - not proper contianment.
  */
 
 

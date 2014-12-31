@@ -121,7 +121,7 @@ namespace   Stroika {
                         }
                     }
                 }
-                return DisjointRange { disjointRanges };
+                return move (DisjointRange { disjointRanges });
             }
             template    <typename T, typename RANGE_TYPE>
             void    DisjointRange<T, RANGE_TYPE>::MergeIn_ (const RangeType& r)
@@ -171,7 +171,7 @@ namespace   Stroika {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
                                           static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                );
+                                         );
                             }
                             // cuz this means no ranges to the right containing rStart
                             //
@@ -194,7 +194,7 @@ namespace   Stroika {
                                           fSubRanges_.IndexOf (startI),
                                           static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
                                           static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                );
+                                         );
                             }
                             if (*startI != newValue) {
                                 fSubRanges_.Update (startI, newValue);
@@ -206,7 +206,7 @@ namespace   Stroika {
                                           fSubRanges_.IndexOf (startI),
                                           static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
                                           static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                );
+                                         );
                             }
                             fSubRanges_.Insert (startI, r);
                         }
@@ -226,7 +226,7 @@ namespace   Stroika {
                                           fSubRanges_.IndexOf (endI),
                                           static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
                                           static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                );
+                                         );
                             }
                             fSubRanges_.Update (endI, newValue);
                         }
@@ -234,7 +234,7 @@ namespace   Stroika {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending RHS subrange element %f/%f",
                                           static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
-                                );
+                                         );
                             }
                             fSubRanges_.Append (r);
                         }
@@ -248,7 +248,7 @@ namespace   Stroika {
                                         DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
                                                   fSubRanges_.IndexOf (i),
                                                   static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ())
-                                        );
+                                                 );
                                     }
                                     fSubRanges_.Remove (i);
                                 }

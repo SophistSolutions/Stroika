@@ -51,7 +51,6 @@ namespace   Stroika {
                 /**
                  *  You can pass in empty Ranges, and ranges out of order, but the constructor always filters out
                  *  empty ranges, and re-orders so subranges well-ordered.
-                 ***    @todo make it so!
                  */
                 DisjointDiscreteRange () = default;
                 DisjointDiscreteRange (const DisjointDiscreteRange&) = default;
@@ -95,8 +94,6 @@ namespace   Stroika {
                  *
                  *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
                  *  appear in the Elements() Iterable<T>.
-
-                 ///NYI
                  */
                 nonvirtual  Iterable<ElementType>   Elements () const;
             };

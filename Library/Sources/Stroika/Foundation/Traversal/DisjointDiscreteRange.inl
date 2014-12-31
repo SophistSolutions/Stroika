@@ -43,25 +43,29 @@ namespace   Stroika {
                 Containers::Sequence<RangeType> srs { this->SubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
                 for (Iterator<RangeType> i = srs.begin (); i != srs.end (); ++i) {
-                    if (elt < i->GetLowerBound ()) {
-                        // then either extend by one or insert new item
-                        if (elt == i->GetLowerBound () - 1) {
-                            srs.Update (i, DiscreteRange<ElementType> (elt, i->GetUpperBound ()));
-                            // No need to check for merge adjacent cuz done by constructor
-                        }
-                        else {
-                            srs.Insert (i, DiscreteRange<ElementType> (elt, elt));
-                        }
-                        *this = THIS_CLASS_ (srs);
-                        return;
-                    }
                     if (i->Contains (elt)) {
                         return;
+                    }
+                    else if (elt == i->GetLowerBound () - 1) {
+                        srs.Update (i, DiscreteRange<ElementType> (elt, i->GetUpperBound ()));
+                        // No need to check for merge adjacent cuz done by constructor
+                        *this = move (THIS_CLASS_ { srs });
+                        return;
+                    }
+                    else if (elt == i->GetUpperBound () + 1) {
+                        srs.Update (i, DiscreteRange<ElementType> (i->GetLowerBound (), elt));
+                        // No need to check for merge adjacent cuz done by constructor
+                        *this = move (THIS_CLASS_ { srs });
+                        return;
+                    }
+                    else if (elt < i->GetLowerBound ()) {
+                        // wont be found later, so break now, and add the point
+                        break;
                     }
                 }
                 // if not less than any there, we must append new item
                 srs.push_back (DiscreteRange<ElementType> (elt, elt));
-                *this = THIS_CLASS_ { srs };
+                *this = move (THIS_CLASS_ { srs });
             }
             template    <typename T, typename RANGE_TYPE>
             auto    DisjointDiscreteRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointDiscreteRange
