@@ -625,6 +625,20 @@ namespace {
             VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Elements ().size () == kMax_);
         }
+        {
+            using DRT = DisjointDiscreteRange<int>;
+            DRT dr;
+            dr.Add (872);
+            VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({872}));
+            dr.Add (231);
+            VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 872}));
+            dr.Add (329);
+            VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 872}));
+            dr.Add (665);
+            VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 665, 872}));
+            dr.Add (581);
+            VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 581, 665, 872}));
+        }
     }
 }
 

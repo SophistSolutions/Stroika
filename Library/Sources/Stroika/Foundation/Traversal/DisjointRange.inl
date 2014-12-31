@@ -58,6 +58,14 @@ namespace   Stroika {
                 return fSubRanges_.FindFirstThat ([elt] (RangeType r) { return r.Contains (elt); });
             }
             template    <typename T, typename RANGE_TYPE>
+            bool    DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
+            {
+                // @todo could be more efficient
+                DisjointRange<T, RANGE_TYPE>        intersection = Intersection (rhs);
+                Containers::Sequence<RANGE_TYPE>    sr { intersection.SubRanges () };
+                return sr.size () == 1 and sr[0] == rhs;
+            }
+            template    <typename T, typename RANGE_TYPE>
             RANGE_TYPE   DisjointRange<T, RANGE_TYPE>::GetBounds () const
             {
                 size_t  n   =   fSubRanges_.size ();
@@ -126,6 +134,14 @@ namespace   Stroika {
             template    <typename T, typename RANGE_TYPE>
             void    DisjointRange<T, RANGE_TYPE>::MergeIn_ (const RangeType& r)
             {
+#if 0
+                if (sNoisyDebugTrace_) {
+                    Debug::TraceContextBumper ctx (SDKSTR ("ENTERING"));
+                    for (RangeType i : SubRanges ()) {
+                        DbgTrace (L"Range: %f..%f", double (i.GetLowerBound ()), double (i.GetUpperBound ()));
+                    }
+                }
+#endif
                 AssertInternalRepValid_ ();
                 if (not r.empty ()) {
                     ElementType         rStart  { r.GetLowerBound () };
@@ -167,6 +183,7 @@ namespace   Stroika {
                         };
 
                         Iterator<RangeType> startI   =   fSubRanges_.FindFirstThat ([rStart] (const RangeType & r) -> bool {return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                        bool    extendedRange { false };
                         if (startI == fSubRanges_.end ()) {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
@@ -182,6 +199,7 @@ namespace   Stroika {
                                 Assert (i->GetUpperBound () == prevVal);
                                 RangeType newValue { i->GetLowerBound (), rStart };
                                 fSubRanges_.Update (i, newValue);
+                                extendedRange = true;
                             }
                             else {
                                 fSubRanges_.Append (r);
@@ -198,11 +216,12 @@ namespace   Stroika {
                             }
                             if (*startI != newValue) {
                                 fSubRanges_.Update (startI, newValue);
+                                extendedRange = true;
                             }
                         }
                         else {
                             if (sNoisyDebugTrace_) {
-                                DbgTrace ("Inserting subrange element %d from %f/%f to %f/%f",
+                                DbgTrace ("Inserting subrange element %d before %f/%f of %f/%f",
                                           fSubRanges_.IndexOf (startI),
                                           static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
                                           static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ())
@@ -221,14 +240,17 @@ namespace   Stroika {
                         Assert (endI != fSubRanges_.end ());
                         if (endI->GetLowerBound () <= rEnd) {
                             RangeType newValue { endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ()) };
-                            if (sNoisyDebugTrace_) {
-                                DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
-                                          fSubRanges_.IndexOf (endI),
-                                          static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
-                                          static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
-                                         );
+                            if (newValue != *endI) {
+                                if (sNoisyDebugTrace_) {
+                                    DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
+                                              fSubRanges_.IndexOf (endI),
+                                              static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
+                                              static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ())
+                                             );
+                                }
+                                fSubRanges_.Update (endI, newValue);
+                                extendedRange = true;
                             }
-                            fSubRanges_.Update (endI, newValue);
                         }
                         else {
                             if (sNoisyDebugTrace_) {
@@ -241,7 +263,7 @@ namespace   Stroika {
 
                         // then merge out uneeded items in between
                         // @todo/CLEANUP/REVIEW - not sure we always have startI <= endI...
-                        if (startI != fSubRanges_.end ()) {
+                        if (extendedRange and startI != fSubRanges_.end ()) {
                             for (auto i = startI; i != endI and i != fSubRanges_.end (); ++i) {
                                 if (i != startI and i != endI) {
                                     if (sNoisyDebugTrace_) {
@@ -261,6 +283,15 @@ namespace   Stroika {
                 Ensure (r.GetLowerBoundOpenness () == Openness::eOpen or Contains (r.GetLowerBound ()));
                 Ensure (r.GetUpperBoundOpenness () == Openness::eOpen or Contains (r.GetUpperBound ()));
                 Ensure (GetBounds ().Contains (r));
+                //Ensure (Contains (r));            DISABLE TEMPORARILY CUZ CONTAINS CONSTRUCTS (ANOTHER) NEW RANGE, CAUSING INFINITE RECURSE - ...
+#if 0
+                if (sNoisyDebugTrace_) {
+                    Debug::TraceContextBumper ctx (SDKSTR ("EXITING"));
+                    for (RangeType i : SubRanges ()) {
+                        DbgTrace (L"Range: %f..%f", double (i.GetLowerBound ()), double (i.GetUpperBound ()));
+                    }
+                }
+#endif
             }
             template    <typename T, typename RANGE_TYPE>
             inline  void    DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()

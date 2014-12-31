@@ -103,6 +103,7 @@ namespace   Stroika {
                  *  GetBounds().Contains() if SubRanges ().size () <= 1.
                  */
                 nonvirtual  bool    Contains (ElementType elt) const;
+                nonvirtual  bool    Contains (const RangeType& rhs) const;
 
             public:
                 /**
