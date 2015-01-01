@@ -128,17 +128,38 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
-                // HORIBLE but for now hopefully adequate implementation
-                // @todo see MultiSet::ElementsIteratorHelper_ for better impl strategy...
                 Containers::Sequence<RangeType>     subRanges { this->SubRanges () };
-                Containers::Sequence<ElementType>   result {};
-                for (RangeType ri : subRanges)
-                {
-                    for (ElementType rri : ri) {
-                        result.Append (rri);
+                struct context_ {
+                    Containers::Sequence<RangeType>     fSubRanges;
+                    size_t                              fSubRangeIdx {};
+                    ElementType                         fCurrentSubRangeIteratorAt {};
+                    context_ () = delete;
+                    context_ (const Containers::Sequence<RangeType>& sr)
+                        : fSubRanges (sr)
+                    {
                     }
-                }
-                return result;
+                    context_ (const context_ & from) = default;
+                };
+                auto myContext = make_shared<context_> (context_ {subRanges});
+                auto getNext = [myContext] () -> Memory::Optional<ElementType> {
+                    if (myContext->fSubRangeIdx < myContext->fSubRanges.size ())
+                    {
+                        RangeType   curRange = myContext->fSubRanges[myContext->fSubRangeIdx];
+                        size_t      nEltsPerRange = curRange.GetDistanceSpanned ();
+                        Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
+                        ElementType result { curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt };
+                        if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
+                            myContext->fSubRangeIdx++;
+                            myContext->fCurrentSubRangeIteratorAt = 0;
+                        }
+                        else {
+                            myContext->fCurrentSubRangeIteratorAt++;
+                        }
+                        return result;
+                    }
+                    return Memory::Optional<ElementType> ();
+                };
+                return Traversal::CreateGenerator<ElementType> (getNext);
             }
 
 
