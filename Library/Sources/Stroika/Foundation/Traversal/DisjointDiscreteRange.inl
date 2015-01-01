@@ -146,8 +146,9 @@ namespace   Stroika {
                 auto getNext = [myContext] () -> Memory::Optional<ElementType> {
                     if (myContext->fSubRangeIdx < myContext->fSubRanges.size ())
                     {
-                        RangeType   curRange = myContext->fSubRanges[myContext->fSubRangeIdx];
-                        size_t      nEltsPerRange = curRange.GetDistanceSpanned ();
+                        using   UnsignedDifferenceType  =   RANGE_TYPE::UnsignedDifferenceType;
+                        RangeType               curRange        { myContext->fSubRanges[myContext->fSubRangeIdx] };
+                        UnsignedDifferenceType  nEltsPerRange   { curRange.GetDistanceSpanned () };
                         Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
                         ElementType result { curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt };
                         if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
