@@ -78,8 +78,8 @@ namespace   Stroika {
                  */
 #if     !qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
                 template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
-                        };
+                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), typename make_unsigned < decltype (T() - T()) >::type > {
+                };
 #else
                 template    <typename T>
                 struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
