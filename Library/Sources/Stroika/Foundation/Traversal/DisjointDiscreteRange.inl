@@ -130,6 +130,7 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
+                using   UnsignedDifferenceType  =   typename RANGE_TYPE::UnsignedDifferenceType;
                 Containers::Sequence<RangeType>     subRanges { this->SubRanges () };
                 struct context_ {
                     Containers::Sequence<RangeType>     fSubRanges;
@@ -146,7 +147,6 @@ namespace   Stroika {
                 auto getNext = [myContext] () -> Memory::Optional<ElementType> {
                     if (myContext->fSubRangeIdx < myContext->fSubRanges.size ())
                     {
-                        using   UnsignedDifferenceType  =   RANGE_TYPE::UnsignedDifferenceType;
                         RangeType               curRange        { myContext->fSubRanges[myContext->fSubRangeIdx] };
                         UnsignedDifferenceType  nEltsPerRange   { curRange.GetDistanceSpanned () };
                         Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
