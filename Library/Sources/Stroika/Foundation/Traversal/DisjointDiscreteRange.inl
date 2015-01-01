@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Traversal_DisjointDiscreteRange_inl_
 #define _Stroika_Foundation_Traversal_DisjointDiscreteRange_inl_
 
+#include    "Generator.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
