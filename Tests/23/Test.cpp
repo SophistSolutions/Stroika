@@ -50,6 +50,40 @@ namespace {
 }
 
 
+namespace {
+    namespace Test2_InitalizeCTORs_ {
+        void    DoRun ()
+        {
+            {
+                SortedSet<int> tmp {1, 3};
+                VerifyTestResult (tmp.size () == 2);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+            }
+            {
+                SortedSet<int> tmp {1, 3, 4, 5, 7};
+                VerifyTestResult (tmp.size () == 5);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+                VerifyTestResult (tmp.Contains (7));
+            }
+            {
+                Set<int> t1 {1, 3, 4, 5, 7};
+                SortedSet<int> tmp = SortedSet<int> (t1.begin (), t1.end () );
+                //SortedSet<int> tmp  {t1.begin (), t1.end () };
+                VerifyTestResult (tmp.size () == 5);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+                VerifyTestResult (tmp.Contains (7));
+            }
+        }
+    }
+}
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -82,6 +116,8 @@ namespace   {
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<SimpleClass>> ();
         RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
+
+        Test2_InitalizeCTORs_::DoRun();
     }
 }
 
