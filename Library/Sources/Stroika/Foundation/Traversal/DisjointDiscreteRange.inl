@@ -46,7 +46,10 @@ namespace   Stroika {
             {
                 using   Memory::Optional;
                 Containers::Sequence<RangeType> srs {};
-                Containers::SortedSet<ElementType> ss { start, end };
+                // @todo DEBUG why this initializer syntax produces wrong overload call ???
+                // --2015-01-02
+                //Containers::SortedSet<ElementType> ss { start, end };
+                Containers::SortedSet<ElementType> ss = Containers::SortedSet<ElementType> ( start, end );
                 ElementType startAt {};
                 Optional<ElementType>   endAt;
                 for (ElementType i : ss) {
@@ -60,7 +63,8 @@ namespace   Stroika {
                     else {
                         Assert (startAt <= *endAt);
                         srs.Append (RangeType (startAt, *endAt));
-                        endAt.clear ();
+                        startAt = i;
+                        endAt = i;
                     }
                 }
                 if (endAt) {
