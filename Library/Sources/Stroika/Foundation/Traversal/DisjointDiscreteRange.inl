@@ -30,7 +30,7 @@ namespace   Stroika {
             template    <typename T, typename RANGE_TYPE>
             template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
             DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
-                : inherited (from)
+                : DisjointDiscreteRange (from.begin (), from.end ())
             {
             }
             template    <typename T, typename RANGE_TYPE>
@@ -44,9 +44,30 @@ namespace   Stroika {
             DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type*)
                 : inherited ()
             {
+                using   Memory::Optional;
+                Containers::Sequence<RangeType> srs {};
                 Containers::SortedSet<ElementType> ss { start, end };
-                // @todo NYI
-                Assert (false);
+                ElementType startAt {};
+                Optional<ElementType>   endAt;
+                for (ElementType i : ss) {
+                    if (endAt.IsMissing ()) {
+                        startAt = i;
+                        endAt = i;
+                    }
+                    else if (RangeType::TraitsType::GetNext (*endAt) == i) {
+                        endAt = i;
+                    }
+                    else {
+                        Assert (startAt <= *endAt);
+                        srs.Append (RangeType (startAt, *endAt));
+                        endAt.clear ();
+                    }
+                }
+                if (endAt) {
+                    Assert (startAt <= *endAt);
+                    srs.Append (RangeType (startAt, *endAt));
+                }
+                *this = move (THIS_CLASS_ { srs });
             }
             template    <typename T, typename RANGE_TYPE>
             void    DisjointDiscreteRange<T, RANGE_TYPE>::Add (ElementType elt)
