@@ -9,6 +9,7 @@
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Sequence.h"
+#include    "../Containers/SortedSet.h"
 #include    "../Memory/Optional.h"
 
 #include    "DiscreteRange.h"
@@ -59,7 +60,9 @@ namespace   Stroika {
                 template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
                 explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
                 template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end);
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>::value, int >::type* = nullptr);
+                template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type* = nullptr);
 
             public:
                 nonvirtual  DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;

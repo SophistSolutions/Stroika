@@ -35,9 +35,18 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>::value, int >::type*)
                 : inherited (start, end)
             {
+            }
+            template    <typename T, typename RANGE_TYPE>
+            template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type*)
+                : inherited ()
+            {
+                Containers::SortedSet<ElementType> ss { start, end };
+                // @todo NYI
+                Assert (false);
             }
             template    <typename T, typename RANGE_TYPE>
             void    DisjointDiscreteRange<T, RANGE_TYPE>::Add (ElementType elt)
