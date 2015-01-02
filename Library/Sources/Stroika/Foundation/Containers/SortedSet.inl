@@ -63,6 +63,15 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (move<inherited> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+            {
+                _AssertRepValidType ();
+                this->AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template    <typename T, typename TRAITS>
             inline  void    SortedSet<T, TRAITS>::_AssertRepValidType () const
             {
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
