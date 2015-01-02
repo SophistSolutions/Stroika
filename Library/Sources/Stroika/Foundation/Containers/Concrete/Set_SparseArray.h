@@ -24,7 +24,9 @@
  *
  *              Nice to add coalese feature on add remove. A good ½ day to impement properly.
  *
- *              Probably also AsRuns -> Iterable<Range<T,T>>
+ *              Probably also AsRuns () -> Iterable<Range<T,T>>
+ *
+ *              @see DisjointRange<> and DisjointDiscreteRange<>
  */
 
 
