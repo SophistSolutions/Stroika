@@ -651,7 +651,6 @@ namespace {
             roundTrip (Set<int> {4, 5, 6, 7, 8, 9, 10, 11, 100, 102, 103, 104 });
             roundTrip (Set<int> ((DiscreteRange<int> {1, 1000}).Elements ()));
         }
-#endif
     }
 }
 
