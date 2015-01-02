@@ -53,6 +53,11 @@ namespace   Stroika {
                 return fSubRanges_.empty ();
             }
             template    <typename T, typename RANGE_TYPE>
+            inline  void    DisjointRange<T, RANGE_TYPE>::clear ()
+            {
+                fSubRanges_.clear ();
+            }
+            template    <typename T, typename RANGE_TYPE>
             bool    DisjointRange<T, RANGE_TYPE>::Contains (ElementType elt) const
             {
                 return fSubRanges_.FindFirstThat ([elt] (RangeType r) { return r.Contains (elt); });

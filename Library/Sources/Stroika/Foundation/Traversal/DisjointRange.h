@@ -97,6 +97,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Same as *this = DisjointRange ()
+                 */
+                nonvirtual   void    clear ();
+
+            public:
+                /**
                  *  @see Range::Contains.
                  *
                  *  This returns true if r is contained in some sub-element range. This is only the smae as
