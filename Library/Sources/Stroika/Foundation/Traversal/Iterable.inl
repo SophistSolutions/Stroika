@@ -281,7 +281,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>    Iterable<T>::end ()
             {
-                return (Iterator<T>::GetEmptyIterator ());
+                return Iterator<T>::GetEmptyIterator ();
             }
             template    <typename T>
             inline  void    Iterable<T>::Apply (const function<void(const T& item)>& doToElement) const
