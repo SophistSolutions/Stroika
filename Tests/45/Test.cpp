@@ -404,8 +404,6 @@ namespace {
 
 
 
-
-
 namespace {
     void    Test13_DisjointRange_ ()
     {
@@ -639,31 +637,23 @@ namespace {
             dr.Add (581);
             VerifyTestResult (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 581, 665, 872}));
         }
-#if 0
         {
             using Containers::Set;
+            using Containers::SortedSet;
             using DRT = DisjointDiscreteRange<int>;
             auto roundTrip = [] (const Set<int>& s) {
                 DRT tmp { s };
                 VerifyTestResult (tmp.Elements().size () == s.size ());
                 VerifyTestResult (Set<int> (tmp.Elements ()) == s);
             };
-
-            Set<int> xxx {6, 7};
-            VerifyTestResult (xxx.size () == 2);
-            VerifyTestResult (xxx.Contains (6));
-            VerifyTestResult (xxx.Contains (7));
-            roundTrip (xxx);
-
             roundTrip (Set<int> {3, 4});
-
             roundTrip (Set<int> {1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 100 });
+            roundTrip (Set<int> {4, 5, 6, 7, 8, 9, 10, 11, 100, 102, 103, 104 });
             roundTrip (Set<int> ((DiscreteRange<int> {1, 1000}).Elements ()));
         }
 #endif
     }
 }
-
 
 
 
