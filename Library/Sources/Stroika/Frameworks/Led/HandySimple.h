@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
 #ifndef ____Led_HandySimple_h__
 #define ____Led_HandySimple_h__ 1

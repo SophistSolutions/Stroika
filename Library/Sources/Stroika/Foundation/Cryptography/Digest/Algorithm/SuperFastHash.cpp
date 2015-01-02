@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2014.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  *
  * Copyright(c) 2004-2008 by Paul Hsieh
  *      PARTS OF THIS CODE MAYBE COVERED BY http://www.gnu.org/licenses/lgpl-2.1.txt - See
