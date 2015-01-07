@@ -358,6 +358,10 @@ namespace {
             S = tmp + 2;                 // skip ") "
         }
 
+        // MSVC SILLY WARNING ABOUT USING swscanf_s
+        // (warning doesnt appear to check if we have mismatch between types and format args provided.
+        //      --LGP 2015-01-07
+        DISABLE_COMPILER_MSC_WARNING_START(4996)
         int num = sscanf(S,
                          "%c "
                          "%d %d %d %d %d "
@@ -399,6 +403,7 @@ namespace {
                          &result.rtprio, &result.sched  /* both added to 2.5.18 */
 #endif
                         );
+        DISABLE_COMPILER_MSC_WARNING_END(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("result.start_time=%lld", result.start_time);
