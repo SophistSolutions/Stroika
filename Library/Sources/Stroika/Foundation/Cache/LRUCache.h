@@ -286,7 +286,7 @@ namespace   Stroika {
                 template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
                 struct  LRUCache_DefaultTraits {
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, kHashTableSize, HASH_TABLE_SIZE);
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
                     // If KeyType different type than ElementType we need a hash for that too
                     static  size_t  Hash (const KEY& e)
@@ -324,7 +324,7 @@ namespace   Stroika {
                     {
                         return e.fKey;
                     }
-                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
                     static  size_t  Hash (const KEY& e)
                     {
                         return TRAITS::Hash (e);
