@@ -43,7 +43,7 @@ namespace   {
         namespace Private_ {
             void    T1_ ()
             {
-                nu_LRUCache<string, string> tmp (3);
+                LRUCache<string, string> tmp (3);
                 tmp.Add("a", "1");
                 tmp.Add("b", "2");
                 tmp.Add("c", "3");
@@ -52,14 +52,14 @@ namespace   {
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
 
-                nu_LRUCache<string, string> tmp2 = tmp;
+                LRUCache<string, string> tmp2 = tmp;
                 VerifyTestResult (tmp2.Lookup ("a").IsMissing ());
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
             void    T2_ ()
             {
-                using   CACHE = nu_LRUCache<string, string, nu_LRUCache_DefaultTraits<string, 10>>;
+                using   CACHE = LRUCache<string, string, LRUCacheSupport::LRUCache_DefaultTraits<string, 10>>;
                 CACHE tmp (3);
                 tmp.Add("a", "1");
                 tmp.Add("b", "2");

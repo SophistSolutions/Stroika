@@ -89,7 +89,7 @@ namespace   Stroika {
                 ~ThreadPool ();
 
             public:
-                using   TaskType    =   shared_ptr<IRunnable>;
+                using   TaskType    =   IRunnablePtr;
 
             public:
                 nonvirtual  unsigned int    GetPoolSize () const;
@@ -109,6 +109,10 @@ namespace   Stroika {
             public:
                 /**
                  *  Push the given task into the queue.
+                 *
+                 *  EXAMPLE:
+                 *      ThreadPool p;
+                 *      p.AddTask (mkIRunnablePtr ([] () {doIt ();});
                  */
                 nonvirtual  void    AddTask (const TaskType& task);
 

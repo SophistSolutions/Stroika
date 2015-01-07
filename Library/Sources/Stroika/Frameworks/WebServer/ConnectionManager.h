@@ -88,8 +88,8 @@ namespace   Stroika {
 
             private:
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-                Execution::nu_Synchronized<list<shared_ptr<RequestHandler>>>    fHandlers_;
-                Execution::nu_Synchronized<list<shared_ptr<Connection>>>        fActiveConnections_;
+                Execution::Synchronized<list<shared_ptr<RequestHandler>>>   fHandlers_;
+                Execution::Synchronized<list<shared_ptr<Connection>>>       fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
@@ -97,7 +97,7 @@ namespace   Stroika {
                 // But for now - KISS
                 //
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
-                Execution::ThreadPool                           fThreads_;
+                Execution::ThreadPool                                       fThreads_;
             };
 
         }
