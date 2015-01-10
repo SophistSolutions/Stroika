@@ -140,7 +140,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       ct      { tr->GetCurrentTask () };
+            TaskType					ct      { tr->GetCurrentTask () };
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
@@ -201,7 +201,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       ct      { tr->GetCurrentTask () };
+            TaskType					ct      { tr->GetCurrentTask () };
             if (task == ct) {
                 thread2Kill =   i->fThread;
                 fThreads_.Update (i, mkThread_ ());
@@ -242,6 +242,7 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
 
 bool    ThreadPool::IsPresent (const TaskType& task) const
 {
+    Require (task != nullptr);
     {
         // First see if its in the Q
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -256,12 +257,12 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
 
 bool    ThreadPool::IsRunning (const TaskType& task) const
 {
-    Require (task.get () != nullptr);
+    Require (task != nullptr);
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       rTask   { tr->GetCurrentTask () };
+            TaskType					rTask   { tr->GetCurrentTask () };
             if (task == rTask) {
                 return true;
             }
@@ -293,7 +294,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            TaskType					task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -309,7 +310,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            TaskType					task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -327,7 +328,7 @@ size_t  ThreadPool::GetTasksCount () const
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            TaskType					task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 count++;
             }
