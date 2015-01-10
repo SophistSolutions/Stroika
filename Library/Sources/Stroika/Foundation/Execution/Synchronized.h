@@ -8,8 +8,21 @@
 
 #include    <mutex>
 
+#include    "../Configuration/Common.h"
+
 #include    "Common.h"
+
+
+
+//#define qSUPPORT_LEGACY_SYNCHO  1
+#ifndef qSUPPORT_LEGACY_SYNCHO
+#define qSUPPORT_LEGACY_SYNCHO  0
+#endif
+
+
+#if qSUPPORT_LEGACY_SYNCHO
 #include    "SpinLock.h"        // just needed while we support LEGACY_Synchronized
+#endif
 
 
 
@@ -24,10 +37,6 @@
  *
  */
 
-//#define	qSUPPORT_LEGACY_SYNCHO	0
-#ifndef	qSUPPORT_LEGACY_SYNCHO
-#define	qSUPPORT_LEGACY_SYNCHO	1
-#endif
 
 namespace   Stroika {
     namespace   Foundation {
@@ -106,14 +115,14 @@ namespace   Stroika {
              *      To use timed-locks, use timed_recursive_mutex.
              *
              *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
-			 *
-			 *	EXAMPLE:
-			 *		Synchonized<String>	n;													// SAME
-			 *		Synchonized<String,Synchronized_Traits<String>>	n;						// SAME
-			 *		Synchonized<String,Synchronized_Traits<String, recursive_mutex>>	n;	// SAME
-			 *
-			 *	or slightly faster, but possibly slower or less safe (depnding on usage)
-			 *		Synchonized<String,Synchronized_Traits<String, SpinLock>>	n;	
+             *
+             *  EXAMPLE:
+             *      Synchonized<String> n;                                                  // SAME
+             *      Synchonized<String,Synchronized_Traits<String>> n;                      // SAME
+             *      Synchonized<String,Synchronized_Traits<String, recursive_mutex>>    n;  // SAME
+             *
+             *  or slightly faster, but possibly slower or less safe (depnding on usage)
+             *      Synchonized<String,Synchronized_Traits<String, SpinLock>>   n;
              */
             template    <typename   T, typename MUTEX = recursive_mutex>
             struct  Synchronized_Traits {
@@ -121,17 +130,17 @@ namespace   Stroika {
             };
 
 
-			/**
-			 *	EXAMPLE:
-			 *		Synchonized<String>	n;													// SAME
-			 *		Synchonized<String,Synchronized_Traits<String>>	n;						// SAME
-			 *		Synchonized<String,Synchronized_Traits<String, recursive_mutex>>	n;	// SAME
-			 *
-			 *	or slightly faster, but possibly slower or less safe (depnding on usage)
-			 *		Synchonized<String,Synchronized_Traits<String, SpinLock>>	n;	
-			 *
-			 *	or to allow timed locks
-			 *		Synchonized<String,Synchronized_Traits<String, timed_recursive_mutex>>	n;	
+            /**
+             *  EXAMPLE:
+             *      Synchonized<String> n;                                                  // SAME
+             *      Synchonized<String,Synchronized_Traits<String>> n;                      // SAME
+             *      Synchonized<String,Synchronized_Traits<String, recursive_mutex>>    n;  // SAME
+             *
+             *  or slightly faster, but possibly slower or less safe (depnding on usage)
+             *      Synchonized<String,Synchronized_Traits<String, SpinLock>>   n;
+             *
+             *  or to allow timed locks
+             *      Synchonized<String,Synchronized_Traits<String, timed_recursive_mutex>>  n;
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
             class   Synchronized {
@@ -202,12 +211,23 @@ namespace   Stroika {
                 }
 
             public:
+                /**
+                 * EXAMPLE:
+                 *      auto    lockedConfigData = fConfig_.GetReference ();
+                 *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
+                 *      fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
+                 *
+                 *  This is equivilent (if using a recursive mutex) to (COUNTER_EXAMPLE):
+                 *      lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
+                 *      fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);
+                 *      fCurrentPressure_ = fConfig_->fPressure.Value (Pressure::Low);
+                 *
+                 *  Except that the former only does the lock once, and works even with a non-recursive mutex.
+                 */
                 nonvirtual  WritableReference GetReference ()
                 {
                     return move (WritableReference (&fDelegate_, &fLock_));
                 }
-
-            public:
                 nonvirtual  const WritableReference GetReference () const
                 {
                     return move (WritableReference (&fDelegate_, &fLock_));

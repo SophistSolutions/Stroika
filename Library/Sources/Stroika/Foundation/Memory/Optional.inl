@@ -796,7 +796,7 @@ namespace   Stroika {
         }
 #endif
 
-	
-	}
+
+    }
 }
 #endif  /*_Stroika_Foundation_Memory_Optional_inl_*/

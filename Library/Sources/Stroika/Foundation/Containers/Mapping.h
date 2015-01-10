@@ -495,8 +495,8 @@ namespace   Stroika {
 
         }
 #endif
-	
-	}
+
+    }
 }
 
 
