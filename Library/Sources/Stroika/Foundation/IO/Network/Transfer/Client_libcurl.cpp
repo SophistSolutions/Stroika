@@ -264,9 +264,10 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
         // @todo CONSIDER if we need to use Synchonized<> here. At one point we did, but perhaps no longer?
         // --LGP 2015-01-10
-        static  const   Mapping<String, String>    kSilenceTheseHeaders_  {{
-                { String_Constant (L"Expect"), String ()},
-                { String_Constant (L"Transfer-Encoding"), String ()}
+        static  const   Mapping<String, String>    kSilenceTheseHeaders_  {
+            {
+                pair<String, String> { String_Constant {L"Expect"}, {}},
+                pair<String, String> { String_Constant {L"Transfer-Encoding"}, {}}
             }
         };
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
