@@ -34,6 +34,7 @@
  * Description:
  *
  * TODO:
+ *      @todo   More operator<, etc overloads
  *
  */
 
@@ -207,7 +208,7 @@ namespace   Stroika {
                 /**
                  *  Synonym for load ()
                  */
-                nonvirtual  operator T () const
+                nonvirtual  explicit    operator T () const
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_;
@@ -265,6 +266,7 @@ namespace   Stroika {
                     return GetReference ();
                 }
 
+#if 0
             public:
                 bool operator== (T rhs) const
                 {
@@ -296,6 +298,7 @@ namespace   Stroika {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ >= rhs;
                 }
+#endif
 
             public:
                 void    lock ()
@@ -314,6 +317,58 @@ namespace   Stroika {
                 mutable MutexType   fLock_;
             };
 
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () < rhs;
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator<= (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () <= rhs;
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool operator== (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () == rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs.load () == rhs.load ();
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool operator!= (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () != rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs.load () != rhs.load ();
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator>= (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () >= rhs;
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator> (const Synchronized<T, TRAITS>& lhs, T rhs)
+            {
+                return lhs.load () > rhs;
+            }
 
 
             //migrate names support
