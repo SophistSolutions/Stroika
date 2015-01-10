@@ -183,7 +183,7 @@ namespace   Stroika {
                     {
                         RangeType               curRange        { myContext->fSubRanges[myContext->fSubRangeIdx] };
                         UnsignedDifferenceType  nEltsPerRange   { curRange.GetDistanceSpanned () };
-                        Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
+                        Assert (static_cast<UnsignedDifferenceType> (myContext->fCurrentSubRangeIteratorAt) <= nEltsPerRange);
                         ElementType result { curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt };
                         if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
                             myContext->fSubRangeIdx++;
