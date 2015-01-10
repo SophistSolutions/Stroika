@@ -56,7 +56,6 @@ namespace {
 
 
 
-
 namespace {
     void    RunThreads_ (const initializer_list<Thread>& threads)
     {
@@ -76,7 +75,7 @@ namespace {
 namespace {
 
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
-    Thread  mkIterateOverThread_ (ITERABLE_TYPE* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
+    Thread  mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         using ElementType   =   typename ITERABLE_TYPE::ElementType;
         return Thread ([iterable, lock, repeatCount] () {
@@ -84,7 +83,7 @@ namespace {
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
                 lock_guard<decltype(*lock)> critSec (*lock);
-                for (ElementType e :  *iterable) {
+                for (ElementType e :  iterable->load ()) {
                     ElementType e2 = e; // do something
                 }
             }
@@ -168,7 +167,6 @@ namespace   {
         }
     }
 }
-
 
 
 
@@ -277,16 +275,16 @@ namespace {
                 Synchronized<Optional<int>> sharedValue { 0 };
                 static  const int kMaxVal_ = 100000;
                 Thread  reader = [&sharedValue] () {
-                    while (sharedValue < kMaxVal_) {
-                        VerifyTestResult (sharedValue <= kMaxVal_);
+                    while (sharedValue.load () < kMaxVal_) {
+                        VerifyTestResult (sharedValue.load () <= kMaxVal_);
                     }
-                    VerifyTestResult (sharedValue == kMaxVal_);
+                    VerifyTestResult (sharedValue.load () == kMaxVal_);
                 };
                 Thread  adder = [&sharedValue] () {
-                    while (sharedValue < kMaxVal_) {
-                        sharedValue = *sharedValue.load () + 1;
+                    while (sharedValue.load () < kMaxVal_) {
+                        sharedValue.store (*sharedValue.load () + 1);
                     }
-                    VerifyTestResult (sharedValue == kMaxVal_);
+                    VerifyTestResult (sharedValue.load () == kMaxVal_);
                 };
                 reader.Start ();
                 adder.Start ();
@@ -298,7 +296,7 @@ namespace {
                 // wait long time cuz of debuggers etc
                 adder.WaitForDone(100);
                 reader.WaitForDone(100);
-                VerifyTestResult (sharedValue == kMaxVal_);
+                VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
                 VerifyTestResult (false);
@@ -335,12 +333,14 @@ namespace {
 }
 
 
+
+
 namespace {
     namespace   Test5_SetSpecificSyncMethods {
         void    DoIt ()
         {
             Set<int>                                sensorsToActuallyRead       { 2, 3 };
-            static  const   Synchronized<Set<int>>  kACUSensors_                { 1, 2 };
+            static  const   Synchronized<Set<int>>  kACUSensors_                { Set<int> { 1, 2 } };
             Set<int>                                acufpgaSensors1     =   kACUSensors_ ^ sensorsToActuallyRead;
             Set<int>                                acufpgaSensors2     =   sensorsToActuallyRead ^ kACUSensors_;
             VerifyTestResult (acufpgaSensors1 == Set<int> ({ 2 }));
@@ -382,19 +382,19 @@ namespace {
             {
                 using   namespace Execution;
                 {
-                    nu_Synchronized<int>    tmp;
+                    Synchronized<int>    tmp;
                     tmp = 4;
-                    int a = tmp;
+                    int a  { tmp };
                     VerifyTestResult (a == 4);
                 }
                 {
-                    nu_Synchronized<int>    tmp { 4 };
-                    int a = tmp;
+                    Synchronized<int>    tmp { 4 };
+                    int a { tmp };
                     VerifyTestResult (a == 4);
                 }
                 {
-                    nu_Synchronized<String>    tmp { L"x" };
-                    String a = tmp;
+                    Synchronized<String>    tmp { L"x" };
+                    String a { tmp };
                     VerifyTestResult (a == L"x");
                     VerifyTestResult (tmp->find ('z') == string::npos);
                     VerifyTestResult (tmp->find ('x') == 0);
@@ -438,7 +438,7 @@ namespace {
                     // Fails cuz no synchonization
                     DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;} , [] (intish_object1 * i) {(i->fVal)--;});
                 }
-                DoInterlocktest_<nu_Synchronized<intish_object1>> ([] (nu_Synchronized<intish_object1>* i) {((*i)->fVal)++;} , [] (nu_Synchronized<intish_object1>* i) {((*i)->fVal)--;});
+                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {((*i)->fVal)++;} , [] (Synchronized<intish_object1>* i) {((*i)->fVal)--;});
             }
         }
         void    DoIt ()
@@ -464,7 +464,6 @@ namespace   {
         Test7_nuSynchonized_::DoIt ();
     }
 }
-
 
 
 
