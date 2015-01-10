@@ -138,10 +138,9 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
     while (poolSize < fThreads_.size ()) {
         // iterate over threads if any not busy, remove that one
         bool anyFoundToKill = false;
-        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+        for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>       ct  =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
@@ -200,13 +199,12 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     Thread  thread2Kill;
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    ct  =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+        for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>       ct  =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (task == ct) {
-                thread2Kill =   *i;
-                *i = mkThread_ ();
+                thread2Kill =   i->fThread;
+                fThreads_.Update (i, mkThread_ ());
                 break;
             }
         }
@@ -226,15 +224,15 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     }
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        for (Thread ti : fThreads_) {
-            ti.Abort ();
+        for (TPInfo_ ti : fThreads_) {
+            ti.fThread.Abort ();
         }
     }
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        for (Thread ti : fThreads_) {
+        for (TPInfo_ ti : fThreads_) {
             // @todo fix wrong timeout value here
-            ti.AbortAndWaitForDone (timeout);
+            ti.fThread.AbortAndWaitForDone (timeout);
         }
         fThreads_.RemoveAll ();
     }
@@ -262,9 +260,8 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    rTask   =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>       rTask   =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (task == rTask) {
                 return true;
             }
@@ -295,9 +292,8 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>       task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (task.get () != nullptr) {
                 result.Add (task);
             }
@@ -312,9 +308,8 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>       task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (task.get () != nullptr) {
                 result.Add (task);
             }
@@ -331,9 +326,8 @@ size_t  ThreadPool::GetTasksCount () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<IRunnable>    tr  =   i->GetRunnable ();
-            Assert (dynamic_cast<MyRunnable_*> (tr.get ()) != nullptr);
-            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr.get ()).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
+            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
             if (task.get () != nullptr) {
                 count++;
             }
@@ -350,7 +344,9 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
         {
             auto    critSec { make_unique_lock (fCriticalSection_) };
-            threadsToShutdown = fThreads_;
+            for (auto ti : fThreads_) {
+                threadsToShutdown.Add (ti.fThread);
+            }
         }
         for (auto t : threadsToShutdown) {
             t.WaitForDoneUntil (timeoutAt);
@@ -367,7 +363,7 @@ void    ThreadPool::Abort ()
         auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.clear ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            i->Abort ();
+            i->fThread.Abort ();
         }
     }
 }
@@ -405,11 +401,12 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
     }
 }
 
-Thread      ThreadPool::mkThread_ ()
+ThreadPool::TPInfo_      ThreadPool::mkThread_ ()
 {
-    Thread  t   =   Thread (shared_ptr<IRunnable> (new ThreadPool::MyRunnable_ (*this)));      // ADD MY THREADOBJ
+    shared_ptr<MyRunnable_> r   { new ThreadPool::MyRunnable_ (*this) };
+    Thread  t   =   Thread (static_cast<IRunnablePtr> (r));      // ADD MY THREADOBJ
     static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
     t.SetThreadName (Characters::CString::Format (L"Thread Pool Entry %d", sThreadNum_++));
     t.Start ();
-    return t;
+    return TPInfo_ { t, r };
 }

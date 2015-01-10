@@ -190,20 +190,30 @@ namespace   Stroika {
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
-                // Called internally from threadpool tasks - to wait until there is a new task to run.
-                // This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
-                nonvirtual  void        WaitForNextTask_ (TaskType* result);
-                nonvirtual  Thread      mkThread_ ();
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
+                class   MyRunnable_;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   MyRunnable_;
+                struct  TPInfo_ {
+                    Thread                      fThread;
+                    shared_ptr<MyRunnable_>     fRunnable;
+                };
+
+            private:
+                // Called internally from threadpool tasks - to wait until there is a new task to run.
+                // This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
+                nonvirtual  void        WaitForNextTask_ (TaskType* result);
+                nonvirtual  TPInfo_     mkThread_ ();
+
             private:
                 mutable recursive_mutex         fCriticalSection_;
                 bool                            fAborted_;
-                Containers::Collection<Thread>  fThreads_;
+                Containers::Collection<TPInfo_> fThreads_;
                 list<TaskType>                  fTasks_;            // Use Stroika Queue
                 WaitableEvent                   fTasksAdded_;
             private:
