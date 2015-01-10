@@ -53,7 +53,7 @@ namespace {
     Execution::Thread                               sBookkeepingThread_;
     bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    LEGACY_Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
+    Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         mutex                               fMutex_;     // mutex so we can update related variables together
@@ -82,7 +82,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
-        if (sSuppressDuplicatesThreshold_.IsPresent ()) {
+        if (sSuppressDuplicatesThreshold_->IsPresent ()) {
             auto    critSec { make_unique_lock (sLastMsg_.fMutex_) };
             if (p == sLastMsg_.fLastMsgSent_) {
                 sLastMsg_.fRepeatCount_++;
@@ -142,6 +142,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
+	 auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
     if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         sSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         UpdateBookkeepingThread_ ();
@@ -170,7 +171,7 @@ void    Logger::UpdateBookkeepingThread_ ()
     sBookkeepingThread_.AbortAndWaitForDone ();
     sBookkeepingThread_ = Thread ();  // so null
 
-    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSuppressDuplicatesThreshold_.Value (0);
+    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSuppressDuplicatesThreshold_->Value (0);
     bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
     if (suppressDuplicates or GetBufferingEnabled ()) {
         if (suppressDuplicates) {
