@@ -12,6 +12,7 @@
 #include    "../Containers/Collection.h"
 #include    "../Containers/Queue.h"
 
+#include    "Function.h"
 #include    "Thread.h"
 #include    "WaitableEvent.h"
 
@@ -89,7 +90,9 @@ namespace   Stroika {
                 ~ThreadPool ();
 
             public:
-                using   TaskType    =   IRunnablePtr;
+                /**
+                 */
+                using   TaskType    =   Function<void()>;
 
             public:
                 nonvirtual  unsigned int    GetPoolSize () const;
@@ -112,9 +115,17 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      ThreadPool p;
-                 *      p.AddTask (mkIRunnablePtr ([] () {doIt ();});
+                 *      p.AddTask ([] () {doIt ();});
+                 *
+                 *  \note   Design Note:
+                 *      The reason this returns as TaskType is that its easy to convert a lambda or whatever into a TaskType, but if you do
+                 *      it multiple times you get different (!=) values. So to make the auto conversion work easier without needing
+                 *      to first create a variable, and then do the add task, you can just do them together. And it avoids mistakes like:
+                 *          function<void()> f = ...;
+                 *          p.AddTask(f);
+                 *          p.RemoveTask (p);   // fails cuz differnt 'TaskType' added - f converted to TaskType twice!
                  */
-                nonvirtual  void    AddTask (const TaskType& task);
+                nonvirtual  TaskType    AddTask (const TaskType& task);
 
             public:
                 /**
@@ -134,19 +145,25 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  returns true if queued OR actively running
+                 *  returns true if queued OR actively running.
+                 *
+                 *  \req task != nullptr
                  */
                 nonvirtual  bool    IsPresent (const TaskType& task) const;
 
             public:
                 /**
                  *  returns true actively running
+                 *
+                 *  \req task != nullptr
                  */
                 nonvirtual  bool    IsRunning (const TaskType& task) const;
 
             public:
                 /**
                  *  throws if timeout. Returns when task has completed (or if not in task q)
+                 *
+                 *  \req task != nullptr
                  */
                 nonvirtual  void    WaitForTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite) const;
 

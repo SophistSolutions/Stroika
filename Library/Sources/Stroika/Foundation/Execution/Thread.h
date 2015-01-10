@@ -207,10 +207,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Each thread has associated an IRunnable, which gets run by the thread. It can be accessed
-                 *  via GetRunnable(), but is only settable in the thread constructor.
+                 *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
+                 *  via GetFunction(), but is only settable in the thread constructor.
                  */
-                nonvirtual  shared_ptr<IRunnable>    GetRunnable () const;
+                nonvirtual  function<void()>    GetFunction () const;
 
             public:
                 /**
@@ -335,7 +335,7 @@ namespace   Stroika {
                  *  in another thread, by the time the answer is returned, the value may have changed.
                  *
                  *  But only certain transitions are legal. Status::eNull is the starting state for SOME Thread constructors (no arg).
-                 *  Nothing transitions back to the Status:eNull state. From there when you specify an IRunnable to run,
+                 *  Nothing transitions back to the Status:eNull state. From there when you specify a std::function<> to run,
                  *  then you transition to Status::eNotYetRunning.
                  *
                  *  From eNotYetRunning, you can transition to eRunning with Start ().

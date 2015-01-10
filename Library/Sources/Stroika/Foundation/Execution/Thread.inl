@@ -29,7 +29,7 @@ namespace   Stroika {
              */
             class   Thread::Rep_ {
             public:
-                Rep_ (const IRunnablePtr& runnable);
+                Rep_ (const function<void()>& runnable);
                 ~Rep_ ();
 
             public:
@@ -72,7 +72,7 @@ namespace   Stroika {
 #endif
 
             private:
-                shared_ptr<IRunnable>   fRunnable_;
+                function<void()>        fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 AbortFlagType_*         fTLSAbortFlag_;
@@ -134,10 +134,10 @@ namespace   Stroika {
                 }
                 return fRep_->GetNativeHandle ();
             }
-            inline  shared_ptr<IRunnable>    Thread::GetRunnable () const
+            inline  function<void()>    Thread::GetFunction () const
             {
-                if (fRep_.get () == nullptr) {
-                    return shared_ptr<IRunnable> ();
+                if (fRep_ == nullptr) {
+                    return nullptr;
                 }
                 return fRep_->fRunnable_;
             }

@@ -195,7 +195,7 @@ Thread::SuppressAbortInContext::~SuppressAbortInContext ()
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
+Thread::Rep_::Rep_ (const function<void()>& runnable)
     : fRunnable_ (runnable)
     , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fThread_ ()
@@ -264,7 +264,7 @@ Thread::Rep_::~Rep_ ()
 
 void    Thread::Rep_::Run_ ()
 {
-    fRunnable_->Run ();
+    fRunnable_ ();
 }
 
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
@@ -515,13 +515,19 @@ Thread::Thread ()
 }
 
 Thread::Thread (const function<void()>& fun2CallOnce)
-    : fRep_ (shared_ptr<Rep_> (new Rep_ (mkIRunnablePtr (fun2CallOnce))))
+    : fRep_ (shared_ptr<Rep_> (new Rep_ (fun2CallOnce)))
 {
     Rep_::DoCreate (&fRep_);
 }
-
+namespace {
+    function<void()> mkF_(IRunnablePtr runnable)
+    {
+        // mkF_ function used so we bind to copyable var, and not reference whcih can go out of scope too soon!
+        return [runnable] () { runnable->Run (); };
+    }
+}
 Thread::Thread (const IRunnablePtr& runnable)
-    : fRep_ (shared_ptr<Rep_> (new Rep_ (runnable)))
+    : Thread (mkF_ (runnable))
 {
     Rep_::DoCreate (&fRep_);
 }

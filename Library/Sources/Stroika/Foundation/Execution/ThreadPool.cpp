@@ -37,8 +37,8 @@ public:
         auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
-        Assert (fCurTask_.get () == nullptr or fNextTask_.get () == nullptr);   // one or both must be null
-        return fCurTask_.get () == nullptr ? fNextTask_ : fCurTask_;
+        Assert (fCurTask_ == nullptr or fNextTask_ == nullptr);   // one or both must be null
+        return fCurTask_ == nullptr ? fNextTask_ : fCurTask_;
     }
 
 public:
@@ -51,25 +51,25 @@ public:
             {
                 fThreadPool_.WaitForNextTask_ (&fNextTask_);            // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                Assert (fNextTask_.get () != nullptr);
-                Assert (fCurTask_.get () == nullptr);
+                Assert (fNextTask_ != nullptr);
+                Assert (fCurTask_ == nullptr);
                 fCurTask_ = fNextTask_;
-                fNextTask_.reset ();
-                Assert (fCurTask_.get () != nullptr);
-                Assert (fNextTask_.get () == nullptr);
+                fNextTask_ = nullptr;
+                Assert (fCurTask_ != nullptr);
+                Assert (fNextTask_ == nullptr);
             }
             try {
-                fCurTask_->Run ();
-                fCurTask_.reset ();
+                fCurTask_ ();
+                fCurTask_ = nullptr;
             }
             catch (const ThreadAbortException&) {
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                fCurTask_.reset ();
+                fCurTask_ = nullptr;
                 throw;  // cancel this thread
             }
             catch (...) {
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                fCurTask_.reset ();
+                fCurTask_ = nullptr;
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
             }
         }
@@ -140,7 +140,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					ct      { tr->GetCurrentTask () };
+            TaskType                    ct      { tr->GetCurrentTask () };
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
@@ -156,7 +156,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
     }
 }
 
-void    ThreadPool::AddTask (const TaskType& task)
+ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
 {
     //Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AddTask"));
     Require (not fAborted_);
@@ -169,6 +169,7 @@ void    ThreadPool::AddTask (const TaskType& task)
     fTasksAdded_.Set ();
     // this would be a race - if aborting and adding tasks at the same time
     Require (not fAborted_);
+    return task;
 }
 
 void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
@@ -201,7 +202,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					ct      { tr->GetCurrentTask () };
+            TaskType                    ct      { tr->GetCurrentTask () };
             if (task == ct) {
                 thread2Kill =   i->fThread;
                 fThreads_.Update (i, mkThread_ ());
@@ -262,7 +263,7 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					rTask   { tr->GetCurrentTask () };
+            TaskType                    rTask   { tr->GetCurrentTask () };
             if (task == rTask) {
                 return true;
             }
@@ -294,7 +295,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					task    { tr->GetCurrentTask () };
+            TaskType                    task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -310,7 +311,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					task    { tr->GetCurrentTask () };
+            TaskType                    task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 result.Add (task);
             }
@@ -328,7 +329,7 @@ size_t  ThreadPool::GetTasksCount () const
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
-            TaskType					task    { tr->GetCurrentTask () };
+            TaskType                    task    { tr->GetCurrentTask () };
             if (task != nullptr) {
                 count++;
             }
@@ -405,7 +406,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 ThreadPool::TPInfo_      ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r   { new ThreadPool::MyRunnable_ (*this) };
-    Thread  t   =   Thread (static_cast<IRunnablePtr> (r));      // ADD MY THREADOBJ
+    Thread  t   =   Thread ([r] () { r->Run (); });
     static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
     t.SetThreadName (Characters::CString::Format (L"Thread Pool Entry %d", sThreadNum_++));
     t.Start ();

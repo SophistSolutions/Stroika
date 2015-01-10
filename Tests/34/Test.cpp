@@ -463,7 +463,8 @@ namespace   {
                 }
             };
             int intVal  =   3;
-            shared_ptr<Execution::IRunnable>    task    =   Execution::mkIRunnablePtr (bind (FRED::DoIt, &intVal));
+            //shared_ptr<Execution::IRunnable>    task    =   Execution::mkIRunnablePtr (bind (FRED::DoIt, &intVal));
+            ThreadPool::TaskType task { bind (FRED::DoIt, &intVal) };
             p.AddTask (task);
             p.WaitForTask (task);
             p.AbortAndWaitForDone ();
@@ -497,8 +498,10 @@ namespace   {
             ThreadPool  p;
             p.SetPoolSize (threadPoolSize);
             int updaterValue    =   0;
-            shared_ptr<Execution::IRunnable>    task1   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
-            shared_ptr<Execution::IRunnable>    task2   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            //shared_ptr<Execution::IRunnable>    task1   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            //shared_ptr<Execution::IRunnable>    task2   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            ThreadPool::TaskType task1 { bind (FRED::DoIt, &updaterValue) };
+            ThreadPool::TaskType task2 { bind (FRED::DoIt, &updaterValue) };
             p.AddTask (task1);
             p.AddTask (task2);
             p.WaitForTask (task1);
