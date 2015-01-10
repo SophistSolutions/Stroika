@@ -72,6 +72,9 @@ namespace   Stroika {
                 Function (const CTOR_FUNC_SIG& f);
 
             public:
+                nonvirtual  Function&   operator= (const Function&) = default;
+
+            public:
                 nonvirtual  operator STDFUNCTION () const;
 
             public:
