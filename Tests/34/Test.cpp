@@ -296,10 +296,10 @@ namespace   {
     struct  data_ {};
     void    RegressionTest4_Synchronized_ ()
     {
-        //template <typename T> using Synchonized = nu_Synchronized<T, nu_Synchronized_Traits<T,recursive_mutex>>;
+        //template <typename T> using Synchonized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
         using namespace Execution;
-        using syncofdata = nu_Synchronized<data_, nu_Synchronized_Traits<data_, recursive_mutex>>;
-        using syncofint = nu_Synchronized<int, nu_Synchronized_Traits<int, recursive_mutex>>;
+        using syncofdata = Synchronized<data_, Synchronized_Traits<data_, recursive_mutex>>;
+        using syncofint = Synchronized<int, Synchronized_Traits<int, recursive_mutex>>;
 
 
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest4_Synchronized_"));
