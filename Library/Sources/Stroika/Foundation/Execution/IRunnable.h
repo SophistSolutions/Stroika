@@ -14,6 +14,11 @@
 
 
 
+/////DEPRECATING FILE BECAUSE function<void()> works just as well (in most cases) or use Exeuction::Function<void()>).
+
+
+
+
 /**
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
@@ -82,10 +87,10 @@ namespace   Stroika {
              *  bare function pointer variant, but not too much in either case. But the most efficent
              *  way is generally to do your own IRunnable subclass.
              */
-            IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) ());
-            IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) (void* arg), void* arg);
-            IRunnablePtr    mkIRunnablePtr (const function<void()>& fun2CallOnce);
-            IRunnablePtr    mkIRunnablePtr (const IRunnablePtr& fun2CallOnce);
+            _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) ()), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
+            _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) (void* arg), void* arg), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
+            _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (const function<void()>& fun2CallOnce), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
+            _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (const IRunnablePtr& fun2CallOnce), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
 
 
         }

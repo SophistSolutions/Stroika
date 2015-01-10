@@ -298,7 +298,7 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
     fStdErr_ = err;
 }
 
-IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
+function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
     String      cmdLine     =   fCommandLine_.Value ();
     SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
@@ -307,7 +307,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
 
-    return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
+    return [progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
         DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -745,13 +745,13 @@ DoneWithProcess:
             }
         }
 #endif
-    });
+    };
 }
 
 void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     if (timeout == Time::kInfinite) {
-        CreateRunnable (progress)->Run ();
+        CreateRunnable (progress) ();
     }
     else {
         Thread t (CreateRunnable (progress));

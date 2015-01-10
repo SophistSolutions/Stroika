@@ -21,7 +21,7 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
-class   ThreadPool::MyRunnable_ : public IRunnable {
+class   ThreadPool::MyRunnable_  {
 public:
     MyRunnable_ (ThreadPool& threadPool)
         : fCurTaskUpdateCritSection_ ()
@@ -42,7 +42,7 @@ public:
     }
 
 public:
-    virtual void    Run () override
+    nonvirtual void    Run ()
     {
         // For NOW - allow ThreadAbort to just kill this thread. In the future - we may want to implement some sort of restartability
 

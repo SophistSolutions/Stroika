@@ -14,7 +14,6 @@
 #include    "../Streams/BinaryInputStream.h"
 #include    "../Streams/BinaryOutputStream.h"
 
-#include    "IRunnable.h"
 #include    "Process.h"
 #include    "ProgressMonitor.h"
 
@@ -177,7 +176,7 @@ namespace   Stroika {
                  *  Each of these CAN be null, and will if so, that will be interpretted as an empty stream
                  *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
                  */
-                nonvirtual  IRunnablePtr    CreateRunnable (ProgressMonitor::Updater progress = nullptr);
+                nonvirtual  function<void()>    CreateRunnable (ProgressMonitor::Updater progress = nullptr);
 
             public:
                 /**
