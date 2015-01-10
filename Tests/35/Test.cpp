@@ -283,8 +283,8 @@ namespace {
                     VerifyTestResult (sharedValue == kMaxVal_);
                 };
                 Thread  adder = [&sharedValue] () {
-                    while (*sharedValue < kMaxVal_) {
-                        sharedValue = *sharedValue + 1;
+                    while (sharedValue < kMaxVal_) {
+                        sharedValue = *sharedValue.load () + 1;
                     }
                     VerifyTestResult (sharedValue == kMaxVal_);
                 };
