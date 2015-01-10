@@ -35,7 +35,7 @@ using   namespace   Stroika::Frameworks::WebServer;
  */
 void    ConnectionManager::Start ()
 {
-    fThreads_.AddTask (Execution::mkIRunnablePtr (bind (&ConnectionManager::DoMainConnectionLoop_, this)));
+    fThreads_.AddTask (bind (&ConnectionManager::DoMainConnectionLoop_, this));
 }
 
 void    ConnectionManager::Abort ()

@@ -80,9 +80,7 @@ void    Capturer::ManageRunner_(bool on)
     bool    threadPoolRunning   =   fThreadPool_.GetTasksCount () != 0;
     if (on) {
         if (not threadPoolRunning) {
-            fThreadPool_.AddTask (Execution::mkIRunnablePtr ([this] () {
-                Runner_ ();
-            }));
+            fThreadPool_.AddTask ([this] () { Runner_ (); });
             fThreadPool_.SetPoolSize (1);
         }
     }
