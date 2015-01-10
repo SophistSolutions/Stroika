@@ -519,6 +519,8 @@ Thread::Thread (const function<void()>& fun2CallOnce)
 {
     Rep_::DoCreate (&fRep_);
 }
+
+DISABLE_COMPILER_MSC_WARNING_START(4996)
 namespace {
     function<void()> mkF_(IRunnablePtr runnable)
     {
@@ -531,6 +533,8 @@ Thread::Thread (const IRunnablePtr& runnable)
 {
     Rep_::DoCreate (&fRep_);
 }
+DISABLE_COMPILER_MSC_WARNING_END(4996)
+
 
 void    Thread::SetThreadPriority (Priority priority)
 {

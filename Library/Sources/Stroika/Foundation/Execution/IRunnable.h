@@ -46,6 +46,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            DISABLE_COMPILER_MSC_WARNING_START(4996)
             /**
              *  This simple class is the basis of Stroika deferred run-task support (and threading etc).
              *  Just create Shared<IRunnable> entites and you can pass the tasks around, and the shared
@@ -56,11 +57,12 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            class   IRunnable {
+            class   _DeprecatedClass_ (IRunnable, "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64")
+            {
             public:
-                IRunnable ();
+                IRunnable () = default;
                 IRunnable (const IRunnable&) = delete;
-                virtual ~IRunnable ();
+                virtual ~IRunnable () = default;
 
             public:
                 nonvirtual  IRunnable& operator= (const IRunnable&) = delete;
@@ -92,6 +94,7 @@ namespace   Stroika {
             _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (const function<void()>& fun2CallOnce), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
             _DeprecatedFunction_ (IRunnablePtr    mkIRunnablePtr (const IRunnablePtr& fun2CallOnce), "Instead use std::function() or Exeuction::Function- to be removed after v2.0a64");
 
+            DISABLE_COMPILER_MSC_WARNING_END(4996)
 
         }
     }

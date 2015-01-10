@@ -20,12 +20,14 @@ namespace   Stroika {
              ******************************** Execution::IRunnable **************************
              ********************************************************************************
              */
+#if 0
             inline  IRunnable::IRunnable ()
             {
             }
             inline  IRunnable::~IRunnable ()
             {
             }
+#endif
 
 
             /*
