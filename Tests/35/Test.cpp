@@ -32,11 +32,10 @@ using   namespace   Stroika::Foundation;
 using   namespace   Characters;
 using   namespace   Containers;
 
+using   Execution::Synchronized;
 using   Execution::Thread;
 using   Execution::WaitableEvent;
 
-template    <typename T>
-using   Synchronized    =   Execution::LEGACY_Synchronized<T>;
 
 
 
