@@ -52,6 +52,7 @@ namespace   Stroika {
             public:
                 using STDFUNCTION   =   function<FUNCTION_SIGNATURE>;
                 using result_type   =   typename STDFUNCTION::result_type;
+                // fails on windows - not sure why...
                 //using argument_type   =   typename STDFUNCTION::argument_type;
                 //using first_argument_type   =   typename STDFUNCTION::first_argument_type;
                 //using second_argument_type   =   typename STDFUNCTION::second_argument_type;
@@ -78,20 +79,51 @@ namespace   Stroika {
                  */
                 nonvirtual  int Compare (const Function& rhs) const;
 
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Atom& rhs)
-                 */
-                nonvirtual  bool operator< (const Function& rhs) const;
-                nonvirtual  bool operator<= (const Function& rhs) const;
-                nonvirtual  bool operator> (const Function& rhs) const;
-                nonvirtual  bool operator>= (const Function& rhs) const;
-                nonvirtual  bool operator== (const Function& rhs) const;
-                nonvirtual  bool operator!= (const Function& rhs) const;
-
             private:
                 shared_ptr<STDFUNCTION> fFun_;
             };
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+
+
+            /**
+             *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Function& rhs)
+             */
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
 
 
         }

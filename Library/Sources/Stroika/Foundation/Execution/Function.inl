@@ -55,35 +55,77 @@ namespace   Stroika {
                     return 1;
                 }
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************** operator< *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator< (const Function& rhs) const
+            inline  bool    operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) < 0;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************* operator<= *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator<= (const Function& rhs) const
+            inline  bool    operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) <= 0;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************* operator== *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator> (const Function& rhs) const
+            inline  bool    operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) > 0;
+                return lhs.Compare (rhs) == 0;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************* operator!= *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator>= (const Function& rhs) const
+            inline  bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) != 0;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************** operator> *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
+            inline  bool    operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) == 0;
+                return lhs.Compare (rhs) > 0;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************************* operator>= *******************************
+             ********************************************************************************
+             */
             template    <typename FUNCTION_SIGNATURE>
-            inline  bool    Function<FUNCTION_SIGNATURE>::operator!= (const Function& rhs) const
+            inline  bool    operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
-                return Compare (rhs) != 0;
+                return lhs.Compare (rhs) >= 0;
             }
 
 
