@@ -204,10 +204,31 @@ namespace   Stroika {
                 }
 
             public:
+                /**
+                 *  Synonym for load ()
+                 */
                 nonvirtual  operator T () const
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_;
+                }
+
+            public:
+                /**
+                 */
+                nonvirtual  T load () const
+                {
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                    return fDelegate_;
+                }
+
+            public:
+                /**
+                 */
+                nonvirtual  void    store (const T& v) const
+                {
+                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                    fDelegate_ = v;
                 }
 
             public:
@@ -275,7 +296,7 @@ namespace   Stroika {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_ >= rhs;
                 }
-#if 1
+
             public:
                 void    lock ()
                 {
@@ -287,7 +308,7 @@ namespace   Stroika {
                 {
                     fLock_.unlock ();
                 }
-#endif
+
             private:
                 T                   fDelegate_;
                 mutable MutexType   fLock_;
