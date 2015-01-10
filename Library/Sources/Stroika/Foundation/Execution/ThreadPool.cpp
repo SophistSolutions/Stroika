@@ -139,8 +139,8 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
         // iterate over threads if any not busy, remove that one
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>       ct  =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       ct      { tr->GetCurrentTask () };
             if (ct == nullptr) {
                 // since we have fCriticalSection_ - we can safely remove this thread
                 fThreads_.Remove (i);
@@ -200,8 +200,8 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>       ct  =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       ct      { tr->GetCurrentTask () };
             if (task == ct) {
                 thread2Kill =   i->fThread;
                 fThreads_.Update (i, mkThread_ ());
@@ -260,8 +260,8 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>       rTask   =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       rTask   { tr->GetCurrentTask () };
             if (task == rTask) {
                 return true;
             }
@@ -292,9 +292,9 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>       task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
-            if (task.get () != nullptr) {
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            if (task != nullptr) {
                 result.Add (task);
             }
         }
@@ -308,9 +308,9 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>       task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
-            if (task.get () != nullptr) {
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            if (task != nullptr) {
                 result.Add (task);
             }
         }
@@ -326,9 +326,9 @@ size_t  ThreadPool::GetTasksCount () const
         auto    critSec { make_unique_lock (fCriticalSection_) };
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_>     tr  =   i->fRunnable;
-            shared_ptr<IRunnable>    task    =   dynamic_cast<MyRunnable_&> (*tr).GetCurrentTask ();
-            if (task.get () != nullptr) {
+            shared_ptr<MyRunnable_>     tr      { i->fRunnable };
+            shared_ptr<IRunnable>       task    { tr->GetCurrentTask () };
+            if (task != nullptr) {
                 count++;
             }
         }
