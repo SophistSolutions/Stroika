@@ -20,6 +20,9 @@
  *
  *  TODO
  *      @todo   Better understand, and fix qFoundation_Execution_Function_OperatorForwardNeedsRefBug, and eliminate it
+ *
+ *      @todo   Consider if this should be copy-by-value (use SharedByValue instead of shared_ptr) so it more closely
+ *              mimics copy behavior of std::function?
  */
 
 
@@ -39,7 +42,8 @@ namespace   Stroika {
 
 
             /**
-             *  IDEA is be SAME AS std::function<> but allow for operator< etc...
+             *  IDEA is be SAME AS std::function<> but allow for operator<, a usable operator== etc...,
+             *  which is an unfortunate omission from the c++ standard.
              *
              *  This should be convertable to a normal std::function<>, and fairly if not totally interoprable.
              *
@@ -55,17 +59,13 @@ namespace   Stroika {
                 using STDFUNCTION   =   function<FUNCTION_SIGNATURE>;
 
             public:
+                /**
+                 */
                 using result_type   =   typename STDFUNCTION::result_type;
 
-                // @todo FIGURE OUT why this doesnt compile on windows and/or UNIX/GCC/clang++
-                //
-                // fails on windows - not sure why...
-                //using argument_type   =   typename STDFUNCTION::argument_type;
-                //using first_argument_type   =   typename STDFUNCTION::first_argument_type;
-                //using second_argument_type   =   typename STDFUNCTION::second_argument_type;
-                //
-
             public:
+                /**
+                 */
                 Function () = default;
                 Function (nullptr_t);
                 Function (const Function&) = default;
@@ -73,12 +73,18 @@ namespace   Stroika {
                 Function (const CTOR_FUNC_SIG& f);
 
             public:
+                /**
+                 */
                 nonvirtual  Function&   operator= (const Function&) = default;
 
             public:
+                /**
+                 */
                 nonvirtual  operator STDFUNCTION () const;
 
             public:
+                /**
+                 */
                 template    <typename... Args>
                 nonvirtual  result_type     operator() ( Args... args ) const;
 
