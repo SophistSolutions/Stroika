@@ -27,7 +27,6 @@
 /// NOT SURE WHAT's GOING ON. Seems like my bug, but I dont fully
 /// understand
 /// doesnt seem needed with msvc, but is with gcc/clang++
-#define qFoundation_Execution_Function_OperatorForwardNeedsRefBug           0
 #ifndef qFoundation_Execution_Function_OperatorForwardNeedsRefBug
 #define qFoundation_Execution_Function_OperatorForwardNeedsRefBug           1
 #endif
@@ -42,6 +41,8 @@ namespace   Stroika {
             /**
              *  IDEA is be SAME AS std::function<> but allow for operator< etc...
              *
+             *  This should be convertable to a normal std::function<>, and fairly if not totally interoprable.
+             *
              *  \note   Alias
              *      This template could have been called Callback<> - as thats principally what its used for.
              *      Callbacks you need to be able to create, and then later remove (by value) - and this class
@@ -52,11 +53,17 @@ namespace   Stroika {
             class   Function {
             public:
                 using STDFUNCTION   =   function<FUNCTION_SIGNATURE>;
+
+            public:
                 using result_type   =   typename STDFUNCTION::result_type;
+
+                // @todo FIGURE OUT why this doesnt compile on windows and/or UNIX/GCC/clang++
+                //
                 // fails on windows - not sure why...
                 //using argument_type   =   typename STDFUNCTION::argument_type;
                 //using first_argument_type   =   typename STDFUNCTION::first_argument_type;
                 //using second_argument_type   =   typename STDFUNCTION::second_argument_type;
+                //
 
             public:
                 Function () = default;
