@@ -25,7 +25,6 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -263,9 +262,12 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
-        static  const   LEGACY_Synchronized<Mapping<String, String>>    kSilenceTheseHeaders_ = initializer_list<pair<String, String>> {
-            { String_Constant (L"Expect"), String ()},
-            { String_Constant (L"Transfer-Encoding"), String ()}
+        // @todo CONSIDER if we need to use Synchonized<> here. At one point we did, but perhaps no longer?
+        // --LGP 2015-01-10
+        static  const   Mapping<String, String>    kSilenceTheseHeaders_  {{
+                { String_Constant (L"Expect"), String ()},
+                { String_Constant (L"Transfer-Encoding"), String ()}
+            }
         };
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
