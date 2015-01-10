@@ -115,7 +115,7 @@ namespace   Stroika {
             template    <typename FUNCTION_SIGNATURE>
             inline  bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
             {
-                return lhs.Compare (nullptr) = ! 0;
+                return lhs.Compare (nullptr) != 0;
             }
 
 
