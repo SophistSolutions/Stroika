@@ -19,6 +19,7 @@
 #include    "../Containers/SortedCollection.h"
 #include    "../Containers/SortedMapping.h"
 #include    "../Containers/SortedSet.h"
+#include    "../Execution/Synchronized.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/DiscreteRange.h"
@@ -334,6 +335,8 @@ namespace   Stroika {
 #endif
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
+                template    <typename T, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>&);
                 template    <typename T>
