@@ -95,6 +95,11 @@ namespace   Stroika {
             {
                 return lhs.Compare (rhs) == 0;
             }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
+            {
+                return lhs.Compare (nullptr) == 0;
+            }
 
 
             /*
@@ -106,6 +111,11 @@ namespace   Stroika {
             inline  bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
             {
                 return lhs.Compare (rhs) != 0;
+            }
+            template    <typename FUNCTION_SIGNATURE>
+            inline  bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
+            {
+                return lhs.Compare (nullptr) = ! 0;
             }
 
 

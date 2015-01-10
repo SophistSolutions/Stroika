@@ -115,6 +115,8 @@ namespace   Stroika {
              */
             template    <typename FUNCTION_SIGNATURE>
             bool    operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
 
 
             /**
@@ -122,6 +124,8 @@ namespace   Stroika {
              */
             template    <typename FUNCTION_SIGNATURE>
             bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+            template    <typename FUNCTION_SIGNATURE>
+            bool    operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
 
 
             /**
