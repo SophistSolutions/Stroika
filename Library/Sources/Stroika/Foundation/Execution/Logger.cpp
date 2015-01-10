@@ -142,7 +142,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
-	 auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
+    auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
     if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         sSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         UpdateBookkeepingThread_ ();
