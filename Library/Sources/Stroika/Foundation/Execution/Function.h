@@ -67,6 +67,7 @@ namespace   Stroika {
 
             public:
                 Function () = default;
+                Function (nullptr_t);
                 Function (const Function&) = default;
                 template    <typename CTOR_FUNC_SIG>
                 Function (const CTOR_FUNC_SIG& f);

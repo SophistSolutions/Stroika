@@ -28,10 +28,14 @@ namespace   Stroika {
             {
             }
             template    <typename FUNCTION_SIGNATURE>
+            inline  Function<FUNCTION_SIGNATURE>::Function (nullptr_t)
+                : fFun_ { } {
+            }
+            template    <typename FUNCTION_SIGNATURE>
             inline  Function<FUNCTION_SIGNATURE>::operator STDFUNCTION () const
             {
                 if (fFun_ == nullptr) {
-                    return STDFUNCTION ();
+                    return nullptr;
                 }
                 return *fFun_;
             }
@@ -59,7 +63,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************** operator< *******************************
+             ************************************ operator< *********************************
              ********************************************************************************
              */
             template    <typename FUNCTION_SIGNATURE>
@@ -71,7 +75,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************* operator<= *******************************
+             *********************************** operator<= *********************************
              ********************************************************************************
              */
             template    <typename FUNCTION_SIGNATURE>
