@@ -8,6 +8,7 @@
 
 #include    "IRunnable.h"
 
+DISABLE_COMPILER_MSC_WARNING_START(4996)
 
 
 using   namespace   Stroika::Foundation;
@@ -86,3 +87,4 @@ IRunnablePtr    Execution::mkIRunnablePtr (const function<void()>& fun2CallOnce)
 }
 
 
+DISABLE_COMPILER_MSC_WARNING_END(4996)
