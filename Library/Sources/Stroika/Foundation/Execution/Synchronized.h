@@ -21,20 +21,13 @@
  * Description:
  *
  * TODO:
- *      @todo   Testing new nu_Synchronized design and if it works, covnert everything!
- *
- *      @todo   Test that
- *              Possible design flaw with new synchronized.
- *
- *              F(const container & )
- *              Synchronized <container> g
- *              F(g)
- *
- *              always works. We use operator T() to fix this but I'm not 100% sure that works.
  *
  */
 
-
+//#define	qSUPPORT_LEGACY_SYNCHO	0
+#ifndef	qSUPPORT_LEGACY_SYNCHO
+#define	qSUPPORT_LEGACY_SYNCHO	1
+#endif
 
 namespace   Stroika {
     namespace   Foundation {
@@ -86,6 +79,7 @@ namespace   Stroika {
              *  which is really just intended to operate on integers, and integer type things, and not on
              *  objects with methods.
              */
+#if qSUPPORT_LEGACY_SYNCHO
             template    <typename   T>
             class   LEGACY_Synchronized {
             public:
@@ -101,9 +95,10 @@ namespace   Stroika {
                 T           fDelegate_;
                 SpinLock    fLock_;
             };
+#endif
 
 
-            /*
+            /**
              *  MUTEX:
              *      We chose to make the default MUTEX recursive_mutex - since most patterns of use will be supported
              *      by this safely.
@@ -111,14 +106,35 @@ namespace   Stroika {
              *      To use timed-locks, use timed_recursive_mutex.
              *
              *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
+			 *
+			 *	EXAMPLE:
+			 *		Synchonized<String>	n;													// SAME
+			 *		Synchonized<String,Synchronized_Traits<String>>	n;						// SAME
+			 *		Synchonized<String,Synchronized_Traits<String, recursive_mutex>>	n;	// SAME
+			 *
+			 *	or slightly faster, but possibly slower or less safe (depnding on usage)
+			 *		Synchonized<String,Synchronized_Traits<String, SpinLock>>	n;	
              */
             template    <typename   T, typename MUTEX = recursive_mutex>
-            struct  nu_Synchronized_Traits {
+            struct  Synchronized_Traits {
                 using  MutexType = MUTEX;
             };
 
-            template    <typename   T, typename TRAITS = nu_Synchronized_Traits<T>>
-            class   nu_Synchronized {
+
+			/**
+			 *	EXAMPLE:
+			 *		Synchonized<String>	n;													// SAME
+			 *		Synchonized<String,Synchronized_Traits<String>>	n;						// SAME
+			 *		Synchonized<String,Synchronized_Traits<String, recursive_mutex>>	n;	// SAME
+			 *
+			 *	or slightly faster, but possibly slower or less safe (depnding on usage)
+			 *		Synchonized<String,Synchronized_Traits<String, SpinLock>>	n;	
+			 *
+			 *	or to allow timed locks
+			 *		Synchonized<String,Synchronized_Traits<String, timed_recursive_mutex>>	n;	
+             */
+            template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
+            class   Synchronized {
             public:
                 using   MutexType = typename TRAITS::MutexType;
             public:
@@ -164,14 +180,14 @@ namespace   Stroika {
 
             public:
                 template    <typename ...ARGUMENT_TYPES>
-                nu_Synchronized (ARGUMENT_TYPES&& ...args)
+                Synchronized (ARGUMENT_TYPES&& ...args)
                     : fDelegate_ (std::forward<ARGUMENT_TYPES> (args)...)
                 {
                 }
 
             public:
                 // use template forwarding variadic CTOR formward
-                const nu_Synchronized& operator= (const T& rhs)
+                const Synchronized& operator= (const T& rhs)
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     fDelegate_ = rhs;
@@ -260,10 +276,12 @@ namespace   Stroika {
 
 
             //migrate names support
+#if 0
             template    <typename   T, typename MUTEX = recursive_mutex>
-            using Synchronized_Traits =   nu_Synchronized_Traits<T, MUTEX>;
+            using nu_Synchronized_Traits =   Synchronized_Traits<T, MUTEX>;
             template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
-            using   Synchronized  = nu_Synchronized<T, TRAITS>;
+            using   nu_Synchronized  = Synchronized<T, TRAITS>;
+#endif
 
 
         }

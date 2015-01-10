@@ -17,6 +17,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if qSUPPORT_LEGACY_SYNCHO
             /*
              ********************************************************************************
              ********************************* LEGACY_Synchronized *********************************
@@ -58,6 +59,7 @@ namespace   Stroika {
                 return fDelegate_;
             }
 
+#endif
 
         }
     }

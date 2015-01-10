@@ -189,6 +189,7 @@ namespace   Stroika {
             {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
+#if qSUPPORT_LEGACY_SYNCHO
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::LEGACY_Synchronized<Memory::Optional<T>>&)
             {
@@ -218,6 +219,7 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (LEGACY_Synchronized<Optional<T>>), toVariantMapper, fromVariantMapper);
             }
+#endif
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
             {

@@ -1274,6 +1274,7 @@ namespace   Stroika {
         }
 
 
+#if qSUPPORT_LEGACY_SYNCHO
         namespace Execution {
 
 
@@ -1315,6 +1316,7 @@ namespace   Stroika {
 
 
         }
+#endif
 
     }
 }
