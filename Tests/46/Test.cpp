@@ -566,6 +566,43 @@ namespace {
 
 
 
+namespace {
+    namespace   Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_ {
+        void    innerLoop_ ()
+        {
+            for (int i = 1; i < 1000; i++) {
+                if (i == 3) {
+                    wstring a = L"x";
+                }
+            }
+        }
+        struct MyFakeRunnableRep_ {
+            virtual void doRun ()  = 0;
+        };
+    }
+    void    Test_stdFunctionBaseline ()
+    {
+        using namespace Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_;
+        function<void()> f = innerLoop_;
+        for (int i = 0; i < 10; ++i) {
+            f ();
+        }
+    }
+    void    Test_VirtualFunctionBasedRunnable ()
+    {
+        using namespace Test_stdFunction_VERSUS_virtualClassRunnable_PRIVATE_;
+        struct x : MyFakeRunnableRep_ {
+            virtual void doRun () override { innerLoop_ (); };
+        };
+        shared_ptr<MyFakeRunnableRep_>  f { new x () };
+        for (int i = 0; i < 10; ++i) {
+            f->doRun ();
+        }
+    }
+}
+
+
+
 
 
 
@@ -989,6 +1026,14 @@ namespace   {
             &failedTests
         );
 #endif
+        Tester (
+            L"IRunnable versus std::function",
+            Test_VirtualFunctionBasedRunnable, L"IRunnable",
+            Test_stdFunctionBaseline, L"std::function",
+            210000,
+            0.5,
+            &failedTests
+        );
 #if 0
         Tester (
             L"atomic sharedptr versus sharedptr",
