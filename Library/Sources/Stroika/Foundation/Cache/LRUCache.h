@@ -23,6 +23,13 @@
  *
  * TODO:
  *
+ *
+ *      @todo   Change default MUTEX argument for LRUCache to AssertExternallySycnhonized, and then maybe get rid of it,
+ *              cuz callers can just use 'Synchonized'
+ *
+ *
+ *
+ *
  *      @todo   Look at nu_LRUCache<> and consider possability of migrating to it, or something like that
  *              Much slower, but threadsafe, and simpler to use.
  *
@@ -283,7 +290,7 @@ namespace   Stroika {
 
 /// DRAFT NEW API
             namespace   LRUCacheSupport {
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename MUTEX = mutex>
                 struct  DefaultTraits {
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
@@ -303,6 +310,8 @@ namespace   Stroika {
                     {
                         return lhs == rhs;
                     }
+
+                    using   MutexType   =   MUTEX;
 
 #if     qDebug
                     using   StatsType   =   LRUCacheSupport::Stats_Basic;
@@ -341,7 +350,10 @@ namespace   Stroika {
                     }
                 };
                 mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
-                mutable mutex   fLock_;
+
+                using MutexType = typename TRAITS::MutexType;
+
+                mutable MutexType   fLock_;
             public:
                 LRUCache (size_t size = 1)
                     : fRealCache_ (size)
