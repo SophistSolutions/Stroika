@@ -284,7 +284,7 @@ namespace   Stroika {
 /// DRAFT NEW API
             namespace   LRUCacheSupport {
                 template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
-                struct  LRUCache_DefaultTraits {
+                struct  DefaultTraits {
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
@@ -310,9 +310,15 @@ namespace   Stroika {
                     using   StatsType   =   LRUCacheSupport::Stats_Null;
 #endif
                 };
+
+
+                //@todo LOSE/DEPRECATE THIS NAME
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+                using  LRUCache_DefaultTraits  = DefaultTraits<KEY, HASH_TABLE_SIZE>;
+
             }
 
-            template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::LRUCache_DefaultTraits<KEY>>
+            template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache {
             private:
                 struct  LEGACYLRUCACHEOBJ_ {
@@ -430,7 +436,7 @@ namespace   Stroika {
 
 
 
-#if 1
+#if 0
             template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
             using   nu_LRUCache_DefaultTraits  = LRUCacheSupport::LRUCache_DefaultTraits<KEY, HASH_TABLE_SIZE>;
             template    <typename KEY, typename VALUE, typename TRAITS = nu_LRUCache_DefaultTraits<KEY>>
