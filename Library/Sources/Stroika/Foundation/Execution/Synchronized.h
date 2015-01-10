@@ -194,10 +194,22 @@ namespace   Stroika {
                     : fDelegate_ (std::forward<ARGUMENT_TYPES> (args)...)
                 {
                 }
+                Synchronized (const Synchronized& src)
+                    : fDelegate_ (src.load ())
+                {
+                }
 
             public:
                 // use template forwarding variadic CTOR formward
-                const Synchronized& operator= (const T& rhs)
+                Synchronized&   operator= (const Synchronized& rhs)
+                {
+                    if (&rhs != this) {
+                        MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                        fDelegate_ = rhs.load ();
+                    }
+                    return *this;
+                }
+                Synchronized&   operator= (const T& rhs)
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     fDelegate_ = rhs;
@@ -207,8 +219,10 @@ namespace   Stroika {
             public:
                 /**
                  *  Synonym for load ()
+                 ****
+                 ***    @todo DECIDE IF WE WANT TO USE EXPLICIT
                  */
-                nonvirtual  explicit    operator T () const
+                nonvirtual   explicit operator T () const
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_;
@@ -226,7 +240,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    store (const T& v) const
+                nonvirtual  void    store (const T& v)
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     fDelegate_ = v;
@@ -266,40 +280,6 @@ namespace   Stroika {
                     return GetReference ();
                 }
 
-#if 0
-            public:
-                bool operator== (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ == rhs;
-                }
-                bool operator!= (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ != rhs;
-                }
-                bool operator< (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ < rhs;
-                }
-                bool operator<= (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ <= rhs;
-                }
-                bool operator> (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ > rhs;
-                }
-                bool operator>= (T rhs) const
-                {
-                    MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    return fDelegate_ >= rhs;
-                }
-#endif
-
             public:
                 void    lock ()
                 {
@@ -320,9 +300,19 @@ namespace   Stroika {
 
 
             template    <typename   T, typename TRAITS>
-            inline  bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
+            inline  bool    operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
             {
                 return lhs.load () < rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator< (T lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs < rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs.load () < rhs.load ();
             }
 
 
@@ -331,27 +321,47 @@ namespace   Stroika {
             {
                 return lhs.load () <= rhs;
             }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator<= (T lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs <= rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs.load () <= rhs.load ();
+            }
 
 
             template    <typename   T, typename TRAITS>
-            inline  bool operator== (const Synchronized<T, TRAITS>& lhs, T rhs)
+            inline  bool    operator== (const Synchronized<T, TRAITS>& lhs, T rhs)
             {
                 return lhs.load () == rhs;
             }
             template    <typename   T, typename TRAITS>
-            inline  bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            inline  bool    operator== (T lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs == rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
                 return lhs.load () == rhs.load ();
             }
 
 
             template    <typename   T, typename TRAITS>
-            inline  bool operator!= (const Synchronized<T, TRAITS>& lhs, T rhs)
+            inline  bool    operator!= (const Synchronized<T, TRAITS>& lhs, T rhs)
             {
                 return lhs.load () != rhs;
             }
             template    <typename   T, typename TRAITS>
-            inline  bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+            inline  bool    operator!= (T lhs, const Synchronized<T, TRAITS>& rhs)
+            {
+                return lhs != rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  bool    operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
                 return lhs.load () != rhs.load ();
             }
@@ -369,6 +379,76 @@ namespace   Stroika {
             {
                 return lhs.load () > rhs;
             }
+
+
+            // @todo EXPERIMENTAL...
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator^ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} ^ T {})
+            {
+                return lhs.load () ^ rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator^ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} ^ T {})
+            {
+                return lhs ^ rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator^ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} ^ T {})
+            {
+                return lhs.load () ^ rhs.load ();
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator* (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} * T {})
+            {
+                return lhs.load () * rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator* (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} * T {})
+            {
+                return lhs * rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator* (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} * T {})
+            {
+                return lhs.load () * rhs.load ();
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator+ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} + T {})
+            {
+                return lhs.load () + rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator+ (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} + T {})
+            {
+                return lhs + rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator+ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} + T {})
+            {
+                return lhs.load () + rhs.load ();
+            }
+
+
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator- (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} - T {})
+            {
+                return lhs.load () + rhs;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator- (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {})
+            {
+                return lhs - rhs.load ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto    operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {})
+            {
+                return lhs.load () - rhs.load ();
+            }
+
 
 
             //migrate names support
