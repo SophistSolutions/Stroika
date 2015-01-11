@@ -273,7 +273,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  @see SharedByValue_State
+                 *  @see SharedByValue_State.
+                 *
+                 *  Note that two subsequent calls on an object CAN return differnt answers, without any calls to 'this' object.
+                 *  Thats because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
+                 *  solo, without any change to THIS object.
                  */
                 nonvirtual  SharedByValue_State    GetSharingState () const;
 

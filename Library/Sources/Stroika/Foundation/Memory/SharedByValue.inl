@@ -278,7 +278,11 @@ namespace   Stroika {
                         return SharedByValue_State::eSolo;
                     default:
                         Assert (fSharedImpl_.get () != nullptr);
-                        Assert (not fSharedImpl_.unique ());
+                        //NOT NECESSARILY - cuz there is no lock
+                        // between the use_count and this unique call, so another object could decrement its count
+                        // and this could be that it was shared, but is no solo.
+                        // Assert (not fSharedImpl_.unique ());
+                        // -- LGP 2015-01-10
                         return SharedByValue_State::eShared;
                 }
             }
