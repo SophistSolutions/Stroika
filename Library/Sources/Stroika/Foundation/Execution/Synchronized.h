@@ -435,6 +435,20 @@ namespace   Stroika {
             }
 
 
+            template    <typename   T, typename TRAITS, typename RHSTYPE>
+            inline  auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator-= (rhs))
+            {
+                return lhs->operator-= (rhs);
+            }
+
+
+            template    <typename   T, typename TRAITS, typename RHSTYPE>
+            inline  auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator+= (rhs))
+            {
+                return lhs->operator+= (rhs);
+            }
+
+
             template    <typename   T, typename TRAITS>
             inline  auto    operator- (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} - T {})
             {
