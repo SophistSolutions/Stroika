@@ -221,8 +221,10 @@ namespace   Stroika {
                  *  Synonym for load ()
                  ****
                  ***    @todo DECIDE IF WE WANT TO USE EXPLICIT
+                 ****           http://stackoverflow.com/questions/27573928/are-explicit-conversion-operators-allowed-in-braced-initializer-lists
+                 *** VERY UNCELAR - FIUDDLE WITH THIS
                  */
-                nonvirtual   explicit operator T () const
+                nonvirtual   /*explicit*/ operator T () const
                 {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
                     return fDelegate_;
