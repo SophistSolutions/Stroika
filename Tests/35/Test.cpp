@@ -96,8 +96,8 @@ namespace {
 
 namespace {
 
-    template <typename ITERABLE_TYPE, typename LOCK_TYPE>
-    Thread  mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, LOCK_TYPE* lock, unsigned int repeatCount)
+    template <typename ITERABLE_TYPE, typename ITERABLE_TYPE2, typename LOCK_TYPE>
+    Thread  mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         return Thread ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
             Debug::TraceContextBumper traceCtx (SDKSTR ("{}OverwriteThread::MAIN..."));
@@ -135,7 +135,7 @@ namespace   {
             //mutex lock;
             Synchronized<ITERABLE_TYPE>  oneToKeepOverwriting { elt1 };
             Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
-            Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, Synchronized<ITERABLE_TYPE> (elt1), Synchronized<ITERABLE_TYPE> (elt2), &lock, repeatCount);
+            Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
             RunThreads_ ({iterateThread, overwriteThread});
         }
         void    DoIt ()
