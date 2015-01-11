@@ -189,8 +189,8 @@ namespace   {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
             };
-            Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount);
-            Thread  mutateThread =   mutateFunction;
+            Thread  iterateThread   { mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount) };
+            Thread  mutateThread    { mutateFunction };
             RunThreads_ ({iterateThread, mutateThread});
         }
         void    DoIt ()
@@ -200,8 +200,8 @@ namespace   {
 
             const unsigned int kRepeatCount_ = 250;
 
-            static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
-            static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
+            static constexpr initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+            static const    initializer_list<int>   kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
             no_lock_ lock;
             //mutex lock;
@@ -274,18 +274,18 @@ namespace {
             try {
                 Synchronized<Optional<int>> sharedValue { 0 };
                 static  const int kMaxVal_ = 100000;
-                Thread  reader = [&sharedValue] () {
+                Thread  reader {[&sharedValue] () {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                };
-                Thread  adder = [&sharedValue] () {
+                }};
+                Thread  adder {[&sharedValue] () {
                     while (sharedValue.load () < kMaxVal_) {
                         sharedValue.store (*sharedValue.load () + 1);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                };
+                }};
                 reader.Start ();
                 adder.Start ();
                 Execution::Finally cleanup { [reader, adder] () mutable {

@@ -578,15 +578,15 @@ namespace {
     void    RegressionTest11_AbortSubAbort_ ()
     {
         auto    testFailToProperlyAbort = [] () {
-            Thread  innerThread = [] () {
+            Thread  innerThread {[] () {
                 Execution::Sleep (1000);
-            };
+            }};
             innerThread.SetThreadName (L"innerThread");
-            Thread  testThread  =   [&innerThread] () {
+            Thread  testThread  { [&innerThread] () {
                 innerThread.Start ();
                 Execution::Sleep (1000);
                 innerThread.AbortAndWaitForDone ();
-            };
+            }};
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
             Execution::Sleep (1);  // wait til both threads running and blocked in sleeps
@@ -596,18 +596,18 @@ namespace {
             innerThread.AbortAndWaitForDone ();
         };
         auto    testInnerThreadProperlyShutDownByOuterThread = [] () {
-            Thread  innerThread = [] () {
+            Thread  innerThread {[] () {
                 Execution::Sleep (1000);
-            };
+            }};
             innerThread.SetThreadName (L"innerThread");
-            Thread  testThread = [&innerThread] () {
+            Thread  testThread {[&innerThread] () {
                 innerThread.Start ();
                 Finally cleanup ([&innerThread] () {
                     Thread::SuppressAbortInContext  suppressAborts;
                     innerThread.AbortAndWaitForDone ();
                 });
                 Execution::Sleep (1000);
-            };
+            }};
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
             Execution::Sleep (1);   // wait til both threads running and blocked in sleeps
@@ -631,14 +631,14 @@ namespace {
         // EXPERIMENTAL
         WaitableEvent we1 (WaitableEvent::eAutoReset);
         WaitableEvent we2 (WaitableEvent::eAutoReset);
-        Thread t1 = [&we1] () {
+        Thread t1 {[&we1] () {
             Execution::Sleep (1.0);
             we1.Set ();
-        };
-        Thread t2 = [&we2] () {
+        }};
+        Thread t2 {[&we2] () {
             Execution::Sleep (0.1);
             we2.Set ();
-        };
+        }};
         Time::DurationSecondsType   startAt = Time::GetTickCount ();
         t1.Start ();
         t2.Start ();
@@ -665,16 +665,16 @@ namespace {
         WaitableEvent we2 (WaitableEvent::eAutoReset);
         bool w1Fired = false;
         bool w2Fired = false;
-        Thread t1 = [&we1, &w1Fired] () {
+        Thread t1 {[&we1, &w1Fired] () {
             Execution::Sleep (0.5);
             w1Fired = true;
             we1.Set ();
-        };
-        Thread t2 = [&we2, &w2Fired] () {
+        }};
+        Thread t2 {[&we2, &w2Fired] () {
             Execution::Sleep (0.1);
             w2Fired = true;
             we2.Set ();
-        };
+        }};
         Time::DurationSecondsType   startAt = Time::GetTickCount ();
         t2.Start ();
         t1.Start ();
@@ -700,20 +700,20 @@ namespace {
     {
         SpinLock lock;
         int     sum =   0;
-        Thread t1 = [&lock, &sum] () {
+        Thread t1 {[&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
                 sum += i;
             }
-        };
-        Thread t2 = [&lock, &sum] () {
+        }};
+        Thread t2 {[&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
                 sum -= i;
             }
-        };
+        }};
         t1.Start ();
         t2.Start ();
         t1.WaitForDone ();
