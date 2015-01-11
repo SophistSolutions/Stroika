@@ -142,15 +142,44 @@ namespace   Stroika {
                  *  timeout can be negative (which triggers an immediate exception).
                  *
                  *  TimeOutException throws if the timeout is exceeeded.
+                 *
+                 *  @see WaitQuietly ()
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
+                 *  Wait the given period of time, and return true if event occured, and false on timeout.
+                 *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but dont
+                 *  want an exception as its not an issue to handle specially.
+                 *
+                 *  Returns:    true if event signaled/occurred, and false if timeout
+                 *
+                 *  @see Wait ()
+                 *  @see WaitUntil ()
+                 *  @see WaitUntilQuietly ()
+                 */
+                nonvirtual  bool    WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
                  *  TimeOutException throws if the event is not signaled before timeoutAt is
                  *  exceeeded (includes when reached).
+                 *
+                 *  @see Wait ()
+                 *  @see WaitQuietly ()
+                 *  @see WaitUntilQuietly ()
                  */
                 nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
+
+            public:
+                /**
+                 *
+                 *  @see Wait ()
+                 *  @see WaitQuietly ()
+                 *  @see WaitUntil ()
+                 */
+                nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
 
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
             public:
@@ -212,6 +241,8 @@ namespace   Stroika {
 
             private:
                 struct WE_ {
+                    static  constexpr   bool    kTIMEOUTBoolResult { false };
+
                     ResetType                   fResetType;
                     mutex                       fMutex;
                     condition_variable          fConditionVariable;
@@ -222,6 +253,7 @@ namespace   Stroika {
                     nonvirtual  void    Reset ();
                     nonvirtual  void    Set ();
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
+                    nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
                 };
                 WE_                             fWE_;
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects

@@ -91,9 +91,17 @@ namespace   Stroika {
             {
                 fWE_.WaitUntil (timeout + Time::GetTickCount ());
             }
+            inline  bool    WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout)
+            {
+                return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
+            }
             inline  void    WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
             {
                 fWE_.WaitUntil (timeoutAt);
+            }
+            inline  bool    WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+            {
+                return fWE_.WaitUntilQuietly (timeoutAt);
             }
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
             template    <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>

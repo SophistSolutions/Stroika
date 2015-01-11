@@ -62,18 +62,25 @@ using   Stroika::Foundation::Time::Duration;
  */
 void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WE_::WaitUntil"));
-    DbgTrace ("(timeout = %.2f)", timeoutAt);
-#endif
-    CheckForThreadAborting ();
-    if (timeoutAt <= Time::GetTickCount ()) {
+    if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
         DoThrow (TimeOutException ());
 #else
         throw (TimeOutException ());
 #endif
+    }
+}
+
+bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WE_::WaitUntil"));
+    DbgTrace ("(timeout = %.2f)", timeoutAt);
+#endif
+    CheckForThreadAborting ();
+    if (timeoutAt <= Time::GetTickCount ()) {
+        return kTIMEOUTBoolResult;
     }
 
     /*
@@ -89,12 +96,7 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
         CheckForThreadAborting ();
         Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-            DoThrow (TimeOutException ());
-#else
-            throw (TimeOutException ());
-#endif
+            return kTIMEOUTBoolResult;
         }
 
         /*
@@ -115,6 +117,7 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
         // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
         fTriggered = false ;   // autoreset
     }
+    return not kTIMEOUTBoolResult;
 }
 
 
