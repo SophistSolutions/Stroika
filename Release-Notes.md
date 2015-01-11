@@ -21,10 +21,19 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a64">v2.0a64x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a64">v2.0a64</a><br/>2015-01-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>LRUCache: fixed hash table size, and further name changes / refactoring.</li>
+	<li>Refactored operator== etc stuff outside of class members for Execution::Function, and suported nullptr</li>
+	<li>Added performacne test comparing  IRunnable versus std::function, and based on that deprecated IRunnable, and
+	switched to using std::function directly.</li>
+	<li>Refactored ThreadPool due to change in using std::function</li>
+	<li>Started adding qSUPPORT_LEGACY_SYNCHO to get rid of legacy syncho code</li>
+	<li>Added ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&) overload</li>
+	<li>Some SFINAE improvements to Optional<> operator== etc stuff - but still inadequate</li>
+	<li>Synchonized improvements, CTORs, Synchonized<>::load/store, etc</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
