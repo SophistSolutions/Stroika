@@ -274,18 +274,22 @@ namespace {
             try {
                 Synchronized<Optional<int>> sharedValue { 0 };
                 static  const int kMaxVal_ = 100000;
-                Thread  reader {[&sharedValue] () {
+                Thread  reader {[&sharedValue] ()
+                {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }};
-                Thread  adder {[&sharedValue] () {
+                }
+                               };
+                Thread  adder {[&sharedValue] ()
+                {
                     while (sharedValue.load () < kMaxVal_) {
                         sharedValue.store (*sharedValue.load () + 1);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }};
+                }
+                              };
                 reader.Start ();
                 adder.Start ();
                 Execution::Finally cleanup { [reader, adder] () mutable {
