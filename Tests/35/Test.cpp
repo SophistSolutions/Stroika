@@ -363,10 +363,21 @@ namespace {
             if (xx != yy) {
             }
             Optional<String> xxo;
+#if 1
+            //////@todo FIX various operator overloads so this works more seemlessly. See
+            //      template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            //      bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            // and related failed attempts
+            if (xxo != yy.load ()) {
+            }
+            if (xxo == yy.load ()) {
+            }
+#else
             if (xxo != yy) {
             }
             if (xxo == yy) {
             }
+#endif
         }
     }
 }
