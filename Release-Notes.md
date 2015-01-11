@@ -20,10 +20,10 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a65">v2.0a65x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a65">v2.0a65</a><br/>2015-01-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Minor fix to IRunnable backward compat Thread CTOR</li>
 </ul>
 </td>
 </tr>

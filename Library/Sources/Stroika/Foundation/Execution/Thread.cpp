@@ -521,20 +521,11 @@ Thread::Thread (const function<void()>& fun2CallOnce)
 }
 
 DISABLE_COMPILER_MSC_WARNING_START(4996)
-namespace {
-    function<void()> mkF_(IRunnablePtr runnable)
-    {
-        // mkF_ function used so we bind to copyable var, and not reference whcih can go out of scope too soon!
-        return [runnable] () { runnable->Run (); };
-    }
-}
 Thread::Thread (const IRunnablePtr& runnable)
-    : Thread (mkF_ (runnable))
+    : Thread ([runnable] () { runnable->Run (); })
 {
-    Rep_::DoCreate (&fRep_);
 }
 DISABLE_COMPILER_MSC_WARNING_END(4996)
-
 
 void    Thread::SetThreadPriority (Priority priority)
 {
