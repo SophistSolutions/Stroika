@@ -21,6 +21,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
+ *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
+ *
  *      @todo   COULD make operator==, operator<, etc compares more efficeint when comparing with T
  *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE); And could improve iterop
  *              by adding operator XXX (where XXX is ==, etc) with (T, OPTIONAL);
@@ -280,8 +284,6 @@ namespace   Stroika {
                  *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
                  *  is different, then they compare as not Equals()
                  */
-                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-                nonvirtual  bool    Equals (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
                 nonvirtual  bool    Equals (const Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    Equals (T rhs) const;
 
@@ -290,8 +292,6 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
-                template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-                nonvirtual  int Compare (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const;
                 nonvirtual  int Compare (const Optional<T, TRAITS>& rhs) const;
                 nonvirtual  int Compare (T rhs) const;
 
@@ -326,21 +326,50 @@ namespace   Stroika {
              *  Simple overloaded operator which calls @Optional<T,TRAITS>::Equals (const Optional<T, TRAITS>& rhs)
              */
             template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            bool    operator== (const Optional<T, TRAITS>& lhs, T rhs);
             template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, const T& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            bool    operator== (T lhs, const Optional<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+#if 0
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename X1 = typename enable_if<is_convertible<RHS_CONVERTABLE_TO_OPTIONAL, Optional<T, TRAITS>>::value >::type>
+            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            {
+                return lhs.Equals (Optional<T, TRAITS> (rhs));
+            }
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            {
+                return lhs.Equals (Optional<T, TRAITS> (rhs));
+            }
+#endif
+
+
+
 
             /**
              *  Simple overloaded operator which calls @Optional<T,TRAITS>::Equals (const Optional<T, TRAITS>& rhs)
              */
             template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            bool    operator!= (const Optional<T, TRAITS>& lhs, T rhs);
             template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, const T& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            bool    operator!= (T lhs, const Optional<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+
+#if 0
+            // @TODO GET THIS WORKING
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            {
+                return not lhs.Equals (Optional<T, TRAITS> { rhs });
+            }
+#endif
+
 
             /**
              *  Simple overloaded operator which calls @Optional<T,TRAITS>::Compare (const Optional<T, TRAITS>& rhs)

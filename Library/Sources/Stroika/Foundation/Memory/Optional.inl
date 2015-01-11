@@ -287,12 +287,6 @@ namespace   Stroika {
                 return TRAITS::Equals (*fValue_, rhs);
             }
             template    <typename T, typename TRAITS>
-            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            inline  bool    Optional<T, TRAITS>::Equals (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
-            {
-                return Equals (static_cast<Optional<T, TRAITS>> (rhs));
-            }
-            template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional<T, TRAITS>& rhs) const
             {
                 if (fValue_ == nullptr) {
@@ -314,12 +308,6 @@ namespace   Stroika {
                 }
                 AssertNotNull (fValue_);
                 return TRAITS::Compare (*fValue_, rhs);
-            }
-            template    <typename T, typename TRAITS>
-            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            inline  int Optional<T, TRAITS>::Compare (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs) const
-            {
-                return Compare (static_cast<Optional<T, TRAITS>> (rhs));
             }
 
 
@@ -363,19 +351,24 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, T rhs)
             {
                 return lhs.Equals (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    operator== (const Optional<T, TRAITS>& lhs, const T& rhs)
+            inline  bool    operator== (T lhs, const Optional<T, TRAITS>& rhs)
+            {
+                return rhs.Equals (lhs);    // symetric so reverse
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            inline  bool    operator== (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return lhs.Equals (Optional<T, TRAITS> (rhs));
+                return lhs.Equals (Optional<T, TRAITS> { rhs });
             }
 
 
@@ -385,19 +378,24 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, T rhs)
             {
                 return not lhs.Equals (rhs);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, const T& rhs)
+            inline  bool    operator!= (T lhs, const Optional<T, TRAITS>& rhs)
+            {
+                return not rhs.Equals (lhs);    // take advantage of commutativity
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return not lhs.Equals (Optional<T, TRAITS> (rhs));
+                return not lhs.Equals (Optional<T, TRAITS> { rhs });
             }
 
 
