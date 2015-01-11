@@ -22,10 +22,12 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a66">v2.0a66x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a66">v2.0a66</a><br/>2015-01-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added WaitableEvent::WaitQueitly and WaitableEvent::WaitUntilQuietly</li>
+	<li>use Function<> in Thread class, and fixed enable_if CTOR for Thread</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
