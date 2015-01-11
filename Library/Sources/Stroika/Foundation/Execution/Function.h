@@ -19,6 +19,9 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO
+ *      @todo   Instead of using shared_ptr<> - we could have an INT counter (except for special case of null where we use
+ *              0). That might be cheaper, and preserve the same semantics.
+ *
  *      @todo   Better understand, and fix qFoundation_Execution_Function_OperatorForwardNeedsRefBug, and eliminate it
  *
  *      @todo   Consider if this should be copy-by-value (use SharedByValue instead of shared_ptr) so it more closely

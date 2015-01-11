@@ -195,7 +195,7 @@ Thread::SuppressAbortInContext::~SuppressAbortInContext ()
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const function<void()>& runnable)
+Thread::Rep_::Rep_ (const Function<void()>& runnable)
     : fRunnable_ (runnable)
     , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fThread_ ()
@@ -514,7 +514,7 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (const function<void()>& fun2CallOnce)
+Thread::Thread (const Function<void()>& fun2CallOnce)
     : fRep_ (shared_ptr<Rep_> (new Rep_ (fun2CallOnce)))
 {
     Rep_::DoCreate (&fRep_);

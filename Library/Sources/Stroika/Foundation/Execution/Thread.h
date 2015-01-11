@@ -11,6 +11,8 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Time/Realtime.h"
+
+#include    "Function.h"
 #include    "Signals.h"
 
 #include    "IRunnable.h"
@@ -200,32 +202,32 @@ namespace   Stroika {
                  *  another thread with the arg 'arg'.
                  */
                 Thread ();
-                Thread (const function<void()>& fun2CallOnce);
+                Thread (const Function<void()>& fun2CallOnce);
                 Thread (const IRunnablePtr& runnable);
                 template <typename FUNCTION>
-                Thread (FUNCTION f, typename is_function<FUNCTION>::type* = nullptr);
+                Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
                 /**
                  *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
                  *  via GetFunction(), but is only settable in the thread constructor.
                  */
-                nonvirtual  function<void()>    GetFunction () const;
+                nonvirtual  Function<void()>    GetFunction () const;
 
             public:
                 /**
-                  */
+                 */
                 nonvirtual  IDType              GetID () const;
 
             public:
                 /**
-                  */
+                 */
                 nonvirtual  NativeHandleType    GetNativeHandle () noexcept;
 
             public:
                 /**
-                  * \req    GetStatus () == Status::eNotYetRunning
-                  */
+                 * \req    GetStatus () == Status::eNotYetRunning
+                 */
                 nonvirtual  void    Start ();
 
             public:
@@ -240,7 +242,7 @@ namespace   Stroika {
                 nonvirtual  void    Abort ();
 
             public:
-                /*
+                /**
                  *  Note that its legal to call Stop_Forced_Unsafe on a thread in any state -
                  *  including nullptr. Some may just have no effect
                  *
@@ -295,7 +297,7 @@ namespace   Stroika {
 
 
             public:
-                enum class Priority {
+                enum    class   Priority {
                     eLowest,
                     eBelowNormal,
                     eNormal,
@@ -304,6 +306,8 @@ namespace   Stroika {
 
                     Stroika_Define_Enum_Bounds(eLowest, eHighest)
                 };
+
+            public:
                 /**
                  *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
                  *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
@@ -321,7 +325,7 @@ namespace   Stroika {
 
 
             public:
-                enum class Status : uint8_t {
+                enum    class   Status : uint8_t {
                     eNull,              // null thread object
                     eNotYetRunning,     // created, but start not yet called
                     eRunning,           // in the context of the 'Run' method
@@ -330,6 +334,8 @@ namespace   Stroika {
 
                     Stroika_Define_Enum_Bounds(eNull, eCompleted)
                 };
+
+            public:
                 /**
                  *  Each Thread object has an associated state. Since this can be accessed from one thread while things
                  *  in another thread, by the time the answer is returned, the value may have changed.
@@ -401,7 +407,7 @@ namespace   Stroika {
             /**
              *  Represent the thread ID for display - typically as an integer
              */
-            wstring FormatThreadID (Thread::IDType threadID);
+            wstring     FormatThreadID (Thread::IDType threadID);
 
 
             /**
@@ -410,7 +416,6 @@ namespace   Stroika {
              *  This function will also trigger a throw if called inside a thread which is being aborted.
              */
             void    CheckForThreadAborting ();
-
             template    <unsigned int kEveryNTimes>
             void    CheckForThreadAborting ();
 

@@ -29,7 +29,7 @@ namespace   Stroika {
              */
             class   Thread::Rep_ {
             public:
-                Rep_ (const function<void()>& runnable);
+                Rep_ (const Function<void()>& runnable);
                 ~Rep_ ();
 
             public:
@@ -63,7 +63,6 @@ namespace   Stroika {
                 static  void    CALLBACK    CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
 
-
             private:
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
                 using   AbortFlagType_  =   volatile bool;
@@ -72,7 +71,7 @@ namespace   Stroika {
 #endif
 
             private:
-                function<void()>        fRunnable_;
+                Function<void()>        fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 AbortFlagType_*         fTLSAbortFlag_;
@@ -107,9 +106,9 @@ namespace   Stroika {
              ************************************* Thread ***********************************
              ********************************************************************************
              */
-            template <typename FUNCTION>
-            inline  Thread::Thread (FUNCTION f, typename is_function<FUNCTION>::type*) :
-                Thread (function<void()>(f))
+            template    <typename FUNCTION>
+            inline  Thread::Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type*) :
+                Thread (Function<void()>(f))
             {
             }
 #if     qPlatform_POSIX
@@ -134,7 +133,7 @@ namespace   Stroika {
                 }
                 return fRep_->GetNativeHandle ();
             }
-            inline  function<void()>    Thread::GetFunction () const
+            inline  Function<void()>    Thread::GetFunction () const
             {
                 if (fRep_ == nullptr) {
                     return nullptr;
