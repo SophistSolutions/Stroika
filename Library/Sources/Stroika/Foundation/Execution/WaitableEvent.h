@@ -125,6 +125,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Set the event to the non-signaled state
+                 *
+                 *  \note   This COULD have been called 'UnSet'.
                  */
                 nonvirtual  void    Reset ();
 
@@ -149,7 +151,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Wait the given period of time, and return true if event occured, and false on timeout.
+                 *  Wait the given period of time, and return true if event occured (Set called), and false on timeout.
                  *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but dont
                  *  want an exception as its not an issue to handle specially.
                  *
