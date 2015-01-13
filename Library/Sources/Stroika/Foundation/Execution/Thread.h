@@ -284,6 +284,13 @@ namespace   Stroika {
                  */
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
+            public:
+                /**
+                 *  If the thread is Done() - and completed with an exception, this throws that exception, allowing
+                 *  an exception thrown inside a thread, to be propagated across threads.
+                 */
+                nonvirtual  void    ThrowIfDoneWithException ();
+
 #if     qPlatform_Windows
             public:
                 /**

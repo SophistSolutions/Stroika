@@ -84,6 +84,7 @@ namespace   Stroika {
                 WaitableEvent           fOK2StartEvent_;
                 WaitableEvent           fThreadDone_;
                 wstring                 fThreadName_;
+                exception_ptr           fSavedException_;
 
             private:
                 friend class    Thread;

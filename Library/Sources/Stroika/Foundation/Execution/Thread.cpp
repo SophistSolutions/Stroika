@@ -264,7 +264,16 @@ Thread::Rep_::~Rep_ ()
 
 void    Thread::Rep_::Run_ ()
 {
-    fRunnable_ ();
+    try {
+        fRunnable_ ();
+    }
+    catch (const ThreadAbortException&) {
+        throw;
+    }
+    catch (...) {
+        fSavedException_ = current_exception ();
+        throw;
+    }
 }
 
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
@@ -728,6 +737,17 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
         else {
             DbgTrace ("OK - maybe the target thread is ingoring abort exceptions? try/catch/ignore?");
         }
+    }
+}
+
+void    Thread::ThrowIfDoneWithException ()
+{
+    if (fRep_) {
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
+        auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
+#endif
+        if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_)
+            DoReThrow (fSavedException_, L"Rethrowing exception across threads");
     }
 }
 
