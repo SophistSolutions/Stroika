@@ -756,11 +756,11 @@ void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSec
         CreateRunnable (progress) ();
     }
     else {
-        // @todo BUG - MUST REPPORPAGE EXCEPTIONS FROM THREAD / RUNABLE TO CALLER
         Thread t (CreateRunnable (progress));
         t.SetThreadName (L"ProcessRunner thread");
         t.Start ();
         t.WaitForDone (timeout);
+        t.ThrowIfDoneWithException ();
     }
 }
 
