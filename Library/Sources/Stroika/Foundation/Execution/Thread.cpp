@@ -746,8 +746,9 @@ void    Thread::ThrowIfDoneWithException ()
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
         auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
 #endif
-        if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_)
-            DoReThrow (fSavedException_, L"Rethrowing exception across threads");
+        if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
+            DoReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
+		}
     }
 }
 
