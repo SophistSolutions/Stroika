@@ -748,7 +748,7 @@ void    Thread::ThrowIfDoneWithException ()
 #endif
         if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
             DoReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
-		}
+        }
     }
 }
 

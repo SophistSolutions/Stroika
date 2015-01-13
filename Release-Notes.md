@@ -21,10 +21,16 @@ History
   
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a67">v2.0a67x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a67">v2.0a67</a><br/>2015-01-12</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>operator+= and operator-= support for Synchronized&lt;T, TRAITS&gt;</li>
+	<li>LRUCache: tiny improvements to StatsType, and mutex now defaults to Debug::AssertExternallySynchronizedLock</li>
+	<li>DoReThrow() overload with exception_ptr, and used in a few places</li>
+	<li>use new Thread::ThrowIfDoneWithException() in ProcessRunner::Run () so we propagate exception to caller</li>
+	<li>Used exception_ptr/current_exception in Thread class: added new Thread::ThrowIfDoneWithException() to support it;</li>
+	<li>Instruments/MountedFilesystemUsage now has (POSIX) capture_Process_Run_DF_ overloads to work with df when it returns an error (imperfect but improved)</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
