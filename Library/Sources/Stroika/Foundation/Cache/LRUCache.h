@@ -121,6 +121,16 @@ namespace   Stroika {
 
 
                 /**
+                 *  Helper for DefaultTraits.
+                 */
+#if     qDebug
+                using   StatsType_DEFAULT   =   Stats_Basic;
+#else
+                using   StatsType_DEFAULT   =   Stats_Null;
+#endif
+
+
+                /**
                  * The DefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
                  */
                 template    <typename   ELEMENT, typename KEY = ELEMENT>
@@ -129,7 +139,7 @@ namespace   Stroika {
                     using   KeyType     =   KEY;
 
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, 1);
+                    DEFINE_CONSTEXPR_CONSTANT(uint32_t, HASH_TABLE_SIZE, 1);
 
                     static  KeyType ExtractKey (const ElementType& e);
 
@@ -142,11 +152,7 @@ namespace   Stroika {
                     // defaults to operator==
                     static  bool    Equal (const KeyType& lhs, const KeyType& rhs);
 
-#if     qDebug
-                    using   StatsType   =   Stats_Basic;
-#else
-                    using   StatsType   =   Stats_Null;
-#endif
+                    using   StatsType   =   StatsType_DEFAULT;
                 };
 
 
@@ -313,11 +319,7 @@ namespace   Stroika {
 
                     using   MutexType   =   MUTEX;
 
-#if     qDebug
-                    using   StatsType   =   LRUCacheSupport::Stats_Basic;
-#else
-                    using   StatsType   =   LRUCacheSupport::Stats_Null;
-#endif
+                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
 
 
