@@ -300,6 +300,7 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
 
 function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
+    TraceContextBumper  ctx (SDKSTR ("ProcessRunner::CreateRunnable"));
     String      cmdLine     =   fCommandLine_.Value ();
     SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
 
@@ -739,7 +740,7 @@ DoneWithProcess:
             if (result != cpid || status != 0) {
                 // @todo fix this message
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("cpid = %d, sresult = result=%d, status=%d", cpid, result, status);
+                DbgTrace ("cpid=%d, result=%d, status=%d", cpid, result, status);
 #endif
                 DoThrow (StringException (L"sub-process failed"));
             }
@@ -750,10 +751,12 @@ DoneWithProcess:
 
 void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
+    TraceContextBumper  ctx (SDKSTR ("ProcessRunner::Run"));
     if (timeout == Time::kInfinite) {
         CreateRunnable (progress) ();
     }
     else {
+        // @todo BUG - MUST REPPORPAGE EXCEPTIONS FROM THREAD / RUNABLE TO CALLER
         Thread t (CreateRunnable (progress));
         t.SetThreadName (L"ProcessRunner thread");
         t.Start ();
