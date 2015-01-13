@@ -103,7 +103,7 @@ namespace {
 
 #if     qPlatform_POSIX
 namespace {
-    Sequence<VolumeInfo> capture_Process_Run_DF_ ()
+    Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
     {
         Sequence<VolumeInfo>   result;
         //
@@ -112,10 +112,16 @@ namespace {
         //
         //  NEW NOTE - I THINK ITS IN THERE.... RE-EXAMINE proc/filesystems proc/partitions, and http://en.wikipedia.org/wiki/Procfs
         //      -- LGP 2014-08-01
-        ProcessRunner pr (L"/bin/df -k -T");
+        ProcessRunner pr { includeFSTypes ? L"/bin/df -k -T" : L"/bin/df -k" };
         Streams::BasicBinaryInputOutputStream   useStdOut;
         pr.SetStdOut (useStdOut);
-        pr.Run ();
+        std::exception_ptr runException;
+        try {
+            pr.Run ();
+        }
+        catch (...) {
+            runException = current_exception ();
+        }
         String out;
         Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
         bool skippedHeader = false;
@@ -125,24 +131,39 @@ namespace {
                 continue;
             }
             Sequence<String>    l    =  i.Tokenize (Set<Characters::Character> { ' ' });
-            if (l.size () < 7) {
+            if (l.size () < (includeFSTypes ? 7 : 6)) {
                 DbgTrace ("skipping line cuz len=%d", l.size ());
                 continue;
             }
             VolumeInfo v;
-            v.fFileSystemType = l[1].Trim ();
-            v.fMountedOnName = l[6].Trim ();
+            if (includeFSTypes) {
+                v.fFileSystemType = l[1].Trim ();
+            }
+            v.fMountedOnName = l[includeFSTypes ? 6 : 5].Trim ();
             {
                 String  d   =   l[0].Trim ();
                 if (not d.empty () and d != L"none") {
                     v.fDeviceOrVolumeName = d;
                 }
             }
-            v.fDiskSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
-            v.fUsedSizeInBytes = Characters::String2Float<double> (l[3]) * 1024;
+            v.fDiskSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
+            v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
             result.Append (v);
         }
+        // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
+        if (runException and result.empty ()) {
+            Execution::DoReThrow (runException);
+        }
         return result;
+    }
+    Sequence<VolumeInfo> capture_Process_Run_DF_ ()
+    {
+        try {
+            return capture_Process_Run_DF_ (true);
+        }
+        catch (...) {
+            return capture_Process_Run_DF_ (false);
+        }
     }
 }
 #endif
