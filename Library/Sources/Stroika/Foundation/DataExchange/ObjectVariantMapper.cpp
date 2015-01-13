@@ -395,7 +395,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
                                     mapper->ToObject (i.fTypeInfo, VariantValue (v), intoObjOfTypeT + i.fOffset);
                                 }
                                 catch (...) {
-                                    rethrow_exception (savedException);
+                                    Execution::DoReThrow (savedException);
                                 }
                             }
                         }
