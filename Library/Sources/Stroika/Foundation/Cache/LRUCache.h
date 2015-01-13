@@ -13,6 +13,7 @@
 /// move these to .inl file when we move code for nu_LRUCache
 #include    "../Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "../Cryptography/Hash.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 
 #include    "../Memory/Optional.h"
 
@@ -296,7 +297,7 @@ namespace   Stroika {
 
 /// DRAFT NEW API
             namespace   LRUCacheSupport {
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename MUTEX = mutex>
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename MUTEX = Debug::AssertExternallySynchronizedLock>
                 struct  DefaultTraits {
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
