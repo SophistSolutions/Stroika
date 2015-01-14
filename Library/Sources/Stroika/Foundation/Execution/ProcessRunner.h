@@ -22,6 +22,14 @@
 /**
  *  TODO:
  *
+ *      @todo   Redo POSIX impl using vfork () or http://linux.die.net/man/3/posix_spawn
+ *
+ *      @todo   Need EXCEPTION TYPE that includes PROCESS_STATUS and throw that instead of current exception
+ *              On failure.
+ *
+ *      @todo   PERHAPS add option to ignore process status return, and continue as if OK. Not really needed cuz
+ *              you can do this yourself just ignroing the exception.
+ *
  *      @todo   Windows implementation is weak, but appears fully functional.
  *
  *      @todo   Fix POSIX version to use vfork() instead of fork () - but carefully! Must setup data just so.
