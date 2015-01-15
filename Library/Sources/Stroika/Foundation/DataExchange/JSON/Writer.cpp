@@ -83,11 +83,12 @@ namespace   {
         }
         out.Write (buf);
     }
-    void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
+    template    <typename CHARITERATOR>
+    void    PrettyPrint_ (CHARITERATOR start, CHARITERATOR end, const TextOutputStream& out)
     {
         Characters::StringBuilder   sb; // String builder for performance
         sb.Append (L"\"");
-        for (auto i = v.begin (); i != v.end (); ++i) {
+        for (auto i = start; i != end; ++i) {
             switch (*i) {
                 case '\"':
                     sb.Append (L"\\\"");
@@ -111,6 +112,16 @@ namespace   {
         sb.Append (L"\"");
         out.Write (sb.begin (), sb.end ());
     }
+    void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
+    {
+        PrettyPrint_ (v.begin (), v.end (), out);
+    }
+    void    PrettyPrint_ (const String& v, const TextOutputStream& out)
+    {
+        pair<const wchar_t*, const wchar_t*>    p =  v.GetData<wchar_t> ();
+        static_assert(sizeof(Character) == sizeof(wchar_t), "sizeof(Character) == sizeof(wchar_t)");
+        PrettyPrint_ (p.first, p.second, out);
+    }
     void    PrettyPrint_ (const vector<VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         out.Write (L"[\n");
@@ -125,14 +136,14 @@ namespace   {
         Indent_ (out, indentLevel);
         out.Write (L"]");
     }
-    void    PrettyPrint_ (const map<wstring, VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const Mapping<String, VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         out.Write (L"{\n");
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel + 1);
-            PrettyPrint_ (i->first, out, indentLevel + 1);
+            PrettyPrint_ (i->fKey, out, indentLevel + 1);
             out.Write (L" : ");
-            PrettyPrint_ (i->second, out, indentLevel + 1);
+            PrettyPrint_ (i->fValue, out, indentLevel + 1);
             ++i;
             if (i != v.end ()) {
                 out.Write (L",");
@@ -170,7 +181,7 @@ namespace   {
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
             case    VariantValue::Type::eMap:
-                PrettyPrint_ (v.As<map<wstring, VariantValue>> (), out, indentLevel);
+                PrettyPrint_ (v.As<Mapping<String, VariantValue>> (), out, indentLevel);
                 break;
             case    VariantValue::Type::eArray:
                 PrettyPrint_ (v.As<vector<VariantValue>> (), out, indentLevel);
