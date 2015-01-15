@@ -199,7 +199,7 @@ namespace   {
     {
         Require (i != nullptr);
         Require (*i < end);
-        map<wstring, VariantValue>   result;
+        Mapping<String, VariantValue>   result;
 
         if (NextChar_ (i, end) != '{') {
             Execution::DoThrow (BadFormatException (String_Constant (L"JSON: Expected '{'")));
@@ -249,8 +249,7 @@ namespace   {
                     lf = eColon;
                 }
                 else if (lf == eValue) {
-                    VariantValue    v = Reader_value_ (i, end);
-                    result.insert (map<wstring, VariantValue>::value_type (curName, v));
+                    result.Add (curName, Reader_value_ (i, end));
                     curName.clear ();
                     lf = eComma;
                 }
