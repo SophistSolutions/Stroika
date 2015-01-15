@@ -212,6 +212,14 @@ namespace   Stroika {
             {
                 return GetLength ();
             }
+            inline  const wchar_t*  StringBuilder::begin ()
+            {
+                return c_str ();
+            }
+            inline  const wchar_t*  StringBuilder::end ()
+            {
+                return c_str () + length ();
+            }
 
 
         }

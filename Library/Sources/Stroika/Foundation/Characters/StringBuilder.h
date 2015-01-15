@@ -157,6 +157,16 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  size () const;
 
+            public:
+                /**
+                 */
+                nonvirtual  const wchar_t*  begin () { return c_str (); }
+
+            public:
+                /**
+                 */
+                nonvirtual  const wchar_t*  end () { return c_str () + length (); }
+
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
