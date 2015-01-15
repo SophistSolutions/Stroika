@@ -24,7 +24,11 @@ using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
 
-
+#if     !qCompilerAndStdLib_string_conversions_Buggy
+namespace {
+    const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
+}
+#endif
 
 class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_IRep_ : public TextOutputStream::_IRep {
 public:
@@ -42,11 +46,6 @@ protected:
     virtual void    Write (const Character* start, const Character* end)  override
     {
 #if     !qCompilerAndStdLib_string_conversions_Buggy
-#if     qCompilerAndStdLib_codecvt_utf8_out_ThreadSafeBuggy
-        codecvt_utf8<wchar_t>   converter;
-#else
-        static  const   codecvt_utf8<wchar_t>   converter;
-#endif
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
         const wchar_t*  pc  =   sc;
@@ -60,7 +59,7 @@ protected:
         auto    critSec { make_unique_lock (_fCriticalSection) };
 Again:
         char*   p   =   std::begin (outBuf);
-        codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
+        codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
         Assert (std::begin (outBuf) <= p and p <= std::end (outBuf));
         _fSource.Write (reinterpret_cast<const Byte*> (std::begin (outBuf)), reinterpret_cast<const Byte*> (p));
         if (r == codecvt_utf8<wchar_t>::partial or pc < ec) {
