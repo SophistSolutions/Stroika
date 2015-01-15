@@ -160,12 +160,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  const wchar_t*  begin () { return c_str (); }
+                nonvirtual  const wchar_t*  begin ();
 
             public:
                 /**
                  */
-                nonvirtual  const wchar_t*  end () { return c_str () + length (); }
+                nonvirtual  const wchar_t*  end ();
 
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
