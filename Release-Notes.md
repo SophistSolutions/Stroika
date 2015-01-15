@@ -20,10 +20,19 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a68">v2.0a68x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a68">v2.0a68</a><br/>2015-01-15</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added new (draft) JSON readwrite and object-variant-mapper performacne test (and made 2.5x faster with below changes)</li>
+	<li>Started a variety of performance tweaks based on the realization that constructing codecvt_utf8<wchar_t> was extremely slow (so do statically) and can re-use it from 
+	differnt threads cuz with STL and const methods, this is guaranteed thread safe
+	(see http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf 17.6.5.9 Data race avoidance: A C++ standard library function shall not directly or indirectly modify objects (1.10) accessible by threads
+other than the current thread unless the objects are accessed directly or indirectly via the function’s non-const
+arguments, including this)
+	</li>
+	<li>added begin/end to StringBuilder</li>
+	<li>Use StringBuilderand other tweaks in DataExchange/JSON/Writer for performance sake</li>
+	<li>Simplify Mapping<>/old legacy map<> usage in VariantValue</li>
 </ul>
 </td>
 </tr>
