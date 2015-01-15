@@ -41,8 +41,12 @@ public:
 protected:
     virtual void    Write (const Character* start, const Character* end)  override
     {
-#if    !qCompilerAndStdLib_string_conversions_Buggy
+#if     !qCompilerAndStdLib_string_conversions_Buggy
+#if     qCompilerAndStdLib_codecvt_utf8_out_ThreadSafeBuggy
         codecvt_utf8<wchar_t>   converter;
+#else
+        static  const   codecvt_utf8<wchar_t>   converter;
+#endif
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
         const wchar_t*  pc  =   sc;

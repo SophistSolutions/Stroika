@@ -1372,6 +1372,19 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
+// Constructing codecvt_utf8<wchar_t> is VERY performance intensive/costly.
+// we only call out() method. This all appears threadsafe, but I can find
+// no clear docs.
+#ifndef qCompilerAndStdLib_codecvt_utf8_out_ThreadSafeBuggy
+
+#define qCompilerAndStdLib_codecvt_utf8_out_ThreadSafeBuggy              0
+
+#endif
+
+
+
+
+
 
 
 
