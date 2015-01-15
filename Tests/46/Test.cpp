@@ -45,6 +45,7 @@
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -1309,19 +1310,31 @@ namespace {
             });
             return mapper;
         }
-
-        ScanDetails_    doRead_ ()
+        ScanDetails_    doRead_ (const BinaryInputStream in)
         {
             using   namespace DataExchange;
-            VariantValue o { JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_))) };
+            VariantValue o { JSON::Reader ().Read (in) };
             static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             return kMapper_.ToObject<ScanDetails_> (o);
         }
+        Memory::BLOB    doWrite_ (const ScanDetails_& scan)
+        {
+            using   namespace DataExchange;
+            Streams::BasicBinaryOutputStream    out;
+            static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
+            JSON::Writer ().Write (kMapper_.FromObject (scan), out);
+            return out.As<Memory::BLOB> ();
+        }
         void    DoRunPerfTest ()
         {
-            ScanDetails_    sd { doRead_ () };
+            ScanDetails_    sd { doRead_ (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_))) };
             Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             Assert (sd.fScanID == 5856);
+            Memory::BLOB    b = doWrite_ (sd);
+            ScanDetails_    sd2 { doRead_ (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (b), end (b))) };
+            Assert (sd2.fScanID == sd.fScanID);
+            Assert (sd2.fAuxData == sd.fAuxData);
+            Assert (sd2.fRawSpectrum == sd.fRawSpectrum);
         }
     }
 }
@@ -1546,9 +1559,9 @@ namespace   {
         );
         Tester (
             L"Test_JSONReadWriteFile",
-            1 / 600.0,
+            1 / 64.0,
             Test_JSONReadWriteFile_::DoRunPerfTest , L"Test_JSONReadWriteFile",
-            550,
+            64,
             1.2,
             &failedTests
         );
