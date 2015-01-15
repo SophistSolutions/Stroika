@@ -195,19 +195,8 @@ VariantValue::VariantValue (const String& val)
 {
 }
 
-namespace {
-    Mapping<String, VariantValue> cvt_ (const map<wstring, VariantValue>& val)
-    {
-        Mapping<String, VariantValue>   tmp;
-        for (auto i : val) {
-            tmp.Add (i.first, i.second);
-        }
-        return tmp;
-    }
-}
-
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal_ (new TIRep_<Mapping<String, VariantValue>> (cvt_ (val)))
+    : fVal_ (new TIRep_<Mapping<String, VariantValue>> (Mapping<String, VariantValue> {val}))
 {
 }
 
