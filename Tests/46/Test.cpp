@@ -25,6 +25,14 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Configuration/StroikaVersion.h"
+#include    "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include    "Stroika/Foundation/DataExchange/INI/Reader.h"
+#include    "Stroika/Foundation/DataExchange/INI/Writer.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/XML/Reader.h"
+#include    "Stroika/Foundation/DataExchange/XML/Writer.h"
+#include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
@@ -37,6 +45,7 @@
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -198,7 +207,46 @@ namespace {
         return false;
 #endif
     }
+    bool    Tester (String testName,
+                    DurationSecondsType baselineTime,
+                    function<void()> compareWithT, String compareWithTName,
+                    unsigned int runCount,
+                    double warnIfPerformanceScoreHigherThan,
+                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
+                   )
+    {
+#if     qDebug
+        runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
+#endif
+        baselineTime *= runCount;
+        DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
+#if     qPrintOutIfBaselineOffFromOneSecond
+        if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount << " so try using runCount = " << int (runCount / baselineTime) << endl;
+        }
+#endif
+        printResults (testName, Characters::Format (L"%f seconds", baselineTime), compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
+#if     qPrintOutIfFailsToMeetPerformanceExpectations
+        double ratio = compareWithTime / baselineTime;
+        return ratio > warnIfPerformanceScoreHigherThan;
+#else
+        return false;
+#endif
+    }
 
+    void    Tester (String testName,
+                    DurationSecondsType baselineTime,
+                    function<void()> compareWithT, String compareWithTName,
+                    unsigned int runCount,
+                    double warnIfPerformanceScoreHigherThan,
+                    Set<String>* failedTestAccumulator,
+                    function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
+                   )
+    {
+        if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
+            failedTestAccumulator->Add (testName);
+        }
+    }
     void    Tester (String testName,
                     function<void()> baselineT, String baselineTName,
                     function<void()> compareWithT, String compareWithTName,
@@ -983,8 +1031,300 @@ namespace {
 
 
 
+namespace {
+    namespace Test_JSONReadWriteFile_ {
+        constexpr   Byte    kSAMPLE_FILE_[] =
+            "{\
+    \"Aux-Data\" : {\
+        \"C3\" : \"-0\",\
+        \"EngineId\" : \"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\",\
+        \"Gas-Cell\" : \"Short\",\
+        \"Sample-Pressure\" : \"-129.277\",\
+        \"Sample-Temperature\" : \"-74.51\",\
+        \"iC4\" : \"-0\",\
+        \"nC4\" : \"-0\",\
+        \"nC5\" : \"-0\"\
+    },\
+    \"Background-ID\" : 5378,\
+    \"Raw-Spectrum\" : {\
+        \"1000\" : 102.207499,\
+        \"1001\" : 104.437091,\
+        \"1002\" : 105.038416,\
+        \"1003\" : 106.717942,\
+        \"1004\" : 108.897728,\
+        \"1005\" : 110.894962,\
+        \"1006\" : 109.450638,\
+        \"1007\" : 109.475062,\
+        \"1008\" : 112.364229,\
+        \"1009\" : 114.742569,\
+        \"1010\" : 114.876544,\
+        \"1011\" : 115.329764,\
+        \"1012\" : 114.287301,\
+        \"1013\" : 116.257922,\
+        \"1014\" : 116.513513,\
+        \"1015\" : 118.098858,\
+        \"1016\" : 120.959124,\
+        \"1017\" : 122.762808,\
+        \"1018\" : 120.115923,\
+        \"1019\" : 123.527138,\
+        \"1020\" : 123.097837,\
+        \"1021\" : 123.135073,\
+        \"1022\" : 127.237821,\
+        \"1023\" : 126.812848,\
+        \"1024\" : 129.457969,\
+        \"1025\" : 128.345917,\
+        \"1026\" : 129.984425,\
+        \"1027\" : 131.375393,\
+        \"1028\" : 131.884103,\
+        \"1029\" : 132.656497,\
+        \"1030\" : 134.59663,\
+        \"1031\" : 135.856095,\
+        \"1032\" : 135.952807,\
+        \"1033\" : 137.859343,\
+        \"1034\" : 136.869097,\
+        \"1035\" : 138.835342,\
+        \"1036\" : 140.525628,\
+        \"1037\" : 141.462064,\
+        \"1038\" : 143.509938,\
+        \"1039\" : 143.025406,\
+        \"1040\" : 145.696478,\
+        \"1041\" : 145.621319,\
+        \"1042\" : 144.466126,\
+        \"1043\" : 147.638448,\
+        \"1044\" : 146.277531,\
+        \"1045\" : 147.775448,\
+        \"1046\" : 151.020184,\
+        \"1047\" : 150.296378,\
+        \"1048\" : 150.245013,\
+        \"1049\" : 154.725126,\
+        \"1050\" : 152.592499,\
+        \"1051\" : 154.033013,\
+        \"1052\" : 157.257001,\
+        \"1053\" : 155.615766,\
+        \"1054\" : 157.941679,\
+        \"1055\" : 158.318632,\
+        \"1056\" : 159.615589,\
+        \"1057\" : 160.554203,\
+        \"1058\" : 163.494878,\
+        \"1059\" : 161.874425,\
+        \"1060\" : 164.481251,\
+        \"1061\" : 166.688488,\
+        \"1062\" : 167.057323,\
+        \"1063\" : 168.264615,\
+        \"1064\" : 166.01023,\
+        \"1065\" : 168.396505,\
+        \"1066\" : 168.089616,\
+        \"1067\" : 170.023101,\
+        \"1068\" : 173.431235,\
+        \"1069\" : 173.246185,\
+        \"1070\" : 173.722823,\
+        \"1071\" : 173.153608,\
+        \"1072\" : 176.137788,\
+        \"1073\" : 175.371997,\
+        \"1074\" : 176.688347,\
+        \"1075\" : 180.784501,\
+        \"1076\" : 180.070223,\
+        \"1077\" : 182.610873,\
+        \"1078\" : 181.150272,\
+        \"1079\" : 183.36719,\
+        \"1080\" : 184.092786,\
+        \"1081\" : 186.711791,\
+        \"1082\" : 187.572159,\
+        \"1083\" : 188.785103,\
+        \"1084\" : 189.263375,\
+        \"1085\" : 190.892796,\
+        \"1086\" : 190.323923,\
+        \"1087\" : 189.079699,\
+        \"1088\" : 190.530891,\
+        \"1089\" : 194.173038,\
+        \"1090\" : 193.672212,\
+        \"1091\" : 194.384409,\
+        \"1092\" : 197.342573,\
+        \"1093\" : 197.415818,\
+        \"1094\" : 199.179823,\
+        \"1095\" : 200.596746,\
+        \"1096\" : 201.53603,\
+        \"1097\" : 199.419327,\
+        \"1098\" : 200.564464,\
+        \"1099\" : 201.269345,\
+        \"1100\" : 202.64605,\
+        \"900\" : 5.276987,\
+        \"901\" : 6.840619,\
+        \"902\" : 6.500289,\
+        \"903\" : 8.03882,\
+        \"904\" : 6.711202,\
+        \"905\" : 10.280579,\
+        \"906\" : 10.475101,\
+        \"907\" : 10.606406,\
+        \"908\" : 13.54551,\
+        \"909\" : 13.841327,\
+        \"910\" : 12.198958,\
+        \"911\" : 16.643659,\
+        \"912\" : 14.578187,\
+        \"913\" : 18.954581,\
+        \"914\" : 18.36068,\
+        \"915\" : 19.383819,\
+        \"916\" : 21.717242,\
+        \"917\" : 19.646697,\
+        \"918\" : 23.250176,\
+        \"919\" : 22.704226,\
+        \"920\" : 25.335496,\
+        \"921\" : 25.824652,\
+        \"922\" : 26.055423,\
+        \"923\" : 28.658592,\
+        \"924\" : 28.517954,\
+        \"925\" : 30.196885,\
+        \"926\" : 31.030664,\
+        \"927\" : 30.098038,\
+        \"928\" : 33.244351,\
+        \"929\" : 34.620035,\
+        \"930\" : 35.68152,\
+        \"931\" : 36.90124,\
+        \"932\" : 36.283642,\
+        \"933\" : 38.395281,\
+        \"934\" : 39.033175,\
+        \"935\" : 40.367104,\
+        \"936\" : 39.395377,\
+        \"937\" : 39.044223,\
+        \"938\" : 43.853149,\
+        \"939\" : 43.431587,\
+        \"940\" : 42.951665,\
+        \"941\" : 44.675716,\
+        \"942\" : 46.983485,\
+        \"943\" : 45.722461,\
+        \"944\" : 47.532444,\
+        \"945\" : 49.952878,\
+        \"946\" : 48.673128,\
+        \"947\" : 51.676115,\
+        \"948\" : 50.569155,\
+        \"949\" : 54.984444,\
+        \"950\" : 54.494472,\
+        \"951\" : 53.869777,\
+        \"952\" : 54.25914,\
+        \"953\" : 58.971926,\
+        \"954\" : 57.559519,\
+        \"955\" : 57.468957,\
+        \"956\" : 60.300616,\
+        \"957\" : 59.822135,\
+        \"958\" : 61.488314,\
+        \"959\" : 62.261685,\
+        \"960\" : 64.511706,\
+        \"961\" : 63.959589,\
+        \"962\" : 65.517899,\
+        \"963\" : 66.882009,\
+        \"964\" : 66.425605,\
+        \"965\" : 68.261815,\
+        \"966\" : 70.418805,\
+        \"967\" : 69.337126,\
+        \"968\" : 72.908709,\
+        \"969\" : 73.304041,\
+        \"970\" : 73.119387,\
+        \"971\" : 76.79671,\
+        \"972\" : 74.605076,\
+        \"973\" : 75.799573,\
+        \"974\" : 77.236541,\
+        \"975\" : 79.427965,\
+        \"976\" : 78.456946,\
+        \"977\" : 82.153217,\
+        \"978\" : 81.065032,\
+        \"979\" : 83.16378,\
+        \"980\" : 85.913195,\
+        \"981\" : 86.969779,\
+        \"982\" : 86.159601,\
+        \"983\" : 87.806876,\
+        \"984\" : 88.487533,\
+        \"985\" : 90.95273,\
+        \"986\" : 88.678744,\
+        \"987\" : 92.527448,\
+        \"988\" : 93.661814,\
+        \"989\" : 93.114072,\
+        \"990\" : 92.373317,\
+        \"991\" : 96.029655,\
+        \"992\" : 96.849889,\
+        \"993\" : 97.373866,\
+        \"994\" : 98.85073,\
+        \"995\" : 100.856283,\
+        \"996\" : 101.807204,\
+        \"997\" : 102.519829,\
+        \"998\" : 100.426089,\
+        \"999\" : 104.86934\
+    },\
+    \"Reference-ID\" : 5379,\
+    \"Scan-End\" : \"2015-01-14T15:31:08Z\",\
+    \"Scan-ID\" : 5856,\
+    \"Scan-Kind\" : \"Sample\",\
+    \"Scan-Label\" : \"\",\
+    \"Scan-Start\" : \"2015-01-14T15:31:07Z\"\
+}";
+        enum class ScanKindType {
+            Background,
+            Reference,
+            Sample,
+            Stroika_Define_Enum_Bounds(Background, Sample)
+        };
+        constexpr   Configuration::EnumNames<ScanKindType>    Stroika_Enum_Names(ScanKindType)
+        {
+            Configuration::EnumNames<ScanKindType>::BasicArrayInitializer {
+                {
+                    { ScanKindType::Background, L"Background" },
+                    { ScanKindType::Reference, L"Reference" },
+                    { ScanKindType::Sample, L"Sample" },
+                }
+            }
+        };
+        using ScanIDType = int;
+        using SpectrumType = Mapping<double, double>;
+        using PersistenceScanAuxDataType = Mapping<String, String>;
+        struct  ScanDetails_ {
+            ScanIDType                  fScanID {};
+            DateTime                    fScanStart;
+            DateTime                    fScanEnd;
+            ScanKindType                fScanKind {};
+            String                      fScanLabel {};
+            SpectrumType      fRawSpectrum {};
+            PersistenceScanAuxDataType      fAuxData {};
+            Optional<ScanIDType>        fUseBackground {};
+            Optional<ScanIDType>        fUseReference {};
+        };
 
+        DataExchange::ObjectVariantMapper GetPersistenceDetailsMapper_ ()
+        {
+            using   namespace DataExchange;
+            ObjectVariantMapper mapper;
+            mapper.AddCommonType<ScanIDType> ();
+            mapper.AddCommonType<Optional<ScanIDType>> ();
+            mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (Stroika_Enum_Names(ScanKindType)));
+            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<SpectrumType> ());
+            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<PersistenceScanAuxDataType> ());
+            mapper.AddClass<ScanDetails_> ({
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanID, L"Scan-ID"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanStart, L"Scan-Start"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanEnd, L"Scan-End"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanKind, L"Scan-Kind"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanLabel, L"Scan-Label"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fRawSpectrum, L"Raw-Spectrum"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fAuxData, L"Aux-Data"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseBackground, L"Background-ID"),
+                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseReference, L"Reference-ID"),
+            });
+            return mapper;
+        }
 
+        ScanDetails_    doRead_ ()
+        {
+            using   namespace DataExchange;
+            VariantValue o { JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_))) };
+            static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
+            return kMapper_.ToObject<ScanDetails_> (o);
+        }
+        void    DoRunPerfTest ()
+        {
+            ScanDetails_    sd { doRead_ () };
+            Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
+            Assert (sd.fScanID == 5856);
+        }
+    }
+}
 
 
 
@@ -1202,6 +1542,14 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             6440,
             0.26,
+            &failedTests
+        );
+        Tester (
+            L"Test_JSONReadWriteFile",
+            1 / 600.0,
+            Test_JSONReadWriteFile_::DoRunPerfTest , L"Test_JSONReadWriteFile",
+            550,
+            1.2,
             &failedTests
         );
 
