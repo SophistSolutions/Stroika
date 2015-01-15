@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/StringBuilder.h"
 #include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "../../Streams/TextOutputStreamBinaryAdapter.h"
@@ -35,9 +36,11 @@ using   Characters::String_Constant;
 namespace   {
     void    Indent_ (const TextOutputStream& out, int indentLevel)
     {
+        Characters::StringBuilder   sb; // String builder for performance
         for (int i = 0; i < indentLevel; ++i) {
-            out.Write (L"    ");
+            sb.Append (L"    ");
         }
+        out.Write (sb.begin (), sb.end ());
     }
 }
 namespace   {
@@ -82,29 +85,31 @@ namespace   {
     }
     void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
     {
-        out.Write (L"\"");
+        Characters::StringBuilder   sb; // String builder for performance
+        sb.Append (L"\"");
         for (auto i = v.begin (); i != v.end (); ++i) {
             switch (*i) {
                 case '\"':
-                    out.Write (L"\\\"");
+                    sb.Append (L"\\\"");
                     break;
                 case '\\':
-                    out.Write (L"\\\\");
+                    sb.Append (L"\\\\");
                     break;
                 case '\n':
-                    out.Write (L"\\n");
+                    sb.Append (L"\\n");
                     break;
                 case '\r':
-                    out.Write (L"\\r");
+                    sb.Append (L"\\r");
                     break;
 // unclear if we need to quote other chars such as \f\t\b\ but probably not...
                 default:
                     wchar_t c = *i;
-                    out.Write (&c, &c + 1);
+                    sb.Append (&c, &c + 1);
                     break;
             }
         }
-        out.Write (L"\"");
+        sb.Append (L"\"");
+        out.Write (sb.begin (), sb.end ());
     }
     void    PrettyPrint_ (const vector<VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
