@@ -1297,6 +1297,8 @@ namespace {
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (Stroika_Enum_Names(ScanKindType)));
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<SpectrumType> ());
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<PersistenceScanAuxDataType> ());
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<ScanDetails_> ({
                 ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanID, L"Scan-ID"),
                 ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanStart, L"Scan-Start"),
@@ -1308,6 +1310,8 @@ namespace {
                 ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseBackground, L"Background-ID"),
                 ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseReference, L"Reference-ID"),
             });
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
         ScanDetails_    doRead_ (const BinaryInputStream in)
