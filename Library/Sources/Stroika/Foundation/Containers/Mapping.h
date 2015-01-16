@@ -333,6 +333,16 @@ namespace   Stroika {
                 template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
+
+            public:
+                /**
+                 *  EXPERIMENTAL API/UTILITY
+                 */
+                nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = [] (ValueType l, ValueType r) -> ValueType { return l + r; }, ValueType initialValue = {})
+                {
+                    Add (key, LookupValue (key, initialValue) + newValue);
+                }
+
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
