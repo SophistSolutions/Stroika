@@ -171,12 +171,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ToVariantMapperType     =   function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>;
+                using   ToVariantMapperType     =   function<VariantValue(const ObjectVariantMapper& mapper, const Byte* objOfType)>;
 
             public:
                 /**
                  */
-                using   FromVariantMapperType   =   function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>;
+                using   FromVariantMapperType   =   function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
 
             public:
                 struct  TypesRegistry;

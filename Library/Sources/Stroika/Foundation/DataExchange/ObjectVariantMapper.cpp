@@ -37,11 +37,11 @@ namespace {
     template    <typename T, typename UseVariantType>
     ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
     {
-        auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (fromObjOfTypeT)));
         };
-        auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             * reinterpret_cast<T*> (intoObjOfTypeT) = static_cast<T> (d.As<UseVariantType> ());
         };
@@ -154,10 +154,10 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<VariantValue> ()
 {
-    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         return *(reinterpret_cast<const VariantValue*> (fromObjOfTypeT));
     };
-    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid (VariantValue), toVariantMapper, fromVariantMapper));
@@ -166,10 +166,10 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 {
-    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<wstring> ());
     };
-    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ().As<wstring> ());
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid (Duration), toVariantMapper, fromVariantMapper));
@@ -178,10 +178,10 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
 {
-    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         return VariantValue ((reinterpret_cast<const TimeOfDay*> (fromObjOfTypeT))->GetAsSecondsCount ());
     };
-    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid (TimeOfDay), toVariantMapper, fromVariantMapper));
@@ -191,25 +191,25 @@ template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ()
 {
     using   ACTUAL_ELEMENT_TYPE =   Mapping<String, String>;
-    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
         const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
         for (auto i : *actualMember)
         {
             // really could do either way - but second more efficient
-            //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
+            //m.Add (i.first, mapper.Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
             m.Add (i.fKey, i.fValue);
         }
         return VariantValue (m);
     };
-    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
         ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
         actualInto->clear ();
         for (auto i : m)
         {
             // really could do either way - but second more efficient
-            //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
+            //actualInto->Add (i.first, mapper.ToObject<String> (i.second));
             actualInto->Add (i.fKey, i.fValue.As<String> ());
         }
     };
@@ -220,11 +220,11 @@ template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ()
 {
     using   ACTUAL_ELEMENT_TYPE     =   Mapping<String, VariantValue>;
-    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
         return VariantValue (*actualMember);
     };
-    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
         * actualInto = d.As<Mapping<String, VariantValue>> ();
     };
@@ -339,21 +339,21 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
     }
 #endif
 
-    auto toVariantMapper = [fields] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [fields] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
         Mapping<String, VariantValue> m;
         for (auto i : fields)
         {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
-            VariantValue    vv = mapper->FromObjectMapper (i.fTypeInfo) (mapper, fromObjOfTypeT + i.fOffset);
+            VariantValue    vv = mapper.FromObjectMapper (i.fTypeInfo) (mapper, fromObjOfTypeT + i.fOffset);
             if (i.fNullFields == ObjectVariantMapper::StructureFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
                 m.Add (i.fSerializedFieldName, vv);
             }
         }
         return VariantValue (m);
     };
-    auto fromVariantMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
         VariantValue v2Decode = d;
         preflightBeforeToObject (&v2Decode);
@@ -365,13 +365,13 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             if (not o.IsMissing ()) {
                 switch (i.fSpecialArrayHandling) {
                     case StructureFieldInfo::ArrayElementHandling::eExact: {
-                            mapper->ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
+                            mapper.ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
                         }
                         break;
                     case StructureFieldInfo::ArrayElementHandling::eTryExtraArray: {
                             exception_ptr savedException;
                             try {
-                                mapper->ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
+                                mapper.ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
                             }
                             catch (...) {
                                 // Because of ambiguity in xml between arrays and single elements, we optionally allow special mapping to array
@@ -380,7 +380,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
                                 Sequence<VariantValue> v;
                                 v.Append (*o);
                                 try {
-                                    mapper->ToObjectMapper (i.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fOffset);
+                                    mapper.ToObjectMapper (i.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fOffset);
                                 }
                                 catch (...) {
                                     Execution::DoReThrow (savedException);
