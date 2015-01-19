@@ -169,6 +169,12 @@ namespace   Stroika {
                 struct  TypeMappingDetails;
 
             public:
+                using   ToVariantMapperType     =   function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>;
+
+            public:
+                using   FromVariantMapperType   =   function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>;
+
+            public:
                 struct  TypesRegistry;
 
             public:
@@ -410,15 +416,11 @@ namespace   Stroika {
              *  helpers like MakeCommonSerializer () or AddClass will be used.
              */
             struct  ObjectVariantMapper::TypeMappingDetails {
-                type_index                                                                              fForType;
-                function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>        fToVariantMapper;
-                function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>    fFromVariantMapper;
+                type_index              fForType;
+                ToVariantMapperType     fToVariantMapper;
+                FromVariantMapperType   fFromVariantMapper;
 
-                TypeMappingDetails (
-                    const type_index& forTypeInfo,
-                    const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-                    const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
-                );
+                TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper);
 
                 nonvirtual  bool operator== (const TypeMappingDetails& rhs) const;
                 nonvirtual  bool operator< (const TypeMappingDetails& rhs) const;

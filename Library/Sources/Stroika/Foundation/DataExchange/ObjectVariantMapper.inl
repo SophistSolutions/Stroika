@@ -42,11 +42,7 @@ namespace   Stroika {
              *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
-                const type_index& forTypeInfo,
-                const function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-                const function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
-            )
+            inline  ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper)
                 : fForType (forTypeInfo)
                 , fToVariantMapper (toVariantMapper)
                 , fFromVariantMapper (fromVariantMapper)
