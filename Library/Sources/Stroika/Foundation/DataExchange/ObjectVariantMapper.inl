@@ -137,7 +137,7 @@ namespace   Stroika {
             inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, TYPE* into) const
             {
                 RequireNotNull (into);
-                ToObjectMapper  (typeid (TYPE)) (this, v, reinterpret_cast<Byte*> (into));
+                ToObject<TYPE> (ToObjectMapper<TYPE> (), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename TYPE>
             inline  TYPE    ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const
