@@ -557,23 +557,23 @@ namespace   Stroika {
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    const ACTUAL_CONTAINTER_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT);
-                    Mapping<String, VariantValue> m;
-                    //ToVariantMapperType   keyMapper       { mapper->FromObjectMapper<KEY_TYPE> () };
-                    //ToVariantMapperType   valueMapper     { mapper->FromObjectMapper<VALUE_TYPE> () };
+                    ToVariantMapperType             keyMapper       { mapper->FromObjectMapper<KEY_TYPE> () };
+                    ToVariantMapperType             valueMapper     { mapper->FromObjectMapper<VALUE_TYPE> () };
+                    const ACTUAL_CONTAINTER_TYPE*   actualMember    { reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT) };
+                    Mapping<String, VariantValue>   m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
                     {
-                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
+                        m.Add (mapper->FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (valueMapper, i.fValue));
                     }
                     return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
+                    FromVariantMapperType           keyMapper   { mapper->ToObjectMapper<KEY_TYPE> () };
+                    FromVariantMapperType           valueMapper { mapper->ToObjectMapper<VALUE_TYPE> () };
                     Mapping<String, VariantValue>   m           { d.As<Mapping<String, VariantValue>> () };
                     ACTUAL_CONTAINTER_TYPE*         actualInto  { reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT) };
                     actualInto->clear ();
-                    FromVariantMapperType           keyMapper   { mapper->ToObjectMapper<KEY_TYPE> () };
-                    FromVariantMapperType           valueMapper { mapper->ToObjectMapper<VALUE_TYPE> () };
                     for (Common::KeyValuePair<String, VariantValue> p : m)
                     {
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper->ToObject<VALUE_TYPE> (valueMapper, p.fValue));
