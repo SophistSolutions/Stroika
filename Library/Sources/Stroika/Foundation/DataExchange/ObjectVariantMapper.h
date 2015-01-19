@@ -277,21 +277,31 @@ namespace   Stroika {
                 /**
                  *  Convert a VariantValue object into any C++ object - using the type converters already registered in
                  *  this mapper.
+                 *
+                 *  The overload that takes no value argument (optionally just forTypeInfo) just returns the function that
+                 *  does the data mapping. This can be used as an optimization to avoid multiple lookups of the mapper
+                 *  for a given type (say when reading or writing an array).
                  */
-                nonvirtual  void    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
+                nonvirtual  FromVariantMapperType   ToObject (const type_index& forTypeInfo) const;
+                nonvirtual  void                    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
                 template    <typename CLASS>
-                nonvirtual  void    ToObject (const VariantValue& v, CLASS* into) const;
+                nonvirtual  void                    ToObject (const VariantValue& v, CLASS* into) const;
                 template    <typename CLASS>
-                nonvirtual  CLASS   ToObject (const VariantValue& v) const;
+                nonvirtual  CLASS                   ToObject (const VariantValue& v) const;
 
             public:
                 /**
                  *  Convert a C++ object to a VariantValue object - using the type converters already registered in
                  *  this mapper.
+                 *
+                 *  The overload that takes no value argument (optionally just forTypeInfo) just returns the function that
+                 *  does the data mapping. This can be used as an optimization to avoid multiple lookups of the mapper
+                 *  for a given type (say when reading or writing an array).
                  */
-                nonvirtual  VariantValue    FromObject (const type_index& forTypeInfo, const Byte* objOfType) const;
+                nonvirtual  ToVariantMapperType     FromObject (const type_index& forTypeInfo) const;
+                nonvirtual  VariantValue            FromObject (const type_index& forTypeInfo, const Byte* objOfType) const;
                 template    <typename CLASS>
-                nonvirtual  VariantValue    FromObject (const CLASS& from) const;
+                nonvirtual  VariantValue            FromObject (const CLASS& from) const;
 
             public:
                 /**

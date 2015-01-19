@@ -110,7 +110,16 @@ namespace   Stroika {
             {
                 return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd), preflightBeforeToObject);
             }
-            template    <typename CLASS>
+            inline auto ObjectVariantMapper::ToObject (const type_index& forTypeInfo) const ->FromVariantMapperType
+            {
+                Require (Lookup_ (forTypeInfo).fFromVariantMapper);
+                return Lookup_ (forTypeInfo).fFromVariantMapper;
+            }
+
+            inline  void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const
+            {
+                ToObject (forTypeInfo) (this, d, into);
+            }            template    <typename CLASS>
             inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, CLASS* into) const
             {
                 RequireNotNull (into);
@@ -128,6 +137,15 @@ namespace   Stroika {
                 CLASS tmp;
                 ToObject (v, &tmp);
                 return tmp;
+            }
+            inline auto  ObjectVariantMapper::FromObject (const type_index& forTypeInfo) const -> ToVariantMapperType
+            {
+                Require (Lookup_ (forTypeInfo).fToVariantMapper);
+                return Lookup_ (forTypeInfo).fToVariantMapper;
+            }
+            inline  VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType) const
+            {
+                return FromObject (forTypeInfo) (this, objOfType);
             }
             template    <typename CLASS>
             inline  VariantValue    ObjectVariantMapper::FromObject (const CLASS& from) const

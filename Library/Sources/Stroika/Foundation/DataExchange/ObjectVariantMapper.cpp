@@ -308,18 +308,6 @@ void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
     fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
 }
 
-VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType) const
-{
-    Require (Lookup_ (forTypeInfo).fToVariantMapper);
-    return Lookup_ (forTypeInfo).fToVariantMapper (this, objOfType);
-}
-
-void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const
-{
-    Require (Lookup_ (forTypeInfo).fFromVariantMapper);
-    Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
-}
-
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const
 {
     return MakeCommonSerializer_ForClassObject_ (forTypeInfo, n, fields, [] (VariantValue*) {});
