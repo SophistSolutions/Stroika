@@ -129,7 +129,7 @@ namespace   Stroika {
             {
                 RequireNotNull (into);
                 RequireNotNull (fromVariantMapper);
-                Require (fromVariantMapper  == ToObject<TYPE> ());  // pass it in as optimization, but not change of semantics
+                // LOGICALLY required but cannot compare == on std::function! Require (fromVariantMapper  == ToObject<TYPE> ());  // pass it in as optimization, but not change of semantics
                 fromVariantMapper  (this, v, reinterpret_cast<Byte*> (into));
             }
             template    <typename TYPE>
@@ -181,7 +181,7 @@ namespace   Stroika {
             template    <typename TYPE>
             inline  VariantValue    ObjectVariantMapper::FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const
             {
-                Require (toVariantMapper  == FromObject<TYPE> ());  // pass it in as optimization, but not change of semantics
+                // LOGICALLY required but cannot compare == on std::function! Require (toVariantMapper  == FromObject<TYPE> ());  // pass it in as optimization, but not change of semantics
                 return toVariantMapper (this, reinterpret_cast<const Byte*> (&from));
             }
             template    <typename TYPE>
