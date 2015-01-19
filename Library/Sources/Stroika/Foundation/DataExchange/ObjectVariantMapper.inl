@@ -118,7 +118,7 @@ namespace   Stroika {
             template    <typename TYPE>
             inline  auto   ObjectVariantMapper::ToObject () const -> FromVariantMapperType
             {
-                return ToObject (typeid (TYPE))
+                return ToObject (typeid (TYPE));
             }
             inline  void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const
             {
@@ -172,7 +172,7 @@ namespace   Stroika {
             template    <typename TYPE>
             inline  auto   ObjectVariantMapper::FromObject () const -> ToVariantMapperType
             {
-                return FromObject (typeid (TYPE))
+                return FromObject (typeid (TYPE));
             }
             inline  VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType) const
             {
