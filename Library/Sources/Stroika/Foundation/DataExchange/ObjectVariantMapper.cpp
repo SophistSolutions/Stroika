@@ -346,7 +346,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
-            VariantValue    vv = mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset);
+            VariantValue    vv = mapper->FromObjectMapper (i.fTypeInfo) (mapper, fromObjOfTypeT + i.fOffset);
             if (i.fNullFields == ObjectVariantMapper::StructureFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
                 m.Add (i.fSerializedFieldName, vv);
             }
@@ -365,22 +365,22 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
             if (not o.IsMissing ()) {
                 switch (i.fSpecialArrayHandling) {
                     case StructureFieldInfo::ArrayElementHandling::eExact: {
-                            mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+                            mapper->ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
                         }
                         break;
                     case StructureFieldInfo::ArrayElementHandling::eTryExtraArray: {
                             exception_ptr savedException;
                             try {
-                                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
+                                mapper->ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
                             }
                             catch (...) {
                                 // Because of ambiguity in xml between arrays and single elements, we optionally allow special mapping to array
                                 // but then if that fails, throw the original exception
-                                savedException = current_exception();
+                                savedException = current_exception ();
                                 Sequence<VariantValue> v;
                                 v.Append (*o);
                                 try {
-                                    mapper->ToObject (i.fTypeInfo, VariantValue (v), intoObjOfTypeT + i.fOffset);
+                                    mapper->ToObjectMapper (i.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fOffset);
                                 }
                                 catch (...) {
                                     Execution::DoReThrow (savedException);

@@ -110,19 +110,15 @@ namespace   Stroika {
             {
                 return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd), preflightBeforeToObject);
             }
-            inline auto ObjectVariantMapper::ToObject (const type_index& forTypeInfo) const ->FromVariantMapperType
+            inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const ->FromVariantMapperType
             {
                 Require (Lookup_ (forTypeInfo).fFromVariantMapper);
                 return Lookup_ (forTypeInfo).fFromVariantMapper;
             }
             template    <typename TYPE>
-            inline  auto   ObjectVariantMapper::ToObject () const -> FromVariantMapperType
+            inline  auto   ObjectVariantMapper::ToObjectMapper () const -> FromVariantMapperType
             {
-                return ToObject (typeid (TYPE));
-            }
-            inline  void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const
-            {
-                ToObject (forTypeInfo) (this, d, into);
+                return ToObjectMapper (typeid (TYPE));
             }
             template    <typename TYPE>
             inline  void    ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const
@@ -136,7 +132,7 @@ namespace   Stroika {
             inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, TYPE* into) const
             {
                 RequireNotNull (into);
-                ToObject  (typeid (TYPE), v, reinterpret_cast<Byte*> (into));
+                ToObjectMapper  (typeid (TYPE)) (this, v, reinterpret_cast<Byte*> (into));
             }
             template    <typename TYPE>
             inline  TYPE    ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const
@@ -164,20 +160,22 @@ namespace   Stroika {
                 ToObject (v, &tmp);
                 return tmp;
             }
-            inline auto  ObjectVariantMapper::FromObject (const type_index& forTypeInfo) const -> ToVariantMapperType
+            inline auto  ObjectVariantMapper::FromObjectMapper (const type_index& forTypeInfo) const -> ToVariantMapperType
             {
                 Require (Lookup_ (forTypeInfo).fToVariantMapper);
                 return Lookup_ (forTypeInfo).fToVariantMapper;
             }
             template    <typename TYPE>
-            inline  auto   ObjectVariantMapper::FromObject () const -> ToVariantMapperType
+            inline  auto   ObjectVariantMapper::FromObjectMapper () const -> ToVariantMapperType
             {
-                return FromObject (typeid (TYPE));
+                return FromObjectMapper (typeid (TYPE));
             }
+#if 0
             inline  VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType) const
             {
                 return FromObject (forTypeInfo) (this, objOfType);
             }
+#endif
             template    <typename TYPE>
             inline  VariantValue    ObjectVariantMapper::FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const
             {
@@ -187,7 +185,7 @@ namespace   Stroika {
             template    <typename TYPE>
             inline  VariantValue    ObjectVariantMapper::FromObject (const TYPE& from) const
             {
-                return FromObject  (typeid (TYPE), reinterpret_cast<const Byte*> (&from));
+                return FromObjectMapper (typeid (TYPE)) (this, reinterpret_cast<const Byte*> (&from));
             }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
@@ -561,8 +559,8 @@ namespace   Stroika {
                     RequireNotNull (fromObjOfTypeT);
                     const ACTUAL_CONTAINTER_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT);
                     Mapping<String, VariantValue> m;
-                    //ToVariantMapperType   keyMapper       { mapper->FromObject<KEY_TYPE> () };
-                    //ToVariantMapperType   valueMapper     { mapper->FromObject<VALUE_TYPE> () };
+                    //ToVariantMapperType   keyMapper       { mapper->FromObjectMapper<KEY_TYPE> () };
+                    //ToVariantMapperType   valueMapper     { mapper->FromObjectMapper<VALUE_TYPE> () };
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
                     {
                         m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
@@ -571,11 +569,11 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
-                    ACTUAL_CONTAINTER_TYPE*  actualInto  =   reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT);
+                    Mapping<String, VariantValue>   m           { d.As<Mapping<String, VariantValue>> () };
+                    ACTUAL_CONTAINTER_TYPE*         actualInto  { reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT) };
                     actualInto->clear ();
-                    FromVariantMapperType   keyMapper   { mapper->ToObject<KEY_TYPE> () };
-                    FromVariantMapperType   valueMapper { mapper->ToObject<VALUE_TYPE> () };
+                    FromVariantMapperType           keyMapper   { mapper->ToObjectMapper<KEY_TYPE> () };
+                    FromVariantMapperType           valueMapper { mapper->ToObjectMapper<VALUE_TYPE> () };
                     for (Common::KeyValuePair<String, VariantValue> p : m)
                     {
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper->ToObject<VALUE_TYPE> (valueMapper, p.fValue));
