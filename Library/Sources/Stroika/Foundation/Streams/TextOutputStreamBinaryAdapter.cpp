@@ -50,9 +50,7 @@ protected:
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
         const wchar_t*  pc  =   sc;
 
-        // convert characters to bytes using codepage, and then
-        //mbstate_t mb = mbstate_t(); // docs say this is OK, but on windows maybe not???
-        mbstate_t mb = 0;   // looking
+        mbstate_t mb {};
 
         char  outBuf[10 * 1024];
         //char    outBuf[10]; // to test
