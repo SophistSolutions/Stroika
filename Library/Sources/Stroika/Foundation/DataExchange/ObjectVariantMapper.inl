@@ -561,6 +561,8 @@ namespace   Stroika {
                     RequireNotNull (fromObjOfTypeT);
                     const ACTUAL_CONTAINTER_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_CONTAINTER_TYPE*> (fromObjOfTypeT);
                     Mapping<String, VariantValue> m;
+                    //ToVariantMapperType   keyMapper       { mapper->FromObject<KEY_TYPE> () };
+                    //ToVariantMapperType   valueMapper     { mapper->FromObject<VALUE_TYPE> () };
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
                     {
                         m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
@@ -572,9 +574,11 @@ namespace   Stroika {
                     Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
                     ACTUAL_CONTAINTER_TYPE*  actualInto  =   reinterpret_cast<ACTUAL_CONTAINTER_TYPE*> (intoObjOfTypeT);
                     actualInto->clear ();
+                    FromVariantMapperType   keyMapper   { mapper->ToObject<KEY_TYPE> () };
+                    FromVariantMapperType   valueMapper { mapper->ToObject<VALUE_TYPE> () };
                     for (Common::KeyValuePair<String, VariantValue> p : m)
                     {
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.fKey), mapper->ToObject<VALUE_TYPE> (p.fValue));
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper->ToObject<VALUE_TYPE> (valueMapper, p.fValue));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINTER_TYPE), toVariantMapper, fromVariantMapper);
