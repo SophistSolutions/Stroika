@@ -283,6 +283,8 @@ namespace   Stroika {
                  *  for a given type (say when reading or writing an array).
                  */
                 nonvirtual  FromVariantMapperType   ToObject (const type_index& forTypeInfo) const;
+                template    <typename TYPE>
+                nonvirtual  FromVariantMapperType   ToObject () const;
                 nonvirtual  void                    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
                 template    <typename CLASS>
                 nonvirtual  void                    ToObject (const VariantValue& v, CLASS* into) const;
@@ -299,6 +301,8 @@ namespace   Stroika {
                  *  for a given type (say when reading or writing an array).
                  */
                 nonvirtual  ToVariantMapperType     FromObject (const type_index& forTypeInfo) const;
+                template    <typename TYPE>
+                nonvirtual  ToVariantMapperType     FromObject () const;
                 nonvirtual  VariantValue            FromObject (const type_index& forTypeInfo, const Byte* objOfType) const;
                 template    <typename CLASS>
                 nonvirtual  VariantValue            FromObject (const CLASS& from) const;
