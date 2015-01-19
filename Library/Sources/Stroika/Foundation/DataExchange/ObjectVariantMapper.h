@@ -286,10 +286,14 @@ namespace   Stroika {
                 template    <typename TYPE>
                 nonvirtual  FromVariantMapperType   ToObject () const;
                 nonvirtual  void                    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
-                template    <typename CLASS>
-                nonvirtual  void                    ToObject (const VariantValue& v, CLASS* into) const;
-                template    <typename CLASS>
-                nonvirtual  CLASS                   ToObject (const VariantValue& v) const;
+                template    <typename TYPE>
+                nonvirtual  void                    ToObject (const VariantValue& v, TYPE* into) const;
+                template    <typename TYPE>
+                nonvirtual  void                    ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const;
+                template    <typename TYPE>
+                nonvirtual  TYPE                    ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const;
+                template    <typename TYPE>
+                nonvirtual  TYPE                    ToObject (const VariantValue& v) const;
 
             public:
                 /**
@@ -304,8 +308,10 @@ namespace   Stroika {
                 template    <typename TYPE>
                 nonvirtual  ToVariantMapperType     FromObject () const;
                 nonvirtual  VariantValue            FromObject (const type_index& forTypeInfo, const Byte* objOfType) const;
-                template    <typename CLASS>
-                nonvirtual  VariantValue            FromObject (const CLASS& from) const;
+                template    <typename TYPE>
+                nonvirtual  VariantValue            FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const;
+                template    <typename TYPE>
+                nonvirtual  VariantValue            FromObject (const TYPE& from) const;
 
             public:
                 /**

@@ -124,14 +124,22 @@ namespace   Stroika {
             {
                 ToObject (forTypeInfo) (this, d, into);
             }
-            template    <typename CLASS>
-            inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, CLASS* into) const
+            template    <typename TYPE>
+            inline  void    ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v, TYPE* into) const
             {
                 RequireNotNull (into);
-                ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
+                RequireNotNull (fromVariantMapper);
+                Require (fromVariantMapper  == ToObject<TYPE> ());  // pass it in as optimization, but not change of semantics
+                fromVariantMapper  (this, v, reinterpret_cast<Byte*> (into));
             }
-            template    <typename CLASS>
-            inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
+            template    <typename TYPE>
+            inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, TYPE* into) const
+            {
+                RequireNotNull (into);
+                ToObject  (typeid (TYPE), v, reinterpret_cast<Byte*> (into));
+            }
+            template    <typename TYPE>
+            inline  TYPE    ObjectVariantMapper::ToObject (const FromVariantMapperType& fromVariantMapper, const VariantValue& v) const
             {
                 /*
                  *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
@@ -139,7 +147,20 @@ namespace   Stroika {
                  *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
                  *  by the two argument ToObject.
                  */
-                CLASS tmp;
+                TYPE tmp;
+                ToObject (fromVariantMapper, v, &tmp);
+                return tmp;
+            }
+            template    <typename TYPE>
+            inline  TYPE    ObjectVariantMapper::ToObject (const VariantValue& v) const
+            {
+                /*
+                 *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
+                 *  all its types to have a default constructor. To avoid that dependency, you may provide a template
+                 *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
+                 *  by the two argument ToObject.
+                 */
+                TYPE tmp;
                 ToObject (v, &tmp);
                 return tmp;
             }
@@ -157,10 +178,16 @@ namespace   Stroika {
             {
                 return FromObject (forTypeInfo) (this, objOfType);
             }
-            template    <typename CLASS>
-            inline  VariantValue    ObjectVariantMapper::FromObject (const CLASS& from) const
+            template    <typename TYPE>
+            inline  VariantValue    ObjectVariantMapper::FromObject (const ToVariantMapperType& toVariantMapper, const TYPE& from) const
             {
-                return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
+                Require (toVariantMapper  == FromObject<TYPE> ());  // pass it in as optimization, but not change of semantics
+                return toVariantMapper (this, reinterpret_cast<const Byte*> (&from));
+            }
+            template    <typename TYPE>
+            inline  VariantValue    ObjectVariantMapper::FromObject (const TYPE& from) const
+            {
+                return FromObject  (typeid (TYPE), reinterpret_cast<const Byte*> (&from));
             }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
