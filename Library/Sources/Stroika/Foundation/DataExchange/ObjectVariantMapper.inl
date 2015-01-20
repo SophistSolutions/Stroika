@@ -203,7 +203,7 @@ namespace   Stroika {
                     RequireNotNull (intoObjOfTypeT);
                     FromVariantMapperType                           domainMapper    { mapper.ToObjectMapper<DOMAIN_TYPE> () };
                     FromVariantMapperType                           rangeMapper     { mapper.ToObjectMapper<RANGE_TYPE> () };
-                    Sequence<VariantValue>                          s               { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>                          s               = d.As<Sequence<VariantValue>> ();
                     Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*     actualInto      { reinterpret_cast<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*> (intoObjOfTypeT) };
                     actualInto->clear ();
                     for (VariantValue encodedPair : s)
@@ -346,7 +346,7 @@ namespace   Stroika {
                 auto fromVariantMapper = [](const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
-                    Sequence<VariantValue>      s           { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>      s          = d.As<Sequence<VariantValue>> ();
                     ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
                     actualInto->clear ();
                     for (auto i : s)
@@ -374,7 +374,7 @@ namespace   Stroika {
                 auto fromVariantMapper = [](const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
-                    Sequence<VariantValue>      s           { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>      s        =  d.As<Sequence<VariantValue>> ();
                     ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
                     actualInto->clear ();
                     for (auto i : s)
@@ -414,7 +414,7 @@ namespace   Stroika {
                      */
                     FromVariantMapperType       keyMapper   { mapper.ToObjectMapper<KEY_TYPE> () };
                     FromVariantMapperType       valueMapper { mapper.ToObjectMapper<VALUE_TYPE> () };
-                    Sequence<VariantValue>      s           { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>      s           = d.As<Sequence<VariantValue>> () ;
                     ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
                     actualInto->clear ();
                     for (VariantValue encodedPair : s)
@@ -439,7 +439,7 @@ namespace   Stroika {
                 using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType     valueMapper { mapper.FromObjectMapper<T> () };     // optimization if > 1 array elt, and anti-optimization array.size == 0
+                    ToVariantMapperType     valueMapper     { mapper.FromObjectMapper<T> () };     // optimization if > 1 array elt, and anti-optimization array.size == 0
                     Sequence<VariantValue>  s;
                     const T*                actualMember    { reinterpret_cast<const T*> (fromObjOfTypeT) };
                     for (auto i = actualMember; i < actualMember + SZ; ++i)
@@ -450,7 +450,7 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    Sequence<VariantValue>  s               { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>  s               =   d.As<Sequence<VariantValue>> ();
                     T*                      actualMember    { reinterpret_cast<T*> (intoObjOfTypeT) };
                     if (s.size () > SZ)
                     {
