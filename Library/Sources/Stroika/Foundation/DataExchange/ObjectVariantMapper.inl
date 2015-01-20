@@ -430,11 +430,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, size_t SZ>
-#if 1
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
-#else
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (T ar[SZ])
-#endif
+            inline  ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (&)[SZ])
             {
                 using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {

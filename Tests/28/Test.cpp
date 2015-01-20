@@ -675,11 +675,7 @@ namespace   {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
-#if 1
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Array<int, 5> ());
-#else
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
-#endif
 
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04

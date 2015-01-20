@@ -385,11 +385,6 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>&);
-#if 0
-                // haven't gotten to work
-                template    <typename T, size_t SZ>
-                static  TypeMappingDetails MakeCommonSerializer_ (T ar[SZ]);
-#endif
                 template    <typename T, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&);
                 template    <typename T, typename TRAITS>
@@ -409,15 +404,9 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_WithKeyValuePairAdd_ ();
 
-#if 1
-            public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                // this is for builtin C++ array (int a[3]) - not std::array).
+            private:
                 template    <typename T, size_t SZ>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
-#endif
+                static  TypeMappingDetails MakeCommonSerializer_ (const T (&)[SZ]);
 
             private:
                 template    <typename RANGE_TYPE>
