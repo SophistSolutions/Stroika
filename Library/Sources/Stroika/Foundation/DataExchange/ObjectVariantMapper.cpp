@@ -226,7 +226,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
     };
     auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
-        *actualInto = d.As<Mapping<String, VariantValue>> ();
+        * actualInto = d.As<Mapping<String, VariantValue>> ();
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
 }
