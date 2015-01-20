@@ -167,10 +167,10 @@ template    <>
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 {
     auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-        return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<wstring> ());
+        return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<String> ());
     };
     auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-        *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ().As<wstring> ());
+        *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ());
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid (Duration), toVariantMapper, fromVariantMapper));
 }
@@ -226,7 +226,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
     };
     auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
-        * actualInto = d.As<Mapping<String, VariantValue>> ();
+        *actualInto = d.As<Mapping<String, VariantValue>> ();
     };
     return (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
 }
