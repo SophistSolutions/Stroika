@@ -334,10 +334,19 @@ namespace   Stroika {
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+                inline  static  bool    DefaultAccumulateArg_ (ValueType l, ValueType r)               {        return l + r;       }
+#endif
+
+            public:
                 /**
                  *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+                nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = DefaultAccumulateArg_, ValueType initialValue = {})
+#else
                 nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = [] (ValueType l, ValueType r) -> ValueType { return l + r; }, ValueType initialValue = {})
+#endif
                 {
                     Add (key, LookupValue (key, initialValue) + newValue);
                 }
