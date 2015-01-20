@@ -74,7 +74,7 @@ String TextInputStream::ReadAll () const
 {
     Characters::StringBuilder result;
     while (true) {
-        Character buf[1024];
+        Character buf[16*1024];
         size_t n = Read (std::begin (buf), std::end (buf));
         Assert (0 <= n and n <= NEltsOf (buf));
         if (n == 0) {
