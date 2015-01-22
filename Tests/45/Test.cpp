@@ -4,6 +4,7 @@
 //  TEST    Foundation::Traveral
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
@@ -656,6 +657,15 @@ namespace {
 
 
 
+namespace {
+    void    Test14_Format_ ()
+    {
+        VerifyTestResult (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+    }
+
+}
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -672,6 +682,7 @@ namespace   {
         Test11_GetDistanceSpanned_ ();
         Test12_RangeConstExpr_ ();
         Test13_DisjointRange_ ();
+        Test14_Format_ ();
     }
 }
 

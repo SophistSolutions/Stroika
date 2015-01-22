@@ -352,6 +352,7 @@ namespace   Stroika {
                  */
                 nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
 
+#if 0
             public:
                 /**
                  *  This function is only defined if there is a format method on type T, and that method
@@ -359,6 +360,19 @@ namespace   Stroika {
                  */
                 template    <typename... ARGS>
                 nonvirtual  Characters::String  Format (ARGS&& ... args) const;
+#endif
+
+            public:
+                /**
+                 *  Print a displayable rendition of the given range, using the argument funciton to format
+                 *  the basic ElementType.
+                 *
+                 *  EXAMPLE:
+                 *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+                 *
+                 *      @todo add default ElementType format function to TRAITS, and then make this std::function default to that helper.
+                 */
+                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound) const;
 
             private:
                 T           fBegin_;

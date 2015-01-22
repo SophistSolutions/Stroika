@@ -4,6 +4,7 @@
 #ifndef _Stroika_Foundation_Traversal_Range_inl_
 #define _Stroika_Foundation_Traversal_Range_inl_
 
+#include    "../Characters/StringBuilder.h"
 #include    "../Debug/Assertions.h"
 #include    "../Math/Overlap.h"
 #include    "DisjointRange.h"
@@ -381,6 +382,7 @@ namespace   Stroika {
             {
                 return fEndOpenness_;
             }
+#if 0
             template    <typename T, typename TRAITS>
             template    <typename... ARGS>
             inline  Characters::String  Range<T, TRAITS>::Format (ARGS&& ... args) const
@@ -392,6 +394,31 @@ namespace   Stroika {
                     return GetLowerBound ().Format (forward<ARGS> (args)...) + L" - " + GetUpperBound  ().Format (forward<ARGS> (args)...);
                 }
             }
+#endif
+            template    <typename T, typename TRAITS>
+            Characters::String  Range<T, TRAITS>::Format (const function<Characters::String(T)>& formatBound) const
+            {
+                Characters::StringBuilder out;
+                if (empty ()) {
+                    out += L"{}";
+                }
+                else if (GetLowerBound () == GetUpperBound ()) {
+                    // if single point, open and closed must be same (or always must be closed?
+                    bool closed = true; // cuz otherwise would be empty set
+                    out += L"[";
+                    out += formatBound (GetLowerBound ());
+                    out +=  L"]";
+                }
+                else {
+                    out += (GetLowerBoundOpenness () == Openness::eClosed) ? L"[" : L"(";
+                    out += formatBound (GetLowerBound ());
+                    out +=  L" ... ";
+                    out += formatBound (GetUpperBound ());
+                    out += (GetUpperBoundOpenness () == Openness::eClosed) ? L"]" : L")";
+                }
+                return out.str ();
+            }
+
 
 
             /*
@@ -440,6 +467,7 @@ namespace   Stroika {
             {
                 return not lhs.Equals (rhs);
             }
+
 
         }
     }
