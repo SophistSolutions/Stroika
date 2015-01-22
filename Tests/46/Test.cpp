@@ -1023,7 +1023,6 @@ namespace {
     {
         Test_BLOB_Versus_Vector_Byte_DETAILS::T1_<BLOBISH_IMPL> ();
     }
-
 }
 
 
@@ -1345,6 +1344,103 @@ namespace {
 
 
 
+
+
+
+
+
+#if     qPlatform_Windows
+namespace {
+    namespace Test_UTF82WString_ {
+        static  const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
+        void    Test_UTF82WString_win32API (const char* s, const char* e)
+        {
+            wstring     tmp;
+            NarrowStringToWide (s, e, kCodePage_UTF8, &tmp);
+        }
+        void    Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
+        {
+            mbstate_t mb {};
+#if 1
+            SmallStackBuffer<wchar_t> outBuf (e - s);
+            const char* from_next;
+            wchar_t* to_next;
+            kConverter_.in (mb, s, e, from_next, outBuf.begin (), outBuf.end (), to_next);
+            //wstring tmp { outBuf.begin (), outBuf.begin () + (to_next - outBuf.begin ()) };
+#else
+            //SmallStackBuffer<wchar_t> outBuf (e-s);
+            std::wstring tmp((e - s), '\0');
+            const char* from_next;
+            wchar_t* to_next;
+            kConverter_.in (mb, s, e, from_next, &tmp[0], &tmp[tmp.size()], to_next);
+            tmp.resize(to_next - &tmp[0]);
+#endif
+        }
+        constexpr char kS1_ [] = "asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
+        constexpr char kS2_ [] = "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b";
+    }
+    void    Test_UTF82WString_win32API ()
+    {
+        using namespace Test_UTF82WString_;
+        Test_UTF82WString_win32API (begin (kS1_), end (kS1_));
+    }
+    void    Test_UTF82WString_codecvt_utf8 ()
+    {
+        using namespace Test_UTF82WString_;
+        Test_UTF82WString_codecvt_utf8 (begin (kS1_), end (kS1_));
+    }
+}
+#endif
+
+
+
+
+
+
+#if     qPlatform_Windows
+namespace {
+    namespace  Test_WString2UTF8_ {
+        static  const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
+        constexpr wchar_t kS1_ [] = L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
+        constexpr wchar_t kS2_ [] = L"z\u00df\u6c34\U0001d10b";
+        void    Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
+        {
+            string      tmp;
+            WideStringToNarrow (s, e, kCodePage_UTF8, &tmp);
+        }
+        void    Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
+        {
+            const wchar_t*  sc  =   s;
+            const wchar_t*  ec  =   e;
+            std::string tmp((e - s) * kConverter_.max_length(), '\0');
+            const wchar_t* from_next;
+            char* to_next;
+            mbstate_t mb {};
+            codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size()], to_next);
+            tmp.resize(to_next -  &tmp[0]);
+        }
+    }
+    void    Test_WString2UTF8_win32API ()
+    {
+        using namespace Test_WString2UTF8_;
+        Test_WString2UTF8_win32API (begin (kS1_), end (kS1_));
+        Test_WString2UTF8_win32API (begin (kS2_), end (kS2_));
+    }
+    void    Test_WString2UTF8_codecvt_utf8 ()
+    {
+        using namespace Test_WString2UTF8_;
+        Test_WString2UTF8_codecvt_utf8 (begin (kS1_), end (kS1_));
+        Test_WString2UTF8_codecvt_utf8 (begin (kS2_), end (kS2_));
+    }
+}
+#endif
+
+
+
+
+
+
+
 namespace   {
     void    RunPerformanceTests_ ()
     {
@@ -1569,6 +1665,30 @@ namespace   {
             1.2,
             &failedTests
         );
+#if     qPlatform_Windows
+        Tester (
+            L"UTF82WString win32API vs codecvt_utf8",
+            Test_UTF82WString_win32API, L"win32API",
+            Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
+            1390000,
+            2.1,
+            &failedTests
+        );
+#endif
+
+#if     qPlatform_Windows
+        Tester (
+            L"WString2UTF8 win32API vs codecvt_utf8",
+            Test_WString2UTF8_win32API, L"win32API",
+            Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
+            1390000,
+            2.1,
+            &failedTests
+        );
+#endif
+
+
+
 
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl << endl;
 
