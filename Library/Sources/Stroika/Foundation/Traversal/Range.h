@@ -68,6 +68,15 @@ namespace   Stroika {
 
                 Stroika_Define_Enum_Bounds(eOpen, eClosed)
             };
+            constexpr   Configuration::EnumNames<Openness>    Stroika_Enum_Names(Openness)
+            {
+                Configuration::EnumNames<Openness>::BasicArrayInitializer {
+                    {
+                        { Openness::eOpen, L"Open" },
+                        { Openness::eClosed, L"Closed" },
+                    }
+                }
+            };
 
 
             /**
