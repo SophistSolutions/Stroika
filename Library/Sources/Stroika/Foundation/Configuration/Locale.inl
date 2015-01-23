@@ -5,7 +5,7 @@
 #define _Stroika_Foundation_Configuration_Locale_inl_    1
 
 
-#include	"../Execution/Exceptions.h"
+#include    "../Execution/Exceptions.h"
 
 /*
  ********************************************************************************
