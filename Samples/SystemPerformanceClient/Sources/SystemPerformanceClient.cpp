@@ -134,7 +134,7 @@ int main (int argc, const char* argv[])
                 capturer.AddCaptureSet (cs);
             }
             capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-                cout << "    Measured-At: " << ms.fMeasuredAt.Format ([] (DateTime dt) { return dt.Format (); }).AsNarrowSDKString () << endl;
+                cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                 for (Measurement mi : ms.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                 }
@@ -160,7 +160,7 @@ int main (int argc, const char* argv[])
                     cout << "    NO DATA";
                 }
                 else {
-                    cout << "    Measured-At: " << m.fMeasuredAt.Format ([] (DateTime dt) { return dt.Format (); }).AsNarrowSDKString () << endl;
+                    cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
                     for (Measurement mi : m.fMeasurements) {
                         cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                     }
