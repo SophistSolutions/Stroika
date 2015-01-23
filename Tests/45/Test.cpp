@@ -661,6 +661,10 @@ namespace {
     void    Test14_Format_ ()
     {
         VerifyTestResult (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+        VerifyTestResult (Range<int> (3, 4).Format () == L"[3 ... 4)");
+
+
+
     }
 
 }

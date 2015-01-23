@@ -112,6 +112,22 @@ namespace   Stroika {
                     static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
                     template    <typename SFINAE = ElementType>
                     static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+
+                    template    <typename SFINAE = ElementType>
+                    inline  static  Characters::String  Format (T v, typename enable_if <is_integral<SFINAE>::value>::type* = 0)
+                    {
+                        return Characters::Format (L"%d", static_cast<int> (v));
+                    }
+                    template    <typename SFINAE = ElementType>
+                    inline  static  Characters::String  Format (T v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0)
+                    {
+                        return Characters::Format (L"%f", static_cast<double> (v));
+                    }
+                    template    <typename SFINAE = ElementType>
+                    inline  static  Characters::String  Format (T v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0)
+                    {
+                        return v.Format ();
+                    }
                 };
 
 
@@ -372,6 +388,7 @@ namespace   Stroika {
 #endif
 
             public:
+                static Characters::String a (T x) { return TraitsType::Format (x); }
                 /**
                  *  Print a displayable rendition of the given range, using the argument funciton to format
                  *  the basic ElementType.
@@ -381,7 +398,7 @@ namespace   Stroika {
                  *
                  *      @todo add default ElementType format function to TRAITS, and then make this std::function default to that helper.
                  */
-                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound) const;
+                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = a /*TraitsType::Format*/) const;
 
             private:
                 T           fBegin_;
