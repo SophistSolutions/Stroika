@@ -119,6 +119,20 @@ namespace   Stroika {
              *          { Priority::b, L"b" },
              *          { Priority::c, L"c" },
              *  };
+             *
+             *  OR
+             *      constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
+             *      {
+             *          Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
+             *              {
+             *                  { FileAccessMode::eNoAccess, L"No-Access" },
+             *                  { FileAccessMode::eRead, L"Read" },
+             *                  { FileAccessMode::eWrite, L"Write" },
+             *                  { FileAccessMode::eReadWrite, L"Read-Write" },
+             *              }
+             *          }
+             *      };
+             *
              */
 #define Stroika_Enum_Names(ENUMNAME)\
     ENUMNAME##_EnumNames
