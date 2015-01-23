@@ -372,16 +372,6 @@ namespace   Stroika {
                  */
                 nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
 
-#if 0
-            public:
-                /**
-                 *  This function is only defined if there is a format method on type T, and that method
-                 *
-                 */
-                template    <typename... ARGS>
-                nonvirtual  Characters::String  Format (ARGS&& ... args) const;
-#endif
-
             public:
                 static Characters::String a (T x) { return TraitsType::Format (x); }
                 /**
