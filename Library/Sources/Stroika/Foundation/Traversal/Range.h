@@ -113,21 +113,16 @@ namespace   Stroika {
                     template    <typename SFINAE = ElementType>
                     static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
 
+                    /**
+                     *  Format as a string the given ElementType. This method is not required, and may not compile (SFINAE), but
+					 *	often provides a convenient default argument to the Range<>::Format () function.
+                     */
                     template    <typename SFINAE = ElementType>
-                    inline  static  Characters::String  Format (T v, typename enable_if <is_integral<SFINAE>::value>::type* = 0)
-                    {
-                        return Characters::Format (L"%d", static_cast<int> (v));
-                    }
+                    static  Characters::String  Format (ElementType v, typename enable_if <is_integral<SFINAE>::value>::type* = 0);
                     template    <typename SFINAE = ElementType>
-                    inline  static  Characters::String  Format (T v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0)
-                    {
-                        return Characters::Format (L"%f", static_cast<double> (v));
-                    }
+                    static  Characters::String  Format (ElementType v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0);
                     template    <typename SFINAE = ElementType>
-                    inline  static  Characters::String  Format (T v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0)
-                    {
-                        return v.Format ();
-                    }
+                    static  Characters::String  Format (ElementType v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0);
                 };
 
 
