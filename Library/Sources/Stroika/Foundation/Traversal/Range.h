@@ -370,6 +370,10 @@ namespace   Stroika {
                  */
                 nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
 
+            private:
+                // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()
+                static Characters::String DefaultElementFormat_ (T x) { return TraitsType::Format (x); }
+
             public:
                 /**
                  *  Print a displayable rendition of the given range, using the argument funciton to format
@@ -379,7 +383,7 @@ namespace   Stroika {
                  *      Assert (Range<int> (3, 4).Format () == L"[3 ... 4)");
                  *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
                  */
-                nonvirtual  Characters::String  Format (function<Characters::String(T)> formatBound = TraitsType::Format) const;
+                nonvirtual  Characters::String  Format (function<Characters::String(T)> formatBound = /*DefaultElementFormat_*/ TraitsType::Format) const;
 
             private:
                 T           fBegin_;
