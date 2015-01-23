@@ -298,7 +298,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  EXPERIMENTAL v2.0a21
                  */
                 nonvirtual  constexpr   T    GetMidpoint () const;
 
