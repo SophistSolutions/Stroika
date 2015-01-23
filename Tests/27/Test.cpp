@@ -326,11 +326,10 @@ namespace   {
                     }
                     {
                         // Verify change of locale has no effect on results
-                        locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                        Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                         Streams::BasicBinaryOutputStream    tmpStrm;
                         DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
-                        locale::global (prevLocale);
                     }
 
                 }
@@ -358,9 +357,8 @@ namespace   {
                 };
                 f ();
                 {
-                    locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                    Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     f ();
-                    locale::global (prevLocale);
                 }
             }
         }
@@ -413,9 +411,8 @@ namespace   {
                 };
                 {
                     doAll ();
-                    locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                    Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     doAll ();
-                    locale::global (prevLocale);
                 }
             }
         }

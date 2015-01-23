@@ -892,9 +892,8 @@ namespace {
         }
         {
             // Verify change of locale has no effect on results
-            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             runLocaleIndepTest ();
-            locale::global (prevLocale);
         }
     }
 }

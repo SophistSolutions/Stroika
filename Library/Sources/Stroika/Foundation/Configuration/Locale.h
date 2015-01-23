@@ -93,6 +93,20 @@ namespace   Stroika {
             locale    FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
 
 
+            /**
+             *  Temporarily use the given argument locale.
+             */
+            class ScopedUseLocale {
+            private:
+                locale  fPrev_;
+            public:
+                ScopedUseLocale () = delete;
+                ScopedUseLocale (const ScopedUseLocale&) = delete;
+                ScopedUseLocale (const locale& l);
+                ~ScopedUseLocale ();
+            };
+
+
         }
     }
 }

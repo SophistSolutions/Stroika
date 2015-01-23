@@ -5,6 +5,8 @@
 #define _Stroika_Foundation_Configuration_Locale_inl_    1
 
 
+#include	"../Execution/Exceptions.h"
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -23,6 +25,20 @@ namespace   Stroika {
             inline  std::locale GetPlatformDefaultLocale ()
             {
                 return std::locale ("");
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************** Configuration::ScopedUseLocale **************************
+             ********************************************************************************
+             */
+            inline  ScopedUseLocale::ScopedUseLocale (const locale& l)
+                : fPrev_  {  locale::global (l) } {
+            }
+            inline  ScopedUseLocale::~ScopedUseLocale ()
+            {
+                IgnoreExceptionsForCall (locale::global (fPrev_));
             }
 
 
