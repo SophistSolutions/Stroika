@@ -115,7 +115,7 @@ namespace   Stroika {
 
                     /**
                      *  Format as a string the given ElementType. This method is not required, and may not compile (SFINAE), but
-					 *	often provides a convenient default argument to the Range<>::Format () function.
+                     *  often provides a convenient default argument to the Range<>::Format () function.
                      */
                     template    <typename SFINAE = ElementType>
                     static  Characters::String  Format (ElementType v, typename enable_if <is_integral<SFINAE>::value>::type* = 0);
