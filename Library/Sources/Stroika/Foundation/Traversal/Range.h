@@ -37,8 +37,6 @@
  *          @todo   Correct the implementation of Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee)
  *                  for openness. And if possible, make it constexpr.
  *
- *          @todo   Range<T, TRAITS>::Format() should take into account openness
- *
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
  *                  chosen definition.
