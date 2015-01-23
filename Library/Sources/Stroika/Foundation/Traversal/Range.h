@@ -383,7 +383,7 @@ namespace   Stroika {
                  *      Assert (Range<int> (3, 4).Format () == L"[3 ... 4)");
                  *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
                  */
-                nonvirtual  Characters::String  Format (function<Characters::String(T)> formatBound = /*DefaultElementFormat_*/ TraitsType::Format) const;
+                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*TraitsType::Format*/) const;
 
             private:
                 T           fBegin_;
