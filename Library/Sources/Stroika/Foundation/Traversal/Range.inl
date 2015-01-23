@@ -402,7 +402,7 @@ namespace   Stroika {
                 return fEndOpenness_;
             }
             template    <typename T, typename TRAITS>
-            Characters::String  Range<T, TRAITS>::Format (const function<Characters::String(T)>& formatBound) const
+            Characters::String  Range<T, TRAITS>::Format (function<Characters::String(T)> formatBound) const
             {
                 Characters::StringBuilder out;
                 if (empty ()) {

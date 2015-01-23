@@ -370,18 +370,20 @@ namespace   Stroika {
                  */
                 nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
 
+            private:
+                // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()
+                static Characters::String DefaultElementFormat_ (T x) { return TraitsType::Format (x); }
+
             public:
-                static Characters::String a (T x) { return TraitsType::Format (x); }
                 /**
                  *  Print a displayable rendition of the given range, using the argument funciton to format
                  *  the basic ElementType.
                  *
                  *  EXAMPLE:
+                 *      Assert (Range<int> (3, 4).Format () == L"[3 ... 4)");
                  *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
-                 *
-                 *      @todo add default ElementType format function to TRAITS, and then make this std::function default to that helper.
                  */
-                nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = a /*TraitsType::Format*/) const;
+                nonvirtual  Characters::String  Format (function<Characters::String(T)> formatBound = /*DefaultElementFormat_*/ TraitsType::Format) const;
 
             private:
                 T           fBegin_;
