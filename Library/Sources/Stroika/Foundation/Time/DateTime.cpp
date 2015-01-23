@@ -412,7 +412,8 @@ String DateTime::Format (PrintFormat pf) const
                  *  Good enuf for now...
                  *      -- LGP 2013-03-02
                  */
-                return fDate_.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) + L" " + fTimeOfDay_.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped);
+                String  dateStr { fDate_.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) };
+                return fTimeOfDay_.empty () ? dateStr : (dateStr + L" " + fTimeOfDay_.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped));
             }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
@@ -458,6 +459,10 @@ String DateTime::Format (const locale& l) const
 {
     if (empty ()) {
         return String ();
+    }
+    if (GetTimeOfDay ().empty ()) {
+        // otherwise we get a 'datetime' of 'XXX ' - with a space at the end
+        return GetDate ().Format (l);
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
