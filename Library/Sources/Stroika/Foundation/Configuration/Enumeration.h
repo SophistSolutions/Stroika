@@ -61,6 +61,8 @@ namespace   Stroika {
              *
              *  This function is handy since class enum's cannot be automatically promoted to integers.
              *
+             *  \note This function could have been called Ord () - to be more like Pascal.
+             *
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
