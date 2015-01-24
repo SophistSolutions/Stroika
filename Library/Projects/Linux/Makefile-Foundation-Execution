@@ -21,7 +21,6 @@ Objs	=	\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
 	$(ObjDir)Finally.o\
 	$(ObjDir)Function.o\
-	$(ObjDir)IRunnable.o\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\

@@ -468,9 +468,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
@@ -783,9 +780,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1750,9 +1744,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.inl">
       <Filter>Sources\Execution</Filter>
