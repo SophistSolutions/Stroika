@@ -21,7 +21,7 @@
  * Description:
  *
  * TODO:
- *      @todo   More operator<, etc overloads
+ *      @todo   More operator<, and other operator overloads
  *
  *      @todo   Tons of cleanups, orthoganiality, docs, etc.
  *
@@ -132,7 +132,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  T load () const;
+                nonvirtual  T   load () const;
 
             public:
                 /**
@@ -221,6 +221,8 @@ namespace   Stroika {
 
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator< (const Synchronized<T, TRAITS>& lhs, T rhs);
             template    <typename   T, typename TRAITS>
@@ -229,6 +231,8 @@ namespace   Stroika {
             bool    operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator<= (const Synchronized<T, TRAITS>& lhs, T rhs);
             template    <typename   T, typename TRAITS>
@@ -237,6 +241,8 @@ namespace   Stroika {
             bool    operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator== (const Synchronized<T, TRAITS>& lhs, T rhs);
             template    <typename   T, typename TRAITS>
@@ -245,6 +251,8 @@ namespace   Stroika {
             bool    operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator!= (const Synchronized<T, TRAITS>& lhs, T rhs);
             template    <typename   T, typename TRAITS>
@@ -253,14 +261,20 @@ namespace   Stroika {
             bool    operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator>= (const Synchronized<T, TRAITS>& lhs, T rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             bool    operator> (const Synchronized<T, TRAITS>& lhs, T rhs);
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             auto    operator^ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} ^ T {});
             template    <typename   T, typename TRAITS>
@@ -269,6 +283,8 @@ namespace   Stroika {
             auto    operator^ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} ^ T {});
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             auto    operator* (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} * T {});
             template    <typename   T, typename TRAITS>
@@ -277,6 +293,8 @@ namespace   Stroika {
             auto    operator* (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} * T {});
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             auto    operator+ (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} + T {});
             template    <typename   T, typename TRAITS>
@@ -285,14 +303,20 @@ namespace   Stroika {
             auto    operator+ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} + T {});
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
             auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator-= (rhs));
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
             auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator+= (rhs));
 
 
+            /**
+             */
             template    <typename   T, typename TRAITS>
             auto    operator- (const Synchronized<T, TRAITS>& lhs, T rhs) -> decltype (T {} - T {});
             template    <typename   T, typename TRAITS>
