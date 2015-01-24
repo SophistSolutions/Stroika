@@ -330,6 +330,8 @@ namespace   Stroika {
 
             }
 
+            /**
+             */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache {
             private:
@@ -447,17 +449,6 @@ namespace   Stroika {
                     }
                 }
             };
-
-
-
-
-#if 0
-            template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
-            using   nu_LRUCache_DefaultTraits  = LRUCacheSupport::LRUCache_DefaultTraits<KEY, HASH_TABLE_SIZE>;
-            template    <typename KEY, typename VALUE, typename TRAITS = nu_LRUCache_DefaultTraits<KEY>>
-            using   nu_LRUCache = LRUCache<KEY, VALUE, TRAITS>;
-#endif
-
 
 
         }
