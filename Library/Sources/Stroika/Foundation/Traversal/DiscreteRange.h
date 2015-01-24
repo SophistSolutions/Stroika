@@ -20,6 +20,18 @@
  *      @todo   Consider if clearer having DiscreteRange aggregate Elements() instead of inheriting from
  *              Iterable. Would make construction, and coipying etc cheaper (esp when that feature
  *              is not used).
+
+
+ >>>> DOCUMENT WHY DsicreateRange<> no longer Iterabkle<?>
+	>>> avoids conflict on empty, and provides clearer 'getlength'.
+	>>> avoids shared_ptr stuff (REP) for iterablke unles/until used.
+	>>> this should allow constexpr discrete_rage!!!
+	>>> and see other comments on why - in progress switchover...
+	>>> (NOTE - downside is 
+		-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+		+            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
+
+
  *
  *      @todo   Understand what you must do DiscreteRange<int> (1,10) instead of just DiscreteRange (1,10),
  *              and if something reasonable to be done about it - do so (compiler bug or ambiguity due to optional)
@@ -142,7 +154,7 @@ namespace   Stroika {
              *      }
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
-            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, public Iterable<T> {
+            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, private Iterable<T> {
             private:
                 using       inherited_RangeType     =   Range<T, typename TRAITS::RangeTraitsType>;
 

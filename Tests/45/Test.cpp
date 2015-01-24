@@ -76,12 +76,12 @@ namespace   {
         {
             DiscreteRange<int> r (3, 3);
             VerifyTestResult (not r.empty ());
-            VerifyTestResult (r.size () == 1);
+            VerifyTestResult (r.Elements ().size () == 1);
         }
         {
             int nItemsHit = 0;
             int lastItemHit = 0;
-            for (auto i : DiscreteRange<int> (3, 5)) {
+            for (auto i : DiscreteRange<int> (3, 5).Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit < i);
                 lastItemHit = i;
@@ -124,7 +124,7 @@ namespace {
         {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color>::FullRange ()) {
+            for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
@@ -135,7 +135,7 @@ namespace {
         {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ()) {
+            for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
@@ -146,7 +146,7 @@ namespace {
         {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
@@ -157,7 +157,7 @@ namespace {
         {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
-            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color i) {
+            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
@@ -303,12 +303,12 @@ namespace {
         {
             const uint32_t  kRefCheck_[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
             auto isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
-            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck)) {
+            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck)) {
                 VerifyTestResult (Math::IsPrime (i));
             }
-            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck));
+            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck));
             VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
-            VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck).GetLength ());
+            VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck).GetLength ());
         }
     }
 }
@@ -318,9 +318,9 @@ namespace {
     void    Test8_DiscreteRangeTestFromDocs_ ()
     {
         // From Docs in DiscreteRange<> class
-        vector<int> v = DiscreteRange<int> (1, 10).As<vector<int>> ();
+        vector<int> v = DiscreteRange<int> (1, 10).Elements ().As<vector<int>> ();
         VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
-        for (auto i : DiscreteRange<int> (1, 10)) {
+        for (auto i : DiscreteRange<int> (1, 10).Elements ()) {
             VerifyTestResult (1 <= i and i <= 10);  // rough verification
         }
     }
