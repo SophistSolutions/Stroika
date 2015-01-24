@@ -1445,6 +1445,7 @@ namespace   {
     void    RunPerformanceTests_ ()
     {
         DateTime    startedAt = DateTime::Now ();
+        GetOutStream_ () << "Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better" << endl << endl;
         GetOutStream_ () << "[[[Started testing at: " << startedAt.Format ().AsNarrowSDKString () << "]]]" << endl << endl;
         if (not Math::NearlyEquals (sTimeMultiplier_, 1.0)) {
             GetOutStream_ () << "Using TIME MULTIPLIER: " << sTimeMultiplier_ << endl << endl;
@@ -1484,7 +1485,7 @@ namespace   {
             Test_VirtualFunctionBasedRunnable, L"IRunnable",
             Test_stdFunctionBaseline, L"std::function",
             210000,
-            0.5,
+            1.1,
             &failedTests
         );
 #if 0
@@ -1597,7 +1598,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
             136000,
-            7.2,
+            7.3,
             &failedTests
         );
         Tester (
