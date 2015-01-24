@@ -429,48 +429,6 @@ namespace   Stroika {
 
 
         }
-
-
-#if qSUPPORT_LEGACY_SYNCHO
-        namespace Execution {
-
-
-            // early alpha placeholder test
-            template    <typename T, typename TRAITS>
-            class LEGACY_Synchronized<Containers::MultiSet<T, TRAITS>> {
-            public:
-                using   ContainerType =     Containers::MultiSet<T, TRAITS>;
-                using   ElementType   =     typename ContainerType::ElementType;
-            public:
-                LEGACY_Synchronized () : fDelegate_ () {}
-                LEGACY_Synchronized (const LEGACY_Synchronized& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (LEGACY_Synchronized&& src) : fDelegate_ (move (src)) {}
-                LEGACY_Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
-                LEGACY_Synchronized (const initializer_list<T>& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (const multiset<T>& src) : fDelegate_ (src) {}
-                template <typename CONTAINER_OF_T>
-                explicit LEGACY_Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit LEGACY_Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
-                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs)
-                {
-                    fDelegate_ = rhs.fDelegate_;
-                    return *this;
-                }
-                typename Traversal::Iterator<ElementType> begin () const                            { return fDelegate_.begin (); }
-                typename Traversal::Iterator<ElementType> end () const                              { return fDelegate_.end (); }
-                operator ContainerType () const                                                     { return fDelegate_;    }
-            private:
-                Containers::MultiSet<T, TRAITS> fDelegate_;
-                mutex                           fLock_;
-            };
-
-
-        }
-#endif
-
-
     }
 }
 

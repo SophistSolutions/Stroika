@@ -467,53 +467,6 @@ namespace   Stroika {
 
 
         }
-
-
-#if qSUPPORT_LEGACY_SYNCHO
-        namespace Execution {
-
-
-            // early alpha placeholder test
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class LEGACY_Synchronized<Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>> {
-            public:
-                using   ContainerType =     Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
-                using   ElementType   =     typename ContainerType::ElementType;
-            public:
-                LEGACY_Synchronized () : fDelegate_ () {}
-                LEGACY_Synchronized (const LEGACY_Synchronized& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (LEGACY_Synchronized&& src) : fDelegate_ (move (src)) {}
-                LEGACY_Synchronized (const ContainerType& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (ContainerType&& src) : fDelegate_ (move (src)) {}
-                LEGACY_Synchronized (const initializer_list<Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src) : fDelegate_ (src) {}
-                LEGACY_Synchronized (const map<KEY_TYPE, VALUE_TYPE>& src) : fDelegate_ (src) {}
-                template <typename CONTAINER_OF_T>
-                explicit LEGACY_Synchronized (const CONTAINER_OF_T& src) : fDelegate_ (src) {}
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit LEGACY_Synchronized (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end) : fDelegate_ (start, end) {}
-                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs)
-                {
-                    fDelegate_ = rhs.fDelegate_;
-                    return *this;
-                }
-                typename Traversal::Iterator<ElementType> begin () const                            { return fDelegate_.begin (); }
-                typename Traversal::Iterator<ElementType> end () const                              { return fDelegate_.end (); }
-                operator ContainerType () const                                                     { return fDelegate_;    }
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                ContainerType   operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const              { return fDelegate_ + items;    }
-                void    Add (KEY_TYPE key, VALUE_TYPE newElt)                                       { return fDelegate_.Add (key, newElt);    }
-                void    Add (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> p)                          { return fDelegate_.Add (p);    }
-
-            private:
-                Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   fDelegate_;
-                mutex                                               fLock_;
-            };
-
-
-        }
-#endif
-
     }
 }
 

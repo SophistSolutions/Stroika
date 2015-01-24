@@ -13,19 +13,6 @@
 #include    "Common.h"
 
 
-
-//#define qSUPPORT_LEGACY_SYNCHO  1
-#ifndef qSUPPORT_LEGACY_SYNCHO
-#define qSUPPORT_LEGACY_SYNCHO  0
-#endif
-
-
-#if qSUPPORT_LEGACY_SYNCHO
-#include    "SpinLock.h"        // just needed while we support LEGACY_Synchronized
-#endif
-
-
-
 /**
  *  \file
  *
@@ -45,11 +32,11 @@ namespace   Stroika {
 
 
             /**
-             *  This class template it denotes a pattern for creating automatically synchronized classes.
-             *
-             *  It contains no generic implementation of synchonizaiton, but instead, (partial) specializations
-             *  are provided throughout Stroika, for classes that are automatically synchronized.
-             *
+            ***** SCRAP NOTES - SOME OF THIS TEXT APPLIES TO NEW SYNCHO... CLEANUP
+
+            * @todo
+            *
+            *
              *  The idea behind any of these synchronized classes is that they can be used freely from
              *  different threads without worry of data corruption. It is almost as if each operation were
              *  preceeded with a mutex lock (on that object) and followed by an unlock.
@@ -64,22 +51,6 @@ namespace   Stroika {
              *  operation on Synchronized<T>, the Read will always return a consistent reasonable value, from
              *  before the modification or afterwards, but never a distorted invalid value.
              *
-             *  This is ESPECAILLY critical for maintaining reference counts (as many Stroika objects
-             *  are just reference counting containers).
-             *
-             *  EXAMPLE:
-             *      static Optional<int>                sThisVarIsNotThreadsafe;
-             *      static Synchronized<Optional<int>>  sThisIsSameAsAboveButIsThreadSafe;
-             *
-             *      // the variable sThisIsSameAsAboveButIsThreadSafe and be gotten or set from any thread
-             *      // without fear of occurption. Each individual API is threadsafe. However, you CANNOT
-             *      // safely do
-             *      //      if (sThisIsSameAsAboveButIsThreadSafe.IsPresent()) { print (*sThisIsSameAsAboveButIsThreadSafe); }
-             *      //  Instead do
-             *      //      print (sThisIsSameAsAboveButIsThreadSafe.Value ()); OR
-             *      //      auto tmp = sThisIsSameAsAboveButIsThreadSafe;
-             *      //      if (tm.IsPresent()) { print (*tmp); }
-             *
              *  This is very much closely logically the java 'synchronized' attribute, except that its
              *  not a language extension/attribute here, but rather a class wrapper. Its also implemented
              *  in the library, not the programming language.
@@ -89,23 +60,6 @@ namespace   Stroika {
              *  which is really just intended to operate on integers, and integer type things, and not on
              *  objects with methods.
              */
-#if qSUPPORT_LEGACY_SYNCHO
-            template    <typename   T>
-            class   LEGACY_Synchronized {
-            public:
-                LEGACY_Synchronized ();
-                LEGACY_Synchronized (const T& from);
-                LEGACY_Synchronized (const LEGACY_Synchronized& from);
-                const LEGACY_Synchronized& operator= (const LEGACY_Synchronized& rhs);
-
-            public:
-                nonvirtual  operator T () const;
-
-            private:
-                T           fDelegate_;
-                SpinLock    fLock_;
-            };
-#endif
 
 
             /**
@@ -467,13 +421,6 @@ namespace   Stroika {
 
 
 
-            //migrate names support
-#if 0
-            template    <typename   T, typename MUTEX = recursive_mutex>
-            using nu_Synchronized_Traits =   Synchronized_Traits<T, MUTEX>;
-            template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
-            using   nu_Synchronized  = Synchronized<T, TRAITS>;
-#endif
 
 
         }

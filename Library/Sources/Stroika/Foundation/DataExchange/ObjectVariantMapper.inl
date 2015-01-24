@@ -228,37 +228,6 @@ namespace   Stroika {
             {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
-#if qSUPPORT_LEGACY_SYNCHO
-            template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::LEGACY_Synchronized<Memory::Optional<T>>&)
-            {
-                using   namespace   Execution;
-                using   namespace   Memory;
-                auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    const LEGACY_Synchronized<Optional<T>>*  actualMember    =   reinterpret_cast<const LEGACY_Synchronized<Optional<T>>*> (fromObjOfTypeT);
-                    if (actualMember->IsPresent ())
-                    {
-                        return mapper.FromObject<T> (**actualMember);
-                    }
-                    else {
-                        return VariantValue ();
-                    }
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    LEGACY_Synchronized<Optional<T>>*    actualInto  =   reinterpret_cast<LEGACY_Synchronized<Optional<T>>*> (intoObjOfTypeT);
-                    if (d.empty ())
-                    {
-                        actualInto->clear ();
-                    }
-                    else {
-                        *actualInto = mapper.ToObject<T> (d);
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (LEGACY_Synchronized<Optional<T>>), toVariantMapper, fromVariantMapper);
-            }
-#endif
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
             {
