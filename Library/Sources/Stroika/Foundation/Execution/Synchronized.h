@@ -23,6 +23,10 @@
  * TODO:
  *      @todo   More operator<, etc overloads
  *
+ *		@todo	Tons of cleanups, orthoganiality, docs, etc.
+ *
+ *		@todo	consider/doc choice on /*explicit*/ operator T () 
+ *
  */
 
 
