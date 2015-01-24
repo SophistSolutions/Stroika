@@ -359,95 +359,34 @@ namespace   Stroika {
                 using MutexType = typename TRAITS::MutexType;
 
                 mutable MutexType   fLock_;
-            public:
-                LRUCache (size_t size = 1)
-                    : fRealCache_ (size)
-                    , fLock_ ()
-                {
-                }
-                LRUCache (const LRUCache& from)
-                    : fRealCache_ (1)
-                    , fLock_ ()
-                {
-                    fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
-                    auto    critSec { Execution::make_unique_lock (from.fLock_) };
-                    for (auto i : from.fRealCache_) {
-                        Add (i.fKey, i.fValue);
-                    }
-                }
-                const LRUCache& operator= (const LRUCache& rhs)
-                {
-                    if (this != &rhs) {
-                        SetMaxCacheSize (rhs.GetMaxCacheSize ());
-                        auto    critSec { Execution::make_unique_lock (rhs.fLock_) };
-                        for (auto i : rhs.fRealCache_) {
-                            Add (i.fKey, i.fValue);
-                        }
-                    }
-                    return *this;
-                }
 
             public:
-                nonvirtual  size_t  GetMaxCacheSize () const
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    return fRealCache_.GetMaxCacheSize ();
-                }
+                LRUCache (size_t size = 1);
+                LRUCache (const LRUCache& from);
 
             public:
-                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize)
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    fRealCache_.SetMaxCacheSize (maxCacheSize);
-                }
+                const LRUCache& operator= (const LRUCache& rhs);
 
             public:
-                nonvirtual  typename TRAITS::StatsType  GetStats () const
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    return fRealCache_.fStats;
-                }
+                nonvirtual  size_t  GetMaxCacheSize () const;
 
             public:
-                nonvirtual  void    clear ()
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    fRealCache_.ClearCache ();
-                }
+                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
             public:
-                Memory::Optional<VALUE> Lookup (const KEY& key) const
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
-                    if (v == nullptr) {
-                        return Memory::Optional<VALUE> ();
-                    }
-                    Ensure (TRAITS::Equals (key, v->fKey));
-                    return v->fValue;
-                }
-            public:
-                void Add (const KEY& key, const VALUE& value)
-                {
-                    auto    critSec { Execution::make_unique_lock (fLock_) };
-                    LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.AddNew (key);
-                    v->fKey = key;
-                    v->fValue = value;
-                }
+                nonvirtual  typename TRAITS::StatsType  GetStats () const;
 
             public:
-                VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
-                {
-                    Memory::Optional<VALUE> v = Lookup (key);
-                    if (v.IsMissing ()) {
-                        VALUE   newV = valueFetcher (key);
-                        Add (key, newV);
-                        return newV;
-                    }
-                    else {
-                        return *v;
-                    }
-                }
+                nonvirtual  void    clear ();
+
+            public:
+                nonvirtual  Memory::Optional<VALUE> Lookup (const KEY& key) const;
+
+            public:
+                nonvirtual  void    Add (const KEY& key, const VALUE& value);
+
+            public:
+                nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
             };
 
 

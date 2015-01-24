@@ -262,6 +262,104 @@ namespace   Stroika {
             }
 
 
+
+
+
+
+
+
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size = 1)
+                : fRealCache_ (size)
+                , fLock_ ()
+            {
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache (const LRUCache& from)
+                : fRealCache_ (1)
+                , fLock_ ()
+            {
+                fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
+                auto    critSec { Execution::make_unique_lock (from.fLock_) };
+                for (auto i : from.fRealCache_) {
+                    Add (i.fKey, i.fValue);
+                }
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            auto    LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> const LRUCache&
+            {
+                if (this != &rhs) {
+                    SetMaxCacheSize (rhs.GetMaxCacheSize ());
+                    auto    critSec { Execution::make_unique_lock (rhs.fLock_) };
+                    for (auto i : rhs.fRealCache_) {
+                        Add (i.fKey, i.fValue);
+                    }
+                }
+                return *this;
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            nonvirtual  size_t  LRUCache<KEY, VALUE, TRAITS>::GetMaxCacheSize () const
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                return fRealCache_.GetMaxCacheSize ();
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            nonvirtual  void    LRUCache<KEY, VALUE, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                fRealCache_.SetMaxCacheSize (maxCacheSize);
+            }
+
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            nonvirtual  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                return fRealCache_.fStats;
+            }
+
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            nonvirtual  void    LRUCache<KEY, VALUE, TRAITS>::clear ()
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                fRealCache_.ClearCache ();
+            }
+
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            Memory::Optional<VALUE>     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
+                if (v == nullptr) {
+                    return Memory::Optional<VALUE> ();
+                }
+                Ensure (TRAITS::Equals (key, v->fKey));
+                return v->fValue;
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)
+            {
+                auto    critSec { Execution::make_unique_lock (fLock_) };
+                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.AddNew (key);
+                v->fKey = key;
+                v->fValue = value;
+            }
+
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
+            {
+                Memory::Optional<VALUE> v = Lookup (key);
+                if (v.IsMissing ()) {
+                    VALUE   newV = valueFetcher (key);
+                    Add (key, newV);
+                    return newV;
+                }
+                else {
+                    return *v;
+                }
+            }
+
+
+
         }
     }
 }
