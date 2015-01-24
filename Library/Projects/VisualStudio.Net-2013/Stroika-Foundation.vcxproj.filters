@@ -1023,9 +1023,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
@@ -1915,9 +1912,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>

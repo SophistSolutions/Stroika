@@ -283,27 +283,6 @@ namespace   Stroika {
                 };
 
 
-#if     qPlatform_Windows
-                /**
-                 * This must be called before any Sockets are created, otherwise its
-                 *  an erorr (requirement failure).
-                 *
-                 *  This defaults to ON
-                 */
-                _DeprecatedFunction_ (inline void    AutosetupWinsock(bool setup), "Instead use WinSock() - to be removed after v2.0a57")
-                {
-                    using IO::Network::Platform::Windows::WinSock;
-                    if (setup) {
-                        WinSock::AssureStarted ();
-                    }
-                    else {
-                        Require (WinSock::IsStarted ());
-                        WinSock::NoteExternallyStarted ();
-                    }
-                }
-#endif
-
-
             }
         }
     }

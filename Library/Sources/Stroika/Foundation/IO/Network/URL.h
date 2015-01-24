@@ -228,12 +228,6 @@ namespace   Stroika {
                     nonvirtual  PortType     GetPortValue () const;
 
                 public:
-                    _DeprecatedFunction_ (inline  PortType  GetEffectivePortNumber () const, "Instead use GetPortValue() - to be removed after v2.0a55")
-                    {
-                        return GetPortValue ();
-                    }
-
-                public:
                     /**
                      *  This value overrides the port# used by the protocol. This can be empty, implying the URL refers to the default
                      *  port for the given URL scheme.
@@ -290,16 +284,6 @@ namespace   Stroika {
                      *  But other violations in teh format of a protocol generate exceptions.
                      */
                     nonvirtual  void    SetScheme (const SchemeType& scheme);
-
-                public:
-                    _DeprecatedFunction_ (inline  SchemeType  GetProtocol () const, "Instead use GetScheme() - to be removed after v2.0a55")
-                    {
-                        return GetScheme();
-                    }
-                    _DeprecatedFunction_ (inline  void    SetProtocol (const SchemeType& protocol), "Instead use SetScheme() - to be removed after v2.0a55")
-                    {
-                        SetScheme (protocol);
-                    }
 
                 public:
                     /**

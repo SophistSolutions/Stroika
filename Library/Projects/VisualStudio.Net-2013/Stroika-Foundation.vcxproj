@@ -1116,7 +1116,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
@@ -1459,7 +1458,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
