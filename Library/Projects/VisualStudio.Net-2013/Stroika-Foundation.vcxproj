@@ -1295,6 +1295,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h" />
   </ItemGroup>
@@ -1608,6 +1609,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Range.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\ReadMe.md" />

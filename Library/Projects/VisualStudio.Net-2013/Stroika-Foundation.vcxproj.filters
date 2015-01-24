@@ -1719,6 +1719,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2599,6 +2602,9 @@
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>

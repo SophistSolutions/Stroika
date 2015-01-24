@@ -17,6 +17,7 @@
 #include    "Stroika/Foundation/Traversal/DisjointRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
+#include    "Stroika/Foundation/Traversal/Partition.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -659,6 +660,8 @@ namespace {
 
 
 
+
+
 namespace {
     void    Test14_Format_ ()
     {
@@ -675,6 +678,41 @@ namespace {
         }
     }
 }
+
+
+
+
+
+
+
+namespace {
+    void    Test15_Partition_ ()
+    {
+        {
+            using   Containers::Sequence;
+            using RT = Range<int>;
+            VerifyTestResult (not IsPartition (Sequence<RT> { RT {1, 2}, RT {3, 4} }));
+            VerifyTestResult (IsPartition (Sequence<RT> { RT {1, 2}, RT {2, 4} }));
+        }
+#if 0
+        VerifyTestResult (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+        VerifyTestResult (Range<int> (3, 4).Format () == L"[3 ... 4)");
+        {
+            using   namespace   Time;
+            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/03 ... 4/5/03]");
+        }
+        {
+            Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
+            using   namespace   Time;
+            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/1903 ... 4/5/1903]");
+        }
+#endif
+    }
+}
+
+
+
+
 
 
 
@@ -696,6 +734,7 @@ namespace   {
         Test12_RangeConstExpr_ ();
         Test13_DisjointRange_ ();
         Test14_Format_ ();
+        Test15_Partition_ ();
     }
 }
 
