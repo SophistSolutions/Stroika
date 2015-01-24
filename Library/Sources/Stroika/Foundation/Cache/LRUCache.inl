@@ -265,11 +265,13 @@ namespace   Stroika {
 
 
 
-
-
-
+            /*
+             ********************************************************************************
+             ************************** LRUCache<KEY, VALUE, TRAITS> ************************
+             ********************************************************************************
+             */
             template    <typename KEY, typename VALUE, typename TRAITS>
-            LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size = 1)
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size)
                 : fRealCache_ (size)
                 , fLock_ ()
             {
@@ -298,32 +300,29 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            nonvirtual  size_t  LRUCache<KEY, VALUE, TRAITS>::GetMaxCacheSize () const
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::GetMaxCacheSize () const
             {
                 auto    critSec { Execution::make_unique_lock (fLock_) };
                 return fRealCache_.GetMaxCacheSize ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            nonvirtual  void    LRUCache<KEY, VALUE, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
+            void    LRUCache<KEY, VALUE, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
             {
                 auto    critSec { Execution::make_unique_lock (fLock_) };
                 fRealCache_.SetMaxCacheSize (maxCacheSize);
             }
-
             template    <typename KEY, typename VALUE, typename TRAITS>
-            nonvirtual  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
+            inline  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
             {
                 auto    critSec { Execution::make_unique_lock (fLock_) };
                 return fRealCache_.fStats;
             }
-
             template    <typename KEY, typename VALUE, typename TRAITS>
-            nonvirtual  void    LRUCache<KEY, VALUE, TRAITS>::clear ()
+            void    LRUCache<KEY, VALUE, TRAITS>::clear ()
             {
                 auto    critSec { Execution::make_unique_lock (fLock_) };
                 fRealCache_.ClearCache ();
             }
-
             template    <typename KEY, typename VALUE, typename TRAITS>
             Memory::Optional<VALUE>     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const
             {
@@ -343,7 +342,6 @@ namespace   Stroika {
                 v->fKey = key;
                 v->fValue = value;
             }
-
             template    <typename KEY, typename VALUE, typename TRAITS>
             VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
             {
@@ -357,7 +355,6 @@ namespace   Stroika {
                     return *v;
                 }
             }
-
 
 
         }
