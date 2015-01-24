@@ -23,13 +23,13 @@
 
 
  >>>> DOCUMENT WHY DsicreateRange<> no longer Iterabkle<?>
-	>>> avoids conflict on empty, and provides clearer 'getlength'.
-	>>> avoids shared_ptr stuff (REP) for iterablke unles/until used.
-	>>> this should allow constexpr discrete_rage!!!
-	>>> and see other comments on why - in progress switchover...
-	>>> (NOTE - downside is 
-		-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
-		+            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
+    >>> avoids conflict on empty, and provides clearer 'getlength'.
+    >>> avoids shared_ptr stuff (REP) for iterablke unles/until used.
+    >>> this should allow constexpr discrete_rage!!!
+    >>> and see other comments on why - in progress switchover...
+    >>> (NOTE - downside is
+        -            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+        +            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
 
 
  *
