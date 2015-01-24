@@ -24,7 +24,6 @@
  *
  * TODO:
  *
- *
  *      @todo   Change default MUTEX argument for LRUCache to AssertExternallySycnhonized, and then maybe get rid of it,
  *              cuz callers can just use 'Synchonized'
  *
@@ -325,10 +324,13 @@ namespace   Stroika {
 
 
                 //@todo LOSE/DEPRECATE THIS NAME
+#if 0
                 template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
                 using  LRUCache_DefaultTraits  = DefaultTraits<KEY, HASH_TABLE_SIZE>;
+#endif
 
             }
+
 
             /**
              */
@@ -380,13 +382,48 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
+                /**
+                 *  The value associated with KEY may not be present, so an Optional is returned.
+                 *
+                 *  @see LookupValue ()
+                 */
                 nonvirtual  Memory::Optional<VALUE> Lookup (const KEY& key) const;
 
             public:
-                nonvirtual  void    Add (const KEY& key, const VALUE& value);
+                /**
+                 *  LookupValue () finds the value in the cache, and returns it, or if not present, uses the argument valueFetcher to retrieve it.
+                 *
+                 *  So LookupValue (v) is equivilent to:
+                 *          if (auto o = Lookup (k)) {
+                 *              return o;
+                 *          }
+                 *          else {
+                 *              auto v = valueFetcher (k);
+                 *              Add (k, v);
+                 *              return v;
+                 *          }
+                 *
+                 *  EXAMPLE USAGE:
+                 *      struct Details_ {
+                 *      };
+                 *      using DetailsID = int;
+                 *      Details_ ReadDetailsFromFile_ (DetailsID id);
+                 *
+                 *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      fDetailsCache_; // caches often helpful in multithreaded situations
+                 *
+                 *      // returns the value from LRUCache, or automatically pages it in from file
+                 *      Details_    GetDetails (DetailsID id) {
+                 *          return
+                 *              fDetailsCache_->LookupValue (
+                 *                  id,
+                 *                  [] (DetailsID id) -> Details_ { return ReadDetailsFromFile_ (id); }
+                 *              );
+                 *      }
+                 */
+                nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
 
             public:
-                nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
+                nonvirtual  void    Add (const KEY& key, const VALUE& value);
             };
 
 
