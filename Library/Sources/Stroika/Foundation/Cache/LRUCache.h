@@ -24,10 +24,7 @@
  *
  * TODO:
  *
- *      @todo   Change default MUTEX argument for LRUCache to AssertExternallySycnhonized, and then maybe get rid of it,
- *              cuz callers can just use 'Synchonized'
- *
- *
+ *          >>>> BIG PICTURE TODO - REVIEW THIS TODO LIST CUZ MOST ALREADY DONE NOW, BUT INCOMPLETE SO LEAVE TIL CONVERSION COMPLETE <<<<
  *
  *
  *      @todo   Look at nu_LRUCache<> and consider possability of migrating to it, or something like that
@@ -62,6 +59,8 @@
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
  *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why
  *              its better.
+ *
+ *      @todo   Need way to produce ITERABLE (copy??? of cache data - so callers can LOOK at what is in teh cache)
  *
  *      @todo   Consider restructuring the API more like STL-MAP
  *              KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
@@ -296,7 +295,7 @@ namespace   Stroika {
 
 /// DRAFT NEW API
             namespace   LRUCacheSupport {
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename MUTEX = Debug::AssertExternallySynchronizedLock>
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
                 struct  DefaultTraits {
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
@@ -317,8 +316,6 @@ namespace   Stroika {
                         return lhs == rhs;
                     }
 
-                    using   MutexType   =   MUTEX;
-
                     using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
 
@@ -333,41 +330,19 @@ namespace   Stroika {
 
 
             /**
+             *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchonized.
+             *
+             *  EXAMPLE USAGE:
+             *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
              */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache {
-            private:
-                struct  LEGACYLRUCACHEOBJ_ {
-                    KEY     fKey;
-                    VALUE   fValue;
-                };
-                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits_<LEGACYLRUCACHEOBJ_, KEY> {
-                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ_& e)
-                    {
-                        return e.fKey;
-                    }
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
-                    static  size_t  Hash (const KEY& e)
-                    {
-                        return TRAITS::Hash (e);
-                    }
-                    static  bool    Equal (const KEY& lhs, const KEY& rhs)
-                    {
-                        return TRAITS::Equals (lhs, rhs);
-                    }
-                };
-                mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
-
-                using MutexType = typename TRAITS::MutexType;
-
-                mutable MutexType   fLock_;
-
             public:
                 LRUCache (size_t size = 1);
                 LRUCache (const LRUCache& from);
 
             public:
-                const LRUCache& operator= (const LRUCache& rhs);
+                nonvirtual  const LRUCache& operator= (const LRUCache& rhs);
 
             public:
                 nonvirtual  size_t  GetMaxCacheSize () const;
@@ -424,6 +399,31 @@ namespace   Stroika {
 
             public:
                 nonvirtual  void    Add (const KEY& key, const VALUE& value);
+
+            private:
+                struct  LEGACYLRUCACHEOBJ_ {
+                    KEY     fKey;
+                    VALUE   fValue;
+                };
+                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits_<LEGACYLRUCACHEOBJ_, KEY> {
+                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ_& e)
+                    {
+                        return e.fKey;
+                    }
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
+                    static  size_t  Hash (const KEY& e)
+                    {
+                        return TRAITS::Hash (e);
+                    }
+                    static  bool    Equal (const KEY& lhs, const KEY& rhs)
+                    {
+                        return TRAITS::Equals (lhs, rhs);
+                    }
+                };
+                mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
+
+            private:
+                mutable Debug::AssertExternallySynchronizedLock   fLock_;
             };
 
 
