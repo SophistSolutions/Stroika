@@ -34,9 +34,6 @@
  *          -- LGP 2013-10-17
  *
  *  TODO:
- *          @todo   Correct the implementation of Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee)
- *                  for openness. And if possible, make it constexpr.
- *
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
  *                  chosen definition.
@@ -371,7 +368,7 @@ namespace   Stroika {
 
             private:
                 // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()
-                static Characters::String DefaultElementFormat_ (T x) { return TraitsType::Format (x); }
+                static  Characters::String DefaultElementFormat_ (T x)  {   return TraitsType::Format (x);  }
 
             public:
                 /**
