@@ -83,8 +83,8 @@
  *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
  *                      used for testing, could still be usable that way...
  *
- *		@todo	LRUCache CONSTRUCTS all its elements, even if they arent in the cache, That might be bad. Redo if not
- *				too hard so when items removed from cache (use optional) they arent really there. Cached objects COULD be big.
+ *      @todo   LRUCache CONSTRUCTS all its elements, even if they arent in the cache, That might be bad. Redo if not
+ *              too hard so when items removed from cache (use optional) they arent really there. Cached objects COULD be big.
  *
  *      @todo   Come up with easy way to persist cache. I suppose this counts on fact that you can load/store
  *              cached elements – so persist mechanism must parameterize that).

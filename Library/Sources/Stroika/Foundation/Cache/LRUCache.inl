@@ -236,6 +236,7 @@ namespace   Stroika {
             inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::LookupElement (const KeyType& item)
             {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
+                Assert (0 <= chainIdx and chainIdx < TRAITS::HASH_TABLE_SIZE);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
                     if (TRAITS::Equal (TRAITS::ExtractKey (cur->fElement), item)) {
                         ShuffleToHead_ (chainIdx, cur);
@@ -257,6 +258,7 @@ namespace   Stroika {
             inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::AddNew (const KeyType& item)
             {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
+                Assert (0 <= chainIdx and chainIdx < TRAITS::HASH_TABLE_SIZE);
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
                 return &fCachedElts_First_[chainIdx]->fElement;
             }
