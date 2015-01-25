@@ -13,7 +13,7 @@
 
 
 #define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
-#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #include    "BlockAllocated.h"
 #endif
 
