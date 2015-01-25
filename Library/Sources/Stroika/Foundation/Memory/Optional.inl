@@ -47,43 +47,88 @@ namespace   Stroika {
             constexpr
 #endif
             Optional<T, TRAITS>::Optional ()
-                : fValue_ (nullptr)
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                : fValue_ (new (fBuffer_) T (from))
+#else
                 : fValue_ (new AutomaticallyBlockAllocated<T> (from))
+#endif
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                : fValue_ (new (fBuffer_) T (std::move (from)))
+#else
                 : fValue_ (new AutomaticallyBlockAllocated<T> (std::move (from)))
+#endif
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS>& from)
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                : fValue_ (from.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*from.fValue_))
+#else
                 : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
+#endif
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional<T, TRAITS>&& from)
+#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (from.fValue_)
+#endif
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (from.fValue_ != nullptr) {
+                    fValue_ = new (fBuffer_) T (move (*from.fValue_));
+                    from.clear ();
+                }
+#else
                 from.fValue_ = nullptr;
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T* from)
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                : fValue_ (from == nullptr ? nullptr : new (fBuffer_) T (*from))
+#else
                 : fValue_ (from == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
+#endif
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != nullptr) {
+                    destroy_ (fValue_);
+                }
+#else
                 delete fValue_;
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ == &rhs) {
+                    // No need to copy in this case and would be bad to try
+                    //  Optional<T, TRAITS> x;
+                    //  x = *x;
+                }
+                else {
+                    if (fValue_ == nullptr) {
+                        fValue_ = new (fBuffer_) T (rhs);
+                    }
+                    else {
+                        *fValue_ = rhs;
+                    }
+                }
+#else
                 if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T, TRAITS> x;
@@ -97,11 +142,27 @@ namespace   Stroika {
                         *fValue_ = rhs;
                     }
                 }
+#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ == &rhs) {
+                    // No need to move in this case and would be bad to try
+                    //  Optional<T, TRAITS> x;
+                    //  x = *x;
+                }
+                else {
+                    if (fValue_ == nullptr) {
+                        fValue_ = new (fBuffer_) T (std::move (rhs));
+                    }
+                    else {
+                        *fValue_ = std::move (rhs);
+                    }
+                }
+#else
                 if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T, TRAITS> x;
@@ -115,11 +176,23 @@ namespace   Stroika {
                         *fValue_ = std::move (rhs);
                     }
                 }
+#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional<T, TRAITS>& rhs)
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != rhs.fValue_) {
+                    if (fValue_ != nullptr) {
+                        destroy_ (fValue_);
+                        fValue_ = nullptr;
+                    }
+                    if (rhs.fValue_ != nullptr) {
+                        fValue_ = new (fBuffer_) T (*rhs.fValue_);
+                    }
+                }
+#else
                 if (fValue_->get () != rhs.fValue_->get ()) {
                     delete fValue_;
                     fValue_ = nullptr;
@@ -127,21 +200,50 @@ namespace   Stroika {
                         fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
                     }
                 }
+#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional<T, TRAITS> && rhs)
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != rhs.fValue_) {
+                    if (fValue_ != nullptr) {
+                        destroy_ (fValue_);
+                        fValue_ = nullptr;
+                    }
+                    if (rhs.fValue_ != nullptr) {
+                        fValue_ = new (fBuffer_) T (*rhs);
+                    }
+                    rhs.clear ();
+                }
+#else
                 if (fValue_->get () != rhs.fValue_->get ()) {
                     delete fValue_;
                     fValue_ = rhs.fValue_;
                     rhs.fValue_ = nullptr;
                 }
+#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != rhs) {
+                    if (rhs == nullptr) {
+                        clear ();
+                    }
+                    else {
+                        if (fValue_ == nullptr) {
+                            fValue_ = new (fBuffer_) T (*rhs);
+                        }
+                        else {
+                            *fValue_ = *rhs;
+                        }
+                    }
+                }
+#else
                 if (fValue_->get () != rhs) {
                     delete fValue_;
                     fValue_ = nullptr;
@@ -149,23 +251,38 @@ namespace   Stroika {
                         fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
                     }
                 }
+#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != nullptr) {
+                    destroy_ (fValue_);
+                }
+#else
                 delete fValue_;
+#endif
                 fValue_ = nullptr;
             }
             template    <typename T, typename TRAITS>
             inline  T*    Optional<T, TRAITS>::get ()
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                return fValue_;
+#else
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::get () const
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                return fValue_;
+#else
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
@@ -185,7 +302,11 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                return IsMissing () ? defaultValue : *fValue_;
+#else
                 return IsMissing () ? defaultValue : *fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
@@ -195,7 +316,11 @@ namespace   Stroika {
                     Execution::DoThrow (exception2ThrowIfMissing);
                 }
                 else {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                    return *fValue_;
+#else
                     return *fValue_->get ();
+#endif
                 }
             }
             template    <typename T, typename TRAITS>
@@ -204,7 +329,11 @@ namespace   Stroika {
             {
                 RequireNotNull (to);
                 if (IsPresent ()) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                    *to = *fValue_;
+#else
                     *to = *fValue_->get ();
+#endif
                 }
             }
             template    <typename T, typename TRAITS>
@@ -212,55 +341,75 @@ namespace   Stroika {
             {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                EnsureNotNull (fValue_);
+                return fValue_;
+#else
                 EnsureNotNull (fValue_->get ());
                 return fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  T* Optional<T, TRAITS>::operator-> ()
             {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                EnsureNotNull (fValue_);
+                return fValue_;
+#else
                 EnsureNotNull (fValue_->get ());
                 return fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  const T& Optional<T, TRAITS>::operator* () const
             {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                EnsureNotNull (fValue_);
+                return *fValue_;
+#else
                 EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  T& Optional<T, TRAITS>::operator* ()
             {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                EnsureNotNull (fValue_);
+                return *fValue_;
+#else
                 EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
-                (*fValue_->get ()) += rhs;
+                *fValue_ += rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
-                (*fValue_->get ()) -= rhs;
+                *fValue_ -= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
-                (*fValue_->get ()) *= rhs;
+                *fValue_ *= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
-                (*fValue_->get ()) /= rhs;
+                *fValue_ /= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>

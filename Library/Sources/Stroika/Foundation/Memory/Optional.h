@@ -10,8 +10,12 @@
 #include    "../Configuration/Common.h"
 #include    "../Execution/SpinLock.h"
 #include    "../Execution/Synchronized.h"
-#include    "BlockAllocated.h"
 
+
+#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
+#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#include    "BlockAllocated.h"
+#endif
 
 
 /**
@@ -135,6 +139,9 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
             class   Optional {
+#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                static  void    destroy_ (T* p) { AssertNotNull (p); p->~T ();};
+#endif
             public:
                 /**
                  *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
@@ -302,7 +309,12 @@ namespace   Stroika {
                  *  (since can use block-allocation - even if type T not block allocated) -
                  *  and no extra count infrastructure, or threadafe locking.
                  */
-                AutomaticallyBlockAllocated<T>*  fValue_;
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                Byte fBuffer_[10000/*sizeof(T)*/];  // intentionally uninitialized
+                T*  fValue_ = nullptr;
+#else
+                AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
+#endif
             };
 
 
