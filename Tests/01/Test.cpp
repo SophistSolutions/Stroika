@@ -23,8 +23,9 @@ using   namespace   Stroika::Foundation::Cache;
 
 
 
+
 namespace   {
-    namespace    Test2_Simple_ {
+    namespace    Test1_Simple_ {
         namespace Private_ {
             void    T1_ ()
             {
@@ -71,10 +72,37 @@ namespace   {
 
 
 
+
+
+namespace {
+    namespace   Test2_LRUCache_ObjWithNoArgCTORs_ {
+        namespace Private_ {
+            struct TNoCTOR_ {
+                TNoCTOR_ (int) {}
+                TNoCTOR_ () {} /*= delete*/;
+                //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
+                bool operator==(const TNoCTOR_& rhs) const { return true; }
+            };
+        }
+        void    DoIt ()
+        {
+            using Private_::TNoCTOR_;
+            LRUCache<TNoCTOR_, TNoCTOR_> test (10);
+            test.Add (TNoCTOR_ (), TNoCTOR_ ());
+            (void)test.Lookup (TNoCTOR_ ());
+        }
+    }
+}
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test2_Simple_::DoIt ();
+        Test1_Simple_::DoIt ();
+        Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
     }
 }
 
@@ -86,6 +114,3 @@ int main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-
-
-

@@ -286,7 +286,10 @@ namespace   Stroika {
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
                 auto    critSec { Execution::make_unique_lock (from.fLock_) };
                 for (auto i : from.fRealCache_) {
-                    Add (i.fKey, i.fValue);
+                    Assert (i.fKey.IsMissing () == i.fValue.IsMissing ());
+                    if (i.fKey) {
+                        Add (*i.fKey, *i.fValue);
+                    }
                 }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
@@ -333,8 +336,8 @@ namespace   Stroika {
                 if (v == nullptr) {
                     return Memory::Optional<VALUE> ();
                 }
-                Ensure (TRAITS::Equals (key, v->fKey));
-                return v->fValue;
+                Ensure (TRAITS::Equals (key, *v->fKey));
+                return *v->fValue;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)

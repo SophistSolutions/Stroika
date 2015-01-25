@@ -9,12 +9,9 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
-
-/// move these to .inl file when we move code for nu_LRUCache
 #include    "../Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "../Cryptography/Hash.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
-
 #include    "../Memory/Optional.h"
 
 
@@ -23,6 +20,9 @@
  *      \file
  *
  * TODO:
+ *
+ *  @todo   Hash_SFINAE_<> IS HORRIBLE HACK!!!! CLEANUP!!! Tricky... SFINAE -- SEE SerializeForHash1_
+ *
  *
  *          >>>> BIG PICTURE TODO - REVIEW THIS TODO LIST CUZ MOST ALREADY DONE NOW, BUT INCOMPLETE SO LEAVE TIL CONVERSION COMPLETE <<<<
  *
@@ -303,12 +303,24 @@ namespace   Stroika {
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
                     // If KeyType different type than ElementType we need a hash for that too
-                    static  size_t  Hash (const KEY& e)
+
+                    //tmphack - SHOUDL do smarter defaults!!!!
+                    template    <typename SFINAE>
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
                     {
                         using   Cryptography::Digest::Digester;
                         using   Cryptography::Digest::Algorithm::Jenkins;
                         using   USE_DIGESTER_     =   Digester<Jenkins>;
                         return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
+                    }
+                    template    <typename SFINAE>
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
+                    {
+                        return 0;
+                    }
+                    static  size_t  Hash (const KEY& e)
+                    {
+                        return Hash_SFINAE_<KEY> (e);
                     }
 
                     // defaults to operator==
@@ -402,23 +414,43 @@ namespace   Stroika {
                 nonvirtual  void    Add (const KEY& key, const VALUE& value);
 
             private:
+                //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API
                 struct  LEGACYLRUCACHEOBJ_ {
-                    KEY     fKey;
-                    VALUE   fValue;
+                    Memory::Optional<KEY>     fKey;
+                    Memory::Optional<VALUE>   fValue;
                 };
                 struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits_<LEGACYLRUCACHEOBJ_, KEY> {
-                    static  KEY ExtractKey (const LEGACYLRUCACHEOBJ_& e)
+                    static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
                     {
                         return e.fKey;
                     }
                     DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
-                    static  size_t  Hash (const KEY& e)
+                    static  size_t  HS_ (const KEY& k)
                     {
-                        return TRAITS::Hash (e);
+                        return TRAITS::Hash (k);
                     }
-                    static  bool    Equal (const KEY& lhs, const KEY& rhs)
+                    static  size_t  Hash (const Memory::Optional<KEY>& e)
                     {
-                        return TRAITS::Equals (lhs, rhs);
+                        static_assert (TRAITS::kHashTableSize >= 1, "HASH_TABLE_SIZE >= 1");
+                        if (TRAITS::kHashTableSize == 1) {
+                            return 0;   // avoid referencing hash function
+                        }
+                        else if (e.IsMissing ()) {
+                            return 0;
+                        }
+                        else {
+                            return HS_ (*e);
+                        }
+                    }
+                    static  bool    Equal (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
+                    {
+                        if (lhs.IsMissing () != rhs.IsMissing ()) {
+                            return false;
+                        }
+                        if (lhs.IsMissing () and rhs.IsMissing ()) {
+                            return true;
+                        }
+                        return TRAITS::Equals (*lhs, *rhs);
                     }
                 };
                 mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
