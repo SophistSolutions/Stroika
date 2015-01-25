@@ -26,7 +26,6 @@
  *
  *          >>>> BIG PICTURE TODO - REVIEW THIS TODO LIST CUZ MOST ALREADY DONE NOW, BUT INCOMPLETE SO LEAVE TIL CONVERSION COMPLETE <<<<
  *
- *
  *      @todo   Look at nu_LRUCache<> and consider possability of migrating to it, or something like that
  *              Much slower, but threadsafe, and simpler to use.
  *
@@ -83,6 +82,9 @@
  *                      so there WOULD be cost. Could avoid that by having the TRAITS
  *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
  *                      used for testing, could still be usable that way...
+ *
+ *		@todo	LRUCache CONSTRUCTS all its elements, even if they arent in the cache, That might be bad. Redo if not
+ *				too hard so when items removed from cache (use optional) they arent really there. Cached objects COULD be big.
  *
  *      @todo   Come up with easy way to persist cache. I suppose this counts on fact that you can load/store
  *              cached elements – so persist mechanism must parameterize that).
@@ -303,11 +305,10 @@ namespace   Stroika {
                     // If KeyType different type than ElementType we need a hash for that too
                     static  size_t  Hash (const KEY& e)
                     {
-                        using   Cryptography::Hash;
                         using   Cryptography::Digest::Digester;
                         using   Cryptography::Digest::Algorithm::Jenkins;
                         using   USE_DIGESTER_     =   Digester<Jenkins>;
-                        return Hash<USE_DIGESTER_, KEY, size_t> (e);
+                        return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
                     }
 
                     // defaults to operator==
