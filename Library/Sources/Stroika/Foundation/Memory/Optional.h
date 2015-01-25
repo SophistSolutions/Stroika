@@ -139,9 +139,6 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
             class   Optional {
-#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                static  void    destroy_ (T* p) { AssertNotNull (p); p->~T ();};
-#endif
             public:
                 /**
                  *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
@@ -314,6 +311,11 @@ namespace   Stroika {
                 T*  fValue_ = nullptr;
 #else
                 AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
+#endif
+
+#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+            private:
+                static  void    destroy_ (T* p);
 #endif
             };
 

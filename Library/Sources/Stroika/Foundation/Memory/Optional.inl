@@ -41,6 +41,14 @@ namespace   Stroika {
              **************************** Optional<T, TRAITS> *******************************
              ********************************************************************************
              */
+#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+            template    <typename T, typename TRAITS>
+            inline      void    Optional<T, TRAITS>::destroy_ (T* p)
+            {
+                AssertNotNull (p);
+                p->~T ();
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
