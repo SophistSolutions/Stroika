@@ -292,9 +292,9 @@ namespace   Stroika {
 
             /// MIGRATION STRATEGY FROM OLD TO NEW NAMES/DESIGN
             template    <typename   ELEMENT, typename KEY = ELEMENT>
-            using  DefaultTraits_LEGACY = LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>;
-            template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY<ELEMENT>>
-            using   LRUCache_LEGACY  = LRUCache_<ELEMENT, TRAITS>;
+            using  DefaultTraits_LEGACY_SOON2GO_ = LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>;
+            template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY_SOON2GO_<ELEMENT>>
+            using   LRUCache_LEGACY_SOON2GO_  = LRUCache_<ELEMENT, TRAITS>;
 
 
 
