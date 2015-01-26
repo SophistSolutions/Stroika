@@ -161,15 +161,6 @@ namespace   Stroika {
             class   ObjectVariantMapper {
             public:
                 /**
-                 *  Defaults to installing basic type mappers (@see ResetToDefaultTypeRegistry).
-                 */
-                ObjectVariantMapper ();
-
-            public:
-                struct  TypeMappingDetails;
-
-            public:
-                /**
                  */
                 using   ToVariantMapperType     =   function<VariantValue(const ObjectVariantMapper& mapper, const Byte* objOfType)>;
 
@@ -177,6 +168,29 @@ namespace   Stroika {
                 /**
                  */
                 using   FromVariantMapperType   =   function<void(const ObjectVariantMapper& mapper, const VariantValue& d, Byte* into)>;
+
+            public:
+                /**
+                 *  Defaults to installing basic type mappers (@see ResetToDefaultTypeRegistry).
+                 */
+                ObjectVariantMapper ();
+
+            public:
+                /**
+                 *  Structure to capture all the details of how to map between a VariantValue and an associated C++ structure.
+                 *  This CAN be direclyly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
+                 *  helpers like MakeCommonSerializer () or AddClass will be used.
+                 */
+                struct  TypeMappingDetails {
+                    type_index              fForType;
+                    ToVariantMapperType     fToVariantMapper;
+                    FromVariantMapperType   fFromVariantMapper;
+
+                    TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper);
+
+                    nonvirtual  bool operator== (const TypeMappingDetails& rhs) const;
+                    nonvirtual  bool operator< (const TypeMappingDetails& rhs) const;
+                };
 
             public:
                 struct  TypesRegistry;
@@ -424,23 +438,6 @@ namespace   Stroika {
 
             private:
                 TypesRegistry   fTypeMappingRegistry_;
-            };
-
-
-            /**
-             *  Structure to capture all the details of how to map between a VariantValue and an associated C++ structure.
-             *  This CAN be direclyly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
-             *  helpers like MakeCommonSerializer () or AddClass will be used.
-             */
-            struct  ObjectVariantMapper::TypeMappingDetails {
-                type_index              fForType;
-                ToVariantMapperType     fToVariantMapper;
-                FromVariantMapperType   fFromVariantMapper;
-
-                TypeMappingDetails (const type_index& forTypeInfo, const ToVariantMapperType& toVariantMapper, const FromVariantMapperType& fromVariantMapper);
-
-                nonvirtual  bool operator== (const TypeMappingDetails& rhs) const;
-                nonvirtual  bool operator< (const TypeMappingDetails& rhs) const;
             };
 
 

@@ -147,7 +147,30 @@ namespace   Stroika {
                      */
                     class  Response {
                     public:
-                        struct  SSLResultInfo;
+                        /**
+                         *  This info is returned only for secure connections - and is an indicator of whether or
+                         *  not the SSL connection was valid
+                         *
+                         *  This system allows invalid SSL certs as the target - by default - and returns that info, so its up
+                         *  to the caller to decide whether or not to accept the data from an invalid SSL cert
+                         */
+                        struct  SSLResultInfo {
+                            String  fSubjectCommonName;     // hostname declared
+                            String  fSubjectCompanyName;
+                            String  fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
+                            String  fIssuer;
+                            enum    class ValidationStatus : uint8_t {
+                                eNoSSL,
+                                eSSLOK,
+                                eCertNotYetValid,   // startB date too soon
+                                eCertExpired,
+                                eHostnameMismatch,
+                                eSSLFailure,        // generic - typically bad CERT - or bad trust
+
+                                Stroika_Define_Enum_Bounds(eNoSSL, eSSLFailure)
+                            };
+                            ValidationStatus    fValidationStatus { ValidationStatus::eNoSSL };
+                        };
 
                     public:
                         Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const Optional<SSLResultInfo>& sslInfo = Optional<SSLResultInfo> ());
@@ -221,32 +244,6 @@ namespace   Stroika {
                         Mapping<String, String>             fHeaders_;
                         HTTP::Status                        fStatus_ {};
                         Optional<SSLResultInfo>             fServerEndpointSSLInfo_;
-                    };
-
-
-                    /**
-                     *  This info is returned only for secure connections - and is an indicator of whether or
-                     *  not the SSL connection was valid
-                     *
-                     *  This system allows invalid SSL certs as the target - by default - and returns that info, so its up
-                     *  to the caller to decide whether or not to accept the data from an invalid SSL cert
-                     */
-                    struct  Response::SSLResultInfo {
-                        String  fSubjectCommonName;     // hostname declared
-                        String  fSubjectCompanyName;
-                        String  fStyleOfValidation;     // a string saying how the cert was valided - for example 'Domain Controll Validated'
-                        String  fIssuer;
-                        enum    class ValidationStatus : uint8_t {
-                            eNoSSL,
-                            eSSLOK,
-                            eCertNotYetValid,   // start date too soon
-                            eCertExpired,
-                            eHostnameMismatch,
-                            eSSLFailure,        // generic - typically bad CERT - or bad trust
-
-                            Stroika_Define_Enum_Bounds(eNoSSL, eSSLFailure)
-                        };
-                        ValidationStatus    fValidationStatus { ValidationStatus::eNoSSL };
                     };
 
 
