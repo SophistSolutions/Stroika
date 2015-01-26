@@ -56,39 +56,33 @@ namespace   Stroika {
                 String              fSerialNumber;
                 String              fUPC;
 
-                struct  Icon;
+                /**
+                 */
+                struct  Icon {
+                    Icon ();
+
+                    InternetMediaType   fMimeType;
+                    uint16_t            fHorizontalPixels;
+                    uint16_t            fVerticalPixels;
+                    uint16_t            fColorDepth;
+                    URL                 fURL;       // url to the icon image file
+                };
                 Collection<Icon>      fIcons;
 
-                struct  Service;
+                /**
+                 */
+                struct  Service {
+                    Service ();
+
+                    String      fServiceType;           // e.g. urn:schemas-upnp-org:service:serviceType:v
+                    String      fServiceID;             // e.g. urn:upnp-org:serviceId:serviceID
+                    URL         fSCPDURL;               // URL to service description
+                    URL         fControlURL;            // URL to service description
+                    URL         fEventSubURL;           // URL to service description
+                };
                 Collection<Service>   fServices;
 
                 DeviceDescription ();
-            };
-
-
-            /**
-             */
-            struct  DeviceDescription::Icon {
-                Icon ();
-
-                InternetMediaType   fMimeType;
-                uint16_t            fHorizontalPixels;
-                uint16_t            fVerticalPixels;
-                uint16_t            fColorDepth;
-                URL                 fURL;       // url to the icon image file
-            };
-
-
-            /**
-            */
-            struct  DeviceDescription::Service {
-                Service ();
-
-                String      fServiceType;           // eg urn:schemas - upnp - org : service : serviceType : v
-                String      fServiceID;             // eg urn : upnp - org : serviceId : serviceID
-                URL         fSCPDURL;               // URL to service description
-                URL         fControlURL;            // URL to service description
-                URL         fEventSubURL;           // URL to service description
             };
 
 
