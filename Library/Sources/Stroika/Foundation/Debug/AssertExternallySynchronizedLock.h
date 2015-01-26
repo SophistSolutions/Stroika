@@ -28,6 +28,19 @@ namespace   Stroika {
              *  is only accessed by a single thread.
              *
              *  In debug builds, it enforces this fact through assertions.
+             *
+             *  Use this as a BASECLASS instead of directly aggregating, due to C++'s queer
+             *  rules about sizeof() and members (all at least sizeof byte), but that appears to not apply to
+             *  base classes.
+             *
+             *  EXAMPLE USAGE:
+             *      struct foo : private Debug::AssertExternallySynchronizedLock {
+             *          inline  void    DoStuffOnData ()
+             *          {
+             *              auto    critSec { Execution::make_unique_lock (*this) };
+             *              // now do what you usually do for DOStuffOnData...
+             *          }
+             *      };
              */
             class   AssertExternallySynchronizedLock {
             public:
@@ -38,14 +51,14 @@ namespace   Stroika {
                 nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock&) = delete;
 
             public:
-                nonvirtual  void    lock ();
+                nonvirtual  void    lock () const;
 
             public:
-                nonvirtual  void    unlock ();
+                nonvirtual  void    unlock () const;
 
 #if     qDebug
             private:
-                atomic_flag fLock_;
+                mutable atomic_flag fLock_;
 #endif
             };
 

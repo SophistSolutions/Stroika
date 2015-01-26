@@ -275,16 +275,14 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size)
                 : fRealCache_ (size)
-                , fLock_ ()
             {
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             LRUCache<KEY, VALUE, TRAITS>::LRUCache (const LRUCache& from)
                 : fRealCache_ (1)
-                , fLock_ ()
             {
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
-                auto    critSec { Execution::make_unique_lock (from.fLock_) };
+                auto    critSec { Execution::make_unique_lock (from) };
                 for (auto i : from.fRealCache_) {
                     Assert (i.fKey.IsMissing () == i.fValue.IsMissing ());
                     if (i.fKey) {
@@ -297,7 +295,7 @@ namespace   Stroika {
             {
                 if (this != &rhs) {
                     SetMaxCacheSize (rhs.GetMaxCacheSize ());
-                    auto    critSec { Execution::make_unique_lock (rhs.fLock_) };
+                    auto    critSec { Execution::make_unique_lock (rhs) };
                     for (auto i : rhs.fRealCache_) {
                         Add (i.fKey, i.fValue);
                     }
@@ -307,31 +305,31 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  size_t  LRUCache<KEY, VALUE, TRAITS>::GetMaxCacheSize () const
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 return fRealCache_.GetMaxCacheSize ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 fRealCache_.SetMaxCacheSize (maxCacheSize);
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 return fRealCache_.fStats;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::clear ()
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 fRealCache_.ClearCache ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             Memory::Optional<VALUE>     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
                 if (v == nullptr) {
                     return Memory::Optional<VALUE> ();
@@ -342,7 +340,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)
             {
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.AddNew (key);
                 v->fKey = key;
                 v->fValue = value;
@@ -351,7 +349,7 @@ namespace   Stroika {
             Containers::Mapping<KEY, VALUE>     LRUCache<KEY, VALUE, TRAITS>::Elements () const
             {
                 Containers::Mapping<KEY, VALUE>  result;
-                auto    critSec { Execution::make_unique_lock (fLock_) };
+                auto    critSec { Execution::make_unique_lock (*this) };
                 for (auto i : fRealCache_) {
                     result.Add (i.fKey, i.fValue);
                 }
