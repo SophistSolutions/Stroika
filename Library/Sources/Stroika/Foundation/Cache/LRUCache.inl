@@ -350,7 +350,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             Containers::Mapping<KEY, VALUE>     LRUCache<KEY, VALUE, TRAITS>::Elements () const
             {
-                Mapping<KEY, VALUE>  result;
+                Containers::Mapping<KEY, VALUE>  result;
                 auto    critSec { Execution::make_unique_lock (fLock_) };
                 for (auto i : fRealCache_) {
                     result.Add (i.fKey, i.fValue);
