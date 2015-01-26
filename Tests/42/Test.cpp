@@ -31,6 +31,15 @@ using   namespace   Stroika::Foundation::Memory;
 namespace   {
     void    Test1_Optional ()
     {
+#if     !qDebug
+        {
+            struct a {
+                int aaa;
+                int* aaap;
+            };
+            VerifyTestResult (sizeof (Optional<int>) == sizeof (a));
+        }
+#endif
         {
             Optional<int>   x;
             VerifyTestResult (x.IsMissing ());
@@ -38,8 +47,7 @@ namespace   {
             VerifyTestResult (not x.IsMissing ());
             VerifyTestResult (x.IsPresent ());
             VerifyTestResult (*x == 1);
-        }
-        {
+        } {
             // Careful about self-assignment
             Optional<int>   x;
             x = 3;
