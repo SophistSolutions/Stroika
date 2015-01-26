@@ -59,8 +59,8 @@ namespace   Stroika {
              *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -
              *              see if this too can be replaced with something in C++11?
              */
-            template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-            inline  constexpr size_t    NEltsOf_REAL_(ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+            template    <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
+            inline  constexpr size_t    NEltsOf_REAL_(const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
             {
                 return (SIZE_OF_ARRAY);
             }
