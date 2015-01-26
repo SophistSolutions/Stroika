@@ -14,7 +14,7 @@
 
 
 #define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
-#if !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #include    "BlockAllocated.h"
 #endif
 
@@ -308,16 +308,16 @@ namespace   Stroika {
                  *  and no extra count infrastructure, or threadafe locking.
                  */
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-#if		!qCompilerAndStdLib_alignas_Buggy
-				alignas(alignment_of<T>) 
+#if     !qCompilerAndStdLib_alignas_Buggy
+                alignas(alignment_of<T>)
 #endif
-                Memory::Byte	fBuffer_[sizeof(T)];  // intentionally uninitialized
-				T*				fValue_ { nullptr };
+                Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
+                T*              fValue_ { nullptr };
 #else
                 AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
 #endif
 
-#if		qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             private:
                 static  void    destroy_ (T* p);
 #endif
