@@ -8,8 +8,6 @@
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
-#include    "../Execution/SpinLock.h"
-#include    "../Execution/Synchronized.h"
 #include    "../Memory/Common.h"
 
 
