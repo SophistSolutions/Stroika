@@ -216,14 +216,11 @@ namespace   Stroika {
             {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs.fValue_) {
-                    if (fValue_ != nullptr) {
-                        destroy_ (fValue_);
-                        fValue_ = nullptr;
-                    }
+                    clear ();
                     if (rhs.fValue_ != nullptr) {
-                        fValue_ = new (fBuffer_) T (*rhs);
+                        fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
+                        rhs.clear ();
                     }
-                    rhs.clear ();
                 }
 #else
                 if (fValue_->get () != rhs.fValue_->get ()) {
