@@ -208,6 +208,23 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_alignas_Buggy
+*/
+#ifndef qCompilerAndStdLib_alignas_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_alignas_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qCompilerAndStdLib_alignas_Buggy      0
+#endif
+
+#endif
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_union_designators_Buggy

@@ -308,13 +308,16 @@ namespace   Stroika {
                  *  and no extra count infrastructure, or threadafe locking.
                  */
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                Memory::Byte fBuffer_[/*10000*/sizeof(T)];  // intentionally uninitialized
-                T*  fValue_ = nullptr;
+#if		!qCompilerAndStdLib_alignas_Buggy
+				alignas(alignment_of<T>) 
+#endif
+                Memory::Byte	fBuffer_[sizeof(T)];  // intentionally uninitialized
+				T*				fValue_ { nullptr };
 #else
                 AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
 #endif
 
-#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if		qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             private:
                 static  void    destroy_ (T* p);
 #endif
