@@ -236,7 +236,6 @@ namespace {
     }
 
     void    Tester (String testName,
-                    DurationSecondsType baselineTime,
                     function<void()> compareWithT, String compareWithTName,
                     unsigned int runCount,
                     double warnIfPerformanceScoreHigherThan,
@@ -244,6 +243,7 @@ namespace {
                     function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER
                    )
     {
+        DurationSecondsType baselineTime = 1 / double(runCount);
         if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
         }
@@ -1349,6 +1349,47 @@ namespace {
 
 
 
+namespace {
+    namespace   Test_Optional_ {
+        namespace   Private_ {
+            template    <typename T>
+            void    T1_ ()
+            {
+                for (int i = 0; i < 1000; ++i) {
+                    Optional<T> x;
+                    Optional<T> y = x;
+                }
+            }
+            template    <typename T>
+            void    T2_ ()
+            {
+                for (int i = 0; i < 1000; ++i) {
+                    Optional<T> x = T {};
+                    Optional<T> y = x;
+                }
+            }
+            template    <typename T>
+            void    TAll_ ()
+            {
+                T1_<T> ();
+                T2_<T> ();
+            }
+        }
+        void    DoRunPerfTest ()
+        {
+            using   namespace   Private_;
+            TAll_<int> ();
+            TAll_<string> ();
+            TAll_<wstring> ();
+            TAll_<Characters::String> ();
+        }
+    }
+}
+
+
+
+
+
 #if     qPlatform_Windows
 namespace {
     namespace Test_UTF82WString_ {
@@ -1660,10 +1701,16 @@ namespace   {
         );
         Tester (
             L"Test_JSONReadWriteFile",
-            1 / 64.0,
             Test_JSONReadWriteFile_::DoRunPerfTest , L"Test_JSONReadWriteFile",
             64,
-            1.2,
+            1.0,
+            &failedTests
+        );
+        Tester (
+            L"Test_Optional_",
+            Test_Optional_::DoRunPerfTest , L"Test_Optional_",
+            4875,
+            1.1,
             &failedTests
         );
 #if     qPlatform_Windows
@@ -1676,7 +1723,6 @@ namespace   {
             &failedTests
         );
 #endif
-
 #if     qPlatform_Windows
         Tester (
             L"WString2UTF8 win32API vs codecvt_utf8",
@@ -1687,9 +1733,6 @@ namespace   {
             &failedTests
         );
 #endif
-
-
-
 
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl << endl;
 
