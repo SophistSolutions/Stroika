@@ -307,7 +307,7 @@ namespace   Stroika {
                  *  and no extra count infrastructure, or threadafe locking.
                  */
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                Byte fBuffer_[10000/*sizeof(T)*/];  // intentionally uninitialized
+                Memory::Byte fBuffer_[10000/*sizeof(T)*/];  // intentionally uninitialized
                 T*  fValue_ = nullptr;
 #else
                 AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
