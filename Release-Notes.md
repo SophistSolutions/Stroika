@@ -17,10 +17,20 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a70">v2.0a70x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a70">v2.0a70</a><br/>2015-01-26</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Attempted (mostly failed) to cleanup Debug::AssertExternallySynchronizedLock so we can save space used in release
+		builds.</li>
+	<li>Many LRUCache<> improvements: new Elements() method, and improved/revised use of Debug::AssertExternallySynchronizedLock</li>
+	<li>Huge performance improvement (qUseDirectlyEmbeddedDataInOptionalBackEndImpl_)to Optional<> and 
+		performance regression tests for Optional.</li>
+	<li>Lose several deprecated functions/classes, like IRunnable, Lockable etc</li>
+	<li>DiscreteRange<> cleanups (private Iterable)</li>
+	<li>Large improvement to Range<>::Format</li>
+	<li>new Configuration::ScopedUseLocale</li>
+	<li>Minor misc progress on performance regtests (e.g. bufzize of Streams/TextInputStream::ReadAll)</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)[gcc47 didnt work, didnt investigate]</li>
 </ul>
 </td>
 </tr>
