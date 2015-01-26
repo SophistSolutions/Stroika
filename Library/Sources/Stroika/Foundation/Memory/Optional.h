@@ -13,7 +13,7 @@
 #include    "../Memory/Common.h"
 
 
-#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
+#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  1
 #if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #include    "BlockAllocated.h"
 #endif
