@@ -9,6 +9,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Containers/Mapping.h"
 #include    "../Cryptography/Digest/Algorithm/Jenkins.h"
 #include    "../Cryptography/Hash.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -20,6 +21,8 @@
  *      \file
  *
  * TODO:
+ *
+ *  @todo   Make sure the Mapping<> is constructed with TRAITS that allow for the proper "EQUALS" method.
  *
  *  @todo   Hash_SFINAE_<> IS HORRIBLE HACK!!!! CLEANUP!!! Tricky... SFINAE -- SEE SerializeForHash1_
  *
@@ -411,7 +414,14 @@ namespace   Stroika {
                 nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
 
             public:
+                /**
+                 */
                 nonvirtual  void    Add (const KEY& key, const VALUE& value);
+
+            public:
+                /**
+                 */
+                nonvirtual  Containers::Mapping<KEY, VALUE>     Elements () const;
 
             private:
                 //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API
