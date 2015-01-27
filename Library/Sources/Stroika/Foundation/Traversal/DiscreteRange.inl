@@ -207,13 +207,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const
             {
-                auto    r   =   inherited_RangeType::UnionBounds (rhs);
+                auto    r   =   inherited::UnionBounds (rhs);
                 return DiscreteRange<T, TRAITS> (r.GetLowerBound (), r.GetUpperBound ());
             }
             template    <typename T, typename TRAITS>
             typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
             {
-                if (empty ()) {
+                if (this->empty ()) {
                     return 0;
                 }
                 else {
@@ -223,7 +223,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Iterable<T>   DiscreteRange<T, TRAITS>::Elements () const
             {
-                return empty () ? MyIterable_ () : MyIterable_ (this->GetLowerBound (), this->GetUpperBound ());
+                return this->empty () ? MyIterable_ () : MyIterable_ (this->GetLowerBound (), this->GetUpperBound ());
             }
             template    <typename T, typename TRAITS>
             inline  DiscreteRange<T, TRAITS>::operator Iterable<T> () const
@@ -233,7 +233,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Iterator<T> DiscreteRange<T, TRAITS>::begin () const
             {
-                return empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new MyIteratorRep_ (this->GetLowerBound (), this->GetUpperBound ())));
+                return this->empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new MyIteratorRep_ (this->GetLowerBound (), this->GetUpperBound ())));
             }
             template    <typename T, typename TRAITS>
             inline  Iterator<T> DiscreteRange<T, TRAITS>::end () const
