@@ -364,8 +364,8 @@ void    ThreadPool::Abort ()
         // Clear the task Q and then abort each thread
         auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.clear ();
-        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            i->fThread.Abort ();
+        for (auto ti : fThreads_) {
+            ti.fThread.Abort ();
         }
     }
 }
