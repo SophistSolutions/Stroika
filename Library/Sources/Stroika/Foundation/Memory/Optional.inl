@@ -50,6 +50,18 @@ namespace   Stroika {
             }
 #endif
             template    <typename T>
+            inline  void    Optional<T>::clear_ ()
+            {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                if (fValue_ != nullptr) {
+                    destroy_ (fValue_);
+                }
+#else
+                delete fValue_;
+#endif
+                fValue_ = nullptr;
+            }
+            template    <typename T>
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
@@ -210,6 +222,9 @@ namespace   Stroika {
                         destroy_ (fValue_);
                         fValue_ = nullptr;
                     }
+#if     qDebug
+                    auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
+#endif
                     if (rhs.fValue_ != nullptr) {
                         fValue_ = new (fBuffer_) T (*rhs.fValue_);
                     }
@@ -233,10 +248,13 @@ namespace   Stroika {
 #endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs.fValue_) {
-                    clear ();
+                    clear_ ();
+#if     qDebug
+                    auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
+#endif
                     if (rhs.fValue_ != nullptr) {
                         fValue_ = new (fBuffer_) T (move (*rhs.fValue_));
-                        rhs.clear ();
+                        rhs.clear_ ();
                     }
                 }
 #else
@@ -257,7 +275,7 @@ namespace   Stroika {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs) {
                     if (rhs == nullptr) {
-                        clear ();
+                        clear_ ();
                     }
                     else {
                         if (fValue_ == nullptr) {
@@ -285,14 +303,8 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fValue_ != nullptr) {
-                    destroy_ (fValue_);
-                }
-#else
-                delete fValue_;
-#endif
-                fValue_ = nullptr;
+                clear_ ();
+                Ensure (fValue_ == nullptr);
             }
             template    <typename T>
             inline  const T*    Optional<T>::get () const

@@ -38,6 +38,7 @@
  *              o   (even if I need to use ifdefs to maintain size)
  *
  *      @todo   Docs on Holder_ stuff... Maytbe use Holder_ for operator*, and see if we can make Holder private or document why not
+ *              make sure assignemnt through Holder works as expected (fails) so a->b = c should fail of a is optional.
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
@@ -339,6 +340,8 @@ namespace   Stroika {
             private:
                 static  void    destroy_ (T* p);
 #endif
+            private:
+                nonvirtual  void    clear_ ();
 
 #if     qDebug
             private:
