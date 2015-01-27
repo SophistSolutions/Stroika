@@ -8,6 +8,7 @@
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Memory/Common.h"
 
 
@@ -337,6 +338,12 @@ namespace   Stroika {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             private:
                 static  void    destroy_ (T* p);
+#endif
+
+#if     qDebug
+            private:
+                // for NOW we have this in ifdefs to avoid SIZE increase in RELEASE build (STILL WORKING ON BETTER WAY, probs using SFINAE)
+                Debug::AssertExternallySynchronizedLock fDebugMutex_;
 #endif
             };
 

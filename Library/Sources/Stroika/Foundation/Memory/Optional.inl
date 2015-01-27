@@ -83,6 +83,7 @@ namespace   Stroika {
                 : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
 #endif
             {
+                //DO ON ARG_auto    critSec { Execution::make_unique_lock (*this) };
             }
             template    <typename T>
             inline  Optional<T>::Optional (Optional<T>&& from)
@@ -90,6 +91,7 @@ namespace   Stroika {
                 : fValue_ (from.fValue_)
 #endif
             {
+                //DO ON ARG_auto    critSec { Execution::make_unique_lock (*this) };
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (from.fValue_ != nullptr) {
                     fValue_ = new (fBuffer_) T (move (*from.fValue_));
@@ -111,6 +113,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>::~Optional ()
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != nullptr) {
                     destroy_ (fValue_);
@@ -122,6 +127,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const T& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ == &rhs) {
                     // No need to copy in this case and would be bad to try
@@ -156,6 +164,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (T && rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ == &rhs) {
                     // No need to move in this case and would be bad to try
@@ -190,6 +201,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const Optional<T>& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs.fValue_) {
                     if (fValue_ != nullptr) {
@@ -214,6 +228,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (Optional<T> && rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs.fValue_) {
                     clear ();
@@ -234,6 +251,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const T* rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != rhs) {
                     if (rhs == nullptr) {
@@ -262,6 +282,9 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Optional<T>::clear ()
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != nullptr) {
                     destroy_ (fValue_);
@@ -274,6 +297,9 @@ namespace   Stroika {
             template    <typename T>
             inline  const T*    Optional<T>::get () const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 return fValue_;
 #else
@@ -298,6 +324,9 @@ namespace   Stroika {
             template    <typename T>
             inline  T Optional<T>::Value (T defaultValue) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 return IsMissing () ? defaultValue : *fValue_;
 #else
@@ -308,6 +337,9 @@ namespace   Stroika {
             template    <typename   THROW_IF_MISSING_TYPE>
             inline  T   Optional<T>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 if (IsMissing ()) {
                     Execution::DoThrow (exception2ThrowIfMissing);
                 }
@@ -323,6 +355,9 @@ namespace   Stroika {
             template    <typename   CONVERTABLE_TO_TYPE>
             nonvirtual  void    Optional<T>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 RequireNotNull (to);
                 if (IsPresent ()) {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
@@ -335,6 +370,9 @@ namespace   Stroika {
             template    <typename T>
             inline  auto Optional<T>::operator-> () const -> Holder_
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 return Holder_ { this };
@@ -342,6 +380,9 @@ namespace   Stroika {
             template    <typename T>
             inline  T   Optional<T>::operator* () const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
@@ -355,6 +396,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&    Optional<T>::operator+= (const T& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 *fValue_ += rhs;
@@ -363,6 +407,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&    Optional<T>::operator-= (const T& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 *fValue_ -= rhs;
@@ -371,6 +418,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&    Optional<T>::operator*= (const T& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 *fValue_ *= rhs;
@@ -379,6 +429,9 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&    Optional<T>::operator/= (const T& rhs)
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 *fValue_ /= rhs;
@@ -387,6 +440,9 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Optional<T>::Equals (const Optional<T>& rhs) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 if (fValue_ == nullptr) {
                     return rhs.fValue_ == nullptr;
                 }
@@ -401,6 +457,9 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Optional<T>::Equals (T rhs) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 if (fValue_ == nullptr) {
                     return false;
                 }
@@ -410,6 +469,9 @@ namespace   Stroika {
             template    <typename T>
             inline  int Optional<T>::Compare (const Optional<T>& rhs) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 if (fValue_ == nullptr) {
                     return (rhs.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
@@ -424,6 +486,9 @@ namespace   Stroika {
             template    <typename T>
             inline  int Optional<T>::Compare (T rhs) const
             {
+#if     qDebug
+                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
+#endif
                 if (fValue_ == nullptr) {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
