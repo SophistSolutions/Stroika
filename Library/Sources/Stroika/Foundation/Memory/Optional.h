@@ -269,12 +269,11 @@ namespace   Stroika {
                 /**
                  *  \pre (IsPresent ())
                  *
-                 *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
+                 *  \note   We chose to return T, instead of const T&, because for smaller objects this works as
+                 *          well or better, and because it allows us to control the lifetime of the underlying memory,
+                 *          and so we can apply assertions etc to assure valid lifetime management.
                  */
-                nonvirtual  T& operator* ();
-                nonvirtual  const T& operator* () const;
+                nonvirtual  T   operator* () const;
 
             public:
                 /**

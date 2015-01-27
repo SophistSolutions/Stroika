@@ -368,20 +368,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-            inline  const T& Optional<T, TRAITS>::operator* () const
-            {
-                Require (IsPresent ());
-                AssertNotNull (fValue_);
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                EnsureNotNull (fValue_);
-                return *fValue_;
-#else
-                EnsureNotNull (fValue_->get ());
-                return *fValue_->get ();
-#endif
-            }
-            template    <typename T, typename TRAITS>
-            inline  T& Optional<T, TRAITS>::operator* ()
+            inline  T   Optional<T, TRAITS>::operator* () const
             {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
