@@ -396,24 +396,32 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
+                Require (IsPresent ());
+                AssertNotNull (fValue_);
                 *fValue_ += rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
+                Require (IsPresent ());
+                AssertNotNull (fValue_);
                 *fValue_ -= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
+                Require (IsPresent ());
+                AssertNotNull (fValue_);
                 *fValue_ *= rhs;
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
+                Require (IsPresent ());
+                AssertNotNull (fValue_);
                 *fValue_ /= rhs;
                 return *this;
             }
