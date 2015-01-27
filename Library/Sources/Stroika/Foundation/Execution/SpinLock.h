@@ -12,6 +12,17 @@
 #include    "../Time/Realtime.h"
 
 
+/**
+ * TODO
+ *
+ *  \file
+ *
+ *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
+ *
+ *      @todo   Since this lock is NOT recursive, we could add a capture of the current thread, and then
+ *              ASSERT no calls come in on the same thread, as they would be guarnateed to deadlock!
+ */
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -22,8 +33,9 @@ namespace   Stroika {
              *  Implementation based on
              *      http://en.cppreference.com/w/cpp/atomic/atomic_flag
              *
-             *  Abotu to run tests to compare perofmrance numbers. But this maybe useful for at least some(many) cases.
+             *  About to run tests to compare performance numbers. But this maybe useful for at least some(many) cases.
              *
+             *  Note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
              */
             class   SpinLock {
             public:
@@ -44,7 +56,7 @@ namespace   Stroika {
 
             private:
                 atomic_flag fLock_;
-                //atomic_flag fLock_ = ATOMIC_FLAG_INIT;
+                //atomic_flag fLock_ { ATOMIC_FLAG_INIT };
 
             private:
                 // put in private subroutine instead of directly calling cuz MSVC impl is inline and
