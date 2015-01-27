@@ -78,7 +78,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>::Optional (const Optional<T>& from)
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                : fValue_ (from.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*from.fValue_))
+                : fValue_ (from.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*from))
 #else
                 : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
 #endif
@@ -271,17 +271,6 @@ namespace   Stroika {
 #endif
                 fValue_ = nullptr;
             }
-#if 0
-            template    <typename T>
-            inline  T*    Optional<T>::get ()
-            {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                return fValue_;
-#else
-                return fValue_ == nullptr ? nullptr : fValue_->get ();
-#endif
-            }
-#endif
             template    <typename T>
             inline  const T*    Optional<T>::get () const
             {
@@ -349,31 +338,7 @@ namespace   Stroika {
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 return Holder_ { this };
-#if 0
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                EnsureNotNull (fValue_);
-                return fValue_;
-#else
-                EnsureNotNull (fValue_->get ());
-                return fValue_->get ();
-#endif
-#endif
             }
-#if 0
-            template    <typename T>
-            inline  T* Optional<T>::operator-> ()
-            {
-                Require (IsPresent ());
-                AssertNotNull (fValue_);
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                EnsureNotNull (fValue_);
-                return fValue_;
-#else
-                EnsureNotNull (fValue_->get ());
-                return fValue_->get ();
-#endif
-            }
-#endif
             template    <typename T>
             inline  T   Optional<T>::operator* () const
             {

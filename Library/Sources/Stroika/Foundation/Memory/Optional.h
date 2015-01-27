@@ -31,6 +31,13 @@
  *
  *      @todo   LOSE Optional_DefaultTraits
  *
+ *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
+ *
+ *      @todo   Add threadsafety check code
+ *              o   (even if I need to use ifdefs to maintain size)
+ *
+ *      @todo   Docs on Holder_ stuff... Maytbe use Holder_ for operator*, and see if we can make Holder private or document why not
+ *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
  *
@@ -257,7 +264,6 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
-                //nonvirtual  T*          get ();
                 nonvirtual  const T*    get () const;
 
             public:
@@ -272,8 +278,6 @@ namespace   Stroika {
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */
-                //nonvirtual  T* operator-> ();
-                //nonvirtual  const T* operator-> () const;
                 nonvirtual  Holder_ operator-> () const;
 
             public:
