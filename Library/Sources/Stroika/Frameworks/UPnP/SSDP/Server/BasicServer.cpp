@@ -75,8 +75,8 @@ public:
         StartNotifier_ ();
         StartResponder_ ();
 
-		IO::Network::LinkMonitor	lm;
-		lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
+        IO::Network::LinkMonitor    lm;
+        lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
             Debug::TraceContextBumper ctx (SDKSTR ("Basic SSDP server - LinkMonitor callback"));
             DbgTrace (L"(lc = %d, netName=%s, ipNum=%s)", lc, netName.c_str (), ipNum.c_str ());
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
