@@ -271,6 +271,7 @@ namespace   Stroika {
 #endif
                 fValue_ = nullptr;
             }
+#if 0
             template    <typename T, typename TRAITS>
             inline  T*    Optional<T, TRAITS>::get ()
             {
@@ -280,6 +281,7 @@ namespace   Stroika {
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
 #endif
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::get () const
             {
@@ -354,6 +356,7 @@ namespace   Stroika {
                 return fValue_->get ();
 #endif
             }
+#if 0
             template    <typename T, typename TRAITS>
             inline  T* Optional<T, TRAITS>::operator-> ()
             {
@@ -367,6 +370,7 @@ namespace   Stroika {
                 return fValue_->get ();
 #endif
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  T   Optional<T, TRAITS>::operator* () const
             {

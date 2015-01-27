@@ -239,6 +239,15 @@ namespace   Stroika {
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
+
+            public:
+                struct Holder_ {
+                    const Optional<T, TRAITS>*   fVal;
+                    const T* operator-> () const { return fVal->get (); }
+                    const T& operator* () const { return *fVal->get (); }
+                    Holder_& operator= (const Holder_&) = delete;
+                    Holder_& operator= (T) = delete;
+                };
             public:
                 /**
                  *  Returns nullptr if value is missing
@@ -247,7 +256,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
                  */
-                nonvirtual  T*          get ();
+                //nonvirtual  T*          get ();
                 nonvirtual  const T*    get () const;
 
             public:
@@ -262,7 +271,7 @@ namespace   Stroika {
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */
-                nonvirtual  T* operator-> ();
+                //nonvirtual  T* operator-> ();
                 nonvirtual  const T* operator-> () const;
 
             public:
