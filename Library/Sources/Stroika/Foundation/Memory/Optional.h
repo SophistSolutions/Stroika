@@ -162,8 +162,8 @@ namespace   Stroika {
                 Optional ();
                 Optional (const T& from);
                 Optional (T&&  from);
-                Optional (const Optional<T>& from);
-                Optional (Optional<T>&& from);
+                Optional (const Optional& from);
+                Optional (Optional&& from);
                 explicit Optional (const T* from);
 
             public:
@@ -172,11 +172,11 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Optional<T>& operator= (const T& rhs);
-                nonvirtual  Optional<T>& operator= (T && rhs);
-                nonvirtual  Optional<T>& operator= (const Optional<T>& rhs);
-                nonvirtual  Optional<T>& operator= (Optional<T> && rhs);
-                nonvirtual  Optional<T>& operator= (const T* rhs);
+                nonvirtual  Optional& operator= (const T& rhs);
+                nonvirtual  Optional& operator= (T && rhs);
+                nonvirtual  Optional& operator= (const Optional& rhs);
+                nonvirtual  Optional& operator= (Optional && rhs);
+                nonvirtual  Optional& operator= (const T* rhs);
 
             public:
                 /**
@@ -249,8 +249,8 @@ namespace   Stroika {
 
 
             public:
-                struct Holder_ {
-                    const Optional<T>*   fVal;
+                struct  Holder_ {
+                    const Optional*   fVal;
                     const T* operator-> () const { return fVal->get (); }
                     operator const T& () const { return *fVal->get (); }
                     Holder_& operator= (const Holder_&) = delete;
@@ -296,17 +296,17 @@ namespace   Stroika {
                  *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
                  */
-                nonvirtual  Optional<T>&    operator+= (const T& rhs);
-                nonvirtual  Optional<T>&    operator-= (const T& rhs);
-                nonvirtual  Optional<T>&    operator*= (const T& rhs);
-                nonvirtual  Optional<T>&    operator/= (const T& rhs);
+                nonvirtual  Optional&    operator+= (const T& rhs);
+                nonvirtual  Optional&    operator-= (const T& rhs);
+                nonvirtual  Optional&    operator*= (const T& rhs);
+                nonvirtual  Optional&    operator/= (const T& rhs);
 
             public:
                 /**
                  *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
                  *  is different, then they compare as not Equals()
                  */
-                nonvirtual  bool    Equals (const Optional<T>& rhs) const;
+                nonvirtual  bool    Equals (const Optional& rhs) const;
                 nonvirtual  bool    Equals (T rhs) const;
 
             public:
@@ -314,7 +314,7 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
-                nonvirtual  int Compare (const Optional<T>& rhs) const;
+                nonvirtual  int Compare (const Optional& rhs) const;
                 nonvirtual  int Compare (T rhs) const;
 
             private:
