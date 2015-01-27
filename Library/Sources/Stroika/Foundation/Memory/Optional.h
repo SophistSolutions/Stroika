@@ -244,7 +244,7 @@ namespace   Stroika {
                 struct Holder_ {
                     const Optional<T, TRAITS>*   fVal;
                     const T* operator-> () const { return fVal->get (); }
-                    const T& operator* () const { return *fVal->get (); }
+                    operator const T& () const { return *fVal->get (); }
                     Holder_& operator= (const Holder_&) = delete;
                     Holder_& operator= (T) = delete;
                 };
@@ -272,7 +272,8 @@ namespace   Stroika {
                  *  syntactically mirror dereferencing a pointer.
                  */
                 //nonvirtual  T* operator-> ();
-                nonvirtual  const T* operator-> () const;
+                //nonvirtual  const T* operator-> () const;
+                nonvirtual  Holder_ operator-> () const;
 
             public:
                 /**
