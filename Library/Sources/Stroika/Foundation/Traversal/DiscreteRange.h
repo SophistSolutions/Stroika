@@ -154,26 +154,26 @@ namespace   Stroika {
              *      }
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
-            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, private Iterable<T> {
+            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {
             private:
-                using       inherited_RangeType     =   Range<T, typename TRAITS::RangeTraitsType>;
+                using       inherited     =   Range<T, typename TRAITS::RangeTraitsType>;
 
             public:
                 /**
                  */
-                using   ElementType =   typename inherited_RangeType::ElementType;
+                using   ElementType =   typename inherited::ElementType;
 
             public:
                 /**
                  */
-                using   UnsignedDifferenceType      =   typename inherited_RangeType::UnsignedDifferenceType;
+                using   UnsignedDifferenceType      =   typename inherited::UnsignedDifferenceType;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 struct   MyIteratorRep_;
-                struct   MyIteratableRep_;
+//                struct   MyIteratableRep_;
 
             public:
                 /**
@@ -181,7 +181,7 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-                explicit DiscreteRange ();
+                explicit DiscreteRange () = default;
                 explicit DiscreteRange (T begin, T end);
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
                 explicit DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
@@ -226,11 +226,19 @@ namespace   Stroika {
 
                  ///NYI
                  */
-                nonvirtual  Iterable<T>   Elements () const
-                {
-                    return *this;   //tmphack - later remove baseclass iterable!
-                }
+                nonvirtual  Iterable<T>   Elements () const;
 
+            public:
+                /**EXPERIEMNTAL
+                */
+                operator Iterable<T> () const;
+                /**EXPERIEMNTAL
+                */
+                Iterator<T> begin () const;
+                /**EXPERIEMNTAL
+                */
+                Iterator<T> end () const;
+#if 0
             public:
                 using   inherited_RangeType::Contains;
 
@@ -240,6 +248,9 @@ namespace   Stroika {
                  *  value.
                  */
                 nonvirtual  bool empty () const;
+#endif
+            private:
+                struct  MyIterable_;
             };
 
 

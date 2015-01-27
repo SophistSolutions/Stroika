@@ -90,6 +90,17 @@ namespace   {
             VerifyTestResult (nItemsHit == 3);
             VerifyTestResult (lastItemHit == 5);    /// IN DISCUSSION - OPEN ENDED RHS?
         }
+        {
+            int nItemsHit = 0;
+            int lastItemHit = 0;
+            for (auto i : DiscreteRange<int> (3, 5)) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit < i);
+                lastItemHit = i;
+            }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == 5);    /// IN DISCUSSION - OPEN ENDED RHS?
+        }
     }
 
 }

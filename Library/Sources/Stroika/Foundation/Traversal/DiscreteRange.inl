@@ -78,73 +78,83 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************* DiscreteRange<T, TRAITS>::MyIteratableRep_ ***********************
+             ***************** DiscreteRange<T, TRAITS>::MyIterable_ ************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
-                using   inherited = typename Iterable<T>::_IRep;
-                using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
-                using   _APPLY_ARGTYPE = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
-                using   _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
-                DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
-                T       fStart;
-                T       fEnd;
-                bool    fForcedEnd;
-                MyIteratableRep_ ()
-                    : fStart (TRAITS::kLowerBound)
-                    , fEnd (TRAITS::kLowerBound)
-                    , fForcedEnd (true)
-                {
-                }
-                MyIteratableRep_ (T start, T end)
-                    : fStart (start)
-                    , fEnd (end)
-                    , fForcedEnd (false)
-                {
-                }
-                virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const
-                {
-                    // DiscreteRange doesnt track specific 'envelope' owner
-                    return _SharedPtrIRep (new MyIteratableRep_ (*this));
-                }
-                virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const
-                {
-                    // DiscreteRange doesnt track specific 'envelope' owner
-                    if (fForcedEnd) {
-                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));
+            struct  DiscreteRange<T, TRAITS>::MyIterable_: Iterable<T> {
+                struct   MyRep_ : Iterable<T>::_IRep {
+                    using   inherited = typename Iterable<T>::_IRep;
+                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
+                    using   _APPLY_ARGTYPE = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
+                    DECLARE_USE_BLOCK_ALLOCATION (MyRep_);
+                    T       fStart;
+                    T       fEnd;
+                    bool    fForcedEnd;
+                    MyRep_ ()
+                        : fStart (TRAITS::kLowerBound)
+                        , fEnd (TRAITS::kLowerBound)
+                        , fForcedEnd (true)
+                    {
                     }
-                    else {
-                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
+                    MyRep_ (T start, T end)
+                        : fStart (start)
+                        , fEnd (end)
+                        , fForcedEnd (false)
+                    {
                     }
-                }
-                virtual size_t              GetLength () const
+                    virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const
+                    {
+                        // DiscreteRange doesnt track specific 'envelope' owner
+                        return _SharedPtrIRep (new MyRep_ (*this));
+                    }
+                    virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const
+                    {
+                        // DiscreteRange doesnt track specific 'envelope' owner
+                        if (fForcedEnd) {
+                            return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));
+                        }
+                        else {
+                            return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
+                        }
+                    }
+                    virtual size_t              GetLength () const
+                    {
+                        using   SignedDifferenceType        =   typename TRAITS::SignedDifferenceType;
+                        if (fForcedEnd) {
+                            return static_cast<SignedDifferenceType> (0);
+                        }
+                        else {
+                            return 1 + static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
+                        }
+                    }
+                    virtual bool                IsEmpty () const
+                    {
+                        if (fForcedEnd) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                            //return fStart == fEnd;
+                        }
+                    }
+                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const
+                    {
+                        this->_Apply (doToElement);
+                    }
+                    virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                    {
+                        return this->_FindFirstThat (doToElement, suggestedOwner);
+                    }
+                };
+                MyIterable_ ()
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyRep_ ()))
                 {
-                    using   SignedDifferenceType        =   typename TRAITS::SignedDifferenceType;
-                    if (fForcedEnd) {
-                        return static_cast<SignedDifferenceType> (0);
-                    }
-                    else {
-                        return 1 + static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
-                    }
                 }
-                virtual bool                IsEmpty () const
+                MyIterable_ (T start, T end)
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyRep_ (start, end)))
                 {
-                    if (fForcedEnd) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                        //return fStart == fEnd;
-                    }
-                }
-                virtual void                Apply (_APPLY_ARGTYPE doToElement) const
-                {
-                    this->_Apply (doToElement);
-                }
-                virtual Iterator<T>         FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
-                {
-                    return this->_FindFirstThat (doToElement, suggestedOwner);
                 }
             };
 
@@ -155,28 +165,19 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            DiscreteRange<T, TRAITS>::DiscreteRange ()
-                : inherited_RangeType ()
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ()))
-            {
-            }
-            template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
-                : inherited_RangeType (begin, end)
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (begin, end)))
+                : inherited (begin, end)
             {
                 Require (begin <= end);
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
-                : inherited_RangeType (begin, end)
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (this->GetLowerBound (), this->GetUpperBound ())))
+                : inherited (begin, end)
             {
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
-                : inherited_RangeType ()
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ()))
+                : inherited ()
             {
                 // Could do more efficiently
                 if (not r.empty ()) {
@@ -191,17 +192,17 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
-                return inherited_RangeType::Intersection (rhs);
+                return inherited::Intersection (rhs);
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange<T, TRAITS>& rhs) const
             {
-                return DiscreteRange<T, TRAITS> (inherited_RangeType::Intersection (rhs));
+                return DiscreteRange<T, TRAITS> (inherited::Intersection (rhs));
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
             {
-                return inherited_RangeType::UnionBounds (rhs);
+                return inherited::UnionBounds (rhs);
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange<T, TRAITS>& rhs) const
@@ -220,10 +221,24 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  bool DiscreteRange<T, TRAITS>::empty () const
+            Iterable<T>   DiscreteRange<T, TRAITS>::Elements () const
             {
-                Ensure (inherited_RangeType::empty () == Iterable<T>::empty ());
-                return inherited_RangeType::empty ();
+                return empty () ? MyIterable_ () : MyIterable_ (this->GetLowerBound (), this->GetUpperBound ());
+            }
+            template    <typename T, typename TRAITS>
+            inline  DiscreteRange<T, TRAITS>::operator Iterable<T> () const
+            {
+                return Elements ();
+            }
+            template    <typename T, typename TRAITS>
+            Iterator<T> DiscreteRange<T, TRAITS>::begin () const
+            {
+                return empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new MyIteratorRep_ (this->GetLowerBound (), this->GetUpperBound ())));
+            }
+            template    <typename T, typename TRAITS>
+            inline  Iterator<T> DiscreteRange<T, TRAITS>::end () const
+            {
+                return Iterator<T>::GetEmptyIterator ();
             }
 
 
