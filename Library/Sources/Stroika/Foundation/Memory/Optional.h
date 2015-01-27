@@ -29,6 +29,7 @@
  *
  *  TODO:
  *
+ *      @todo   LOSE Optional_DefaultTraits
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
@@ -52,9 +53,9 @@ namespace   Stroika {
 
 
             /**
-             *  Default traits object for type T (for use in Optional<T, TRAITS>). This can generally be ignored.
+             *  Default traits object for type T (for use in Optional<T>). This can generally be ignored.
              *  It requires operator== and operator< are defined for type T (if they are not, you must
-             *  provide your own traits to use Optional<T, TRAITS>).
+             *  provide your own traits to use Optional<T>).
              */
             template    <typename T>
             struct   Optional_DefaultTraits {
@@ -64,7 +65,7 @@ namespace   Stroika {
 
 
             /**
-             *  Optional<T, TRAITS> can be used to store an object which may or may not be present. This can be
+             *  Optional<T> can be used to store an object which may or may not be present. This can be
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
              *
@@ -75,7 +76,7 @@ namespace   Stroika {
              *
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
              *  runs the risk of producing surprising exceptions, we treat dereferencing an 'IsMissing'
-             *  Optional<T, TRAITS> as an Assertion Erorr.
+             *  Optional<T> as an Assertion Erorr.
              *
              *  However, see @ref Value()
              *
@@ -118,14 +119,14 @@ namespace   Stroika {
              *
              *  \note   \em Design-Note - why no operator T()
              *      -   We considered having an operator T () method. This has advantages, in that
-             *          it makes more seemless replacing use of a T with an Optional<T, TRAITS>. But it has
-             *          the disadvantage that, when coupled with the Optional<T, TRAITS> (T) CTOR, you can
+             *          it makes more seemless replacing use of a T with an Optional<T>. But it has
+             *          the disadvantage that, when coupled with the Optional<T> (T) CTOR, you can
              *          get overloading problems.
              *      -   Plus, one must carefully check each use of a variable of type T, being converted
-             *          to type Optional<T, TRAITS>, so being forced to say "*" first isn't totally unreasonable.
+             *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
-             *          It would have been impractical to make Optional<T, TRAITS> fully thread-safe, due to its returning
+             *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
              *          of internal pointers.
              *
              *  \note   \em Design-Note - Optional<void>
@@ -141,7 +142,7 @@ namespace   Stroika {
              *              this can be done - I think - just as easily using 'bool c' for the variants with
              *              no extra data.
              */
-            template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
+            template    <typename T>
             class   Optional {
             public:
                 /**
@@ -154,8 +155,8 @@ namespace   Stroika {
                 Optional ();
                 Optional (const T& from);
                 Optional (T&&  from);
-                Optional (const Optional<T, TRAITS>& from);
-                Optional (Optional<T, TRAITS>&& from);
+                Optional (const Optional<T>& from);
+                Optional (Optional<T>&& from);
                 explicit Optional (const T* from);
 
             public:
@@ -164,29 +165,29 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Optional<T, TRAITS>& operator= (const T& rhs);
-                nonvirtual  Optional<T, TRAITS>& operator= (T && rhs);
-                nonvirtual  Optional<T, TRAITS>& operator= (const Optional<T, TRAITS>& rhs);
-                nonvirtual  Optional<T, TRAITS>& operator= (Optional<T, TRAITS> && rhs);
-                nonvirtual  Optional<T, TRAITS>& operator= (const T* rhs);
+                nonvirtual  Optional<T>& operator= (const T& rhs);
+                nonvirtual  Optional<T>& operator= (T && rhs);
+                nonvirtual  Optional<T>& operator= (const Optional<T>& rhs);
+                nonvirtual  Optional<T>& operator= (Optional<T> && rhs);
+                nonvirtual  Optional<T>& operator= (const T* rhs);
 
             public:
                 /**
-                 *  Erases (destroys) any present value for this Optional<T, TRAITS> instance. After calling clear (),
+                 *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
                  *  the IsMissing () will return true.
                  */
                 nonvirtual  void    clear ();
 
             public:
                 /**
-                *  Returns true iff the Optional<T, TRAITS> has no valid value. Attempts to access the value of
-                *  an Optional<T, TRAITS> (eg. through operator* ()) will result in an assertion error.
+                *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
+                *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
                 */
                 nonvirtual  constexpr   bool    IsMissing () const noexcept; // means no value (it is optional!)
 
             public:
                 /**
-                 *  Returns true iff the Optional<T, TRAITS> has a valid value ( not IsMissing ());
+                 *  Returns true iff the Optional<T> has a valid value ( not IsMissing ());
                  */
                 nonvirtual  constexpr   bool    IsPresent () const noexcept;
 
@@ -242,7 +243,7 @@ namespace   Stroika {
 
             public:
                 struct Holder_ {
-                    const Optional<T, TRAITS>*   fVal;
+                    const Optional<T>*   fVal;
                     const T* operator-> () const { return fVal->get (); }
                     operator const T& () const { return *fVal->get (); }
                     Holder_& operator= (const Holder_&) = delete;
@@ -253,8 +254,8 @@ namespace   Stroika {
                  *  Returns nullptr if value is missing
                  *
                  *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 //nonvirtual  T*          get ();
                 nonvirtual  const T*    get () const;
@@ -264,8 +265,8 @@ namespace   Stroika {
                  *  \pre (IsPresent ())
                  *
                  *  \warning
-                 *      This method returns a pointer internal to (owned by) Optional<T, TRAITS>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T, TRAITS> instance.
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  *
                  *  This is really just syntactic sugar equivalent to get () - except that it requires
                  *  not-null - but more convenient since it allows the use of an optional to
@@ -291,17 +292,17 @@ namespace   Stroika {
                  *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
                  */
-                nonvirtual  Optional<T, TRAITS>&    operator+= (const T& rhs);
-                nonvirtual  Optional<T, TRAITS>&    operator-= (const T& rhs);
-                nonvirtual  Optional<T, TRAITS>&    operator*= (const T& rhs);
-                nonvirtual  Optional<T, TRAITS>&    operator/= (const T& rhs);
+                nonvirtual  Optional<T>&    operator+= (const T& rhs);
+                nonvirtual  Optional<T>&    operator-= (const T& rhs);
+                nonvirtual  Optional<T>&    operator*= (const T& rhs);
+                nonvirtual  Optional<T>&    operator/= (const T& rhs);
 
             public:
                 /**
                  *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
                  *  is different, then they compare as not Equals()
                  */
-                nonvirtual  bool    Equals (const Optional<T, TRAITS>& rhs) const;
+                nonvirtual  bool    Equals (const Optional<T>& rhs) const;
                 nonvirtual  bool    Equals (T rhs) const;
 
             public:
@@ -309,7 +310,7 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
-                nonvirtual  int Compare (const Optional<T, TRAITS>& rhs) const;
+                nonvirtual  int Compare (const Optional<T>& rhs) const;
                 nonvirtual  int Compare (T rhs) const;
 
             private:
@@ -337,42 +338,42 @@ namespace   Stroika {
 
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Compare (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator< (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            template    <typename T>
+            bool    operator< (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool    operator< (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Compare (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator<= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            template    <typename T>
+            bool    operator<= (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool    operator<= (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Equals (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Equals (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, T rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (T lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+            template    <typename T>
+            bool    operator== (const Optional<T>& lhs, T rhs);
+            template    <typename T>
+            bool    operator== (T lhs, const Optional<T>& rhs);
+            template    <typename T>
+            bool    operator== (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 #if 0
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename X1 = typename enable_if<is_convertible<RHS_CONVERTABLE_TO_OPTIONAL, Optional<T, TRAITS>>::value >::type>
-            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename X1 = typename enable_if<is_convertible<RHS_CONVERTABLE_TO_OPTIONAL, Optional<T>>::value >::type>
+            bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return lhs.Equals (Optional<T, TRAITS> (rhs));
+                return lhs.Equals (Optional<T> (rhs));
             }
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return lhs.Equals (Optional<T, TRAITS> (rhs));
+                return lhs.Equals (Optional<T> (rhs));
             }
 #endif
 
@@ -380,42 +381,42 @@ namespace   Stroika {
 
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Equals (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Equals (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, T rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (T lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
+            template    <typename T>
+            bool    operator!= (const Optional<T>& lhs, T rhs);
+            template    <typename T>
+            bool    operator!= (T lhs, const Optional<T>& rhs);
+            template    <typename T>
+            bool    operator!= (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator!= (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
 #if 0
             // @TODO GET THIS WORKING
-            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
+            bool    operator!= (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return not lhs.Equals (Optional<T, TRAITS> { rhs });
+                return not lhs.Equals (Optional<T> { rhs });
             }
 #endif
 
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Compare (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator>= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator>= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            template    <typename T>
+            bool    operator>= (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool    operator>= (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**
-             *  Simple overloaded operator which calls @Optional<T,TRAITS>::Compare (const Optional<T, TRAITS>& rhs)
+             *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
              */
-            template    <typename T, typename TRAITS>
-            bool    operator> (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS>
-            bool    operator> (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T_TRAITS& rhs);
+            template    <typename T>
+            bool    operator> (const Optional<T>& lhs, const Optional<T>& rhs);
+            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            bool    operator> (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
 
         }
