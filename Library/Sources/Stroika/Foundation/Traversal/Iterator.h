@@ -341,7 +341,6 @@ namespace   Stroika {
                  *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
                  *  class instance Iterator<T>.
                  */
-                nonvirtual  T*          operator-> ();
                 nonvirtual  const T*    operator-> () const;
 
             public:

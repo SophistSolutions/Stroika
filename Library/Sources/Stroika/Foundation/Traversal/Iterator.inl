@@ -116,13 +116,6 @@ namespace   Stroika {
                 return *fCurrent_;
             }
             template    <typename T, typename BASE_STD_ITERATOR>
-            inline    T*   Iterator<T, BASE_STD_ITERATOR>::operator-> ()
-            {
-                Require (not Done ());
-                RequireNotNull (fIterator_);
-                return fCurrent_.get ();
-            }
-            template    <typename T, typename BASE_STD_ITERATOR>
             inline    const T*   Iterator<T, BASE_STD_ITERATOR>::operator-> () const
             {
                 Require (not Done ());
