@@ -1036,7 +1036,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />

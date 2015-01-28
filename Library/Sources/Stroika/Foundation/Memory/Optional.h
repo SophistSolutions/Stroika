@@ -30,8 +30,6 @@
  *
  *  TODO:
  *
- *      @todo   LOSE Optional_DefaultTraits
- *
  *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
  *
  *      @todo   Add threadsafety check code
@@ -59,18 +57,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
-
-
-            /**
-             *  Default traits object for type T (for use in Optional<T>). This can generally be ignored.
-             *  It requires operator== and operator< are defined for type T (if they are not, you must
-             *  provide your own traits to use Optional<T>).
-             */
-            template    <typename T>
-            struct   Optional_DefaultTraits {
-                static  int     Compare (T lhs, T rhs);
-                static  bool    Equals (T lhs, T rhs);
-            };
 
 
             /**

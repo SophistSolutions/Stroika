@@ -21,23 +21,6 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************** Optional_DefaultTraits<T> ******************************
-             ********************************************************************************
-             */
-            template    <typename T>
-            inline  int     Optional_DefaultTraits<T>::Compare (T lhs, T rhs)
-            {
-                return Common::ComparerWithWellOrder<T>::Compare (lhs, rhs);
-            }
-            template    <typename T>
-            inline  bool    Optional_DefaultTraits<T>::Equals (T lhs, T rhs)
-            {
-                return Common::ComparerWithEquals<T>::Equals (lhs, rhs);
-            }
-
-
-            /*
-             ********************************************************************************
              *********************************** Optional<T> ********************************
              ********************************************************************************
              */
@@ -467,7 +450,7 @@ namespace   Stroika {
                 }
                 AssertNotNull (fValue_);
                 AssertNotNull (rhs.fValue_);
-                return Optional_DefaultTraits<T>::Equals (*fValue_, *rhs.fValue_);
+                return Common::ComparerWithWellOrder<T>::Equals (*fValue_, *rhs.fValue_);
             }
             template    <typename T>
             inline  bool    Optional<T>::Equals (T rhs) const
@@ -479,7 +462,7 @@ namespace   Stroika {
                     return false;
                 }
                 AssertNotNull (fValue_);
-                return Optional_DefaultTraits<T>::Equals (*fValue_, rhs);
+                return Common::ComparerWithWellOrder<T>::Equals (*fValue_, rhs);
             }
             template    <typename T>
             inline  int Optional<T>::Compare (const Optional<T>& rhs) const
@@ -496,7 +479,7 @@ namespace   Stroika {
                 }
                 AssertNotNull (fValue_);
                 AssertNotNull (rhs.fValue_);
-                return Optional_DefaultTraits<T>::Compare (*fValue_, *rhs.fValue_);
+                return Common::ComparerWithWellOrder<T>::Compare (*fValue_, *rhs.fValue_);
             }
             template    <typename T>
             inline  int Optional<T>::Compare (T rhs) const
@@ -508,7 +491,7 @@ namespace   Stroika {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 AssertNotNull (fValue_);
-                return Optional_DefaultTraits<T>::Compare (*fValue_, rhs);
+                return Common::ComparerWithWellOrder<T>::Compare (*fValue_, rhs);
             }
 
 

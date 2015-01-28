@@ -1614,9 +1614,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Optional.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
