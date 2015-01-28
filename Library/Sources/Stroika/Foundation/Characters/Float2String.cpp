@@ -46,7 +46,7 @@ namespace {
             s.imbue (*options.fUseLocale);
         }
         else {
-            static  locale  kCLocale_ = locale ("C");
+            static  const   locale  kCLocale_ = locale::classic ();
             s.imbue (kCLocale_);
         }
         if (options.fPrecision.IsPresent ()) {
