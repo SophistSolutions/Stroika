@@ -18,9 +18,13 @@
  *
  * TODO:
  *
- *      @todo
+ *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
  *
- *  Implementation Note:
+ *      @todo   Consider defect - easy to misinterpret 'TimeStampType staleIfOlderThan' arg to Lookup()
+ *              as offset (see Ago() API), instead of timestamp to compare with timestamp on data.
+ *
+ *      @todo   Consider adding way to retreive timestamp for key 'k'. Also consider Iterable<> method (like LRUCache)
+ *              so we can dump cache (including timestamps)
  *
  */
 
@@ -35,13 +39,12 @@ namespace   Stroika {
              */
             struct  CallerStalenessCache_Traits_DEFAULT {
                 using  TimeStampType = Time::DurationSecondsType  ; // type must support operator<()
-                static  TimeStampType   GetCurrentTimestamp();
+                static  TimeStampType   GetCurrentTimestamp ();
             };
 
 
             /**
-             *
-             *  The idea behind this cache to to track when something is added, and that the lookup function can avoid
+             *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
              *  a costly call to compute something if its been recently enough added.
              *
              *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
@@ -50,7 +53,12 @@ namespace   Stroika {
              *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
              *  value from cache, or fetch it and update the cache if needed.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  This differs from other forms of caches in that:
+             *      o   It records the timestamp when a value is last-updated
+             *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
+             *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *
              */
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
@@ -67,6 +75,20 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return the timestamp backwards the given timestamp.
+                 *
+                 *  \req backThisTime >= 0
+                 *
+                 *  Example Usage:
+                 *      CallerStalenessCache<> cc;
+                 *      if (Optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
+                 *          // look key, but throw disregard if older than 5 seconds (from now)
+                 *      }
+                 */
+                static  TimeStampType   Ago (TimeStampType backThisTime);
+
+            public:
+                /**
                  */
                 nonvirtual  void    ClearOlderThan (TimeStampType t);
 
@@ -78,6 +100,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
                  */
                 nonvirtual   void   Add (KEY k, VALUE v);
 
@@ -88,9 +111,12 @@ namespace   Stroika {
                  *
                  *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
                  *  but just see if a value is present.
+                 *
+                 *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
                  */
                 nonvirtual  Memory::Optional<VALUE>   Lookup (KEY k, TimeStampType staleIfOlderThan);
                 nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
+                nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
             public:
                 /**

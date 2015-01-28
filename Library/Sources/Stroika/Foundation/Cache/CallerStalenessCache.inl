@@ -37,6 +37,12 @@ namespace   Stroika {
                 return TIME_TRAITS::GetCurrentTimestamp ();
             }
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
+            inline  typename    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Ago (TimeStampType backThisTime)
+            {
+                Require (backThisTime >= 0);
+                return GetCurrentTimestamp () - backThisTime;
+            }
+            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
             nonvirtual  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
             {
                 for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
