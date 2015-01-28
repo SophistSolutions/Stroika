@@ -190,7 +190,13 @@ namespace   Stroika {
                 /**
                  *  Return true iff IsPresent ().
                  *
-                 *  @todo   Unsure if I want this?
+                 *  \note   Design Note:
+                 *          I've long disliked type punning, and consider it a frequenty source of confusion. However,
+                 *          the compelling simplicity (and it appears to me clarity and commonness of):
+                 *              if (Optional<T> i = getValue ()) {
+                 *                  use_value (*i);
+                 *              }
+                 *          outweighs this concern.
                  */
                 nonvirtual  explicit operator bool () const noexcept;
 
@@ -237,6 +243,8 @@ namespace   Stroika {
 
 
             public:
+                // @todo WRITE DOCS ON HOLDER
+                // @todo make Holder use fDebugMutex_ and then we can use it in operator*
                 struct  Holder_ {
                     const Optional*   fVal;
                     const T* operator-> () const { return fVal->get (); }

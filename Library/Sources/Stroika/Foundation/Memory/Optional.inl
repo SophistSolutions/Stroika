@@ -376,13 +376,14 @@ namespace   Stroika {
                 return Holder_ { this };
             }
             template    <typename T>
-            inline  T   Optional<T>::operator* () const
+            inline  auto   Optional<T>::operator* () const -> T
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
+                //return Holder_ { this };  when we embed mutex into holder
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 EnsureNotNull (fValue_);
                 return *fValue_;
