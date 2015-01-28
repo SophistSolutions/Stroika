@@ -21,10 +21,10 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a72">v2.0a72x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a72">v2.0a72</a><br/>2015-01-28</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>fixed re-entrancy bug(deadlock) in optional mutex debug checking (debug only issue)</li>
 </ul>
 </td>
 </tr>
