@@ -108,13 +108,14 @@ namespace   Stroika {
                         , fDataCapturedAt (t)
                     {
                     }
-
+#if 0
                     // @todo
                     //tmphack cuz Stroika Mapping requires operator== (to be fixed soon)
                     bool operator==(const myVal_& rhs) const
                     {
                         return fValue == rhs.fValue;
                     }
+#endif
                 };
 
             private:
