@@ -21,7 +21,18 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a71">v2.0a71x</a><br/>2015-01-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Tests\HistoricalReferenceOutput\PerformanceDumps</li>
+	<li>Lose Iteartor<>::operator-&ht; NON_CONST overload returning non-const pointer</li>
+	<li>Various Optional&lt;&gt; changes:
+		<br/>As checked in - now appears to work without crash in BLKQCL-Controller (still dont know exact proiblem)
+		<br/>Turn qUseDirectlyEmbeddedDataInOptionalBackEndImpl_ off (which was key to working in BLKQCL-Controller)
+		<br/>Use Holder_ to allow threadsafety checking
+		<br/>Lose lots of non-const overloads and make API threadafe except for actual threadafety part)
+		<br/>Lose TRAITS support
+		<br/>Added ifdef(qDebug) - for now - fDebugMutex_ support
+	</li>
+	<li>redo DiscreteRange() to not inherit from Iterable<> but have convert op, and experimental begin/end methods so can be used in iteration expressions</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
