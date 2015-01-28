@@ -110,7 +110,7 @@ namespace   Stroika {
 #endif
                 if (from.fValue_ != nullptr) {
                     fValue_ = new (fBuffer_) T (move (*from.fValue_));
-                    from.clear ();
+                    from.clear_ ();
                 }
 #else
                 from.fValue_ = nullptr;
