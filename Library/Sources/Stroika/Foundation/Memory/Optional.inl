@@ -105,6 +105,9 @@ namespace   Stroika {
             {
                 //DO ON ARG_auto    critSec { Execution::make_unique_lock (*this) };
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if     qDebug
+                auto    critSec2 { Execution::make_unique_lock (from.fDebugMutex_) };
+#endif
                 if (from.fValue_ != nullptr) {
                     fValue_ = new (fBuffer_) T (move (*from.fValue_));
                     from.clear ();
