@@ -87,6 +87,11 @@ namespace   Stroika {
                 return o->fValue;
             }
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
+            inline  VALUE   CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue)
+            {
+                return Lookup (k, staleIfOlderThan, [defaultValue] () { return defaultValue; });
+            }
+            template    <typename   KEY, typename VALUE, typename TIME_TRAITS>
             inline  void    CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::clear ()
             {
                 Clear();
