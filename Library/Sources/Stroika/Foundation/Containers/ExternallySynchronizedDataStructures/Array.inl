@@ -180,7 +180,21 @@ namespace   Stroika {
                                 _fItems = (T*) new char [sizeof (T) * slotsAlloced];
                             }
                             else {
+#if 1
+                                /// STILL NOT EXPCITON SAFE!!!
+                                //
+                                // do better, but for now at least do something SAFE
+                                T* newV = (T*) new char [sizeof (T) * slotsAlloced];
+                                size_t n2Copy = min(_fSlotsAllocated, slotsAlloced);
+                                std::uninitialized_copy (&_fItems[0], &_fItems[n2Copy], newV);
+                                for (T* p = &_fItems[0]; p != &_fItems[_fLength]; ++p) {
+                                    p->T::~T ();
+                                }
+                                delete (char*)_fItems;
+                                _fItems = newV;
+#else
                                 _fItems = (T*) realloc (_fItems, sizeof (T) * slotsAlloced);
+#endif
                             }
                         }
                         _fSlotsAllocated = slotsAlloced;

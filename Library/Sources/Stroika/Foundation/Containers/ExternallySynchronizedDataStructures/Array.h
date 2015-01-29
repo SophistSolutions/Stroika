@@ -71,6 +71,12 @@
  *
  *  TODO:
  *
+ *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
+ *              but celanup safety/use uninitalized_copy and stl destroy funcitons.
+ *
+ *              NOTE - CAN USE realloc() if is_trivially_constructible<T>::value, so maybe do SFINAE
+ *              differnt impls...
+ *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *
  *      @todo   For each class (Array/Array_Patchikng, and all iteraotrs, add explicit
@@ -85,9 +91,6 @@
  *              RETHINK. Above may not be a problem. Real issue is array stores base and length
  *              and iterators use start/end. Maybe THATs what we really need to change in the
  *              array class (probably).
- *
- *      @todo   FIX realloc() stuff. We probably need to get rid of realloc altogether. Look at what
- *              std::vector<> does for hints about most efficient way..
  *
  *      @todo   Add RVALUE-REF (MOVE) stuff.
  *
