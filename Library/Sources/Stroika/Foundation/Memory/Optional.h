@@ -13,7 +13,7 @@
 
 
 // Disable by default for now since appears to have broken something...
-//#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  1
+#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  1
 #ifndef qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
 #endif
