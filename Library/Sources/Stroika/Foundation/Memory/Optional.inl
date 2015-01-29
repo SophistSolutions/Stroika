@@ -72,13 +72,18 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const Optional<T>& from)
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                : fValue_ (from.fValue_ == nullptr ? nullptr : new (fBuffer_) T (*from))
-#else
+#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
 #endif
             {
-                //DO ON ARG_auto    critSec { Execution::make_unique_lock (*this) };
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+#if     qDebug
+                auto critSec { Execution::make_unique_lock (from.fDebugMutex_) };
+#endif
+                if (from.fValue_ != nullptr) {
+                    fValue_ = new (fBuffer_) T (*from.fValue_);
+                }
+#endif
             }
             template    <typename T>
             inline  Optional<T>::Optional (Optional<T>&& from)
@@ -86,7 +91,6 @@ namespace   Stroika {
                 : fValue_ (from.fValue_)
 #endif
             {
-                //DO ON ARG_auto    critSec { Execution::make_unique_lock (*this) };
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #if     qDebug
                 auto    critSec2 { Execution::make_unique_lock (from.fDebugMutex_) };
