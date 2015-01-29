@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <type_traits>
+
 #include    "../Configuration/Common.h"
 
 
@@ -47,6 +49,14 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+
+
+            //LIFTED -@todo add docs/reference
+            // from Stroustrup C++11 book - page 800
+            struct substition_failure {};
+
+            template <typename T> struct substitution_succeeded : std::true_type {};
+            template <> struct substitution_succeeded<substition_failure> : std::false_type {};
 
 
             /*
