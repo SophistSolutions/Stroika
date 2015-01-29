@@ -53,14 +53,14 @@ namespace   Stroika {
                 namespace Has_Compare_Helper_ {
                     using namespace Configuration;
                     template <typename T>
-                    struct get_Compare_result {
+                    struct  get_Compare_result {
                     private:
-                        template <typename X>
-                        static auto check (X const& x) -> decltype (declval<T> ().Compare (declval<T> ()));
-                        static substition_failure check(...);
+                        template    <typename X>
+                        static auto check (X const& x) -> decltype (declval<X> ().Compare (declval<X> ()));
+                        static substition_failure check (...);
 
                     public:
-                        using type = decltype(check(std::declval<T>()));
+                        using type = decltype (check (std::declval<T> ()));
                     };
                 }
             }
