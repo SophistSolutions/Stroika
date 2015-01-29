@@ -206,6 +206,22 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_uninitialized_copy_n_Buggy
+@DESCRIPTION:   Just annowing warning workaround
+*/
+#ifndef qCompilerAndStdLib_uninitialized_copy_n_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qCompilerAndStdLib_uninitialized_copy_n_Buggy   0
+#endif
+
+#endif
+
+
+
 
 
 /*
