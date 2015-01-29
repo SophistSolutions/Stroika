@@ -48,21 +48,35 @@ namespace   Stroika {
             }
 
 
+
+            namespace Private_ {
+                template <typename T>
+                inline  int Compare_Helper_ (const T& v1, const T& v2, typename enable_if<Has_Compare<T>::value>::type* = nullptr)
+                {
+                    return v1.Compare (v2);
+                }
+                template <typename T>
+                inline  int Compare_Helper_ (T v1, T v2, typename enable_if<not Has_Compare<T>::value>::type* = nullptr)
+                {
+                    if (v1 < v2) {
+                        return -1;
+                    }
+                    else if (v2 < v1) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                }
+            }
+
+
             template <typename T>
             inline  int ComparerWithWellOrder<T>::Compare (T v1, T v2)
             {
-                if (v1 < v2) {
-                    Assert (not Equals (v1, v2));
-                    return -1;
-                }
-                else if (v2 < v1) {
-                    Assert (not Equals (v1, v2));
-                    return 1;
-                }
-                else {
-                    Assert (Equals (v1, v2));
-                    return 0;
-                }
+                int result { Private_::Compare_Helper_<T> (v1, v2) };
+                Assert ((result == 0) == Equals (v1, v2));
+                return result;
             }
 
 

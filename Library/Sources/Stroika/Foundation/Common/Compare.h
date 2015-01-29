@@ -50,6 +50,19 @@ namespace   Stroika {
                         static bool const value = sizeof(test (s < t)) == sizeof(yes);
                     };
                 }
+                namespace Has_Compare_Helper_ {
+                    using namespace Configuration;
+                    template <typename T>
+                    struct get_Compare_result {
+                    private:
+                        template <typename X>
+                        static auto check (X const& x) -> decltype (declval<T> ().Compare (declval<T> ()));
+                        static substition_failure check(...);
+
+                    public:
+                        using type = decltype(check(std::declval<T>()));
+                    };
+                }
             }
 
 
@@ -61,6 +74,14 @@ namespace   Stroika {
                     Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
             };
 
+
+            /**
+             *  has value member which is true iff 'T' supports the less than operator.
+             */
+            template    <typename T>
+            struct  Has_Compare :
+                    Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type> {
+            };
 
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
