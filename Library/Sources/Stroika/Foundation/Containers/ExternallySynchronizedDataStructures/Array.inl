@@ -181,12 +181,20 @@ namespace   Stroika {
                             }
                             else {
 #if 1
-                                /// STILL NOT EXPCITON SAFE!!!
-                                //
                                 // do better, but for now at least do something SAFE
+                                // USE SFINAE IsTriviallyCopyable to see which way to do it (if can use realloc).
+                                // ALSO - on windoze - use _expand() if avaialble...
                                 T* newV = (T*) new char [sizeof (T) * slotsAlloced];
-                                size_t n2Copy = min(_fSlotsAllocated, slotsAlloced);
-                                std::uninitialized_copy (&_fItems[0], &_fItems[n2Copy], newV);
+                                try {
+                                    size_t n2Copy = min(_fSlotsAllocated, slotsAlloced);
+                                    DISABLE_COMPILER_MSC_WARNING_START(4996)
+                                    std::uninitialized_copy_n (&_fItems[0], n2Copy, newV);
+                                    DISABLE_COMPILER_MSC_WARNING_END(4996)
+                                }
+                                catch (...) {
+                                    delete (char*)newV;
+                                    throw;
+                                }
                                 for (T* p = &_fItems[0]; p != &_fItems[_fLength]; ++p) {
                                     p->T::~T ();
                                 }

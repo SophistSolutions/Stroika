@@ -74,7 +74,7 @@
  *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
  *              but celanup safety/use uninitalized_copy and stl destroy funcitons.
  *
- *              NOTE - CAN USE realloc() if is_trivially_constructible<T>::value, so maybe do SFINAE
+ *              NOTE - CAN USE realloc() if is_trivially_copyable<T>::value, so maybe do SFINAE
  *              differnt impls...
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
