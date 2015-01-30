@@ -19,14 +19,24 @@ History
 
 
 
+
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a73">v2.0a73x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a73">v2.0a73</a><br/>2015-01-29</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Minor CallerStalenessCache&lt;&gt; fixes, and docs, and similar for Mapping&lt;&gt;</li>
+	<li>SAFER fix for Array<> code - not using realloc(): eventually rewrite so sometimes uses this,
+	 or expand or some such. But for now - at least its SAFE!!! (thjough more costly) than what we had before
+	</li>
+	<li>Turn back on qUseDirectlyEmbeddedDataInOptionalBackEndImpl_: safe now that we fixed above Array bug</li>
+	<li>started adding more SFINAE support from Stroustrup C++11 book, and used to tweak ComparerWithWellOrder<T>::Compare() slightly</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
+
+
+
 
 
 
