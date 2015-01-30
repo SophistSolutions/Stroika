@@ -233,6 +233,8 @@
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_alignas_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_alignas_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_alignas_Buggy      0
 #endif
