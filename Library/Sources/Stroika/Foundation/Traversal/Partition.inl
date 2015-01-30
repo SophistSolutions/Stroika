@@ -56,7 +56,7 @@ namespace   Stroika {
             /**
              */
             template    <typename RANGETYPE>
-            bool    IsPartition (const Iterable<RANGETYPE>& iterable)
+            inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable)
             {
                 return Private_::IsPartition_Helper_ (iterable);
             }
