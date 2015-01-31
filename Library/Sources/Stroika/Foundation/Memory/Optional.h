@@ -29,6 +29,10 @@
  *
  *  TODO:
  *
+ *      @todo   Add appropriate constexpr code. Now that we have DIRECTCONSTRUCTION we can use
+ *              constexpr for some more constructors. But we must carefully use enable_if for this because
+ *              if you use Optional_Traits_Blockallocated_Indirect_Storage it wont work.
+ *
  *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
  *
  *      @todo   Consider adding NonConstHolder_, and return that from non-cost operator->(). More like std::optional.
@@ -392,6 +396,9 @@ namespace   Stroika {
                 nonvirtual  int Compare (T rhs) const;
 
             private:
+#if 1
+                typename TRAITS::StorageType    fStorage_;
+#else
                 /*
                  *  Carefully manage the storage ourselves - not doing shared copy. No shared
                  *  copy (copyonwrite) because these are rarely copied, and this is cheaper
@@ -406,6 +413,7 @@ namespace   Stroika {
                 T*              fValue_ { nullptr };
 #else
                 AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
+#endif
 #endif
 
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
