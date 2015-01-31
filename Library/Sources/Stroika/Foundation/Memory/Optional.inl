@@ -40,19 +40,19 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  const T* Optional<T>::ConstHolder_::operator-> () const
-			{
-				return fVal->get ();
-			}
+            {
+                return fVal->get ();
+            }
             template    <typename T>
             inline  Optional<T>::ConstHolder_::operator const T& () const
-			{
-				return *fVal->get ();
-			}
+            {
+                return *fVal->get ();
+            }
             template    <typename T>
             inline  const T& Optional<T>::ConstHolder_::operator* () const
-			{
-				return *fVal->get ();
-			}
+            {
+                return *fVal->get ();
+            }
 
 
             /*

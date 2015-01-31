@@ -20,9 +20,9 @@
 #define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
 #endif
 
-#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+//#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #include    "BlockAllocated.h"
-#endif
+//#endif
 
 
 /**
@@ -33,6 +33,10 @@
  *  TODO:
  *
  *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
+ *
+ *      @todo   Consider adding NonConstHolder_, and return that from non-cost operator->(). More like std::optional.
+ *              But harder to use safely, and maybe better to avoid (harder to control lifetime of update of returned pointer????
+ *              mabye? maybe no diff than cosnt case? Consider???)
  *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
@@ -62,6 +66,26 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
+
+
+            template    <typename T>
+            struct  Optional_Traits_Inplace_Storage {
+                struct  StorageType {
+#if     !qCompilerAndStdLib_alignas_Buggy
+                    alignas(alignment_of<T>)
+#endif
+                    Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
+                    T*              fValue_ { nullptr };
+                };
+            };
+            template    <typename T>
+            struct  Optional_Traits_Blockallocated_Indirect_Storage {
+                struct  StorageType {
+                    AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
+                };
+            };
+            template    <typename T>
+            using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
 
 
             /**
@@ -354,7 +378,7 @@ namespace   Stroika {
 #if     qDebug
             private:
                 // for NOW we have this in ifdefs to avoid SIZE increase in RELEASE build (STILL WORKING ON BETTER WAY, probs using SFINAE)
-                mutable	Debug::AssertExternallySynchronizedLock fDebugMutex_;
+                mutable Debug::AssertExternallySynchronizedLock fDebugMutex_;
 #endif
             };
 
