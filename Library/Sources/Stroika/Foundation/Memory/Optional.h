@@ -11,7 +11,8 @@
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
-#include    "../Memory/Common.h"
+#include    "BlockAllocated.h"
+#include    "Common.h"
 
 
 // Disable by default for now since appears to have broken something...
@@ -19,10 +20,6 @@
 #ifndef qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
 #endif
-
-//#if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-#include    "BlockAllocated.h"
-//#endif
 
 
 /**
@@ -68,6 +65,10 @@ namespace   Stroika {
         namespace   Memory {
 
 
+            /**
+             *  This storage style is the default, and is usually fastest. However, it requires the
+             *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
+             */
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
@@ -78,15 +79,30 @@ namespace   Stroika {
                     T*              fValue_ { nullptr };
                 };
             };
+
+
+            /**
+             *  This storage is usually somewhat slower than Optional_Traits_Inplace_Storage (except
+             *  if doing lots of moves).
+             *
+             *  Its main advantage is that it doesn't require the sizeof (T) be know at the time Optional<T>
+             *  is used (so T can be forward declared).
+             */
             template    <typename T>
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
                 };
             };
+
+
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             template    <typename T>
             using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
-
+#else
+            template    <typename T>
+            using   Optional_Traits_Default = Optional_Traits_Blockallocated_Indirect_Storage<T>;
+#endif
 
             /**
              *  Optional<T> can be used to store an object which may or may not be present. This can be
