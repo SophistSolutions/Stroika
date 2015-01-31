@@ -112,7 +112,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec2 { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
-                if (from.get () != nullptr) {
+                if (from.fStorage_.get () != nullptr) {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                     fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*from.get ()));
                     from.clear_ ();
@@ -272,9 +272,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::get () const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
+                // Caller beware!
                 return fStorage_.get ();
             }
             template    <typename T, typename TRAITS>
