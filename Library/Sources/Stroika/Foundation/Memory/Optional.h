@@ -88,6 +88,11 @@ namespace   Stroika {
                     StorageType (T* p)
                         : fValue_ { p } {
                     }
+                    template    <typename ...ARGS>
+                    T*  alloc (ARGS&& ...args)
+                    {
+                        return new (fBuffer_) T (forward<ARGS> (args)...);
+                    }
                     void    destroy ()
                     {
                         // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
@@ -123,6 +128,11 @@ namespace   Stroika {
                     }
                     StorageType (AutomaticallyBlockAllocated<T>* p)
                         : fValue_ { p } {
+                    }
+                    template    <typename ...ARGS>
+                    T*  alloc (ARGS&& ...args)
+                    {
+                        return new AutomaticallyBlockAllocated<T> (forward<ARGS> (args)...);
                     }
                     void    destroy ()
                     {

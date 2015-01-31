@@ -77,20 +77,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                fStorage_.fValue_ = new (fStorage_.fBuffer_) T (from);
-#else
-                fStorage_.fValue_  = new AutomaticallyBlockAllocated<T> (from);
-#endif
+                fStorage_.fValue_ = fStorage_.alloc (from);
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (T&& from)
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                fStorage_.fValue_ = new (fStorage_.fBuffer_) T (std::move (from));
-#else
-                fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (std::move (from));
-#endif
+                fStorage_.fValue_ = fStorage_.alloc (move (from));
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
@@ -99,22 +91,18 @@ namespace   Stroika {
                 auto critSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
                 if (from.fStorage_.get () != nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*from.fStorage_.get ());
-#else
-                    fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*from.fStorage_.get ());
-#endif
+                    fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.get ());
                 }
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
             {
 #if     qDebug
-                auto    critSec2 { Execution::make_unique_lock (from.fDebugMutex_) };
+                auto    rhsCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
                 if (from.fStorage_.get () != nullptr) {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*from.get ()));
+                    fStorage_.fValue_ = fStorage_.alloc (move (*from.fStorage_.get ()));
                     from.clear_ ();
 #else
                     fStorage_.fValue_ = from.get ();
@@ -125,11 +113,9 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T* from)
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                fStorage_.fValue_ = (from == nullptr ? nullptr : new (fStorage_.fBuffer_) T (*from));
-#else
-                fStorage_.fValue_ = (from == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from));
-#endif
+                if (from != nullptr) {
+                    fStorage_.fValue_ = fStorage_.alloc (*from);
+                }
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
@@ -152,11 +138,7 @@ namespace   Stroika {
                 }
                 else {
                     if (fStorage_.get () == nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (rhs);
-#else
-                        fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
-#endif
+                        fStorage_.fValue_ = fStorage_.alloc (rhs);
                     }
                     else {
                         *fStorage_.fValue_ = rhs;
@@ -177,11 +159,7 @@ namespace   Stroika {
                 }
                 else {
                     if (fStorage_.get () == nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (std::move (rhs));
-#else
-                        fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (std::move (rhs));
-#endif
+                        fStorage_.fValue_ = fStorage_.alloc (move (rhs));
                     }
                     else {
                         *fStorage_.get () = std::move (rhs);
@@ -199,14 +177,10 @@ namespace   Stroika {
                 if (fStorage_.get () != rhs.fStorage_.get ()) {
                     clear_ ();
 #if     qDebug
-                    auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
+                    auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
                     if (rhs.fStorage_.get () != nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*rhs.fStorage_.get ());
-#else
-                        fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
-#endif
+                        fStorage_.fValue_ = fStorage_.alloc (*rhs.fStorage_.get ());
                     }
                 }
                 return *this;
@@ -220,11 +194,11 @@ namespace   Stroika {
                 if (fStorage_.get () != rhs.fStorage_.get ()) {
                     clear_ ();
 #if     qDebug
-                    auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
+                    auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
                     if (rhs.fStorage_.get () != nullptr) {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*rhs.fStorage_.get ()));
+                        fStorage_.fValue_ = fStorage_.alloc (move (*rhs.fStorage_.get ()));
                         rhs.clear_ ();
 #else
                         fStorage_.fValue_ = rhs.fStorage_.fValue_;
@@ -247,11 +221,7 @@ namespace   Stroika {
                     }
                     else {
                         if (fStorage_.fValue_ == nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                            fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*rhs);
-#else
-                            fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
-#endif
+                            fStorage_.fValue_ = fStorage_.alloc (*rhs);
                         }
                         else {
                             *fStorage_.fValue_ = *rhs;
