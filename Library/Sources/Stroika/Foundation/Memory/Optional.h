@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -241,37 +243,27 @@ namespace   Stroika {
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
-
-            public:
             private:
-                // @todo WRITE DOCS ON HOLDER
-                // @todo make Holder use fDebugMutex_ and then we can use it in operator*
-                struct	ConstHolder_ {
+                /*
+                 *  Implementation detail to allow returning 'short lived' internal pointers to optional which preserve our
+                 *  Debug::AssertExternallySynchronizedLock locking (so we can detect data races).
+                 */
+                struct  ConstHolder_ {
 #if     qDebug
-					std::unique_lock<decltype(fDebugMutex_)> fCritSec_;
+                    std::unique_lock<Debug::AssertExternallySynchronizedLock> fCritSec_;
 #endif
                     const Optional*   fVal;
-					ConstHolder_ (const ConstHolder_&) = delete;
-					ConstHolder_ (const Optional* p)
-						: fVal (p)
-#if     qDebug
-						 , fCritSec_ { Execution::make_unique_lock (p->fDebugMutex_) }
-#endif
-					{
-					}
-					ConstHolder_ (ConstHolder_&& from)
-						: fVal (from.fVal)
-					{
-						from.fVal = nullptr;
-					}
-                    const T* operator-> () const { return fVal->get (); }
-                    operator const T& () const { return *fVal->get (); }
-                    const T& operator* () const { return *fVal->get (); }
+                    ConstHolder_ (const ConstHolder_&) = delete;
+                    ConstHolder_ (const Optional* p);
+                    ConstHolder_ (ConstHolder_&& from);
+                    const T* operator-> () const;
+                    operator const T& () const;
+                    const T& operator* () const;
                     ConstHolder_& operator= (const ConstHolder_&) = delete;
                     ConstHolder_& operator= (T) = delete;
                 };
 
-			public:
+            public:
                 /**
                  *  Returns nullptr if value is missing
                  *

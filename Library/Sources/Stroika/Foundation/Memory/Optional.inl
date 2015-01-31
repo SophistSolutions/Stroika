@@ -24,6 +24,34 @@ namespace   Stroika {
              *********************************** Optional<T> ********************************
              ********************************************************************************
              */
+
+
+
+
+            template    <typename T>
+            inline  Optional<T>::ConstHolder_::ConstHolder_ (const Optional* p)
+                : fVal (p)
+#if     qDebug
+                , fCritSec_ { Execution::make_unique_lock (p->fDebugMutex_) }
+#endif
+            {
+            }
+            template    <typename T>
+            inline  Optional<T>::ConstHolder_::ConstHolder_ (ConstHolder_&& from)
+                : fVal (from.fVal)
+            {
+                from.fVal = nullptr;
+            }
+            template    <typename T>
+            inline  const T* Optional<T>::ConstHolder_::operator-> () const { return fVal->get (); }
+            template    <typename T>
+            inline  Optional<T>::ConstHolder_::operator const T& () const { return *fVal->get (); }
+            template    <typename T>
+            inline  const T& Optional<T>::ConstHolder_::operator* () const { return *fVal->get (); }
+
+
+
+
 #if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             template    <typename T>
             inline      void    Optional<T>::destroy_ (T* p)
@@ -372,7 +400,7 @@ namespace   Stroika {
             template    <typename T>
             inline  auto Optional<T>::operator-> () const -> ConstHolder_
             {
-				// No lock on fDebugMutex_ cuz done in ConstHolder_
+                // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 return move (ConstHolder_ { this });
@@ -387,7 +415,7 @@ namespace   Stroika {
                 AssertNotNull (fValue_);
                 //return ConstHolder_ { this };  when we embed mutex into holder
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-				// No lock on fDebugMutex_ cuz done in ConstHolder_
+                // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 return *fValue_;
