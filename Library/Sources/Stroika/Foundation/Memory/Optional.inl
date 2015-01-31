@@ -21,35 +21,35 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************** Optional<T>::ConstHolder_ ***************************
+             ************************** Optional<T, TRAITS>::ConstHolder_ ***************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Optional<T>::ConstHolder_::ConstHolder_ (const Optional* p)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::ConstHolder_::ConstHolder_ (const Optional* p)
                 : fVal (p)
 #if     qDebug
                 , fCritSec_ { p->fDebugMutex_ }
 #endif
             {
             }
-            template    <typename T>
-            inline  Optional<T>::ConstHolder_::ConstHolder_ (ConstHolder_&& from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::ConstHolder_::ConstHolder_ (ConstHolder_&& from)
                 : fVal (from.fVal)
             {
                 from.fVal = nullptr;
             }
-            template    <typename T>
-            inline  const T* Optional<T>::ConstHolder_::operator-> () const
+            template    <typename T, typename TRAITS>
+            inline  const T* Optional<T, TRAITS>::ConstHolder_::operator-> () const
             {
                 return fVal->get ();
             }
-            template    <typename T>
-            inline  Optional<T>::ConstHolder_::operator const T& () const
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::ConstHolder_::operator const T& () const
             {
                 return *fVal->get ();
             }
-            template    <typename T>
-            inline  const T& Optional<T>::ConstHolder_::operator* () const
+            template    <typename T, typename TRAITS>
+            inline  const T& Optional<T, TRAITS>::ConstHolder_::operator* () const
             {
                 return *fVal->get ();
             }
@@ -57,19 +57,19 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************************** Optional<T> ********************************
+             *************************** Optional<T, TRAITS> ********************************
              ********************************************************************************
              */
 #if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-            template    <typename T>
-            inline      void    Optional<T>::destroy_ (T* p)
+            template    <typename T, typename TRAITS>
+            inline      void    Optional<T, TRAITS>::destroy_ (T* p)
             {
                 AssertNotNull (p);
                 p->~T ();
             }
 #endif
-            template    <typename T>
-            inline  void    Optional<T>::clear_ ()
+            template    <typename T, typename TRAITS>
+            inline  void    Optional<T, TRAITS>::clear_ ()
             {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fValue_ != nullptr) {
@@ -80,16 +80,16 @@ namespace   Stroika {
 #endif
                 fValue_ = nullptr;
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
 #endif
-            Optional<T>::Optional ()
+            Optional<T, TRAITS>::Optional ()
             {
             }
-            template    <typename T>
-            inline  Optional<T>::Optional (const T& from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (const T& from)
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (new (fBuffer_) T (from))
 #else
@@ -97,8 +97,8 @@ namespace   Stroika {
 #endif
             {
             }
-            template    <typename T>
-            inline  Optional<T>::Optional (T&& from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (T&& from)
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (new (fBuffer_) T (std::move (from)))
 #else
@@ -106,8 +106,8 @@ namespace   Stroika {
 #endif
             {
             }
-            template    <typename T>
-            inline  Optional<T>::Optional (const Optional<T>& from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (const Optional& from)
 #if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (from.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from))
 #endif
@@ -121,8 +121,8 @@ namespace   Stroika {
                 }
 #endif
             }
-            template    <typename T>
-            inline  Optional<T>::Optional (Optional<T>&& from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (Optional&& from)
 #if     !qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (from.fValue_)
 #endif
@@ -139,8 +139,8 @@ namespace   Stroika {
                 from.fValue_ = nullptr;
 #endif
             }
-            template    <typename T>
-            inline  Optional<T>::Optional (const T* from)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::Optional (const T* from)
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 : fValue_ (from == nullptr ? nullptr : new (fBuffer_) T (*from))
 #else
@@ -148,8 +148,8 @@ namespace   Stroika {
 #endif
             {
             }
-            template    <typename T>
-            inline  Optional<T>::~Optional ()
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::~Optional ()
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -162,8 +162,8 @@ namespace   Stroika {
                 delete fValue_;
 #endif
             }
-            template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (const T& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -199,8 +199,8 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (T && rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -236,8 +236,8 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -266,8 +266,8 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (Optional<T> && rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional && rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -292,8 +292,8 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (const T* rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -323,8 +323,8 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            template    <typename T>
-            inline  void    Optional<T>::clear ()
+            template    <typename T, typename TRAITS>
+            inline  void    Optional<T, TRAITS>::clear ()
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -332,8 +332,8 @@ namespace   Stroika {
                 clear_ ();
                 Ensure (fValue_ == nullptr);
             }
-            template    <typename T>
-            inline  const T*    Optional<T>::get () const
+            template    <typename T, typename TRAITS>
+            inline  const T*    Optional<T, TRAITS>::get () const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -344,23 +344,23 @@ namespace   Stroika {
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
 #endif
             }
-            template    <typename T>
-            inline  constexpr   bool    Optional<T>::IsMissing () const noexcept
+            template    <typename T, typename TRAITS>
+            inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
             {
                 return fValue_ == nullptr;
             }
-            template    <typename T>
-            inline  constexpr   bool    Optional<T>::IsPresent () const noexcept
+            template    <typename T, typename TRAITS>
+            inline  constexpr   bool    Optional<T, TRAITS>::IsPresent () const noexcept
             {
                 return fValue_ != nullptr;
             }
-            template    <typename T>
-            inline  Optional<T>::operator bool () const noexcept
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::operator bool () const noexcept
             {
                 return IsPresent ();
             }
-            template    <typename T>
-            inline  T Optional<T>::Value (T defaultValue) const
+            template    <typename T, typename TRAITS>
+            inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -371,9 +371,9 @@ namespace   Stroika {
                 return IsMissing () ? defaultValue : *fValue_->get ();
 #endif
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
-            inline  T   Optional<T>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
+            inline  T   Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -389,9 +389,9 @@ namespace   Stroika {
 #endif
                 }
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename   CONVERTABLE_TO_TYPE>
-            nonvirtual  void    Optional<T>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            nonvirtual  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -405,16 +405,16 @@ namespace   Stroika {
 #endif
                 }
             }
-            template    <typename T>
-            inline  auto Optional<T>::operator-> () const -> ConstHolder_
+            template    <typename T, typename TRAITS>
+            inline  auto Optional<T, TRAITS>::operator-> () const -> ConstHolder_
             {
                 // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
                 AssertNotNull (fValue_);
                 return move (ConstHolder_ { this });
             }
-            template    <typename T>
-            inline  auto   Optional<T>::operator* () const -> T
+            template    <typename T, typename TRAITS>
+            inline  auto   Optional<T, TRAITS>::operator* () const -> T
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -432,8 +432,8 @@ namespace   Stroika {
                 return *fValue_->get ();
 #endif
             }
-            template    <typename T>
-            inline  Optional<T>&    Optional<T>::operator+= (const T& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -443,8 +443,8 @@ namespace   Stroika {
                 *fValue_ += rhs;
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&    Optional<T>::operator-= (const T& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -454,8 +454,8 @@ namespace   Stroika {
                 *fValue_ -= rhs;
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&    Optional<T>::operator*= (const T& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -465,8 +465,8 @@ namespace   Stroika {
                 *fValue_ *= rhs;
                 return *this;
             }
-            template    <typename T>
-            inline  Optional<T>&    Optional<T>::operator/= (const T& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -476,8 +476,8 @@ namespace   Stroika {
                 *fValue_ /= rhs;
                 return *this;
             }
-            template    <typename T>
-            inline  bool    Optional<T>::Equals (const Optional<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -493,8 +493,8 @@ namespace   Stroika {
                 AssertNotNull (rhs.fValue_);
                 return Common::ComparerWithWellOrder<T>::Equals (*fValue_, *rhs.fValue_);
             }
-            template    <typename T>
-            inline  bool    Optional<T>::Equals (T rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -505,8 +505,8 @@ namespace   Stroika {
                 AssertNotNull (fValue_);
                 return Common::ComparerWithWellOrder<T>::Equals (*fValue_, rhs);
             }
-            template    <typename T>
-            inline  int Optional<T>::Compare (const Optional<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -522,8 +522,8 @@ namespace   Stroika {
                 AssertNotNull (rhs.fValue_);
                 return Common::ComparerWithWellOrder<T>::Compare (*fValue_, *rhs.fValue_);
             }
-            template    <typename T>
-            inline  int Optional<T>::Compare (T rhs) const
+            template    <typename T, typename TRAITS>
+            inline  int Optional<T, TRAITS>::Compare (T rhs) const
             {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
@@ -541,15 +541,15 @@ namespace   Stroika {
              ************************************ operator< *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator< (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator< (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Compare (rhs) < 0;
             }
-            template    <typename T, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            inline  bool    operator< (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            inline  bool    operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T> (rhs)) < 0;
+                return lhs.Compare (Optional<T, TRAITS> (rhs)) < 0;
             }
 
 
@@ -558,15 +558,15 @@ namespace   Stroika {
              ************************************ operator<= ********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator<= (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator<= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Compare (rhs) <= 0;
             }
-            template    <typename T, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            inline  bool    operator<= (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            inline  bool    operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T> (rhs)) <= 0;
+                return lhs.Compare (Optional<T, TRAITS> (rhs)) <= 0;
             }
 
 
@@ -575,25 +575,25 @@ namespace   Stroika {
              *********************************** operator== *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator== (const Optional<T>& lhs, T rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, T rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename T>
-            inline  bool    operator== (T lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator== (T lhs, const Optional<T, TRAITS>& rhs)
             {
                 return rhs.Equals (lhs);    // symetric so reverse
             }
-            template    <typename T>
-            inline  bool    operator== (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
-            inline  bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
+            inline  bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return lhs.Equals (Optional<T> { rhs });
+                return lhs.Equals (Optional<T, TRAITS> { rhs });
             }
 
 
@@ -602,25 +602,25 @@ namespace   Stroika {
              *********************************** operator!= *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator!= (const Optional<T>& lhs, T rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, T rhs)
             {
                 return not lhs.Equals (rhs);
             }
-            template    <typename T>
-            inline  bool    operator!= (T lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (T lhs, const Optional<T, TRAITS>& rhs)
             {
                 return not rhs.Equals (lhs);    // take advantage of commutativity
             }
-            template    <typename T>
-            inline  bool    operator!= (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
-            inline  bool    operator!= (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
+            template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK>
+            inline  bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
             {
-                return not lhs.Equals (Optional<T> { rhs });
+                return not lhs.Equals (Optional<T, TRAITS> { rhs });
             }
 
 
@@ -629,15 +629,15 @@ namespace   Stroika {
              *********************************** operator>= *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator>= (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator>= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Compare (rhs) >= 0;
             }
-            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            inline  bool    operator>= (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
+            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            inline  bool    operator>= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T> (rhs)) >= 0;
+                return lhs.Compare (Optional<T, TRAITS> (rhs)) >= 0;
             }
 
 
@@ -646,15 +646,15 @@ namespace   Stroika {
              ************************************ operator> *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  bool    operator> (const Optional<T>& lhs, const Optional<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  bool    operator> (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
             {
                 return lhs.Compare (rhs) > 0;
             }
-            template    <typename T, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-            inline  bool    operator> (const Optional<T>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
+            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            inline  bool    operator> (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T> (rhs)) > 0;
+                return lhs.Compare (Optional<T, TRAITS> (rhs)) > 0;
             }
 
 
