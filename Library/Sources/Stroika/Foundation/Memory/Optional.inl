@@ -21,7 +21,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************** Optional<T, TRAITS>::ConstHolder_ ***************************
+             ********************* Optional<T, TRAITS>::ConstHolder_ ************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -60,24 +60,10 @@ namespace   Stroika {
              *************************** Optional<T, TRAITS> ********************************
              ********************************************************************************
              */
-#if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-            template    <typename T, typename TRAITS>
-            inline      void    Optional<T, TRAITS>::destroy_ (T* p)
-            {
-                AssertNotNull (p);
-                p->~T ();
-            }
-#endif
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear_ ()
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ != nullptr) {
-                    destroy_ (fStorage_.fValue_);
-                }
-#else
-                delete fStorage_.fValue_;
-#endif
+                fStorage_.destroy ();
                 fStorage_.fValue_ = nullptr;
             }
             template    <typename T, typename TRAITS>
@@ -151,13 +137,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ != nullptr) {
-                    destroy_ (fStorage_.fValue_);
-                }
-#else
-                delete fStorage_.fValue_;
-#endif
+                fStorage_.destroy ();
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
@@ -241,10 +221,8 @@ namespace   Stroika {
 #endif
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fStorage_.fValue_ != rhs.fStorage_.fValue_) {
-                    if (fStorage_.fValue_ != nullptr) {
-                        destroy_ (fStorage_.fValue_);
-                        fStorage_.fValue_ = nullptr;
-                    }
+                    fStorage_.destroy ();
+                    fStorage_.fValue_ = nullptr;
 #if     qDebug
                     auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif

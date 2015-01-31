@@ -320,18 +320,18 @@ namespace   Stroika {
                  *  Debug::AssertExternallySynchronizedLock locking (so we can detect data races).
                  */
                 struct  ConstHolder_ {
+                    const Optional*   fVal;
 #if     qDebug
                     std::unique_lock<Debug::AssertExternallySynchronizedLock> fCritSec_;
 #endif
-                    const Optional*   fVal;
                     ConstHolder_ (const ConstHolder_&) = delete;
                     ConstHolder_ (const Optional* p);
                     ConstHolder_ (ConstHolder_&& from);
+                    ConstHolder_& operator= (const ConstHolder_&) = delete;
+                    ConstHolder_& operator= (T) = delete;
                     const T* operator-> () const;
                     operator const T& () const;
                     const T& operator* () const;
-                    ConstHolder_& operator= (const ConstHolder_&) = delete;
-                    ConstHolder_& operator= (T) = delete;
                 };
 
             public:
@@ -416,10 +416,6 @@ namespace   Stroika {
 #endif
 #endif
 
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-            private:
-                static  void    destroy_ (T* p);
-#endif
             private:
                 nonvirtual  void    clear_ ();
 
