@@ -354,7 +354,7 @@ namespace   Stroika {
 #if     qDebug
             private:
                 // for NOW we have this in ifdefs to avoid SIZE increase in RELEASE build (STILL WORKING ON BETTER WAY, probs using SFINAE)
-                Debug::AssertExternallySynchronizedLock fDebugMutex_;
+                mutable	Debug::AssertExternallySynchronizedLock fDebugMutex_;
 #endif
             };
 

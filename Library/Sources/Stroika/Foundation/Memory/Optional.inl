@@ -21,18 +21,14 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************************** Optional<T> ********************************
+             ************************** Optional<T>::ConstHolder_ ***************************
              ********************************************************************************
              */
-
-
-
-
             template    <typename T>
             inline  Optional<T>::ConstHolder_::ConstHolder_ (const Optional* p)
                 : fVal (p)
 #if     qDebug
-                , fCritSec_ { Execution::make_unique_lock (p->fDebugMutex_) }
+                , fCritSec_ { p->fDebugMutex_ }
 #endif
             {
             }
@@ -43,15 +39,27 @@ namespace   Stroika {
                 from.fVal = nullptr;
             }
             template    <typename T>
-            inline  const T* Optional<T>::ConstHolder_::operator-> () const { return fVal->get (); }
+            inline  const T* Optional<T>::ConstHolder_::operator-> () const
+			{
+				return fVal->get ();
+			}
             template    <typename T>
-            inline  Optional<T>::ConstHolder_::operator const T& () const { return *fVal->get (); }
+            inline  Optional<T>::ConstHolder_::operator const T& () const
+			{
+				return *fVal->get ();
+			}
             template    <typename T>
-            inline  const T& Optional<T>::ConstHolder_::operator* () const { return *fVal->get (); }
+            inline  const T& Optional<T>::ConstHolder_::operator* () const
+			{
+				return *fVal->get ();
+			}
 
 
-
-
+            /*
+             ********************************************************************************
+             *********************************** Optional<T> ********************************
+             ********************************************************************************
+             */
 #if qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             template    <typename T>
             inline      void    Optional<T>::destroy_ (T* p)
