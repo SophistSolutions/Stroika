@@ -101,13 +101,8 @@ namespace   Stroika {
                 auto    rhsCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
                 if (from.fStorage_.get () != nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                    fStorage_.fValue_ = fStorage_.alloc (move (*from.fStorage_.get ()));
-                    from.clear_ ();
-#else
-                    fStorage_.fValue_ = from.get ();
-                    from.fStorage_.fValue_ = nullptr;
-#endif
+                    fStorage_.moveInitialize (from.fStorage_);
+                    Assert (rhs.fStorage_.fValue_ == nullptr);
                 }
             }
             template    <typename T, typename TRAITS>
@@ -197,13 +192,8 @@ namespace   Stroika {
                     auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
                     if (rhs.fStorage_.get () != nullptr) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                        fStorage_.fValue_ = fStorage_.alloc (move (*rhs.fStorage_.get ()));
-                        rhs.clear_ ();
-#else
-                        fStorage_.fValue_ = rhs.fStorage_.fValue_;
-                        rhs.fStorage_.fValue_ = nullptr;
-#endif
+                        fStorage_.moveInitialize (rhs.fStorage_);
+                        Assert (rhs.fStorage_.fValue_ == nullptr);
                     }
                 }
                 return *this;
