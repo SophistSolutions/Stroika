@@ -322,8 +322,41 @@ namespace {
         {
             vector<Byte> b = {1, 2, 3, 4, 5 };
             Memory::BLOB bl = b;
-            Verify (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
         }
+    }
+}
+
+
+namespace {
+    namespace Test9PRIVATE_ {
+        template <typename T> using InPlace_Traits = Optional_Traits_Inplace_Storage<T>;
+        template <typename T> using Indirect_Traits = Optional_Traits_Blockallocated_Indirect_Storage<T>;
+        template    <typename OPTIONALOFT>
+        void    BasicOTest_ ()
+        {
+            {
+                OPTIONALOFT o1;
+                OPTIONALOFT o2 { typename OPTIONALOFT::value_type () };
+                OPTIONALOFT o3 = o1;
+                o3 = o2;
+                VerifyTestResult (o3 == o2);
+            }
+            {
+                OPTIONALOFT o1 { typename OPTIONALOFT::value_type () };
+                VerifyTestResult (o1.IsPresent ());
+                OPTIONALOFT o2 = move (o1);
+                VerifyTestResult (o2 == typename OPTIONALOFT::value_type ());
+            }
+        }
+    }
+    void    Test9_OptionalStorageTraits_ ()
+    {
+        using   namespace Test9PRIVATE_;
+        BasicOTest_<Optional<int, InPlace_Traits<int>>> ();
+        BasicOTest_<Optional<int, Indirect_Traits<int>>> ();
+        BasicOTest_<Optional<wstring, InPlace_Traits<wstring>>> ();
+        BasicOTest_<Optional<wstring, Indirect_Traits<wstring>>> ();
     }
 }
 
@@ -343,6 +376,7 @@ namespace   {
         Test_6_SharedPtr ();
         Test_7_Bits_ ();
         Test_8_BLOB_ ();
+        Test9_OptionalStorageTraits_ ();
     }
 }
 
