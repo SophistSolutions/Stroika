@@ -34,6 +34,9 @@
  *
  *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
  *
+ *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
+ *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
+ *
  *      @todo   Add threadsafety check code
  *              o   (even if I need to use ifdefs to maintain size)
  *
