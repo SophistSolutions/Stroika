@@ -33,7 +33,7 @@
  *              constexpr for some more constructors. But we must carefully use enable_if for this because
  *              if you use Optional_Traits_Blockallocated_Indirect_Storage it wont work.
  *
- *      @todo   Decide if and docuemnt why if we leave get() returning bare unsafe ptr (maybe rename peek)
+ *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
  *      @todo   Consider adding NonConstHolder_, and return that from non-cost operator->(). More like std::optional.
  *              But harder to use safely, and maybe better to avoid (harder to control lifetime of update of returned pointer????
@@ -114,11 +114,11 @@ namespace   Stroika {
                         }
                         Ensure (rhs.fValue_ == nullptr);
                     }
-                    T*  get ()
+                    T*  peek ()
                     {
                         return fValue_;
                     }
-                    const T*    get () const
+                    const T*    peek () const
                     {
                         return fValue_;
                     }
@@ -161,11 +161,11 @@ namespace   Stroika {
                         rhs.fValue_ = nullptr;
                         Ensure (rhs.fValue_ == nullptr);
                     }
-                    T*  get ()
+                    T*  peek ()
                     {
                         return fValue_ == nullptr ? nullptr : fValue_->get ();
                     }
-                    const T*    get () const
+                    const T*    peek () const
                     {
                         return fValue_ == nullptr ? nullptr : fValue_->get ();
                     }
@@ -391,7 +391,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
-                nonvirtual  const T*    get () const;
+                nonvirtual  const T*    peek () const;
 
             public:
                 /**
@@ -401,7 +401,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  *
-                 *  This is really just syntactic sugar equivalent to get () - except that it requires
+                 *  This is really just syntactic sugar equivalent to peek () - except that it requires
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */

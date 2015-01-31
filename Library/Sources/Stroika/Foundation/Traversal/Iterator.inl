@@ -120,7 +120,7 @@ namespace   Stroika {
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
-                return fCurrent_.get ();
+                return fCurrent_.peek ();
             }
             template    <typename T, typename BASE_STD_ITERATOR>
             inline   void   Iterator<T, BASE_STD_ITERATOR>::operator++ ()

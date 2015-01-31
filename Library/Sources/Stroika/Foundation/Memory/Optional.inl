@@ -41,17 +41,17 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  const T* Optional<T, TRAITS>::ConstHolder_::operator-> () const
             {
-                return fVal->get ();
+                return fVal->peek ();
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::ConstHolder_::operator const T& () const
             {
-                return *fVal->get ();
+                return *fVal->peek ();
             }
             template    <typename T, typename TRAITS>
             inline  const T& Optional<T, TRAITS>::ConstHolder_::operator* () const
             {
-                return *fVal->get ();
+                return *fVal->peek ();
             }
 
 
@@ -90,8 +90,8 @@ namespace   Stroika {
 #if     qDebug
                 auto critSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
-                if (from.fStorage_.get () != nullptr) {
-                    fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.get ());
+                if (from.fStorage_.peek () != nullptr) {
+                    fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
                 }
             }
             template    <typename T, typename TRAITS>
@@ -100,7 +100,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    rhsCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
-                if (from.fStorage_.get () != nullptr) {
+                if (from.fStorage_.peek () != nullptr) {
                     fStorage_.moveInitialize (move (from.fStorage_));
                     Assert (from.fStorage_.fValue_ == nullptr);
                 }
@@ -126,13 +126,13 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-                if (fStorage_.get () == &rhs) {
+                if (fStorage_.peek () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
-                    if (fStorage_.get () == nullptr) {
+                    if (fStorage_.peek () == nullptr) {
                         fStorage_.fValue_ = fStorage_.alloc (rhs);
                     }
                     else {
@@ -147,17 +147,17 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-                if (fStorage_.get () == &rhs) {
+                if (fStorage_.peek () == &rhs) {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
-                    if (fStorage_.get () == nullptr) {
+                    if (fStorage_.peek () == nullptr) {
                         fStorage_.fValue_ = fStorage_.alloc (move (rhs));
                     }
                     else {
-                        *fStorage_.get () = std::move (rhs);
+                        *fStorage_.peek () = std::move (rhs);
                     }
                 }
                 return *this;
@@ -169,13 +169,13 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
 
-                if (fStorage_.get () != rhs.fStorage_.get ()) {
+                if (fStorage_.peek () != rhs.fStorage_.peek ()) {
                     clear_ ();
 #if     qDebug
                     auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
-                    if (rhs.fStorage_.get () != nullptr) {
-                        fStorage_.fValue_ = fStorage_.alloc (*rhs.fStorage_.get ());
+                    if (rhs.fStorage_.peek () != nullptr) {
+                        fStorage_.fValue_ = fStorage_.alloc (*rhs.fStorage_.peek ());
                     }
                 }
                 return *this;
@@ -186,12 +186,12 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-                if (fStorage_.get () != rhs.fStorage_.get ()) {
+                if (fStorage_.peek () != rhs.fStorage_.peek ()) {
                     clear_ ();
 #if     qDebug
                     auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
-                    if (rhs.fStorage_.get () != nullptr) {
+                    if (rhs.fStorage_.peek () != nullptr) {
                         fStorage_.moveInitialize (move (rhs.fStorage_));
                         Assert (rhs.fStorage_.fValue_ == nullptr);
                     }
@@ -227,14 +227,14 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
                 clear_ ();
-                Ensure (fStorage_.get () == nullptr);
+                Ensure (fStorage_.peek () == nullptr);
             }
             template    <typename T, typename TRAITS>
-            inline  const T*    Optional<T, TRAITS>::get () const
+            inline  const T*    Optional<T, TRAITS>::peek () const
             {
                 // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
                 // Caller beware!
-                return fStorage_.get ();
+                return fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
@@ -257,7 +257,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-                return IsMissing () ? defaultValue : *fStorage_.get ();
+                return IsMissing () ? defaultValue : *fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
@@ -270,7 +270,7 @@ namespace   Stroika {
                     Execution::DoThrow (exception2ThrowIfMissing);
                 }
                 else {
-                    return *fStorage_.get ();
+                    return *fStorage_.peek ();
                 }
             }
             template    <typename T, typename TRAITS>
@@ -282,7 +282,7 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
                 if (IsPresent ()) {
-                    *to = *fStorage_.get ();
+                    *to = *fStorage_.peek ();
                 }
             }
             template    <typename T, typename TRAITS>
@@ -304,7 +304,7 @@ namespace   Stroika {
                 //return ConstHolder_ { this };  when we embed mutex into holder
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
-                return *fStorage_.get ();
+                return *fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)

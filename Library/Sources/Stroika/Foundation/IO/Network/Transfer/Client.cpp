@@ -42,7 +42,7 @@ using   namespace   Stroika::Foundation::Memory;
 InternetMediaType   Request::GetContentType () const
 {
     Optional<String> i   =   fOverrideHeaders.Lookup (String_Constant (HTTP::HeaderName::kContentType));
-    if (i.get () != nullptr) {
+    if (i) {
         return InternetMediaType (*i);
     }
     return InternetMediaType ();
@@ -67,7 +67,7 @@ void    Request::SetContentType (const InternetMediaType& ct)
 InternetMediaType   Response::GetContentType () const
 {
     Optional<String> i   =   fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType));
-    if (i.get () != nullptr) {
+    if (i) {
         return InternetMediaType (*i);
     }
     return InternetMediaType ();
