@@ -66,6 +66,8 @@ namespace   Stroika {
             /**
              *  This storage style is the default, and is usually fastest. However, it requires the
              *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
+             *
+             *  \note   This is NOT meant to be used by itself. This is only to be used as a template argument to Optional<>
              */
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
@@ -76,46 +78,15 @@ namespace   Stroika {
                     Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
                     T*              fValue_ { nullptr };
 
-                    StorageType ()
-                    {
-                    }
-                    StorageType (T* p)
-                        : fValue_ { p } {
-                    }
+                    StorageType ();
+                    StorageType (T* p);
+
                     template    <typename ...ARGS>
-                    T*  alloc (ARGS&& ...args)
-                    {
-                        return new (fBuffer_) T (forward<ARGS> (args)...);
-                    }
-                    void    destroy ()
-                    {
-                        // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
-                        if (fValue_ != nullptr) {
-                            fValue_->~T ();
-                        }
-                    }
-                    void    moveInitialize (StorageType&&  rhs)
-                    {
-                        Require (this != &rhs);
-                        Require (fValue_ == nullptr);
-                        if (rhs.fValue_ == nullptr) {
-                            fValue_ = nullptr;
-                        }
-                        else {
-                            fValue_ = alloc (move (*rhs.fValue_));
-                            rhs.fValue_->~T ();
-                            rhs.fValue_ = nullptr;
-                        }
-                        Ensure (rhs.fValue_ == nullptr);
-                    }
-                    T*  peek ()
-                    {
-                        return fValue_;
-                    }
-                    const T*    peek () const
-                    {
-                        return fValue_;
-                    }
+                    T*      alloc (ARGS&& ...args);
+                    void    destroy ();
+                    void    moveInitialize (StorageType&& rhs);
+                    T*          peek ();
+                    const T*    peek () const;
                 };
             };
 
@@ -126,43 +97,23 @@ namespace   Stroika {
              *
              *  Its main advantage is that it doesn't require the sizeof (T) be know at the time Optional<T>
              *  is used (so T can be forward declared).
+             *
+             *  \note   This is NOT meant to be used by itself. This is only to be used as a template argument to Optional<>
              */
             template    <typename T>
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
-                    StorageType ()
-                    {
-                    }
-                    StorageType (AutomaticallyBlockAllocated<T>* p)
-                        : fValue_ { p } {
-                    }
+
+                    StorageType ();
+                    StorageType (AutomaticallyBlockAllocated<T>* p);
+
                     template    <typename ...ARGS>
-                    AutomaticallyBlockAllocated<T>*  alloc (ARGS&& ...args)
-                    {
-                        return new AutomaticallyBlockAllocated<T> (forward<ARGS> (args)...);
-                    }
-                    void    destroy ()
-                    {
-                        delete fValue_;
-                    }
-                    void    moveInitialize (StorageType&&  rhs)
-                    {
-                        // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
-                        Require (this != &rhs);
-                        Require (fValue_ == nullptr);
-                        fValue_ = rhs.fValue_;
-                        rhs.fValue_ = nullptr;
-                        Ensure (rhs.fValue_ == nullptr);
-                    }
-                    T*  peek ()
-                    {
-                        return fValue_ == nullptr ? nullptr : fValue_->get ();
-                    }
-                    const T*    peek () const
-                    {
-                        return fValue_ == nullptr ? nullptr : fValue_->get ();
-                    }
+                    AutomaticallyBlockAllocated<T>*  alloc (ARGS&& ...args);
+                    void        destroy ();
+                    void        moveInitialize (StorageType&& rhs);
+                    T*          peek ();
+                    const T*    peek () const;
                 };
             };
 

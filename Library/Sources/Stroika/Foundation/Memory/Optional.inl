@@ -21,6 +21,106 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************* Optional_Traits_Inplace_Storage<T> ***********************
+             ********************************************************************************
+             */
+            template    <typename T>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType ()
+            {
+            }
+            template    <typename T>
+            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T* p)
+                : fValue_ { p } {
+            }
+            template    <typename T>
+            template    <typename ...ARGS>
+            inline  T*  Optional_Traits_Inplace_Storage<T>::StorageType::alloc (ARGS&& ...args)
+            {
+                return new (fBuffer_) T (forward<ARGS> (args)...);
+            }
+            template    <typename T>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::destroy ()
+            {
+                // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
+                if (fValue_ != nullptr) {
+                    fValue_->~T ();
+                }
+            }
+            template    <typename T>
+            inline  void    Optional_Traits_Inplace_Storage<T>::StorageType::moveInitialize (StorageType&&  rhs)
+            {
+                Require (this != &rhs);
+                Require (fValue_ == nullptr);
+                if (rhs.fValue_ == nullptr) {
+                    fValue_ = nullptr;
+                }
+                else {
+                    fValue_ = alloc (move (*rhs.fValue_));
+                    rhs.fValue_->~T ();
+                    rhs.fValue_ = nullptr;
+                }
+                Ensure (rhs.fValue_ == nullptr);
+            }
+            template    <typename T>
+            inline    T*  Optional_Traits_Inplace_Storage<T>::StorageType::peek ()
+            {
+                return fValue_;
+            }
+            template    <typename T>
+            inline  const T*    Optional_Traits_Inplace_Storage<T>::StorageType::peek () const
+            {
+                return fValue_;
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************* Optional_Traits_Inplace_Storage<T> ***********************
+             ********************************************************************************
+             */
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType ()
+            {
+            }
+            template    <typename T>
+            inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (AutomaticallyBlockAllocated<T>* p)
+                : fValue_ { p } {
+            }
+            template    <typename T>
+            template    <typename ...ARGS>
+            inline  AutomaticallyBlockAllocated<T>*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::alloc (ARGS&& ...args)
+            {
+                return new AutomaticallyBlockAllocated<T> (forward<ARGS> (args)...);
+            }
+            template    <typename T>
+            inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::destroy ()
+            {
+                delete fValue_;
+            }
+            template    <typename T>
+            inline  void    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::moveInitialize (StorageType&&  rhs)
+            {
+                // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
+                Require (this != &rhs);
+                Require (fValue_ == nullptr);
+                fValue_ = rhs.fValue_;
+                rhs.fValue_ = nullptr;
+                Ensure (rhs.fValue_ == nullptr);
+            }
+            template    <typename T>
+            inline  T*  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::peek ()
+            {
+                return fValue_ == nullptr ? nullptr : fValue_->get ();
+            }
+            template    <typename T>
+            inline  const T*    Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::peek () const
+            {
+                return fValue_ == nullptr ? nullptr : fValue_->get ();
+            }
+
+
+            /*
+             ********************************************************************************
              ********************* Optional<T, TRAITS>::ConstHolder_ ************************
              ********************************************************************************
              */
