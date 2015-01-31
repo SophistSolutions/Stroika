@@ -95,32 +95,32 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #if     qDebug
                 auto critSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
-                if (from.fStorage_.fValue_ != nullptr) {
-                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*from.fStorage_.fValue_);
-                }
+                if (from.fStorage_.get () != nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*from.fStorage_.get ());
 #else
-                fStorage_.fValue_ = (from.fStorage_.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from));
+                    fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*from.fStorage_.get ());
 #endif
+                }
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
             {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
 #if     qDebug
                 auto    critSec2 { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
-                if (from.fStorage_.fValue_ != nullptr) {
-                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*from.fStorage_.fValue_));
+                if (from.get () != nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                    fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*from.get ()));
                     from.clear_ ();
-                }
 #else
-                fStorage_.fValue_ = from.fStorage_.fValue_;
-                from.fStorage_.fValue_ = nullptr;
+                    fStorage_.fValue_ = from.get ();
+                    from.fStorage_.fValue_ = nullptr;
 #endif
+                }
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T* from)
@@ -145,35 +145,23 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
+                if (fStorage_.get () == &rhs) {
+                    // No need to copy in this case and would be bad to try
+                    //  Optional<T> x;
+                    //  x = *x;
+                }
+                else {
+                    if (fStorage_.get () == nullptr) {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ == &rhs) {
-                    // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
-                    //  x = *x;
-                }
-                else {
-                    if (fStorage_.fValue_ == nullptr) {
                         fStorage_.fValue_ = new (fStorage_.fBuffer_) T (rhs);
-                    }
-                    else {
-                        *fStorage_.fValue_ = rhs;
-                    }
-                }
 #else
-                if (fStorage_.fValue_->get () == &rhs) {
-                    // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
-                    //  x = *x;
-                }
-                else {
-                    if (fStorage_.fValue_ == nullptr) {
                         fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
+#endif
                     }
                     else {
                         *fStorage_.fValue_ = rhs;
                     }
                 }
-#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -182,35 +170,23 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ == &rhs) {
+                if (fStorage_.get () == &rhs) {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
-                    if (fStorage_.fValue_ == nullptr) {
+                    if (fStorage_.get () == nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                         fStorage_.fValue_ = new (fStorage_.fBuffer_) T (std::move (rhs));
-                    }
-                    else {
-                        *fStorage_.fValue_ = std::move (rhs);
-                    }
-                }
 #else
-                if (fStorage_.fValue_->get () == &rhs) {
-                    // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
-                    //  x = *x;
-                }
-                else {
-                    if (fStorage_.fValue_ == nullptr) {
                         fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (std::move (rhs));
+#endif
                     }
                     else {
-                        *fStorage_.fValue_ = std::move (rhs);
+                        *fStorage_.get () = std::move (rhs);
                     }
                 }
-#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -219,26 +195,20 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ != rhs.fStorage_.fValue_) {
-                    fStorage_.destroy ();
-                    fStorage_.fValue_ = nullptr;
+
+                if (fStorage_.get () != rhs.fStorage_.get ()) {
+                    clear_ ();
 #if     qDebug
                     auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
-                    if (rhs.fStorage_.fValue_ != nullptr) {
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*rhs.fStorage_.fValue_);
-                    }
-                }
+                    if (rhs.fStorage_.get () != nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*rhs.fStorage_.get ());
 #else
-                if (fStorage_.fValue_->get () != rhs.fStorage_.fValue_->get ()) {
-                    delete fStorage_.fValue_;
-                    fStorage_.fValue_ = nullptr;
-                    if (rhs.fStorage_.fValue_ != nullptr) {
                         fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
+#endif
                     }
                 }
-#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -247,24 +217,21 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                if (fStorage_.fValue_ != rhs.fStorage_.fValue_) {
+                if (fStorage_.get () != rhs.fStorage_.get ()) {
                     clear_ ();
 #if     qDebug
                     auto    critSec2 { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
-                    if (rhs.fStorage_.fValue_ != nullptr) {
-                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*rhs.fStorage_.fValue_));
+                    if (rhs.fStorage_.get () != nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+                        fStorage_.fValue_ = new (fStorage_.fBuffer_) T (move (*rhs.fStorage_.get ()));
                         rhs.clear_ ();
+#else
+                        fStorage_.fValue_ = rhs.fStorage_.fValue_;
+                        rhs.fStorage_.fValue_ = nullptr;
+#endif
                     }
                 }
-#else
-                if (fStorage_.fValue_->get () != rhs.fStorage_.fValue_->get ()) {
-                    delete fStorage_.fValue_;
-                    fStorage_.fValue_ = rhs.fStorage_.fValue_;
-                    rhs.fStorage_.fValue_ = nullptr;
-                }
-#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -273,29 +240,24 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                 if (fStorage_.fValue_ != rhs) {
+
                     if (rhs == nullptr) {
                         clear_ ();
                     }
                     else {
                         if (fStorage_.fValue_ == nullptr) {
+#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
                             fStorage_.fValue_ = new (fStorage_.fBuffer_) T (*rhs);
+#else
+                            fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
+#endif
                         }
                         else {
                             *fStorage_.fValue_ = *rhs;
                         }
                     }
                 }
-#else
-                if (fStorage_.fValue_->get () != rhs) {
-                    delete fStorage_.fValue_;
-                    fStorage_.fValue_ = nullptr;
-                    if (rhs != nullptr) {
-                        fStorage_.fValue_ = new AutomaticallyBlockAllocated<T> (*rhs);
-                    }
-                }
-#endif
                 return *this;
             }
             template    <typename T, typename TRAITS>
@@ -305,7 +267,7 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
                 clear_ ();
-                Ensure (fStorage_.fValue_ == nullptr);
+                Ensure (fStorage_.get () == nullptr);
             }
             template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::get () const
@@ -313,11 +275,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                return fStorage_.fValue_;
-#else
-                return fStorage_.fValue_ == nullptr ? nullptr : fStorage_.fValue_->get ();
-#endif
+                return fStorage_.get ();
             }
             template    <typename T, typename TRAITS>
             inline  constexpr   bool    Optional<T, TRAITS>::IsMissing () const noexcept
@@ -340,11 +298,7 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                return IsMissing () ? defaultValue : *fStorage_.fValue_;
-#else
-                return IsMissing () ? defaultValue : *fStorage_.fValue_->get ();
-#endif
+                return IsMissing () ? defaultValue : *fStorage_.get ();
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
@@ -357,11 +311,7 @@ namespace   Stroika {
                     Execution::DoThrow (exception2ThrowIfMissing);
                 }
                 else {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                    return *fStorage_.fValue_;
-#else
-                    return *fStorage_.fValue_->get ();
-#endif
+                    return *fStorage_.get ();
                 }
             }
             template    <typename T, typename TRAITS>
@@ -373,11 +323,7 @@ namespace   Stroika {
 #endif
                 RequireNotNull (to);
                 if (IsPresent ()) {
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                    *to = *fStorage_.fValue_;
-#else
-                    *to = *fStorage_.fValue_->get ();
-#endif
+                    *to = *fStorage_.get ();
                 }
             }
             template    <typename T, typename TRAITS>
@@ -397,15 +343,9 @@ namespace   Stroika {
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 //return ConstHolder_ { this };  when we embed mutex into holder
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                // No lock on fDebugMutex_ cuz done in ConstHolder_
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
-                return *fStorage_.fValue_;
-#else
-                EnsureNotNull (fStorage_.fValue_->get ());
-                return *fStorage_.fValue_->get ();
-#endif
+                return *fStorage_.get ();
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)

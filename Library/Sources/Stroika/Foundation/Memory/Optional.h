@@ -95,6 +95,14 @@ namespace   Stroika {
                             fValue_->~T ();
                         }
                     }
+                    T*  get ()
+                    {
+                        return fValue_;
+                    }
+                    const T*    get () const
+                    {
+                        return fValue_;
+                    }
                 };
             };
 
@@ -119,6 +127,14 @@ namespace   Stroika {
                     void    destroy ()
                     {
                         delete fValue_;
+                    }
+                    T*  get ()
+                    {
+                        return fValue_ == nullptr ? nullptr : fValue_->get ();
+                    }
+                    const T*    get () const
+                    {
+                        return fValue_ == nullptr ? nullptr : fValue_->get ();
                     }
                 };
             };
@@ -396,25 +412,7 @@ namespace   Stroika {
                 nonvirtual  int Compare (T rhs) const;
 
             private:
-#if 1
                 typename TRAITS::StorageType    fStorage_;
-#else
-                /*
-                 *  Carefully manage the storage ourselves - not doing shared copy. No shared
-                 *  copy (copyonwrite) because these are rarely copied, and this is cheaper
-                 *  (since can use block-allocation - even if type T not block allocated) -
-                 *  and no extra count infrastructure, or threadafe locking.
-                 */
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-#if     !qCompilerAndStdLib_alignas_Buggy
-                alignas(alignment_of<T>)
-#endif
-                Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
-                T*              fValue_ { nullptr };
-#else
-                AutomaticallyBlockAllocated<T>*  fValue_ = nullptr;
-#endif
-#endif
 
             private:
                 nonvirtual  void    clear_ ();
