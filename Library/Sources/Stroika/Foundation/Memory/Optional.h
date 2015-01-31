@@ -35,7 +35,7 @@
  *      @todo   Add threadsafety check code
  *              o   (even if I need to use ifdefs to maintain size)
  *
- *      @todo   Docs on Holder_ stuff... Maytbe use Holder_ for operator*, and see if we can make Holder private or document why not
+ *      @todo   Docs on ConstHolder_ stuff... Maytbe use ConstHolder_ for operator*, and see if we can make Holder private or document why not
  *              make sure assignemnt through Holder works as expected (fails) so a->b = c should fail of a is optional.
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
@@ -243,16 +243,35 @@ namespace   Stroika {
 
 
             public:
+            private:
                 // @todo WRITE DOCS ON HOLDER
                 // @todo make Holder use fDebugMutex_ and then we can use it in operator*
-                struct  Holder_ {
+                struct	ConstHolder_ {
+#if     qDebug
+					std::unique_lock<decltype(fDebugMutex_)> fCritSec_;
+#endif
                     const Optional*   fVal;
+					ConstHolder_ (const ConstHolder_&) = delete;
+					ConstHolder_ (const Optional* p)
+						: fVal (p)
+#if     qDebug
+						 , fCritSec_ { Execution::make_unique_lock (p->fDebugMutex_) }
+#endif
+					{
+					}
+					ConstHolder_ (ConstHolder_&& from)
+						: fVal (from.fVal)
+					{
+						from.fVal = nullptr;
+					}
                     const T* operator-> () const { return fVal->get (); }
                     operator const T& () const { return *fVal->get (); }
-                    Holder_& operator= (const Holder_&) = delete;
-                    Holder_& operator= (T) = delete;
+                    const T& operator* () const { return *fVal->get (); }
+                    ConstHolder_& operator= (const ConstHolder_&) = delete;
+                    ConstHolder_& operator= (T) = delete;
                 };
-            public:
+
+			public:
                 /**
                  *  Returns nullptr if value is missing
                  *
@@ -274,7 +293,7 @@ namespace   Stroika {
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */
-                nonvirtual  Holder_ operator-> () const;
+                nonvirtual  ConstHolder_ operator-> () const;
 
             public:
                 /**
