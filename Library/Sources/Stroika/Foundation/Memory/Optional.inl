@@ -161,12 +161,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  void    Optional<T, TRAITS>::clear_ ()
-            {
-                fStorage_.destroy ();
-                fStorage_.fValue_ = nullptr;
-            }
-            template    <typename T, typename TRAITS>
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
@@ -268,7 +262,6 @@ namespace   Stroika {
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-
                 if (fStorage_.peek () != rhs.fStorage_.peek ()) {
                     clear_ ();
 #if     qDebug
@@ -305,7 +298,6 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
                 if (fStorage_.fValue_ != rhs) {
-
                     if (rhs == nullptr) {
                         clear_ ();
                     }
@@ -375,7 +367,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename   CONVERTABLE_TO_TYPE>
-            nonvirtual  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            inline  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
                 RequireNotNull (to);
 #if     qDebug
@@ -507,6 +499,12 @@ namespace   Stroika {
                 }
                 AssertNotNull (fStorage_.fValue_);
                 return Common::ComparerWithWellOrder<T>::Compare (*fStorage_.fValue_, rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    Optional<T, TRAITS>::clear_ ()
+            {
+                fStorage_.destroy ();
+                fStorage_.fValue_ = nullptr;
             }
 
 

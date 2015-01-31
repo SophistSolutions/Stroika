@@ -37,7 +37,7 @@
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
  *
  *      @todo   IMRPOVE threadsafety check code
- *              o   Make so more seemless but avoid issue with growing release code size (non-zero size members)
+ *              o   Make so more seemless (no #ifdefs) but avoid issue with growing release code size (non-zero size members)
  *
  *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
  *              since COMPARE is part of traits we do NOT want to allow compare with differnt traits (so MUST FIX EUQalas as well)
@@ -425,20 +425,6 @@ namespace   Stroika {
             bool    operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
             template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
             bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
-#if 0
-            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename X1 = typename enable_if<is_convertible<RHS_CONVERTABLE_TO_OPTIONAL, Optional<T>>::value >::type>
-            bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
-            {
-                return lhs.Equals (Optional<T> (rhs));
-            }
-            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator== (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
-            {
-                return lhs.Equals (Optional<T> (rhs));
-            }
-#endif
-
-
 
 
             /**
@@ -452,15 +438,6 @@ namespace   Stroika {
             bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
             template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
             bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
-
-#if 0
-            // @TODO GET THIS WORKING
-            template    <typename T, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            bool    operator!= (const Optional<T>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
-            {
-                return not lhs.Equals (Optional<T> { rhs });
-            }
-#endif
 
 
             /**
