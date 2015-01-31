@@ -77,6 +77,20 @@ namespace   Stroika {
 #endif
                     Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
                     T*              fValue_ { nullptr };
+
+                    StorageType ()
+                    {
+                    }
+                    StorageType (T* p)
+                        : fValue_ { p } {
+                    }
+                    void    destroy ()
+                    {
+                        // up to caller (for efficiency reasons) to make sure fValue_ cleared out (null) if neeeded
+                        if (fValue_ != nullptr) {
+                            fValue_->~T ();
+                        }
+                    }
                 };
             };
 
@@ -92,6 +106,16 @@ namespace   Stroika {
             struct  Optional_Traits_Blockallocated_Indirect_Storage {
                 struct  StorageType {
                     AutomaticallyBlockAllocated<T>*  fValue_ { nullptr };
+                    StorageType ()
+                    {
+                    }
+                    StorageType (AutomaticallyBlockAllocated<T>* p)
+                        : fValue_ { p } {
+                    }
+                    void    destroy ()
+                    {
+                        delete fValue_;
+                    }
                 };
             };
 
