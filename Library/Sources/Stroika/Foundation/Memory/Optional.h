@@ -15,12 +15,6 @@
 #include    "Common.h"
 
 
-// Disable by default for now since appears to have broken something...
-#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  1
-#ifndef qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-#define qUseDirectlyEmbeddedDataInOptionalBackEndImpl_  0
-#endif
-
 
 /**
  *  \file
@@ -144,7 +138,7 @@ namespace   Stroika {
                         : fValue_ { p } {
                     }
                     template    <typename ...ARGS>
-                    T*  alloc (ARGS&& ...args)
+                    AutomaticallyBlockAllocated<T>*  alloc (ARGS&& ...args)
                     {
                         return new AutomaticallyBlockAllocated<T> (forward<ARGS> (args)...);
                     }
@@ -173,13 +167,11 @@ namespace   Stroika {
             };
 
 
-#if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
+            /**
+             */
             template    <typename T>
             using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
-#else
-            template    <typename T>
-            using   Optional_Traits_Default = Optional_Traits_Blockallocated_Indirect_Storage<T>;
-#endif
+
 
             /**
              *  Optional<T> can be used to store an object which may or may not be present. This can be
