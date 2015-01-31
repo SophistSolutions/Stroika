@@ -140,7 +140,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>::Optional (const T* from)
             {
 #if     qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
-                fStorage_.fValue_ = (from == nullptr ? nullptr : new (fBuffer_) T (*from));
+                fStorage_.fValue_ = (from == nullptr ? nullptr : new (fStorage_.fBuffer_) T (*from));
 #else
                 fStorage_.fValue_ = (from == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*from));
 #endif
