@@ -203,6 +203,11 @@ namespace   Stroika {
             class   Optional {
             public:
                 /**
+                 */
+                using   value_type  =   T;
+
+            public:
+                /**
                  *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
                  *  derefrence and copy. Experiemental cuz could mess up type deducation of Optional<T>...
                  */
@@ -277,6 +282,8 @@ namespace   Stroika {
                  *
                  *  @see AssignIf
                  *  @see Value
+                 *
+                 *  @todo when we have std::optional support, make this default to std::bad_optional_access
                  */
                 template    <typename   THROW_IF_MISSING_TYPE>
                 nonvirtual  T   CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing = THROW_IF_MISSING_TYPE ()) const;
@@ -383,6 +390,12 @@ namespace   Stroika {
                  */
                 nonvirtual  int Compare (const Optional& rhs) const;
                 nonvirtual  int Compare (T rhs) const;
+
+            public:
+                /**
+                 *  Mimmic (except for now for particular exception thrown) value() api, and dont support non-const variation (for now).
+                 */
+                nonvirtual  T   value () const;
 
             private:
                 typename TRAITS::StorageType    fStorage_;

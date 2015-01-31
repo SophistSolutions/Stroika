@@ -501,6 +501,11 @@ namespace   Stroika {
                 return Common::ComparerWithWellOrder<T>::Compare (*fStorage_.fValue_, rhs);
             }
             template    <typename T, typename TRAITS>
+            inline  T   Optional<T, TRAITS>::value () const
+            {
+                return CheckedValue (Execution::StringException (L"std::bad_optional_access"));
+            }
+            template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear_ ()
             {
                 fStorage_.destroy ();
