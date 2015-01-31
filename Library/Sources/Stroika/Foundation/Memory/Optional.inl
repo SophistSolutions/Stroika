@@ -101,8 +101,8 @@ namespace   Stroika {
                 auto    rhsCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
                 if (from.fStorage_.get () != nullptr) {
-                    fStorage_.moveInitialize (from.fStorage_);
-                    Assert (rhs.fStorage_.fValue_ == nullptr);
+                    fStorage_.moveInitialize (move (from.fStorage_));
+                    Assert (from.fStorage_.fValue_ == nullptr);
                 }
             }
             template    <typename T, typename TRAITS>
@@ -192,7 +192,7 @@ namespace   Stroika {
                     auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
 #endif
                     if (rhs.fStorage_.get () != nullptr) {
-                        fStorage_.moveInitialize (rhs.fStorage_);
+                        fStorage_.moveInitialize (move (rhs.fStorage_));
                         Assert (rhs.fStorage_.fValue_ == nullptr);
                     }
                 }
@@ -277,10 +277,10 @@ namespace   Stroika {
             template    <typename   CONVERTABLE_TO_TYPE>
             nonvirtual  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
+                RequireNotNull (to);
 #if     qDebug
                 auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
 #endif
-                RequireNotNull (to);
                 if (IsPresent ()) {
                     *to = *fStorage_.get ();
                 }

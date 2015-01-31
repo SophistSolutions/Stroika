@@ -103,7 +103,7 @@ namespace   Stroika {
                     void    moveInitialize (StorageType&&  rhs)
                     {
                         Require (this != &rhs);
-                        Require (fValue == nullptr);
+                        Require (fValue_ == nullptr);
                         if (rhs.fValue_ == nullptr) {
                             fValue_ = nullptr;
                         }
@@ -156,7 +156,7 @@ namespace   Stroika {
                     {
                         // This is the ONE case where Optional_Traits_Blockallocated_Indirect_Storage can perform better than Optional_Traits_Inplace_Storage
                         Require (this != &rhs);
-                        Require (fValue == nullptr);
+                        Require (fValue_ == nullptr);
                         fValue_ = rhs.fValue_;
                         rhs.fValue_ = nullptr;
                         Ensure (rhs.fValue_ == nullptr);
