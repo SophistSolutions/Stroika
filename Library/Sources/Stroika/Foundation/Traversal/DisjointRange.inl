@@ -171,10 +171,7 @@ namespace   Stroika {
             {
 #if 0
                 if (sNoisyDebugTrace_) {
-                    Debug::TraceContextBumper ctx (SDKSTR ("ENTERING"));
-                    for (RangeType i : SubRanges ()) {
-                        DbgTrace (L"Range: %f..%f", double (i.GetLowerBound ()), double (i.GetUpperBound ()));
-                    }
+                    DbgTrace (L"MergeIn (r = %s)", r.Format ().c_str ());
                 }
 #endif
                 AssertInternalRepValid_ ();
@@ -321,10 +318,7 @@ namespace   Stroika {
                 //Ensure (Contains (r));            DISABLE TEMPORARILY CUZ CONTAINS CONSTRUCTS (ANOTHER) NEW RANGE, CAUSING INFINITE RECURSE - ...
 #if 0
                 if (sNoisyDebugTrace_) {
-                    Debug::TraceContextBumper ctx (SDKSTR ("EXITING"));
-                    for (RangeType i : SubRanges ()) {
-                        DbgTrace (L"Range: %f..%f", double (i.GetLowerBound ()), double (i.GetUpperBound ()));
-                    }
+                    DbgTrace (L"MergeIn (r = %s)", r.Format ().c_str ());
                 }
 #endif
             }
