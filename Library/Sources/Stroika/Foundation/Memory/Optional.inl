@@ -13,7 +13,6 @@
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
-#include    "../Execution/StringException.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -504,7 +503,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T   Optional<T, TRAITS>::value () const
             {
-                return CheckedValue (Execution::StringException (L"std::bad_optional_access"));
+                return CheckedValue (domain_error ("std::bad_optional_access"));
             }
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear_ ()
