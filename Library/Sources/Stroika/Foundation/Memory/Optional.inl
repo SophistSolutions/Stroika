@@ -13,6 +13,7 @@
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/Exceptions.h"
+#include    "../Execution/StringException.h"
 
 namespace   Stroika {
     namespace   Foundation {
