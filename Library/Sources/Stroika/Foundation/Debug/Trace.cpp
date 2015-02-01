@@ -319,6 +319,7 @@ void    Emitter::EmitTraceMessage (const char* format, ...)
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
@@ -336,6 +337,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
@@ -353,6 +355,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
         return 0;
     }
@@ -371,6 +374,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
         return 0;
     }
