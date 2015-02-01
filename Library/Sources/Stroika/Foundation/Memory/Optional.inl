@@ -439,7 +439,6 @@ namespace   Stroika {
                 AssertNotNull (fStorage_.fValue_);
                 return move (ConstHolder_ { this });
             }
-#if     qOptional_SupportNonConstOperatorArrow
             template    <typename T, typename TRAITS>
             inline  auto Optional<T, TRAITS>::operator-> () -> MutableHolder_ {
                 // No lock on fDebugMutex_ cuz done in MutableHolder_
@@ -447,8 +446,6 @@ namespace   Stroika {
                 AssertNotNull (fStorage_.fValue_);
                 return move (MutableHolder_ { this });
             }
-#endif
-
             template    <typename T, typename TRAITS>
             inline  auto   Optional<T, TRAITS>::operator* () const -> T
             {

@@ -60,13 +60,6 @@ namespace   Stroika {
         namespace   Memory {
 
 
-// support for now, but I fear encourages buggy code, so maybe not for long???
-// --LGP 2015-02-01
-//#define     qOptional_SupportNonConstOperatorArrow   0
-#ifndef     qOptional_SupportNonConstOperatorArrow
-#define     qOptional_SupportNonConstOperatorArrow   1
-#endif
-
             /**
              *  This storage style is the default, and is usually fastest. However, it requires the
              *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
@@ -144,11 +137,22 @@ namespace   Stroika {
              *
              *  However, see @ref Value()
              *
+             *  \note   Design Note: Stroika Optional versus std::optional
+             *          o   First, std::optional doesn't exist yet, and probably wont enter the language until c++17.
+             *          o   Optional<> integrates with and leverages Stroika's assertion mechanism, making
+             *              it much easier to find bugs with code using Optional
+             *          o   Debug::AssertExternallySynchronizedLock, and other stratgies and API structure
+             *              to assure (in debug releases) that the Stroika Optional class is used in an threadsafe manner.
+             *          o   multiple trait-based storage strategies for implementing optional
+             *              o   Optional_Traits_Inplace_Storage
+             *                  Nearly identical to what is used by std::optional, and probably fastest
+             *              o   Optional_Traits_Blockallocated_Indirect_Storage
+             *                  Fastest for when you do lots of copies of Optional, and allows use
+             *                  of Optional with forward-declared structs (so doesnt need to know size
+             *                  at declare time)
+             *
              *  \note   To use Optional with un-copyable things, use:
              *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
-             *
-             *  \note   After C++14, C++ may be introducing std::optional<> which may possibly make this
-             *          obsolete. We'll see.
              *
              *  \note   \em Design-Note - why not SharedByValue<T>
              *      -   We considered using the SharedByValue<T> template which would be more efficient
@@ -376,10 +380,8 @@ namespace   Stroika {
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
                  */
-                nonvirtual  ConstHolder_ operator-> () const;
-#if     qOptional_SupportNonConstOperatorArrow
-                nonvirtual  MutableHolder_ operator-> ();
-#endif
+                nonvirtual  MutableHolder_  operator-> ();
+                nonvirtual  ConstHolder_    operator-> () const;
 
             public:
                 /**
