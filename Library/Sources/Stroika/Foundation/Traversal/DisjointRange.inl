@@ -153,28 +153,7 @@ namespace   Stroika {
             auto    DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType
             {
                 // @todo could do more efficiently
-                Memory::Optional<T> lhs;
-                Memory::Optional<T> rhs;
-                for (RangeType rri : SubRanges ()) {
-                    if (lhs) {
-                        lhs = min (rri.GetLowerBound (), *lhs);
-                    }
-                    else {
-                        lhs = rri.GetLowerBound ();
-                    }
-                    if (rhs) {
-                        rhs = max (rri.GetUpperBound (), *rhs);
-                    }
-                    else {
-                        rhs = rri.GetUpperBound ();
-                    }
-                }
-                if (lhs) {
-                    return RangeType (lhs, rhs);
-                }
-                else {
-                    return RangeType ();
-                }
+                return Union (rhs).GetBounds ();
             }
             template    <typename T, typename RANGE_TYPE>
             Characters::String  DisjointRange<T, RANGE_TYPE>::Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*RangeType::TraitsType::Format*/) const
