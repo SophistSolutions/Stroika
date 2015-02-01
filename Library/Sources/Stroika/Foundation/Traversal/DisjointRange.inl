@@ -156,7 +156,7 @@ namespace   Stroika {
                 return Union (rhs).GetBounds ();
             }
             template    <typename T, typename RANGE_TYPE>
-            Characters::String  DisjointRange<T, RANGE_TYPE>::Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*RangeType::TraitsType::Format*/) const
+            Characters::String  DisjointRange<T, RANGE_TYPE>::Format (const function<Characters::String(T)>& formatBound) const
             {
                 Characters::StringBuilder out;
                 out += L"[";
