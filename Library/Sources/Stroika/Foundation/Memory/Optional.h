@@ -60,6 +60,13 @@ namespace   Stroika {
         namespace   Memory {
 
 
+// support for now, but I fear encourages buggy code, so maybe not for long???
+// --LGP 2015-02-01
+#define     qOptional_SupportNonConstOperatorArrow   0
+#ifndef     qOptional_SupportNonConstOperatorArrow
+#define     qOptional_SupportNonConstOperatorArrow   1
+#endif
+
             /**
              *  This storage style is the default, and is usually fastest. However, it requires the
              *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
@@ -331,6 +338,20 @@ namespace   Stroika {
                     operator const T& () const;
                     const T& operator* () const;
                 };
+                struct  MutableHolder_ {
+                    Optional*   fVal;
+#if     qDebug
+                    std::unique_lock<Debug::AssertExternallySynchronizedLock> fCritSec_;
+#endif
+                    MutableHolder_ (const MutableHolder_&) = delete;
+                    MutableHolder_ (Optional* p);
+                    MutableHolder_ (MutableHolder_&& from);
+                    MutableHolder_& operator= (const MutableHolder_&) = delete;
+                    MutableHolder_& operator= (T) = delete;
+                    T* operator-> ();
+                    operator T& ();
+                    T& operator* ();
+                };
 
             public:
                 /**
@@ -355,6 +376,9 @@ namespace   Stroika {
                  *  syntactically mirror dereferencing a pointer.
                  */
                 nonvirtual  ConstHolder_ operator-> () const;
+#if     qOptional_SupportNonConstOperatorArrow
+                nonvirtual  MutableHolder_ operator-> ();
+#endif
 
             public:
                 /**

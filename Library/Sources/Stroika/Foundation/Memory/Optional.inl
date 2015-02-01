@@ -157,6 +157,42 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************* Optional<T, TRAITS>::MutableHolder_ ************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::MutableHolder_::MutableHolder_ (Optional* p)
+                : fVal (p)
+#if     qDebug
+                , fCritSec_ { p->fDebugMutex_ }
+#endif
+            {
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::MutableHolder_::MutableHolder_ (MutableHolder_&& from)
+                : fVal (from.fVal)
+            {
+                from.fVal = nullptr;
+            }
+            template    <typename T, typename TRAITS>
+            inline  T* Optional<T, TRAITS>::MutableHolder_::operator-> ()
+            {
+                return fVal->peek ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>::MutableHolder_::operator T& ()
+            {
+                return *fVal->peek ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  T& Optional<T, TRAITS>::MutableHolder_::operator* ()
+            {
+                return *fVal->peek ();
+            }
+
+
+            /*
+             ********************************************************************************
              *************************** Optional<T, TRAITS> ********************************
              ********************************************************************************
              */
@@ -396,6 +432,16 @@ namespace   Stroika {
                 AssertNotNull (fStorage_.fValue_);
                 return move (ConstHolder_ { this });
             }
+#if     qOptional_SupportNonConstOperatorArrow
+            template    <typename T, typename TRAITS>
+            inline  auto Optional<T, TRAITS>::operator-> () -> MutableHolder_ {
+                // No lock on fDebugMutex_ cuz done in MutableHolder_
+                Require (IsPresent ());
+                AssertNotNull (fStorage_.fValue_);
+                return move (MutableHolder_ { this });
+            }
+#endif
+
             template    <typename T, typename TRAITS>
             inline  auto   Optional<T, TRAITS>::operator* () const -> T
             {
