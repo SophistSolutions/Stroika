@@ -437,6 +437,10 @@ namespace   Stroika {
                 // for NOW we have this in ifdefs to avoid SIZE increase in RELEASE build (STILL WORKING ON BETTER WAY, probs using SFINAE)
                 mutable Debug::AssertExternallySynchronizedLock fDebugMutex_;
 #endif
+
+            private:
+                template    <typename T2, typename TRAITS2>
+                friend  class   Optional;
             };
 
 
