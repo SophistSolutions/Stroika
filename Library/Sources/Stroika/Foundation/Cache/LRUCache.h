@@ -367,7 +367,7 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
-				// experimental as of 2015-02-01 - maybe use regular optional traits?
+                // experimental as of 2015-02-01 - maybe use regular optional traits?
                 using   OptionalValue   =   Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>;
 
             public:
