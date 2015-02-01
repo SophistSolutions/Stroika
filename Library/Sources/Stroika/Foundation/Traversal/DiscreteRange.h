@@ -173,7 +173,6 @@ namespace   Stroika {
             public:
 #endif
                 struct   MyIteratorRep_;
-//                struct   MyIteratableRep_;
 
             public:
                 /**
@@ -223,32 +222,20 @@ namespace   Stroika {
                  *
                  *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
                  *  appear in the Elements() Iterable<T>.
-
-                 ///NYI
                  */
                 nonvirtual  Iterable<T>   Elements () const;
 
             public:
-                /**EXPERIEMNTAL
+                /**EXPERIEMNTAL as of 2.0a73
                 */
                 operator Iterable<T> () const;
-                /**EXPERIEMNTAL
+                /**EXPERIEMNTAL as of 2.0a73
                 */
                 Iterator<T> begin () const;
-                /**EXPERIEMNTAL
+                /**EXPERIEMNTAL as of 2.0a73
                 */
                 Iterator<T> end () const;
-#if 0
-            public:
-                using   inherited_RangeType::Contains;
 
-            public:
-                /**
-                 *  DiscreteRange<>::emty () and Iterable<T>::empty () have different definitions, but they always coincide in
-                 *  value.
-                 */
-                nonvirtual  bool empty () const;
-#endif
             private:
                 struct  MyIterable_;
             };
