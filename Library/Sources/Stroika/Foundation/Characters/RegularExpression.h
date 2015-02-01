@@ -10,6 +10,8 @@
 #include    <regex>
 #endif
 
+#include    "../Containers/Sequence.h"
+
 #include    "String.h"
 
 
@@ -67,6 +69,20 @@ namespace   Stroika {
 
             private:
                 wregex      fCompiledRegExp_;
+            };
+
+
+            // @todo DRAFT 2015-02-01
+            class   RegularExpressionMatch {
+            public:
+                RegularExpressionMatch (const String& fullMatch);
+                RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
+                String  GetFullMatch () const;
+                Containers::Sequence<String>    GetSubMatches () const;
+
+            private:
+                String  fFullMatch_;
+                Containers::Sequence<String> fSubMatches_;
             };
 #endif
 

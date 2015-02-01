@@ -251,6 +251,7 @@ namespace   Stroika {
 
 
             class   RegularExpression;
+            class   RegularExpressionMatch;
 
 
             /**
@@ -563,6 +564,19 @@ namespace   Stroika {
                  *  \req  (from <= to);
                  *  \req  (to <= GetLength ());     // for 2-arg variant
                  *
+                 *  EXAMPLE USAGE:
+                 *      String tmp { L"This is good" };
+                 *      Assert (tmp.SubString (5) == L"is good");
+                 *
+                 *  EXAMPLE USAGE:
+                 *      const String_Constant kTest_ { L"a=b" };
+                 *      const String_Constant kLbl2LookFor_ { L"a=" };
+                 *      size_t i = resultLine.Find (kLbl2LookFor_);
+                 *      if (i != String::npos) {
+                 *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
+                 *      }
+                 *      Assert (tmp == L"b");
+                 *
                  *  @see substr
                  *  @see SafeSubString
                  *  @see CircularSubString
@@ -695,6 +709,20 @@ namespace   Stroika {
                  *
                  *  \req (startAt <= GetLength ());
                  *
+                 *  EXAMPLE USAGE:
+                 *      const String_Constant kTest_ { L"a=b" };
+                 *      const String_Constant kLbl2LookFor_ { L"a=" };
+                 *      size_t i = kTest_.Find (kLbl2LookFor_);
+                 *      if (i != String::npos) {
+                 *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
+                 *      }
+                 *      Assert (tmp == L"b");
+                 *
+                 *  EXAMPLE USAGE:
+                 *      const String_Constant kTest_ { L"a=b," };
+                 *      Sequence<String>      tmp { kTest_.FindEachString (RegularExpression (L"a=(.*)[, ]")) };
+                 *      Assert (tmp.size () == 1 and tmp[0] == L"b");
+                 *
                  *  @see FindEach ()
                  *  @see FindEachString ()
                  *  @see Tokenize
@@ -741,7 +769,9 @@ namespace   Stroika {
                  *  There is no overload for FindEachString() taking a Character or SubString, because the results
                  *  wouldn't be useful. Their count might be, but the results would each be identical to the argument.
                  */
-                nonvirtual  vector<String>  FindEachString (const RegularExpression& regEx) const;
+                nonvirtual  vector<RegularExpressionMatch>  FindEachMatch (const RegularExpression& regEx) const;
+                nonvirtual  vector<String>                  FindEachString (const RegularExpression& regEx) const;
+
 
             public:
                 /**

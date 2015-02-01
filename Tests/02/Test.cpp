@@ -696,69 +696,139 @@ namespace   {
 }
 
 namespace   {
-    void    Test17_Find_ ()
-    {
-        VerifyTestResult (String (L"abc").Find (L"b") == 1);
-        VerifyTestResult (String (L"abc").Find (L"x") == String::kBadIndex);
-        VerifyTestResult (String (L"abc").Find (L"b", 2) == String::kBadIndex);
-    }
-    void    Test17_FindEach_ ()
-    {
+    namespace Test17_Private_ {
+        void    Test17_Find_ ()
         {
+            VerifyTestResult (String (L"abc").Find (L"b") == 1);
+            VerifyTestResult (String (L"abc").Find (L"x") == String::kBadIndex);
+            VerifyTestResult (String (L"abc").Find (L"b", 2) == String::kBadIndex);
+        }
+        void    Test17_FindEach_ ()
+        {
+            {
+                // @todo - Either have FindEach return Sequence or fix vector stuff!!!
+                VerifyTestResult (String (L"abc").FindEach (L"b") == Containers::Sequence<size_t> ({ 1 }).As<vector<size_t>> ());
+            }
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String (L"abc").FindEach (L"b") == Containers::Sequence<size_t> ({ 1 }).As<vector<size_t>> ());
+            VerifyTestResult (String (L"01-23-45-67-89").FindEach (L"-") == Containers::Sequence<size_t> ({ 2, 5, 8, 11 }).As<vector<size_t>> ());
+            // @todo - Either have FindEach return Sequence or fix vector stuff!!!
+            VerifyTestResult (String (L"AAAA").FindEach (L"AA") == Containers::Sequence<size_t> ({ 0, 2 }).As<vector<size_t>> ());
         }
-        // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-        VerifyTestResult (String (L"01-23-45-67-89").FindEach (L"-") == Containers::Sequence<size_t> ({ 2, 5, 8, 11 }).As<vector<size_t>> ());
-        // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-        VerifyTestResult (String (L"AAAA").FindEach (L"AA") == Containers::Sequence<size_t> ({ 0, 2 }).As<vector<size_t>> ());
-    }
-    void    Test17_ReplaceAll_ ()
-    {
-        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
-        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
-        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
-    }
-    void    Test17_RegExp_Search_ ()
-    {
-#if     qCompilerAndStdLib_Supports_regex
+        void    Test17_ReplaceAll_ ()
         {
-            RegularExpression   regExp (L"abc");
-            String              testStr2Search  =   String (L"abc");
-            VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
-            VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
-        } {
-            // Test replace crlfs
-            String  stringWithCRLFs =   L"abc\r\ndef\r\n";
-            String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*"), L"");
-            VerifyTestResult (replaced == L"abcdef");
+            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
+            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
+            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
         }
+        void    Test17_RegExp_Search_ ()
+        {
+#if     !qCompilerAndStdLib_regex_Buggy
+            {
+                RegularExpression   regExp (L"abc");
+                String              testStr2Search  =   String (L"abc");
+                VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
+                VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
+            } {
+                // Test replace crlfs
+                String  stringWithCRLFs =   L"abc\r\ndef\r\n";
+                String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*"), L"");
+                VerifyTestResult (replaced == L"abcdef");
+            }
 #endif
 #if 0
 // not sure why this didn't work! -
-        {
-            String  abc     =   String (L"abc");
-            String  abcabc  =   String (L"abc abc");
-            VerifyTestResult (abcabc.Search (abc).size () == 2);
-            VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
-            VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
+            {
+                String  abc     =   String (L"abc");
+                String  abcabc  =   String (L"abc abc");
+                VerifyTestResult (abcabc.Search (abc).size () == 2);
+                VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
+                VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
+            }
+#endif
         }
+        void    Test17_RegExp_ ()
+        {
+            Test17_Find_ ();
+            Test17_FindEach_ ();
+            Test17_RegExp_Search_ ();
+#if     !qCompilerAndStdLib_regex_Buggy
+            VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
+            vector<RegularExpressionMatch>  r   =   String (L"<h2>Egg prices</h2>").FindEachMatch (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
+            VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == L"2" and r[0].GetSubMatches ()[1] == L"Egg prices");
+            VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 #endif
+        }
+        void    docsTests_ ()
+        {
+            {
+                const String_Constant kTest_ { L"a=b" };
+                const String_Constant kLbl2LookFor_ { L"a=" };
+                size_t i = kTest_.Find (kLbl2LookFor_);
+                String  tmp;
+                if (i != String::npos) {
+                    tmp = String { kTest_.SubString (kLbl2LookFor_.length ()) };
+                }
+                VerifyTestResult (tmp == L"b");
+            }
+#if     !qCompilerAndStdLib_regex_Buggy
+            {
+                // SEE http://en.cppreference.com/w/cpp/regex/match_results/operator_at
+                // SEE http://en.cppreference.com/w/cpp/regex/regex_search
+                // TEST FAIULS - SEE ABOUT WHY
+#if 0
+#include <iostream>
+#include <string>
+#include <regex>
+                int main() {
+                    std::string lines[] = {"a=b,a=c"};
+
+                    std::regex color_regex("a=(.*)");
+
+                    std::smatch color_match;
+                    for (const auto& line : lines) {
+                        std::regex_search(line, color_match, color_regex);
+                        std::cout << "matches for '" << line << "'\n";
+                        // for (size_t i = 0; i < color_match.size(); ++i) {
+                        //     std::ssub_match sub_match = color_match[i];
+                        //     std::string sub_match_str = sub_match.str();
+                        //     std::cout << i << ": " << sub_match_str << '\n';
+                        //}
+
+                        for (auto i : color_match) {
+                            std::cout << i << '\n';
+                        }
+                    }
+                }
+#endif
+                {
+                    const String_Constant kTest_ { L"a=b," };
+                    const RegularExpression kRE_ { L"a=(.*)", RegularExpression::SyntaxType::eECMAScript };
+                    Sequence<String>      tmp1 { kTest_.FindEachString (kRE_) };
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b,"});
+                }
+                {
+                    const String_Constant kTest_ { L"a=b," };
+                    const RegularExpression kRE_ { L"a=(.*),", RegularExpression::SyntaxType::eECMAScript };
+                    Sequence<String>      tmp1 { kTest_.FindEachString (kRE_) };
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+                }
+            }
+#endif
+        }
     }
-    void    Test17_RegExp_ ()
+
+    void    Test17_Find_ ()
     {
-        Test17_Find_ ();
-        Test17_FindEach_ ();
-        Test17_RegExp_Search_ ();
-#if     qCompilerAndStdLib_Supports_regex
-        VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
-        vector<String>  r   =   String (L"<h2>Egg prices</h2>").FindEachString (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
-        VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
-        VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
-#endif
+        Test17_Private_::Test17_ReplaceAll_ ();
+        Test17_Private_::Test17_ReplaceAll_ ();
+        Test17_Private_::Test17_RegExp_ ();
+        Test17_Private_::docsTests_ ();
     }
 }
-
 
 
 
@@ -1210,6 +1280,26 @@ namespace {
 
 
 
+namespace {
+    void    Test47_SubString_ ()
+    {
+        {
+            String tmp { L"This is good" };
+            VerifyTestResult (tmp.SubString (5) == L"is good");
+        }
+        {
+            const String_Constant kTest_ { L"a=b" };
+            const String_Constant kLbl2LookFor_ { L"a=" };
+            size_t i = kTest_.Find (kLbl2LookFor_);
+            String  tmp;
+            if (i != String::npos) {
+                tmp = String { kTest_.SubString (kLbl2LookFor_.length ()) };
+            }
+            VerifyTestResult (tmp == L"b");
+        }
+    }
+}
+
 
 namespace   {
 
@@ -1236,9 +1326,6 @@ namespace   {
         Test15_StripAll_ ();
         Test16_Format_ ();
         Test17_Find_ ();
-        Test17_ReplaceAll_ ();
-        Test17_ReplaceAll_ ();
-        Test17_RegExp_ ();
         Test18_Compare_ ();
         Test19_ConstCharStar_ ();
         Test20_CStringHelpers_ ();
@@ -1258,6 +1345,7 @@ namespace   {
         Test44_LocaleUNICODEConversions_ ();
         Test45_Tokenize_ ();
         Test46_CompareLHSRHS_ ();
+        Test47_SubString_ ();
     }
 }
 

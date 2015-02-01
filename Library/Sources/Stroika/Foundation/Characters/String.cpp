@@ -687,16 +687,40 @@ vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) 
 #endif
 
 #if     !qCompilerAndStdLib_regex_Buggy
+vector<RegularExpressionMatch>  String::FindEachMatch (const RegularExpression& regEx) const
+{
+    vector<RegularExpressionMatch>  result;
+    wstring         tmp         { As<wstring> () };
+    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
+        std::wsmatch    match { *i };
+        Assert (match.size () != 0);
+        size_t n = match.size ();
+        Containers::Sequence<String>    s;
+        for (size_t i = 1; i < n; ++i) {
+            s.Append (match.str (i));
+        }
+        result.push_back (RegularExpressionMatch (match.str (0), s));
+    }
+    return result;
+}
+
 vector<String>  String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String>  result;
-    wstring tmp    { As<wstring> () };
-    std::wsmatch res;
-    regex_search (tmp, res, regEx.GetCompiled ());
-    result.reserve (res.size ());
-    for (auto i = res.begin (); i != res.end (); ++i) {
-        result.push_back (String (*i));
+    wstring         tmp         { As<wstring> () };
+#if 1
+    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
+        result.push_back (String { i->str () });
     }
+#else
+    std::wsmatch    res;
+    if (regex_search (tmp, res, regEx.GetCompiled ())) {
+        result.reserve (res.size ());
+        for (auto i : res) {
+            result.push_back (String { i });
+        }
+    }
+#endif
     return result;
 }
 #endif

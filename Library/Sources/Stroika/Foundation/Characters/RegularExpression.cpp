@@ -5,6 +5,8 @@
 
 #include    <regex>
 
+#include    "../Containers/Sequence.h"
+
 #include    "RegularExpression.h"
 
 
@@ -43,4 +45,26 @@ RegularExpression::RegularExpression (const String& re, CompareOptions co)
     :  fCompiledRegExp_ (re.As<wstring> (), mkOption_ (SyntaxType::eDEFAULT, co))
 {
 }
+
+
+
+
+
+
+RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch)
+    : fFullMatch_ (fullMatch)
+    , fSubMatches_ (Containers::Sequence<String> ())
+{
+}
+RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches)
+    : fFullMatch_ (fullMatch)
+    , fSubMatches_ (subMatches)
+{
+}
+String  RegularExpressionMatch::GetFullMatch () const { return fFullMatch_; }
+Containers::Sequence<String>    RegularExpressionMatch::GetSubMatches () const { return fSubMatches_; }
+
 #endif
+
+
+
