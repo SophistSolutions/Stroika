@@ -336,12 +336,6 @@ namespace   Stroika {
                 };
 
 
-                //@todo LOSE/DEPRECATE THIS NAME
-#if 0
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
-                using  LRUCache_DefaultTraits  = DefaultTraits<KEY, HASH_TABLE_SIZE>;
-#endif
-
             }
 
 
