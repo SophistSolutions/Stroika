@@ -369,6 +369,13 @@ namespace   Stroika {
                 Ensure (fStorage_.peek () == nullptr);
             }
             template    <typename T, typename TRAITS>
+            inline  T*    Optional<T, TRAITS>::peek ()
+            {
+                // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).
+                // Caller beware!
+                return fStorage_.peek ();
+            }
+            template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::peek () const
             {
                 // Don't bother checking fDebugMutex_ lock here since we advertise this as an unsafe API (unchecked).

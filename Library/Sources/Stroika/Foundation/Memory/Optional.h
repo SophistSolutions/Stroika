@@ -62,7 +62,7 @@ namespace   Stroika {
 
 // support for now, but I fear encourages buggy code, so maybe not for long???
 // --LGP 2015-02-01
-#define     qOptional_SupportNonConstOperatorArrow   0
+//#define     qOptional_SupportNonConstOperatorArrow   0
 #ifndef     qOptional_SupportNonConstOperatorArrow
 #define     qOptional_SupportNonConstOperatorArrow   1
 #endif
@@ -361,6 +361,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
+                nonvirtual  T*			peek ();
                 nonvirtual  const T*    peek () const;
 
             public:
