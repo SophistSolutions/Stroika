@@ -327,12 +327,12 @@ namespace   Stroika {
                 fRealCache_.ClearCache ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            Memory::Optional<VALUE>     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const
+            auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const -> OptionalValue
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
                 if (v == nullptr) {
-                    return Memory::Optional<VALUE> ();
+                    return OptionalValue ();
                 }
                 Ensure (TRAITS::Equals (key, *v->fKey));
                 return *v->fValue;
@@ -358,7 +358,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
             {
-                Memory::Optional<VALUE> v = Lookup (key);
+                OptionalValue v = Lookup (key);
                 if (v.IsMissing ()) {
                     VALUE   newV = valueFetcher (key);
                     Add (key, newV);

@@ -373,12 +373,16 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
+				// experimental as of 2015-02-01 - maybe use regular optional traits?
+                using   OptionalValue   =   Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>;
+
+            public:
                 /**
                  *  The value associated with KEY may not be present, so an Optional is returned.
                  *
                  *  @see LookupValue ()
                  */
-                nonvirtual  Memory::Optional<VALUE> Lookup (const KEY& key) const;
+                nonvirtual  OptionalValue Lookup (const KEY& key) const;
 
             public:
                 /**
