@@ -549,9 +549,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
-      <Filter>Sources\Traversal</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -737,12 +734,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp">
       <Filter>Sources\IO\Network\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.cpp">
-      <Filter>Sources\Traversal</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.cpp">
-      <Filter>Sources\Traversal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

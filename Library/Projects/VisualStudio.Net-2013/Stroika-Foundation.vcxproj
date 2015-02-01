@@ -929,9 +929,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h" />
