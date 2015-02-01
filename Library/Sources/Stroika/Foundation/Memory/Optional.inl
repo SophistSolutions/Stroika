@@ -182,7 +182,18 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
 #if     qDebug
-                auto critSec { Execution::make_unique_lock (from.fDebugMutex_) };
+                auto fromCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
+#endif
+                if (from.fStorage_.peek () != nullptr) {
+                    fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
+                }
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename TRAITS2>
+            inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS2>& from)
+            {
+#if     qDebug
+                auto fromCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
 #endif
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());

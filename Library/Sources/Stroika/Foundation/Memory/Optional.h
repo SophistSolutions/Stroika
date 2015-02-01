@@ -218,6 +218,8 @@ namespace   Stroika {
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
+                template    <typename TRAITS2>
+                Optional (const Optional<T, TRAITS2>& from);
                 Optional (Optional&& from);
                 explicit Optional (const T* from);
 
