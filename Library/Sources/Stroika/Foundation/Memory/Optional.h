@@ -439,7 +439,6 @@ namespace   Stroika {
             template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
             bool    operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
-
             /**
              *  Simple overloaded operator which calls @Optional<T>::Equals (const Optional<T>& rhs)
              */
@@ -451,7 +450,6 @@ namespace   Stroika {
             bool    operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
             template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
             bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
-
 
             /**
              *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
