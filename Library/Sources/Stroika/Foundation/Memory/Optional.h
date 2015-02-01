@@ -361,7 +361,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
-                nonvirtual  T*			peek ();
+                nonvirtual  T*          peek ();
                 nonvirtual  const T*    peek () const;
 
             public:

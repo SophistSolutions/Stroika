@@ -23,6 +23,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
 using   namespace   Stroika::Foundation::Execution;
 
+using   Memory::Optional;
 using   Time::DurationSecondsType;
 
 
@@ -122,7 +123,7 @@ void        Logger::FlushBuffer ()
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp != nullptr) {
         while (true) {
-            auto p = sOutMsgQ_.RemoveHeadIfPossible ();
+            Optional<pair<Logger::Priority, String>> p = sOutMsgQ_.RemoveHeadIfPossible ();
             if (p.IsPresent ()) {
                 tmp->Log (p->first, p->second);
             }
