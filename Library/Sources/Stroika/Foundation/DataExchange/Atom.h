@@ -166,7 +166,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
-
             public:
                 /**
                  *  Template on <T> only defined for
@@ -193,8 +192,6 @@ namespace   Stroika {
             private:
                 _AtomInternalType  fValue_;
             };
-
-
 
 
         }

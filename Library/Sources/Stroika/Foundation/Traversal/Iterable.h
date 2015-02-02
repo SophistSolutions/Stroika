@@ -460,6 +460,12 @@ namespace   Stroika {
                  *              Doing so MAY result in a deadlock.
                  *
                  *              If there is a need to do this, just use explicit iteration instead.
+                 *
+                 *  EXAMPLE USAGE:
+                 *      bool IsAllWhitespace (String s) const
+                 *      {
+                 *          return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
+                 *      }
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
                 nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (const T& item)>& doToElement) const;

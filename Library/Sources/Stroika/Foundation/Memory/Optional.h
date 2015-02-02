@@ -150,6 +150,10 @@ namespace   Stroika {
              *                  Fastest for when you do lots of copies of Optional, and allows use
              *                  of Optional with forward-declared structs (so doesnt need to know size
              *                  at declare time)
+             *          o   Stroika's operator*() -> T, wheras std::optional::operator* -> T&. This choice
+             *              makes it slightly safer (more easily detectable race issues), but slightly less
+             *              conveneint and certainly incompatible with std::optional<>.
+             *              Use *peek() to achieve the same results, if this is really what you wanted.
              *
              *  \note   lifetime example
              *          Optional<pair<int,int>> x;
