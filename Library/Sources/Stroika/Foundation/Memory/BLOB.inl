@@ -152,6 +152,7 @@ namespace   Stroika {
             {
                 RequireNotNull (into);
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
+                Assert (tmp.first <= tmp.second);
                 into->clear ();
                 into->insert (into->begin (), tmp.first, tmp.second);
             }
@@ -165,6 +166,7 @@ namespace   Stroika {
             inline  bool    BLOB::empty () const
             {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
+                Assert (tmp.first <= tmp.second);
                 return tmp.first == tmp.second;
             }
             inline  const Byte* BLOB::begin () const
@@ -178,6 +180,7 @@ namespace   Stroika {
             inline  size_t  BLOB::GetSize () const
             {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
+                Assert (tmp.first <= tmp.second);
                 return tmp.second - tmp.first;
             }
             inline  bool    BLOB::operator< (const BLOB& rhs) const
