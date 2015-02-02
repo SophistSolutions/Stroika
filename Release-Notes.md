@@ -23,10 +23,13 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a74">v2.0a74x</a><br/>2015-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a74">v2.0a74</a><br/>2015-02-02</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Major refactoring of Optional&lt;&gt; code: adding back TRAITs, and using that to support plugable storage strategies (inline versus blockallocated), and documented better.</li>
+	<li>allow mutable Optional<T, TRAITS>::peek () (not sure good idea)</li>
+	<li>String REGEXP improvements (really experiments). Still VERY INCHOATE. But added docs/example use cases and added those to regtests (as well as inline docs)</li>
+	<li>DisjointRange&lt;T, RANGE_TYPE&gt;::Format()</li>
 </ul>
 </td>
 </tr>
