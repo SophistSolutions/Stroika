@@ -88,34 +88,33 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  BLOB::BLOB ()
-                : fRep_ (new ZeroRep_ ())
-            {
+                : fRep_ { new ZeroRep_ () } {
             }
             inline  BLOB::BLOB (const initializer_list<Byte>& data)
-                : fRep_ (new BasicRep_ (data.begin (), data.end ()))
+                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (data.begin (), data.end ()))))
             {
             }
             template    <typename CONTAINER_OF_BYTE>
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-                : fRep_ (new BasicRep_ (data.begin (), data.end ()))
+                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (data.begin (), data.end ()))))
             {
             }
             template    <size_t SIZE>
             inline  BLOB::BLOB (const Byte (&data)[SIZE])
-                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+                : fRep_ (move (SIZE == 0 ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))))
             {
             }
             template    <size_t SIZE>
             inline  BLOB::BLOB (const array<Byte, SIZE>& data)
-                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))
+                : fRep_ (move (SIZE == 0 ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))))
             {
             }
             inline  BLOB::BLOB (const vector<Byte>& data)
-                : fRep_ (new BasicRep_ (Containers::Start (data), Containers::End (data)))
+                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::End (data)))))
             {
             }
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
-                : fRep_ (new BasicRep_ (start, end))
+                : fRep_ (move (start == end ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (start, end))))
             {
             }
             inline  BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
@@ -123,12 +122,10 @@ namespace   Stroika {
             {
             }
             inline  BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
-                : fRep_ (new BasicRep_ (list2Concatenate))
-            {
+                : fRep_ { new BasicRep_ (list2Concatenate) } {
             }
             inline  BLOB::BLOB (const SharedIRep& rep)
-                : fRep_ (rep)
-            {
+                : fRep_ { rep } {
             }
             inline  BLOB::BLOB (SharedIRep&& rep)
                 : fRep_ (std::move (rep))
