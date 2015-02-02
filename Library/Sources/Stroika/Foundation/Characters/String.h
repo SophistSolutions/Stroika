@@ -718,11 +718,6 @@ namespace   Stroika {
                  *      }
                  *      Assert (tmp == L"b");
                  *
-                 *  EXAMPLE USAGE:
-                 *      const String_Constant kTest_ { L"a=b," };
-                 *      Sequence<String>      tmp { kTest_.FindEachString (RegularExpression (L"a=(.*)[, ]")) };
-                 *      Assert (tmp.size () == 1 and tmp[0] == L"b");
-                 *
                  *  @see FindEach ()
                  *  @see FindEachString ()
                  *  @see Tokenize
@@ -768,6 +763,11 @@ namespace   Stroika {
                  *
                  *  There is no overload for FindEachString() taking a Character or SubString, because the results
                  *  wouldn't be useful. Their count might be, but the results would each be identical to the argument.
+                 *
+                 *  EXAMPLE USAGE:
+                 *      const String_Constant kTest_ { L"a=b," };
+                 *      Sequence<String>      tmp { kTest_.FindEachString (RegularExpression (L"a=(.*)[, ]")) };
+                 *      Assert (tmp.size () == 1 and tmp[0] == L"b");
                  */
                 nonvirtual  vector<RegularExpressionMatch>  FindEachMatch (const RegularExpression& regEx) const;
                 nonvirtual  vector<String>                  FindEachString (const RegularExpression& regEx) const;

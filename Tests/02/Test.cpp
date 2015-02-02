@@ -816,6 +816,19 @@ namespace   {
                     Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
                     VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
                 }
+                {
+                    const String_Constant kTest_ { L"a=b," };
+                    const RegularExpression kRE_ { L"a=(.*)[, ]", RegularExpression::SyntaxType::eECMAScript };
+                    Sequence<String>      tmp1 { kTest_.FindEachString (kRE_) };
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+                }
+                {
+                    const String_Constant kTest_ { L"a=b, c=d" };
+                    const RegularExpression kRE_ { L"(.)=(.)", RegularExpression::SyntaxType::eECMAScript };
+                    VerifyTestResult ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+                }
             }
 #endif
         }

@@ -46,7 +46,7 @@ namespace   Stroika {
                 /**
                  *  not sure what these types mean - find out and document clearly
                  *
-                 **** MAYBE REDO SO DEFAULT IS ECMASCRIPT?
+                 **** @todo MAYBE REDO SO DEFAULT IS ECMASCRIPT?
                  */
                 enum    class   SyntaxType {
                     eECMAScript     =   regex_constants::ECMAScript,
