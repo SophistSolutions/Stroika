@@ -133,7 +133,7 @@ namespace   Stroika {
              *
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
              *  runs the risk of producing surprising exceptions, we treat dereferencing an 'IsMissing'
-             *  Optional<T> as an Assertion Erorr.
+             *  Optional<T> as an Assertion Error.
              *
              *  However, see @ref Value()
              *

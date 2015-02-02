@@ -13,7 +13,7 @@
 
 /*
  * TODO:
- *      @todo   Consider adding in here the Windows Structured Erorr handling stuff here.
+ *      @todo   Consider adding in here the Windows Structured Error handling stuff here.
  *              I think we already have hooks to translate that into exceptions.
  *              Maybe thats better? Dunno.
  */
