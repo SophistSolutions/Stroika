@@ -73,6 +73,7 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatena
 
 pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
 {
+    Ensure (fData.begin () <= fData.end ());
     return pair<const Byte*, const Byte*> (fData.begin (), fData.end ());
 }
 
@@ -114,6 +115,7 @@ Memory::BLOB::AdoptRep_::~AdoptRep_ ()
 
 pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
 {
+    Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
 }
 
@@ -135,6 +137,7 @@ Memory::BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, con
 
 pair<const Byte*, const Byte*>   Memory::BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
+    Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
 }
 
