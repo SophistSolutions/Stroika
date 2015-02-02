@@ -55,13 +55,10 @@ namespace   Stroika {
                     eAwk            =   regex_constants::awk,
                     eGrep           =   regex_constants::grep,
                     eEGrep          =   regex_constants::egrep,
-
-                    eDEFAULT = SyntaxType::eBasic,
                 };
 
             public:
-                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
-                explicit RegularExpression (const String& re, CompareOptions co);
+                explicit RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
 
             public:
