@@ -57,6 +57,8 @@
  *
  * TODO:
  *
+ *      @todo   CLEANUP (INCLUDING GOOD DOC EXAMPLES) ALL THE REGEXP CODE!! AND GOOD REGRESSION TESTS>
+ *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
@@ -755,19 +757,21 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Run Find (), starting at the beginning of the string and iterating through, capturing all the
-                 *  occurrances of the given argument substring. Accumulate those results and return the actual
-                 *  substrings.
-                 *
-                 *  *Design Note*:
-                 *
-                 *  There is no overload for FindEachString() taking a Character or SubString, because the results
-                 *  wouldn't be useful. Their count might be, but the results would each be identical to the argument.
+                 *  @todo CLEANUP DOCS
                  *
                  *  EXAMPLE USAGE:
-                 *      const String_Constant kTest_ { L"a=b," };
-                 *      Sequence<String>      tmp { kTest_.FindEachString (RegularExpression (L"a=(.*)[, ]")) };
-                 *      Assert (tmp.size () == 1 and tmp[0] == L"b");
+                 *      const String_Constant kTest_    { L"a=b," };
+                 *      const RegularExpression kRE_    { L"a=(.*)[, ]", RegularExpression::SyntaxType::eECMAScript };
+                 *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
+                 *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                 *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+                  *     Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+                 *
+                 *  EXAMPLE USAGE:
+                 *      const String_Constant kTest_ { L"a=b, c=d" };
+                 *      const RegularExpression kRE_ { L"(.)=(.)", RegularExpression::SyntaxType::eECMAScript };
+                 *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+                 *
                  */
                 nonvirtual  vector<RegularExpressionMatch>  FindEachMatch (const RegularExpression& regEx) const;
                 nonvirtual  vector<String>                  FindEachString (const RegularExpression& regEx) const;
