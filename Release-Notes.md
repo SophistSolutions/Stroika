@@ -22,10 +22,10 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a75">v2.0a75x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a75">v2.0a75</a><br/>2015-02-02</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Small fixes to TimedCache code.</li>
 </ul>
 </td>
 </tr>
@@ -44,6 +44,7 @@ History
 	<li>allow mutable Optional<T, TRAITS>::peek () (not sure good idea)</li>
 	<li>String REGEXP improvements (really experiments). Still VERY INCHOATE. But added docs/example use cases and added those to regtests (as well as inline docs)</li>
 	<li>DisjointRange&lt;T, RANGE_TYPE&gt;::Format()</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
