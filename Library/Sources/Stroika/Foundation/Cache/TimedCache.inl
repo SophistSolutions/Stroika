@@ -80,7 +80,11 @@ namespace   Stroika {
             void    TimedCache<KEY, RESULT, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
             {
                 Require (timeoutInSeconds > 0.0f);
-                auto    critSec { make_unique_lock (fMutex_); }
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
+#else
+                auto    critSec { Execution::make_unique_lock (fMutex_) };
+#endif
                 if (fTimeout_ != timeoutInSeconds) {
                     ClearIfNeeded_ ();
                     fTimeout_ = timeoutInSeconds;
@@ -93,7 +97,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
-                auto    critSec { make_unique_lock (fMutex_) };
+                auto    critSec { Execution::make_unique_lock (fMutex_) };
 #endif
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
@@ -124,7 +128,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex_);
 #else
-                auto    critSec { make_unique_lock (fMutex_) };
+                auto    critSec { Execution::make_unique_lock (fMutex_) };
 #endif
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
@@ -136,9 +140,19 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>
+            void    TimedCache<KEY, RESULT, TRAITS>::Remove (const KEY& key)
+            {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
+#else
+                auto    critSec { Execution::make_unique_lock (fMutex_) };
+#endif
+                fMap_.erase (key);
+            }
+            template    <typename   KEY, typename RESULT, typename TRAITS>
             inline  void    TimedCache<KEY, RESULT, TRAITS>::DoBookkeeping ()
             {
-                auto    critSec { make_unique_lock (fMutex_) };
+                auto    critSec { Execution::make_unique_lock (fMutex_) };
                 ClearOld_ ();
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>

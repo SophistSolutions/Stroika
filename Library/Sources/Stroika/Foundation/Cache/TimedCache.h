@@ -149,6 +149,9 @@ namespace   Stroika {
                 nonvirtual  void    AddElement (const KEY& key, const RESULT& result);
 
             public:
+                nonvirtual  void    Remove (const KEY& key);
+
+            public:
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
 
             public:
