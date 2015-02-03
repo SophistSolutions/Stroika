@@ -99,6 +99,36 @@ namespace   Stroika {
                  *  appear in the Elements() Iterable<T>.
                  */
                 nonvirtual  Iterable<ElementType>   Elements () const;
+
+            public:
+                /**
+                 *  Not needed, but this provides the ability to performance tweek teh search done by FindFirstThat/FindLastThat
+                 */
+                struct  FindHints {
+                    ElementType fSeedPosition;
+                    bool        fForwardFirst { false };
+                    FindHints (ElementType seedPosition, bool forwardFirst);
+                };
+
+            public:
+                /**
+                 *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
+                 &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
+                 */
+                nonvirtual  Optional<ElementType>    FindFirstThat (const function<bool(ElementType)>& testF) const;
+                nonvirtual  Optional<ElementType>    FindFirstThat (const function<bool(ElementType)>& testF, const FindHints& hints) const;
+
+            public:
+                /**
+                 *  Find the last element of the DisjointDiscreteRange that passes the argument function test.
+                 &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
+                 */
+                nonvirtual  Optional<ElementType>    FindLastThat (const function<bool(ElementType)>& testF) const;
+                nonvirtual  Optional<ElementType>    FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) const;
+
+            private:
+                nonvirtual  Optional<ElementType>    ScanTil_ (const function<bool(ElementType)>& testF, const function<Optional<ElementType>(ElementType)>& iterNext, ElementType seedPosition) const;
+                nonvirtual  Optional<ElementType>    ScanFindAny_ (const function<bool(ElementType)>& testF, ElementType seedPosition, bool forwardFirst) const;
             };
 
 
