@@ -12,6 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Memory/Optional.h"
 #include    "../Time/Realtime.h"
 
@@ -161,7 +162,6 @@ namespace   Stroika {
                 typename TRAITS::StatsType  fStats;
 
             private:
-                mutable mutex               fMutex_;
                 bool                        fAccessFreshensDate_;
                 Time::DurationSecondsType   fTimeout_;
                 Time::DurationSecondsType   fNextAutoClearAt_;
@@ -170,6 +170,11 @@ namespace   Stroika {
                 nonvirtual  void    ClearIfNeeded_ ();
                 nonvirtual  void    ClearOld_ ();
 
+#if     qDebug
+            private:
+                Debug::AssertExternallySynchronizedLock fMutex_;
+#endif
+
             private:
                 struct  MyResult_ {
                     MyResult_ (const RESULT& r)
@@ -177,7 +182,7 @@ namespace   Stroika {
                         , fLastAccessedAt (Time::GetTickCount ())
                     {
                     }
-                    RESULT  fResult;
+                    RESULT                      fResult;
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
                 map<KEY, MyResult_>   fMap_;
