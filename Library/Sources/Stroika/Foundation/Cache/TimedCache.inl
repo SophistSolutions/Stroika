@@ -68,11 +68,9 @@ namespace   Stroika {
              */
             template    <typename   KEY, typename RESULT, typename TRAITS>
             TimedCache<KEY, RESULT, TRAITS>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
-                : fMap_ ()
-                , fAccessFreshensDate_ (accessFreshensDate)
+                : fAccessFreshensDate_ (accessFreshensDate)
                 , fTimeout_ (timeoutInSeconds)
                 , fNextAutoClearAt_ (Time::GetTickCount () + timeoutInSeconds)
-                , fStats ()
             {
                 Require (fTimeout_ > 0.0f);
             }
@@ -139,7 +137,7 @@ namespace   Stroika {
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
-                    fMap_.insert (map<KEY, MyResult_>::value_type (key, MyResult_ (result)));
+                    fMap_.insert (typename map<KEY, MyResult_>::value_type (key, MyResult_ (result)));
                 }
                 else {
                     i->second = MyResult_ (result);  // overwrite if its already there
