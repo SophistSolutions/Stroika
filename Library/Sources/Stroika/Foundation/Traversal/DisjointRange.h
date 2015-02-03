@@ -92,6 +92,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Containing no points (same as containing no subranges).
                  */
                 nonvirtual   bool    empty () const;
 
