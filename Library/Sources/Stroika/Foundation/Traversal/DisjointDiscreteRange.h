@@ -49,6 +49,10 @@ namespace   Stroika {
                 using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
 
             public:
+                template    <typename T>
+                using   Optional = Memory::Optional;
+
+            public:
                 /**
                  *  You can pass in empty Ranges, and ranges out of order, but the constructor always filters out
                  *  empty ranges, and re-orders so subranges well-ordered.
@@ -81,12 +85,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<ElementType> GetNext (ElementType elt) const;
+                nonvirtual  Optional<ElementType> GetNext (ElementType elt) const;
 
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<ElementType> GetPrevious (ElementType elt) const;
+                nonvirtual  Optional<ElementType> GetPrevious (ElementType elt) const;
 
             public:
                 /**
@@ -106,7 +110,7 @@ namespace   Stroika {
                  */
                 struct  FindHints {
                     ElementType fSeedPosition;
-                    bool        fForwardFirst { false };
+                    bool        fForwardFirst;
                     FindHints (ElementType seedPosition, bool forwardFirst);
                 };
 

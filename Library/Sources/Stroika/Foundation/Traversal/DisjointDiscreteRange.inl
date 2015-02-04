@@ -57,7 +57,6 @@ namespace   Stroika {
             DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type*)
                 : inherited ()
             {
-                using   Memory::Optional;
                 Containers::Sequence<RangeType> srs {};
                 // @todo DEBUG why this initializer syntax produces wrong overload call ???
                 // --2015-01-02
@@ -129,7 +128,7 @@ namespace   Stroika {
                 return DisjointDiscreteRange { inherited::Intersection (rhs).SubRanges () };
             }
             template    <typename T, typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (ElementType elt) const -> Memory::Optional<ElementType> {
+            auto   DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (ElementType elt) const -> Optional<ElementType> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or successors
                 ElementType next = RANGE_TYPE::TraitsType::GetNext (elt);
@@ -138,10 +137,10 @@ namespace   Stroika {
                 {
                     return max (next, i->GetLowerBound ());
                 }
-                return Memory::Optional<ElementType> ();
+                return Optional<ElementType> ();
             }
             template    <typename T, typename RANGE_TYPE>
-            auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (ElementType elt) const -> Memory::Optional<ElementType> {
+            auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (ElementType elt) const -> Optional<ElementType> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or predecessors
                 ElementType prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
@@ -173,7 +172,7 @@ namespace   Stroika {
                     Ensure (i->GetUpperBound () < prev);
                     return i->GetUpperBound ();
                 }
-                return Memory::Optional<ElementType> ();
+                return Optional<ElementType> ();
             }
             template    <typename T, typename RANGE_TYPE>
             auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
@@ -191,7 +190,7 @@ namespace   Stroika {
                     context_ (const context_ & from) = default;
                 };
                 auto myContext = make_shared<context_> (context_ {subRanges});
-                auto getNext = [myContext] () -> Memory::Optional<ElementType> {
+                auto getNext = [myContext] () -> Optional<ElementType> {
                     if (myContext->fSubRangeIdx < myContext->fSubRanges.size ())
                     {
                         RangeType               curRange        { myContext->fSubRanges[myContext->fSubRangeIdx] };
@@ -207,7 +206,7 @@ namespace   Stroika {
                         }
                         return result;
                     }
-                    return Memory::Optional<ElementType> ();
+                    return Optional<ElementType> ();
                 };
                 return Traversal::CreateGenerator<ElementType> (getNext);
             }
