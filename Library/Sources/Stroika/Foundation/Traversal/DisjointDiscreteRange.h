@@ -49,8 +49,8 @@ namespace   Stroika {
                 using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
 
             public:
-                template    <typename T>
-                using   Optional = Memory::Optional;
+                template    <typename T2>
+                using   Optional = Memory::Optional<T2>;
 
             public:
                 /**

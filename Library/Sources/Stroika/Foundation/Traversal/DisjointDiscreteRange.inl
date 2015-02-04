@@ -212,7 +212,7 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(ElementType)>& testF) const -> Optional<ElementType> {
-                return this->empty () ? Optional<ElementType> () : FindFirstThat (testF, FindHints (GetBounds ().GetLowerBound (), true));
+                return this->empty () ? Optional<ElementType> () : FindFirstThat (testF, FindHints (this->GetBounds ().GetLowerBound (), true));
             }
             template    <typename T, typename RANGE_TYPE>
             auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
@@ -240,11 +240,11 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF) -> Optional<ElementType> {
-                return this->empty () ? Optional<ElementType> () : FindLastThat (testF, FindHints (GetBounds ().GetUpperBound (), false));
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF) const -> Optional<ElementType> {
+                return this->empty () ? Optional<ElementType> () : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
                 Require (Contains (hints.fSeedPosition));
                 Optional<ElementType>    o   =   ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
                 if (o)
@@ -269,7 +269,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool(ElementType)>& testF, const function<Optional<ElementType>(ElementType)>& iterNext, ElementType seedPosition) -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool(ElementType)>& testF, const function<Optional<ElementType>(ElementType)>& iterNext, ElementType seedPosition) const -> Optional<ElementType> {
                 ElementType i { seedPosition };
                 while (not testF (i))
                 {
@@ -285,15 +285,15 @@ namespace   Stroika {
                 return i;
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool(ElementType)>& testF, ElementType seedPosition, bool forwardFirst) -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool(ElementType)>& testF, ElementType seedPosition, bool forwardFirst) const -> Optional<ElementType> {
                 /*
                  *  First we must find a value/position where testF is true. It could be forward or backward from our start hint.
                  *  Try one direction, and then the other.
                  *
                  *  Only return 'IsIMissing()' if there are no values from which testF is true.
                  */
-                function<Optional<ElementType>(ElementType)> backwardNext   =   [this] (ElementType i) { return GetPrevious (i); }
-                function<Optional<ElementType>(ElementType)> forwardNext    =   [this] (ElementType i) { return GetNext (i); }
+                function<Optional<ElementType>(ElementType)> backwardNext   =   [this] (ElementType i) { return GetPrevious (i); };
+                function<Optional<ElementType>(ElementType)> forwardNext    =   [this] (ElementType i) { return GetNext (i); };
                 ElementType             i   { seedPosition };
                 Optional<ElementType>   o   { ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i) };
                 if (o)
