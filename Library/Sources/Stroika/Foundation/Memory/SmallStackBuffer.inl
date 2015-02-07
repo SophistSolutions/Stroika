@@ -69,6 +69,9 @@ namespace   Stroika {
                     // since we are using the heap, we can store the size in our fBuffer_
                     *(size_t*)&fBuffer_ = nElements;
                 }
+#if     qDebug
+                ValidateGuards_ ();
+#endif
             }
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
@@ -86,6 +89,9 @@ namespace   Stroika {
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 #endif
                 GrowToSize (nElements);
+#if     qDebug
+                ValidateGuards_ ();
+#endif
             }
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
@@ -98,11 +104,18 @@ namespace   Stroika {
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 #endif
+#if     qDebug
+                memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+                memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+#endif
                 GrowToSize (from.fSize_);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
 #else
                 std::copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
+#endif
+#if     qDebug
+                ValidateGuards_ ();
 #endif
             }
             template    <typename   T, size_t BUF_SIZE>
@@ -127,6 +140,9 @@ namespace   Stroika {
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
 #else
                 std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.fSize_, fPointer_);
+#endif
+#if     qDebug
+                ValidateGuards_ ();
 #endif
                 return *this;
             }
