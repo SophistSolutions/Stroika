@@ -7,6 +7,7 @@
 #include    "../../Foundation/StroikaPreComp.h"
 
 #include    "../../Foundation/Cache/LRUCache.h"
+#include    "../../Foundation/Memory/Optional.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 
@@ -34,7 +35,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Led {
 
-
+            using   Foundation::Memory::Optional;
 
             /*
             @CONFIGVAR:     qCacheTextMeasurementsForPM
@@ -328,22 +329,19 @@ namespace   Stroika {
                 struct  CacheEltLRUCacheTraits;
                 class   CacheElt {
                 public:
-                    CacheElt ();
-
-                public:
                     struct  COMPARE_ITEM {
                         COMPARE_ITEM (PartitionMarker* pm, size_t startingRowAt): fPM (pm), fRowStartingAt (startingRowAt) {}
-
                         PartitionMarker*    fPM;
                         size_t              fRowStartingAt;
                     };
+
+                public:
+                    CacheElt ();
+                    CacheElt (const COMPARE_ITEM& ci);
+                    CacheElt (const CacheElt&) = default;
+
                 private:
                     COMPARE_ITEM    fValidFor;
-
-                    static  bool    Equal (const CacheElt& lhs, const COMPARE_ITEM& rhs)
-                    {
-                        return lhs.fValidFor.fPM == rhs.fPM and lhs.fValidFor.fRowStartingAt == rhs.fRowStartingAt;
-                    }
 
                 public:
                     Foundation::Memory::SmallStackBuffer<Led_Distance>  fMeasurementsCache;     // for just the given PM
@@ -352,32 +350,21 @@ namespace   Stroika {
                     friend  struct  CacheEltLRUCacheTraits;
                     friend  class   PartitioningTextImager::MeasureTextCache;
                 };
-                struct  CacheEltLRUCacheTraits : Foundation::Cache::DefaultTraits_LEGACY_SOON2GO_<CacheElt, CacheElt::COMPARE_ITEM> {
-                    static  KeyType ExtractKey (const ElementType& e)
-                    {
-                        return e.fValidFor;
-                    }
-                    static  void    Clear (ElementType* element)
-                    {
-                        RequireNotNull (element);
-                        element->fValidFor.fPM = nullptr;
-                    }
-                    static  bool    Equal (const KeyType& lhs, const KeyType& rhs)
+
+            private:
+                struct  CacheEltLRUCacheTraits_ : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt::COMPARE_ITEM> {
+                    static  bool    Equals (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs)
                     {
                         return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
                     }
                 };
-
-            private:
-                mutable Foundation::Cache::LRUCache_LEGACY_SOON2GO_<CacheElt, CacheEltLRUCacheTraits>  fCache;
+                mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheEltLRUCacheTraits_>  fCache;
 
             public:
-                nonvirtual  void            ClearAll ();
-                nonvirtual  const CacheElt* LookupPM (PartitionMarker* pm, size_t rowStart) const;
+                nonvirtual  void                ClearAll ();
 
             public:
-                nonvirtual  CacheElt*       PrepareCacheUpdate (PartitionMarker* pm) const;
-                nonvirtual  const CacheElt* CompleteCacheUpdate (CacheElt* cacheElt, PartitionMarker* pm, size_t rowStart) const;
+                nonvirtual  CacheElt   LookupValue (PartitionMarker* pm, size_t rowStart, const function<CacheElt(PartitionMarker*, size_t)>& valueFetcher);
 
             private:
                 PartitionPtr    fPartition;
@@ -584,26 +571,25 @@ namespace   Stroika {
 //  class   PartitioningTextImager::MeasureTextCache
             inline  void    PartitioningTextImager::MeasureTextCache::ClearAll ()
             {
-                fCache.ClearCache ();
+                fCache.clear ();
             }
-            inline  const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::LookupPM (PartitionMarker* pm, size_t rowStart) const
+            inline   PartitioningTextImager::MeasureTextCache::CacheElt   PartitioningTextImager::MeasureTextCache::LookupValue (PartitionMarker* pm, size_t rowStart, const function<CacheElt(PartitionMarker*, size_t)>& valueFetcher)
             {
                 RequireNotNull (pm);
-                return fCache.LookupElement (CacheElt::COMPARE_ITEM (pm, rowStart));
-            }
-            inline  PartitioningTextImager::MeasureTextCache::CacheElt* PartitioningTextImager::MeasureTextCache::PrepareCacheUpdate (PartitionMarker* pm) const
-            {
-                RequireNotNull (pm);
-                Led_Arg_Unused (pm);
-                // Safe to pass changing CacheElt::COMPARE_ITEM () because use HASH_TABLE_SIZE==1 for fCache
-                return fCache.AddNew (CacheElt::COMPARE_ITEM (pm, 0));
+                using CacheElt = PartitioningTextImager::MeasureTextCache::CacheElt;
+                return fCache.LookupValue (CacheElt::COMPARE_ITEM (pm, rowStart), [valueFetcher] (const CacheElt::COMPARE_ITEM & c) { return valueFetcher (c.fPM, c.fRowStartingAt); });
             }
 
 
 //  class   PartitioningTextImager::MeasureTextCache::CacheElt
-            inline  PartitioningTextImager::MeasureTextCache::CacheElt::CacheElt ():
-                fValidFor (nullptr, 0),
-                fMeasurementsCache (0)
+            inline  PartitioningTextImager::MeasureTextCache::CacheElt::CacheElt ()
+                : fValidFor (nullptr, 0)
+                , fMeasurementsCache (0)
+            {
+            }
+            inline  PartitioningTextImager::MeasureTextCache::CacheElt::CacheElt (const COMPARE_ITEM& ci)
+                : fValidFor { ci }
+            , fMeasurementsCache (0)
             {
             }
 #endif

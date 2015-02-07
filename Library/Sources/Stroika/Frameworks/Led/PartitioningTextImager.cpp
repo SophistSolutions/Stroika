@@ -536,18 +536,15 @@ Led_Distance    PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, si
     size_t  startOfRow  =   GetStartOfRowContainingPosition (from);
     Require (GetEndOfRowContainingPosition (startOfRow) >= to);     //  WE REQUIRE from/to be contained within a single row!!!
 
-    const MeasureTextCache::CacheElt*   ce  =   fMeasureTextCache->LookupPM (pm, startOfRow);
-    if (ce == nullptr) {
-        MeasureTextCache::CacheElt* updateCE = fMeasureTextCache->PrepareCacheUpdate (pm);
+    MeasureTextCache::CacheElt  ce = fMeasureTextCache->LookupValue (pm, startOfRow, [this] (PartitionMarker * pm, size_t startOfRow) {
+        MeasureTextCache::CacheElt  newCE { MeasureTextCache::CacheElt::COMPARE_ITEM (pm, startOfRow) };
         size_t  rowEnd      =   GetEndOfRowContainingPosition (startOfRow);
         size_t  rowLen      =   rowEnd - startOfRow;
-        updateCE->fMeasurementsCache.GrowToSize (rowLen);
-        CalcSegmentSize_FillIn (startOfRow, rowEnd, updateCE->fMeasurementsCache);
-        ce = fMeasureTextCache->CompleteCacheUpdate (updateCE, pm, startOfRow);
-        Assert (ce == fMeasureTextCache->LookupPM (pm, startOfRow));
-    }
-    AssertNotNull (ce);
-    const   Led_Distance*   measurementsCache   =   ce->fMeasurementsCache;
+        newCE.fMeasurementsCache.GrowToSize (rowLen);
+        CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache);
+        return newCE;
+    });
+    const   Led_Distance*   measurementsCache   =   ce.fMeasurementsCache;
 
     Assert (to > startOfRow);                                                           // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
@@ -822,14 +819,6 @@ PartitioningTextImager::MeasureTextCache::~MeasureTextCache ()
     ts.RemoveMarkerOwner (this);
 }
 
-const PartitioningTextImager::MeasureTextCache::CacheElt*   PartitioningTextImager::MeasureTextCache::CompleteCacheUpdate (CacheElt* cacheElt, PartitionMarker* pm, size_t rowStart) const
-{
-    RequireNotNull (cacheElt);
-    cacheElt->fValidFor.fPM = pm;
-    cacheElt->fValidFor.fRowStartingAt = rowStart;
-    return cacheElt;
-}
-
 void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
 {
     *infoRecord = pm;
@@ -838,11 +827,7 @@ void    PartitioningTextImager::MeasureTextCache::AboutToSplit (PartitionMarker*
 void    PartitioningTextImager::MeasureTextCache::DidSplit (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    for (auto i = fCache.begin (); i != fCache.end (); ++i) {
-        if ((*i).fValidFor.fPM == pm) {
-            CacheEltLRUCacheTraits::Clear (&(*i));
-        }
-    }
+    fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
 }
 
 void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept
@@ -855,11 +840,7 @@ void    PartitioningTextImager::MeasureTextCache::AboutToCoalece (PartitionMarke
 void    PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) const noexcept
 {
     PartitionMarker*    pm  =   reinterpret_cast<PartitionMarker*> (infoRecord);
-    for (auto i = fCache.begin (); i != fCache.end (); ++i) {
-        if ((*i).fValidFor.fPM == pm) {
-            CacheEltLRUCacheTraits::Clear (&(*i));
-        }
-    }
+    fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
 }
 
 TextStore*  PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
@@ -897,11 +878,7 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
             break;
         }
 // Could optimize this further.... (MUCH)
-        for (auto i = fCache.begin (); i != fCache.end (); ++i) {
-            if ((*i).fValidFor.fPM == pm) {
-                CacheEltLRUCacheTraits::Clear (&(*i));
-            }
-        }
+        fCache.clear ([pm] (const CacheElt::COMPARE_ITEM & c) { return pm == c.fPM; });
     }
     MarkerOwner::EarlyDidUpdateText (updateInfo);
 }
