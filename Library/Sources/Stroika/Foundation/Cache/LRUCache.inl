@@ -121,6 +121,12 @@ namespace   Stroika {
                 return fCur->fElement;
             }
             template    <typename   ELEMENT, typename TRAITS>
+            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator-> ()
+            {
+                RequireNotNull (fCur);
+                return &fCur->fElement;
+            }
+            template    <typename   ELEMENT, typename TRAITS>
             inline  bool LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator== (CacheIterator rhs)
             {
                 return fCur == rhs.fCur;
@@ -328,6 +334,28 @@ namespace   Stroika {
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 fRealCache_.ClearCache ();
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            void    LRUCache<KEY, VALUE, TRAITS>::clear (const KEY& key)
+            {
+                auto    critSec { Execution::make_unique_lock (*this) };
+                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
+                if (v != nullptr) {
+                    v->fKey.clear ();
+                    v->fValue.clear ();
+                }
+                Ensure (not Lookup (key));
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            void    LRUCache<KEY, VALUE, TRAITS>::clear (function<bool(const KEY&)> clearPredicate)
+            {
+                auto    critSec { Execution::make_unique_lock (*this) };
+                for (auto i = fRealCache_.begin (); i != fRealCache_.end (); ++i) {
+                    if (i->fKey and clearPredicate (*i->fKey)) {
+                        i->fKey.clear ();
+                        i->fValue.clear ();
+                    }
+                }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const -> OptionalValue

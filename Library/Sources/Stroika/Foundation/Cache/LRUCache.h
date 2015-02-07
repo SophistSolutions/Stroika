@@ -277,6 +277,7 @@ namespace   Stroika {
             public:
                 nonvirtual  CacheIterator& operator++ ();
                 nonvirtual  ELEMENT& operator* ();
+                nonvirtual  ELEMENT* operator-> ();
                 nonvirtual  bool operator== (CacheIterator rhs);
                 nonvirtual  bool operator!= (CacheIterator rhs);
 
@@ -368,6 +369,8 @@ namespace   Stroika {
 
             public:
                 nonvirtual  void    clear ();
+                nonvirtual  void    clear (const KEY& key);
+                nonvirtual  void    clear (function<bool(const KEY&)> clearPredicate);
 
             public:
                 // experimental as of 2015-02-01 - maybe use regular optional traits?
