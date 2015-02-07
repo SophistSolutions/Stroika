@@ -296,8 +296,11 @@ namespace   Stroika {
                 if (this != &rhs) {
                     SetMaxCacheSize (rhs.GetMaxCacheSize ());
                     auto    critSec { Execution::make_unique_lock (rhs) };
+                    fRealCache_.ClearCache ();
                     for (auto i : rhs.fRealCache_) {
-                        Add (i.fKey, i.fValue);
+                        if (i.fKey) {
+                            Add (*i.fKey, *i.fValue);
+                        }
                     }
                 }
                 return *this;
@@ -351,7 +354,9 @@ namespace   Stroika {
                 Containers::Mapping<KEY, VALUE>  result;
                 auto    critSec { Execution::make_unique_lock (*this) };
                 for (auto i : fRealCache_) {
-                    result.Add (i.fKey, i.fValue);
+                    if (i.fKey) {
+                        result.Add (*i.fKey, *i.fValue);
+                    }
                 }
                 return result;
             }

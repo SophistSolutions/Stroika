@@ -108,8 +108,8 @@ namespace   Stroika {
                  *  Helper detail class for analyzing and tuning cache statistics.
                  */
                 struct  Stats_Basic {
-                    size_t      fCachedCollected_Hits { 0 };
-                    size_t      fCachedCollected_Misses { 0 };
+                    size_t      fCachedCollected_Hits   { };
+                    size_t      fCachedCollected_Misses { };
                     void    IncrementHits ();
                     void    IncrementMisses ();
                 };
@@ -288,13 +288,14 @@ namespace   Stroika {
 
 
 
-
+#if 0
 
             /// MIGRATION STRATEGY FROM OLD TO NEW NAMES/DESIGN
             template    <typename   ELEMENT, typename KEY = ELEMENT>
             using  DefaultTraits_LEGACY_SOON2GO_ = LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>;
             template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY_SOON2GO_<ELEMENT>>
             using   LRUCache_LEGACY_SOON2GO_  = LRUCache_<ELEMENT, TRAITS>;
+#endif
 
 
 
@@ -302,6 +303,8 @@ namespace   Stroika {
             namespace   LRUCacheSupport {
                 template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
                 struct  DefaultTraits {
+                    using   KeyType     =   KEY;
+
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
