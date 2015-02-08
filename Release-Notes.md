@@ -20,10 +20,16 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a76">v2.0a76x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a76">v2.0a76</a><br/>2015-02-07</td>
 <td>
 <ul>
-	<li>TODO.</li>
+	<li>Draft of DisjointDiscreteRange<>::FindFirstThat/FindLastThat</li>
+	<li>Fixed small bug(s) with LRUCache due to recent change to using Optional internally; 
+	KeyType in its DefaultTraits, and ifdef out LRUCache_LEGACY_SOON2GO_</li>
+	<li>LRUCache clear() method overloads</li>
+	<li>Improved 'validateguards' support in SmallStackBuffer (fixed bug that not setup gaurds on X(X&) CTOR</li>
+	<li>Reimplemnted MeasureTextCache::CacheElt using new LRUCache code (cleanup)</li>
+	<li>Very little testing</li>
 </ul>
 </td>
 </tr>
