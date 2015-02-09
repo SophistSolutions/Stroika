@@ -216,7 +216,7 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
-                Require (Contains (hints.fSeedPosition));
+                Require (this->Contains (hints.fSeedPosition));
                 Optional<ElementType>    o   =   ScanFindAny_ (testF,  hints.fSeedPosition, hints.fForwardFirst);
                 if (o)
                 {
@@ -245,7 +245,7 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
-                Require (Contains (hints.fSeedPosition));
+                Require (this->Contains (hints.fSeedPosition));
                 Optional<ElementType>    o   =   ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
                 if (o)
                 {
