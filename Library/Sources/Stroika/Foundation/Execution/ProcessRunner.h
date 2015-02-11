@@ -122,6 +122,9 @@ namespace   Stroika {
             // The caller of 'subprocess' then would just wait on each of the 3 subprocesses (or would implement the aforementioned
             // looping over reads/writes/selects etc).
             //
+             *
+             *  EXAMPLE USAGE:
+             *      String name = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
              */
             class ProcessRunner {
             public:
