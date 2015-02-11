@@ -13,6 +13,7 @@
 #include    "BlockingQueue.h"
 #include    "Common.h"
 #include    "Process.h"
+#include    "Synchronized.h"
 #include    "Thread.h"
 #include    "TimeOutException.h"
 
@@ -64,12 +65,11 @@ namespace {
     Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
-        mutex                               fMutex_;     // mutex so we can update related variables together
         pair<Logger::Priority, String>      fLastMsgSent_;
         Time::DurationSecondsType           fLastSentAt = 0.0;
         unsigned int                        fRepeatCount_ = 0;
     };
-    LastMsg_    sLastMsg_;
+    Synchronized<LastMsg_>    sLastMsg_;
 }
 
 
@@ -91,19 +91,19 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
     if (tmp.get () != nullptr) {
         auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
         if (sSuppressDuplicatesThreshold_->IsPresent ()) {
-            auto    critSec { make_unique_lock (sLastMsg_.fMutex_) };
-            if (p == sLastMsg_.fLastMsgSent_) {
-                sLastMsg_.fRepeatCount_++;
-                sLastMsg_.fLastSentAt = Time::GetTickCount ();
+            auto    lastMsgLocked = sLastMsg_.GetReference ();
+            if (p == lastMsgLocked->fLastMsgSent_) {
+                lastMsgLocked->fRepeatCount_++;
+                lastMsgLocked->fLastSentAt = Time::GetTickCount ();
                 return; // so will be handled later
             }
             else {
-                if (sLastMsg_.fRepeatCount_ > 0) {
+                if (lastMsgLocked->fRepeatCount_ > 0) {
                     FlushDupsWarning_ ();
                 }
-                sLastMsg_.fLastMsgSent_ = p;
-                sLastMsg_.fRepeatCount_ = 0;
-                sLastMsg_.fLastSentAt = Time::GetTickCount ();
+                lastMsgLocked->fLastMsgSent_ = p;
+                lastMsgLocked->fRepeatCount_ = 0;
+                lastMsgLocked->fLastSentAt = Time::GetTickCount ();
             }
         }
         if (GetBufferingEnabled ()) {
@@ -170,21 +170,22 @@ void    Logger::FlushDupsWarning_ ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (SDKSTR ("Logger::FlushDupsWarning_"));
 #endif
-    if (sLastMsg_.fRepeatCount_ > 0) {
+    auto    lastMsgLocked = sLastMsg_.GetReference ();
+    if (lastMsgLocked->fRepeatCount_ > 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", sLastMsg_.fRepeatCount_);
+        DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
         shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
         if (tmp != nullptr) {
-            if (sLastMsg_.fRepeatCount_ == 1) {
-                tmp->Log (sLastMsg_.fLastMsgSent_.first, sLastMsg_.fLastMsgSent_.second);
+            if (lastMsgLocked->fRepeatCount_ == 1) {
+                tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
             }
             else {
-                tmp->Log (sLastMsg_.fLastMsgSent_.first,  Characters::Format (L"[%d duplicates suppressed]: %s", sLastMsg_.fRepeatCount_ - 1, sLastMsg_.fLastMsgSent_.second.c_str ()));
+                tmp->Log (lastMsgLocked->fLastMsgSent_.first,  Characters::Format (L"[%d duplicates suppressed]: %s", lastMsgLocked->fRepeatCount_ - 1, lastMsgLocked->fLastMsgSent_.second.c_str ()));
             }
         }
-        sLastMsg_.fRepeatCount_ = 0;
-        sLastMsg_.fLastMsgSent_.second.clear ();
+        lastMsgLocked->fRepeatCount_ = 0;
+        lastMsgLocked->fLastMsgSent_.second.clear ();
     }
 }
 
@@ -210,8 +211,8 @@ void    Logger::UpdateBookkeepingThread_ ()
                     catch (const TimeOutException&) {
                     }
                     {
-                        auto    critSec { make_unique_lock (sLastMsg_.fMutex_) };
-                        if (sLastMsg_.fRepeatCount_ > 0 and sLastMsg_.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
+                        auto    lastMsgLocked = sLastMsg_.GetReference ();
+                        if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
                             FlushDupsWarning_ ();
                         }
                     }
