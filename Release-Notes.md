@@ -18,10 +18,12 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a77">v2.0a77x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a77">v2.0a77</a><br/>2015-02-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Bugfixes with Traversal/DisjointDiscreteRange</li>
+	<li>use Synchonized<> with recursive mutex  instead of nonrecursive mutext to avoid a flush deadlock in Execution::Logger</li>
+	<li>Very little testing</li>
 </ul>
 </td>
 </tr>
