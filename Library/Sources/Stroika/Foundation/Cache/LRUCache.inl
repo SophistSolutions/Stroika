@@ -46,7 +46,7 @@ namespace   Stroika {
             }
 
 
-
+#if 0
             /*
              ********************************************************************************
              *********** LRUCacheSupport::DefaultTraits_<ELEMENT,TRAITS> *********************
@@ -72,6 +72,7 @@ namespace   Stroika {
             {
                 return lhs == rhs;
             }
+#endif
 
 
             /*

@@ -133,68 +133,51 @@ namespace   Stroika {
                 using   StatsType_DEFAULT   =   Stats_Null;
 #endif
 
-
                 /**
-                 * The DefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
                  */
-                template    <typename   ELEMENT, typename KEY = ELEMENT>
-                struct  DefaultTraits_ {
-                    using   ElementType =   ELEMENT;
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+                struct  DefaultTraits {
                     using   KeyType     =   KEY;
 
                     // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                    DEFINE_CONSTEXPR_CONSTANT(uint32_t, HASH_TABLE_SIZE, 1);
-
-                    static  KeyType ExtractKey (const ElementType& e);
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
                     // If KeyType different type than ElementType we need a hash for that too
-                    static  size_t  Hash (const KeyType& e);
 
-                    // defaults to using default CTOR for ElementType and copying over
-                    static  void    Clear (ElementType* element);
+                    //tmphack - SHOUDL do smarter defaults!!!!
+                    template    <typename SFINAE>
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
+                    {
+                        using   Cryptography::Digest::Digester;
+                        using   Cryptography::Digest::Algorithm::Jenkins;
+                        using   USE_DIGESTER_     =   Digester<Jenkins>;
+                        return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
+                    }
+                    template    <typename SFINAE>
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
+                    {
+                        return 0;
+                    }
+                    static  size_t  Hash (const KEY& e)
+                    {
+                        return Hash_SFINAE_<KEY> (e);
+                    }
 
                     // defaults to operator==
-                    static  bool    Equal (const KeyType& lhs, const KeyType& rhs);
+                    static  bool    Equals (const KEY& lhs, const KEY& rhs)
+                    {
+                        return lhs == rhs;
+                    }
 
-                    using   StatsType   =   StatsType_DEFAULT;
+                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
-
 
             }
 
 
-            /**
-             *  A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
-             *
-             *  TODO: THIS DOC IS OBSOLETE - PRE TRAITS implementation!!!
-             *
-             *
-             *
-                <br>
-                <code>
-                    struct  ELEMENT {
-                        struct  COMPARE_ITEM;
-                        nonvirtual  void    Clear ();
-                        static      bool    Equal (const ELEMENT&, const COMPARE_ITEM&);
-                    };
-                </code>
-                </p>
-                    <p>The <code>COMPARE_ITEM</code> is an object which defines the attributes which make the given item UNIQUE (for Lookup purposes).
-                Think of it as the KEY. The <code>Clear ()</code> method must be provided to invaliate the given item (usually by setting part of the COMPARE_ITEM
-                to an invalid value) so it won't get found by a Lookup. The 'Equal' method compares an element and a COMPARE_ITEM in the Lookup method.
-                    </p>
-                    <p>Note that the type 'ELEMENT' must be copyable (though its rarely copied - just in response
-                to a @'LRUCache<ELEMENT>::SetMaxCacheSize' call.</p>
-                    <p>To iterate over the elements of the cache - use an @'LRUCache<ELEMENT>::CacheIterator'.
-                    <p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
-                to internal data structures (the cached elements).
-                *
 
-                *NOTE that this the reason for the ELEMNET first arg to LRUCache template is so I can do default
-                * template more easily - for second argument. Otherwise, its really not needed and must agree with
-                * the elemnt in TRAITS::ElementType;
-            */
-            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits_<ELEMENT>>
+            // MOVE TO NESTED SOON
+            template    <typename   ELEMENT, typename TRAITS>
             class   LRUCache_ {
             public:
                 using   ElementType     =   typename TRAITS::ElementType;
@@ -251,6 +234,32 @@ namespace   Stroika {
                     ElementType     fElement;
                 };
 
+
+                /*
+                @CLASS:         LRUCache<ELEMENT>::CacheIterator
+                @DESCRIPTION:   <p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
+                                <p>Please note that while an CacheIterator object exists for an LRUCache - it is not
+                            safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
+                            </p>
+                    //TODO: Must update implementation to support BUCKETS (hashtable)
+                    //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
+                */
+                struct  CacheIterator {
+                    explicit CacheIterator (CacheElement_** start, CacheElement_** end);
+
+                public:
+                    nonvirtual  CacheIterator& operator++ ();
+                    nonvirtual  ELEMENT& operator* ();
+                    nonvirtual  ELEMENT* operator-> ();
+                    nonvirtual  bool operator== (CacheIterator rhs);
+                    nonvirtual  bool operator!= (CacheIterator rhs);
+
+                private:
+                    CacheElement_**  fCurV;
+                    CacheElement_**  fEndV;
+                    CacheElement_*   fCur;
+                };
+
             private:
                 vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
                 CacheElement_*          fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
@@ -261,86 +270,8 @@ namespace   Stroika {
             };
 
 
-            /*
-            @CLASS:         LRUCache<ELEMENT>::CacheIterator
-            @DESCRIPTION:   <p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
-                            <p>Please note that while an CacheIterator object exists for an LRUCache - it is not
-                        safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
-                        </p>
-                //TODO: Must update implementation to support BUCKETS (hashtable)
-                //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
-            */
-            template    <typename   ELEMENT, typename TRAITS>
-            struct  LRUCache_<ELEMENT, TRAITS>::CacheIterator {
-                explicit CacheIterator (CacheElement_** start, CacheElement_** end);
-
-            public:
-                nonvirtual  CacheIterator& operator++ ();
-                nonvirtual  ELEMENT& operator* ();
-                nonvirtual  ELEMENT* operator-> ();
-                nonvirtual  bool operator== (CacheIterator rhs);
-                nonvirtual  bool operator!= (CacheIterator rhs);
-
-            private:
-                CacheElement_**  fCurV;
-                CacheElement_**  fEndV;
-                CacheElement_*   fCur;
-            };
 
 
-
-#if 0
-
-            /// MIGRATION STRATEGY FROM OLD TO NEW NAMES/DESIGN
-            template    <typename   ELEMENT, typename KEY = ELEMENT>
-            using  DefaultTraits_LEGACY_SOON2GO_ = LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>;
-            template    <typename   ELEMENT, typename TRAITS = DefaultTraits_LEGACY_SOON2GO_<ELEMENT>>
-            using   LRUCache_LEGACY_SOON2GO_  = LRUCache_<ELEMENT, TRAITS>;
-#endif
-
-
-
-/// DRAFT NEW API
-            namespace   LRUCacheSupport {
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
-                struct  DefaultTraits {
-                    using   KeyType     =   KEY;
-
-                    // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
-
-                    // If KeyType different type than ElementType we need a hash for that too
-
-                    //tmphack - SHOUDL do smarter defaults!!!!
-                    template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
-                    {
-                        using   Cryptography::Digest::Digester;
-                        using   Cryptography::Digest::Algorithm::Jenkins;
-                        using   USE_DIGESTER_     =   Digester<Jenkins>;
-                        return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
-                    }
-                    template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
-                    {
-                        return 0;
-                    }
-                    static  size_t  Hash (const KEY& e)
-                    {
-                        return Hash_SFINAE_<KEY> (e);
-                    }
-
-                    // defaults to operator==
-                    static  bool    Equals (const KEY& lhs, const KEY& rhs)
-                    {
-                        return lhs == rhs;
-                    }
-
-                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
-                };
-
-
-            }
 
 
             /**
@@ -433,7 +364,15 @@ namespace   Stroika {
                     Memory::Optional<KEY>     fKey;
                     Memory::Optional<VALUE>   fValue;
                 };
-                struct  LEGACYLRUCACHEOBJ_TRAITS_ : Cache::LRUCacheSupport::DefaultTraits_<LEGACYLRUCACHEOBJ_, KEY> {
+                struct  LEGACYLRUCACHEOBJ_TRAITS_ {
+                    using   ElementType =   LEGACYLRUCACHEOBJ_;
+                    using   KeyType     =   KEY;
+                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
+
+                    static  void    Clear (ElementType* element)
+                    {
+                        (*element) = ElementType ();
+                    }
                     static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
                     {
                         return e.fKey;
