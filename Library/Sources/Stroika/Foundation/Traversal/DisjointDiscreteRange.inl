@@ -303,7 +303,7 @@ namespace   Stroika {
                 }
                 else {
                     // scan the other way and see if its found
-                    o = ScanTil_ (testF, forwardFirst ? backwardNext : forwardFirst, i);
+                    o = ScanTil_ (testF, forwardFirst ? backwardNext : forwardNext, i);
                     if (o)
                     {
                         i = *o;
