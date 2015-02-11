@@ -372,6 +372,7 @@ void    ThreadPool::Abort ()
 
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
+    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortAndWaitForDone"));
     Thread::SuppressAbortInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     Abort ();
     WaitForDone (timeout);
