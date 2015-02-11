@@ -18,10 +18,10 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a78">v2.0a78x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a78">v2.0a78</a><br/>2015-02-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Typo</li>
 </ul>
 </td>
 </tr>
