@@ -14,6 +14,15 @@ History
     <th style='vertical-align: top'>Changes</th>
   </thead>
 
+    
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a79">v2.0a79x</a><br/>2015-02-??</td>
+<td>
+<ul>
+	<li>TODO</li>
+</ul>
+</td>
+</tr>
 
 
   
