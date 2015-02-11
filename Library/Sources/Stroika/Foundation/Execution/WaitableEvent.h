@@ -132,6 +132,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This checks if the event is currently in a triggered state. Regardless of the type of event
+                 *  (autoreset or not) - this does not change the trigger state.
+                 */
+                nonvirtual  bool    PeekIsSet () const;
+
+            public:
+                /**
                  *  Set the event to the signaled state.
                  *
                  *  \note   This COULD have been called 'Signal', or 'SetSignaled'.
@@ -145,7 +152,10 @@ namespace   Stroika {
                  *
                  *  TimeOutException throws if the timeout is exceeeded.
                  *
+                 *  \note Wait (0) will always throw TimeOutException () regardless of the state of the event/trigger
+                 *
                  *  @see WaitQuietly ()
+                 *  @see PeekIsSet ()
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -157,9 +167,12 @@ namespace   Stroika {
                  *
                  *  Returns:    true if event signaled/occurred, and false if timeout
                  *
+                 *  \note WaitQuietly (0) will always return false regardless of the state of the event/trigger
+                 *
                  *  @see Wait ()
                  *  @see WaitUntil ()
                  *  @see WaitUntilQuietly ()
+                 *  @see PeekIsSet ()
                  */
                 nonvirtual  bool    WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -253,6 +266,7 @@ namespace   Stroika {
 
                     WE_ (ResetType resetType);
                     nonvirtual  void    Reset ();
+                    nonvirtual  bool    PeekIsSet () const;
                     nonvirtual  void    Set ();
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
                     nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);

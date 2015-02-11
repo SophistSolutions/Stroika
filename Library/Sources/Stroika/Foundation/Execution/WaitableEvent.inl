@@ -61,6 +61,10 @@ namespace   Stroika {
 #endif
                 fTriggered = false;
             }
+            inline  bool    WaitableEvent::WE_::PeekIsSet () const
+            {
+                return fTriggered;
+            }
             inline  void    WaitableEvent::WE_::Set ()
             {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -86,6 +90,10 @@ namespace   Stroika {
             {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
                 fWE_.Reset ();
+            }
+            inline  bool    WaitableEvent::PeekIsSet () const
+            {
+                return fWE_.PeekIsSet ();
             }
             inline  void    WaitableEvent::Wait (Time::DurationSecondsType timeout)
             {
