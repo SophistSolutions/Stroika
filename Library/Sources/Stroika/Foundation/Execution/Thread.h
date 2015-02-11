@@ -396,6 +396,9 @@ namespace   Stroika {
             /**
              *  This object - while in existance, blocks delivery of all abort signals (for this thread in which its instantiated).
              *  These objects nest.
+             *
+             *  This is used to prevent a second abort request coming in to a thread already in the process of shutting down, which
+             *  might cause a second, or incomplete cleanup.
              */
             class   Thread::SuppressAbortInContext {
             public:
