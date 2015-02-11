@@ -46,6 +46,101 @@ namespace   Stroika {
             }
 
 
+
+            // MOVE TO NESTED SOON
+            template    <typename   ELEMENT, typename TRAITS>
+            class   LRUCache_ {
+            public:
+                using   ElementType     =   typename TRAITS::ElementType;
+                using   KeyType         =   typename TRAITS::KeyType;
+
+            public:
+                LRUCache_ (size_t maxCacheSize);
+                LRUCache_ () = delete;
+                LRUCache_ (const LRUCache_&) = delete;
+
+            public:
+                nonvirtual  LRUCache_& operator= (const LRUCache_&) = delete;
+
+            public:
+                nonvirtual  size_t  GetMaxCacheSize () const;
+                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
+
+            public:
+                struct  CacheIterator;
+            public:
+                nonvirtual  CacheIterator   begin ();
+                nonvirtual  CacheIterator   end ();
+
+            public:
+                nonvirtual  void    ClearCache ();
+
+            public:
+                /**
+                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                 */
+                nonvirtual  ELEMENT*    AddNew (const KeyType& item);
+
+            public:
+                /*
+                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                 */
+                nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
+
+            public:
+                typename TRAITS::StatsType  fStats;
+
+            private:
+                struct  CacheElement_ {
+                public:
+                    CacheElement_ ();
+
+                public:
+                    CacheElement_*   fNext;
+                    CacheElement_*   fPrev;
+
+                public:
+                    ElementType     fElement;
+                };
+
+
+            public:
+                /*
+                @CLASS:         LRUCache<ELEMENT>::CacheIterator
+                @DESCRIPTION:   <p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
+                                <p>Please note that while an CacheIterator object exists for an LRUCache - it is not
+                            safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
+                            </p>
+                    //TODO: Must update implementation to support BUCKETS (hashtable)
+                    //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
+                */
+                struct  CacheIterator {
+                    explicit CacheIterator (CacheElement_** start, CacheElement_** end);
+
+                public:
+                    nonvirtual  CacheIterator& operator++ ();
+                    nonvirtual  ELEMENT& operator* ();
+                    nonvirtual  ELEMENT* operator-> ();
+                    nonvirtual  bool operator== (CacheIterator rhs);
+                    nonvirtual  bool operator!= (CacheIterator rhs);
+
+                private:
+                    CacheElement_**  fCurV;
+                    CacheElement_**  fEndV;
+                    CacheElement_*   fCur;
+                };
+
+            private:
+                vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+                CacheElement_*          fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
+                CacheElement_*          fCachedElts_Last_[TRAITS::HASH_TABLE_SIZE];
+
+            private:
+                nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
+            };
+
 #if 0
             /*
              ********************************************************************************
