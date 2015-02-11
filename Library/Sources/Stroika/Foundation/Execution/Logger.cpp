@@ -28,6 +28,13 @@ using   Time::DurationSecondsType;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 /*
  ********************************************************************************
  ******************************** Execution::Logger *****************************
@@ -114,6 +121,10 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 
 void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Logger::SetBufferingEnabled"));
+    DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
+#endif
     sThe_.fBufferingEnabled_ = logBufferingEnabled;
     UpdateBookkeepingThread_ ();
 }
@@ -142,6 +153,10 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Logger::SetSuppressDuplicates"));
+    DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
+#endif
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
     auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
     if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
@@ -152,7 +167,13 @@ void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsTyp
 
 void    Logger::FlushDupsWarning_ ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (SDKSTR ("Logger::FlushDupsWarning_"));
+#endif
     if (sLastMsg_.fRepeatCount_ > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", sLastMsg_.fRepeatCount_);
+#endif
         shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
         if (tmp != nullptr) {
             if (sLastMsg_.fRepeatCount_ == 1) {
