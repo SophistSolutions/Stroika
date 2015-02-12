@@ -47,6 +47,57 @@ namespace   Stroika {
 
 
 
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            struct  LRUCache<KEY, VALUE, TRAITS>::LEGACYLRUCACHEOBJ_ {
+                Memory::Optional<KEY>     fKey;
+                Memory::Optional<VALUE>   fValue;
+            };
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            struct  LRUCache<KEY, VALUE, TRAITS>::LEGACYLRUCACHEOBJ_TRAITS_ {
+                using   ElementType =   LEGACYLRUCACHEOBJ_;
+                using   KeyType     =   KEY;
+                using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
+
+                static  void    Clear (ElementType* element)
+                {
+                    (*element) = ElementType ();
+                }
+                static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
+                {
+                    return e.fKey;
+                }
+                DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
+                static  size_t  HS_ (const KEY& k)
+                {
+                    return TRAITS::Hash (k);
+                }
+                static  size_t  Hash (const Memory::Optional<KEY>& e)
+                {
+                    static_assert (TRAITS::kHashTableSize >= 1, "HASH_TABLE_SIZE >= 1");
+                    if (TRAITS::kHashTableSize == 1) {
+                        return 0;   // avoid referencing hash function
+                    }
+                    else if (e.IsMissing ()) {
+                        return 0;
+                    }
+                    else {
+                        return HS_ (*e);
+                    }
+                }
+                static  bool    Equal (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
+                {
+                    if (lhs.IsMissing () != rhs.IsMissing ()) {
+                        return false;
+                    }
+                    if (lhs.IsMissing () and rhs.IsMissing ()) {
+                        return true;
+                    }
+                    return TRAITS::Equals (*lhs, *rhs);
+                }
+            };
+
+
+
             // MOVE TO NESTED SOON
             template    <typename   ELEMENT, typename TRAITS>
             class   LRUCache_ {
@@ -141,33 +192,6 @@ namespace   Stroika {
                 nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
             };
 
-#if 0
-            /*
-             ********************************************************************************
-             *********** LRUCacheSupport::DefaultTraits_<ELEMENT,TRAITS> *********************
-             ********************************************************************************
-             */
-            template    <typename   ELEMENT, typename KEY>
-            inline  typename    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::KeyType LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::ExtractKey (const ElementType& e)
-            {
-                return e;
-            }
-            template    <typename   ELEMENT, typename KEY>
-            inline  size_t  LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Hash (const KeyType& e)
-            {
-                return 0;
-            }
-            template    <typename   ELEMENT, typename KEY>
-            inline  void    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Clear (ElementType* element)
-            {
-                (*element) = ElementType ();
-            }
-            template    <typename   ELEMENT, typename KEY>
-            inline  bool    LRUCacheSupport::DefaultTraits_<ELEMENT, KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
-            {
-                return lhs == rhs;
-            }
-#endif
 
 
             /*
@@ -236,7 +260,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****************************** LRUCache_<ELEMENT,TRAITS> ************************
+             ***************************** LRUCache_<ELEMENT,TRAITS> ************************
              ********************************************************************************
              */
             template    <typename   ELEMENT, typename TRAITS>

@@ -200,21 +200,31 @@ namespace   Stroika {
                 nonvirtual  const LRUCache& operator= (const LRUCache& rhs);
 
             public:
+                /**
+                 */
                 nonvirtual  size_t  GetMaxCacheSize () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
             public:
+                /**
+                 */
                 nonvirtual  typename TRAITS::StatsType  GetStats () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    clear ();
                 nonvirtual  void    clear (const KEY& key);
                 nonvirtual  void    clear (function<bool(const KEY&)> clearPredicate);
 
             public:
-                // experimental as of 2015-02-01 - maybe use regular optional traits?
+                /**
+                 *  experimental as of 2015-02-01 - maybe use regular optional traits?
+                 */
                 using   OptionalValue   =   Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>;
 
             public:
@@ -270,8 +280,52 @@ namespace   Stroika {
 
             private:
                 //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API
-                struct  LEGACYLRUCACHEOBJ_;
-                struct  LEGACYLRUCACHEOBJ_TRAITS_;
+                struct  LEGACYLRUCACHEOBJ_ {
+                    Memory::Optional<KEY>     fKey;
+                    Memory::Optional<VALUE>   fValue;
+                };
+                struct  LEGACYLRUCACHEOBJ_TRAITS_ {
+                    using   ElementType =   LEGACYLRUCACHEOBJ_;
+                    using   KeyType     =   KEY;
+                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
+
+                    static  void    Clear (ElementType* element)
+                    {
+                        (*element) = ElementType ();
+                    }
+                    static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
+                    {
+                        return e.fKey;
+                    }
+                    DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
+                    static  size_t  HS_ (const KEY& k)
+                    {
+                        return TRAITS::Hash (k);
+                    }
+                    static  size_t  Hash (const Memory::Optional<KEY>& e)
+                    {
+                        static_assert (TRAITS::kHashTableSize >= 1, "HASH_TABLE_SIZE >= 1");
+                        if (TRAITS::kHashTableSize == 1) {
+                            return 0;   // avoid referencing hash function
+                        }
+                        else if (e.IsMissing ()) {
+                            return 0;
+                        }
+                        else {
+                            return HS_ (*e);
+                        }
+                    }
+                    static  bool    Equal (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
+                    {
+                        if (lhs.IsMissing () != rhs.IsMissing ()) {
+                            return false;
+                        }
+                        if (lhs.IsMissing () and rhs.IsMissing ()) {
+                            return true;
+                        }
+                        return TRAITS::Equals (*lhs, *rhs);
+                    }
+                };
                 mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
             };
 
