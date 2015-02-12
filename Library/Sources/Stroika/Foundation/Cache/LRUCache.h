@@ -22,14 +22,14 @@
  *
  * TODO:
  *
- *		@todo   Make sure the Mapping<> is constructed with TRAITS that allow for the proper "EQUALS" method.
+ *      @todo   Make sure the Mapping<> is constructed with TRAITS that allow for the proper "EQUALS" method.
  *
- *		@todo	Find some reasonable/simple way to get 
- *				LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
- *				Working with ONE T argument
- *				Add(elt2cache).
+ *      @todo   Find some reasonable/simple way to get
+ *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
+ *              Working with ONE T argument
+ *              Add(elt2cache).
  *
- *		@todo   Hash_SFINAE_<> IS HORRIBLE HACK!!!! CLEANUP!!! Tricky... SFINAE -- SEE SerializeForHash1_
+ *      @todo   Hash_SFINAE_<> IS HORRIBLE HACK!!!! CLEANUP!!! Tricky... SFINAE -- SEE SerializeForHash1_
  *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
@@ -139,10 +139,10 @@ namespace   Stroika {
             /**
              *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchonized.
              *
-			 *	\note	LRUCache destroys objects when they are cleared from the cache. This guarantee is
-			 *			relevant only in case where the objects use significant resources, or where their lifetime has
-			 *			externally visible (e.g. lockfiles) impact.
-			 *
+             *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is
+             *          relevant only in case where the objects use significant resources, or where their lifetime has
+             *          externally visible (e.g. lockfiles) impact.
+             *
              *  EXAMPLE USAGE:
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
              */
@@ -302,7 +302,7 @@ namespace   Stroika {
                     nonvirtual  CacheIterator   begin ();
                     nonvirtual  CacheIterator   end ();
 
-                    nonvirtual  void		ClearCache ();
+                    nonvirtual  void        ClearCache ();
                     nonvirtual  ELEMENT*    AddNew (const KeyType& item);
                     nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
