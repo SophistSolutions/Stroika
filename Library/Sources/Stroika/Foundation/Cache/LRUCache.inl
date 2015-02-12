@@ -98,36 +98,56 @@ namespace   Stroika {
             private:
                 struct  CacheElement_ {
                 public:
-                    CacheElement_ ();
+                    CacheElement_ () = default;
 
                 public:
-                    CacheElement_*   fNext;
-                    CacheElement_*   fPrev;
+                    CacheElement_*   fNext = nullptr;
+                    CacheElement_*   fPrev = nullptr;
 
                 public:
-                    ElementType     fElement;
+                    ElementType     fElement {};
                 };
 
 
             public:
-                /*
-                @CLASS:         LRUCache<ELEMENT>::CacheIterator
-                @DESCRIPTION:   <p>Used to iterate over elements of an @'LRUCache<ELEMENT>'</p>
-                                <p>Please note that while an CacheIterator object exists for an LRUCache - it is not
-                            safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
-                            </p>
-                    //TODO: Must update implementation to support BUCKETS (hashtable)
-                    //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
-                */
                 struct  CacheIterator {
-                    explicit CacheIterator (CacheElement_** start, CacheElement_** end);
-
-                public:
-                    nonvirtual  CacheIterator& operator++ ();
-                    nonvirtual  ELEMENT& operator* ();
-                    nonvirtual  ELEMENT* operator-> ();
-                    nonvirtual  bool operator== (CacheIterator rhs);
-                    nonvirtual  bool operator!= (CacheIterator rhs);
+                    explicit CacheIterator (CacheElement_** start, CacheElement_** end)
+                        : fCurV (start)
+                        , fEndV (end)
+                        , fCur (start == end ? nullptr : *fCurV)
+                    {
+                    }
+                    CacheIterator& operator++ ()
+                    {
+                        RequireNotNull (fCur);
+                        Require (fCurV != fEndV);
+                        fCur = fCur->fNext;
+                        if (fCur == nullptr) {
+                            fCurV++;
+                            if (fCurV != fEndV) {
+                                fCur  = *fCurV;
+                            }
+                        }
+                        return *this;
+                    }
+                    ELEMENT& operator* ()
+                    {
+                        RequireNotNull (fCur);
+                        return fCur->fElement;
+                    }
+                    ELEMENT* operator-> ()
+                    {
+                        RequireNotNull (fCur);
+                        return &fCur->fElement;
+                    }
+                    bool operator== (CacheIterator rhs)
+                    {
+                        return fCur == rhs.fCur;
+                    }
+                    bool operator!= (CacheIterator rhs)
+                    {
+                        return fCur != rhs.fCur;
+                    }
 
                 private:
                     CacheElement_**  fCurV;
@@ -146,68 +166,6 @@ namespace   Stroika {
 
 
 
-            /*
-             ********************************************************************************
-             ************** LRUCache<ELEMENT, TRAITS>::CacheElement_ ************************
-             ********************************************************************************
-             */
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache_<ELEMENT, TRAITS>::CacheElement_::CacheElement_ ()
-                : fNext (nullptr)
-                , fPrev (nullptr)
-                , fElement ()
-            {
-            }
-
-
-            /*
-             ********************************************************************************
-             *************** LRUCache_<ELEMENT,TRAITS>::CacheIterator ************************
-             ********************************************************************************
-             */
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache_<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement_** start, CacheElement_** end)
-                : fCurV (start)
-                , fEndV (end)
-                , fCur (start == end ? nullptr : *fCurV)
-            {
-            }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator&    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator++ ()
-            {
-                RequireNotNull (fCur);
-                Require (fCurV != fEndV);
-                fCur = fCur->fNext;
-                if (fCur == nullptr) {
-                    fCurV++;
-                    if (fCurV != fEndV) {
-                        fCur  = *fCurV;
-                    }
-                }
-                return *this;
-            }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  ELEMENT&    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator* ()
-            {
-                RequireNotNull (fCur);
-                return fCur->fElement;
-            }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator-> ()
-            {
-                RequireNotNull (fCur);
-                return &fCur->fElement;
-            }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  bool LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator== (CacheIterator rhs)
-            {
-                return fCur == rhs.fCur;
-            }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  bool LRUCache_<ELEMENT, TRAITS>::CacheIterator::operator!= (CacheIterator rhs)
-            {
-                return fCur != rhs.fCur;
-            }
 
 
             /*
