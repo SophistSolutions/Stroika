@@ -174,13 +174,6 @@ namespace   Stroika {
 
             }
 
-#if 0
-
-            template    <typename   ELEMENT, typename TRAITS>
-            class   LRUCache_;
-#endif
-
-
 
 
 
@@ -329,11 +322,9 @@ namespace   Stroika {
                 };
 
             private:
-                // template    <typename   ELEMENT, typename TRAITS>
                 class   LRUCache_ {
                 public:
                     using ELEMENT = LEGACYLRUCACHEOBJ_;
-                    //using TRAITS = LEGACYLRUCACHEOBJ_TRAITS_;
                 public:
                     using   ElementType     =   typename LEGACYLRUCACHEOBJ_TRAITS_::ElementType;
                     using   KeyType         =   typename LEGACYLRUCACHEOBJ_TRAITS_::KeyType;
@@ -378,17 +369,10 @@ namespace   Stroika {
 
                 private:
                     struct  CacheElement_ {
-                    public:
-                        CacheElement_ () = default;
-
-                    public:
                         CacheElement_*   fNext = nullptr;
                         CacheElement_*   fPrev = nullptr;
-
-                    public:
-                        ElementType     fElement {};
+                        ElementType		 fElement {};
                     };
-
 
                 public:
                     struct  CacheIterator {
@@ -445,12 +429,7 @@ namespace   Stroika {
                     nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
                 };
 
-
-
             private:
-
-
-                //  mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
                 mutable LRUCache_  fRealCache_;
             };
 
