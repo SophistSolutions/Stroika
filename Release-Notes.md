@@ -16,10 +16,12 @@ History
 
     
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a79">v2.0a79x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a79">v2.0a79</a><br/>2015-02-11</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added new WaitableEvent::PeekIsSet () and better documented some details in WaitableEvent</li>
+	<li>cleanups to LRUCache to remove remnamts of old API/classes</li>
+	<li>Very little testing</li>
 </ul>
 </td>
 </tr>
