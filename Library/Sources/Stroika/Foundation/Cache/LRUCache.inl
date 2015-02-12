@@ -48,7 +48,7 @@ namespace   Stroika {
 
 
 
-
+#if 0
 
             // MOVE TO NESTED SOON
             template    <typename   ELEMENT, typename TRAITS>
@@ -163,7 +163,7 @@ namespace   Stroika {
             private:
                 nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
             };
-
+#endif
 
 
 
@@ -173,8 +173,8 @@ namespace   Stroika {
              ***************************** LRUCache_<ELEMENT,TRAITS> ************************
              ********************************************************************************
              */
-            template    <typename   ELEMENT, typename TRAITS>
-            LRUCache_<ELEMENT, TRAITS>::LRUCache_ (size_t maxCacheSize)
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LRUCache_ (size_t maxCacheSize)
                 : fStats ()
             {
                 // TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
@@ -184,18 +184,18 @@ namespace   Stroika {
 
                 SetMaxCacheSize (maxCacheSize);
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  size_t  LRUCache_<ELEMENT, TRAITS>::GetMaxCacheSize () const
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::GetMaxCacheSize () const
             {
-                return TRAITS::HASH_TABLE_SIZE * fCachedElts_BUF_[0].size ();
+                return LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE * fCachedElts_BUF_[0].size ();
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            void    LRUCache_<ELEMENT, TRAITS>::SetMaxCacheSize (size_t maxCacheSize)
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::SetMaxCacheSize (size_t maxCacheSize)
             {
                 Require (maxCacheSize >= 1);
-                maxCacheSize =  ((maxCacheSize + TRAITS::HASH_TABLE_SIZE - 1) / TRAITS::HASH_TABLE_SIZE);   // divide size over number of hash chains
+                maxCacheSize =  ((maxCacheSize + LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE - 1) / LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);   // divide size over number of hash chains
                 maxCacheSize = max (maxCacheSize, static_cast<size_t> (1)); // must be at least one per chain
-                for (size_t hi = 0; hi < TRAITS::HASH_TABLE_SIZE; hi++) {
+                for (size_t hi = 0; hi < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE; hi++) {
                     if (maxCacheSize != fCachedElts_BUF_[hi].size ()) {
                         fCachedElts_BUF_[hi].resize (maxCacheSize);
                         // Initially link LRU together.
@@ -210,20 +210,19 @@ namespace   Stroika {
                     }
                 }
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator LRUCache_<ELEMENT, TRAITS>::begin ()
-            {
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::begin () -> CacheIterator {
                 return CacheIterator (std::begin (fCachedElts_First_), std::end (fCachedElts_First_));
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  typename    LRUCache_<ELEMENT, TRAITS>::CacheIterator LRUCache_<ELEMENT, TRAITS>::end ()
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  typename    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheIterator LRUCache<KEY, VALUE, TRAITS>::LRUCache_::end ()
             {
                 return CacheIterator (nullptr, nullptr);
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  void    LRUCache_<ELEMENT, TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
             {
-                Require (chainIdx < TRAITS::HASH_TABLE_SIZE);
+                Require (chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
                 RequireNotNull (b);
                 if (b == fCachedElts_First_[chainIdx]) {
                     Assert (b->fPrev == nullptr);
@@ -252,16 +251,16 @@ namespace   Stroika {
                 Ensure (fCachedElts_Last_[chainIdx] != nullptr and fCachedElts_Last_[chainIdx]->fNext == nullptr);
                 Ensure (fCachedElts_First_[chainIdx] != nullptr and fCachedElts_First_[chainIdx] == b and fCachedElts_First_[chainIdx]->fPrev == nullptr and fCachedElts_First_[chainIdx]->fNext != nullptr);
             }
-            template    <typename   ELEMENT, typename TRAITS>
-            inline  void    LRUCache_<ELEMENT, TRAITS>::ClearCache ()
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::ClearCache ()
             {
-                for (size_t hi = 0; hi < TRAITS::HASH_TABLE_SIZE; hi++) {
+                for (size_t hi = 0; hi < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE; hi++) {
                     for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
-                        TRAITS::Clear (&cur->fElement);
+                        LEGACYLRUCACHEOBJ_TRAITS_::Clear (&cur->fElement);
                     }
                 }
             }
-            template    <typename   ELEMENT, typename TRAITS>
+            template    <typename KEY, typename VALUE, typename TRAITS>
             /*
             @METHOD:        LRUCache_<ELEMENT>::LookupElement
             @DESCRIPTION:   <p>Check and see if the given element is in the cache. Return that element if its tehre, and nullptr otherwise.
@@ -269,12 +268,12 @@ namespace   Stroika {
                         of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
                         for this LRUCache_.</p>
             */
-            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::LookupElement (const KeyType& item)
-            {
-                size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
-                Assert (0 <= chainIdx and chainIdx < TRAITS::HASH_TABLE_SIZE);
-                for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
-                    if (TRAITS::Equal (TRAITS::ExtractKey (cur->fElement), item)) {
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> ELEMENT* {
+                size_t      chainIdx    =   LEGACYLRUCACHEOBJ_TRAITS_::Hash (item) % LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE;
+                Assert (0 <= chainIdx and chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
+                for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
+                {
+                    if (LEGACYLRUCACHEOBJ_TRAITS_::Equal (LEGACYLRUCACHEOBJ_TRAITS_::ExtractKey (cur->fElement), item)) {
                         ShuffleToHead_ (chainIdx, cur);
                         fStats.IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
@@ -283,7 +282,7 @@ namespace   Stroika {
                 fStats.IncrementMisses ();
                 return nullptr;
             }
-            template    <typename   ELEMENT, typename TRAITS>
+            template    <typename KEY, typename VALUE, typename TRAITS>
             /*
             @METHOD:        LRUCache_<ELEMENT>::AddNew
             @DESCRIPTION:   <p>Create a new LRUCache_ element (potentially bumping some old element out of the cache). This new element
@@ -291,10 +290,9 @@ namespace   Stroika {
                         up element is first, and because of this re-ordering, its illegal to do a Lookup while
                         a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
-            inline  ELEMENT*    LRUCache_<ELEMENT, TRAITS>::AddNew (const KeyType& item)
-            {
-                size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
-                Assert (0 <= chainIdx and chainIdx < TRAITS::HASH_TABLE_SIZE);
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (const KeyType& item) -> ELEMENT* {
+                size_t      chainIdx    =   TRAITS::Hash (item) % LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE;
+                Assert (0 <= chainIdx and chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
                 return &fCachedElts_First_[chainIdx]->fElement;
             }

@@ -174,10 +174,11 @@ namespace   Stroika {
 
             }
 
-
+#if 0
 
             template    <typename   ELEMENT, typename TRAITS>
             class   LRUCache_;
+#endif
 
 
 
@@ -326,7 +327,131 @@ namespace   Stroika {
                         return TRAITS::Equals (*lhs, *rhs);
                     }
                 };
-                mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
+
+            private:
+                // template    <typename   ELEMENT, typename TRAITS>
+                class   LRUCache_ {
+                public:
+                    using ELEMENT = LEGACYLRUCACHEOBJ_;
+                    //using TRAITS = LEGACYLRUCACHEOBJ_TRAITS_;
+                public:
+                    using   ElementType     =   typename LEGACYLRUCACHEOBJ_TRAITS_::ElementType;
+                    using   KeyType         =   typename LEGACYLRUCACHEOBJ_TRAITS_::KeyType;
+
+                public:
+                    LRUCache_ (size_t maxCacheSize);
+                    LRUCache_ () = delete;
+                    LRUCache_ (const LRUCache_&) = delete;
+
+                public:
+                    nonvirtual  LRUCache_& operator= (const LRUCache_&) = delete;
+
+                public:
+                    nonvirtual  size_t  GetMaxCacheSize () const;
+                    nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
+
+                public:
+                    struct  CacheIterator;
+                public:
+                    nonvirtual  CacheIterator   begin ();
+                    nonvirtual  CacheIterator   end ();
+
+                public:
+                    nonvirtual  void    ClearCache ();
+
+                public:
+                    /**
+                     *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                     *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                     */
+                    nonvirtual  ELEMENT*    AddNew (const KeyType& item);
+
+                public:
+                    /*
+                     *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                     *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                     */
+                    nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
+
+                public:
+                    typename LEGACYLRUCACHEOBJ_TRAITS_::StatsType  fStats;
+
+                private:
+                    struct  CacheElement_ {
+                    public:
+                        CacheElement_ () = default;
+
+                    public:
+                        CacheElement_*   fNext = nullptr;
+                        CacheElement_*   fPrev = nullptr;
+
+                    public:
+                        ElementType     fElement {};
+                    };
+
+
+                public:
+                    struct  CacheIterator {
+                        explicit CacheIterator (CacheElement_** start, CacheElement_** end)
+                            : fCurV (start)
+                            , fEndV (end)
+                            , fCur (start == end ? nullptr : *fCurV)
+                        {
+                        }
+                        CacheIterator& operator++ ()
+                        {
+                            RequireNotNull (fCur);
+                            Require (fCurV != fEndV);
+                            fCur = fCur->fNext;
+                            if (fCur == nullptr) {
+                                fCurV++;
+                                if (fCurV != fEndV) {
+                                    fCur  = *fCurV;
+                                }
+                            }
+                            return *this;
+                        }
+                        ELEMENT& operator* ()
+                        {
+                            RequireNotNull (fCur);
+                            return fCur->fElement;
+                        }
+                        ELEMENT* operator-> ()
+                        {
+                            RequireNotNull (fCur);
+                            return &fCur->fElement;
+                        }
+                        bool operator== (CacheIterator rhs)
+                        {
+                            return fCur == rhs.fCur;
+                        }
+                        bool operator!= (CacheIterator rhs)
+                        {
+                            return fCur != rhs.fCur;
+                        }
+
+                    private:
+                        CacheElement_**  fCurV;
+                        CacheElement_**  fEndV;
+                        CacheElement_*   fCur;
+                    };
+
+                private:
+                    vector<CacheElement_>   fCachedElts_BUF_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+                    CacheElement_*          fCachedElts_First_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
+                    CacheElement_*          fCachedElts_Last_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
+
+                private:
+                    nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
+                };
+
+
+
+            private:
+
+
+                //  mutable Cache::LRUCache_<LEGACYLRUCACHEOBJ_, LEGACYLRUCACHEOBJ_TRAITS_>  fRealCache_;
+                mutable LRUCache_  fRealCache_;
             };
 
 
