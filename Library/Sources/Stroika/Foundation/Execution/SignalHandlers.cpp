@@ -360,9 +360,9 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 #endif
     SignalHandlerRegistry&  SHR =   Get ();
 
-#if 1
     {
-        // Copy out of Stroika-based containers, because these may throw thread-abort exceptions
+        // Copy out of Stroika-based containers, because these may throw thread-abort exceptions.
+		// The Set<> and Mapping<> code I'm thinking of here. Just use stl code (stuff that wont throw abort exceptions)
         vector<SignalHandler>   shs;
         {
             Thread::SuppressAbortInContext  suppressContext;
@@ -374,12 +374,8 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
             sh (signal);
         }
     }
-#else
-    for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
-        sh (signal);
-    }
-#endif
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
+
+	shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
         tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
     }
