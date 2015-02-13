@@ -120,9 +120,13 @@ namespace   Stroika {
                 fData_[fLength_] = c.GetCharacterCode ();
                 fLength_++;
             }
-            inline  size_t StringBuilder::GetLength () const
+            inline  size_t  StringBuilder::GetLength () const
             {
                 return fLength_;
+            }
+            inline  bool    StringBuilder::empty () const
+            {
+                return fLength_ == 0;
             }
             inline  void    StringBuilder::SetAt (Character item, size_t index)
             {

@@ -105,6 +105,12 @@ namespace   Stroika {
                 nonvirtual  size_t  GetLength () const;
 
             public:
+                /**
+                 *  Returns true if this is an empty string (aka iff GetLength () == 0);
+                 */
+                nonvirtual  bool  empty () const;
+
+            public:
                 nonvirtual  void    SetAt (Character item, size_t index);
 
             public:
