@@ -87,7 +87,7 @@ namespace   Stroika {
                  *  \req (p allocated by BlockAllocator<T>::Allocate ());
                  *  p can be nullptr
                  */
-                static  void    Deallocate (void* p);
+                static  void    Deallocate (void* p) noexcept;
 
             public:
                 /**

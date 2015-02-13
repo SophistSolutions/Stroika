@@ -80,6 +80,8 @@ namespace   Stroika {
                     return *sLock_;
                 }
 
+                void    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+
             }
 
 
@@ -155,7 +157,7 @@ namespace   Stroika {
                 class   BlockAllocationPool_  {
                 public:
                     static  void*   Allocate (size_t n);
-                    static  void    Deallocate (void* p);
+                    static  void    Deallocate (void* p) noexcept;
                     static  void    Compact ();
 
                 private:
@@ -201,18 +203,10 @@ namespace   Stroika {
                 return result;
             }
             template    <size_t SIZE>
-            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p)
-            {
+            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
-                Require (p != nullptr);
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
-#else
-                auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
-#endif
-                // push p onto the head of linked free list
-                (*(void**)p) = sNextLink_;
-                sNextLink_ = p;
+                RequireNotNull (p);
+                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
             }
             template    <size_t SIZE>
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
@@ -316,14 +310,14 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            inline  void    BlockAllocator<T>::Deallocate (void* p)
-            {
+            inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept {
                 using Private_::BlockAllocationPool_;
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
 #endif
 #if     qAllowBlockAllocation
-                if (p != nullptr) {
+                if (p != nullptr)
+                {
                     BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
                 }
 #else
