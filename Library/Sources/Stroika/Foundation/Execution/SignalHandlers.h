@@ -63,6 +63,12 @@ namespace   Stroika {
              *
              *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
              *  creating another SignalHandler (even with the same arguments) may not compare as equal.
+             *
+             *  \note   BEWARE - these are copied during exception handling, which is a dangerous, finicky place.
+             *          Copy must not do operations (like allocate memory) which would be unsafe during signal handling.
+             *
+             *          I THINK Function (based on shared_ptr) is safe with respect to this, but this is probably worth
+             *          double checking.
              */
             class   SignalHandler {
             public:
