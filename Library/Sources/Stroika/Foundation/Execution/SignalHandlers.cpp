@@ -360,9 +360,25 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 #endif
     SignalHandlerRegistry&  SHR =   Get ();
 
+#if 1
+    {
+        // Copy out of Stroika-based containers, because these may throw thread-abort exceptions
+        vector<SignalHandler>   shs;
+        {
+            Thread::SuppressAbortInContext  suppressContext;
+            for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
+                shs.push_back (sh);
+            }
+        }
+        for (SignalHandler sh : shs) {
+            sh (signal);
+        }
+    }
+#else
     for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
         sh (signal);
     }
+#endif
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
         tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
