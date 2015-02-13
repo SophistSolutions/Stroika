@@ -21,10 +21,13 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a80">v2.0a80x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a80">v2.0a80</a><br/>2015-02-12</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>possible fix bug with SignalHandlerRegistry::FirstPassSignalHandler_() - handling exceptions on thread which is being aborted</li>
+	<li>made BlockAllocator&lt;T&gt;::Deallocate (void* p): NOEXCEPT; and used new DoDeleteHandlingLocksExceptionsEtc_ to supress threadabort exceptions</li>
+	<li>Added StringBuilder::empty ()</li>
+	<li>Very little testing</li>
 </ul>
 </td>
 </tr>
