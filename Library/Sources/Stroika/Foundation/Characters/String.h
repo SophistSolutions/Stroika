@@ -616,6 +616,11 @@ namespace   Stroika {
                  *      We chose not to overload SubString() with this functionality because it would have been to easy
                  *      to mask bugs.
                  *
+                 *  \note \em Alias
+                 *      This API is identical to the javascript String.slice () method/behavior
+                 *      @see http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+                 *           15.5.4.13 String.prototype.slice (start, end)
+                 *
                  *  @see substr
                  *  @see SubString
                  *  @see SafeSubString
