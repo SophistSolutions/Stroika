@@ -135,7 +135,7 @@ namespace   Stroika {
                  *  This checks if the event is currently in a triggered state. Regardless of the type of event
                  *  (autoreset or not) - this does not change the trigger state.
                  */
-                nonvirtual  bool    PeekIsSet () const;
+                nonvirtual  bool    PeekIsSet () const noexcept;
 
             public:
                 /**
@@ -167,7 +167,9 @@ namespace   Stroika {
                  *
                  *  Returns:    true if event signaled/occurred, and false if timeout
                  *
-                 *  \note WaitQuietly (0) will always return false regardless of the state of the event/trigger
+                 *  \note   WaitQuietly (0) will always return false regardless of the state of the event/trigger
+                 *
+                 *  \note   WaitQuietly() can raise exceptions, but only ThreadAbortException
                  *
                  *  @see Wait ()
                  *  @see WaitUntil ()
@@ -189,6 +191,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *
+                 *  \note   WaitUntilQuietly() can raise exceptions, but only ThreadAbortException
                  *
                  *  @see Wait ()
                  *  @see WaitQuietly ()
@@ -266,7 +270,7 @@ namespace   Stroika {
 
                     WE_ (ResetType resetType);
                     nonvirtual  void    Reset ();
-                    nonvirtual  bool    PeekIsSet () const;
+                    nonvirtual  bool    PeekIsSet () const noexcept;
                     nonvirtual  void    Set ();
                     nonvirtual  void    WaitUntil (Time::DurationSecondsType timeoutAt);
                     nonvirtual  bool    WaitUntilQuietly (Time::DurationSecondsType timeoutAt);

@@ -61,7 +61,7 @@ namespace   Stroika {
 #endif
                 fTriggered = false;
             }
-            inline  bool    WaitableEvent::WE_::PeekIsSet () const
+            inline  bool    WaitableEvent::WE_::PeekIsSet () const noexcept
             {
                 return fTriggered;
             }
@@ -91,7 +91,7 @@ namespace   Stroika {
                 //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
                 fWE_.Reset ();
             }
-            inline  bool    WaitableEvent::PeekIsSet () const
+            inline  bool    WaitableEvent::PeekIsSet () const noexcept
             {
                 return fWE_.PeekIsSet ();
             }
