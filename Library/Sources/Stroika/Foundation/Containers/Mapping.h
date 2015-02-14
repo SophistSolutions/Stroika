@@ -348,7 +348,7 @@ namespace   Stroika {
                 nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = [] (ValueType l, ValueType r) -> ValueType { return l + r; }, ValueType initialValue = {})
 #endif
                 {
-                    Add (key, LookupValue (key, initialValue) + newValue);
+                    Add (key, f (LookupValue (key, initialValue), newValue));
                 }
 
             public:
