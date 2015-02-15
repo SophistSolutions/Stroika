@@ -23,6 +23,8 @@
 /*
  *  \file
  *              ****VERY ROUGH UNUSABLE DRAFT
+ *                  WORKS - BUT TOTAL CLONE OF MAPPING. STILL TODO ALLOWING MULTIPLE ASSOCIATIONS and MAYBE not calling KEY KEY somewhat misleading
+ *                  but no obviously better term).
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
