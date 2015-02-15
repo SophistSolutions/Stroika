@@ -167,6 +167,8 @@ namespace   Stroika {
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const map<KEY_TYPE, VALUE_TYPE>& src);
+                template    <typename TRAITS2>
+                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
