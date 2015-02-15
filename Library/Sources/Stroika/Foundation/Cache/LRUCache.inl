@@ -393,7 +393,7 @@ namespace   Stroika {
                 if (v == nullptr) {
                     return OptionalValue ();
                 }
-                Ensure (TRAITS::Equals (key, *v->fKey));
+                Ensure (TRAITS::KeyEqualsCompareFunctionType::Equals (key, *v->fKey));
                 return *v->fValue;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>

@@ -93,7 +93,7 @@ namespace   Stroika {
 
                 /**
                  */
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1>
+                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY>>
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
 
@@ -121,11 +121,17 @@ namespace   Stroika {
                         return Hash_SFINAE_<KEY> (e);
                     }
 
+
+                    /**
+                     */
+                    using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
+#if 0
                     // defaults to operator==
                     static  bool    Equals (const KEY& lhs, const KEY& rhs)
                     {
                         return lhs == rhs;
                     }
+#endif
 
                     using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
@@ -279,7 +285,7 @@ namespace   Stroika {
                         if (lhs.IsMissing () and rhs.IsMissing ()) {
                             return true;
                         }
-                        return TRAITS::Equals (*lhs, *rhs);
+                        return TRAITS::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
                     }
                 };
 
