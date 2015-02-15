@@ -65,6 +65,8 @@ namespace   Stroika {
 
 
             /**
+             *      \note   Alias
+             *              Analagous to stl::multimap<>, and often called a MultiMap<>, like MultiSet<>.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Association : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
