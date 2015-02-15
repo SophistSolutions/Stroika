@@ -118,7 +118,7 @@ namespace {
             tmp.Add("b", "2");
             tmp.Add("c", "3");
             tmp.Add("d", "4");
-            Containers::Mapping<string, string> x = tmp.Elements ();
+            Containers::Mapping<string, string> x = tmp.Elements ();    // subtle cuz converting traits type
             VerifyTestResult (x.length () <= 4);
             for (auto i : tmp.Elements ()) {
                 VerifyTestResult (i.fKey == "a" or i.fKey == "b" or i.fKey == "c" or i.fKey == "d");
