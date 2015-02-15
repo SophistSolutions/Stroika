@@ -285,9 +285,8 @@ namespace   Stroika {
                 };
 
             private:
-                class   LRUCache_ {
-                public:
-                    using	ELEMENT			=	LEGACYLRUCACHEOBJ_;
+                struct      LRUCache_ {
+                    using   ELEMENT         =   LEGACYLRUCACHEOBJ_;
                     using   ElementType     =   typename LEGACYLRUCACHEOBJ_TRAITS_::ElementType;
                     using   KeyType         =   typename LEGACYLRUCACHEOBJ_TRAITS_::KeyType;
 
@@ -309,22 +308,18 @@ namespace   Stroika {
 
                     typename LEGACYLRUCACHEOBJ_TRAITS_::StatsType  fStats;
 
-                private:
                     struct  CacheElement_ {
                         CacheElement_*   fNext      { nullptr };
                         CacheElement_*   fPrev      { nullptr };
                         ElementType      fElement   {};
                     };
 
-                public:
                     struct  CacheIterator;
 
-                private:
                     vector<CacheElement_>   fCachedElts_BUF_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
                     CacheElement_*          fCachedElts_First_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
                     CacheElement_*          fCachedElts_Last_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
 
-                private:
                     nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
                 };
 
