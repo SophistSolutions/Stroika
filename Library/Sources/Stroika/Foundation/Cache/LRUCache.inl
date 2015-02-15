@@ -46,125 +46,56 @@ namespace   Stroika {
             }
 
 
-
-
-#if 0
-
-            // MOVE TO NESTED SOON
-            template    <typename   ELEMENT, typename TRAITS>
-            class   LRUCache_ {
-            public:
-                using   ElementType     =   typename TRAITS::ElementType;
-                using   KeyType         =   typename TRAITS::KeyType;
-
-            public:
-                LRUCache_ (size_t maxCacheSize);
-                LRUCache_ () = delete;
-                LRUCache_ (const LRUCache_&) = delete;
-
-            public:
-                nonvirtual  LRUCache_& operator= (const LRUCache_&) = delete;
-
-            public:
-                nonvirtual  size_t  GetMaxCacheSize () const;
-                nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
-
-            public:
-                struct  CacheIterator;
-            public:
-                nonvirtual  CacheIterator   begin ();
-                nonvirtual  CacheIterator   end ();
-
-            public:
-                nonvirtual  void    ClearCache ();
-
-            public:
-                /**
-                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
-                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
-                 */
-                nonvirtual  ELEMENT*    AddNew (const KeyType& item);
-
-            public:
-                /*
-                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
-                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
-                 */
-                nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
-
-            public:
-                typename TRAITS::StatsType  fStats;
-
-            private:
-                struct  CacheElement_ {
-                public:
-                    CacheElement_ () = default;
-
-                public:
-                    CacheElement_*   fNext = nullptr;
-                    CacheElement_*   fPrev = nullptr;
-
-                public:
-                    ElementType     fElement {};
-                };
-
-
-            public:
-                struct  CacheIterator {
-                    explicit CacheIterator (CacheElement_** start, CacheElement_** end)
-                        : fCurV (start)
-                        , fEndV (end)
-                        , fCur (start == end ? nullptr : *fCurV)
-                    {
-                    }
-                    CacheIterator& operator++ ()
-                    {
-                        RequireNotNull (fCur);
-                        Require (fCurV != fEndV);
-                        fCur = fCur->fNext;
-                        if (fCur == nullptr) {
-                            fCurV++;
-                            if (fCurV != fEndV) {
-                                fCur  = *fCurV;
-                            }
+            /*
+             ********************************************************************************
+             ********** LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheIterator **************
+             ********************************************************************************
+             */
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            struct  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheIterator {
+                explicit CacheIterator (CacheElement_** start, CacheElement_** end)
+                    : fCurV (start)
+                    , fEndV (end)
+                    , fCur (start == end ? nullptr : *fCurV)
+                {
+                }
+                CacheIterator& operator++ ()
+                {
+                    RequireNotNull (fCur);
+                    Require (fCurV != fEndV);
+                    fCur = fCur->fNext;
+                    if (fCur == nullptr) {
+                        fCurV++;
+                        if (fCurV != fEndV) {
+                            fCur  = *fCurV;
                         }
-                        return *this;
                     }
-                    ELEMENT& operator* ()
-                    {
-                        RequireNotNull (fCur);
-                        return fCur->fElement;
-                    }
-                    ELEMENT* operator-> ()
-                    {
-                        RequireNotNull (fCur);
-                        return &fCur->fElement;
-                    }
-                    bool operator== (CacheIterator rhs)
-                    {
-                        return fCur == rhs.fCur;
-                    }
-                    bool operator!= (CacheIterator rhs)
-                    {
-                        return fCur != rhs.fCur;
-                    }
-
-                private:
-                    CacheElement_**  fCurV;
-                    CacheElement_**  fEndV;
-                    CacheElement_*   fCur;
-                };
+                    return *this;
+                }
+                ELEMENT& operator* ()
+                {
+                    RequireNotNull (fCur);
+                    return fCur->fElement;
+                }
+                ELEMENT* operator-> ()
+                {
+                    RequireNotNull (fCur);
+                    return &fCur->fElement;
+                }
+                bool operator== (CacheIterator rhs)
+                {
+                    return fCur == rhs.fCur;
+                }
+                bool operator!= (CacheIterator rhs)
+                {
+                    return fCur != rhs.fCur;
+                }
 
             private:
-                vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                CacheElement_*          fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
-                CacheElement_*          fCachedElts_Last_[TRAITS::HASH_TABLE_SIZE];
-
-            private:
-                nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
+                CacheElement_**  fCurV;
+                CacheElement_**  fEndV;
+                CacheElement_*   fCur;
             };
-#endif
-
 
 
 

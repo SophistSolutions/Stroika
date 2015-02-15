@@ -287,7 +287,7 @@ namespace   Stroika {
             private:
                 class   LRUCache_ {
                 public:
-                    using ELEMENT = LEGACYLRUCACHEOBJ_;
+                    using	ELEMENT			=	LEGACYLRUCACHEOBJ_;
                     using   ElementType     =   typename LEGACYLRUCACHEOBJ_TRAITS_::ElementType;
                     using   KeyType         =   typename LEGACYLRUCACHEOBJ_TRAITS_::KeyType;
 
@@ -311,56 +311,13 @@ namespace   Stroika {
 
                 private:
                     struct  CacheElement_ {
-                        CacheElement_*   fNext = nullptr;
-                        CacheElement_*   fPrev = nullptr;
-                        ElementType      fElement {};
+                        CacheElement_*   fNext      { nullptr };
+                        CacheElement_*   fPrev      { nullptr };
+                        ElementType      fElement   {};
                     };
 
                 public:
-                    struct  CacheIterator {
-                        explicit CacheIterator (CacheElement_** start, CacheElement_** end)
-                            : fCurV (start)
-                            , fEndV (end)
-                            , fCur (start == end ? nullptr : *fCurV)
-                        {
-                        }
-                        CacheIterator& operator++ ()
-                        {
-                            RequireNotNull (fCur);
-                            Require (fCurV != fEndV);
-                            fCur = fCur->fNext;
-                            if (fCur == nullptr) {
-                                fCurV++;
-                                if (fCurV != fEndV) {
-                                    fCur  = *fCurV;
-                                }
-                            }
-                            return *this;
-                        }
-                        ELEMENT& operator* ()
-                        {
-                            RequireNotNull (fCur);
-                            return fCur->fElement;
-                        }
-                        ELEMENT* operator-> ()
-                        {
-                            RequireNotNull (fCur);
-                            return &fCur->fElement;
-                        }
-                        bool operator== (CacheIterator rhs)
-                        {
-                            return fCur == rhs.fCur;
-                        }
-                        bool operator!= (CacheIterator rhs)
-                        {
-                            return fCur != rhs.fCur;
-                        }
-
-                    private:
-                        CacheElement_**  fCurV;
-                        CacheElement_**  fEndV;
-                        CacheElement_*   fCur;
-                    };
+                    struct  CacheIterator;
 
                 private:
                     vector<CacheElement_>   fCachedElts_BUF_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
