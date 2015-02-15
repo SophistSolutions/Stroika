@@ -40,6 +40,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Association.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h">
       <Filter>TestCommon</Filter>
     </ClInclude>

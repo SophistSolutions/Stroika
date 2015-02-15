@@ -986,6 +986,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Factory.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.h" />
@@ -1336,6 +1340,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Factory.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl" />

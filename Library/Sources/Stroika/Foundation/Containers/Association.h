@@ -16,6 +16,8 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
+#include    "UpdatableIterable.h"
+
 
 
 /*
@@ -69,13 +71,16 @@ namespace   Stroika {
              *              Analagous to stl::multimap<>, and often called a MultiMap<>, like MultiSet<>.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   Association : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
+            class   Association : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                using   inherited       =   UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
             protected:
                 class   _IRep;
-                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+                using   _AssociationSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+            protected:
+                using   _SharedPtrIRep  =   _AssociationSharedPtrIRep;
 
             public:
                 /**
@@ -112,7 +117,7 @@ namespace   Stroika {
                  */
                 using   ValueEqualsCompareFunctionType  =   typename TraitsType::ValueEqualsCompareFunctionType;
 
-            public:
+			public:
                 /**
                  *  This constructor creates a concrete Association object, either empty, or initialized with any argument
                  *  values.
@@ -121,9 +126,11 @@ namespace   Stroika {
                  */
                 Association ();
                 Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                Association (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
-                Association (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                Association (const std::map<KEY_TYPE, VALUE_TYPE>& src);
+                Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
+                Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
+                Association (const multimap<KEY_TYPE, VALUE_TYPE>& src);
+                template    <typename TRAITS2>
+                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Association (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -131,13 +138,26 @@ namespace   Stroika {
 
             protected:
                 explicit Association (const _SharedPtrIRep& rep);
+                explicit Association (_SharedPtrIRep&& rep);
 
 #if     qDebug
             public:
                 ~Association ();
 #endif
+
             public:
+                /**
+                 */
                 nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
+#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
+                nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Association<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)
+                {
+                    inherited::operator= (move (rhs));
+                    return *this;
+                }
+#else
+                nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Association<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs) = default;
+#endif
 
             public:
                 /**
@@ -175,7 +195,6 @@ namespace   Stroika {
                 nonvirtual  bool                        Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
                 nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
                 nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
-
 
             public:
                 /**
@@ -269,6 +288,7 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
+                template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
                 nonvirtual  bool    Equals (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
@@ -301,9 +321,45 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
+#if 0
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+#endif
+
+            protected:
+#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
+                template    <typename REP_SUB_TYPE>
+                struct  _SafeReadRepAccessor  {
+                    typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_ReadOnlyIterableIRepReference    fAccessor;
+                    _SafeReadRepAccessor (const Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* s)
+                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
+                    {
+                    }
+                    nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
+                    {
+                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
+                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
+                    }
+                };
+#else
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<T2>;
+#endif
+
+            protected:
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+
+			protected:
+                nonvirtual  const _IRep&    _ConstGetRep () const;
+
+			protected:
+                nonvirtual  void    _AssertRepValidType () const;
             };
 
 
@@ -317,15 +373,19 @@ namespace   Stroika {
              *  the Association<T> container API.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            class   Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
-                _IRep ();
+                _IRep () = default;
 
             public:
-                virtual ~_IRep ();
+                virtual ~_IRep ()  = default;
+
+            protected:
+                using   _SharedPtrIRep = typename Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
 
             public:
-                virtual bool                Equals (const _IRep& rhs) const                                 =   0;
+                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const          =   0;
+//                virtual bool                Equals (const _IRep& rhs) const                                 =   0;
                 virtual  Iterable<KeyType>  Keys () const                                                   =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
@@ -337,6 +397,8 @@ namespace   Stroika {
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
 
+#if 0
+
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
                  *  quickie backends).
@@ -346,6 +408,10 @@ namespace   Stroika {
                  */
             protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
+#endif
+
+			protected:
+                nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
             };
 
 
@@ -359,6 +425,6 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-//#include    "Association.inl"
+#include    "Association.inl"
 
 #endif  /*_Stroika_Foundation_Containers_Association_h_ */
