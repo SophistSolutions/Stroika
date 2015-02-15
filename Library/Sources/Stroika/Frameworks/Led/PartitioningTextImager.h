@@ -353,10 +353,12 @@ namespace   Stroika {
 
             private:
                 struct  CacheEltLRUCacheTraits_ : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt::COMPARE_ITEM> {
-                    static  bool    Equals (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs)
-                    {
-                        return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
-                    }
+                    struct KeyEqualsCompareFunctionType {
+                        static  bool    Equals (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs)
+                        {
+                            return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
+                        };
+                    };
                 };
                 mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheEltLRUCacheTraits_>  fCache;
 
