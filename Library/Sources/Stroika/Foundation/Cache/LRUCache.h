@@ -22,8 +22,6 @@
  *
  * TODO:
  *
- *      @todo   Make sure the Mapping<> is constructed with TRAITS that allow for the proper "EQUALS" method.
- *
  *      @todo   Find some reasonable/simple way to get
  *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
  *              Working with ONE T argument
@@ -97,10 +95,10 @@ namespace   Stroika {
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
 
-                    // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+                    /**
+                     *  HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+                     */
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
-
-                    // If KeyType different type than ElementType we need a hash for that too
 
                     //tmphack - SHOUDL do smarter defaults!!!!
                     template    <typename SFINAE>
@@ -121,25 +119,16 @@ namespace   Stroika {
                         return Hash_SFINAE_<KEY> (e);
                     }
 
-
                     /**
                      */
                     using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
-#if 0
-                    // defaults to operator==
-                    static  bool    Equals (const KEY& lhs, const KEY& rhs)
-                    {
-                        return lhs == rhs;
-                    }
-#endif
 
+                    /**
+                     */
                     using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
 
             }
-
-
-
 
 
             /**
@@ -154,6 +143,12 @@ namespace   Stroika {
              */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache : /*private*/public Debug::AssertExternallySynchronizedLock {
+            public:
+                using   TraitsType = TRAITS;
+
+            public:
+                using   KeyEqualsCompareFunctionType =  typename TRAITS::KeyEqualsCompareFunctionType;
+
             public:
                 LRUCache (size_t size = 1);
                 LRUCache (const LRUCache& from);
@@ -238,7 +233,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Containers::Mapping<KEY, VALUE>     Elements () const;
+                nonvirtual  Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>     Elements () const;
 
             private:
                 //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API

@@ -98,11 +98,44 @@ namespace {
 
 
 
+
+
+
+namespace {
+    namespace   Test3_LRUCache_Elements {
+        namespace Private_ {
+            struct TNoCTOR_ {
+                TNoCTOR_ (int) {}
+                TNoCTOR_ () {} /*= delete*/;
+                //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
+                bool operator==(const TNoCTOR_& rhs) const { return true; }
+            };
+        }
+        void    DoIt ()
+        {
+            LRUCache<string, string> tmp (3);
+            tmp.Add("a", "1");
+            tmp.Add("b", "2");
+            tmp.Add("c", "3");
+            tmp.Add("d", "4");
+            Containers::Mapping<string, string> x = tmp.Elements ();
+            VerifyTestResult (x.length () <= 4);
+            for (auto i : tmp.Elements ()) {
+                VerifyTestResult (i.fKey == "a" or i.fKey == "b" or i.fKey == "c" or i.fKey == "d");
+                VerifyTestResult (i.fValue == "1" or i.fValue == "2" or i.fValue == "3" or i.fValue == "4");
+            }
+        }
+    }
+}
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Simple_::DoIt ();
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
+        Test3_LRUCache_Elements::DoIt ();
     }
 }
 

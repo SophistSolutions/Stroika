@@ -405,11 +405,11 @@ namespace   Stroika {
                 v->fValue = value;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            Containers::Mapping<KEY, VALUE>     LRUCache<KEY, VALUE, TRAITS>::Elements () const
-            {
-                Containers::Mapping<KEY, VALUE>  result;
+            auto     LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>> {
+                Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>  result;
                 auto    critSec { Execution::make_unique_lock (*this) };
-                for (auto i : fRealCache_) {
+                for (auto i : fRealCache_)
+                {
                     if (i.fKey) {
                         result.Add (*i.fKey, *i.fValue);
                     }
