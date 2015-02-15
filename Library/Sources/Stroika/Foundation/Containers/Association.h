@@ -117,7 +117,7 @@ namespace   Stroika {
                  */
                 using   ValueEqualsCompareFunctionType  =   typename TraitsType::ValueEqualsCompareFunctionType;
 
-			public:
+            public:
                 /**
                  *  This constructor creates a concrete Association object, either empty, or initialized with any argument
                  *  values.
@@ -355,10 +355,10 @@ namespace   Stroika {
                 template    <typename T2>
                 using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
-			protected:
+            protected:
                 nonvirtual  const _IRep&    _ConstGetRep () const;
 
-			protected:
+            protected:
                 nonvirtual  void    _AssertRepValidType () const;
             };
 
@@ -410,7 +410,7 @@ namespace   Stroika {
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
 #endif
 
-			protected:
+            protected:
                 nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
             };
 
