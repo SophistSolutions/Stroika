@@ -20,7 +20,7 @@
 
 /*
  * TODO:
- *      (o)
+ *      @todo   Redo fHeaders as Stroika Association (not Mapping, cuz things like Set-Cookie headers can appear more than once).
  */
 
 namespace   Stroika {

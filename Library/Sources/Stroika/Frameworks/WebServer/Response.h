@@ -24,7 +24,9 @@
 
 /*
  * TODO:
- *      @todo   Redo using Mapping, and maybe BLOB - anyhow - use Stroika types...
+ *      @todo   Redo using Association, and maybe BLOB - anyhow - use Stroika types...
+ *              (not sure but I think some headers can appear more than once, so Association not Mapping for
+ *              headers).
  *
  *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
