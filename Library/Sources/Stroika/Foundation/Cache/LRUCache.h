@@ -21,6 +21,8 @@
  *
  * TODO:
  *
+ *      @todo   Consider if we should be using Optional_Traits_Blockallocated_Indirect_Storage.
+ *
  *      @todo   Possible get rid of intermediate LRUCache_ object.
  *
  *      @todo   Find some reasonable/simple way to get
@@ -45,9 +47,6 @@
  *                      so there WOULD be cost. Could avoid that by having the TRAITS
  *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
  *                      used for testing, could still be usable that way...
- *
- *      @todo   Come up with easy way to persist cache. I suppose this counts on fact that you can load/store
- *              cached elements – so persist mechanism must parameterize that).
  *
  */
 
