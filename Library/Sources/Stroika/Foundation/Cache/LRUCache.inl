@@ -72,12 +72,12 @@ namespace   Stroika {
                     }
                     return *this;
                 }
-                ELEMENT& operator* ()
+                OptKeyValuePair_& operator* ()
                 {
                     RequireNotNull (fCur);
                     return fCur->fElement;
                 }
-                ELEMENT* operator-> ()
+                OptKeyValuePair_* operator-> ()
                 {
                     RequireNotNull (fCur);
                     return &fCur->fElement;
@@ -107,7 +107,7 @@ namespace   Stroika {
             struct  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheElement_ {
                 CacheElement_*      fNext      { nullptr };
                 CacheElement_*      fPrev      { nullptr };
-                LEGACYLRUCACHEOBJ_  fElement   {};
+                OptKeyValuePair_    fElement   {};
             };
 
 
@@ -211,12 +211,12 @@ namespace   Stroika {
                         of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
                         for this LRUCache_.</p>
             */
-            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> ELEMENT* {
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> OptKeyValuePair_* {
                 size_t      chainIdx    =   Hash_ (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
                 {
-                    if (Equal_ (ExtractKey_ (cur->fElement), item)) {
+                    if (Equals_ (cur->fElement.fKey, item)) {
                         ShuffleToHead_ (chainIdx, cur);
                         fStats.IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
@@ -233,7 +233,7 @@ namespace   Stroika {
                         up element is first, and because of this re-ordering, its illegal to do a Lookup while
                         a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
-            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (const KeyType& item) -> ELEMENT* {
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (const KeyType& item) -> OptKeyValuePair_* {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
@@ -308,7 +308,7 @@ namespace   Stroika {
             void    LRUCache<KEY, VALUE, TRAITS>::clear (const KEY& key)
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
-                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
+                OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
                 if (v != nullptr) {
                     v->fKey.clear ();
                     v->fValue.clear ();
@@ -327,12 +327,12 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const -> OptionalValue
-            {
+            auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const -> Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>> {
                 auto    critSec { Execution::make_unique_lock (*this) };
-                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.LookupElement (key);
-                if (v == nullptr) {
-                    return OptionalValue ();
+                OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
+                if (v == nullptr)
+                {
+                    return Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>> ();
                 }
                 Ensure (TRAITS::KeyEqualsCompareFunctionType::Equals (key, *v->fKey));
                 return *v->fValue;
@@ -341,7 +341,7 @@ namespace   Stroika {
             void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
-                LEGACYLRUCACHEOBJ_*  v   =   fRealCache_.AddNew (key);
+                OptKeyValuePair_*  v   =   fRealCache_.AddNew (key);
                 v->fKey = key;
                 v->fValue = value;
             }
@@ -360,7 +360,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
             {
-                OptionalValue v = Lookup (key);
+                auto v = Lookup (key);
                 if (v.IsMissing ()) {
                     VALUE   newV = valueFetcher (key);
                     Add (key, newV);

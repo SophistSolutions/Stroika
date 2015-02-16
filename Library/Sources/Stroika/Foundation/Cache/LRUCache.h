@@ -145,7 +145,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache : /*private*/public Debug::AssertExternallySynchronizedLock {
             public:
-                using   TraitsType = TRAITS;
+                using   TraitsType  =   TRAITS;
 
             public:
                 using   KeyType     =   KEY;
@@ -184,17 +184,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  experimental as of 2015-02-01 - maybe use regular optional traits?
-                 */
-                using   OptionalValue   =   Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>;
-
-            public:
-                /**
                  *  The value associated with KEY may not be present, so an Optional is returned.
+                 *
+                 *  \note  experimental as of 2015-02-01 - use of Optional_Traits_Blockallocated_Indirect_Storage - maybe use regular optional traits?
                  *
                  *  @see LookupValue ()
                  */
-                nonvirtual  OptionalValue Lookup (const KEY& key) const;
+                nonvirtual  Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>> Lookup (const KEY& key) const;
 
             public:
                 /**
@@ -241,21 +237,13 @@ namespace   Stroika {
 
             private:
                 //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API
-                struct  LEGACYLRUCACHEOBJ_ {
+                struct  OptKeyValuePair_ {
                     Memory::Optional<KEY>     fKey;
                     Memory::Optional<VALUE>   fValue;
                 };
-                static  void    Clear_ (LEGACYLRUCACHEOBJ_* element)
+                static  void    Clear_ (OptKeyValuePair_* element)
                 {
-                    (*element) = LEGACYLRUCACHEOBJ_ ();
-                }
-                static  Memory::Optional<KEY> ExtractKey_ (const LEGACYLRUCACHEOBJ_& e)
-                {
-                    return e.fKey;
-                }
-                static  size_t  HS_ (const KEY& k)
-                {
-                    return TRAITS::Hash (k);
+                    (*element) = OptKeyValuePair_ ();
                 }
                 static  size_t  Hash_ (const Memory::Optional<KEY>& e)
                 {
@@ -267,10 +255,10 @@ namespace   Stroika {
                         return 0;
                     }
                     else {
-                        return HS_ (*e);
+                        return TRAITS::Hash (*e);
                     }
                 }
-                static  bool    Equal_ (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
+                static  bool    Equals_ (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
                 {
                     if (lhs.IsMissing () != rhs.IsMissing ()) {
                         return false;
@@ -278,13 +266,11 @@ namespace   Stroika {
                     if (lhs.IsMissing () and rhs.IsMissing ()) {
                         return true;
                     }
-                    return TRAITS::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
+                    return TraitsType::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
                 }
 
             private:
                 struct      LRUCache_ {
-                    using   ELEMENT         =   LEGACYLRUCACHEOBJ_;
-
                     LRUCache_ (size_t maxCacheSize);
                     LRUCache_ () = delete;
                     LRUCache_ (const LRUCache_&) = delete;
@@ -298,10 +284,10 @@ namespace   Stroika {
                     nonvirtual  CacheIterator   end ();
 
                     nonvirtual  void        ClearCache ();
-                    nonvirtual  ELEMENT*    AddNew (const KeyType& item);
-                    nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
+                    nonvirtual  OptKeyValuePair_*    AddNew (const KeyType& item);
+                    nonvirtual  OptKeyValuePair_*    LookupElement (const KeyType& item);
 
-                    typename TRAITS::StatsType  fStats;
+                    typename TraitsType::StatsType  fStats;
 
                     struct  CacheElement_;
                     struct  CacheIterator;
