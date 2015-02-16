@@ -55,7 +55,7 @@ namespace   Stroika {
              */
             template    <typename KEY, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
             template    <typename SFINAE>
-            size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
+            size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type*)
             {
                 using   Cryptography::Digest::Digester;
                 using   Cryptography::Digest::Algorithm::Jenkins;
@@ -64,7 +64,7 @@ namespace   Stroika {
             }
             template    <typename KEY, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
             template    <typename SFINAE>
-            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
+            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type*)
             {
                 return 0;
             }
@@ -276,7 +276,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY, typename VALUE, typename TRAITS>
-            LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size)
+            inline  LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size)
                 : fRealCache_ (size)
             {
             }
