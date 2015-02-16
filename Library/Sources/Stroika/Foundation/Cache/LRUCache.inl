@@ -199,7 +199,7 @@ namespace   Stroika {
             {
                 for (size_t hi = 0; hi < TraitsType::kHashTableSize; hi++) {
                     for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
-                        LEGACYLRUCACHEOBJ_TRAITS_::Clear (&cur->fElement);
+                        Clear_ (&cur->fElement);
                     }
                 }
             }
@@ -212,11 +212,11 @@ namespace   Stroika {
                         for this LRUCache_.</p>
             */
             inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> ELEMENT* {
-                size_t      chainIdx    =   LEGACYLRUCACHEOBJ_TRAITS_::Hash (item) % TraitsType::kHashTableSize;
+                size_t      chainIdx    =   Hash_ (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
                 {
-                    if (LEGACYLRUCACHEOBJ_TRAITS_::Equal (LEGACYLRUCACHEOBJ_TRAITS_::ExtractKey (cur->fElement), item)) {
+                    if (Equal_ (ExtractKey_ (cur->fElement), item)) {
                         ShuffleToHead_ (chainIdx, cur);
                         fStats.IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;

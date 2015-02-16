@@ -245,43 +245,41 @@ namespace   Stroika {
                     Memory::Optional<KEY>     fKey;
                     Memory::Optional<VALUE>   fValue;
                 };
-                struct  LEGACYLRUCACHEOBJ_TRAITS_ {
-                    static  void    Clear (LEGACYLRUCACHEOBJ_* element)
-                    {
-                        (*element) = LEGACYLRUCACHEOBJ_ ();
+                static  void    Clear_ (LEGACYLRUCACHEOBJ_* element)
+                {
+                    (*element) = LEGACYLRUCACHEOBJ_ ();
+                }
+                static  Memory::Optional<KEY> ExtractKey_ (const LEGACYLRUCACHEOBJ_& e)
+                {
+                    return e.fKey;
+                }
+                static  size_t  HS_ (const KEY& k)
+                {
+                    return TRAITS::Hash (k);
+                }
+                static  size_t  Hash_ (const Memory::Optional<KEY>& e)
+                {
+                    static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
+                    if (TRAITS::kHashTableSize == 1) {
+                        return 0;   // avoid referencing hash function
                     }
-                    static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
-                    {
-                        return e.fKey;
+                    else if (e.IsMissing ()) {
+                        return 0;
                     }
-                    static  size_t  HS_ (const KEY& k)
-                    {
-                        return TRAITS::Hash (k);
+                    else {
+                        return HS_ (*e);
                     }
-                    static  size_t  Hash (const Memory::Optional<KEY>& e)
-                    {
-                        static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
-                        if (TRAITS::kHashTableSize == 1) {
-                            return 0;   // avoid referencing hash function
-                        }
-                        else if (e.IsMissing ()) {
-                            return 0;
-                        }
-                        else {
-                            return HS_ (*e);
-                        }
+                }
+                static  bool    Equal_ (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
+                {
+                    if (lhs.IsMissing () != rhs.IsMissing ()) {
+                        return false;
                     }
-                    static  bool    Equal (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
-                    {
-                        if (lhs.IsMissing () != rhs.IsMissing ()) {
-                            return false;
-                        }
-                        if (lhs.IsMissing () and rhs.IsMissing ()) {
-                            return true;
-                        }
-                        return TRAITS::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
+                    if (lhs.IsMissing () and rhs.IsMissing ()) {
+                        return true;
                     }
-                };
+                    return TRAITS::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
+                }
 
             private:
                 struct      LRUCache_ {
