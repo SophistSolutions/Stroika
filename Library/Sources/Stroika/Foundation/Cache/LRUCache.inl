@@ -199,7 +199,7 @@ namespace   Stroika {
             {
                 for (size_t hi = 0; hi < TraitsType::kHashTableSize; hi++) {
                     for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
-                        Clear_ (&cur->fElement);
+                        cur->fElement.clear ();
                     }
                 }
             }
@@ -216,7 +216,7 @@ namespace   Stroika {
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
                 {
-                    if (Equals_ (cur->fElement.fKey, item)) {
+                    if (cur->fElement and TraitsType::KeyEqualsCompareFunctionType::Equals (cur->fElement->fKey, item)) {
                         ShuffleToHead_ (chainIdx, cur);
                         fStats.IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
@@ -259,9 +259,8 @@ namespace   Stroika {
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
                 auto    critSec { Execution::make_unique_lock (from) };
                 for (auto i : from.fRealCache_) {
-                    Assert (i.fKey.IsMissing () == i.fValue.IsMissing ());
-                    if (i.fKey) {
-                        Add (*i.fKey, *i.fValue);
+                    if (i) {
+                        Add (i->fKey, i->fValue);
                     }
                 }
             }
@@ -320,9 +319,8 @@ namespace   Stroika {
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 for (auto i = fRealCache_.begin (); i != fRealCache_.end (); ++i) {
-                    if (i->fKey and clearPredicate (*i->fKey)) {
-                        i->fKey.clear ();
-                        i->fValue.clear ();
+                    if (i->IsPresent () and clearPredicate ((*i)->fKey)) {
+                        i->clear ();
                     }
                 }
             }
@@ -334,16 +332,15 @@ namespace   Stroika {
                 {
                     return Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>> ();
                 }
-                Ensure (TRAITS::KeyEqualsCompareFunctionType::Equals (key, *v->fKey));
-                return *v->fValue;
+                Ensure (TRAITS::KeyEqualsCompareFunctionType::Equals (key, (*v)->fKey));
+                return (*v)->fValue;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)
             {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 OptKeyValuePair_*  v   =   fRealCache_.AddNew (key);
-                v->fKey = key;
-                v->fValue = value;
+                *v = KeyValuePair_ { key, value };
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>> {
@@ -351,8 +348,8 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 for (auto i : fRealCache_)
                 {
-                    if (i.fKey) {
-                        result.Add (*i.fKey, *i.fValue);
+                    if (i) {
+                        result.Add (i->fKey, i->fValue);
                     }
                 }
                 return result;

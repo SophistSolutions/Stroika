@@ -22,6 +22,8 @@
  *
  * TODO:
  *
+ *      @todo   Possible get rid of intermediate LRUCache_ object.
+ *
  *      @todo   Find some reasonable/simple way to get
  *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
  *              Working with ONE T argument
@@ -236,14 +238,16 @@ namespace   Stroika {
                 nonvirtual  Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>     Elements () const;
 
             private:
-                //tmphack - use optional so we can avoid CTOR rules... and eventually also avoid allocating space? Best to have one outer optinal, butat thjats tricky with current API
-                struct  OptKeyValuePair_ {
-                    Memory::Optional<KEY>     fKey;
-                    Memory::Optional<VALUE>   fValue;
+                struct  KeyValuePair_ {
+                    KEY     fKey;
+                    VALUE   fValue;
                 };
-                static  void    Clear_ (OptKeyValuePair_* element)
+                using   OptKeyValuePair_ = Memory::Optional<KeyValuePair_, Memory::Optional_Traits_Blockallocated_Indirect_Storage<KeyValuePair_>>;
+
+                template    <typename SFINAE = KEY>
+                static  size_t  H_ (const SFINAE& k)
                 {
-                    (*element) = OptKeyValuePair_ ();
+                    return TRAITS::Hash (k);
                 }
                 static  size_t  Hash_ (const Memory::Optional<KEY>& e)
                 {
@@ -255,18 +259,9 @@ namespace   Stroika {
                         return 0;
                     }
                     else {
-                        return TRAITS::Hash (*e);
+                        return H_ (*e);     // use template indirection so we dont force compiling this if its not needed cuz TRAITS::kHashTableSize == 1
+                        // may not work, but trying...
                     }
-                }
-                static  bool    Equals_ (const Memory::Optional<KEY>& lhs, const Memory::Optional<KEY>& rhs)
-                {
-                    if (lhs.IsMissing () != rhs.IsMissing ()) {
-                        return false;
-                    }
-                    if (lhs.IsMissing () and rhs.IsMissing ()) {
-                        return true;
-                    }
-                    return TraitsType::KeyEqualsCompareFunctionType::Equals (*lhs, *rhs);
                 }
 
             private:
@@ -279,7 +274,9 @@ namespace   Stroika {
                     nonvirtual  size_t  GetMaxCacheSize () const;
                     nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
+                    struct  CacheElement_;
                     struct  CacheIterator;
+
                     nonvirtual  CacheIterator   begin ();
                     nonvirtual  CacheIterator   end ();
 
@@ -288,9 +285,6 @@ namespace   Stroika {
                     nonvirtual  OptKeyValuePair_*    LookupElement (const KeyType& item);
 
                     typename TraitsType::StatsType  fStats;
-
-                    struct  CacheElement_;
-                    struct  CacheIterator;
 
                     vector<CacheElement_>   fCachedElts_BUF_[TRAITS::kHashTableSize];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
                     CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize];
