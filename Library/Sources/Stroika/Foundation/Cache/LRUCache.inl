@@ -98,6 +98,18 @@ namespace   Stroika {
             };
 
 
+            /*
+             ********************************************************************************
+             ********** LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheIterator **************
+             ********************************************************************************
+             */
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            struct  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::CacheElement_ {
+                CacheElement_*      fNext      { nullptr };
+                CacheElement_*      fPrev      { nullptr };
+                LEGACYLRUCACHEOBJ_  fElement   {};
+            };
+
 
             /*
              ********************************************************************************
@@ -118,15 +130,15 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  size_t  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::GetMaxCacheSize () const
             {
-                return LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE * fCachedElts_BUF_[0].size ();
+                return TraitsType::kHashTableSize * fCachedElts_BUF_[0].size ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::SetMaxCacheSize (size_t maxCacheSize)
             {
                 Require (maxCacheSize >= 1);
-                maxCacheSize =  ((maxCacheSize + LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE - 1) / LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);   // divide size over number of hash chains
+                maxCacheSize =  ((maxCacheSize + TraitsType::kHashTableSize - 1) / TraitsType::kHashTableSize);   // divide size over number of hash chains
                 maxCacheSize = max (maxCacheSize, static_cast<size_t> (1)); // must be at least one per chain
-                for (size_t hi = 0; hi < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE; hi++) {
+                for (size_t hi = 0; hi < TraitsType::kHashTableSize; hi++) {
                     if (maxCacheSize != fCachedElts_BUF_[hi].size ()) {
                         fCachedElts_BUF_[hi].resize (maxCacheSize);
                         // Initially link LRU together.
@@ -153,7 +165,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
             {
-                Require (chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
+                Require (chainIdx < TraitsType::kHashTableSize);
                 RequireNotNull (b);
                 if (b == fCachedElts_First_[chainIdx]) {
                     Assert (b->fPrev == nullptr);
@@ -185,7 +197,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  void    LRUCache<KEY, VALUE, TRAITS>::LRUCache_::ClearCache ()
             {
-                for (size_t hi = 0; hi < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE; hi++) {
+                for (size_t hi = 0; hi < TraitsType::kHashTableSize; hi++) {
                     for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
                         LEGACYLRUCACHEOBJ_TRAITS_::Clear (&cur->fElement);
                     }
@@ -200,8 +212,8 @@ namespace   Stroika {
                         for this LRUCache_.</p>
             */
             inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> ELEMENT* {
-                size_t      chainIdx    =   LEGACYLRUCACHEOBJ_TRAITS_::Hash (item) % LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE;
-                Assert (0 <= chainIdx and chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
+                size_t      chainIdx    =   LEGACYLRUCACHEOBJ_TRAITS_::Hash (item) % TraitsType::kHashTableSize;
+                Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
                 {
                     if (LEGACYLRUCACHEOBJ_TRAITS_::Equal (LEGACYLRUCACHEOBJ_TRAITS_::ExtractKey (cur->fElement), item)) {
@@ -222,8 +234,8 @@ namespace   Stroika {
                         a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
             inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (const KeyType& item) -> ELEMENT* {
-                size_t      chainIdx    =   TRAITS::Hash (item) % LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE;
-                Assert (0 <= chainIdx and chainIdx < LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE);
+                size_t      chainIdx    =   TRAITS::Hash (item) % TraitsType::kHashTableSize;
+                Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
                 return &fCachedElts_First_[chainIdx]->fElement;
             }

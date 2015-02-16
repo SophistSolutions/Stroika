@@ -128,6 +128,7 @@ namespace   Stroika {
                     using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
                 };
 
+
             }
 
 
@@ -145,6 +146,9 @@ namespace   Stroika {
             class   LRUCache : /*private*/public Debug::AssertExternallySynchronizedLock {
             public:
                 using   TraitsType = TRAITS;
+
+            public:
+                using   KeyType     =   KEY;
 
             public:
                 using   KeyEqualsCompareFunctionType =  typename TRAITS::KeyEqualsCompareFunctionType;
@@ -242,26 +246,21 @@ namespace   Stroika {
                     Memory::Optional<VALUE>   fValue;
                 };
                 struct  LEGACYLRUCACHEOBJ_TRAITS_ {
-                    using   ElementType =   LEGACYLRUCACHEOBJ_;
-                    using   KeyType     =   KEY;
-                    using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
-
-                    static  void    Clear (ElementType* element)
+                    static  void    Clear (LEGACYLRUCACHEOBJ_* element)
                     {
-                        (*element) = ElementType ();
+                        (*element) = LEGACYLRUCACHEOBJ_ ();
                     }
                     static  Memory::Optional<KEY> ExtractKey (const LEGACYLRUCACHEOBJ_& e)
                     {
                         return e.fKey;
                     }
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, HASH_TABLE_SIZE, TRAITS::kHashTableSize);
                     static  size_t  HS_ (const KEY& k)
                     {
                         return TRAITS::Hash (k);
                     }
                     static  size_t  Hash (const Memory::Optional<KEY>& e)
                     {
-                        static_assert (TRAITS::kHashTableSize >= 1, "HASH_TABLE_SIZE >= 1");
+                        static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
                         if (TRAITS::kHashTableSize == 1) {
                             return 0;   // avoid referencing hash function
                         }
@@ -287,8 +286,6 @@ namespace   Stroika {
             private:
                 struct      LRUCache_ {
                     using   ELEMENT         =   LEGACYLRUCACHEOBJ_;
-                    using   ElementType     =   typename LEGACYLRUCACHEOBJ_TRAITS_::ElementType;
-                    using   KeyType         =   typename LEGACYLRUCACHEOBJ_TRAITS_::KeyType;
 
                     LRUCache_ (size_t maxCacheSize);
                     LRUCache_ () = delete;
@@ -306,19 +303,14 @@ namespace   Stroika {
                     nonvirtual  ELEMENT*    AddNew (const KeyType& item);
                     nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
-                    typename LEGACYLRUCACHEOBJ_TRAITS_::StatsType  fStats;
+                    typename TRAITS::StatsType  fStats;
 
-                    struct  CacheElement_ {
-                        CacheElement_*   fNext      { nullptr };
-                        CacheElement_*   fPrev      { nullptr };
-                        ElementType      fElement   {};
-                    };
-
+                    struct  CacheElement_;
                     struct  CacheIterator;
 
-                    vector<CacheElement_>   fCachedElts_BUF_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                    CacheElement_*          fCachedElts_First_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
-                    CacheElement_*          fCachedElts_Last_[LEGACYLRUCACHEOBJ_TRAITS_::HASH_TABLE_SIZE];
+                    vector<CacheElement_>   fCachedElts_BUF_[TRAITS::kHashTableSize];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+                    CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize];
+                    CacheElement_*          fCachedElts_Last_[TRAITS::kHashTableSize];
 
                     nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
                 };
