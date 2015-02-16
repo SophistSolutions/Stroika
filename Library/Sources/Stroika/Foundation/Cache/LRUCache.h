@@ -9,9 +9,8 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Characters/String.h"
 #include    "../Containers/Mapping.h"
-#include    "../Cryptography/Digest/Algorithm/Jenkins.h"
-#include    "../Cryptography/Hash.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Memory/Optional.h"
 
@@ -104,22 +103,10 @@ namespace   Stroika {
 
                     //tmphack - SHOUDL do smarter defaults!!!!
                     template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
-                    {
-                        using   Cryptography::Digest::Digester;
-                        using   Cryptography::Digest::Algorithm::Jenkins;
-                        using   USE_DIGESTER_     =   Digester<Jenkins>;
-                        return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
-                    }
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr);
                     template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
-                    {
-                        return 0;
-                    }
-                    static  size_t  Hash (const KEY& e)
-                    {
-                        return Hash_SFINAE_<KEY> (e);
-                    }
+                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr);
+                    static  size_t  Hash (const KEY& e);
 
                     /**
                      */
@@ -245,24 +232,8 @@ namespace   Stroika {
                 using   OptKeyValuePair_ = Memory::Optional<KeyValuePair_, Memory::Optional_Traits_Blockallocated_Indirect_Storage<KeyValuePair_>>;
 
                 template    <typename SFINAE = KEY>
-                static  size_t  H_ (const SFINAE& k)
-                {
-                    return TRAITS::Hash (k);
-                }
-                static  size_t  Hash_ (const Memory::Optional<KEY>& e)
-                {
-                    static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
-                    if (TRAITS::kHashTableSize == 1) {
-                        return 0;   // avoid referencing hash function
-                    }
-                    else if (e.IsMissing ()) {
-                        return 0;
-                    }
-                    else {
-                        return H_ (*e);     // use template indirection so we dont force compiling this if its not needed cuz TRAITS::kHashTableSize == 1
-                        // may not work, but trying...
-                    }
-                }
+                static  size_t  H_ (const SFINAE& k);
+                static  size_t  Hash_ (const KEY& e);
 
             private:
                 struct      LRUCache_ {

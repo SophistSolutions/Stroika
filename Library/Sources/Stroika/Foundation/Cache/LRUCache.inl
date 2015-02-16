@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 #include    "../Containers/Common.h"
+#include    "../Cryptography/Digest/Algorithm/Jenkins.h"
+#include    "../Cryptography/Hash.h"
 #include    "../Debug/Assertions.h"
 
 
@@ -43,6 +45,35 @@ namespace   Stroika {
             }
             inline  void    LRUCacheSupport::Stats_Null::IncrementMisses ()
             {
+            }
+
+
+
+
+            /*
+             ********************************************************************************
+             *** LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER> **
+             ********************************************************************************
+             */
+            template    <typename KEY, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
+            template    <typename SFINAE>
+            size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr)
+            {
+                using   Cryptography::Digest::Digester;
+                using   Cryptography::Digest::Algorithm::Jenkins;
+                using   USE_DIGESTER_     =   Digester<Jenkins>;
+                return Cryptography::Hash<USE_DIGESTER_, KEY, size_t> (e);
+            }
+            template    <typename KEY, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
+            template    <typename SFINAE>
+            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value || is_convertible<SFINAE, string>::value || is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr)
+            {
+                return 0;
+            }
+            template    <typename KEY, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
+            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash (const KEY& e)
+            {
+                return Hash_SFINAE_<KEY> (e);
             }
 
 
@@ -341,6 +372,25 @@ namespace   Stroika {
                 auto    critSec { Execution::make_unique_lock (*this) };
                 OptKeyValuePair_*  v   =   fRealCache_.AddNew (key);
                 *v = KeyValuePair_ { key, value };
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            template    <typename SFINAE>
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::H_ (const SFINAE& k)
+            {
+                return TRAITS::Hash (k);
+            }
+            template    <typename KEY, typename VALUE, typename TRAITS>
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::Hash_ (const KEY& e)
+            {
+                static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
+                if (TRAITS::kHashTableSize == 1) {
+                    return 0;   // avoid referencing hash function
+                }
+                else {
+                    // use template indirection so we dont force compiling this if its not needed cuz TRAITS::kHashTableSize == 1
+                    // may not work, but trying...
+                    return H_ (e);
+                }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>> {
