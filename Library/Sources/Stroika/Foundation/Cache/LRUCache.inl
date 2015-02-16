@@ -48,8 +48,6 @@ namespace   Stroika {
             }
 
 
-
-
             /*
              ********************************************************************************
              *** LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER> **
@@ -270,7 +268,6 @@ namespace   Stroika {
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
                 return &fCachedElts_First_[chainIdx]->fElement;
             }
-
 
 
             /*
