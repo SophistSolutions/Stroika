@@ -33,11 +33,19 @@ struct  Listener::Rep_ {
 
         fListenThread = Execution::Thread ([this]() {
             while (true) {
-                // unclear what todo with expcetions here
-                // probnably ignore all but for theradabort.
-                // may need virtual fucntions to handle? Or std::function passed in?
-                Socket s = fMasterSocket.Accept ();
-                fNewConnectionAcceptor (s);
+                try {
+                    Socket s = fMasterSocket.Accept ();
+                    fNewConnectionAcceptor (s);
+                }
+                catch (Execution::ThreadAbortException) {
+                    Execution::DoReThrow ();
+                }
+                catch (...) {
+                    // unclear what todo with expcetions here
+                    // probnably ignore all but for theradabort.
+                    // may need virtual fucntions to handle? Or std::function passed in?
+                    DbgTrace (L"Exception accepting new coonection - ignored");
+                }
             }
         });
         fListenThread.SetThreadName (L"WebServer Listener");    // @todo include sockaddr 'pretty print' in name?
@@ -51,10 +59,10 @@ struct  Listener::Rep_ {
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 
-    SocketAddress fSockAddr;
-    function<void (Socket newConnection)> fNewConnectionAcceptor;
-    Socket  fMasterSocket;
-    Execution::Thread fListenThread;
+    SocketAddress                           fSockAddr;
+    function<void (Socket newConnection)>   fNewConnectionAcceptor;
+    Socket                                  fMasterSocket;
+    Execution::Thread                       fListenThread;
 };
 
 
