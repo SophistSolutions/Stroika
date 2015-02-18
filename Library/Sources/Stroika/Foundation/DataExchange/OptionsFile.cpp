@@ -197,8 +197,8 @@ void    OptionsFile::WriteRaw (const BLOB& blob)
         IO::FileSystem::ThroughTmpFileWriter    tmpFile (GetWriteFilePath_ ());
         IO::FileSystem::BinaryFileOutputStream  outStream (tmpFile.GetFilePath ());
         outStream.Write (blob);
-        outStream.Flush();
-        outStream.clear ();
+        outStream.Flush ();
+        outStream.clear ();     // so any errors can be displayed as exceptions, and so closed before commit/rename
         tmpFile.Commit ();
     }
     catch (...) {
