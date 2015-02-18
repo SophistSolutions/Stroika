@@ -19,6 +19,11 @@
  * TODO:
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interupts..
  *
+ *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
+ *              with BinaryFileOutputStream
+ *
+ *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
+ *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
  *              on filessytem reads/writes).
  *

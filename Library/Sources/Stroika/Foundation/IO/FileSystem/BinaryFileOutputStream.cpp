@@ -99,12 +99,12 @@ public:
     }
     virtual void     Flush () override
     {
-        // nothing todo - write 'writes thru'
+        // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
 #if     qPlatform_Windows
             ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (_get_osfhandle (fFD_))));
 #elif   qPlatform_POSIX
-            Execution::ThrowErrNoIfNegative (fsync (fFD_));
+            Execution::ThrowErrNoIfNegative (::fsync (fFD_));
 #else
             AssertNotImplemented ();
 #endif
