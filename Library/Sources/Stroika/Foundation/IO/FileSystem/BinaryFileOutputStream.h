@@ -50,8 +50,23 @@ namespace   Stroika {
                     using   inherited   =   BinaryOutputStream;
                 private:
                     class   Rep_;
+
                 public:
-                    BinaryFileOutputStream (const String& fileName);
+                    /**
+                     *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton
+                     *  to force data to disk (by default Flush just forces the data out of this object to the next object,
+                     *  for files, the operating system).
+                     */
+                    enum FlushFlag {
+                        eToOperatingSystem,
+                        eToDisk
+                    };
+
+                public:
+                    BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
+
+                public:
+                    static  BinaryOutputStream   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
                 };
 
 

@@ -51,9 +51,10 @@ class   BinaryFileOutputStream::Rep_ : public BinaryOutputStream::_IRep, public 
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
-    Rep_ (const String& fileName)
+    Rep_ (const String& fileName, FlushFlag flushFlag)
         : fCriticalSection_ ()
         , fFD_ (-1)
+        , fFlushFlag (flushFlag)
     {
 #if     qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
@@ -68,6 +69,7 @@ public:
     }
     ~Rep_ ()
     {
+        IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
 #if     qPlatform_Windows
         ::_close (fFD_);
 #else
@@ -98,6 +100,15 @@ public:
     virtual void     Flush () override
     {
         // nothing todo - write 'writes thru'
+        if (fFlushFlag == FlushFlag::eToDisk) {
+#if     qPlatform_Windows
+            ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (_get_osfhandle (fFD_))));
+#elif   qPlatform_POSIX
+            Execution::ThrowErrNoIfNegative (fsync (fFD_));
+#else
+            AssertNotImplemented ();
+#endif
+        }
     }
     virtual Streams::SeekOffsetType  GetOffset () const override
     {
@@ -147,9 +158,10 @@ public:
 private:
     mutable mutex   fCriticalSection_;
     int             fFD_;
+    FlushFlag       fFlushFlag;
 };
 
-BinaryFileOutputStream::BinaryFileOutputStream (const String& fileName)
-    : inherited (_SharedIRep (new Rep_ (fileName)))
+BinaryFileOutputStream::BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag)
+    : inherited (_SharedIRep (new Rep_ (fileName, flushFlag)))
 {
 }
