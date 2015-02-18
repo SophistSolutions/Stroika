@@ -62,8 +62,18 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      ThroughTmpFileWriter    tmpFile (targetFileName);
-                 *      BinaryFileOutputStream  out (tmpFile.GetTmpFilePath ());
-                 *      YourCodeToWriteDataToStream (your_data, out);
+                 *		BinaryFileOutputStream  out (tmpFile.GetTmpFilePath ());
+                 *		YourCodeToWriteDataToStream (your_data, out);
+				 *		out.clear();		// close like this so we can throw exception - cannot throw if we count on DTOR
+                 *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+                 *
+                 *  EXAMPLE:
+                 *      ThroughTmpFileWriter    tmpFile (targetFileName);
+				 *		{
+                 *			BinaryFileOutputStream  out (tmpFile.GetTmpFilePath ());
+                 *			YourCodeToWriteDataToStream (your_data, out);
+				 *			// use scope (braces) to force close before commit (or call out.clear())
+				 *		}
                  *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
                  *
                  */
