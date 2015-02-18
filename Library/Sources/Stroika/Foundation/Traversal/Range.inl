@@ -281,6 +281,14 @@ namespace   Stroika {
                 return GetLowerBound () <= containee.GetLowerBound () and containee.GetUpperBound () <= GetUpperBound ();
             }
             template    <typename T, typename TRAITS>
+            inline  constexpr   Range<T, TRAITS>    Range<T, TRAITS>::Closure () const
+            {
+#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                Require (not empty ());
+#endif
+                return Range<T, TRAITS> (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
+            }
+            template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2>
             inline  bool    Range<T, TRAITS>::Equals (const Range<T2, TRAITS2>& rhs) const
             {

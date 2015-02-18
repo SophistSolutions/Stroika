@@ -306,6 +306,14 @@ namespace   Stroika {
                 nonvirtual  constexpr   bool    Contains (const T& r) const;
                 nonvirtual  bool                Contains (const Range<T, TRAITS>& containee) const;
 
+            public:
+                /**
+                 *  Returns an identical Range to this, but including its end points.
+                 *
+                 *  \req not empty ();
+                 */
+                nonvirtual  constexpr   Range<T, TRAITS>    Closure () const;
+
 #if 0
             public:
                 /**
