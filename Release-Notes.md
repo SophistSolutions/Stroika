@@ -18,11 +18,17 @@ History
 
 
 
+
+
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a81">v2.0a81x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a81">v2.0a81</a><br/>2015-02-18</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Added optional FlushFlag support to BinaryFileOutputStream</li>
+	<li>got draft of Association working - but wrong API - really so far nearly identical to Mapping</li>
+	<li>LRUCache fixes: supprot Mapping with traits properly passing new compare funciton, cleanups, performance improvements</li>
+	<li>fixed bug with Mapping::Accumulate, and Mapping CTOR overload</li>
+	<li>Very little testing</li>
 </ul>
 </td>
 </tr>
