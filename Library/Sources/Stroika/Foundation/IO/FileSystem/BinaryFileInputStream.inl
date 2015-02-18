@@ -18,7 +18,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ***************************** Implementation Details ***************************
+                 ********************************** BinaryInputStream ***************************
                  ********************************************************************************
                  */
                 inline  Streams::BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
