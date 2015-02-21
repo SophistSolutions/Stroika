@@ -179,12 +179,6 @@ namespace   Stroika {
                 return fSize_;
             }
             template    <typename   T, size_t BUF_SIZE>
-            inline  T&    SmallStackBuffer<T, BUF_SIZE>::operator[] (size_t i)
-            {
-                Require (i < GetSize ());
-                return fPointer_[i];
-            }
-            template    <typename   T, size_t BUF_SIZE>
             inline  void    SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
             {
                 size_t  s   =   GetSize ();

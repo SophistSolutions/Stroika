@@ -54,6 +54,8 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *
+             *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
+             *
              */
             template    < typename   T, size_t BUF_SIZE = ((4096 / sizeof(T)) == 0 ? 1 : (4096 / sizeof(T))) >
             class   SmallStackBuffer {
@@ -113,9 +115,6 @@ namespace   Stroika {
 
             private:
                 nonvirtual  void    GrowToSize_ (size_t nElements);
-
-            public:
-                nonvirtual  T&  operator[] (size_t i);
 
             public:
                 nonvirtual  void    push_back (const T& e);
