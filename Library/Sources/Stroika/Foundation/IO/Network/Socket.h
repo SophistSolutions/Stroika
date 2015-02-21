@@ -54,6 +54,8 @@ namespace   Stroika {
                  *  When the last reference to an underlying socket represenation is lost, the native socket
                  *  is automatically closed (unless manually Detached first).
                  *
+                 *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
+                 *          works transparently with sockets, sets of sockets, or other waitable objects.
                  */
                 class   Socket {
                 public:
