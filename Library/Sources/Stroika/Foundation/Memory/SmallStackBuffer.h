@@ -115,6 +115,9 @@ namespace   Stroika {
                 nonvirtual  void    GrowToSize_ (size_t nElements);
 
             public:
+                nonvirtual  T&  operator[] (size_t i);
+
+            public:
                 nonvirtual  void    push_back (const T& e);
 
 #if     qDebug
