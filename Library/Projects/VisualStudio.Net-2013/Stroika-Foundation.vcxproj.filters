@@ -735,6 +735,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp">
       <Filter>Sources\IO\Network\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1713,6 +1716,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2603,6 +2609,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
