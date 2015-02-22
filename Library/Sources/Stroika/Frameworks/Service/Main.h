@@ -484,7 +484,7 @@ namespace   Stroika {
                  *  This should be overridden by each service, and should  never return until the service is done
                  *  (probably because of a stop request).
                  *
-                 *  Each MainLoop() runs on a thread, and it is terminated by being sent a ThreadAbortException.
+                 *  Each MainLoop() runs on a thread, and it is terminated by being sent a Thread::AbortException.
                  *
                  *  This is handy, because its mostly treated by Stroika classes automatically, and mostly automatically
                  *  cleans up any ongoing operations.

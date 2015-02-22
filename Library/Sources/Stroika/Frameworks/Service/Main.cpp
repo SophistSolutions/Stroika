@@ -31,7 +31,6 @@
 #include    "../../Foundation/Execution/Module.h"
 #include    "../../Foundation/Execution/OperationNotSupportedException.h"
 #include    "../../Foundation/Execution/ProcessRunner.h"
-#include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/TimeOutException.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/SignalHandlers.h"

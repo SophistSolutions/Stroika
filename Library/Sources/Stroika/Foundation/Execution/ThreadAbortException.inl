@@ -14,11 +14,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-
+#if 0
             // class    ThreadAbortException
             inline  ThreadAbortException::ThreadAbortException ()
             {
             }
+#endif
 
 
         }

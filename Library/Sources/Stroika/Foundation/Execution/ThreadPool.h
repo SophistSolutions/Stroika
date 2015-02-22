@@ -65,7 +65,7 @@ namespace   Stroika {
              *  and it gets eventually executed.
              *
              *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
-             *  special case of ThreadAbortException which  is used internally to end the threadpool or
+             *  special case of Thread::AbortException which  is used internally to end the threadpool or
              *  remove some threads). Because of this, your submitted runnables should take care of their own
              *  error handling internally.
              *
@@ -223,7 +223,7 @@ namespace   Stroika {
 
             private:
                 // Called internally from threadpool tasks - to wait until there is a new task to run.
-                // This will not return UNTIL it has a new task to proceed with (except via exception like ThreadAbortException)
+                // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
                 nonvirtual  void        WaitForNextTask_ (TaskType* result);
                 nonvirtual  TPInfo_     mkThread_ ();
 

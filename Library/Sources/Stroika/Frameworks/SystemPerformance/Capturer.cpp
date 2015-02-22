@@ -114,7 +114,7 @@ void    Capturer::Runner_ ()
                     // set o fmeasuremts, repalcing the others
                     UpdateMeasurementSet_ (measurements);
                 }
-                catch (Execution::ThreadAbortException&) {
+                catch (const Execution::Thread::AbortException&) {
                     Execution::DoReThrow ();
                 }
                 catch (...) {

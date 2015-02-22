@@ -11,7 +11,6 @@
  ********************************************************************************
  */
 #include    "../../Foundation/Execution/Thread.h"
-#include    "../../Foundation/Execution/ThreadAbortException.h"
 
 namespace   Stroika {
     namespace   Frameworks {

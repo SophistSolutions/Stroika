@@ -267,7 +267,7 @@ void    Thread::Rep_::Run_ ()
     try {
         fRunnable_ ();
     }
-    catch (const ThreadAbortException&) {
+    catch (const AbortException&) {
         throw;
     }
     catch (...) {
@@ -344,12 +344,12 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
             incRefCnt->fThreadDone_.Set ();
         }
-        catch (const ThreadAbortException&)
+        catch (const AbortException&)
         {
             /// vaguely #if     qUSE_MUTEX_FOR_STATUS_FIELD related - but not quite.... - not just...
             /// --LGP 2014-01-14 change...
 #if 1
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (AbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
             {
                 auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
@@ -363,7 +363,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (AbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
                 auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
                 incRefCnt->fStatus_ = Status::eCompleted;
@@ -387,9 +387,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             incRefCnt->fThreadDone_.Set ();
         }
     }
-    catch (const ThreadAbortException&)
+    catch (const AbortException&)
     {
-        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught ThreadAbortException - see sigsetmask stuff above - somehow still not working");
+        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught AbortException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
@@ -419,7 +419,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 #endif
         Assert (s_Aborting_);
         if (fStatus_ == Status::eAborting and s_AbortSuppressDepth_ == 0) {
-            Execution::DoThrow (ThreadAbortException ());
+            Execution::DoThrow (AbortException ());
         }
     }
 
@@ -490,7 +490,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     // inside a call to SleepEx, etc... so not updating variables
     if (rep->fStatus_ == Status::eAborting) {
         if (s_AbortSuppressDepth_ == 0) {
-            Execution::DoThrow (ThreadAbortException ());
+            Execution::DoThrow (AbortException ());
         }
         else {
             return; // dont assert out at the end
@@ -863,7 +863,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
 void    Execution::CheckForThreadAborting ()
 {
     if (s_Aborting_ and s_AbortSuppressDepth_ == 0) {
-        Execution::DoThrow (ThreadAbortException ());
+        Execution::DoThrow (Thread::AbortException ());
     }
 }
 

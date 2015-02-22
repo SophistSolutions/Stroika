@@ -188,7 +188,7 @@ Again:
                 using   namespace   Streams;
                 ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
             }
-            catch (const Execution::ThreadAbortException&) {
+            catch (const Execution::Thread::AbortException&) {
                 Execution::DoReThrow ();
             }
             catch (...) {

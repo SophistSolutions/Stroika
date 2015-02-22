@@ -4,7 +4,6 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Execution/Thread.h"
-#include    "../Execution/ThreadAbortException.h"
 
 #include    "BlockAllocator.h"
 
@@ -81,7 +80,7 @@ void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** s
         (*(void**)p) = *staticNextLinkP;
         * staticNextLinkP = p;
     }
-    catch (Execution::ThreadAbortException&)
+    catch (const Execution::Thread::AbortException&)
     {
         Execution::Thread::SuppressAbortInContext  suppressContext;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow

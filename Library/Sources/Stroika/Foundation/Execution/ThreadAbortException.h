@@ -9,6 +9,7 @@
 #include    "../Configuration/Common.h"
 
 #include    "Exceptions.h"
+#include    "Thread.h"
 
 
 
@@ -17,11 +18,16 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if 1
+            using   ThreadAbortException = Thread::AbortException;
+#else
+
             // Generally should not be reported. It's just to help force a thread to shut itself down
             class   ThreadAbortException {
             public:
                 ThreadAbortException ();
             };
+#endif
 
 
         }

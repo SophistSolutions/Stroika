@@ -14,7 +14,7 @@
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
-#include    "../../../Foundation/Execution/ThreadAbortException.h"
+#include    "../../../Foundation/Execution/Thread.h"
 #if     qPlatform_POSIX
 #include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
 #endif

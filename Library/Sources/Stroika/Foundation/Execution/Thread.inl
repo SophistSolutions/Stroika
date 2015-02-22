@@ -13,13 +13,23 @@
 #include    <atomic>
 #include    <list>
 #include    "WaitableEvent.h"
-#include    "ThreadAbortException.h"
+//#include    "ThreadAbortException.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 // experiment with this - turned off -- LGP 2014-01-14
 #define qUSE_MUTEX_FOR_STATUS_FIELD_    0
+
+
+            /*
+             ********************************************************************************
+             ************************** Thread::AbortException ******************************
+             ********************************************************************************
+             */
+            inline  Thread::AbortException::AbortException ()
+            {
+            }
 
 
             /*

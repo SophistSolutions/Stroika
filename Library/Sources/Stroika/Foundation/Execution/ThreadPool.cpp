@@ -62,7 +62,7 @@ public:
                 fCurTask_ ();
                 fCurTask_ = nullptr;
             }
-            catch (const ThreadAbortException&) {
+            catch (const Thread::AbortException&) {
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
                 fCurTask_ = nullptr;
                 throw;  // cancel this thread
@@ -383,7 +383,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 {
     RequireNotNull (result);
     if (fAborted_) {
-        Execution::DoThrow (ThreadAbortException ());
+        Execution::DoThrow (Thread::AbortException ());
     }
 
     while (true) {

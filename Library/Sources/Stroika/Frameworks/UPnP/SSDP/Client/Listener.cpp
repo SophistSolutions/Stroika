@@ -90,7 +90,7 @@ public:
                 using   namespace   Streams;
                 ParsePacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)));
             }
-            catch (const Execution::ThreadAbortException&) {
+            catch (const Execution::Thread::AbortException&) {
                 Execution::DoReThrow ();
             }
             catch (...) {

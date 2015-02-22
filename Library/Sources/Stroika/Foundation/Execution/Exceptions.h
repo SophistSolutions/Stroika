@@ -81,10 +81,9 @@ namespace   Stroika {
 #define IgnoreExceptionsForCall(theCode)        try {theCode;} catch (...) {}
 
 
-            class   ThreadAbortException;
             /**
              */
-#define IgnoreExceptionsExceptThreadAbortForCall(theCode)        try {theCode;} catch (const Execution::ThreadAbortException&) { Execution::DoReThrow (); } catch (...) {}
+#define IgnoreExceptionsExceptThreadAbortForCall(theCode)        try {theCode;} catch (const Stroika::Foundation::Execution::Thread::AbortException&) { Execution::DoReThrow (); } catch (...) {}
 
 
         }

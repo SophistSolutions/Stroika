@@ -120,11 +120,11 @@ namespace   Stroika {
              *          perhaps doing a socket listen/accept call.
              *
              *  When a thread is aborted, it (in that thread) throws
-             *      class   ThreadAbortException;
+             *      class   AbortException;
              *
              *  Thread aborting is tricky todo safely and portably. We take a number of approaches:
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
-             *          Sprinkling CheckForThreadAborting throughout your code - will trigger a ThreadAbortException ()
+             *          Sprinkling CheckForThreadAborting throughout your code - will trigger a AbortException ()
              *          in that thread context.
              *
              *      (2) Async-injection (QueueUserAPC/Widnows)  APC functions get 'suddenly launched' in the context
@@ -166,7 +166,7 @@ namespace   Stroika {
              *
              *  @see HandleEINTR
              *
-             *  @todo       To make STOP code more safe - and have Stop really throw ThreadAbortException
+             *  @todo       To make STOP code more safe - and have Stop really throw AbortException
              *              - then associate a PROGRESS object with this REP, and
              *              make sure the REP (Run method) takes that guy as arg, and call 'CheckCanceled'
              *              periodically - which can do the throw properlly!!!!
@@ -208,6 +208,9 @@ namespace   Stroika {
                 Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
+                class   AbortException;
+
+            public:
                 /**
                  *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
                  *  via GetFunction(), but is only settable in the thread constructor.
@@ -232,7 +235,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Send  (ThreadAbortException) to the given thread.
+                 *  Send  (AbortException) to the given thread.
                  *  This call is (generally) non-blocking (may block for critical section to update status,
                  *  but does NOT block until Stop successful).
                  *
@@ -390,6 +393,14 @@ namespace   Stroika {
             private:
                 class   Rep_;
                 shared_ptr<Rep_> fRep_;
+            };
+
+
+            /**
+             */
+            class   Thread::AbortException {
+            public:
+                AbortException ();
             };
 
 

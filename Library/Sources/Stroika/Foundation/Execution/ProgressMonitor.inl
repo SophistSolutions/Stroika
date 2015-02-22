@@ -124,7 +124,7 @@ namespace   Stroika {
             {
                 if (fRep_.get () != nullptr and fRep_->fCanceled_) {
                     if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
-                        DoThrow (ThreadAbortException ());
+                        DoThrow (Thread::AbortException ());
                     }
                     DoThrow (UserCanceledException ());
                 }

@@ -37,7 +37,7 @@ struct  Listener::Rep_ {
                     Socket s = fMasterSocket.Accept ();
                     fNewConnectionAcceptor (s);
                 }
-                catch (Execution::ThreadAbortException) {
+                catch (const Execution::Thread::AbortException&) {
                     Execution::DoReThrow ();
                 }
                 catch (...) {
