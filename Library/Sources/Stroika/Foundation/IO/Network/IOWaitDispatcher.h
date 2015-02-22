@@ -81,8 +81,8 @@ namespace   Stroika {
                     Execution::WaitForIOReady                                                                   fWaiter_;
 
                 private:
-                    nonvirtual  void    restartOngoingWait_ ();
-                    nonvirtual  void    startthread_ ();
+                    nonvirtual  void    RestartOngoingWait_ ();
+                    nonvirtual  void    Startthread_ ();
                 };
 
 

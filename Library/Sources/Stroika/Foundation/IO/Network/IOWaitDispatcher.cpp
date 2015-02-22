@@ -22,6 +22,7 @@ using   Memory::Optional;
 
 
 
+
 /*
  ********************************************************************************
  ************************* IO::Network::IOWaitDispatcher ************************
@@ -44,9 +45,8 @@ void    IOWaitDispatcher::AddAll (const Set<Socket>& s)
         s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, si.GetNativeSocket ()); });
         fWaiter_.AddAll (s);
     }
-    restartOngoingWait_ ();
+    RestartOngoingWait_ ();
 }
-
 
 void    IOWaitDispatcher::Remove (Socket s)
 {
@@ -60,7 +60,7 @@ void    IOWaitDispatcher::RemoveAll (const Set<Socket>& s)
         s.Apply ([&rwLock] (Socket si) { rwLock->RemoveDomainElement (si); });
         fWaiter_.RemoveAll (s);
     }
-    // No need to restartOngoingWait_ () here because we ignore any sockets reported that no longer apply
+    // No need to RestartOngoingWait_ () here because we ignore any sockets reported that no longer apply
 }
 
 void    IOWaitDispatcher::clear ()
@@ -70,20 +70,20 @@ void    IOWaitDispatcher::clear ()
     fWaiter_.clear ();
 }
 
-void    IOWaitDispatcher::restartOngoingWait_ ()
+void    IOWaitDispatcher::RestartOngoingWait_ ()
 {
     //@todo REVIEW FOR RACES
     if (fCallingHandlers_.try_lock ()) {
         // then we need to kill the thread to interupt a wait...
         fThread_.AbortAndWaitForDone ();
-        startthread_ ();
+        Startthread_ ();
     }
     else {
         // we're done because if locked, we're NOT doing a wait
     }
 }
 
-void    IOWaitDispatcher::startthread_ ()
+void    IOWaitDispatcher::Startthread_ ()
 {
     fThread_ = Thread ([this] () {
         /// need some 'set' to tell if alreadye in list todo
