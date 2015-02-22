@@ -19,6 +19,7 @@ namespace   Stroika {
 
 
 #if 1
+#pragma message ("Warning: File Deprecated")
             using   ThreadAbortException = Thread::AbortException;
 #else
 
