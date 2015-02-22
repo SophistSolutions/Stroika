@@ -263,6 +263,19 @@ namespace   Stroika {
 
 
                 /**
+                 *  Basic operator overload with the obivous meaning
+                 *
+                 *  @todo CLARIFY / THINK THROUGH MEANING - DIFF REPS BUT SAME UNDERLYING OSCKET NATIVE SOCKET ???
+                 */
+                bool    operator< (const Socket& lhs, const Socket& rhs);
+                bool    operator<=(const Socket& lhs, const Socket& rhs);
+                bool    operator==(const Socket& lhs, const Socket& rhs);
+                bool    operator!=(const Socket& lhs, const Socket& rhs);
+                bool    operator>=(const Socket& lhs, const Socket& rhs);
+                bool    operator> (const Socket& lhs, const Socket& rhs);
+
+
+                /**
                  */
                 class   Socket::_Rep {
                 public:

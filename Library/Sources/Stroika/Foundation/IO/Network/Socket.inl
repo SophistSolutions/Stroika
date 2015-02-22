@@ -123,6 +123,36 @@ namespace   Stroika {
                 }
 
 
+                /*
+                 ********************************************************************************
+                 ************************** Compare operator overloads **************************
+                 ********************************************************************************
+                 */
+                inline  bool    operator< (const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () < rhs.GetNativeSocket ();
+                }
+                inline  bool    operator<=(const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () <= rhs.GetNativeSocket ();
+                }
+                inline  bool    operator==(const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () == rhs.GetNativeSocket ();
+                }
+                inline  bool    operator!=(const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () != rhs.GetNativeSocket ();
+                }
+                inline  bool    operator>=(const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () >= rhs.GetNativeSocket ();
+                }
+                inline  bool    operator> (const Socket& lhs, const Socket& rhs)
+                {
+                    return lhs.GetNativeSocket () > rhs.GetNativeSocket ();
+                }
+
 
             }
         }
