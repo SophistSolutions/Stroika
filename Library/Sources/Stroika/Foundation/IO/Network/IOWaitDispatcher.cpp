@@ -57,6 +57,7 @@ void    IOWaitDispatcher::clear ()
 
 void    IOWaitDispatcher::restartOngoingWait_ ()
 {
+	//@todo REVIEW FOR RACES
     if (fCallingHandlers_.try_lock ()) {
         // then we need to kill the thread to interupt a wait...
         fThread_.AbortAndWaitForDone ();
