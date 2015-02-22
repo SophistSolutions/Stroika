@@ -12,6 +12,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -68,6 +69,22 @@ void    IOWaitDispatcher::clear ()
     auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
     rwLock->clear ();
     fWaiter_.clear ();
+}
+
+Set<Socket> IOWaitDispatcher::GetSockets () const
+{
+    return Set<Socket> (fSocketFDBijection_->Preimage ());
+}
+
+void       IOWaitDispatcher::SetSockets (const Set<Socket>& s)
+{
+    {
+        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        rwLock->clear ();
+        s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, si.GetNativeSocket ()); });
+        fWaiter_.SetDescriptors (s);
+    }
+    RestartOngoingWait_ ();
 }
 
 void    IOWaitDispatcher::RestartOngoingWait_ ()

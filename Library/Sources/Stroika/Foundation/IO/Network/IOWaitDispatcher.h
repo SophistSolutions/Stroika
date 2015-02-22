@@ -74,7 +74,7 @@ namespace   Stroika {
 
                 private:
                     CallBackType                                                                                fHandler_;
-                    Execution::Synchronized<Bijection<Socket, Execution::WaitForIOReady::FileDescriptorType>>   fSocketFDBijection_;
+                    mutable Execution::Synchronized<Bijection<Socket, Execution::WaitForIOReady::FileDescriptorType>>   fSocketFDBijection_;    // mutable until we have readlocks in Synchronized
                     mutex                                                                                       fCallingHandlers_;
                     Set<Execution::WaitForIOReady::FileDescriptorType>                                          fElts2Send_;            // only accessed from one thread
                     Execution::Thread                                                                           fThread_;
@@ -90,7 +90,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 
