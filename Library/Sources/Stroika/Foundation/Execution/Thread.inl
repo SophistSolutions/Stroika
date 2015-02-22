@@ -13,7 +13,6 @@
 #include    <atomic>
 #include    <list>
 #include    "WaitableEvent.h"
-//#include    "ThreadAbortException.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -28,6 +27,16 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  Thread::AbortException::AbortException ()
+            {
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************** Thread::InteruptException ******************************
+             ********************************************************************************
+             */
+            inline  Thread::InteruptException::InteruptException ()
             {
             }
 

@@ -208,7 +208,16 @@ namespace   Stroika {
                 Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
+                /**
+                 * Generally should not be reported. It's just to help force a thread to shut itself down
+                 */
                 class   AbortException;
+
+            public:
+                /**
+                 * Generally should not be reported. This is to support Thread::Interupt();
+                 */
+                class   InteruptException;
 
             public:
                 /**
@@ -401,6 +410,14 @@ namespace   Stroika {
             class   Thread::AbortException {
             public:
                 AbortException ();
+            };
+
+
+            /**
+             */
+            class   Thread::InteruptException {
+            public:
+                InteruptException ();
             };
 
 
