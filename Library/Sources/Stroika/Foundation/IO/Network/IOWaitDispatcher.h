@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Containers/Bijection.h"
 #include    "../../Containers/Set.h"
 #include    "../../Execution/Thread.h"
 #include    "../../Execution/WaitForIOReady.h"
@@ -36,6 +37,12 @@ namespace   Stroika {
                  */
                 class  IOWaitDispatcher {
                 public:
+                    template    <typename T>
+                    using   Set = Containers::Set<T>;
+                    template    <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                    using   Bijection = Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>;
+
+                public:
                     using CallBackType = function<void(Socket)>;
 
                 public:
@@ -47,17 +54,30 @@ namespace   Stroika {
                     nonvirtual  void    Add (Socket s);
 
                 public:
+                    nonvirtual  void    AddAll (const Set<Socket>& s);
+
+                public:
                     nonvirtual  void    Remove (Socket s);
+
+                public:
+                    nonvirtual  void    RemoveAll (const Set<Socket>& s);
 
                 public:
                     nonvirtual  void    clear ();
 
+                public:
+                    nonvirtual  Set<Socket> GetSockets () const;
+
+                public:
+                    nonvirtual  void        SetSockets (const Set<Socket>& s);
+
                 private:
-                    CallBackType                fHandler_;
-                    mutex                       fCallingHandlers_;
-                    Containers::Set<Socket>     fElts2Send_;
-                    Execution::Thread           fThread_;
-                    Execution::WaitForIOReady   fWaiter_;
+                    CallBackType                                                                                fHandler_;
+                    Execution::Synchronized<Bijection<Socket, Execution::WaitForIOReady::FileDescriptorType>>   fSocketFDBijection_;
+                    mutex                                                                                       fCallingHandlers_;
+                    Set<Socket>                                                                                 fElts2Send_;            // only accessed from one thread
+                    Execution::Thread                                                                           fThread_;
+                    Execution::WaitForIOReady                                                                   fWaiter_;
 
                 private:
                     nonvirtual  void    restartOngoingWait_ ();

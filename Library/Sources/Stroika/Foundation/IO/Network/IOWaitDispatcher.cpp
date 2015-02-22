@@ -17,11 +17,12 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
+
 /*
-********************************************************************************
-************************* IO::Network::IOWaitDispatcher ************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ************************* IO::Network::IOWaitDispatcher ************************
+ ********************************************************************************
+ */
 IOWaitDispatcher::IOWaitDispatcher (CallBackType callback)
     : fHandler_ (callback)
 {
@@ -29,18 +30,28 @@ IOWaitDispatcher::IOWaitDispatcher (CallBackType callback)
 
 void    IOWaitDispatcher::Add (Socket s)
 {
-    fWaiter_.Add (s);
+    {
+        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        rwLock->Add (s, s.GetNativeSocket ());
+        fWaiter_.Add (s);
+    }
     restartOngoingWait_ ();
 }
 
 void    IOWaitDispatcher::Remove (Socket s)
 {
-    fWaiter_.Remove (s);
-    // No need to wait here because we ignore any sockets reported that no longer apply
+    {
+        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        rwLock->RemoveDomainElement (s);
+        fWaiter_.Remove (s);
+    }
+    // No need to restartOngoingWait_ () here because we ignore any sockets reported that no longer apply
 }
 
 void    IOWaitDispatcher::clear ()
 {
+    auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+    rwLock->clear ();
     fWaiter_.clear ();
 }
 
