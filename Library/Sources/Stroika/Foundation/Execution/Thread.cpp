@@ -692,6 +692,21 @@ void    Thread::Abort ()
     }
 }
 
+void    Thread::Interrupt ()
+{
+    Debug::TraceContextBumper ctx (SDKSTR ("Thread::Interrupt"));
+    if (fRep_.get () == nullptr) {
+        // then its effectively already stopped.
+        return;
+    }
+    // not status not protected by critsection, but SB OK for this
+    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
+
+    //@todo - but not setting STATE variable!!! doesnt change state - ?? except maybe flag saying 'interupting'
+
+    AssertNotYetImplemented ();
+}
+
 void    Thread::Abort_Forced_Unsafe ()
 {
     if (fRep_.get () == nullptr) {

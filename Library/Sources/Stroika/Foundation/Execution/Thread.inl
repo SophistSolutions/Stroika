@@ -33,10 +33,10 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************** Thread::InteruptException ******************************
+             ********************** Thread::InterruptException ******************************
              ********************************************************************************
              */
-            inline  Thread::InteruptException::InteruptException ()
+            inline  Thread::InterruptException::InterruptException ()
             {
             }
 

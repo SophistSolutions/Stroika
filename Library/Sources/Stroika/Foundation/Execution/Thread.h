@@ -217,7 +217,7 @@ namespace   Stroika {
                 /**
                  * Generally should not be reported. This is to support Thread::Interupt();
                  */
-                class   InteruptException;
+                class   InterruptException;
 
             public:
                 /**
@@ -250,8 +250,30 @@ namespace   Stroika {
                  *
                  *  Note that its legal to call Abort on a thread in any state - including Status::eNull.
                  *  Some may just have no effect.
+                 *
+                 *  @see Interrupt
                  */
                 nonvirtual  void    Abort ();
+
+            public:
+                /**
+                 *  @todo TBD
+                 * (like abort but not sticky - just causes next waitable (cancelalation point) to trigger interupt excpetion then state cleared.
+                 *
+                 *  Like Abort(), sending an Interupt() to an expired (aborted) or null thread will be ignored - simply never delivered.
+                 *
+                 *  Note this can be called from any thread, whether the thread object being interupted, or (more typically) from another.
+                 *
+                 *  A thread being aboprted can also be interupted, but Abort() takes precedence if both are attempted.
+                 *
+                 *  \note   If the function associated with the thread doesn't handle the InteruptExcpetion, this will effectively
+                 *          abort the thread (as would any other exception).
+                 *
+                 *  \note   NYI
+                 *
+                 *  @see Abort
+                 */
+                nonvirtual  void    Interrupt ();
 
             public:
                 /**
@@ -415,9 +437,9 @@ namespace   Stroika {
 
             /**
              */
-            class   Thread::InteruptException {
+            class   Thread::InterruptException {
             public:
-                InteruptException ();
+                InterruptException ();
             };
 
 
