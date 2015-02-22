@@ -19,6 +19,7 @@
  *  \version    <a href="code_status.html#Early-Alpha">Early-Alpha</a>
  *
  * TODO:
+ *      @todo FIND a better way than stopping/restarting thread to restart the socket listener...
  */
 
 namespace   Stroika {
@@ -75,7 +76,7 @@ namespace   Stroika {
                     CallBackType                                                                                fHandler_;
                     Execution::Synchronized<Bijection<Socket, Execution::WaitForIOReady::FileDescriptorType>>   fSocketFDBijection_;
                     mutex                                                                                       fCallingHandlers_;
-                    Set<Socket>                                                                                 fElts2Send_;            // only accessed from one thread
+                    Set<Execution::WaitForIOReady::FileDescriptorType>                                          fElts2Send_;            // only accessed from one thread
                     Execution::Thread                                                                           fThread_;
                     Execution::WaitForIOReady                                                                   fWaiter_;
 
