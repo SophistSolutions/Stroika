@@ -843,6 +843,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp" />
@@ -1225,6 +1226,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
@@ -1545,6 +1547,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />

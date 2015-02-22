@@ -738,6 +738,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1719,6 +1722,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2612,6 +2618,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
 </Project>
