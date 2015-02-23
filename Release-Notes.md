@@ -18,10 +18,17 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a82">v2.0a82x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a82">v2.0a82</a><br/>2015-02-23</td>
 <td>
 <ul>
-	<li>TOODO</li>
+	<li>New Execution/WaitForIOReady class, and new IO/Network/IOWaitDispatcher</li>
+	<li>Began major restructuring of Thread Abort() support, in preparation for new Interupt() support. Very incomplete
+	but many name changes, to faciliate this structural change. ThreadAbortExcetpion is now Thread::AbortException, and
+	many APIs use the word Interrupt instead of Abort(). This SHOULD be so far - semaantics free, but doing a release here
+	to test that.
+	</li>
+	<li>new draft Execution::TimedLockGuard</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
