@@ -357,7 +357,7 @@ namespace   {
                 static  void    DoIt ()
                 {
                     while (true) {
-                        Execution::CheckForThreadAborting ();
+                        Execution::CheckForThreadInterruption ();
                     }
                 }
             };
@@ -595,7 +595,7 @@ namespace {
             testThread.Start ();
             Execution::Sleep (1);  // wait til both threads running and blocked in sleeps
             testThread.AbortAndWaitForDone ();
-            // This is the BUG Thread::SuppressAbortInContext was meant to solve!
+            // This is the BUG SuppressInteruptionInContext was meant to solve!
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
             innerThread.AbortAndWaitForDone ();
         };
@@ -610,7 +610,7 @@ namespace {
             {
                 innerThread.Start ();
                 Finally cleanup ([&innerThread] () {
-                    Thread::SuppressAbortInContext  suppressAborts;
+                    Thread::SuppressInteruptionInContext  suppressInteruptions;
                     innerThread.AbortAndWaitForDone ();
                 });
                 Execution::Sleep (1000);
@@ -619,7 +619,7 @@ namespace {
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
             Execution::Sleep (1);   // wait til both threads running and blocked in sleeps
-            // This is the BUG Thread::SuppressAbortInContext was meant to solve!
+            // This is the BUG SuppressInteruptionInContext was meant to solve!
             testThread.AbortAndWaitForDone ();
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eCompleted);
         };
