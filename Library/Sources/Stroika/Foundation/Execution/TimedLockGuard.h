@@ -26,6 +26,9 @@ namespace   Stroika {
             template    <typename MUTEX = timed_mutex>
             class   TimedLockGuard {
             public:
+                /**
+                 *  \note   if argument duration is <= 0, this always throws regardless if whether or not the mutex could be acquired.
+                 */
                 template    <typename FAILURE_EXCEPTION = TimeOutException>
                 TimedLockGuard (MUTEX& m, const Time::Duration& waitUpTo, const FAILURE_EXCEPTION& timeoutException = FAILURE_EXCEPTION ());
                 TimedLockGuard (const TimedLockGuard&) = delete;
