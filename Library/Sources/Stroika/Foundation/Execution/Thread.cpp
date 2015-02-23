@@ -87,8 +87,8 @@ namespace {
 
 
 namespace {
-    thread_local AbortFlagType_					s_Aborting_                     { false };
-    thread_local InterruptSuppressCountType_	s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
+    thread_local AbortFlagType_                 s_Aborting_                     { false };
+    thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
 }
 
 
