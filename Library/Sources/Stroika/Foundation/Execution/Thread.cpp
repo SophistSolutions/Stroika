@@ -176,15 +176,15 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 
 /*
  ********************************************************************************
- ************** Thread::SuppressInteruptionInContext ****************************
+ ************** Thread::SuppressInterruptionInContext ***************************
  ********************************************************************************
  */
-Thread::SuppressInteruptionInContext::SuppressInteruptionInContext ()
+Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
 {
     s_InterruptionSuppressDepth_++;
 }
 
-Thread::SuppressInteruptionInContext::~SuppressInteruptionInContext ()
+Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
     s_InterruptionSuppressDepth_--;
 }
@@ -231,7 +231,7 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
      *  Once we have constructed the other thread, its critical it be allowed to run at least to the
      *  point where it's bumped its reference count before we allow aborting this thread.
      */
-    SuppressInteruptionInContext  suppressInteruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
+    SuppressInterruptionInContext  suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
     (*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {

@@ -36,7 +36,7 @@
  *              existing WAIT API throws child excpetions. Maybe paraemter in construction
  *              of the thread?
  *
- *      @todo   SuppressInteruptionInContext DTOR should CheckFor...Abort...
+ *      @todo   SuppressInterruptionInContext DTOR should CheckFor...Abort...
  *
  *      @todo   DOCUMENT:
  *              With POSIX, interuption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
@@ -289,7 +289,7 @@ namespace   Stroika {
                 nonvirtual  void    Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
 
             public:
-                class   SuppressInteruptionInContext;
+                class   SuppressInterruptionInContext;
 
             public:
                 /**
@@ -453,12 +453,12 @@ namespace   Stroika {
              *  This is used to prevent a second abort request coming in to a thread already in the process of shutting down, which
              *  might cause a second, or incomplete cleanup.
              */
-            class   Thread::SuppressInteruptionInContext {
+            class   Thread::SuppressInterruptionInContext {
             public:
-                SuppressInteruptionInContext ();
-                SuppressInteruptionInContext (const SuppressInteruptionInContext&) = delete;
-                SuppressInteruptionInContext& operator= (const SuppressInteruptionInContext&) = delete;
-                ~SuppressInteruptionInContext ();
+                SuppressInterruptionInContext ();
+                SuppressInterruptionInContext (const SuppressInterruptionInContext&) = delete;
+                SuppressInterruptionInContext& operator= (const SuppressInterruptionInContext&) = delete;
+                ~SuppressInterruptionInContext ();
             };
 
 

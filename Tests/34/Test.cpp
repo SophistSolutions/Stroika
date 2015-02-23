@@ -610,7 +610,7 @@ namespace {
             {
                 innerThread.Start ();
                 Finally cleanup ([&innerThread] () {
-                    Thread::SuppressInteruptionInContext  suppressInteruptions;
+                    Thread::SuppressInteruptionInContext  suppressInterruptions;
                     innerThread.AbortAndWaitForDone ();
                 });
                 Execution::Sleep (1000);
