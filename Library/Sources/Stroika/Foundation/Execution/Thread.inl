@@ -21,20 +21,21 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************** Thread::AbortException ******************************
+             ********************** Thread::InterruptException ******************************
              ********************************************************************************
              */
-            inline  Thread::AbortException::AbortException ()
+            inline  Thread::InterruptException::InterruptException ()
             {
             }
 
 
             /*
              ********************************************************************************
-             ********************** Thread::InterruptException ******************************
+             ************************** Thread::AbortException ******************************
              ********************************************************************************
              */
-            inline  Thread::InterruptException::InterruptException ()
+            inline  Thread::AbortException::AbortException ()
+                : InterruptException ()
             {
             }
 

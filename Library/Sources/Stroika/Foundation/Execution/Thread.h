@@ -429,17 +429,17 @@ namespace   Stroika {
 
             /**
              */
-            class   Thread::AbortException {
+            class   Thread::InterruptException {
             public:
-                AbortException ();
+                InterruptException ();
             };
 
 
             /**
              */
-            class   Thread::InterruptException {
+            class   Thread::AbortException : public Thread::InterruptException {
             public:
-                InterruptException ();
+                AbortException ();
             };
 
 
