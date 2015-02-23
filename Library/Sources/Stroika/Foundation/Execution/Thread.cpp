@@ -655,7 +655,7 @@ void    Thread::Interrupt ()
 
     //@todo - but not setting STATE variable!!! doesnt change state - ?? except maybe flag saying 'interupting'
 
-    AssertNotYetImplemented ();
+    AssertNotImplemented ();
 }
 
 void    Thread::Abort_Forced_Unsafe ()
