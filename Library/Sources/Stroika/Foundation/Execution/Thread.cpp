@@ -87,8 +87,8 @@ namespace {
 
 
 namespace {
-    thread_local AbortFlagType_             s_Aborting_ (false);
-    thread_local AbortSuppressCountType_    s_AbortSuppressDepth_ (0);      // atomic because updated from one thread but peeked at from another
+	thread_local AbortFlagType_             s_Aborting_						{ false };
+	thread_local AbortSuppressCountType_    s_InterruptionSuppressDepth_	{ 0 };			// atomic because updated from one thread but peeked at from another
 }
 
 
@@ -172,6 +172,8 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 
 
 
+
+
 /*
  ********************************************************************************
  ************** Thread::SuppressInteruptionInContext ****************************
@@ -179,12 +181,12 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  */
 Thread::SuppressInteruptionInContext::SuppressInteruptionInContext ()
 {
-    s_AbortSuppressDepth_++;
+    s_InterruptionSuppressDepth_++;
 }
 
 Thread::SuppressInteruptionInContext::~SuppressInteruptionInContext ()
 {
-    s_AbortSuppressDepth_--;
+    s_InterruptionSuppressDepth_--;
 }
 
 
@@ -264,7 +266,7 @@ void    Thread::Rep_::Run_ ()
     try {
         fRunnable_ ();
     }
-    catch (const AbortException&) {
+    catch (const InterruptException&) {
         throw;
     }
     catch (...) {
@@ -287,7 +289,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 
 #if     qCompilerAndStdLib_thread_local_initializers_Buggy
         s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
-        s_AbortSuppressDepth_ = 0;
+        s_InterruptionSuppressDepth_ = 0;
 #endif
         /*
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
@@ -319,14 +321,12 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             bool    doRun   =   false;
             {
-                if (incRefCnt->fStatus_ == Status::eNotYetRunning)
-                {
+                if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
                     incRefCnt->fStatus_ = Status::eRunning;
                     doRun = true;
                 }
             }
-            if (doRun)
-            {
+            if (doRun) {
                 incRefCnt->Run_ ();
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
@@ -335,14 +335,12 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
             incRefCnt->fThreadDone_.Set ();
         }
-        catch (const AbortException&)
-        {
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (AbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+        catch (const InterruptException&) {
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
-        catch (...)
-        {
+        catch (...) {
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
@@ -354,15 +352,13 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             incRefCnt->fThreadDone_.Set ();
         }
     }
-    catch (const AbortException&)
-    {
-        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught AbortException - see sigsetmask stuff above - somehow still not working");
+    catch (const InterruptException&) {
+        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
-    catch (...)
-    {
+    catch (...) {
         DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
 
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
@@ -382,7 +378,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 
     if (GetCurrentThreadID () == GetID ()) {
         Assert (s_Aborting_);
-        if (fStatus_ == Status::eAborting and s_AbortSuppressDepth_ == 0) {
+        if (fStatus_ == Status::eAborting and s_InterruptionSuppressDepth_ == 0) {
             Execution::DoThrow (AbortException ());
         }
     }
@@ -441,7 +437,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     // this isn't the race it might look like because this can only be called when the target (rep) thread is in an alertable state, meaning
     // inside a call to SleepEx, etc... so not updating variables
     if (rep->fStatus_ == Status::eAborting) {
-        if (s_AbortSuppressDepth_ == 0) {
+        if (s_InterruptionSuppressDepth_ == 0) {
             Execution::DoThrow (AbortException ());
         }
         else {
@@ -817,7 +813,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadInterruption ()
 {
-    if (s_Aborting_ and s_AbortSuppressDepth_ == 0) {
+    if (s_Aborting_ and s_InterruptionSuppressDepth_ == 0) {
         Execution::DoThrow (Thread::AbortException ());
     }
 }
