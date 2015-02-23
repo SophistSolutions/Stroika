@@ -25,7 +25,7 @@ using   namespace   Stroika::Foundation::Execution;
 void    AbortableMutex::lock ()
 {
     while (not fM_.try_lock_for (chrono::milliseconds (10))) {
-        CheckForThreadAborting ();
+        CheckForThreadInterruption ();
     }
 }
 

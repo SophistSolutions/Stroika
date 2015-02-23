@@ -78,7 +78,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
     Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WE_::WaitUntil"));
     DbgTrace ("(timeout = %.2f)", timeoutAt);
 #endif
-    CheckForThreadAborting ();
+    CheckForThreadInterruption ();
     if (timeoutAt <= Time::GetTickCount ()) {
         return kTIMEOUTBoolResult;
     }
@@ -93,7 +93,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurrious.
      */
     while (not fTriggered) {
-        CheckForThreadAborting ();
+        CheckForThreadInterruption ();
         Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
         if (remaining < 0) {
             return kTIMEOUTBoolResult;

@@ -40,7 +40,7 @@ namespace   Stroika {
 
 
             //redeclare to avoid having to #include Thread.h
-            void    CheckForThreadAborting ();
+            void    CheckForThreadInterruption ();
 
 
             /*

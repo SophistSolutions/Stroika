@@ -45,7 +45,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
-             *  \note   This calls CheckForThreadAborting ();
+             *  \note   This calls CheckForThreadInterruption ();
              *
              */
             void    Sleep (Time::DurationSecondsType seconds2Wait);
@@ -64,7 +64,7 @@ namespace   Stroika {
              *
              *  @see Sleep ();
              *
-             *  \note   This always calls CheckForThreadAborting () at least once, but may not call Sleep() if not needed.
+             *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
              */
             void    SleepUntil (Time::DurationSecondsType untilTickCount);
 

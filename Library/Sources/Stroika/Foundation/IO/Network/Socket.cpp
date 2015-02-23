@@ -226,7 +226,7 @@ namespace   {
                 memset (&peer, 0, sizeof (peer));
 
 AGAIN:
-                Execution::CheckForThreadAborting ();
+                Execution::CheckForThreadInterruption ();
                 socklen_t   sz = sizeof (peer);
                 Socket::PlatformNativeHandle    r = ::accept (fSD_, &peer, &sz);
                 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)

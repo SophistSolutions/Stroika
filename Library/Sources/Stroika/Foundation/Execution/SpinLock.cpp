@@ -24,5 +24,5 @@ void    SpinLock::Yield_ ()
 #if     !qCompilerAndStdLib_threadYield_Buggy
     std::this_thread::yield ();
 #endif
-    CheckForThreadAborting<100> ();
+    CheckForThreadInterruption<100> ();
 }

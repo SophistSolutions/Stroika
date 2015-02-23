@@ -386,7 +386,6 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
             Execution::DoThrow (AbortException ());
         }
     }
-
     if (fStatus_ == Status::eAborting) {
 #if     qPlatform_POSIX
         {
@@ -648,9 +647,10 @@ void    Thread::Interrupt ()
     // not status not protected by critsection, but SB OK for this
     DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
 
-    //@todo - but not setting STATE variable!!! doesnt change state - ?? except maybe flag saying 'interupting'
-
-    AssertNotImplemented ();
+    Status  cs = fRep_->fStatus_.load ();
+    if (cs != Status::eAborting and cs != Status::eCompleted) {
+        fRep_->NotifyOfInteruptionFromAnyThread_ (false);
+    }
 }
 
 void    Thread::Abort_Forced_Unsafe ()
@@ -812,13 +812,12 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
 
 /*
  ********************************************************************************
- ************************* Execution::CheckForThreadAborting ********************
+ ********************* Execution::CheckForThreadInterruption ********************
  ********************************************************************************
  */
-void    Execution::CheckForThreadAborting ()
+void    Execution::CheckForThreadInterruption ()
 {
     if (s_Aborting_ and s_AbortSuppressDepth_ == 0) {
         Execution::DoThrow (Thread::AbortException ());
     }
 }
-

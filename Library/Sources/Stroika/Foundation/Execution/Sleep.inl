@@ -27,7 +27,7 @@ namespace   Stroika {
 
 
             //redeclare to avoid having to include Thread code
-            void    CheckForThreadAborting ();
+            void    CheckForThreadInterruption ();
 
 
             /*
@@ -39,7 +39,7 @@ namespace   Stroika {
             {
                 Require (seconds2Wait >= 0.0);
                 RequireNotNull (remainingInSleep);  // else call the over overload
-                CheckForThreadAborting ();
+                CheckForThreadInterruption ();
 #if     qPlatform_Windows
                 Time::DurationSecondsType   tc  =   Time::GetTickCount ();
                 if (::SleepEx (static_cast<int> (seconds2Wait * 1000), true) == 0) {
@@ -68,7 +68,7 @@ namespace   Stroika {
 #else
                 AssertNotImplemented ();
 #endif
-                CheckForThreadAborting ();
+                CheckForThreadInterruption ();
             }
 
 
@@ -81,7 +81,7 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType waitMoreSeconds  = untilTickCount - Time::GetTickCount ();
                 if (waitMoreSeconds <= 0) {
-                    CheckForThreadAborting ();
+                    CheckForThreadInterruption ();
                 }
                 else {
                     Sleep (waitMoreSeconds);

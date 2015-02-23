@@ -19,7 +19,7 @@ namespace   Stroika {
 
 
             //redeclare to avoid having to #include Thread.h
-            void    CheckForThreadAborting ();
+            void    CheckForThreadInterruption ();
 
 
             /*
@@ -33,7 +33,7 @@ namespace   Stroika {
                 if (Time::GetTickCount () > afterTickCount) {
                     DoThrow (exception2Throw);
                 }
-                CheckForThreadAborting ();
+                CheckForThreadInterruption ();
             }
             inline  void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
             {

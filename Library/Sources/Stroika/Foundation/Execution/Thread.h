@@ -124,7 +124,7 @@ namespace   Stroika {
              *
              *  Thread aborting is tricky todo safely and portably. We take a number of approaches:
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
-             *          Sprinkling CheckForThreadAborting throughout your code - will trigger a AbortException ()
+             *          Sprinkling CheckForThreadInterruption throughout your code - will trigger a AbortException ()
              *          in that thread context.
              *
              *      (2) Async-injection (QueueUserAPC/Widnows)  APC functions get 'suddenly launched' in the context
@@ -140,7 +140,7 @@ namespace   Stroika {
              *
              *
              *      <<<<DOCUMENT INTERUPTION POINTS>>>> - CALLED INTERUPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
-             *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadAborting () is called. These include:
+             *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadInterruption () is called. These include:
              *          o   SLEEP()
              *          o   ANY WAIT CALLS
              *          o   anything that calls Handle_ErrNoResultInteruption ()
@@ -475,9 +475,9 @@ namespace   Stroika {
              *  like sleeps, most reads, etc.
              *  This function will also trigger a throw if called inside a thread which is being aborted.
              */
-            void    CheckForThreadAborting ();
+            void    CheckForThreadInterruption ();
             template    <unsigned int kEveryNTimes>
-            void    CheckForThreadAborting ();
+            void    CheckForThreadInterruption ();
 
 
         }

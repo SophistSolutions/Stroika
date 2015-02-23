@@ -45,7 +45,7 @@ namespace   Stroika {
                 auto    ret;
                 do {
                     ret = call ();
-                    Execution::CheckForThreadAborting ();
+                    Execution::CheckForThreadInterruption ();
                 }
                 while (ret < 0 && errno == EINTR);
                 return ThrowErrNoIfNegative (ret);
@@ -57,7 +57,7 @@ namespace   Stroika {
                 int ret;
                 do {
                     ret = call ();
-                    Execution::CheckForThreadAborting ();
+                    Execution::CheckForThreadInterruption ();
                 }
                 while (ret < 0 && errno == EINTR);
                 return ThrowErrNoIfNegative (ret);
