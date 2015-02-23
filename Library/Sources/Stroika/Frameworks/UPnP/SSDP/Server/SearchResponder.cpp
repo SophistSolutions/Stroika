@@ -52,7 +52,7 @@ SearchResponder::~SearchResponder ()
 {
     // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
     // after main exists...
-    Execution::Thread::SuppressInteruptionInContext  suppressInteruption;
+    Execution::Thread::SuppressInterruptionInContext  suppressInterruption;
     fListenThread_.AbortAndWaitForDone ();
 }
 

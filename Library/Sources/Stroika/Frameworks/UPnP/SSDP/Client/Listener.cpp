@@ -60,7 +60,7 @@ public:
     ~Rep_ ()
     {
         // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Execution::Thread::SuppressInteruptionInContext  suppressInteruption;
+        Execution::Thread::SuppressInterruptionInContext  suppressInterruption;
         fThread_.AbortAndWaitForDone ();
     }
     void    AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
