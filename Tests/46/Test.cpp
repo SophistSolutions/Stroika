@@ -15,7 +15,7 @@
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/Float2String.h"
 #include    "Stroika/Foundation/Characters/String.h"
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #endif
 #include    "Stroika/Foundation/Characters/String2Float.h"
@@ -50,7 +50,7 @@
 
 #include    "../TestHarness/TestHarness.h"
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 #include    "Stroika/Foundation/Execution/SpinLock.h"
 #include    "Stroika/Foundation/Memory/SharedPtr.h"
 #include    "Stroika/Foundation/Streams/BasicTextOutputStream.h"
@@ -543,7 +543,7 @@ namespace {
 
 
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
@@ -664,7 +664,7 @@ namespace {
 
 
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
@@ -792,7 +792,7 @@ namespace {
 
 
 
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
     template <typename WIDESTRING_IMPL>
     void    Test_OperatorINSERT_ostream_ ()
@@ -1501,7 +1501,7 @@ namespace   {
             .5,
             &failedTests
         );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
@@ -1511,7 +1511,7 @@ namespace   {
             &failedTests
         );
 #endif
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
@@ -1587,7 +1587,7 @@ namespace   {
             2.3,
             &failedTests
         );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
@@ -1605,7 +1605,7 @@ namespace   {
             1.9,
             &failedTests
         );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
@@ -1615,7 +1615,7 @@ namespace   {
         &failedTests
         );
 #endif
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus StringBuilder",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
@@ -1633,7 +1633,7 @@ namespace   {
             1.2,
             &failedTests
         );
-#if     kStroika_Version_FullVersion  >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
