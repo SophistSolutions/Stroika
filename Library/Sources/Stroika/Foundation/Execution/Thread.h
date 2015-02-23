@@ -24,6 +24,9 @@
  *
  *  \file
  *
+ *      @todo   HALFWAY THOUGHT IMPLEMENTING Interupt() method - just Abort() working now...
+ *
+ *
  *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
  *      @todo   Consider using
