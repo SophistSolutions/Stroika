@@ -69,9 +69,9 @@ using   namespace   Execution;
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    using   AbortFlagType_  =   volatile bool;
+    using   TLSInterruptFlagType_  =   volatile bool;
 #else
-    using   AbortFlagType_  =   atomic<bool>;
+    using   TLSInterruptFlagType_  =   atomic<bool>;
 #endif
 }
 
@@ -87,7 +87,7 @@ namespace {
 
 
 namespace {
-    thread_local AbortFlagType_                 s_Aborting_                     { false };
+    thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
 }
 
