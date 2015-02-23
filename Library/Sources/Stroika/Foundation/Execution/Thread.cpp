@@ -78,17 +78,17 @@ namespace {
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    using   AbortSuppressCountType_ =   volatile unsigned int;
+    using   InterruptSuppressCountType_ =   volatile unsigned int;
 #else
-    using   AbortSuppressCountType_ =   atomic<unsigned int>;
+    using   InterruptSuppressCountType_ =   atomic<unsigned int>;
 #endif
 }
 
 
 
 namespace {
-    thread_local AbortFlagType_             s_Aborting_                     { false };
-    thread_local AbortSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
+    thread_local AbortFlagType_					s_Aborting_                     { false };
+    thread_local InterruptSuppressCountType_	s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
 }
 
 
