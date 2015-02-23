@@ -371,7 +371,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
     }
 }
 
-void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
+void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
     //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
@@ -634,7 +634,7 @@ void    Thread::Abort ()
     }
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
-        fRep_->NotifyOfAbortFromAnyThread_ ();
+        fRep_->NotifyOfInteruptionFromAnyThread_ (true);
     }
 }
 

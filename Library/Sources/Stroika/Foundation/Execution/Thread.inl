@@ -69,7 +69,7 @@ namespace   Stroika {
                 // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
                 // and is just called by Thread::Abort (). It sets (indirectly) the thread-local-storage aborted
                 // flag for the target thread. And if called from an aborting thread, it may throw
-                nonvirtual  void    NotifyOfAbortFromAnyThread_ ();
+                nonvirtual  void    NotifyOfInteruptionFromAnyThread_ (bool aborting);
 
             private:
                 static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
