@@ -17,8 +17,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-// experiment with this - turned off -- LGP 2014-01-14
-#define qUSE_MUTEX_FOR_STATUS_FIELD_    0
 
 
             /*
@@ -95,9 +93,6 @@ namespace   Stroika {
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 AbortFlagType_*         fTLSAbortFlag_;
                 std::thread             fThread_;
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                mutable recursive_mutex fStatusCriticalSection_;
-#endif
                 std::atomic<Status>     fStatus_;
                 WaitableEvent           fRefCountBumpedEvent_;
                 WaitableEvent           fOK2StartEvent_;

@@ -199,9 +199,6 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable)
     : fRunnable_ (runnable)
     , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fThread_ ()
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    , fStatusCriticalSection_ ()
-#endif
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
     , fOK2StartEvent_ (WaitableEvent::eAutoReset)
@@ -322,9 +319,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             bool    doRun   =   false;
             {
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
-#endif
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning)
                 {
                     incRefCnt->fStatus_ = Status::eRunning;
@@ -337,38 +331,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
-#endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
             incRefCnt->fThreadDone_.Set ();
         }
         catch (const AbortException&)
         {
-            /// vaguely #if     qUSE_MUTEX_FOR_STATUS_FIELD related - but not quite.... - not just...
-            /// --LGP 2014-01-14 change...
-#if 1
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (AbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-            {
-                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
-                incRefCnt->fStatus_ = Status::eCompleted;
-            }
-#else
             incRefCnt->fStatus_ = Status::eCompleted;
-#endif
-#else
-#if     qPlatform_POSIX
-            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-            s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
-#endif
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (AbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
-            {
-                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
-                incRefCnt->fStatus_ = Status::eCompleted;
-            }
-#endif
             incRefCnt->fThreadDone_.Set ();
         }
         catch (...)
@@ -379,9 +349,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                auto    critSec { make_unique_lock (incRefCnt->fStatusCriticalSection_) };
-#endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
             incRefCnt->fThreadDone_.Set ();
@@ -414,18 +381,12 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
     *fTLSAbortFlag_ = true;
 
     if (GetCurrentThreadID () == GetID ()) {
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-        auto    critSec { make_unique_lock (fStatusCriticalSection_) };
-#endif
         Assert (s_Aborting_);
         if (fStatus_ == Status::eAborting and s_AbortSuppressDepth_ == 0) {
             Execution::DoThrow (AbortException ());
         }
     }
 
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    auto    critSec { make_unique_lock (fStatusCriticalSection_) };
-#endif
     if (fStatus_ == Status::eAborting) {
 #if     qPlatform_POSIX
         {
@@ -483,9 +444,6 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
      */
     Require (GetCurrentThreadID () == rep->GetID ());
     Assert (s_Aborting_);
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    auto    critSec { make_unique_lock (rep->fStatusCriticalSection_) };
-#endif
     // this isn't the race it might look like because this can only be called when the target (rep) thread is in an alertable state, meaning
     // inside a call to SleepEx, etc... so not updating variables
     if (rep->fStatus_ == Status::eAborting) {
@@ -675,17 +633,10 @@ void    Thread::Abort ()
     DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
 
     // first try to send abort exception, and then - if force - get serious!
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
-    if (fRep_->fStatus_ != Status::eCompleted) {
-        fRep_->fStatus_ = Status::eAborting;
-    }
-#else
     // goto aborting, unless the previous value was completed, and then leave it completed.
     if (fRep_->fStatus_.exchange (Status::eAborting) == Status::eCompleted) {
         fRep_->fStatus_ = Status::eCompleted;
     }
-#endif
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfAbortFromAnyThread_ ();
@@ -758,9 +709,6 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 void    Thread::ThrowIfDoneWithException ()
 {
     if (fRep_) {
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-        auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
-#endif
         if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
             DoReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
         }
@@ -823,9 +771,6 @@ Thread::Status  Thread::GetStatus_ () const noexcept
     if (fRep_.get () == nullptr) {
         return Status::eNull;
     }
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-    auto    critSec { make_unique_lock (fRep_->fStatusCriticalSection_) };
-#endif
     return fRep_->fStatus_;
 }
 
