@@ -1725,6 +1725,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2621,6 +2624,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
