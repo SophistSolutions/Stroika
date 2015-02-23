@@ -431,11 +431,6 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
 {
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
 
-#if 0
-    // already set via another mechanism (taking the address) - if that works - we dont need this - testing...
-    //-- LGP 2014-01-14
-    s_Aborting_ = true;
-#endif
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus_ == Status::eAborting or rep->fStatus_ == Status::eCompleted);
     /*
