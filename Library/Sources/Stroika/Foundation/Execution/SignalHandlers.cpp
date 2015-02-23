@@ -365,7 +365,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
         // The Set<> and Mapping<> code I'm thinking of here. Just use stl code (stuff that wont throw abort exceptions)
         vector<SignalHandler>   shs;
         {
-            Thread::SuppressAbortInContext  suppressContext;
+            Thread::SuppressInteruptionInContext  suppressContext;
             for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
                 shs.push_back (sh);
             }

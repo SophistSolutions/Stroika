@@ -560,7 +560,7 @@ IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
         Verify (::SetEvent (fDoneEvent));
     }
     // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-    Thread::SuppressAbortInContext  suppressAbort;
+    Thread::SuppressInteruptionInContext  suppressInteruption;
     IgnoreExceptionsForCall (fThread.AbortAndWaitForDone ());
     if (fDoneEvent != INVALID_HANDLE_VALUE) {
         Verify (::CloseHandle (fDoneEvent));

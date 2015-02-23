@@ -48,7 +48,7 @@ PeriodicNotifier::~PeriodicNotifier ()
 {
     // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
     // after main exists...
-    Execution::Thread::SuppressAbortInContext  suppressAbort;
+    Execution::Thread::SuppressInteruptionInContext  suppressInteruption;
     fListenThread_.AbortAndWaitForDone ();
 }
 

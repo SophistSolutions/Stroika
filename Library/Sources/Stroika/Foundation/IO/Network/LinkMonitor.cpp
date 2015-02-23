@@ -374,7 +374,7 @@ struct  LinkMonitor::Rep_ {
             ::CancelMibChangeNotify2 (fMonitorHandler_);
         }
 #elif   qPlatform_POSIX
-        Execution::Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+        Execution::Thread::SuppressInteruptionInContext  suppressInteruption;  // critical to wait til done cuz captures this
         fMonitorThread_.AbortAndWaitForDone ();
 #endif
     }

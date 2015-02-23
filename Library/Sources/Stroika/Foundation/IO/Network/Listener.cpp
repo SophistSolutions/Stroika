@@ -55,7 +55,7 @@ struct  Listener::Rep_ {
     ~Rep_ ()
     {
         // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Thread::SuppressAbortInContext  suppressAbort;
+        Thread::SuppressInteruptionInContext  suppressInteruption;
         IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
     }
 

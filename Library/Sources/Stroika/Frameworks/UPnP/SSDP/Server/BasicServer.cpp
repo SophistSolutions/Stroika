@@ -98,7 +98,7 @@ public:
     ~Rep_ ()
     {
         fLinkMonitor_.clear ();
-        Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+        Thread::SuppressInteruptionInContext  suppressInteruption;  // critical to wait til done cuz captures this
         fNotifierThread_.AbortAndWaitForDone ();
         fSearchResponderThread_.AbortAndWaitForDone ();
     }
@@ -140,7 +140,7 @@ public:
     {
         Debug::TraceContextBumper ctx (SDKSTR ("Restarting Basic SSDP server threads"));
         {
-            Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
+            Thread::SuppressInteruptionInContext  suppressInteruption;  // critical to wait til done cuz captures this
             fNotifierThread_.AbortAndWaitForDone ();
             fSearchResponderThread_.AbortAndWaitForDone ();
         }
