@@ -606,7 +606,7 @@ Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 
 void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
-    Execution::Thread::SuppressInteruptionInContext  suppressInteruption;       // this must run to completion - it only blocks waiting for subsidiary thread to finish
+    Execution::Thread::SuppressInterruptionInContext  suppressInterruption;       // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)
             );
