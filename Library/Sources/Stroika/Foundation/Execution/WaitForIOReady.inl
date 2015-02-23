@@ -37,7 +37,7 @@ namespace   Stroika {
             }
             inline  void    WaitForIOReady::Add (Socket s)
             {
-                Add (s.GetNativeSocket ());
+                Add (cvt_ (s.GetNativeSocket ()));
             }
             inline  void    WaitForIOReady::AddAll (const Set<FileDescriptorType>& fds)
             {
@@ -47,7 +47,7 @@ namespace   Stroika {
             {
                 Set<FileDescriptorType> fds;
                 for (Socket si : s) {
-                    fds.Add (si.GetNativeSocket ());
+                    fds.Add (cvt_ (si.GetNativeSocket ()));
                 }
                 fFDs_->AddAll (fds);
             }
@@ -57,7 +57,7 @@ namespace   Stroika {
             }
             inline  void    WaitForIOReady::Remove (Socket s)
             {
-                Remove (s.GetNativeSocket ());
+                Remove (cvt_ (s.GetNativeSocket ()));
             }
             inline  void    WaitForIOReady::RemoveAll (const Set<FileDescriptorType>& fds)
             {
@@ -67,7 +67,7 @@ namespace   Stroika {
             {
                 Set<FileDescriptorType> fds;
                 for (Socket si : s) {
-                    fds.Add (si.GetNativeSocket ());
+                    fds.Add (cvt_ (si.GetNativeSocket ()));
                 }
                 fFDs_->RemoveAll (fds);
             }
@@ -82,7 +82,7 @@ namespace   Stroika {
             {
                 Set<FileDescriptorType> fds;
                 for (Socket si : s) {
-                    fds.Add (si.GetNativeSocket ());
+                    fds.Add (cvt_ (si.GetNativeSocket ()));
                 }
                 SetDescriptors (fds);
             }
@@ -92,6 +92,10 @@ namespace   Stroika {
             }
             inline  auto     WaitForIOReady::Wait (Time::DurationSecondsType waitFor) -> Set<FileDescriptorType> {
                 return WaitUntil (waitFor + Time::GetTickCount ());
+            }
+            inline  WaitForIOReady::FileDescriptorType  WaitForIOReady::cvt_ (Socket::PlatformNativeHandle pnh)
+            {
+                return reinterpret_cast<FileDescriptorType> (pnh);
             }
 
 

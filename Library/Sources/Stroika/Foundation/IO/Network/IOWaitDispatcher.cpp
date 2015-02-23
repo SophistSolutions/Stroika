@@ -23,6 +23,13 @@ using   Memory::Optional;
 
 
 
+namespace {
+    inline  WaitForIOReady::FileDescriptorType  cvt_ (Socket::PlatformNativeHandle pnh)
+    {
+        return reinterpret_cast<FileDescriptorType> (pnh);
+    }
+}
+
 
 /*
  ********************************************************************************
@@ -43,7 +50,7 @@ void    IOWaitDispatcher::AddAll (const Set<Socket>& s)
 {
     {
         auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
-        s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, si.GetNativeSocket ()); });
+        s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, cvt_ (si.GetNativeSocket ())); });
         fWaiter_.AddAll (s);
     }
     RestartOngoingWait_ ();
@@ -81,7 +88,7 @@ void       IOWaitDispatcher::SetSockets (const Set<Socket>& s)
     {
         auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
         rwLock->clear ();
-        s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, si.GetNativeSocket ()); });
+        s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, cvt_ (si.GetNativeSocket ())); });
         fWaiter_.SetDescriptors (s);
     }
     RestartOngoingWait_ ();

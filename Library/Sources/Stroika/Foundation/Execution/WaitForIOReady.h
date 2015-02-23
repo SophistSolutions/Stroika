@@ -43,7 +43,11 @@ namespace   Stroika {
              */
             class   WaitForIOReady {
             public:
+#if     qPlatform_Windows
+                using   FileDescriptorType  =   HANDLE;
+#else
                 using   FileDescriptorType  =   int;
+#endif
 
             public:
                 using   Socket = IO::Network::Socket;
@@ -103,6 +107,9 @@ namespace   Stroika {
                  *  Unlike other wait functions, this just returns an empty set on timeout.
                  */
                 nonvirtual  Set<FileDescriptorType>     WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+
+            private:
+                static  FileDescriptorType  cvt_ (Socket::PlatformNativeHandle pnh);
 
             private:
                 Execution::Synchronized<Set<FileDescriptorType>>    fFDs_;
