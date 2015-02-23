@@ -208,9 +208,9 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable)
     , fThreadName_ ()
 {
 #if     qPlatform_POSIX
-    static  bool    sDidInit = false;
-    if (!sDidInit) {
-        sDidInit = true;
+	static  bool    sDidInit_ { false };
+    if (not sDidInit_) {
+        sDidInit_ = true;
         kCallInRepThreadAbortProcSignalHandler_ =   SignalHandler (Rep_::CalledInRepThreadAbortProc_, SignalHandler::Type::eDirect);
     }
 #endif
