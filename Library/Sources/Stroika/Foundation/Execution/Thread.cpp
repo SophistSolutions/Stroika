@@ -87,8 +87,8 @@ namespace {
 
 
 namespace {
-	thread_local AbortFlagType_             s_Aborting_						{ false };
-	thread_local AbortSuppressCountType_    s_InterruptionSuppressDepth_	{ 0 };			// atomic because updated from one thread but peeked at from another
+    thread_local AbortFlagType_             s_Aborting_                     { false };
+    thread_local AbortSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
 }
 
 
@@ -208,7 +208,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable)
     , fThreadName_ ()
 {
 #if     qPlatform_POSIX
-	static  bool    sDidInit_ { false };
+    static  bool    sDidInit_ { false };
     if (not sDidInit_) {
         sDidInit_ = true;
         kCallInRepThreadAbortProcSignalHandler_ =   SignalHandler (Rep_::CalledInRepThreadAbortProc_, SignalHandler::Type::eDirect);
@@ -321,12 +321,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             bool    doRun   =   false;
             {
-                if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
+                if (incRefCnt->fStatus_ == Status::eNotYetRunning)
+                {
                     incRefCnt->fStatus_ = Status::eRunning;
                     doRun = true;
                 }
             }
-            if (doRun) {
+            if (doRun)
+            {
                 incRefCnt->Run_ ();
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
@@ -335,12 +337,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
             incRefCnt->fThreadDone_.Set ();
         }
-        catch (const InterruptException&) {
+        catch (const InterruptException&)
+        {
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
-        catch (...) {
+        catch (...)
+        {
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
@@ -352,13 +356,15 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             incRefCnt->fThreadDone_.Set ();
         }
     }
-    catch (const InterruptException&) {
+    catch (const InterruptException&)
+    {
         DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
-    catch (...) {
+    catch (...)
+    {
         DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
 
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
