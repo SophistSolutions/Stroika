@@ -24,6 +24,9 @@
  *
  *  \file
  *
+ *
+ *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
+ *
  *      @todo   HALFWAY THOUGHT IMPLEMENTING Interupt() method - just Abort() working now...
  *
  *
@@ -247,7 +250,14 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Send  (AbortException) to the given thread.
+                 *  Abort gracefully shuts down and terminates the given thread.
+                 *
+                 *  This works by setting a flag in that thread, which is chekced at each 'cancelation point', and
+                 *  can interrupt certain cancelation waiting cancelation points.
+                 *
+                 *  This causes the given thread to throw an AbortException whenever it reaches one of these cancelation points
+                 *  (or if already at one such waitable cancelation point).
+                 *
                  *  This call is (generally) non-blocking (may block for critical section to update status,
                  *  but does NOT block until Stop successful).
                  *
@@ -260,19 +270,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  @todo TBD
-                 * (like abort but not sticky - just causes next waitable (cancelalation point) to trigger interupt excpetion then state cleared.
+                 *  Interrupt is meant to stop what a thread is currently doing. Calling this sets a thread-local-storage variable
+                 *  inside that thread, so that at the next cancelation point, it will throw the InterruptedException.
+                 *
+                 *  When InterruptedException is thrown, that thread local storage flag is cleared. Often code will catch and rethrow
+                 *  the exception, but the Interupt state doesnt perisist past when its first handled (this is in stark contrast to Abort).
+                 *
+                 *  If the InterruptException is not handled, it will terminate the thread  (go to the done state).
                  *
                  *  Like Abort(), sending an Interupt() to an expired (aborted) or null thread will be ignored - simply never delivered.
                  *
                  *  Note this can be called from any thread, whether the thread object being interupted, or (more typically) from another.
                  *
-                 *  A thread being aboprted can also be interupted, but Abort() takes precedence if both are attempted.
+                 *  A thread being Aborted can also be interrupted, but Abort() takes precedence if both are attempted.
                  *
                  *  \note   If the function associated with the thread doesn't handle the InteruptExcpetion, this will effectively
                  *          abort the thread (as would any other exception).
                  *
-                 *  \note   NYI
+                 *  \note   only partly implemented and untested
                  *
                  *  @see Abort
                  */
