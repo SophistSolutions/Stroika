@@ -88,6 +88,7 @@ namespace {
 
 namespace {
     thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
+    thread_local TLSInterruptFlagType_          s_Interrupting_                 { false };
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
 }
 
@@ -199,7 +200,6 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
  */
 Thread::Rep_::Rep_ (const Function<void()>& runnable)
     : fRunnable_ (runnable)
-    , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fThread_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
@@ -289,6 +289,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 
 #if     qCompilerAndStdLib_thread_local_initializers_Buggy
         s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
+        s_Interrupting_ = false;
         s_InterruptionSuppressDepth_ = 0;
 #endif
         /*
@@ -296,6 +297,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
          *  instance, and hoping all that works correctly (that the memory access all work correctly).
          */
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
+        incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
 
         try {
             // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
@@ -348,6 +350,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
+            s_Interrupting_ = false;
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
@@ -379,16 +382,37 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
     //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
 
     // Harmless todo multiple times - even if already set
-    AssertNotNull (fTLSAbortFlag_);
-    *fTLSAbortFlag_ = true;
+    AssertNotNull (fTLSInterruptFlag_);
+    *fTLSInterruptFlag_ = true;
+
+    if (aborting) {
+        AssertNotNull (fTLSAbortFlag_);
+        *fTLSAbortFlag_ = true;
+    }
 
     if (GetCurrentThreadID () == GetID ()) {
+#if 1
+        Assert (fTLSInterruptFlag_ == &s_Interrupting_);
+        Assert (fTLSAbortFlag_ == &s_Aborting_);
+        CheckForThreadInterruption ();      // unless supressed, this will throw
+
+        // NOTE - using CheckForThreadInterruption uses TLS s_Aborting_ instead of fStatus,but I think thats better...
+        //  --LGP 2015-02-26
+#else
         Assert (s_Aborting_);
         if (fStatus_ == Status::eAborting and s_InterruptionSuppressDepth_ == 0) {
             Execution::DoThrow (AbortException ());
         }
+#endif
     }
+    // Note we fall through here either if we have throws suppressed, or if sending to another thread
+
+    // @todo note - this used to check fStatus flag and I just changed to checking *fTLSInterruptFlag_ -- LGP 2015-02-26
     if (fStatus_ == Status::eAborting) {
+        Assert (*fTLSAbortFlag_);
+        Assert (*fTLSInterruptFlag_);       // except maybe possible slight race til I use atomic exchange!!! -- LGP 2015-02-26
+    }
+    if (*fTLSInterruptFlag_ /*fStatus_ == Status::eAborting*/) {
 #if     qPlatform_POSIX
         {
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
@@ -420,7 +444,15 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
     //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));        // unsafe to call trace code - because called as unsafe handler
     //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
+
+#if 1
+    // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
+    Assert (s_Interrupting_);
+#else
+    s_Interrupting_ = true;
     s_Aborting_ = true;
+#endif
+
     /*
      * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
      * will return EINTR - which is crucial to our strategy to interupt them!
@@ -433,6 +465,19 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
 
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
+#if 1
+    // @todo review/test carefully - cahgnged LGP 2015-02-26 to suppor tinterupt and abort
+    Require (GetCurrentThreadID () == rep->GetID ());
+    Assert (rep->fTLSInterruptFlag_ == &s_Interrupting_);
+    Assert (rep->fTLSAbortFlag_ == &s_Aborting_);
+    switch (rep->fStatus_) {
+        case Status::eAborting:
+        case Status::eRunning: {
+                CheckForThreadInterruption ();
+            }
+            break;
+    }
+#else
     Require (rep->fStatus_ == Status::eAborting or rep->fStatus_ == Status::eCompleted);
     /*
      *  Note - this only gets called by special thread-proces marked as alertable (like sleepex or waitfor...event,
@@ -450,9 +495,11 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
             return; // dont assert out at the end
         }
     }
+
     // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
     Require (rep->fStatus_ == Status::eCompleted);
+#endif
 }
 #endif
 
@@ -819,7 +866,20 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadInterruption ()
 {
-    if (s_Aborting_ and s_InterruptionSuppressDepth_ == 0) {
-        Execution::DoThrow (Thread::AbortException ());
+    if (s_InterruptionSuppressDepth_ == 0) {
+        if (s_Interrupting_) {
+            if (s_Aborting_) {
+                Assert (s_Interrupting_);   // if s_Aborting_, then s_Interrupting_ must be true
+                Execution::DoThrow (Thread::AbortException ());
+            }
+            else {
+                s_Interrupting_ = false;
+                if (s_Aborting_) {
+                    // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
+                    s_Interrupting_ = true;
+                }
+                Execution::DoThrow (Thread::InterruptException ());
+            }
+        }
     }
 }

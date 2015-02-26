@@ -83,16 +83,17 @@ namespace   Stroika {
 
             private:
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-                using   AbortFlagType_  =   volatile bool;
+                using   InteruptFlagType_  =   volatile bool;
 #else
-                using   AbortFlagType_  =   atomic<bool>;
+                using   InteruptFlagType_  =   atomic<bool>;
 #endif
 
             private:
                 Function<void()>        fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                AbortFlagType_*         fTLSAbortFlag_;
+                InteruptFlagType_*      fTLSAbortFlag_ {};          // Can only be set properly within the MAINPROC of the thread
+                InteruptFlagType_*      fTLSInterruptFlag_ {};      // ""
                 std::thread             fThread_;
                 std::atomic<Status>     fStatus_;
                 WaitableEvent           fRefCountBumpedEvent_;
