@@ -422,6 +422,16 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
                 sHandlerInstalled_ = true;
             }
         }
+
+        {
+            /*
+             * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
+             * will return EINTR - which is crucial to our strategy to interupt them!
+             */
+            Verify (::siginterrupt (GetSignalUsedForThreadAbort (), true) == 0);
+        }
+
+
         (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 #elif   qPlatform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
@@ -447,17 +457,20 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 
 #if 1
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
-    Assert (s_Interrupting_);
+    Assert (s_Interrupting_);       // just to debug - technically we cannot asser tthis because the interupted thread could handle and clear the flag
+    // beofre the singal handler gets to it....
 #else
     s_Interrupting_ = true;
     s_Aborting_ = true;
 #endif
 
+#if 0
     /*
      * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
      * will return EINTR - which is crucial to our strategy to interupt them!
      */
     Verify (::siginterrupt (signal, true) == 0);
+#endif
 }
 #elif           qPlatform_Windows
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
@@ -465,9 +478,9 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
 
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
+    Require (GetCurrentThreadID () == rep->GetID ());
 #if 1
     // @todo review/test carefully - cahgnged LGP 2015-02-26 to suppor tinterupt and abort
-    Require (GetCurrentThreadID () == rep->GetID ());
     Assert (rep->fTLSInterruptFlag_ == &s_Interrupting_);
     Assert (rep->fTLSAbortFlag_ == &s_Aborting_);
     switch (rep->fStatus_) {
