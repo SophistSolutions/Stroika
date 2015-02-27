@@ -267,6 +267,8 @@ void    Thread::Rep_::Run_ ()
         fRunnable_ ();
     }
     catch (const InterruptException&) {
+        // Note: intentionally not saved in fSavedException_.
+        // See ThrowIfDoneWithException
         throw;
     }
     catch (...) {
@@ -394,7 +396,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 #if 1
         Assert (fTLSInterruptFlag_ == &s_Interrupting_);
         Assert (fTLSAbortFlag_ == &s_Aborting_);
-        CheckForThreadInterruption ();      // unless supressed, this will throw
+        CheckForThreadInterruption ();      // unless suppressed, this will throw
 
         // NOTE - using CheckForThreadInterruption uses TLS s_Aborting_ instead of fStatus,but I think thats better...
         //  --LGP 2015-02-26
@@ -431,7 +433,6 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
             Verify (::siginterrupt (GetSignalUsedForThreadAbort (), true) == 0);
         }
 
-
         (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 #elif   qPlatform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
@@ -452,13 +453,13 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 #if     qPlatform_POSIX
 void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
-    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));        // unsafe to call trace code - because called as unsafe handler
-    //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
-
+    // unsafe to call trace code - because called as unsafe handler
+    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    //Require (GetCurrentThreadID () == rep->GetID ());         must be true but we dont have the rep as argument
 #if 1
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
-    Assert (s_Interrupting_);       // just to debug - technically we cannot asser tthis because the interupted thread could handle and clear the flag
-    // beofre the singal handler gets to it....
+    Assert (s_Interrupting_);       // just to debug - technically we cannot assert this because the interrupted
+    // thread could handle and clear the flag before the singal handler gets to it....
 #else
     s_Interrupting_ = true;
     s_Aborting_ = true;
@@ -481,6 +482,12 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     Require (GetCurrentThreadID () == rep->GetID ());
 #if 1
     // @todo review/test carefully - cahgnged LGP 2015-02-26 to suppor tinterupt and abort
+    /*
+     *  Note why this is safe here:
+     *      o   This callback is called by the APC mechanism only if in an 'alertable state' call, like SleepEx().
+     *      o   This also respects the TLS variable (current thread) copy of the suppress throw flags
+     *          inside CheckForThreadInterruption()
+     */
     Assert (rep->fTLSInterruptFlag_ == &s_Interrupting_);
     Assert (rep->fTLSAbortFlag_ == &s_Aborting_);
     switch (rep->fStatus_) {
@@ -883,7 +890,7 @@ void    Execution::CheckForThreadInterruption ()
         if (s_Interrupting_) {
             if (s_Aborting_) {
                 Assert (s_Interrupting_);   // if s_Aborting_, then s_Interrupting_ must be true
-                Execution::DoThrow (Thread::AbortException ());
+                DoThrow (Thread::AbortException ());
             }
             else {
                 s_Interrupting_ = false;
@@ -891,7 +898,7 @@ void    Execution::CheckForThreadInterruption ()
                     // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
                     s_Interrupting_ = true;
                 }
-                Execution::DoThrow (Thread::InterruptException ());
+                DoThrow (Thread::InterruptException ());
             }
         }
     }

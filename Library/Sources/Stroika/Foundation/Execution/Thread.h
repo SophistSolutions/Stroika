@@ -27,16 +27,9 @@
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
  *
- *      @todo   HALFWAY THOUGHT IMPLEMENTING Interupt() method - just Abort() working now...
- *
- *
- *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
- *
- *      @todo   Consider using
- *                  http://en.cppreference.com/w/cpp/error/make_exception_ptr
- *              to allow propagating excetions from the called thread to the calling thread.
- *              Maybe API "WaitAndThrowAnyChildThreadExceptions", or make optional if
- *              existing WAIT API throws child excpetions. Maybe paraemter in construction
+ *      @todo   Consider using ThrowIfDoneWithException () more thoroughly, possibly
+ *              redefining the meaning of WaitForDone() or possibly adding WaitAndThrowAnyChildThreadExceptions
+ *              or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
  *              of the thread?
  *
  *      @todo   SuppressInterruptionInContext DTOR should CheckFor...Abort...
@@ -328,9 +321,9 @@ namespace   Stroika {
                  *  including nullptr. Some may just have no effect
                  *  An example of when this is useful is if you have a thread (performing some operation on
                  *  behalf of an object - with data pointers to that object)
-                 * and must stop the thread (its no longer useful) - but must assure its done before you
+                 *  and must stop the thread (its no longer useful) - but must assure its done before you
                  *  destroy the rest of the data...)
-                 * As for example in FileUtils - DirectoryWatcher...
+                 *  As for example in FileUtils - DirectoryWatcher...
                  *
                  *  throws if timeout
                  */
@@ -338,8 +331,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  If the thread is Done() - and completed with an exception, this throws that exception, allowing
-                 *  an exception thrown inside a thread, to be propagated across threads.
+                 *  If the thread is Done() - and completed with an exception (other than interupt),
+                 *  this throws that exception, allowing an exception thrown inside a thread,
+                 *  to be propagated across threads.
+                 *
+                 *  \note   This function intentionally omits InterruptException and AbortException from
+                 *          this rule, so that if you abort or interrupt a thread and then call this method,
+                 *          it will not rethrow.
+                 *
+                 *          The reason for this choice is that the interrupt/abort are usually generated externally
+                 *          and the intent of this method is to pass information back from the thread to the caller.
                  */
                 nonvirtual  void    ThrowIfDoneWithException ();
 
