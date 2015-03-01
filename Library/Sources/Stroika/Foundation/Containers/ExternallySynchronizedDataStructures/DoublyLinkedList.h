@@ -46,7 +46,7 @@ namespace   Stroika {
                 /**
                  * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
                  */
-                template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals <T>>
+                template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally <T>>
                 struct   DoublyLinkedList_DefaultTraits {
                     using   EqualsCompareFunctionType       =   EQUALS_COMPARER;
                 };
