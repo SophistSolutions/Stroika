@@ -105,7 +105,7 @@ namespace   Stroika {
             struct  ComparerWithEquals : ComparerWithEqualsOptionally<T> {
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                static_assert(Configuration::Equality_comparable<T>, "T must be Equality_comparable");
+                static_assert(Configuration::Equality_comparable<T> (), "T must be Equality_comparable");
 #endif
             };
 
