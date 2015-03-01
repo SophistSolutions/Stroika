@@ -87,6 +87,7 @@ namespace {
 
 
 namespace {
+    mutex                                       sChangeInterruptingMutex_;
     thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
     thread_local TLSInterruptFlagType_          s_Interrupting_                 { false };
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
@@ -351,8 +352,11 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
         {
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-            s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
-            s_Interrupting_ = false;
+            {
+                lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
+                s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
+                s_Interrupting_ = false;
+            }
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
@@ -383,13 +387,16 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
     //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
 
-    // Harmless todo multiple times - even if already set
-    AssertNotNull (fTLSInterruptFlag_);
-    *fTLSInterruptFlag_ = true;
+    {
+        lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
+        // Harmless todo multiple times - even if already set
+        AssertNotNull (fTLSInterruptFlag_);
+        *fTLSInterruptFlag_ = true;
 
-    if (aborting) {
-        AssertNotNull (fTLSAbortFlag_);
-        *fTLSAbortFlag_ = true;
+        if (aborting) {
+            AssertNotNull (fTLSAbortFlag_);
+            *fTLSAbortFlag_ = true;
+        }
     }
 
     if (GetCurrentThreadID () == GetID ()) {
@@ -457,9 +464,11 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
     //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
     //Require (GetCurrentThreadID () == rep->GetID ());         must be true but we dont have the rep as argument
 #if 1
+#if 0
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
     Assert (s_Interrupting_);       // just to debug - technically we cannot assert this because the interrupted
     // thread could handle and clear the flag before the singal handler gets to it....
+#endif
 #else
     s_Interrupting_ = true;
     s_Aborting_ = true;
@@ -876,9 +885,6 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
 
 
 
-
-
-
 /*
  ********************************************************************************
  ********************* Execution::CheckForThreadInterruption ********************
@@ -893,6 +899,7 @@ void    Execution::CheckForThreadInterruption ()
                 DoThrow (Thread::AbortException ());
             }
             else {
+                lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
                 s_Interrupting_ = false;
                 if (s_Aborting_) {
                     // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
