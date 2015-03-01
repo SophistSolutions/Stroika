@@ -1760,7 +1760,7 @@ namespace {
     namespace TemporaryTest_ {
         void    DoTest_ ()
         {
-            constexpr   unsigned int    kMaxIterations_ { 1000 };
+            constexpr   unsigned int    kMaxIterations_ { 100000 };
             Sequence<int> s  { Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements () };
             {
                 unsigned int cnt { 0 };
