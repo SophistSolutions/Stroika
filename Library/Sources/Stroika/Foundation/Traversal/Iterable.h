@@ -419,6 +419,16 @@ namespace   Stroika {
                  *  However, Apply () MAY perform the entire iteration atomicly (depending on the
                  *  kind of the container).
                  *
+                 *  Apply () also MAY be much faster than normal iteration (some simple tests
+                 *  - around 2015-02-15 - suggest Apply  () is perhaps 10x faster than using an iterator).
+                 *
+                 *  EXAMPLE USAGE:
+                 *      unsigned int cnt { 0 };
+                 *      s.Apply ([&cnt] (int i) {
+                 *         cnt += i;
+                 *      });
+                 *      DbgTrace ("cnt=%d", cnt);
+                 *
                  *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
                  *              directly or indirectly access the Iterable<> being iterated over.
                  *
