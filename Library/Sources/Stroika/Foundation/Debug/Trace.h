@@ -158,9 +158,10 @@ namespace   Stroika {
 
             public:
                 static  unsigned int    GetCount ();
-            private:
-                static  void    IncCount ();
-                static  void    DecrCount ();
+
+			private:
+                static  void    IncCount_ ();
+                static  void    DecrCount_ ();
 #endif
             };
 

@@ -537,7 +537,7 @@ TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
     char_traits<SDKChar>::copy (fSavedContextName_, contextName, len);
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len] = '\0';
-    IncCount ();
+    IncCount_ ();
 }
 
 unsigned int    TraceContextBumper::GetCount ()
@@ -545,19 +545,19 @@ unsigned int    TraceContextBumper::GetCount ()
     return sTraceContextDepth_;
 }
 
-void    TraceContextBumper::IncCount ()
+void    TraceContextBumper::IncCount_ ()
 {
     sTraceContextDepth_++;
 }
 
-void    TraceContextBumper::DecrCount ()
+void    TraceContextBumper::DecrCount_ ()
 {
     --sTraceContextDepth_;
 }
 
 TraceContextBumper::~TraceContextBumper ()
 {
-    DecrCount ();
+    DecrCount_ ();
     if (fDoEndMarker) {
         auto    critSec { make_unique_lock (GetCritSection_ ()) };
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
