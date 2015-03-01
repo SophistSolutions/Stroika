@@ -60,56 +60,76 @@ namespace   Stroika {
 
 
             /*
-             *BASED ON
-                    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
+             *  BASED ON
+             *      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
+             *
+             *  But not in standard yet, and these not well documented. So go with definitions in
+             *      http://en.cppreference.com/w/cpp/concept/
+             *  for now
              *
              *  Starting to experiment...
              */
-
-            template<typename T>
-            struct eq_result_impl {
-                template<typename X>
-                static auto check(const X& x) -> decltype(x == x);
-                static substition_failure check(...);
-                using type = decltype(check(declval<T>()));
-            };
-            template<typename T>
-            using eq_result = typename eq_result_impl<T>::type;
-            template<typename T>
-            struct has_eq
-                    : integral_constant < bool, !is_same<eq_result<T>, substition_failure>::value >
-            { };
-
-            template<typename T>
-            struct neq_result_impl {
-                template<typename X>
-                static auto check(const X& x) -> decltype(x != x);
-                static substition_failure check(...);
-                using type = decltype(check(declval<T>()));
-            };
-            template<typename T>
-            using neq_result = typename neq_result_impl<T>::type;
-            template<typename T>
-            struct has_neq
-                    : integral_constant < bool, !is_same<neq_result<T>, substition_failure>::value >
-            { };
-
-
-            template    <typename T>
-            constexpr bool Equality_comparable ()
-            {
-                return has_eq<T>::value && is_convertible<eq_result<T>, bool>::value
-                       && has_neq<T>::value && is_convertible<neq_result<T>, bool>::value;
+            namespace Private_ {
+                template    <typename T>
+                struct  eq_result_impl {
+                    template    <typename X>
+                    static auto check(const X& x) -> decltype(x == x);
+                    static substition_failure check(...);
+                    using type = decltype(check(declval<T>()));
+                };
             }
             template    <typename T>
-            constexpr bool Weakly_ordered ()
-            {
-                return false;   // NYI
+            using   eq_result = typename Private_::eq_result_impl<T>::type;
+            template    <typename T>
+            struct  has_eq : integral_constant <bool, not is_same<eq_result<T>, substition_failure>::value> {};
+
+            namespace Private_ {
+                template    <typename T>
+                struct  neq_result_impl {
+                    template    <typename X>
+                    static auto check(const X& x) -> decltype(x != x);
+                    static substition_failure check(...);
+                    using type = decltype(check(declval<T>()));
+                };
             }
             template    <typename T>
-            constexpr bool Totally_ordered ()
+            using   neq_result = typename Private_::neq_result_impl<T>::type;
+            template    <typename T>
+            struct  has_neq : integral_constant <bool, not is_same<neq_result<T>, substition_failure>::value>   {};
+
+
+            namespace Private_ {
+                template    <typename T>
+                struct  lt_result_impl {
+                    template    <typename X>
+                    static auto check(const X& x) -> decltype(x < x);
+                    static substition_failure check(...);
+                    using type = decltype(check(declval<T>()));
+                };
+            }
+            template    <typename T>
+            using   lt_result = typename Private_::lt_result_impl<T>::type;
+            template    <typename T>
+            struct  has_lt : integral_constant <bool, not is_same<lt_result<T>, substition_failure>::value> {};
+
+
+            /**
+             *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
+             */
+            template    <typename T>
+            constexpr bool  EqualityComparable ()
             {
-                return Weakly_ordered<T> () && Equality_comparable<T> ();
+                return has_eq<T>::value && is_convertible<eq_result<T>, bool>::value;
+            }
+
+
+            /**
+             *  See http://en.cppreference.com/w/cpp/concept/LessThanComparable
+             */
+            template    <typename T>
+            constexpr bool LessThanComparable ()
+            {
+                return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
             }
 
 

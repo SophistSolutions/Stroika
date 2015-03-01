@@ -105,7 +105,7 @@ namespace   Stroika {
             struct  ComparerWithEquals : ComparerWithEqualsOptionally<T> {
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                static_assert(Configuration::Equality_comparable<T> (), "T must be Equality_comparable");
+                static_assert(Configuration::EqualityComparable<T> (), "T must be EqualityComparable");
 #endif
             };
 
@@ -120,6 +120,9 @@ namespace   Stroika {
             struct  ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
                 using   ElementType     =   T;
 
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                static_assert(Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
+#endif
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
 
                 /**
@@ -128,7 +131,9 @@ namespace   Stroika {
                 static  int Compare (T v1, T v2);
                 static  bool    Equals (T v1, T v2)
                 {
-                    return not (v1 < v2 or v2 < v1);
+                    bool    result { not (v1 < v2 or v2 < v1) };
+                    //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
+                    return result;
                 }
             };
 
