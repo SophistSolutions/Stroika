@@ -101,14 +101,7 @@ namespace   {
     ofstream*   sTraceFile  =   nullptr;
 #endif
 #if     qDefaultTracingOn
-    /**
-     *  Design Note:
-     *
-     *      This module uses stl:map<> instead of a Stroika map, since this could be used to debug
-     *      Stroika code, and that could cause confusion/interrelationships which are undesirable.
-     *      As we can presume map<> is bug free, just use it directly.
-     */
-    map<Thread::IDType, unsigned int>*   sCounts_;
+    thread_local    unsigned int    sTraceContextDepth_ { 0 };  // no need for atomic access because thread_local
 #endif
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
@@ -178,10 +171,6 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
     sEmitTraceCritSec_ = new recursive_mutex ();
-#if     qDefaultTracingOn
-    Assert (sCounts_ == nullptr);
-    sCounts_ = new map<Thread::IDType, unsigned int> ();
-#endif
 #if     qTraceToFile
     Assert (sTraceFile == nullptr);
     sTraceFile = new ofstream ();
@@ -198,10 +187,6 @@ Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
     sTraceFile->close ();
     delete sTraceFile;
     sTraceFile = nullptr;
-#endif
-#if     qDefaultTracingOn
-    delete sCounts_;
-    sCounts_ = nullptr;
 #endif
 }
 
@@ -543,50 +528,6 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
  ********************************************************************************
  */
 #if     qDefaultTracingOn
-namespace   {
-    // maintain a per-thread-id counter, so if we have multiple threads emitting stuff at the same time, we can more easily
-    // see the nesting...
-    //
-    // However - we want to throw away any entries in the list with a ZERO count - since these are a
-    // waste of memory (and appear to a leak detector as a memory leak)!!!
-    //      -- LGP 2009-05-27
-    inline  unsigned int    GetCount_ ()
-    {
-        Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        auto    critSec { make_unique_lock (GetCritSection_ ()) };
-        map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts_->find (threadID);
-        if (i == sCounts_->end ()) {
-            return 0;
-        }
-        Assert (i != sCounts_->end ());
-        return i->second;
-    }
-    inline  void    IncCount_ ()
-    {
-        Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        auto    critSec { make_unique_lock (GetCritSection_ ()) };
-        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
-        if (i == sCounts_->end ()) {
-            (void)sCounts_->insert (map<Thread::IDType, unsigned int>::value_type (threadID, 1)).first;
-        }
-        else {
-            Assert (i != sCounts_->end ());
-            i->second++;
-        }
-    }
-    inline  void    DecrCount_ ()
-    {
-        Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        auto    critSec { make_unique_lock (GetCritSection_ ()) };
-        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
-        Assert (i != sCounts_->end ());
-        i->second--;
-        if (i->second == 0) {
-            sCounts_->erase (i);
-        }
-    }
-}
-#if     qDefaultTracingOn
 TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
     : fDoEndMarker (true)
     //,fSavedContextName_ ()
@@ -598,23 +539,22 @@ TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
     fSavedContextName_[len] = '\0';
     IncCount ();
 }
-#endif
 
 unsigned int    TraceContextBumper::GetCount ()
 {
-    return GetCount_ ();
+    return sTraceContextDepth_;
 }
+
 void    TraceContextBumper::IncCount ()
 {
-    IncCount_ ();
+    sTraceContextDepth_++;
 }
+
 void    TraceContextBumper::DecrCount ()
 {
-    DecrCount_ ();
+    --sTraceContextDepth_;
 }
-#endif
 
-#if     qDefaultTracingOn
 TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount ();
@@ -630,7 +570,3 @@ TraceContextBumper::~TraceContextBumper ()
     }
 }
 #endif
-
-
-
-
