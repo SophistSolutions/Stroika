@@ -16,6 +16,13 @@
 
 /**
  * TODO:
+ *
+ *      @todo   REPLACE
+ *                  Has_Operator_LessThan<T>::value
+ *              with:
+ *                  Configuration::LessThanComparable<T> ()
+ *              BUT - CANNOT DO until we have vc++ fixed for constexpr functions
+ *
  *      @todo   use http://en.cppreference.com/w/cpp/types/enable_if to make this work better
  *              So for example - we want something like:
  *                  enable_if<is_integral<T>> int compare (T, T) { return v1 - v2; }
@@ -68,6 +75,13 @@ namespace   Stroika {
 
             /**
              *  has value member which is true iff 'T' supports the less than operator.
+             *
+             *  TODO REPLACE
+             *          Has_Operator_LessThan<T>::value
+             *  with:
+             *          Configuration::LessThanComparable<T> ()
+             *
+             *  BUT - CANNOT DO until we have vc++ fixed for constexpr functions
              */
             template    <typename T>
             struct  Has_Operator_LessThan :
