@@ -15,6 +15,12 @@
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
+ *      @todo   Clearly DOCUMENT and CHECK assumption in this code that X-value is non-decreasingly a function of bucket#
+ *              In debug build, could do a pre-pass to assert this (if its not otherwise easy to test/verify)
+ *
+ *      @todo   Better document ZERO (zeroing output and zero value not accumulated). Maybe generalize, or barring that
+ *              make it clear anyhow
+ *
  *      @todo   Consider adding an x-offset, so that we logically re-bin, plus shift along the x-axis by
  *              a (given) offset (in units of src-bin widths).
  */
