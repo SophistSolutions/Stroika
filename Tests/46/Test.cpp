@@ -1755,6 +1755,36 @@ namespace   {
 
 
 
+namespace {
+    // just temp hack to test one thing or another - which is performance related
+    namespace TemporaryTest_ {
+        void    DoTest_ ()
+        {
+            constexpr   unsigned int    kMaxIterations_ { 1000 };
+            Sequence<int> s  { Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements () };
+            {
+                unsigned int cnt { 0 };
+                Debug::TraceContextBumper ctx (SDKSTR ("for-loop-iteration"));
+                Debug::TimingTrace tt;
+                for (auto i : s) {
+                    cnt += i;
+                }
+                DbgTrace ("cnt=%d", cnt);
+            }
+            {
+                unsigned int cnt { 0 };
+                Debug::TraceContextBumper ctx (SDKSTR ("Apply"));
+                Debug::TimingTrace tt;
+                s.Apply ([&cnt] (int i) {
+                    cnt += i;
+                });
+                DbgTrace ("cnt=%d", cnt);
+            }
+        }
+    }
+}
+
+
 
 
 
@@ -1784,6 +1814,8 @@ int     main (int argc, const char* argv[])
         cerr << "Usage:" << endl;
         exit (EXIT_FAILURE);
     }
+
+    TemporaryTest_::DoTest_ ();
 
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
