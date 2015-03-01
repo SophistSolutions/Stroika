@@ -69,7 +69,7 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType timeTaken = Time::GetTickCount () - fStartedAt_;
                 if (timeTaken >= fMinTime2Report_) {
-                    DbgTrace("(timeTaken=%f seconds)", timeTaken);
+                    DbgTrace ("(timeTaken=%f seconds)", timeTaken);
                 }
             }
 
