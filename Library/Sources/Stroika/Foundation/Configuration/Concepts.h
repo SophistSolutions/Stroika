@@ -51,12 +51,19 @@ namespace   Stroika {
         namespace   Configuration {
 
 
-            //LIFTED -@todo add docs/reference
-            // from Stroustrup C++11 book - page 800
-            struct substition_failure {};
+            /**
+             *  LIFTED -@todo add docs/reference
+             *  from Stroustrup C++11 book - page 800
+             */
+            struct substitution_failure {};
 
+
+            /**
+             *  LIFTED -@todo add docs/reference
+             *  from Stroustrup C++11 book - page 800
+             */
             template <typename T> struct substitution_succeeded : std::true_type {};
-            template <> struct substitution_succeeded<substition_failure> : std::false_type {};
+            template <> struct substitution_succeeded<substitution_failure> : std::false_type {};
 
 
             /*
@@ -74,28 +81,28 @@ namespace   Stroika {
                 struct  eq_result_impl {
                     template    <typename X>
                     static auto check(const X& x) -> decltype(x == x);
-                    static substition_failure check(...);
+                    static substitution_failure check(...);
                     using type = decltype(check(declval<T>()));
                 };
             }
             template    <typename T>
             using   eq_result = typename Private_::eq_result_impl<T>::type;
             template    <typename T>
-            struct  has_eq : integral_constant <bool, not is_same<eq_result<T>, substition_failure>::value> {};
+            struct  has_eq : integral_constant <bool, not is_same<eq_result<T>, substitution_failure>::value> {};
 
             namespace Private_ {
                 template    <typename T>
                 struct  neq_result_impl {
                     template    <typename X>
                     static auto check(const X& x) -> decltype(x != x);
-                    static substition_failure check(...);
+                    static substitution_failure check(...);
                     using type = decltype(check(declval<T>()));
                 };
             }
             template    <typename T>
             using   neq_result = typename Private_::neq_result_impl<T>::type;
             template    <typename T>
-            struct  has_neq : integral_constant <bool, not is_same<neq_result<T>, substition_failure>::value>   {};
+            struct  has_neq : integral_constant <bool, not is_same<neq_result<T>, substitution_failure>::value>   {};
 
 
             namespace Private_ {
@@ -103,14 +110,14 @@ namespace   Stroika {
                 struct  lt_result_impl {
                     template    <typename X>
                     static auto check(const X& x) -> decltype(x < x);
-                    static substition_failure check(...);
+                    static substitution_failure check(...);
                     using type = decltype(check(declval<T>()));
                 };
             }
             template    <typename T>
             using   lt_result = typename Private_::lt_result_impl<T>::type;
             template    <typename T>
-            struct  has_lt : integral_constant <bool, not is_same<lt_result<T>, substition_failure>::value> {};
+            struct  has_lt : integral_constant <bool, not is_same<lt_result<T>, substitution_failure>::value> {};
 
 
             /**
@@ -136,6 +143,7 @@ namespace   Stroika {
 
             /*
              * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
+             *      @todo OBSOLETE - USE static_assert<EqualityComparable<T>>
              */
 
             template <typename T>
@@ -154,6 +162,10 @@ namespace   Stroika {
             };
 
 
+            /*
+             * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
+             *      @todo OBSOLETE - USE static_assert<EqualityComparable<T>>
+             */
             template <typename T>
             struct RequireOperatorNotEquals {
                 static void check ()
@@ -170,6 +182,9 @@ namespace   Stroika {
             };
 
 
+            /*
+             *      @todo OBSOLETE - USE static_assert<LessThanComparable<T>>
+             */
             template <typename T>
             struct RequireOperatorLess {
                 static void check ()

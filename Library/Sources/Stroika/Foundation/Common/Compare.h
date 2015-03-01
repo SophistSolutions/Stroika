@@ -64,7 +64,7 @@ namespace   Stroika {
                     private:
                         template    <typename X>
                         static auto check (X const& x) -> decltype (declval<X> ().Compare (declval<X> ()));
-                        static substition_failure check (...);
+                        static substitution_failure check (...);
 
                     public:
                         using type = decltype (check (std::declval<T> ()));
