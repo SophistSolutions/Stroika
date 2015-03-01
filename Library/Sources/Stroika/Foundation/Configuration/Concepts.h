@@ -65,6 +65,36 @@ namespace   Stroika {
              *
              *  Starting to experiment...
              */
+
+            template<typename T>
+            struct eq_result_impl {
+                template<typename X>
+                static auto check(const X& x) -> decltype(x == x);
+                static substition_failure check(...);
+                using type = decltype(check(declval<T>()));
+            };
+            template<typename T>
+            using eq_result = typename eq_result_impl<T>::type;
+            template<typename T>
+            struct has_eq
+                    : integral_constant < bool, !is_same<eq_result<T>, substition_failure>::value >
+            { };
+
+            template<typename T>
+            struct neq_result_impl {
+                template<typename X>
+                static auto check(const X& x) -> decltype(x != x);
+                static substition_failure check(...);
+                using type = decltype(check(declval<T>()));
+            };
+            template<typename T>
+            using neq_result = typename neq_result_impl<T>::type;
+            template<typename T>
+            struct has_neq
+                    : integral_constant < bool, !is_same<neq_result<T>, substition_failure>::value >
+            { };
+
+
             template    <typename T>
             constexpr bool Equality_comparable ()
             {
