@@ -36,10 +36,9 @@ namespace   Stroika {
 #endif
             {
 #if     qDefaultTracingOn
-                IncCount ();
+                IncCount_ ();
 #endif
             }
-
 #if     !qDefaultTracingOn
             inline  TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
             {

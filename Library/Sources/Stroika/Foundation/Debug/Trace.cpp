@@ -528,7 +528,7 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
  ********************************************************************************
  */
 #if     qDefaultTracingOn
-TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
+TraceContextBumper::TraceContextBumper (const wchar_t* contextName)
     : fDoEndMarker (true)
     //,fSavedContextName_ ()
 {
@@ -538,6 +538,11 @@ TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len] = '\0';
     IncCount_ ();
+}
+
+TraceContextBumper::TraceContextBumper (const char* contextName)
+    : TraceContextBumper (mkwtrfromascii_ (contextName).data ())
+{
 }
 
 unsigned int    TraceContextBumper::GetCount ()
@@ -568,5 +573,24 @@ TraceContextBumper::~TraceContextBumper ()
             Emitter::Get ().EmitTraceMessage (SDKSTR ("} </%s>"), fSavedContextName_);
         }
     }
+}
+
+auto    TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_> {
+    array<wchar_t, kMaxContextNameLen_>  r;
+    auto ci = contextName;
+    for (; *ci != '\0'; ++ci)
+    {
+        Require (isascii (*ci));
+        size_t i = ci - contextName;
+        if (i < kMaxContextNameLen_ - 1) {
+            r[i] = *ci;
+        }
+        else {
+            break;
+        }
+    }
+    Assert (ci - contextName < kMaxContextNameLen_);
+    r[ci - contextName] = '\0';
+    return r;
 }
 #endif

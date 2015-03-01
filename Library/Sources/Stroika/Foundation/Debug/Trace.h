@@ -10,6 +10,7 @@
 #include    <windows.h>
 #include    <tchar.h>
 #endif
+#include    <array>
 
 #include    "../Characters/SDKChar.h"
 #include    "../Characters/SDKString.h"
@@ -141,8 +142,12 @@ namespace   Stroika {
             */
             class   TraceContextBumper {
             public:
+                /**
+                 *  If constructor taking const char* used, the argument must be ASCII characters.
+                 */
                 TraceContextBumper ();
-                TraceContextBumper (const SDKChar* contextName);
+                TraceContextBumper (const char* contextName);
+                TraceContextBumper (const wchar_t* contextName);
                 TraceContextBumper (const TraceContextBumper&) = delete;
                 ~TraceContextBumper ();
 
@@ -152,14 +157,24 @@ namespace   Stroika {
 #if     qDefaultTracingOn
             public:
                 bool    fDoEndMarker;
-            private:
-                SDKChar                                     fSavedContextName_[64];
-                Emitter::TraceLastBufferedWriteTokenType    fLastWriteToken_;           // used to COMBINE items into a single line if they happen quickly enuf
 
             public:
                 static  unsigned int    GetCount ();
 
-			private:
+            private:
+#if     qCompilerAndStdLib_constexpr_Buggy
+                DEFINE_CONSTEXPR_CONSTANT (size_t, kMaxContextNameLen_, 64);
+#else
+                static  constexpr size_t    kMaxContextNameLen_   { 64 };
+#endif
+            private:
+                wchar_t                                     fSavedContextName_[kMaxContextNameLen_];
+                Emitter::TraceLastBufferedWriteTokenType    fLastWriteToken_;           // used to COMBINE items into a single line if they happen quickly enuf
+
+            private:
+                static  array<wchar_t, kMaxContextNameLen_>  mkwtrfromascii_ (const char* contextName);
+
+            private:
                 static  void    IncCount_ ();
                 static  void    DecrCount_ ();
 #endif
