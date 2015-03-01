@@ -74,30 +74,30 @@ namespace   Stroika {
             }
             inline  void    Main::Install ()
             {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Install"));
+                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Install");
                 GetServiceRep_ ()._Install ();
             }
 
             inline  void    Main::UnInstall ()
             {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::UnInstall"));
+                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::UnInstall");
                 GetServiceRep_ ()._UnInstall ();
             }
             inline  void    Main::Start (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Start"));
+                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Start");
                 DbgTrace ("(timeout = %f)", timeout);
                 GetServiceRep_ ()._Start (timeout);
             }
             inline  void    Main::Stop (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Stop"));
+                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Stop");
                 DbgTrace ("(timeout = %f)", timeout);
                 GetServiceRep_ ()._Stop (timeout);
             }
             inline  void    Main::ForcedStop (Time::DurationSecondsType timeout)
             {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::ForcedStop"));
+                Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::ForcedStop");
                 DbgTrace ("(timeout = %f)", timeout);
                 GetServiceRep_ ()._ForcedStop (timeout);
             }

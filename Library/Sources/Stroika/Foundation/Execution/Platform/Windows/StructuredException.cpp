@@ -41,13 +41,13 @@ void    Platform::Windows::StructuredException::RegisterHandler ()
 
 void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
 {
-    TraceContextBumper  ctx (SDKSTR ("Platform::Windows::StructuredException::trans_func_"));
+    TraceContextBumper  ctx ("Platform::Windows::StructuredException::trans_func_");
     {
         // I wish I knew how to get a PROCNAME of where the caller was...
         DbgTrace (SDKSTR ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
         if (pExp != nullptr) {
             if (pExp->ContextRecord != nullptr) {
-                TraceContextBumper  ctx (SDKSTR ("ContextRecord"));
+                TraceContextBumper  ctx ("ContextRecord");
                 DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
                 DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
 #if     qPlatform_Win32
@@ -55,7 +55,7 @@ void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXC
 #endif
             }
             if (pExp->ExceptionRecord != nullptr) {
-                TraceContextBumper  ctx (SDKSTR ("ExceptionRecord"));
+                TraceContextBumper  ctx ("ExceptionRecord");
                 DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
                 DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
                 DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);

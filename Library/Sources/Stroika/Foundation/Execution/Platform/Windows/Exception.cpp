@@ -247,7 +247,7 @@ namespace   {
      */
     void    invalid_parameter_handler_ (const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved)
     {
-        TraceContextBumper  trcCtx (SDKSTR ("invalid_parameter_handler"));
+        TraceContextBumper  trcCtx ("invalid_parameter_handler");
         DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
         Assert (false);
         Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));

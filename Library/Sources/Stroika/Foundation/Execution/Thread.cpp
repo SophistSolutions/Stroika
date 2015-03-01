@@ -218,7 +218,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable)
 
 void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 {
-    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::DoCreate"));
+    TraceContextBumper ctx ("Thread::Rep_::DoCreate");
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
@@ -279,7 +279,7 @@ void    Thread::Rep_::Run_ ()
 
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
     RequireNotNull (thisThreadRep);
-    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::ThreadMain_"));
+    TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
 
     try {
         /*
@@ -381,7 +381,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
-    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
+    //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
 
     // Harmless todo multiple times - even if already set
     AssertNotNull (fTLSInterruptFlag_);
@@ -454,7 +454,7 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
     // unsafe to call trace code - because called as unsafe handler
-    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
     //Require (GetCurrentThreadID () == rep->GetID ());         must be true but we dont have the rep as argument
 #if 1
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
@@ -476,7 +476,7 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 #elif           qPlatform_Windows
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
 
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
@@ -640,7 +640,7 @@ void    Thread::SetThreadName (const wstring& threadName)
 {
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
-        TraceContextBumper  ctx (SDKSTR ("Execution::Thread::SetThreadName"));
+        TraceContextBumper  ctx ("Execution::Thread::SetThreadName");
         DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
         fRep_->fThreadName_ = threadName;
 #if     qSupportSetThreadNameDebuggerCall
@@ -687,7 +687,7 @@ void    Thread::Start ()
 
 void    Thread::Abort ()
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("Thread::Abort"));
+    Debug::TraceContextBumper ctx ("Thread::Abort");
     if (fRep_.get () == nullptr) {
         // then its effectively already stopped.
         return;
@@ -708,7 +708,7 @@ void    Thread::Abort ()
 
 void    Thread::Interrupt ()
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("Thread::Interrupt"));
+    Debug::TraceContextBumper ctx ("Thread::Interrupt");
     if (fRep_.get () == nullptr) {
         // then its effectively already stopped.
         return;
@@ -781,7 +781,7 @@ void    Thread::ThrowIfDoneWithException ()
 
 void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("Thread::WaitForDoneUntil"));
+    Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
     //DbgTrace ("(timeout = %.2f)", timeout);
     if (fRep_.get () == nullptr) {
         // then its effectively already done.

@@ -88,7 +88,7 @@ namespace   Stroika {
             }
             inline  void    WaitableEvent::Reset ()
             {
-                //Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Reset"));
+                //Debug::TraceContextBumper ctx ("WaitableEvent::Reset");
                 fWE_.Reset ();
             }
             inline  bool    WaitableEvent::PeekIsSet () const noexcept

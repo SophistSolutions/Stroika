@@ -127,7 +127,7 @@ unsigned int    ThreadPool::GetPoolSize () const
 
 void    ThreadPool::SetPoolSize (unsigned int poolSize)
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::SetPoolSize"));
+    Debug::TraceContextBumper ctx ("ThreadPool::SetPoolSize");
     Require (not fAborted_);
     auto    critSec { make_unique_lock (fCriticalSection_) };
     while (poolSize > fThreads_.size ()) {
@@ -158,7 +158,7 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
 
 ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
 {
-    //Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AddTask"));
+    //Debug::TraceContextBumper ctx ("ThreadPool::AddTask");
     Require (not fAborted_);
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -174,7 +174,7 @@ ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
 
 void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTask"));
+    Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
     {
         // First see if its in the Q
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -217,7 +217,7 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
 
 void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::AbortTasks"));
+    Debug::TraceContextBumper ctx ("ThreadPool::AbortTasks");
     auto tps = GetPoolSize ();
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -274,7 +274,7 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
 
 void    ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForTask"));
+    Debug::TraceContextBumper ctx ("ThreadPool::WaitForTask");
     // Inefficient / VERY SLOPPY impl
     Time::DurationSecondsType   timeoutAt   =   timeout + Time::GetTickCount ();
     while (true) {
@@ -340,7 +340,7 @@ size_t  ThreadPool::GetTasksCount () const
 
 void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::WaitForDoneUntil"));
+    Debug::TraceContextBumper ctx ("ThreadPool::WaitForDoneUntil");
     Require (fAborted_);
     {
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
@@ -358,7 +358,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 
 void    ThreadPool::Abort ()
 {
-    Debug::TraceContextBumper ctx (SDKSTR ("ThreadPool::Abort"));
+    Debug::TraceContextBumper ctx ("ThreadPool::Abort");
     fAborted_ = true;
     {
         // Clear the task Q and then abort each thread
@@ -372,7 +372,7 @@ void    ThreadPool::Abort ()
 
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (SDKSTR ("ThreadPool::AbortAndWaitForDone"));
+    Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
     Thread::SuppressInterruptionInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     Abort ();
     WaitForDone (timeout);

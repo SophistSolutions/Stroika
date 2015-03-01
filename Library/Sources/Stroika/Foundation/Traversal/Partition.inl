@@ -22,7 +22,7 @@ namespace   Stroika {
                     using   Containers::SortedMapping;
                     using   Debug::TraceContextBumper;
                     using   Memory::Optional;
-                    TraceContextBumper ctx (SDKSTR ("IsPartition_Helper_"));
+                    TraceContextBumper ctx ("IsPartition_Helper_");
                     using   namespace   Traversal;
                     using ElementType = typename RANGETYPE::ElementType;
                     SortedMapping<ElementType, RANGETYPE>   tmp;

@@ -78,11 +78,11 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
     {
         Thread watcherThread ([this] () {
             // This is a safe context
-            Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
+            Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
             while (true) {
-                Debug::TraceContextBumper trcCtx1 (SDKSTR ("Waiting for next safe signal"));
+                Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
                 SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-                Debug::TraceContextBumper trcCtx2 (SDKSTR ("Invoking SAFE signal handlers"));
+                Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
                 DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
                 for (SignalHandler sh : fHandlers_.LookupValue (i)) {
                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
@@ -96,7 +96,7 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
     }
     ~Rep_ ()
     {
-        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"));
+        Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
     Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
@@ -126,14 +126,14 @@ shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegist
 
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
     Assert (sTheRep_ == nullptr);
     sTheRep_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR");
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     sTheRep_.reset ();
     // avoid slight race - after reset above - could still be processing a signal (holding refcount above zero).
@@ -183,12 +183,12 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
     nConstructed++;
     Assert (nConstructed == 1);
 #endif
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
 }
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR");
     Assert (SafeSignalsManager::sTheRep_ == nullptr);  // must be cleared first
 }
 
@@ -230,7 +230,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
@@ -355,7 +355,7 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
 #if     qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_");
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
     SignalHandlerRegistry&  SHR =   Get ();

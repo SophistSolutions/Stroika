@@ -405,7 +405,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const typ
     auto i  = fTypeMappingRegistry_.fSerializers.Lookup (foo);
 #if     qDebug
     if (not i.IsPresent ()) {
-        Debug::TraceContextBumper   ctx (SDKSTR ("ObjectVariantMapper::Lookup_"));
+        Debug::TraceContextBumper   ctx ("ObjectVariantMapper::Lookup_");
         DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", forTypeInfo.name ());
     }
 #endif

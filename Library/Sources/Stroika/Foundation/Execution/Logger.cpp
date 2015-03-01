@@ -122,7 +122,7 @@ void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
 void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Logger::SetBufferingEnabled"));
+    Debug::TraceContextBumper ctx ("Logger::SetBufferingEnabled");
     DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
 #endif
     sThe_.fBufferingEnabled_ = logBufferingEnabled;
@@ -154,7 +154,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Logger::SetSuppressDuplicates"));
+    Debug::TraceContextBumper ctx ("Logger::SetSuppressDuplicates");
     DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
 #endif
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
@@ -168,7 +168,7 @@ void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsTyp
 void    Logger::FlushDupsWarning_ ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Logger::FlushDupsWarning_"));
+    Debug::TraceContextBumper ctx ("Logger::FlushDupsWarning_");
 #endif
     auto    lastMsgLocked = sLastMsg_.GetReference ();
     if (lastMsgLocked->fRepeatCount_ > 0) {

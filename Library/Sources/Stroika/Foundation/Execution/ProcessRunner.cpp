@@ -300,7 +300,7 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
 
 function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
-    TraceContextBumper  ctx (SDKSTR ("ProcessRunner::CreateRunnable"));
+    TraceContextBumper  ctx ("ProcessRunner::CreateRunnable");
     String      cmdLine     =   fCommandLine_.Value ();
     SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
 
@@ -309,7 +309,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
     Streams::BinaryOutputStream err =   GetStdErr ();
 
     return [progress, cmdLine, currentDir, in, out, err] () {
-        TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
+        TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
         DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (SDKSTR ("currentDir: %s"), Characters::CString::LimitLength (currentDir, 50, false).c_str ());
@@ -751,7 +751,7 @@ DoneWithProcess:
 
 void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    TraceContextBumper  ctx (SDKSTR ("ProcessRunner::Run"));
+    TraceContextBumper  ctx ("ProcessRunner::Run");
     if (timeout == Time::kInfinite) {
         CreateRunnable (progress) ();
     }

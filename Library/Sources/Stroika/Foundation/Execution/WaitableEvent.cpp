@@ -75,7 +75,7 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::WE_::WaitUntil"));
+    Debug::TraceContextBumper ctx ("WaitableEvent::WE_::WaitUntil");
     DbgTrace ("(timeout = %.2f)", timeoutAt);
 #endif
     CheckForThreadInterruption ();
@@ -134,7 +134,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
 void    WaitableEvent::Set ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("WaitableEvent::Set"));
+    Debug::TraceContextBumper ctx ("WaitableEvent::Set");
 #endif
     fWE_.Set ();
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects

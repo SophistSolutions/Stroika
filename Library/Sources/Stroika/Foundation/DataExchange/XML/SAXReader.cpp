@@ -173,7 +173,7 @@ namespace   {
 #if     qXMLDBTrackAllocs
         void    DUMPCurMemStats ()
         {
-            TraceContextBumper ctx (SDKSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
+            TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
             auto    critSec { Execution::make_unique_lock (fLastSnapshot_CritSection) };
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
@@ -355,7 +355,7 @@ namespace   {
             }
             ~UsingLibInterHelper_XERCES ()
             {
-                TraceContextBumper ctx (SDKSTR ("~UsingLibInterHelper_XERCES"));
+                TraceContextBumper ctx ("~UsingLibInterHelper_XERCES");
                 XMLPlatformUtils::Terminate ();
                 Assert (sStdIStream_InputStream_COUNT_ == 0);
 #if     qUseMyXMLDBMemManager
@@ -399,7 +399,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 #endif
 {
 #if     qHasLibrary_Xerces
-    TraceContextBumper ctx (SDKSTR ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_"));
+    TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_");
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = new UsingLibInterHelper ();
 #endif
@@ -408,7 +408,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 {
 #if     qHasLibrary_Xerces
-    TraceContextBumper ctx (SDKSTR ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_"));
+    TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_");
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
     sUsingLibInterHelper = nullptr;

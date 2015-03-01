@@ -69,7 +69,7 @@ namespace {
     Instruments::Memory::Info capture_ ()
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Instruments::Memory::Info capture_"));
+        Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
 #endif
 
         constexpr   bool    kManuallyComputePagesPerSecond_ { true };

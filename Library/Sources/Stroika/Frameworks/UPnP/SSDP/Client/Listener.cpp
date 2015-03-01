@@ -105,7 +105,7 @@ public:
         String firstLine    =   in.ReadLine ().Trim ();
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Read SSDP Packet"));
+        Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
         const   String  kNOTIFY_LEAD    =   String_Constant (L"NOTIFY ");

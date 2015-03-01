@@ -202,7 +202,7 @@ size_t  Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, si
 size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_t bufSize)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_"));
+    Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_");
 #endif
     size_t  bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
     bytes2Copy = min (bytes2Copy, bufSize);
@@ -248,7 +248,7 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
 Response    Connection_LibCurl::Rep_::Send (const Request& request)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (SDKSTR ("Connection_LibCurl::Rep_::Send"));
+    Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::Send");
     DbgTrace (L"(method='%s')", request.fMethod.c_str ());
 #endif
     MakeHandleIfNeeded_ ();

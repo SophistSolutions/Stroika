@@ -77,7 +77,7 @@ public:
 
         IO::Network::LinkMonitor    lm;
         lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
-            Debug::TraceContextBumper ctx (SDKSTR ("Basic SSDP server - LinkMonitor callback"));
+            Debug::TraceContextBumper ctx ("Basic SSDP server - LinkMonitor callback");
             DbgTrace (L"(lc = %d, netName=%s, ipNum=%s)", lc, netName.c_str (), ipNum.c_str ());
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
@@ -87,7 +87,7 @@ public:
 #if 0
         fLinkMonitor_ = Optional<IO::Network::LinkMonitor> (move (IO::Network::LinkMonitor ()));
         fLinkMonitor_->AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
-            Debug::TraceContextBumper ctx (SDKSTR ("Basic SSDP server - LinkMonitor callback"));
+            Debug::TraceContextBumper ctx ("Basic SSDP server - LinkMonitor callback");
             DbgTrace (L"(lc = %d, netName=%s, ipNum=%s)", lc, netName.c_str (), ipNum.c_str ());
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
                 this->Restart_ ();
@@ -138,7 +138,7 @@ public:
     }
     void    Restart_ ()
     {
-        Debug::TraceContextBumper ctx (SDKSTR ("Restarting Basic SSDP server threads"));
+        Debug::TraceContextBumper ctx ("Restarting Basic SSDP server threads");
         {
             Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to wait til done cuz captures this
             fNotifierThread_.AbortAndWaitForDone ();

@@ -93,7 +93,7 @@ Characters::String Execution::SignalToName (SignalID signal)
  */
 errno_t    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::Execution::SendSignal");
 #if     qPlatform_POSIX
     DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), static_cast<unsigned long> (h));
 #else

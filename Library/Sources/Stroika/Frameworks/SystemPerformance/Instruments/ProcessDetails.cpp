@@ -84,7 +84,7 @@ const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunSta
 namespace {
     Collection<pair<pid_t, ProcessType>> capture_using_ps_ ()
     {
-        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::capture_using_ps_"));
+        Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::capture_using_ps_");
         Collection<pair<pid_t, ProcessType>>   result;
         ProcessRunner pr (L"ps -axl");
         Streams::BasicBinaryInputOutputStream   useStdOut;
@@ -200,7 +200,7 @@ namespace {
     String  ReadFileString_(const Streams::BinaryInputStream& in)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_"));
+        Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_");
 #endif
         StringBuilder sb;
         for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
@@ -331,7 +331,7 @@ namespace {
     StatFileInfo_   ReadStatFile_ (const String& fullPath)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadStatFile_"));
+        Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadStatFile_");
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
         StatFileInfo_    result {};
@@ -424,7 +424,7 @@ namespace {
     Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_io_data_"));
+        Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_io_data_");
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
 
@@ -466,7 +466,7 @@ namespace {
     proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_proc_status_data_"));
+        Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_proc_status_data_");
         DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
         proc_status_data_    result {};
@@ -503,7 +503,7 @@ namespace {
         for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
             bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (SDKSTR ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files"));
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files");
             DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
 #endif
             if (isAllNumeric) {
