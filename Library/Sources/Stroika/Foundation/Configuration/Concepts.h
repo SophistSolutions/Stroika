@@ -60,6 +60,31 @@ namespace   Stroika {
 
 
             /*
+             *BASED ON
+                    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
+             *
+             *  Starting to experiment...
+             */
+            template    <typename T>
+            constexpr bool Equality_comparable ()
+            {
+                return has_eq<T>::value && is_convertible<eq_result<T>, bool>::value
+                       && has_neq<T>::value && is_convertible<neq_result<T>, bool>::value;
+            }
+            template    <typename T>
+            constexpr bool Weakly_ordered ()
+            {
+                return false;   // NYI
+            }
+            template    <typename T>
+            constexpr bool Totally_ordered ()
+            {
+                return Weakly_ordered<T> () && Equality_comparable<T> ();
+            }
+
+
+
+            /*
              * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
              */
 
