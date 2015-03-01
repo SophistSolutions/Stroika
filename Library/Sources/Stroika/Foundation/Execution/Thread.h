@@ -48,9 +48,6 @@
  *
  *          -- LGP 2014-01-14
  *
- *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
- *              DID - 2014-01-14 - with idefs.
- *
  *      @todo   Provide API where we can return a reference to the underlying thread object
  *              (but probably one to ADOPT an existing thread because then we couldnt hook the run-proc,
  *              which is needed for our exception stuff - I think.
@@ -59,12 +56,6 @@
  *
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
- *
- *      @todo   Add a Method (maybe overload of Start) - which takes a new Runnable, so that
- *              the thread object can be re-run. This will be needed (or at least highly advantageous)
- *              for implementing thread pools.
- *              << turns out NOT necessary for thread pools (already draft impl not using it).
- *              Not sure if good idea - so leave this here. MAYBE>>
  */
 
 
@@ -95,7 +86,6 @@ namespace   Stroika {
              *  will work safely - so that even when all external references go away, the fact that the thread
              *  is still running will keep the reference count non-zero.
              *
-             *
              *  Thread Aborting/Interuption:
              *      The Stroika Thread class supports the idea of 'aborting' a thread.
              *
@@ -104,7 +94,7 @@ namespace   Stroika {
              *
              *              >   java uses interuption
              *              >   boost uses cancelation,
-             *              >   and .net uses Abort
+             *              >   and .net uses Interrupt and Abort
              *
              *      The basic idea is that a thread goes off on its own, doing stuff, and an external force
              *  decides to tell it to stop.
@@ -118,10 +108,16 @@ namespace   Stroika {
              *          existing in process processes - some maybe handling a read/write sequence, and some
              *          perhaps doing a socket listen/accept call.
              *
+             *  When a thread is interrupted, it (in that thread) throws
+             *      class   InterruptException;
+             *
              *  When a thread is aborted, it (in that thread) throws
              *      class   AbortException;
              *
-             *  Thread aborting is tricky todo safely and portably. We take a number of approaches:
+             *  The only difference between Interruption and Aborting is that Aborting is permanent, whereas
+             *  Interrupt happens just once.
+             *
+             *  Thread interruption/aborting is tricky todo safely and portably. We take a number of approaches:
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
              *          Sprinkling CheckForThreadInterruption throughout your code - will trigger a AbortException ()
              *          in that thread context.
@@ -136,7 +132,6 @@ namespace   Stroika {
              *      (3) Signal injection (POSIX) - we send a special (TDB) signal to a particular thread.
              *          It sets a 'thread-local variable - aborted' and when it returns - any (WHICH?) system
              *          calls in progress will return the error
-             *
              *
              *      <<<<DOCUMENT INTERUPTION POINTS>>>> - CALLED INTERUPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
              *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadInterruption () is called. These include:
