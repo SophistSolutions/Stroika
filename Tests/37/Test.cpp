@@ -264,7 +264,7 @@ namespace {
 namespace   {
     void    Test2_InternetAddress_ ()
     {
-        Debug::TraceContextBumper trcCtx (SDKSTR ("Test2_InternetAddress_"));
+        Debug::TraceContextBumper trcCtx ("Test2_InternetAddress_");
         {
             VerifyTestResult ((InternetAddress { 169, 254, 0, 1 }).As<String> () == L"169.254.0.1");
             VerifyTestResult ((InternetAddress { 1, 2, 3, 4 }).As<String> () == L"1.2.3.4");
@@ -341,9 +341,9 @@ namespace   {
 namespace {
     void    Test3_NetworkInterfaceList_ ()
     {
-        Debug::TraceContextBumper trcCtx (SDKSTR ("Test3_NetworkInterfaceList_"));
+        Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
         for (Interface iFace : Network::GetInterfaces ()) {
-            Debug::TraceContextBumper trcCtx (SDKSTR ("iface"));
+            Debug::TraceContextBumper trcCtx ("iface");
             if (iFace.fInterfaceName.IsPresent ()) {
                 DbgTrace (L"interface-name: %s", iFace.fInterfaceName->c_str ());
             }

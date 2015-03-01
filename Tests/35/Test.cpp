@@ -79,7 +79,7 @@ namespace {
     {
         using ElementType   =   typename ITERABLE_TYPE::ElementType;
         return Thread ([iterable, lock, repeatCount] () {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("{}IterateOverThread::MAIN..."));
+            Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
                 lock_guard<decltype(*lock)> critSec (*lock);
@@ -100,7 +100,7 @@ namespace {
     Thread  mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         return Thread ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("{}OverwriteThread::MAIN..."));
+            Debug::TraceContextBumper traceCtx ("{}OverwriteThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
@@ -130,7 +130,7 @@ namespace   {
         template    <typename ITERABLE_TYPE>
         void    DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"));
+            Debug::TraceContextBumper traceCtx ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()");
             no_lock_ lock ;
             //mutex lock;
             Synchronized<ITERABLE_TYPE>  oneToKeepOverwriting { elt1 };
@@ -140,7 +140,7 @@ namespace   {
         }
         void    DoIt ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("AssignAndIterateAtSameTimeTest_1_::DoIt ()"));
+            Debug::TraceContextBumper traceCtx ("AssignAndIterateAtSameTimeTest_1_::DoIt ()");
             const unsigned int kRepeatCount_ = 500;
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
@@ -183,7 +183,7 @@ namespace   {
         {
             Synchronized<ITERABLE_TYPE>   oneToKeepOverwriting { elt1 };
             auto mutateFunction =               [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction] () {
-                Debug::TraceContextBumper traceCtx (SDKSTR ("{}::MutateFunction ()"));
+                Debug::TraceContextBumper traceCtx ("{}::MutateFunction ()");
                 DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name());
                 for (unsigned int i = 0; i < repeatCount; ++i) {
                     baseMutateFunction (&oneToKeepOverwriting);
@@ -196,7 +196,7 @@ namespace   {
         void    DoIt ()
         {
             // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-            Debug::TraceContextBumper traceCtx (SDKSTR ("IterateWhileMutatingContainer_Test_2_::DoIt ()"));
+            Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
 
             const unsigned int kRepeatCount_ = 250;
 

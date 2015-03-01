@@ -1764,7 +1764,7 @@ namespace {
             Sequence<int> s  { Traversal::DiscreteRange<int> (0, kMaxIterations_ - 1).Elements () };
             {
                 unsigned int cnt { 0 };
-                Debug::TraceContextBumper ctx (SDKSTR ("for-loop-iteration"));
+                Debug::TraceContextBumper ctx ("for-loop-iteration");
                 Debug::TimingTrace tt;
                 for (auto i : s) {
                     cnt += i;
@@ -1773,7 +1773,7 @@ namespace {
             }
             {
                 unsigned int cnt { 0 };
-                Debug::TraceContextBumper ctx (SDKSTR ("Apply"));
+                Debug::TraceContextBumper ctx ("Apply");
                 Debug::TimingTrace tt;
                 s.Apply ([&cnt] (int i) {
                     cnt += i;

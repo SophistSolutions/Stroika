@@ -43,7 +43,7 @@ using   Containers::Sequence;
 namespace   {
     void    RegressionTest1_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest1_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest1_");
         struct  FRED {
             static  void    DoIt (void* ignored)
             {
@@ -69,7 +69,7 @@ namespace   {
     recursive_mutex sharedCriticalSection_;
     void    RegressionTest2_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest2_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest2_");
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
         struct  FRED {
@@ -108,7 +108,7 @@ namespace   {
     namespace   WAITABLE_EVENTS_ {
         void    NOTIMEOUTS_ ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("pingpong threads with event.wait(NOTIMEOUTS)"));
+            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(NOTIMEOUTS)");
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
                 static  void    DoIt (void* ignored)
@@ -159,7 +159,7 @@ namespace   {
         }
         void    PingBackAndForthWithSimpleTimeouts_ ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("pingpong threads with event.wait(WITHTIMEOUT)"));
+            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(WITHTIMEOUT)");
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
                 static  void    DoIt (void* ignored)
@@ -210,7 +210,7 @@ namespace   {
         }
         void    TEST_TIMEOUT_EXECPETIONS_ ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("Event wait timeouts"));
+            Debug::TraceContextBumper traceCtx ("Event wait timeouts");
             bool    passed  =   false;
             sRegTest3Event_T1_.Reset ();
             try {
@@ -225,7 +225,7 @@ namespace   {
         }
         void    TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
         {
-            Debug::TraceContextBumper traceCtx (SDKSTR ("Deadlock block on waitable event and abort thread (thread cancelation)"));
+            Debug::TraceContextBumper traceCtx ("Deadlock block on waitable event and abort thread (thread cancelation)");
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
                 static  void    DoIt (void* ignored)
@@ -283,7 +283,7 @@ namespace   {
     }
     void    RegressionTest3_WaitableEvents_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest3_WaitableEvents_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest3_WaitableEvents_");
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
@@ -302,7 +302,7 @@ namespace   {
         using syncofint = Synchronized<int, Synchronized_Traits<int, recursive_mutex>>;
 
 
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest4_Synchronized_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
         {
             syncofdata x;
             syncofdata y = data_ ();
@@ -351,7 +351,7 @@ namespace   {
 namespace   {
     void    RegressionTest5_Aborting_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest5_Aborting_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest5_Aborting_");
         {
             struct  FRED {
                 static  void    DoIt ()
@@ -408,7 +408,7 @@ namespace   {
 namespace   {
     void    RegressionTest6_ThreadWaiting_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest6_ThreadWaiting_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest6_ThreadWaiting_");
         struct  FRED {
             static  void    DoIt ()
             {
@@ -445,7 +445,7 @@ namespace   {
 namespace   {
     void    RegressionTest7_SimpleThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest7_SimpleThreadPool_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest7_SimpleThreadPool_");
         {
             ThreadPool  p;
             p.SetPoolSize (1);
@@ -478,7 +478,7 @@ namespace   {
 namespace   {
     void    RegressionTest8_ThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest8_ThreadPool_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest8_ThreadPool_");
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         struct  FRED {
             static  void    DoIt (void* ignored)
@@ -516,7 +516,7 @@ namespace   {
 namespace   {
     void    RegressionTest9_ThreadsAbortingEarly_ ()
     {
-        Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest9_ThreadsAbortingEarly_"));
+        Debug::TraceContextBumper traceCtx ("RegressionTest9_ThreadsAbortingEarly_");
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         struct  FRED {

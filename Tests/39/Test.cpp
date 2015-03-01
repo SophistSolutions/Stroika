@@ -98,7 +98,7 @@ namespace {
         namespace Private_ {
             void    T1_httpbin_SimpleGET_ (Connection c)
             {
-                Debug::TraceContextBumper ctx (SDKSTR ("T1_httpbin_SimpleGET_"));
+                Debug::TraceContextBumper ctx ("T1_httpbin_SimpleGET_");
                 c.SetURL (URL::Parse (L"http://httpbin.org/get"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
@@ -112,7 +112,7 @@ namespace {
             }
             void    T2_httpbin_SimplePOST_ (Connection c)
             {
-                Debug::TraceContextBumper ctx (SDKSTR ("T2_httpbin_SimplePOST_"));
+                Debug::TraceContextBumper ctx ("T2_httpbin_SimplePOST_");
                 using   Memory::BLOB;
 
                 static   mt19937 sRNG_;
@@ -147,7 +147,7 @@ namespace {
             }
             void    T3_httpbin_SimplePUT_ (Connection c)
             {
-                Debug::TraceContextBumper ctx (SDKSTR ("T3_httpbin_SimplePUT_"));
+                Debug::TraceContextBumper ctx ("T3_httpbin_SimplePUT_");
                 using   Memory::BLOB;
 
                 static   mt19937 sRNG_;

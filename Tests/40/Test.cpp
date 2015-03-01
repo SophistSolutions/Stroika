@@ -23,15 +23,15 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 namespace   {
     void    Test1_DirectoryIterator_()
     {
-        Debug::TraceContextBumper ctx (SDKSTR ("Test1_DirectoryIterator_"));
+        Debug::TraceContextBumper ctx ("Test1_DirectoryIterator_");
         {
-            Debug::TraceContextBumper ctx (SDKSTR ("simple test"));
+            Debug::TraceContextBumper ctx ("simple test");
             for (DirectoryIterator i { WellKnownLocations::GetTemporary () }; not i.Done (); ++i) {
                 DbgTrace (L"filename = %s", i->c_str ());
             }
         }
         {
-            Debug::TraceContextBumper ctx (SDKSTR ("t2"));
+            Debug::TraceContextBumper ctx ("t2");
             DirectoryIterator i { WellKnownLocations::GetTemporary () };
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
                 DbgTrace (L"filename = %s", i2->c_str ());
@@ -40,7 +40,7 @@ namespace   {
     }
     void    Test2_DirectoryIterable_()
     {
-        Debug::TraceContextBumper ctx (SDKSTR ("Test2_DirectoryIterable_"));
+        Debug::TraceContextBumper ctx ("Test2_DirectoryIterable_");
         for (String filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
             DbgTrace (L"filename = %s", filename.c_str ());
         }
