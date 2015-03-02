@@ -19,10 +19,17 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a83">v2.0a83x</a><br/>2015-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a83">v2.0a83</a><br/>2015-03-01</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Thread code cleanups (relating to races and new inturrupt support, and hopefully siginterupt fix, docs)</li>
+	<li>experiments with new concepts (added e.g. has_eq, EqualityComparable, LessThanComparable, and used in ComparerWithWellOrder etc)</li>
+	<li>ontainers/ExternallySynchronizedDataStructures Array/LinkedList/DoublyLinkedList use ComparerWithEqualsOptionally instead of ComparerWithEquals: because we dont always need the method. Just fail when we access teh method (like call contains)</li>
+	<li>Lose map&lt;&gt; code in TraceContextBumper, and use thread_local int instead (much simpler)</li>
+	<li>Documentation</li>
+	<li>Support Release-Logging-32/64 in Tests VS2k13 project files</li>
+	<li>TraceContextBumper CTOR wchar_t* / char* instead of ONLY requiring const SDKChar*</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
