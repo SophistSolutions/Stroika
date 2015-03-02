@@ -26,6 +26,7 @@
  *
  *  TODO:
  *
+ *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
  *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
@@ -35,15 +36,7 @@
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.
  *
- *      @todo   Consider adding crit-section-safe version of  VariantValue.
- *              AnD OR MKAE VariantValue (KEY IS DOCUMETNATION) - threasdsafe like other container types.
- *              Might be trivial with careful use of shared_ptr - and maybe safe already?  But if not - maybe worth doing?
- *              ONE Place we can improve if this is threadsafe is use in ProgressMonitor.h
- *
- *              o   But then be extra clear this class is fully threadsafe (maybe already so).
- *
- *              o   Either document why we used  shared_ptr or use SharedByValue. I thinkt he reason
- *                  is that we never modify? So no need for SharedbyValue.
+ *      @todo   Use Debug::AssertExternallySynchonized<> to assure not used from multiple threads.
  *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *              (mostly done but review)
