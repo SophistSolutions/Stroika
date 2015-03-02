@@ -88,4 +88,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_VariantValue_inl_*/
+#endif  /*_Stroika_Foundation_Memory_AnyVariantValue_inl_*/

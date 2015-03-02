@@ -26,6 +26,8 @@
  *
  *  TODO:
  *
+ *      @todo   Redo operator< () etc as NON-MEMMBERS (like we do elsewhere).
+ *
  *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
  *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
