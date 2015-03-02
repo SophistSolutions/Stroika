@@ -458,11 +458,21 @@ namespace   Stroika {
 
 
             /**
-             *  This object - while in existance, blocks delivery of all abort signals (for this thread in which its instantiated).
-             *  These objects nest.
+             *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
+             *  (for this thread in which its instantiated). This blocking nest (so if you have two of them in one thread, only when the last
+             *  one is destroyed does the block on Interuption be removed).
              *
              *  This is used to prevent a second abort request coming in to a thread already in the process of shutting down, which
              *  might cause a second, or incomplete cleanup.
+             *
+             *  Note - this does NOT prevent the delivery of Windows APC messages, nor POSIX interrupt signals. It just prevents that
+             *  from doing anything (other than maybe an EINTR return).
+             *
+             *  It might be NICE to have the DTOR be a cancelation point, but that would violate the rule that you cannot throw
+             *  from a destructor.
+             *
+             *  Any blocked Interrupt Exceptions will wait til the next cancelation point to be invoked (so call
+             *  CheckForThreadInterruption to force that).
              */
             class   Thread::SuppressInterruptionInContext {
             public:
@@ -485,9 +495,11 @@ namespace   Stroika {
 
 
             /**
-             *  Our thread abort mechanism only throws at certain 'signalable' spots in the code -
+             *  Our thread abort mechanism only throws at certain 'signalable' (alertable) spots in the code -
              *  like sleeps, most reads, etc.
              *  This function will also trigger a throw if called inside a thread which is being aborted.
+             *
+             *  Any call to this routine is a 'cancelation point'.
              */
             void    CheckForThreadInterruption ();
             template    <unsigned int kEveryNTimes>
