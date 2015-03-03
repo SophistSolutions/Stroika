@@ -20,10 +20,11 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a84">v2.0a84x</a><br/>2015-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a84">v2.0a84</a><br/>2015-03-02</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Fixed small bug with TraceContext code on UNIX</li>
+	<li>Essentially no new testing</li>
 </ul>
 </td>
 </tr>
