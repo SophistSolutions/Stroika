@@ -6,6 +6,7 @@
 #include    "../Configuration/StroikaConfig.h"
 
 #include    <list>
+#include    <sstream>
 #if     qPlatform_Windows
 #include    <process.h>
 #include    <windows.h>
@@ -860,25 +861,47 @@ Thread::Status  Thread::GetStatus_ () const noexcept
  */
 wstring Execution::FormatThreadID (Thread::IDType threadID)
 {
-    // it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-    Assert (sizeof (threadID) >= sizeof (int));
-    if (sizeof (Thread::IDType) >= sizeof (uint64_t)) {
-        uint64_t    threadIDInt =   *reinterpret_cast<uint64_t*> (&threadID);
-        return Characters::CString::Format (L"0x%016lx", threadIDInt);
+    /*
+     *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
+     *  way we usually format a thread ID (hex, fixed width). So do that, so thread IDs look more consistent.
+     */
+    wstringstream   out;
+    out << threadID;
+
+#if		qPlatform_Windows
+	constexpr	size_t	kSizeOfThreadID_	=	sizeof (DWORD);					// All MSFT SDK Thread APIs use DWORD for thread id
+#elif	qPlatform_POSIX
+	constexpr	size_t	kSizeOfThreadID_	=	sizeof (pthread_t);
+#else
+	// on MSFT this object is much larger than thread id because it includes handle and id
+	// Not a reliable measure anywhere, but probably our best guess
+	constexpr	size_t	kSizeOfThreadID_	=	sizeof (Thread::IDType);
+#endif
+
+    if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
+        uint64_t   threadIDInt =   0;
+        out >> threadIDInt;
+        return Characters::CString::Format (L"0x%016llx", threadIDInt);
     }
     else {
-        //
-        // @todo: this case is wrong - sizeof(unsigned int) could be 64bits, but sizeof(threadID) smaller so peeking at bad data!!!
-        //
-        unsigned int    threadIDInt =   *reinterpret_cast<unsigned int*> (&threadID);
-        if (threadIDInt <= 0xffff) {
+        uint32_t    threadIDInt =   0;
+        out >> threadIDInt;
+        /*
+         *  Often, it appears ThreadIDs IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
+         *
+         *  However, I dont see any reliable way to tell this is the case, so don't bother for now. A trouble with checking on
+         *  a per-thread-id basis is that often the MAIN THREAD is 0, which is < 0xffff. Then we get one size and then
+         *  on the rest a differnt size, so the layout in the debug trace log looks funny.
+         */
+        constexpr   bool    kUse16BitThreadIDsIfTheyFit_ { false };
+        const   bool    kUse16Bit_ = kUse16BitThreadIDsIfTheyFit_ and threadIDInt <= 0xffff;
+        if (kUse16Bit_) {
             return Characters::CString::Format (L"0x%04x", threadIDInt);
         }
         else {
             return Characters::CString::Format (L"0x%08x", threadIDInt);
         }
     }
-    AssertNotImplemented ();
 }
 
 
