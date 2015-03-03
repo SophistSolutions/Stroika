@@ -429,6 +429,11 @@ namespace   Stroika {
                  *      });
                  *      DbgTrace ("cnt=%d", cnt);
                  *
+                 *  \note   Aliases:
+                 *      o   Apply could have logically been called ForEach, and is nearly identical to
+                 *          std::for_each (), except for not taking iterators as arguments, and not having
+                 *          any return value.
+                 *
                  *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
                  *              directly or indirectly access the Iterable<> being iterated over.
                  *
