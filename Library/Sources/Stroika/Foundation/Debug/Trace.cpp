@@ -532,7 +532,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName)
     : fDoEndMarker (true)
     //,fSavedContextName_ ()
 {
-    fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + strlen (GetEOL<char> ()), SDKSTR ("<%s> {"), contextName);
+    fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
     size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));
     char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
     *(std::end (fSavedContextName_) - 1) = '\0';

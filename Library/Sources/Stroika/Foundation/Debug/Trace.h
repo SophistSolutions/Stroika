@@ -162,10 +162,11 @@ namespace   Stroika {
                 static  unsigned int    GetCount ();
 
             private:
+                // Nothing too important about this constant, but not so long as to be hard to read
 #if     qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT (size_t, kMaxContextNameLen_, 64);
+                DEFINE_CONSTEXPR_CONSTANT (size_t, kMaxContextNameLen_, 80);
 #else
-                static  constexpr size_t    kMaxContextNameLen_   { 64 };
+                static  constexpr size_t    kMaxContextNameLen_   { 80 };
 #endif
             private:
                 wchar_t                                     fSavedContextName_[kMaxContextNameLen_];
