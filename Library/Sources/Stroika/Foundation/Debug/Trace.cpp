@@ -570,7 +570,7 @@ TraceContextBumper::~TraceContextBumper ()
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
         }
         else {
-            Emitter::Get ().EmitTraceMessage (SDKSTR ("} </%s>"), fSavedContextName_);
+            Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_);
         }
     }
 }
