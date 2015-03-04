@@ -469,9 +469,11 @@ namespace   {
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
     }
-    void    Test7_ ()
+    void    Test7_Comparisons_ ()
     {
         VerifyTestResult (String (L"1") <= String (L"1"));
+        VerifyTestResult (L"1" <= String (L"1"));
+        VerifyTestResult (String (L"1") <= L"1");
         VerifyTestResult (String (L"1") <= String (L"10"));
         VerifyTestResult (not (String (L"1") > String (L"10")));
         VerifyTestResult (not (String (L"1") >= String (L"10")));
@@ -1329,7 +1331,7 @@ namespace   {
         Test4_ ();
         Test5_ ();
         Test6_ ();
-        Test7_ ();
+        Test7_Comparisons_ ();
         Test8_ReadOnlyStrings_ ();
         Test8_ExternalMemoryOwnershipStrings_ ();
         Test9_StringVersusStdCString_ ();
