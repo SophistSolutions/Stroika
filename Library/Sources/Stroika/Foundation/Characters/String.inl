@@ -615,7 +615,7 @@ namespace   Stroika {
             inline  bool    operator< (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                bool    result { rhs.Compare (lhs) >= 0 };  // reversed order to avoid construction of extra object
+                bool    result { rhs.Compare (lhs) > 0 };  // reversed order to avoid construction of extra object
                 Assert ((String (lhs).Compare (rhs) < 0) == result);
                 return result;
             }
@@ -637,7 +637,7 @@ namespace   Stroika {
             inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                bool    result { rhs.Compare (lhs) > 0 };   // reversed order to avoid construction of extra object
+                bool    result { rhs.Compare (lhs) >= 0 };   // reversed order to avoid construction of extra object
                 Assert ((String (lhs).Compare (rhs) <= 0) == result);
                 return result;
             }
@@ -699,7 +699,7 @@ namespace   Stroika {
             inline  bool    operator>= (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                bool    result { rhs.Compare (lhs) < 0 };   // reversed order to avoid construction of extra object
+                bool    result { rhs.Compare (lhs) <= 0 };   // reversed order to avoid construction of extra object
                 Assert ((String (lhs).Compare (rhs) >= 0) == result);
                 return result;
             }
@@ -721,7 +721,7 @@ namespace   Stroika {
             inline  bool    operator> (const wchar_t* lhs, const String& rhs)
             {
                 RequireNotNull (lhs);
-                bool    result { rhs.Compare (lhs) <= 0 };  // reversed order to avoid construction of extra object
+                bool    result { rhs.Compare (lhs) < 0 };  // reversed order to avoid construction of extra object
                 Assert ((String (lhs).Compare (rhs) > 0) == result);
                 return result;
             }
