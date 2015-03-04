@@ -82,7 +82,7 @@ namespace   Stroika {
                     return DiscreteRange<BucketIndexType> (bucketLB, bucketUB);
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                inline  VALUE_TYPE  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValue (BucketIndexType bucket) const
+                inline  auto  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValue (BucketIndexType bucket) const -> ValueType
                 {
                     Require (bucket < GetBucketCount ());
                     return fBucketDataStart_[bucket];
