@@ -20,6 +20,8 @@
  *              but case of DiscreteRange<int> {1, 2}, DiscreteRange<int> {3, 4}) not handled right - where
  *              elts arent equal, but both sides closed and next elt is next point.
  *
+ *      @todo   Should be optional param to produce the Range that the elements form a partion of.
+ *
  *      @todo   Consider if/how this integrates with std::partition
  *
  *      @todo   Consider if/how this intergrates with DisjointRange

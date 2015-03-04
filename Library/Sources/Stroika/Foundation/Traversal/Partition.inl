@@ -34,7 +34,7 @@ namespace   Stroika {
                     for (KeyValuePair<ElementType, RANGETYPE> i : tmp) {
                         //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                         if (upperBoundSeenSoFar) {
-                            if (*upperBoundSeenSoFar != i.fValue.GetLowerBound ()) {
+                            if (not Math::NearlyEquals (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {
                                 //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                                 //DbgTrace ("return false cuz boudns no match");
                                 return false;
