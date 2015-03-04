@@ -11,6 +11,9 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "../Traversal/Generator.h"
+#include    "../Traversal/Partition.h"
+
 #include    "Common.h"
 
 
@@ -119,6 +122,36 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ************************************* PRIVATE_ *********************************
+                 ********************************************************************************
+                 */
+                namespace PRIVATE_ {
+                    template    <typename X_TYPE, typename VALUE_TYPE>
+                    void    CheckRebinDataDescriptorInvariant_ (const BasicDataDescriptor<X_TYPE, VALUE_TYPE>& d)
+                    {
+#if     qDebug
+                        using   namespace   Traversal;
+                        using   Memory::Optional;
+                        using   BucketIndexType = typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType;
+                        auto myContext = shared_ptr<BucketIndexType> (new size_t (0));
+                        auto bucketCount = d.GetBucketCount ();
+                        auto getNext = [myContext, bucketCount, d] () -> Optional<Range<X_TYPE>> {
+                            Optional<Range<X_TYPE>>   result;
+                            if (*myContext < bucketCount)
+                            {
+                                result = d.GetBucketRange (*myContext);
+                                (*myContext)++;
+                            }
+                            return result;
+                        };
+                        Assert (IsPartition (CreateGenerator<Range<X_TYPE>> (getNext)));
+#endif
+                    }
+                }
+
+
+                /*
+                 ********************************************************************************
                  ********************************** Math::ReBin *********************************
                  ********************************************************************************
                  */
@@ -147,6 +180,11 @@ namespace   Stroika {
                      *  to avoid zeroing (say to accumulate multiple sources)
                      */
                     trgData->ZeroBuckets ();
+
+#if     qDebug
+                    PRIVATE_::CheckRebinDataDescriptorInvariant_ (srcData);
+                    PRIVATE_::CheckRebinDataDescriptorInvariant_ (*trgData);
+#endif
 
                     /*
                      *  x               0    1    2    3    4    5

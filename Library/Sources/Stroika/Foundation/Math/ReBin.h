@@ -15,6 +15,9 @@
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
+ *      @todo   Consider a rename of SRC_DATA_DESCRIPTOR::kZero to kNull, and docuemnt this is a special value
+ *              that short-circuits calls to Accumulate() (typically zero if accumulate is +).
+ *
  *      @todo   Clearly DOCUMENT and CHECK assumption in this code that X-value is non-decreasingly a function of bucket#
  *              In debug build, could do a pre-pass to assert this (if its not otherwise easy to test/verify)
  *
@@ -34,17 +37,23 @@ namespace   Stroika {
 
 
                 /**
+                 */
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                class   DataDescriptorBase {
+                public:
+                    using   BucketIndexType =   size_t;
+                    using   XType           =   X_TYPE;
+                    using   ValueType       =   VALUE_TYPE;
+                };
+
+
+                /**
                  *  Utility to describe source data (bins) for use in the ReBin() API.
                  *
                  *  This is not needed explicitly for simple usage, but is just for complicated cases.
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                class   BasicDataDescriptor {
-                public:
-                    using   BucketIndexType =   size_t;
-                    using   XType           =   X_TYPE;
-                    using   ValueType       =   VALUE_TYPE;
-
+                class   BasicDataDescriptor : public DataDescriptorBase<X_TYPE, VALUE_TYPE> {
                 public:
 #if     qCompilerAndStdLib_constexpr_Buggy
                     static const ValueType kZero;
@@ -59,19 +68,25 @@ namespace   Stroika {
                     nonvirtual  BucketIndexType  GetBucketCount () const;
 
                 public:
-                    nonvirtual  Traversal::Range<X_TYPE>   GetBucketRange (BucketIndexType bucket) const;
+                    nonvirtual  Traversal::Range<XType>   GetBucketRange (BucketIndexType bucket) const;
 
                 public:
-                    // for the given argument x-range, find the range of intersecting buckets
-                    // this is assumed to be contiguous (for now)
-                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange(const Traversal::Range<X_TYPE>& xrange) const;
+                    /**
+                     * for the given argument x-range, find the range of intersecting buckets
+                     * this is assumed to be contiguous (for now)
+                     */
+                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange (const Traversal::Range<XType>& xrange) const;
 
                 public:
-                    nonvirtual  VALUE_TYPE  GetValue (BucketIndexType bucket) const;
+                    /*
+                     *  \req 0 <= bucket and bucket < GetBucketCount ()
+                     */
+                    nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
 
                 protected:
                     const VALUE_TYPE*   fBucketDataStart_;
                     const VALUE_TYPE*   fBucketDataEnd_;
+                private:
                     X_TYPE              fXStart_;
                     X_TYPE              fXEnd_;
                 };
