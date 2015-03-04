@@ -92,43 +92,43 @@ namespace   Stroika {
              ************************* Math::Angle operators ********************************
              ********************************************************************************
              */
-            inline  bool    Angle::operator< (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator< (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () < rhs.AsRadians ();
             }
-            inline  bool    Angle::operator<= (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator<= (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () <= rhs.AsRadians ();
             }
-            inline  bool    Angle::operator== (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator== (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () == rhs.AsRadians ();
             }
-            inline  bool    Angle::operator!= (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator!= (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () != rhs.AsRadians ();
             }
-            inline  bool    Angle::operator>= (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator>= (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () >= rhs.AsRadians ();
             }
-            inline  bool    Angle::operator> (const Angle& lhs, const Angle& rhs)
+            inline  bool    operator> (const Angle& lhs, const Angle& rhs)
             {
                 return lhs.AsRadians () > rhs.AsRadians ();
             }
-            inline  Angle   Angle::operator+ (const Angle& lhs, const Angle& rhs)
+            inline  Angle   operator+ (const Angle& lhs, const Angle& rhs)
             {
                 return Angle (lhs.AsRadians () + rhs.AsRadians ());
             }
-            inline  Angle   Angle::operator- (const Angle& lhs, const Angle& rhs)
+            inline  Angle   operator- (const Angle& lhs, const Angle& rhs)
             {
                 return Angle (lhs.AsRadians () - rhs.AsRadians ());
             }
-            inline  Angle   Angle::operator* (const Angle& lhs, double rhs)
+            inline  Angle   operator* (const Angle& lhs, double rhs)
             {
                 return Angle (lhs.AsRadians () * rhs);
             }
-            inline  Angle   Angle::operator/ (const Angle& lhs, double rhs)
+            inline  Angle   operator/ (const Angle& lhs, double rhs)
             {
                 return Angle (lhs.AsRadians () / rhs);
             }
