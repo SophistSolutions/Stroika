@@ -47,7 +47,7 @@ namespace   Stroika {
 #endif
             inline  constexpr   Date::JulianRepType Date::GetJulianRep () const
             {
-                return (fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_);
+                return fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_;
             }
             inline  constexpr   bool    Date::empty () const
             {
@@ -71,34 +71,42 @@ namespace   Stroika {
                     return l < r ? -1 : 1;
                 }
             }
-            inline  bool    Date::operator< (const Date& rhs) const
-            {
-                return Compare (rhs) < 0;
-            }
-            inline  bool    Date::operator<= (const Date& rhs) const
-            {
-                return Compare (rhs) <= 0;
-            }
-            inline  bool    Date::operator> (const Date& rhs) const
-            {
-                return Compare (rhs) > 0;
-            }
-            inline  bool    Date::operator>= (const Date& rhs) const
-            {
-                return Compare (rhs) >= 0;
-            }
-            inline  bool    Date::operator== (const Date& rhs) const
-            {
-                return Compare (rhs) == 0;
-            }
-            inline  bool    Date::operator!= (const Date& rhs) const
-            {
-                return Compare (rhs) != 0;
-            }
 #if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             constexpr   Date    Date::kMin      { Date::JulianRepType (kMinJulianRep) };
             constexpr   Date    Date::kMax      { Date::JulianRepType (UINT_MAX - 1) };
 #endif
+
+
+
+            /*
+             ********************************************************************************
+             ************************* Time::Date operators *********************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            inline  bool    operator<= (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            inline  bool    operator== (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) == 0;
+            }
+            inline  bool    operator!= (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) != 0;
+            }
+            inline  bool    operator>= (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            inline  bool    operator> (const Date& lhs, const Date& rhs)
+            {
+                return lhs.Compare (rhs) > 0;
+            }
 
 
 #if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy

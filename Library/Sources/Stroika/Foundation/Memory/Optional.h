@@ -226,6 +226,8 @@ namespace   Stroika {
              *              was the one where the optional was there. But
              *              this can be done - I think - just as easily using 'bool c' for the variants with
              *              no extra data.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
             class   Optional {
