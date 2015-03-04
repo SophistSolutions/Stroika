@@ -165,6 +165,8 @@ namespace   Stroika {
                     RequireNotNull (trgData);
 
                     using   namespace Traversal;
+                    using   BucketIndexType =   typename SRC_DATA_DESCRIPTOR::BucketIndexType;
+
                     /*
                      *  OLD OBSOLETE Algorithm:
                      *      Two iterators - one marking (start/end of target buckets), and one marking current
@@ -202,8 +204,8 @@ namespace   Stroika {
                      *  For each one source bucket, put part into current ti (proportional), and put reset into next
                      *  ti (proportional).
                      */
-                    size_t      srcBucketCount = srcData.GetBucketCount ();
-                    for (size_t srcBucketIdx = 0; srcBucketIdx < srcBucketCount; ++srcBucketIdx) {
+                    BucketIndexType      srcBucketCount = srcData.GetBucketCount ();
+                    for (BucketIndexType srcBucketIdx = 0; srcBucketIdx < srcBucketCount; ++srcBucketIdx) {
                         Range<typename SRC_DATA_DESCRIPTOR::XType>  curSrcBucketX       =   srcData.GetBucketRange(srcBucketIdx);
                         auto                                        curSrcBucketXWidth  =   curSrcBucketX.GetDistanceSpanned ();
                         typename SRC_DATA_DESCRIPTOR::ValueType     thisSrcBucketValue  =   srcData.GetValue(srcBucketIdx);
