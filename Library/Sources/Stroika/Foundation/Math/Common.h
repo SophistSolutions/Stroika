@@ -66,11 +66,15 @@ namespace   Stroika {
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              *  But, so its more effective with templates, it can also be used with any type, and becomes require equality (==).
+             *
+             *  \note   The default (0) epsilon value for non-floating point numbers is chosen because this is really just
+             *          meant to address floating point rounding error. This zero value mimics the behavior NearlyEquals for other
+             *          non-floating point values.
              */
             template    <typename   T>
             bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
             template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
+            bool    NearlyEquals (T l, T r, T epsilon = 0, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
             template    <typename   T>
             bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type* = 0);
 
