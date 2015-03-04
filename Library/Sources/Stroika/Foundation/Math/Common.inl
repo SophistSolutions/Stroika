@@ -175,6 +175,11 @@ namespace   Stroika {
                 return NearlyEquals<double> (l, r, epsilon);
             }
 #endif
+            template    <typename   T>
+            inline  bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type*)
+            {
+                return l == r;
+            }
 
 
             /*

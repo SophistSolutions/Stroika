@@ -65,11 +65,14 @@ namespace   Stroika {
 
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
+             *  But, so its more effective with templates, it can also be used with any type, and becomes require equality (==).
              */
             template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
+            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
             template    <typename   T>
             bool    NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
+            template    <typename   T>
+            bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type* = 0);
 
 
             /**
@@ -77,13 +80,13 @@ namespace   Stroika {
              *
              *  Sometimes with floating point arithmatic you get points to move slightly. For example, if you
              *  want a number between 0.0 and 1.0, you might do some arithmatic and get -0.000000001; This might
-             *  cause the valeu to be out of the range 0..1. You might want to assert/assure the value never goes below
+             *  cause the value to be out of the range 0..1. You might want to assert/assure the value never goes below
              *  zero or above one, but this is outside that range.
              *
              *  This helper allows values near a special value (like the endpoint of that range) to 'pin' to be
              *  exactly that endpoint.
              *
-             *  But PinToSpecialPoint() always returns its first argument, or someting NearlyEqual() to it.
+             *  But PinToSpecialPoint () always returns its first argument, or someting NearlyEqual() to it.
              */
             template    <typename   T>
             T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits<T>::epsilon ()));
