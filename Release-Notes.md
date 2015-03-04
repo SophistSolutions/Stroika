@@ -24,10 +24,16 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a85">v2.0a85x</a><br/>2015-03-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>todo</li>
+	<li> Math::NearlyEquals() overload for the case of non-integral/non-floating point values, and changed integer overload default epsilon to zero</li>
+	<li>cleanup display/formatting of threadids</li>
+	<li>Lots of Rebin code cleanups and assertion checking and internal validation</li>
+	<li>Revised design document about how to handle operator overloads (namespace function not member function), and started implementing in a few places</li>
 </ul>
 </td>
 </tr>
+
+
 
 
 
