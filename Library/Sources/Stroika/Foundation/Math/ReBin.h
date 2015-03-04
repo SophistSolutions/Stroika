@@ -52,6 +52,28 @@ namespace   Stroika {
                     using   BucketIndexType =   size_t;
                     using   XType           =   X_TYPE;
                     using   ValueType       =   VALUE_TYPE;
+
+#if 0
+                    // CONCEPT: WHEN WE HAVE - saying we support these methods!
+                public:
+                    nonvirtual  BucketIndexType  GetBucketCount () const;
+
+                public:
+                    nonvirtual  Traversal::Range<XType>   GetBucketRange (BucketIndexType bucket) const;
+
+                public:
+                    /**
+                     * for the given argument x-range, find the range of intersecting buckets
+                     * this is assumed to be contiguous (for now)
+                     */
+                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange (const Traversal::Range<XType>& xrange) const;
+
+                public:
+                    /*
+                     *  \req 0 <= bucket and bucket < GetBucketCount ()
+                     */
+                    nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
+#endif
                 };
 
 
@@ -100,8 +122,8 @@ namespace   Stroika {
                     nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
 
                 protected:
-                    const ValueType*    fBucketDataStart_;
-                    const ValueType*    fBucketDataEnd_;
+                    const ValueType*    _fBucketDataStart;
+                    const ValueType*    _fBucketDataEnd;
 
                 private:
                     XType               fXStart_;

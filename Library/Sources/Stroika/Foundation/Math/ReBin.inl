@@ -30,8 +30,8 @@ namespace   Stroika {
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd)
-                    : fBucketDataStart_ (bucketStart)
-                    , fBucketDataEnd_ (bucketEnd)
+                    : _fBucketDataStart (bucketStart)
+                    , _fBucketDataEnd (bucketEnd)
                     , fXStart_ (xStart)
                     , fXEnd_ (xEnd)
                 {
@@ -43,7 +43,7 @@ namespace   Stroika {
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketCount () const
                 {
-                    BucketIndexType result = fBucketDataEnd_ - fBucketDataStart_;
+                    BucketIndexType result = _fBucketDataEnd - _fBucketDataStart;
                     Ensure (result > 0);
                     return result;
                 }
@@ -85,9 +85,9 @@ namespace   Stroika {
                 inline  auto  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValue (BucketIndexType bucket) const -> ValueType
                 {
                     Require (bucket < GetBucketCount ());
-                    return fBucketDataStart_[bucket];
+                    return _fBucketDataStart[bucket];
                 }
-#if qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_Buggy
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 const VALUE_TYPE BasicDataDescriptor<X_TYPE, VALUE_TYPE>::kZero = 0;
 #endif
@@ -107,14 +107,14 @@ namespace   Stroika {
                 inline  void  UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta)
                 {
                     Require (bucket < inherited::GetBucketCount ());
-                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
+                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::_fBucketDataStart);
                     updatableStart[bucket] += delta;
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  void    UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::ZeroBuckets ()
                 {
-                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::fBucketDataStart_);
-                    for (VALUE_TYPE* i = updatableStart; i != inherited::fBucketDataEnd_; ++i) {
+                    VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::_fBucketDataStart);
+                    for (VALUE_TYPE* i = updatableStart; i != inherited::_fBucketDataEnd; ++i) {
                         *i = inherited::kZero;
                     }
                 }
