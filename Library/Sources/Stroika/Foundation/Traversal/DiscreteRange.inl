@@ -221,6 +221,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
+            inline  auto    DiscreteRange<T, TRAITS>::Offset (typename make_signed<T>::type o) const -> DiscreteRange
+            {
+                Require (not empty ());
+                return DiscreteRange (static_cast<T> (this->GetLowerBound () + o), static_cast<T> (this->GetUpperBound () + o));
+            }
+            template    <typename T, typename TRAITS>
             Iterable<T>   DiscreteRange<T, TRAITS>::Elements () const
             {
                 return this->empty () ? MyIterable_ () : MyIterable_ (this->GetLowerBound (), this->GetUpperBound ());
