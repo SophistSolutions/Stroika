@@ -53,6 +53,13 @@ namespace   Stroika {
                     using   XType           =   X_TYPE;
                     using   ValueType       =   VALUE_TYPE;
 
+                public:
+#if     qCompilerAndStdLib_constexpr_Buggy
+                    static const ValueType kZero;
+#else
+                    static constexpr ValueType kZero { 0 };
+#endif
+
 #if 0
                     // CONCEPT: WHEN WE HAVE - saying we support these methods!
                 public:
@@ -91,13 +98,6 @@ namespace   Stroika {
                     using   BucketIndexType =   typename inherited::BucketIndexType;
                     using   XType           =   typename inherited::XType;
                     using   ValueType       =   typename inherited::ValueType;
-
-                public:
-#if     qCompilerAndStdLib_constexpr_Buggy
-                    static const ValueType kZero;
-#else
-                    static constexpr ValueType kZero { 0 };
-#endif
 
                 public:
                     BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd);
