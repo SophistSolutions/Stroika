@@ -868,14 +868,14 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
     wstringstream   out;
     out << threadID;
 
-#if		qPlatform_Windows
-	constexpr	size_t	kSizeOfThreadID_	=	sizeof (DWORD);					// All MSFT SDK Thread APIs use DWORD for thread id
-#elif	qPlatform_POSIX
-	constexpr	size_t	kSizeOfThreadID_	=	sizeof (pthread_t);
+#if     qPlatform_Windows
+    constexpr   size_t  kSizeOfThreadID_    =   sizeof (DWORD);                 // All MSFT SDK Thread APIs use DWORD for thread id
+#elif   qPlatform_POSIX
+    constexpr   size_t  kSizeOfThreadID_    =   sizeof (pthread_t);
 #else
-	// on MSFT this object is much larger than thread id because it includes handle and id
-	// Not a reliable measure anywhere, but probably our best guess
-	constexpr	size_t	kSizeOfThreadID_	=	sizeof (Thread::IDType);
+    // on MSFT this object is much larger than thread id because it includes handle and id
+    // Not a reliable measure anywhere, but probably our best guess
+    constexpr   size_t  kSizeOfThreadID_    =   sizeof (Thread::IDType);
 #endif
 
     if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
