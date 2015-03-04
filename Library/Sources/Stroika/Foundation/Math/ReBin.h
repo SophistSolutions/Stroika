@@ -18,11 +18,19 @@
  *      @todo   Consider a rename of SRC_DATA_DESCRIPTOR::kZero to kNull, and docuemnt this is a special value
  *              that short-circuits calls to Accumulate() (typically zero if accumulate is +).
  *
+ *              >> TODO RENAME kZERO to kNullValue, and rename ZeroBuckets() to ClearBuckets(), and docuemnt this sets
+ *              teh buckets to the null value. Then change ReBin/2 to NOT call this but Rebin/4 does? And document
+ *              about Accumulate().
+ *
  *      @todo   Clearly DOCUMENT and CHECK assumption in this code that X-value is non-decreasingly a function of bucket#
  *              In debug build, could do a pre-pass to assert this (if its not otherwise easy to test/verify)
  *
- *      @todo   Better document ZERO (zeroing output and zero value not accumulated). Maybe generalize, or barring that
- *              make it clear anyhow
+ *              PROBABLY FALSE: INSTEAD TRY THIS STATEMENT AFTER I TEST/REIVEW:
+ *                  There is no requirement about how the X-values vary with the bucket numbers (though typically
+ *                  they increase monotonically with bucket number).
+ *
+ *                  The only requirement is that the buckets form a partition of some domain (so in other words, they
+ *                  dont overlap, but have no 'holes' in the middle. So they can be parition Range<XType> (some minx/maxx).
  *
  *      @todo   Consider adding an x-offset, so that we logically re-bin, plus shift along the x-axis by
  *              a (given) offset (in units of src-bin widths).
