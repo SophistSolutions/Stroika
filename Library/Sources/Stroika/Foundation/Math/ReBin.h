@@ -54,6 +54,14 @@ namespace   Stroika {
                  */
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 class   BasicDataDescriptor : public DataDescriptorBase<X_TYPE, VALUE_TYPE> {
+                private:
+                    using   inherited = DataDescriptorBase<X_TYPE, VALUE_TYPE>;
+
+                public:
+                    using   BucketIndexType =   typename inherited::BucketIndexType;
+                    using   XType           =   typename inherited::XType;
+                    using   ValueType       =   typename inherited::ValueType;
+
                 public:
 #if     qCompilerAndStdLib_constexpr_Buggy
                     static const ValueType kZero;
@@ -84,11 +92,12 @@ namespace   Stroika {
                     nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
 
                 protected:
-                    const VALUE_TYPE*   fBucketDataStart_;
-                    const VALUE_TYPE*   fBucketDataEnd_;
+                    const ValueType*    fBucketDataStart_;
+                    const ValueType*    fBucketDataEnd_;
+
                 private:
-                    X_TYPE              fXStart_;
-                    X_TYPE              fXEnd_;
+                    XType               fXStart_;
+                    XType               fXEnd_;
                 };
 
 
@@ -172,7 +181,7 @@ namespace   Stroika {
                  *      using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<double, double>;
                  *
                  */
-                template    <typename   SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
+                template    <typename SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
                 void    ReBin (
                     const SRC_DATA_DESCRIPTOR& srcData,
                     TRG_DATA_DESCRIPTOR* trgData

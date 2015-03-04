@@ -126,17 +126,18 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 namespace PRIVATE_ {
-                    template    <typename X_TYPE, typename VALUE_TYPE>
-                    void    CheckRebinDataDescriptorInvariant_ (const BasicDataDescriptor<X_TYPE, VALUE_TYPE>& d)
+                    template    <typename DATA_DESCRIPTOR_TYPE>
+                    void    CheckRebinDataDescriptorInvariant_ (const DATA_DESCRIPTOR_TYPE& d)
                     {
 #if     qDebug
                         using   namespace   Traversal;
                         using   Memory::Optional;
-                        using   BucketIndexType = typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType;
-                        auto myContext = shared_ptr<BucketIndexType> (new size_t (0));
+                        using   BucketIndexType = typename DATA_DESCRIPTOR_TYPE::BucketIndexType;
+                        using   XType = typename DATA_DESCRIPTOR_TYPE::XType;
+                        auto myContext = shared_ptr<BucketIndexType> (new BucketIndexType (0));
                         auto bucketCount = d.GetBucketCount ();
-                        auto getNext = [myContext, bucketCount, d] () -> Optional<Range<X_TYPE>> {
-                            Optional<Range<X_TYPE>>   result;
+                        auto getNext = [myContext, bucketCount, d] () -> Optional<Range<XType>> {
+                            Optional<Range<XType>>   result;
                             if (*myContext < bucketCount)
                             {
                                 result = d.GetBucketRange (*myContext);
@@ -144,7 +145,7 @@ namespace   Stroika {
                             }
                             return result;
                         };
-                        Assert (IsPartition (CreateGenerator<Range<X_TYPE>> (getNext)));
+                        Assert (IsPartition (CreateGenerator<Range<XType>> (getNext)));
 #endif
                     }
                 }
