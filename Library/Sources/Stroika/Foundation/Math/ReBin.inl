@@ -48,8 +48,7 @@ namespace   Stroika {
                     return result;
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                inline  Traversal::Range<X_TYPE>   BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketRange (BucketIndexType bucket) const
-                {
+                inline  auto   BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetBucketRange (BucketIndexType bucket) const -> Traversal::Range<XType> {
                     using Traversal::Range;
                     Require (bucket < GetBucketCount ());
                     X_TYPE  kDelta_ = (fXEnd_ - fXStart_) * (static_cast<X_TYPE> (1) / static_cast<X_TYPE> (GetBucketCount ()));
@@ -57,13 +56,14 @@ namespace   Stroika {
                     return Range<X_TYPE> (s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen);
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                Traversal::DiscreteRange<typename BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BucketIndexType> BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetMappedBucketRange (const Traversal::Range<X_TYPE>& xrange) const
-                {
+                auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetMappedBucketRange (const Traversal::Range<XType>& xrange) const -> Traversal::DiscreteRange<typename BucketIndexType> {
                     using Traversal::DiscreteRange;
-                    if (xrange.GetUpperBound () < fXStart_) {
+                    if (xrange.GetUpperBound () < fXStart_)
+                    {
                         return DiscreteRange<BucketIndexType> ();
                     }
-                    if (xrange.GetLowerBound () > fXEnd_) {
+                    if (xrange.GetLowerBound () > fXEnd_)
+                    {
                         return DiscreteRange<BucketIndexType> ();
                     }
 
