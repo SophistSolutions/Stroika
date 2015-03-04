@@ -63,9 +63,12 @@ namespace   Stroika {
 
 
             /**
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   Character   {
             public:
+                /**
+                 */
                 Character ();
                 Character (char c);
                 Character (char16_t c);
@@ -157,17 +160,6 @@ namespace   Stroika {
             public:
                 static int      Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
-            public:
-                /**
-                *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
-                */
-                nonvirtual  bool operator< (Character rhs) const;
-                nonvirtual  bool operator<= (Character rhs) const;
-                nonvirtual  bool operator> (Character rhs) const;
-                nonvirtual  bool operator>= (Character rhs) const;
-                nonvirtual  bool operator== (Character rhs) const;
-                nonvirtual  bool operator!= (Character rhs) const;
-
             private:
                 wchar_t     fCharacterCode_;
             };
@@ -175,6 +167,37 @@ namespace   Stroika {
 
             template<>
             wchar_t Character::As () const;
+
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator< (Character lhs, Character rhs);
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator<= (Character lhs, Character rhs);
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator== (Character lhs, Character rhs);
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator!= (Character lhs, Character rhs);
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator>= (Character lhs, Character rhs);
+
+            /**
+             *  operator indirects to Character::Compare()
+             */
+            bool operator> (Character lhs, Character rhs);
 
 
             /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE

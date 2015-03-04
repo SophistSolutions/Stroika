@@ -101,6 +101,8 @@ namespace   Stroika {
              *  change (except by assignement - being assigned over).
              *
              *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment! WILL BE SAFE CUZ READONLY (once i fix shared_ptr copy issue)
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   BLOB {
             public:
@@ -199,22 +201,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return true iff the BLOBs compare bytewise equal.
+                 *
+                 *  This is like memcmp() == 0.
+                 */
+                nonvirtual  bool    Equals (const BLOB& rhs) const;
+
+            public:
+                /**
                  *  This is like memcmp() - it returns == 0, if the RHS and LHS are the same, and it
                  *  returns < 0 if the first byte where the two regions differ is less than the first byte
                  *  of the RHS (where they differ).
                  */
                 nonvirtual  int      Compare (const BLOB& rhs) const;
-
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const BLOB& rhs)
-                 */
-                nonvirtual  bool operator< (const BLOB& rhs) const;
-                nonvirtual  bool operator<= (const BLOB& rhs) const;
-                nonvirtual  bool operator> (const BLOB& rhs) const;
-                nonvirtual  bool operator>= (const BLOB& rhs) const;
-                nonvirtual  bool operator== (const BLOB& rhs) const;
-                nonvirtual  bool operator!= (const BLOB& rhs) const;
 
             public:
                 /**
@@ -284,6 +283,37 @@ namespace   Stroika {
 
             template    <>
             Streams::BinaryInputStream BLOB::As () const;
+
+
+            /**
+             *  operator indirects to BLOB::Compare()
+             */
+            bool operator< (const BLOB& lhs, const BLOB& rhs);
+
+            /**
+             *  operator indirects to BLOB::Compare()
+             */
+            bool operator<= (const BLOB& lhs, const BLOB& rhs);
+
+            /**
+             *  operator indirects to BLOB::Equals()
+             */
+            bool operator== (const BLOB& lhs, const BLOB& rhs);
+
+            /**
+             *  operator indirects to BLOB::Equals()
+             */
+            bool operator!= (const BLOB& lhs, const BLOB& rhs);
+
+            /**
+             *  operator indirects to BLOB::Compare()
+             */
+            bool operator>= (const BLOB& lhs, const BLOB& rhs);
+
+            /**
+             *  operator indirects to BLOB::Compare()
+             */
+            bool operator> (const BLOB& lhs, const BLOB& rhs);
 
 
         }

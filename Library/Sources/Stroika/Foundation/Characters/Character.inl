@@ -131,29 +131,36 @@ namespace   Stroika {
             {
                 return Compare (this, this + 1, &rhs, &rhs + 1, co);
             }
-            inline  bool    Character::operator< (Character rhs) const
+
+
+            /*
+             ********************************************************************************
+             ************************* Character operators **********************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (Character lhs, Character rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool    Character::operator<= (Character rhs) const
+            inline  bool    operator<= (Character lhs, Character rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) <= 0;
             }
-            inline  bool    Character::operator> (Character rhs) const
+            inline  bool    operator== (Character lhs, Character rhs)
             {
-                return Compare (rhs) > 0;
+                return lhs.Compare (rhs) == 0;
             }
-            inline  bool    Character::operator>= (Character rhs) const
+            inline  bool    operator!= (Character lhs, Character rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) != 0;
             }
-            inline  bool    Character::operator== (Character rhs) const
+            inline  bool    operator>= (Character lhs, Character rhs)
             {
-                return Compare (rhs) == 0;
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool    Character::operator!= (Character rhs) const
+            inline  bool    operator> (Character lhs, Character rhs)
             {
-                return Compare (rhs) != 0;
+                return lhs.Compare (rhs) > 0;
             }
 
 

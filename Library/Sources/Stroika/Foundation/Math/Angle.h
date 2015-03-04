@@ -15,6 +15,7 @@ namespace   Stroika {
 
 
             /**
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   Angle {
             public:
@@ -46,27 +47,6 @@ namespace   Stroika {
                 nonvirtual  constexpr double  AsGradians () const;
 
             public:
-                /*
-                 * Arithmatic
-                 */
-                nonvirtual  Angle   operator+ (const Angle& rhs) const;
-                nonvirtual  Angle   operator- (const Angle& rhs) const;
-                nonvirtual  Angle   operator* (double rhs) const;
-                nonvirtual  Angle   operator* (Angle& rhs) const;
-                nonvirtual  Angle   operator/ (double rhs) const;
-
-            public:
-                /*
-                 * Comparisons
-                 */
-                nonvirtual  bool    operator== (const Angle& rhs) const;
-                nonvirtual  bool    operator!= (const Angle& rhs) const;
-                nonvirtual  bool    operator<  (const Angle& rhs) const;
-                nonvirtual  bool    operator<= (const Angle& rhs) const;
-                nonvirtual  bool    operator>  (const Angle& rhs) const;
-                nonvirtual  bool    operator>= (const Angle& rhs) const;
-
-            public:
                 nonvirtual  const   Angle&  operator+= (const Angle& rhs);
                 nonvirtual  const   Angle&  operator-= (const Angle& rhs);
                 nonvirtual  const   Angle&  operator*= (double rhs);
@@ -76,9 +56,55 @@ namespace   Stroika {
                 double  fAngleInRadians_;
             };
 
-            Angle   operator* (double lhs, const Angle& rhs);
 
+            /**
+             */
+            bool operator< (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            bool operator<= (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            bool operator== (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            bool operator!= (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            bool operator>= (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            bool operator> (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            Angle   operator+ (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            Angle   operator- (const Angle& lhs, const Angle& rhs);
+
+            /**
+             */
+            Angle   operator* (double lhs, const Angle& rhs);
+            Angle   operator* (const Angle& lhs, double rhs);
+            Angle   operator* (const Angle& lhs, Angle& rhs);
+
+            /**
+             */
+            Angle   operator/ (const Angle& lhs, double rhs);
+
+            /**
+             */
             Angle   Min (const Angle& a1, const Angle& a2);
+
+            /**
+             */
             Angle   Max (const Angle& a1, const Angle& a2);
 
 

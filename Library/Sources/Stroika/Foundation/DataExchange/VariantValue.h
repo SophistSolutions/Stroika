@@ -26,8 +26,6 @@
  *
  *  TODO:
  *
- *      @todo   Redo operator< () etc as NON-MEMMBERS (like we do elsewhere).
- *
  *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
  *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
@@ -112,6 +110,8 @@ namespace   Stroika {
              *
              *  So for now - we just store the largest signed and unsigned integer types and cast down to what
              *  the user users/requests.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   VariantValue {
             private:
@@ -265,18 +265,6 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const VariantValue& rhs)
-                 *  Except for ==/!= which indirect to Equals()
-                 */
-                nonvirtual  bool operator< (const VariantValue& rhs) const;
-                nonvirtual  bool operator<= (const VariantValue& rhs) const;
-                nonvirtual  bool operator> (const VariantValue& rhs) const;
-                nonvirtual  bool operator>= (const VariantValue& rhs) const;
-                nonvirtual  bool operator== (const VariantValue& rhs) const;
-                nonvirtual  bool operator!= (const VariantValue& rhs) const;
-
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -344,6 +332,37 @@ namespace   Stroika {
             vector<VariantValue> VariantValue::As () const;
             template    <>
             Sequence<VariantValue> VariantValue::As () const;
+
+
+            /**
+             *  operator indirects to VariantValue::Compare()
+             */
+            bool operator< (const VariantValue& lhs, const VariantValue& rhs);
+
+            /**
+             *  operator indirects to VariantValue::Compare()
+             */
+            bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
+
+            /**
+             *  operator indirects to VariantValue::Equals()
+             */
+            bool operator== (const VariantValue& lhs, const VariantValue& rhs);
+
+            /**
+             *  operator indirects to VariantValue::Equals()
+             */
+            bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
+
+            /**
+             *  operator indirects to VariantValue::Compare()
+             */
+            bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
+
+            /**
+             *  operator indirects to VariantValue::Compare()
+             */
+            bool operator> (const VariantValue& lhs, const VariantValue& rhs);
 
 
         }

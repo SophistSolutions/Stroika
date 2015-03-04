@@ -64,46 +64,6 @@ namespace   Stroika {
             {
                 return fAngleInRadians_ * 400.0 / (2 * kPi);
             }
-            inline  Angle   Angle::operator+ (const Angle& rhs) const
-            {
-                return Angle (AsRadians () + rhs.AsRadians ());
-            }
-            inline  Angle   Angle::operator- (const Angle& rhs) const
-            {
-                return Angle (AsRadians () - rhs.AsRadians ());
-            }
-            inline  Angle   Angle::operator* (double rhs) const
-            {
-                return Angle (AsRadians () * rhs);
-            }
-            inline  Angle   Angle::operator/ (double rhs) const
-            {
-                return Angle (AsRadians () / rhs);
-            }
-            inline  bool    Angle::operator== (const Angle& rhs) const
-            {
-                return AsRadians () == rhs.AsRadians ();
-            }
-            inline  bool    Angle::operator!= (const Angle& rhs) const
-            {
-                return AsRadians () != rhs.AsRadians ();
-            }
-            inline  bool    Angle::operator< (const Angle& rhs) const
-            {
-                return AsRadians () < rhs.AsRadians ();
-            }
-            inline  bool    Angle::operator<= (const Angle& rhs) const
-            {
-                return AsRadians () <= rhs.AsRadians ();
-            }
-            inline  bool    Angle::operator> (const Angle& rhs) const
-            {
-                return AsRadians () > rhs.AsRadians ();
-            }
-            inline  bool    Angle::operator>= (const Angle& rhs) const
-            {
-                return AsRadians () >= rhs.AsRadians ();
-            }
             inline  const   Angle&  Angle::operator+= (const Angle& rhs)
             {
                 fAngleInRadians_ += rhs.AsRadians ();
@@ -126,11 +86,52 @@ namespace   Stroika {
             }
 
 
+
             /*
              ********************************************************************************
-             ***************************** Math::operator* **********************************
+             ************************* Math::Angle operators ********************************
              ********************************************************************************
              */
+            inline  bool    Angle::operator< (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () < rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator<= (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () <= rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator== (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () == rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator!= (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () != rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator>= (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () >= rhs.AsRadians ();
+            }
+            inline  bool    Angle::operator> (const Angle& lhs, const Angle& rhs)
+            {
+                return lhs.AsRadians () > rhs.AsRadians ();
+            }
+            inline  Angle   Angle::operator+ (const Angle& lhs, const Angle& rhs)
+            {
+                return Angle (lhs.AsRadians () + rhs.AsRadians ());
+            }
+            inline  Angle   Angle::operator- (const Angle& lhs, const Angle& rhs)
+            {
+                return Angle (lhs.AsRadians () - rhs.AsRadians ());
+            }
+            inline  Angle   Angle::operator* (const Angle& lhs, double rhs)
+            {
+                return Angle (lhs.AsRadians () * rhs);
+            }
+            inline  Angle   Angle::operator/ (const Angle& lhs, double rhs)
+            {
+                return Angle (lhs.AsRadians () / rhs);
+            }
             inline  Angle   operator* (double lhs, const Angle& rhs)
             {
                 return Angle (lhs * rhs.AsRadians ());

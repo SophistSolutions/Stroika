@@ -140,29 +140,36 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
             }
-            inline  bool VariantValue::operator< (const VariantValue& rhs) const
+
+
+            /*
+             ********************************************************************************
+             ************************* VariantValue operators *******************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool VariantValue::operator<= (const VariantValue& rhs) const
+            inline  bool    operator<= (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) <= 0;
             }
-            inline  bool VariantValue::operator> (const VariantValue& rhs) const
+            inline  bool    operator== (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return Compare (rhs) > 0;
+                return lhs.Equals (rhs);
             }
-            inline  bool VariantValue::operator>= (const VariantValue& rhs) const
+            inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return Compare (rhs) >= 0;
+                return not lhs.Equals (rhs);
             }
-            inline  bool    VariantValue::operator== (const VariantValue& rhs) const
+            inline  bool    operator>= (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return Equals (rhs);
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool    VariantValue::operator!= (const VariantValue& rhs) const
+            inline  bool    operator> (const VariantValue& lhs, const VariantValue& rhs)
             {
-                return not Equals (rhs);
+                return lhs.Compare (rhs) > 0;
             }
 
 

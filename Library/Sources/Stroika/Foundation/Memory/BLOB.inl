@@ -180,30 +180,6 @@ namespace   Stroika {
                 Assert (tmp.first <= tmp.second);
                 return tmp.second - tmp.first;
             }
-            inline  bool    BLOB::operator< (const BLOB& rhs) const
-            {
-                return compare (rhs) < 0;
-            }
-            inline  bool    BLOB::operator<= (const BLOB& rhs) const
-            {
-                return compare (rhs) <= 0;
-            }
-            inline  bool    BLOB::operator> (const BLOB& rhs) const
-            {
-                return compare (rhs) > 0;
-            }
-            inline  bool    BLOB::operator>= (const BLOB& rhs) const
-            {
-                return compare (rhs) >= 0;
-            }
-            inline  bool    BLOB::operator== (const BLOB& rhs) const
-            {
-                return compare (rhs) == 0;
-            }
-            inline  bool    BLOB::operator!= (const BLOB& rhs) const
-            {
-                return compare (rhs) != 0;
-            }
             inline  int  BLOB::compare (const BLOB& rhs) const
             {
                 return Compare (rhs);
@@ -219,6 +195,51 @@ namespace   Stroika {
             inline  BLOB    BLOB::operator+ (const BLOB& rhs) const
             {
                 return BLOB ({ * this, rhs });
+            }
+            inline  bool    BLOB::Equals (const BLOB& rhs) const
+            {
+                if (fRep_ == rhs.fRep_) {
+                    return true;    // cheap optimization for not super uncommon case
+                }
+                pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
+                pair<const Byte*, const Byte*>   r =   rhs.fRep_->GetBounds ();
+                size_t  lSize = l.second - l.first;
+                size_t  rSize = r.second - r.first;
+                if (lSize != rSize) {
+                    return false;
+                }
+                return ::memcmp (l.first, r.first, lSize) == 0;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************* VariantValue operators *******************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (const BLOB& lhs, const BLOB& rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            inline  bool    operator<= (const BLOB& lhs, const BLOB& rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            inline  bool    operator== (const BLOB& lhs, const BLOB& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            inline  bool    operator!= (const BLOB& lhs, const BLOB& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            inline  bool    operator>= (const BLOB& lhs, const BLOB& rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            inline  bool    operator> (const BLOB& lhs, const BLOB& rhs)
+            {
+                return lhs.Compare (rhs) > 0;
             }
 
 
