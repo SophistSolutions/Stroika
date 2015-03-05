@@ -25,6 +25,17 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ********************** Math::ReBin::DataDescriptorBase *************************
+                 ********************************************************************************
+                 */
+#if     qCompilerAndStdLib_constexpr_Buggy
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                const VALUE_TYPE DataDescriptorBase<X_TYPE, VALUE_TYPE>::kNullValue = 0;
+#endif
+
+
+                /*
+                 ********************************************************************************
                  ********************** Math::ReBin::BasicDataDescriptor ************************
                  ********************************************************************************
                  */
@@ -87,10 +98,6 @@ namespace   Stroika {
                     Require (bucket < GetBucketCount ());
                     return _fBucketDataStart[bucket];
                 }
-#if     qCompilerAndStdLib_constexpr_Buggy
-                template    <typename X_TYPE, typename VALUE_TYPE>
-                const VALUE_TYPE BasicDataDescriptor<X_TYPE, VALUE_TYPE>::kZero = 0;
-#endif
 
 
                 /*
@@ -111,11 +118,11 @@ namespace   Stroika {
                     updatableStart[bucket] += delta;
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                inline  void    UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::ZeroBuckets ()
+                inline  void    UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::clear ()
                 {
                     VALUE_TYPE*  updatableStart = const_cast<VALUE_TYPE*> (inherited::_fBucketDataStart);
                     for (VALUE_TYPE* i = updatableStart; i != inherited::_fBucketDataEnd; ++i) {
-                        *i = inherited::kZero;
+                        *i = inherited::kNullValue;
                     }
                 }
 
@@ -178,12 +185,6 @@ namespace   Stroika {
                      *      so we can have differently scaled source buckets.
                      */
 
-                    /*
-                     *  By default, zero all target buckets, but you could override that in the TRG argument
-                     *  to avoid zeroing (say to accumulate multiple sources)
-                     */
-                    trgData->ZeroBuckets ();
-
 #if     qDebug
                     PRIVATE_::CheckRebinDataDescriptorInvariant_ (srcData);
                     PRIVATE_::CheckRebinDataDescriptorInvariant_ (*trgData);
@@ -213,7 +214,7 @@ namespace   Stroika {
                         Assert (curSrcBucketXWidth >= 0);   // can ever be zero?
 
                         // Check special value of zero so we dont waste time spreading zeros around
-                        if (thisSrcBucketValue != SRC_DATA_DESCRIPTOR::kZero and curSrcBucketXWidth != 0) {
+                        if (thisSrcBucketValue != SRC_DATA_DESCRIPTOR::kNullValue and curSrcBucketXWidth != 0) {
                             /*
                              *  find range of target buckets to distribute value.
                              *
@@ -239,6 +240,7 @@ namespace   Stroika {
 
                     SRC_DATA_DESCRIPTOR srcData (srcStart, srcEnd, 1, 2);
                     TRG_DATA_DESCRIPTOR trgData (trgStart, trgEnd, 1, 2);
+                    trgData.clear ();       // zero all the target buckets since this is a simple-usage variant and thats typically what will be wanted
                     ReBin (srcData, &trgData);
                 }
 

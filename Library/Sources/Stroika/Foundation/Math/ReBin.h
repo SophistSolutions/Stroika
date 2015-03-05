@@ -16,13 +16,6 @@
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
- *      @todo   Consider a rename of SRC_DATA_DESCRIPTOR::kZero to kNull, and docuemnt this is a special value
- *              that short-circuits calls to Accumulate() (typically zero if accumulate is +).
- *
- *              >> TODO RENAME kZERO to kNullValue, and rename ZeroBuckets() to ClearBuckets(), and docuemnt this sets
- *              teh buckets to the null value. Then change ReBin/2 to NOT call this but Rebin/4 does? And document
- *              about Accumulate().
- *
  *      @todo   Clearly DOCUMENT and CHECK assumption in this code that X-value is non-decreasingly a function of bucket#
  *              In debug build, could do a pre-pass to assert this (if its not otherwise easy to test/verify)
  *
@@ -54,11 +47,16 @@ namespace   Stroika {
                     using   XType           =   X_TYPE;
                     using   ValueType       =   VALUE_TYPE;
 
+
+                    /**
+                     *  kNullValue is a special value, such that Accumulate() will have no effect if this value is applied. Typically
+                     *  this will be zero (if we accumulate by adding - the default).
+                     */
                 public:
 #if     qCompilerAndStdLib_constexpr_Buggy
-                    static const ValueType kZero;
+                    static const ValueType kNullValue;
 #else
-                    static constexpr ValueType kZero { 0 };
+                    static constexpr ValueType kNullValue { 0 };
 #endif
 
 #if 0
@@ -112,7 +110,7 @@ namespace   Stroika {
                 public:
                     /**
                      * Tor the given argument x-range, find the range of intersecting buckets.
-					 *	The ReBin code does NOT assume this is contiguous, but the BasicDataDescriptor<> does.
+                     *  The ReBin code does NOT assume this is contiguous, but the BasicDataDescriptor<> does.
                      */
                     nonvirtual  Containers::Set<BucketIndexType> GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const;
 
@@ -147,7 +145,7 @@ namespace   Stroika {
                     nonvirtual  void    AccumulateValue (typename inherited::BucketIndexType bucket, VALUE_TYPE delta);
 
                 public:
-                    nonvirtual  void    ZeroBuckets ();
+                    nonvirtual  void    clear ();
                 };
 
 
@@ -168,14 +166,21 @@ namespace   Stroika {
                  *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
                  *  As a future exercise, we may want to experiment  with different assumptions (like linear
                  *  up/down according to prev and successive bins?).
-				 *
-				 *	\note	The bucket index really doesnt mean much of anything (if you use the SRC_DATA_DESCRIPTOR 
-				 *			variant of the API), except that its used to address (name) buckets.
-				 *			Buckets underlying X-Range need not vary monotonically with bucket index
-				 *			(though beware that BasicDataDescriptor assumes this).
-				 *
-				 *			The only requirement ReBin() makes is that each bucket represents a Range, and that
-				 *			these ranges are contiguous and non-overlapping (a partition).
+                 *
+                 *  \note   The bucket index really doesnt mean much of anything (if you use the SRC_DATA_DESCRIPTOR
+                 *          variant of the API), except that its used to address (name) buckets.
+                 *          Buckets underlying X-Range need not vary monotonically with bucket index
+                 *          (though beware that BasicDataDescriptor assumes this).
+                 *
+                 *          The only requirement ReBin() makes is that each bucket represents a Range, and that
+                 *          these ranges are contiguous and non-overlapping (a partition).
+                 *
+                 *  \note   When calling the simple ReBin() overload (with no source description) - the target data is all
+                 *          automatically zeroed.
+                 *
+                 *          But for the more ReBin() template variant with the SOURCE_DESCRIPTION, the caller must clear if desired.
+                 *          The reason to NOT clear (null) the target in this variant is that the caller may want to accumulate sereral
+                 *          ReBin sources into one.
                  *
                  *  EXAMPLE:
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
