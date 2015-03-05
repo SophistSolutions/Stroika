@@ -21,15 +21,15 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a85">v2.0a85x</a><br/>2015-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a85">v2.0a85</a><br/>2015-03-05</td>
 <td>
 <ul>
-	<li>todo</li>
-	<li> Math::NearlyEquals() overload for the case of non-integral/non-floating point values, and changed integer overload default epsilon to zero</li>
+	<li>Lots of Rebin code cleanups and assertion checking and internal validation, GetIntersectingBuckets, kNullValue, etc (not all bacwkard compatible changes)</li>
+	<li>Math::NearlyEquals() overload for the case of non-integral/non-floating point values, and changed integer overload default epsilon to zero</li>
 	<li>cleanup display/formatting of threadids</li>
-	<li>Lots of Rebin code cleanups and assertion checking and internal validation</li>
 	<li>Revised design document about how to handle operator overloads (namespace function not member function), and started implementing in a few places</li>
 	<li>Range&lt;&gt;Offset</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
