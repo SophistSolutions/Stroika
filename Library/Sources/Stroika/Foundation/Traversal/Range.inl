@@ -412,8 +412,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  auto    Range<T, TRAITS>::Offset (SignedDifferenceType o) const -> Range
             {
-                Require (not this->empty ());
-                return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o));
+                Require (not empty ());
+                return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
             }
             template    <typename T, typename TRAITS>
             Characters::String  Range<T, TRAITS>::Format (const function<Characters::String(T)>& formatBound) const
