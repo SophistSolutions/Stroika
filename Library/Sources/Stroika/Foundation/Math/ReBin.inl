@@ -56,15 +56,15 @@ namespace   Stroika {
                     return Range<X_TYPE> (s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen);
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetMappedBucketRange (const Traversal::Range<XType>& xrange) const -> Traversal::DiscreteRange<BucketIndexType> {
+                auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const -> Containers::Set<BucketIndexType> {
                     using Traversal::DiscreteRange;
                     if (xrange.GetUpperBound () < fXStart_)
                     {
-                        return DiscreteRange<BucketIndexType> ();
+                        return Containers::Set<BucketIndexType> ();
                     }
                     if (xrange.GetLowerBound () > fXEnd_)
                     {
-                        return DiscreteRange<BucketIndexType> ();
+                        return Containers::Set<BucketIndexType> ();
                     }
 
                     X_TYPE  kDelta_ = (fXEnd_ - fXStart_) * (static_cast<X_TYPE> (1) / static_cast<X_TYPE> (GetBucketCount ()));
@@ -79,7 +79,7 @@ namespace   Stroika {
                     BucketIndexType    bucketLB = Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (floor (bucketLowerBound)), 0, GetBucketCount () - 1);
                     BucketIndexType    bucketUB = Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (ceil (bucketUpperBound)), bucketLB, GetBucketCount () - 1);
 
-                    return DiscreteRange<BucketIndexType> (bucketLB, bucketUB);
+                    return Containers::Set<BucketIndexType> (DiscreteRange<BucketIndexType> (bucketLB, bucketUB).Elements ());
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  auto  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValue (BucketIndexType bucket) const -> ValueType
@@ -220,7 +220,7 @@ namespace   Stroika {
                              *  Each bucket returned may have little overall contribution from the source bucket. We look at
                              *  the degree of overlap.
                              */
-                            for (auto targetBucket : trgData->GetMappedBucketRange (curSrcBucketX).Elements ()) {
+                            for (auto targetBucket : trgData->GetIntersectingBuckets (curSrcBucketX)) {
                                 Range<typename SRC_DATA_DESCRIPTOR::XType>  trgBucketIntersectRange =   trgData->GetBucketRange(targetBucket).Intersection (curSrcBucketX);
                                 auto                                        trgBucketXWidth         =   trgBucketIntersectRange.GetDistanceSpanned ();
                                 trgData->AccumulateValue (targetBucket, thisSrcBucketValue * (trgBucketXWidth / curSrcBucketXWidth));

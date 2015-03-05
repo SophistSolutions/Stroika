@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Containers/Set.h"
 #include    "../Traversal/DiscreteRange.h"
 #include    "../Traversal/Range.h"
 
@@ -70,10 +71,10 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * for the given argument x-range, find the range of intersecting buckets
-                     * this is assumed to be contiguous (for now)
+                     * For the given argument x-range, find the range of intersecting buckets
+                     * This need not be contiguous (for now).
                      */
-                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange (const Traversal::Range<XType>& xrange) const;
+                    nonvirtual  Containers::Set<BucketIndexType> GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const;
 
                 public:
                     /*
@@ -110,10 +111,10 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * for the given argument x-range, find the range of intersecting buckets
-                     * this is assumed to be contiguous (for now)
+                     * Tor the given argument x-range, find the range of intersecting buckets.
+					 *	The ReBin code does NOT assume this is contiguous, but the BasicDataDescriptor<> does.
                      */
-                    nonvirtual  Traversal::DiscreteRange<BucketIndexType> GetMappedBucketRange (const Traversal::Range<XType>& xrange) const;
+                    nonvirtual  Containers::Set<BucketIndexType> GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const;
 
                 public:
                     /*
@@ -167,6 +168,14 @@ namespace   Stroika {
                  *  Classically - this assumes the curve was fairly linear across the new set original set of bins.
                  *  As a future exercise, we may want to experiment  with different assumptions (like linear
                  *  up/down according to prev and successive bins?).
+				 *
+				 *	\note	The bucket index really doesnt mean much of anything (if you use the SRC_DATA_DESCRIPTOR 
+				 *			variant of the API), except that its used to address (name) buckets.
+				 *			Buckets underlying X-Range need not vary monotonically with bucket index
+				 *			(though beware that BasicDataDescriptor assumes this).
+				 *
+				 *			The only requirement ReBin() makes is that each bucket represents a Range, and that
+				 *			these ranges are contiguous and non-overlapping (a partition).
                  *
                  *  EXAMPLE:
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
