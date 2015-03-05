@@ -218,7 +218,7 @@ namespace   Stroika {
                  *  \req not empty
                  *  \req the DiscreteRange produced by applying the given offset to *this remains valid with respect to the constraints on this DiscreteRange.
                  */
-                nonvirtual  DiscreteRange Offset (typename make_signed<T>::type o) const;
+                nonvirtual  DiscreteRange Offset (SignedDifferenceType o) const;
 
             public:
                 /**

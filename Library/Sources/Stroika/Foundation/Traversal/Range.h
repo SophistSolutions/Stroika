@@ -227,6 +227,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                using   SignedDifferenceType      =   typename TraitsType::SignedDifferenceType;
+
+            public:
+                /**
+                 */
                 using   UnsignedDifferenceType      =   typename TraitsType::UnsignedDifferenceType;
 
             public:
@@ -373,6 +378,13 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  constexpr   Openness    GetUpperBoundOpenness () const;
+
+            public:
+                /**
+                 *  \req not empty
+                 *  \req the Range produced by applying the given offset to *this remains valid with respect to the constraints on this Range.
+                 */
+                nonvirtual  Range Offset (SignedDifferenceType o) const;
 
             private:
                 // @todo see why this is needed and we cannot directly bind to TraitsType::Format in Range<>::Format()

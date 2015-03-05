@@ -29,6 +29,7 @@ History
 	<li>cleanup display/formatting of threadids</li>
 	<li>Lots of Rebin code cleanups and assertion checking and internal validation</li>
 	<li>Revised design document about how to handle operator overloads (namespace function not member function), and started implementing in a few places</li>
+	<li>Range&lt;&gt;Offset</li>
 </ul>
 </td>
 </tr>
