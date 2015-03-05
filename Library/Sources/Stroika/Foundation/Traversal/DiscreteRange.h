@@ -166,6 +166,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                using   SignedDifferenceType      =   typename inherited::SignedDifferenceType;
+
+            public:
+                /**
+                 */
                 using   UnsignedDifferenceType      =   typename inherited::UnsignedDifferenceType;
 
             private:
