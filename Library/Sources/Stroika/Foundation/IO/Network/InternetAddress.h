@@ -77,6 +77,8 @@ namespace   Stroika {
                  *  \note Site-Local addresses
                  *      This class provides no support for site-local addresses because they have been deprecated
                  *      in http://www.ietf.org/rfc/rfc3879.txt
+                 *
+                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
                  */
                 class   InternetAddress {
                 public:
@@ -247,23 +249,20 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Return true iff the InternetAddresses are the same.
+                     *
+                     *  This is like Compare() == 0.
+                     */
+                    nonvirtual  bool    Equals (const InternetAddress& rhs) const;
+
+                public:
+                    /**
                      *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                      *  Treat any in_addr4 < in_addr6 (in other words fAddressFamily_ is high-order of compare).
                      *  For IPv4 compares, compare logically in the form the ip addr would appear as text.
                      *  For IPv6, compare as a byte string.
                      */
                     nonvirtual  int Compare (const InternetAddress& rhs) const;
-
-                public:
-                    /**
-                     *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const InternetAddress& rhs)
-                     */
-                    nonvirtual  bool    operator< (const InternetAddress& rhs) const;
-                    nonvirtual  bool    operator<= (const InternetAddress& rhs) const;
-                    nonvirtual  bool    operator> (const InternetAddress& rhs) const;
-                    nonvirtual  bool    operator>= (const InternetAddress& rhs) const;
-                    nonvirtual  bool    operator== (const InternetAddress& rhs) const;
-                    nonvirtual  bool    operator!= (const InternetAddress& rhs) const;
 
                 private:
                     AddressFamily   fAddressFamily_;
@@ -272,6 +271,37 @@ namespace   Stroika {
                         in6_addr        fV6_;
                     };
                 };
+
+
+                /**
+                 *  operator indirects to BLOB::Compare()
+                 */
+                bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
+
+                /**
+                 *  operator indirects to InternetAddress::Compare()
+                 */
+                bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
+
+                /**
+                 *  operator indirects to InternetAddress::Equals()
+                 */
+                bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
+
+                /**
+                 *  operator indirects to InternetAddress::Equals()
+                 */
+                bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
+
+                /**
+                 *  operator indirects to InternetAddress::Compare()
+                 */
+                bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
+
+                /**
+                 *  operator indirects to InternetAddress::Compare()
+                 */
+                bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
 
 
                 namespace V4 {

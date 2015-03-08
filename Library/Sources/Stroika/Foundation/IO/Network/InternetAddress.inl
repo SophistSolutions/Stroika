@@ -198,29 +198,36 @@ namespace   Stroika {
                     static_assert (false, "Only specifically specialized variants are supported");
 #endif
                 }
-                inline  bool    InternetAddress::operator< (const InternetAddress& rhs) const
+
+
+                /*
+                 ********************************************************************************
+                 ************************* InternetAddress operators ****************************
+                 ********************************************************************************
+                 */
+                inline  bool    operator< (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) < 0;
+                    return lhs.Compare (rhs) < 0;
                 }
-                inline  bool    InternetAddress::operator<= (const InternetAddress& rhs) const
+                inline  bool    operator<= (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) <= 0;
+                    return lhs.Compare (rhs) <= 0;
                 }
-                inline  bool    InternetAddress::operator> (const InternetAddress& rhs) const
+                inline  bool    operator== (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) > 0;
+                    return lhs.Equals (rhs);
                 }
-                inline  bool    InternetAddress::operator>= (const InternetAddress& rhs) const
+                inline  bool    operator!= (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) >= 0;
+                    return not lhs.Equals (rhs);
                 }
-                inline  bool    InternetAddress::operator== (const InternetAddress& rhs) const
+                inline  bool    operator>= (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) == 0;
+                    return lhs.Compare (rhs) >= 0;
                 }
-                inline  bool    InternetAddress::operator!= (const InternetAddress& rhs) const
+                inline  bool    operator> (const InternetAddress& lhs, const InternetAddress& rhs)
                 {
-                    return Compare (rhs) != 0;
+                    return lhs.Compare (rhs) > 0;
                 }
 
 

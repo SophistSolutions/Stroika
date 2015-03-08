@@ -334,6 +334,12 @@ bool    InternetAddress::IsMulticastAddress () const
     return false;
 }
 
+bool    InternetAddress::Equals (const InternetAddress& rhs) const
+{
+    // @todo could optimize slightly since we dont care about order of element comparison
+    return Compare (rhs) == 0;
+}
+
 int InternetAddress::Compare (const InternetAddress& rhs) const
 {
     if (fAddressFamily_ != rhs.fAddressFamily_) {

@@ -255,7 +255,7 @@ namespace   Stroika {
                      *  low level, wrapper on 'man 2 getsockopt'.
                      */
                     template    <typename RESULT_TYPE>
-                    nonvirtual  RESULT_TYPE getsockopt (int level, int optname);
+                    nonvirtual  RESULT_TYPE	getsockopt (int level, int optname);
 
                 private:
                     shared_ptr<_Rep> fRep_;
