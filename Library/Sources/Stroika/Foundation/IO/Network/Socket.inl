@@ -121,36 +121,44 @@ namespace   Stroika {
                     fRep_->getsockopt (level, optname, &r, &roptlen);
                     return r;
                 }
+                inline  bool    Socket::Equals (const Socket& rhs) const
+                {
+                    return GetNativeSocket () == rhs.GetNativeSocket ();
+                }
+                inline  int Socket::Compare (const Socket& rhs) const
+                {
+                    return Common::CompareNormalizer (GetNativeSocket () - rhs.GetNativeSocket ());
+                }
 
 
                 /*
                  ********************************************************************************
-                 ************************** Compare operator overloads **************************
+                 ****************************** Socket operators ********************************
                  ********************************************************************************
                  */
                 inline  bool    operator< (const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () < rhs.GetNativeSocket ();
+                    return lhs.Compare (rhs) < 0;
                 }
                 inline  bool    operator<=(const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () <= rhs.GetNativeSocket ();
+                    return lhs.Compare (rhs) <= 0;
                 }
                 inline  bool    operator==(const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () == rhs.GetNativeSocket ();
+                    return lhs.Equals (rhs);
                 }
                 inline  bool    operator!=(const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () != rhs.GetNativeSocket ();
+                    return not lhs.Equals (rhs);
                 }
                 inline  bool    operator>=(const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () >= rhs.GetNativeSocket ();
+                    return lhs.Compare (rhs) >= 0;
                 }
                 inline  bool    operator> (const Socket& lhs, const Socket& rhs)
                 {
-                    return lhs.GetNativeSocket () > rhs.GetNativeSocket ();
+                    return lhs.Compare (rhs) > 0;
                 }
 
 

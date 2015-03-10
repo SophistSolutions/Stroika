@@ -56,6 +56,8 @@ namespace   Stroika {
                  *
                  *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
                  *          works transparently with sockets, sets of sockets, or other waitable objects.
+                 *
+                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
                  */
                 class   Socket {
                 public:
@@ -244,6 +246,26 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Return true iff the sOCKETS are the same.
+                     *
+                     *  This is like Compare() == 0.
+                     *
+                     *  \note   Two sockets compare equal iff their underlying native sockets are equal (@see GetNativeSocket)
+                     *          This means you can have two Socket objects which compare equal by use of Attach().
+                     *
+                     */
+                    nonvirtual  bool    Equals (const Socket& rhs) const;
+
+                public:
+                    /**
+                     *
+                     *  \note   Sockets are compared by their underlying native sockets (@see GetNativeSocket).
+                     *          This means you can have two Socket objects which compare equal by use of Attach().
+                     */
+                    nonvirtual  int Compare (const Socket& rhs) const;
+
+                public:
+                    /**
                      *  Return the native platform handle object associated with this socket
                      *  (typically an integer file descriptor)
                      */
@@ -255,7 +277,7 @@ namespace   Stroika {
                      *  low level, wrapper on 'man 2 getsockopt'.
                      */
                     template    <typename RESULT_TYPE>
-                    nonvirtual  RESULT_TYPE	getsockopt (int level, int optname);
+                    nonvirtual  RESULT_TYPE getsockopt (int level, int optname);
 
                 private:
                     shared_ptr<_Rep> fRep_;
@@ -263,15 +285,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  Basic operator overload with the obivous meaning
-                 *
-                 *  @todo CLARIFY / THINK THROUGH MEANING - DIFF REPS BUT SAME UNDERLYING OSCKET NATIVE SOCKET ???
+                 *  operator indirects to Socket::Compare()
                  */
                 bool    operator< (const Socket& lhs, const Socket& rhs);
+
+                /**
+                 *  operator indirects to Socket::Compare()
+                 */
                 bool    operator<=(const Socket& lhs, const Socket& rhs);
+
+                /**
+                 *  operator indirects to Socket::Equals()
+                 */
                 bool    operator==(const Socket& lhs, const Socket& rhs);
+
+                /**
+                 *  operator indirects to Socket::Equals()
+                 */
                 bool    operator!=(const Socket& lhs, const Socket& rhs);
+
+                /**
+                 *  operator indirects to Socket::Compare()
+                 */
                 bool    operator>=(const Socket& lhs, const Socket& rhs);
+
+                /**
+                 *  operator indirects to Socket::Compare()
+                 */
                 bool    operator> (const Socket& lhs, const Socket& rhs);
 
 
