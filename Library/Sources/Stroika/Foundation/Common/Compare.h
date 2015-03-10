@@ -174,6 +174,23 @@ namespace   Stroika {
             };
 
 
+            /**
+            */
+            template    <typename INTEGERLIKETYPE>
+            int CompareNormalizer (INTEGERLIKETYPE i)
+            {
+                if (i < 0) {
+                    return -1;
+                }
+                else if (i == 0) {
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
+            }
+
+
         }
     }
 }
