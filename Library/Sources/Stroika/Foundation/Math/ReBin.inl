@@ -144,10 +144,17 @@ namespace   Stroika {
                         auto myContext = shared_ptr<BucketIndexType> (new BucketIndexType (0));
                         auto bucketCount = d.GetBucketCount ();
                         auto getNext = [myContext, bucketCount, d] () -> Optional<Range<XType>> {
+                            /*
+                             * Intentionally skip empty range elements, as legal in ReBin () - buy which make
+                             * the set not technically a partition.
+                             */
                             Optional<Range<XType>>   result;
-                            if (*myContext < bucketCount)
+                            while (result.IsMissing () and * myContext < bucketCount)
                             {
-                                result = d.GetBucketRange (*myContext);
+                                Range<XType>    tmp { d.GetBucketRange (*myContext) };
+                                if (not tmp.empty ()) {
+                                    result = tmp;
+                                }
                                 (*myContext)++;
                             }
                             return result;
