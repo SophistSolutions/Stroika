@@ -121,13 +121,20 @@ namespace   Stroika {
                 {
                     fFragment_ = frag;
                 }
-                inline  bool    URL::operator== (const URL& rhs) const
+
+
+                /*
+                 ********************************************************************************
+                 ****************************** URL operators ***********************************
+                 ********************************************************************************
+                 */
+                inline  bool    operator== (const URL& lhs, const URL& rhs)
                 {
-                    return Equals (rhs);
+                    return lhs.Equals (rhs);
                 }
-                inline  bool    URL::operator!= (const URL& rhs) const
+                inline  bool    operator!= (const URL& lhs, const URL& rhs)
                 {
-                    return not Equals (rhs);
+                    return not lhs.Equals (rhs);
                 }
 
 

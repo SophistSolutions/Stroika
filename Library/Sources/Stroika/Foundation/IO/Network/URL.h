@@ -28,6 +28,8 @@
  *
  *              (partly/maybe done?)
  *
+ *      @todo   support Compare() and oeprator<, etc.
+ *
  *      @todo   CURRENT code sometimes (like for scheme) normalizes on assignemnt. But should preserve what caller
  *              says. Just 'normalize' on compare, or have extra field which is normalized string (tolower).
  *
@@ -120,6 +122,8 @@ namespace   Stroika {
                  *  Class to help encode/decode the logical parts of an internet URL
                  *
                  *  @see http://www.ietf.org/rfc/rfc1738.txt
+                 *
+                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
                  *
                  * TODO:
                  *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
@@ -312,8 +316,8 @@ namespace   Stroika {
 
                 public:
                     /**
-                    *   @see GetHostRelativePath for format restrictions. This can be empty.
-                    */
+                     *   @see GetHostRelativePath for format restrictions. This can be empty.
+                     */
                     nonvirtual  String  GetHostRelPathDir () const;
 
                 public:
@@ -348,10 +352,6 @@ namespace   Stroika {
                      */
                     nonvirtual  void    SetFragment (const String& frag);
 
-                public:
-                    nonvirtual  bool    operator== (const URL& rhs) const;
-                    nonvirtual  bool    operator!= (const URL& rhs) const;
-
                 private:
                     String      fProtocol_;
                     String      fHost_;
@@ -365,8 +365,21 @@ namespace   Stroika {
                 };
 
 
-                // See http://tools.ietf.org/html/rfc3986
-                // This doesn't encode an entire URL, just a particular field
+                /**
+                 *  operator indirects to URL::Equals ()
+                 */
+                bool operator== (const URL& lhs, const URL& rhs);
+
+                /**
+                 *  operator indirects to URL::Equals ()
+                 */
+                bool operator!= (const URL& lhs, const URL& rhs);
+
+
+                /*
+                 *  See http://tools.ietf.org/html/rfc3986
+                 *  This doesn't encode an entire URL, just a particular field
+                 */
                 string  EncodeURLQueryStringField (const String& s);
 
 
