@@ -12,6 +12,7 @@
  */
 #include    <type_traits>
 
+#include    "../Common/Compare.h"
 #include    "../Execution/ModuleInit.h"
 
 
@@ -73,46 +74,7 @@ namespace   Stroika {
             inline  int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
             {
                 using ST = typename make_signed<_AtomInternalType>::type;
-                ST i = static_cast<ST> (fValue_) - static_cast<ST> (rhs.fValue_);
-                if (i == 0) {
-                    return 0;
-                }
-                else if (i < 0) {
-                    return -1;
-                }
-                else {
-                    return 1;
-                }
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator< (Atom rhs) const
-            {
-                return Compare (rhs) < 0;
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator<= (Atom rhs) const
-            {
-                return Compare (rhs) <= 0;
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator> (Atom rhs) const
-            {
-                return Compare (rhs) > 0;
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator>= (Atom rhs) const
-            {
-                return Compare (rhs) >= 0;
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator== (Atom rhs) const
-            {
-                return Compare (rhs) == 0;
-            }
-            template    <typename   ATOM_MANAGER>
-            inline  bool Atom<ATOM_MANAGER>::operator!= (Atom rhs) const
-            {
-                return Compare (rhs) != 0;
+                return Common::CompareNormalizer (static_cast<ST> (fValue_) - static_cast<ST> (rhs.fValue_));
             }
             template    <typename   ATOM_MANAGER>
             inline  bool    Atom<ATOM_MANAGER>::empty () const
@@ -145,6 +107,45 @@ namespace   Stroika {
             {
                 return fValue_;
             }
+
+
+
+            /*
+             ********************************************************************************
+             ****************************** Atom operators **********************************
+             ********************************************************************************
+             */
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) == 0;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) != 0;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            template    <typename   ATOM_MANAGER>
+            inline  bool    operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+            {
+                return lhs.Compare (rhs) > 0;
+            }
+
 
 
             namespace Private_ {

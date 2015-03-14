@@ -147,17 +147,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Atom& rhs)
-                 */
-                nonvirtual  bool operator< (Atom rhs) const;
-                nonvirtual  bool operator<= (Atom rhs) const;
-                nonvirtual  bool operator> (Atom rhs) const;
-                nonvirtual  bool operator>= (Atom rhs) const;
-                nonvirtual  bool operator== (Atom rhs) const;
-                nonvirtual  bool operator!= (Atom rhs) const;
-
-            public:
-                /**
                  */
                 nonvirtual  bool    empty () const;
 
@@ -192,6 +181,43 @@ namespace   Stroika {
             private:
                 _AtomInternalType  fValue_;
             };
+
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
+            /**
+             *  operator indirects to Atom<>::Compare ()
+             */
+            template    <typename   ATOM_MANAGER>
+            bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
 
 
         }
