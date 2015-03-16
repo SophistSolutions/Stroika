@@ -40,29 +40,36 @@ namespace   Stroika {
             {
                 return As<Characters::String> ().AsUTF8 ();
             }
-            inline  bool Duration::operator<= (const Duration& rhs) const
+
+
+            /*
+             ********************************************************************************
+             ************************** Duration operators **********************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool Duration::operator< (const Duration& rhs) const
+            inline  bool    operator<= (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) <= 0;
             }
-            inline  bool Duration::operator> (const Duration& rhs) const
+            inline  bool    operator== (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) > 0;
+                return lhs.Compare (rhs) == 0;
             }
-            inline  bool Duration::operator>= (const Duration& rhs) const
+            inline  bool    operator!= (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) != 0;
             }
-            inline  bool Duration::operator== (const Duration& rhs) const
+            inline  bool    operator>= (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) == 0;
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool Duration::operator!= (const Duration& rhs) const
+            inline  bool    operator> (const Duration& lhs, const Duration& rhs)
             {
-                return Compare (rhs) != 0;
+                return lhs.Compare (rhs) > 0;
             }
 
 

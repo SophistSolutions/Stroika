@@ -127,6 +127,8 @@ namespace   Stroika {
              *
              *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
              *          static de-initializaiton.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   Duration {
             public:
@@ -156,13 +158,6 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  bool    empty () const;
-
-
-            public:
-                /**
-                 *  Return the sum of the two durations.
-                 */
-                nonvirtual  Duration    operator+ (const Duration& rhs) const;
 
             public:
                 /**
@@ -280,17 +275,6 @@ namespace   Stroika {
                  */
                 nonvirtual  int     Compare (const Duration& rhs) const;
 
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Duration& rhs)
-                 */
-                nonvirtual  bool operator< (const Duration& rhs) const;
-                nonvirtual  bool operator<= (const Duration& rhs) const;
-                nonvirtual  bool operator> (const Duration& rhs) const;
-                nonvirtual  bool operator>= (const Duration& rhs) const;
-                nonvirtual  bool operator== (const Duration& rhs) const;
-                nonvirtual  bool operator!= (const Duration& rhs) const;
-
             private:
                 using   InternalNumericFormatType_  =   double;
                 static  InternalNumericFormatType_  ParseTime_ (const string& s);
@@ -330,6 +314,42 @@ namespace   Stroika {
             public:
                 FormatException ();
             };
+
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator< (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator<= (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator== (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator!= (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator>= (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  operator indirects to Duration::Compare()
+             */
+            bool    operator> (const Duration& lhs, const Duration& rhs);
+
+            /**
+             *  Return the sum of the two durations.
+             */
+            Duration    operator+ (const Duration& lhs, const Duration& rhs);
 
 
         }

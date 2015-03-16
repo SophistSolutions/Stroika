@@ -146,12 +146,6 @@ Duration::Duration (long double duration)
 {
 }
 
-Duration    Duration::operator+ (const Duration& rhs) const
-{
-    // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
-    return Duration (As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
-}
-
 Duration&   Duration::operator+= (const Duration& rhs)
 {
     *this = *this + rhs;
@@ -651,3 +645,19 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
 #if     qCompilerAndStdLib_GCC_48_OptimizerBug
 #pragma GCC pop_options
 #endif
+
+
+
+
+
+/*
+ ********************************************************************************
+ *************************** Time operators *************************************
+ ********************************************************************************
+ */
+Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
+{
+    // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
+    return Duration (lhsAs<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
+}
+
