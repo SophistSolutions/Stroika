@@ -78,34 +78,41 @@ namespace   Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-            inline  bool    TimeOfDay::operator< (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) < 0;
-            }
-            inline  bool    TimeOfDay::operator<= (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) <= 0;
-            }
-            inline  bool    TimeOfDay::operator> (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) > 0;
-            }
-            inline  bool    TimeOfDay::operator>= (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) >= 0;
-            }
-            inline  bool    TimeOfDay::operator== (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) == 0;
-            }
-            inline  bool    TimeOfDay::operator!= (const TimeOfDay& rhs) const
-            {
-                return Compare (rhs) != 0;
-            }
 #if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             constexpr   TimeOfDay   TimeOfDay::kMin { 0 };
             constexpr   TimeOfDay   TimeOfDay::kMax { TimeOfDay::kMaxSecondsPerDay - 1 };
 #endif
+
+
+            /*
+             ********************************************************************************
+             ************************* TimeOfDay operators **********************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            inline  bool    operator<= (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            inline  bool    operator== (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) == 0;
+            }
+            inline  bool    operator!= (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) != 0;
+            }
+            inline  bool    operator>= (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            inline  bool    operator> (TimeOfDay lhs, TimeOfDay rhs)
+            {
+                return lhs.Compare (rhs) > 0;
+            }
 
 
         }

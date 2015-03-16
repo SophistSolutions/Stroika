@@ -93,11 +93,14 @@ namespace   Stroika {
              *  This is useful - with a DateTime object for example, to represent the idea that a
              *  time has not been specified.
              *
-             *      'empty' concept:
+             *  \note   'empty' concept:
              *          Treat it as DISTINCT from any other time. However, when converting it to a
              *          number of seconds, treat empty as TimeOfDay::kMin. For format routine,
              *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN
              *          TimeOfDay::kMin. This is a bit like the floating point concept of negative infinity.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
              */
             class   TimeOfDay {
             public:
@@ -247,17 +250,6 @@ namespace   Stroika {
                  */
                 nonvirtual  int Compare (const TimeOfDay& rhs) const;
 
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const TimeOfDay& rhs)
-                 */
-                nonvirtual  bool    operator< (const TimeOfDay& rhs) const;
-                nonvirtual  bool    operator<= (const TimeOfDay& rhs) const;
-                nonvirtual  bool    operator> (const TimeOfDay& rhs) const;
-                nonvirtual  bool    operator>= (const TimeOfDay& rhs) const;
-                nonvirtual  bool    operator== (const TimeOfDay& rhs) const;
-                nonvirtual  bool    operator!= (const TimeOfDay& rhs) const;
-
             private:
                 uint32_t    fTime_;
             };
@@ -267,6 +259,37 @@ namespace   Stroika {
             public:
                 FormatException ();
             };
+
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator< (TimeOfDay lhs, TimeOfDay rhs);
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator<= (TimeOfDay lhs, TimeOfDay rhs);
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator== (TimeOfDay lhs, TimeOfDay rhs);
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator!= (TimeOfDay lhs, TimeOfDay rhs);
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator>= (TimeOfDay lhs, TimeOfDay rhs);
+
+            /**
+             *  operator indirects to TimeOfDay::Compare()
+             */
+            bool    operator> (TimeOfDay lhs, TimeOfDay rhs);
 
 
         }
