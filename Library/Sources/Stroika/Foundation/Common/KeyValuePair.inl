@@ -53,15 +53,22 @@ namespace   Stroika {
             {
                 return fKey == rhs.fKey and fValue == rhs.fValue;
             }
+
+
+            /*
+             ********************************************************************************
+             ************************** KeyValuePair operators ******************************
+             ********************************************************************************
+             */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair<KeyType, ValueType>& rhs) const
+            bool    operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
             {
-                return Equals (rhs);
+                return lhs.Equals (rhs);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator!= (const KeyValuePair<KeyType, ValueType>& rhs) const
+            bool    operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
             {
-                return not Equals (rhs);
+                return not lhs.Equals (rhs);
             }
 
 

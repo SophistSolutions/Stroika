@@ -31,6 +31,8 @@ namespace   Stroika {
             /**
              *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements
              *  (when used for mappings, or other key/value pairs).
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             struct  KeyValuePair {
@@ -63,14 +65,20 @@ namespace   Stroika {
                  * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
                  */
                 nonvirtual  bool    Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
-
-            public:
-                /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Equals (const typename KeyValuePair<KeyType,ValueType>& rhs)
-                 */
-                nonvirtual  bool operator== (const KeyValuePair<KeyType, ValueType>& rhs) const;
-                nonvirtual  bool operator!= (const KeyValuePair<KeyType, ValueType>& rhs) const;
             };
+
+
+            /**
+             *  operator indirects to KeyValuePair<>::Equals ()
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            bool    operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+
+            /**
+             *  operator indirects to KeyValuePair<>::Equals ()
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            bool    operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
 
 
         }
