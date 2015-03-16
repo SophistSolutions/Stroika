@@ -191,6 +191,7 @@ namespace   Stroika {
              *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
              *      methods that need it.
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
             class   Sequence : public UpdatableIterable<T> {
