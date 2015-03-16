@@ -97,30 +97,38 @@ namespace   Stroika {
             {
                 return fTimezone_;
             }
-            inline  bool    DateTime::operator< (const DateTime& rhs) const
+
+
+            /*
+             ********************************************************************************
+             ************************** DateTime operators **********************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) < 0;
+                return lhs.Compare (rhs) < 0;
             }
-            inline  bool    DateTime::operator<= (const DateTime& rhs) const
+            inline  bool    operator<= (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) <= 0;
+                return lhs.Compare (rhs) <= 0;
             }
-            inline  bool    DateTime::operator> (const DateTime& rhs) const
+            inline  bool    operator== (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) > 0;
+                return lhs.Compare (rhs) == 0;
             }
-            inline  bool    DateTime::operator>= (const DateTime& rhs) const
+            inline  bool    operator!= (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) >= 0;
+                return lhs.Compare (rhs) != 0;
             }
-            inline  bool    DateTime::operator== (const DateTime& rhs) const
+            inline  bool    operator>= (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) == 0;
+                return lhs.Compare (rhs) >= 0;
             }
-            inline  bool    DateTime::operator!= (const DateTime& rhs) const
+            inline  bool    operator> (DateTime lhs, DateTime rhs)
             {
-                return Compare (rhs) != 0;
+                return lhs.Compare (rhs) > 0;
             }
+
 
 
             namespace Private_ {

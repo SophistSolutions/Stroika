@@ -138,6 +138,8 @@ namespace   Stroika {
              *
              *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
              *          static de-initializaiton.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   DateTime {
             public:
@@ -333,7 +335,6 @@ namespace   Stroika {
                 template    <typename T>
                 nonvirtual  T   As () const;
 
-
             public:
                 nonvirtual  constexpr   Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
 
@@ -358,7 +359,6 @@ namespace   Stroika {
                  */
                 nonvirtual  DateTime    AddSeconds (time_t seconds) const;
 
-
             public:
                 /**
                  *Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
@@ -366,36 +366,12 @@ namespace   Stroika {
                 nonvirtual  Duration    Difference (const DateTime& rhs) const;
 
             public:
-                /**
-                 *  Syntactic sugar on Add()
-                 */
-                nonvirtual  DateTime operator+ (const Duration& rhs) const;
-
-            public:
-                /**
-                 *  Syntactic sugar on Add() or Difference()
-                 */
-                nonvirtual  DateTime operator- (const Duration& rhs) const;
-                nonvirtual  Duration operator- (const DateTime& rhs) const;
-
-            public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                 // this comparison function - see the notes about 'empty' in the class description.
                 //
                 // Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
                 // unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
-                nonvirtual  int Compare (const DateTime& rhs) const;
-
-            public:
-                /**
-                *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const DateTime& rhs)
-                */
-                nonvirtual  bool    operator< (const DateTime& rhs) const;
-                nonvirtual  bool    operator<= (const DateTime& rhs) const;
-                nonvirtual  bool    operator> (const DateTime& rhs) const;
-                nonvirtual  bool    operator>= (const DateTime& rhs) const;
-                nonvirtual  bool    operator== (const DateTime& rhs) const;
-                nonvirtual  bool    operator!= (const DateTime& rhs) const;
+                nonvirtual  int     Compare (const DateTime& rhs) const;
 
             private:
                 Timezone    fTimezone_;
@@ -419,6 +395,48 @@ namespace   Stroika {
 #endif
             template    <>
             Date    DateTime::As () const;
+
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator< (DateTime lhs, DateTime rhs);
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator<= (DateTime lhs, DateTime rhs);
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator== (DateTime lhs, DateTime rhs);
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator!= (DateTime lhs, DateTime rhs);
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator>= (DateTime lhs, DateTime rhs);
+
+            /**
+             *  operator indirects to DateTime::Compare()
+             */
+            bool    operator> (DateTime lhs, DateTime rhs);
+
+            /**
+             *  Syntactic sugar on Add()
+             */
+            DateTime   operator+ (const DateTime&, const Duration& rhs);
+
+            /**
+             *  Syntactic sugar on Add() or Difference()
+             */
+            DateTime operator- (const DateTime&, const Duration& rhs);
+            Duration operator- (const DateTime&, const DateTime& rhs);
 
 
         }
