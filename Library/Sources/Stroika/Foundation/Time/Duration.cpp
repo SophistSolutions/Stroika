@@ -658,6 +658,6 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
 Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
 {
     // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
-    return Duration (lhsAs<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
+    return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
 }
 
