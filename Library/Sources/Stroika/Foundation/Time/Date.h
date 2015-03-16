@@ -415,32 +415,32 @@ namespace   Stroika {
             /**
              *  operator indirects to Date::Compare()
              */
-            bool operator< (const Date& lhs, const Date& rhs);
+            bool    operator< (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool operator<= (const Date& lhs, const Date& rhs);
+            bool    operator<= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool operator== (const Date& lhs, const Date& rhs);
+            bool    operator== (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool operator!= (const Date& lhs, const Date& rhs);
+            bool    operator!= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to Date::Compare()
              */
-            bool operator>= (const Date& lhs, const Date& rhs);
+            bool    operator>= (const Date& lhs, const Date& rhs);
 
             /**
              *  operator indirects to BLOB::Compare()
              */
-            bool operator> (const Date& lhs, const Date& rhs);
+            bool    operator> (const Date& lhs, const Date& rhs);
 
 
             int DayDifference (const Date& lhs, const Date& rhs);
