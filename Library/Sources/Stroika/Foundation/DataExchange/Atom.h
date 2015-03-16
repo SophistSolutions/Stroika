@@ -69,6 +69,8 @@ namespace   Stroika {
              *
              *  Atom can even be used with Set_Bitstring () – esp if you don’t use generic Atom<> but one with its own custom arena!
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
              *  \em Design Choice:
              *      In some ways, this could be more powerful if the Atom construction took a ATOM_MANAGER as parameter.
              *      Then we could store the pointer, and do wholesale clearing / throwing away of atom names. But to make
