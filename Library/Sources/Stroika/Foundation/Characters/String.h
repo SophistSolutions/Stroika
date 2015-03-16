@@ -335,6 +335,7 @@ namespace   Stroika {
              *          operate properly, even if used at file scope, and to initialize other strings or objects.
              *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             class   String : public Traversal::Iterable<Character> {
             private:
