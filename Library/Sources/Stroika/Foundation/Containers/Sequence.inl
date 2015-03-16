@@ -331,41 +331,48 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  bool    Sequence<T>::operator< (const Sequence<T>& rhs) const
-            {
-                return Compare (rhs) < 0;
-            }
-            template    <typename T>
-            inline  bool    Sequence<T>::operator<= (const Sequence<T>& rhs) const
-            {
-                return Compare (rhs) <= 0;
-            }
-            template    <typename T>
-            inline  bool    Sequence<T>::operator> (const Sequence<T>& rhs) const
-            {
-                return Compare (rhs) > 0;
-            }
-            template    <typename T>
-            inline  bool    Sequence<T>::operator>= (const Sequence<T>& rhs) const
-            {
-                return Compare (rhs) >= 0;
-            }
-            template    <typename T>
-            inline  bool    Sequence<T>::operator== (const Sequence<T>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T>
-            inline  bool    Sequence<T>::operator!= (const Sequence<T>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename T>
             inline  void    Sequence<T>::_AssertRepValidType () const
             {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
 #endif
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************** Sequence<T> operators *******************************
+             ********************************************************************************
+             */
+            template    <typename T>
+            inline  bool    operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            template    <typename T>
+            inline  bool    operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            template    <typename T>
+            inline  bool    operator== (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            template    <typename T>
+            inline  bool    operator> (const Sequence<T>& lhs, const Sequence<T>& rhs)
+            {
+                return lhs.Compare (rhs) > 0;
             }
 
 

@@ -295,23 +295,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to
-                 *  @Compare (const Sequence<T>& rhs) and uses  Equals() for ==/!=
-                 *
-                 *  Note that these are trivial wrappers on Compare () and Equals () - which
-                 *  take optional COMPARER arguments (for the elements). These don't take
-                 *  any such arguments because it would ruin the syntactic sugar, and
-                 *  if we are losing that anyhow, just use Equals<> or Compare<>.
-                 */
-                nonvirtual  bool operator< (const Sequence<T>& rhs) const;
-                nonvirtual  bool operator<= (const Sequence<T>& rhs) const;
-                nonvirtual  bool operator> (const Sequence<T>& rhs) const;
-                nonvirtual  bool operator>= (const Sequence<T>& rhs) const;
-                nonvirtual  bool operator== (const Sequence<T>& rhs) const;
-                nonvirtual  bool operator!= (const Sequence<T>& rhs) const;
-
-            public:
-                /**
                  *  \ens size () == 0
                  */
                 nonvirtual  void    RemoveAll ();
@@ -561,6 +544,42 @@ namespace   Stroika {
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
             };
+
+            /**
+             *  operator indirects to Sequence<>::Compare()
+             */
+            template    <typename T>
+            bool    operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+            /**
+             *  operator indirects to Sequence<>::Compare()
+             */
+            template    <typename T>
+            bool    operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+            /**
+             *  operator indirects to Sequence<>::Equals()
+             */
+            template    <typename T>
+            bool    operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+            /**
+             *  operator indirects to Sequence<>::Equals()
+             */
+            template    <typename T>
+            bool    operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+            /**
+             *  operator indirects to Sequence<>::Compare()
+             */
+            template    <typename T>
+            bool    operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
+            /**
+             *  operator indirects to Sequence<>::Compare()
+             */
+            template    <typename T>
+            bool    operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
 
         }
