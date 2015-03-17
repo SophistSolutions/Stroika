@@ -101,6 +101,8 @@ namespace   Stroika {
              *      if you declare an API with Set<T> arguments, its important STL sources passing in set<T> work transparently.
              *
              *      Similarly for std::initalizer_list.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
             class   Set : public UpdatableIterable<T> {
@@ -281,24 +283,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Alias for Union
-                 */
-                nonvirtual  Set<T, TRAITS>   operator+ (const Iterable<T>& rhs) const;
-
-            public:
-                /**
-                 *  Alias for Difference.
-                 */
-                nonvirtual  Set<T, TRAITS>   operator- (const Set<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *   Alias for Intersection.
-                 */
-                nonvirtual  Set<T, TRAITS>   operator^ (const Iterable<T>& rhs) const;
-
-            public:
-                /**
                  *      Synonym for Add/AddAll.
                  *
                  *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
@@ -314,18 +298,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Set<T, TRAITS>& operator-= (T item);
                 nonvirtual  Set<T, TRAITS>& operator-= (const Iterable<T>& items);
-
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Set<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar on not Equals()
-                 */
-                nonvirtual  bool    operator!= (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -423,6 +395,37 @@ namespace   Stroika {
             public:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
+
+
+            /**
+             *  operator indirects to Set<>::Equals()
+             */
+            template    <typename T, typename TRAITS>
+            bool    operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+
+            /**
+             *  operator indirects to Set<>::Equals()
+             */
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+
+            /**
+             *  Alias for Set<>::Union
+             */
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+
+            /**
+             *  Alias for Set<>::Difference.
+             */
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+
+            /**
+             *   Alias for Set<>::Intersection.
+             */
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
 
 
         }

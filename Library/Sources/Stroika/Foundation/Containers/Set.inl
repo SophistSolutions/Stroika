@@ -251,31 +251,6 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator+ (const Iterable<T>& rhs) const
-            {
-                return Union (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator- (const Set<T, TRAITS>& rhs) const
-            {
-                return Difference (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator^ (const Iterable<T>& rhs) const
-            {
-                return Intersection (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool  Set<T, TRAITS>::operator== (const Set<T, TRAITS>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool    Set<T, TRAITS>::operator!= (const Set<T, TRAITS>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (T item)
             {
                 Add (item);
@@ -344,6 +319,39 @@ namespace   Stroika {
                     }
                 }
                 return true;
+            }
+
+
+
+            /*
+             ********************************************************************************
+             ******************************* Set<T> operators *******************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  bool  operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            {
+                return lhs.Union (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return lhs.Difference (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            {
+                return lhs.Intersection (rhs);
             }
 
 
