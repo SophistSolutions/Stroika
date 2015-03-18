@@ -25,6 +25,10 @@
  *
  *
  * TODO:
+ *
+ *      @todo   REDO operator== etc using non-member functions
+ *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
+ *
  *      @todo   SignalHandlerRegistry::FirstPassSignalHandler_ is NOT signal safe. Its close (esp given
  *              the block allocation). But its not fully safe. SO MUST FIX!!! But can be done without
  *              changing API (just store vector of actual direct handlers).

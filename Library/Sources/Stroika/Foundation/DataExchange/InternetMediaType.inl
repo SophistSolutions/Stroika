@@ -38,17 +38,13 @@ namespace   Stroika {
             {
                 return IsSubTypeOfOrEqualTo (*this, moreGeneralType);
             }
-            inline  bool InternetMediaType::operator< (const InternetMediaType& rhs) const
+            inline  bool    InternetMediaType::Equals (const InternetMediaType& rhs) const
             {
-                return fType_ < rhs.fType_;
+                return fType_.Equals (rhs.fType_);
             }
-            inline  bool InternetMediaType::operator== (const InternetMediaType& rhs) const
+            inline  int    InternetMediaType::Compare (const InternetMediaType& rhs) const
             {
-                return fType_ == rhs.fType_;
-            }
-            inline  bool InternetMediaType::operator!= (const InternetMediaType& rhs) const
-            {
-                return fType_ != rhs.fType_;
+                return fType_.Compare (rhs.fType_);
             }
             template    <>
             inline  String  InternetMediaType::As () const
@@ -76,6 +72,37 @@ namespace   Stroika {
                     }
                 }
                 return false;
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************** InternetMediaType operators ****************************
+             ********************************************************************************
+             */
+            inline  bool    operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return lhs.Compare (rhs) < 0;
+            }
+            inline  bool    operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return lhs.Compare (rhs) <= 0;
+            }
+            inline  bool    operator== (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            inline  bool    operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            inline  bool    operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return lhs.Compare (rhs) >= 0;
+            }
+            inline  bool    operator> (const InternetMediaType& lhs, const InternetMediaType& rhs)
+            {
+                return lhs.Compare (rhs) > 0;
             }
 
 

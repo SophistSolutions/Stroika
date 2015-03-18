@@ -311,18 +311,6 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar on not Equals()
-                 */
-                nonvirtual  bool    operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
 #if 0
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -415,6 +403,19 @@ namespace   Stroika {
             protected:
                 nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
             };
+
+
+            /**
+                *      Syntactic sugar on Equals()
+                */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            bool    operator== (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+
+            /**
+                *      Syntactic sugar on not Equals()
+                */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            bool    operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
 
         }

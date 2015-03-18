@@ -285,12 +285,12 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline bool   MultiSetEntry<T>::operator== (const MultiSetEntry<T>& rhs)  const
+            inline bool   MultiSetEntry<T>::operator== (const MultiSetEntry<T>& rhs) const
             {
                 return (fCount == rhs.fCount and fItem == rhs.fItem);
             }
             template    <typename T>
-            inline bool   MultiSetEntry<T>::operator!= (const MultiSetEntry<T>& rhs)  const
+            inline bool   MultiSetEntry<T>::operator!= (const MultiSetEntry<T>& rhs) const
             {
                 return not (operator== (rhs));
             }

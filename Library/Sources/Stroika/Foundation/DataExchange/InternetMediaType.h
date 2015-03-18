@@ -46,9 +46,14 @@ namespace   Stroika {
                 nonvirtual  bool    IsA (const InternetMediaType& moreGeneralType) const;   // synonym for IsSubTypeOfOrEqualTo ()
 
             public:
-                bool operator< (const InternetMediaType& rhs) const;
-                bool operator== (const InternetMediaType& rhs) const;
-                bool operator!= (const InternetMediaType& rhs) const;
+                /**
+                 */
+                nonvirtual  bool    Equals (const InternetMediaType& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  int      Compare (const InternetMediaType& rhs) const;
 
             private:
                 String  fType_;
@@ -59,10 +64,42 @@ namespace   Stroika {
             nonvirtual  wstring InternetMediaType::As () const;
 
 
+            /**
+             */
+            bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+            /**
+             */
+            bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+            /**
+             */
+            bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+            /**
+             */
+            bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+            /**
+             */
+            bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+            /**
+             */
+            bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs);
+
+
+            /**
+             */
             bool        IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
+
+            /**
+             */
             bool        IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
 
 
+            /**
+             */
             template    <typename CONTAINER>
             bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny);
 

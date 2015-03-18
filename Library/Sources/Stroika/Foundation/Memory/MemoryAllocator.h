@@ -18,6 +18,9 @@
 /**
  *  \file
  *
+ *      @todo   REDO operator== etc using non-member functions
+ *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
+ *
  */
 
 

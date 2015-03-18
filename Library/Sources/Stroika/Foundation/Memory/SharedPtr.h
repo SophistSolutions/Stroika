@@ -19,6 +19,9 @@
  *
  *      TODO:
  *
+ *      @todo   REDO operator== etc using non-member functions
+ *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
+ *
  *      @todo   I THINK should be able todo SharedPtr::Envolpe<> template specialization for
  *              enabled_shared_from_this, which stores and copies only ONE POINTER> That could
  *              make for much faster atomic copies etc (maybe losing the spinlock).

@@ -127,16 +127,6 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    Equals (const AnyVariantValue& rhs) const;
 
-            public:
-                /**
-                 */
-                nonvirtual  bool    operator== (const AnyVariantValue& rhs) const;
-
-            public:
-                /**
-                 */
-                nonvirtual  bool    operator!= (const AnyVariantValue& rhs) const;
-
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -153,6 +143,14 @@ namespace   Stroika {
                 template    <typename T>
                 struct  TIRep_;
             };
+
+            /**
+                */
+            bool    operator== (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
+
+            /**
+                */
+            bool    operator!= (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
 
 
         }

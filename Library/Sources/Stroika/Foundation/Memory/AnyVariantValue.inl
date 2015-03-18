@@ -75,13 +75,20 @@ namespace   Stroika {
                 const TIRep_<RETURNTYPE>*   t   =   reinterpret_cast<TIRep_<RETURNTYPE>*> (fVal_.get ());
                 return t->fValue;
             }
-            inline  bool    AnyVariantValue::operator== (const AnyVariantValue& rhs) const
+
+
+            /*
+             ********************************************************************************
+             **************************** Iterator operators ********************************
+             ********************************************************************************
+             */
+            inline  bool    operator== (const AnyVariantValue& lhs, const AnyVariantValue& rhs)
             {
-                return Equals (rhs);
+                return lhs.Equals (rhs);
             }
-            inline  bool    AnyVariantValue::operator!= (const AnyVariantValue& rhs) const
+            inline  bool    operator!= (const AnyVariantValue& lhs, const AnyVariantValue& rhs)
             {
-                return not Equals (rhs);
+                return not rhs.Equals (rhs);
             }
 
 
