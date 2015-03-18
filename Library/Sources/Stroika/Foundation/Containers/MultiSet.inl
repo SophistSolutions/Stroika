@@ -542,16 +542,6 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  bool   MultiSet<T, TRAITS>::operator== (const MultiSet<T, TRAITS>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool    MultiSet<T, TRAITS>::operator!= (const MultiSet<T, TRAITS>& rhs) const
-            {
-                return not (Equals (rhs));
-            }
-            template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>&  MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
             {
                 for (auto i = t.begin (); i != t.end (); ++i) {
@@ -565,6 +555,23 @@ namespace   Stroika {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
 #endif
+            }
+
+
+            /*
+              ********************************************************************************
+              **************************** MultiSet operators ********************************
+              ********************************************************************************
+              */
+            template    <typename T, typename TRAITS>
+            inline  bool   operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 

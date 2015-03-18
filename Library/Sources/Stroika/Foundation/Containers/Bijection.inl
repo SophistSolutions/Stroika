@@ -304,16 +304,6 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug
@@ -346,6 +336,23 @@ namespace   Stroika {
                     }
                 }
                 return true;
+            }
+
+
+            /*
+             ********************************************************************************
+             **************************** Bijection operators *******************************
+             ********************************************************************************
+             */
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool  operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 

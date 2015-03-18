@@ -109,6 +109,8 @@ namespace   Stroika {
              *
              *  \em Factory:
              *      @see Concrete::Bijection_Factory<> to see default implementations.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
             class   Bijection : public UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
@@ -418,18 +420,6 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar on not Equals()
-                 */
-                nonvirtual  bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
-
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 template    <typename REP_SUB_TYPE>
@@ -517,6 +507,19 @@ namespace   Stroika {
             protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
+
+
+            /**
+             *      Syntactic sugar on Equals()
+             */
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            nonvirtual  bool    operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
+
+            /**
+             *      Syntactic sugar on not Equals()
+             */
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
 
 
         }

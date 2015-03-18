@@ -120,7 +120,7 @@ namespace   Stroika {
                 return lhs.Equals (rhs);
             }
             template    <typename T>
-            inline  bool    Stack<T>::operator!= (const Stack<T>& lhs, const Stack<T>& rhs)
+            inline  bool    operator!= (const Stack<T>& lhs, const Stack<T>& rhs)
             {
                 return not lhs.Equals (rhs);
             }

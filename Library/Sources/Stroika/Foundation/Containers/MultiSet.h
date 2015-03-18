@@ -120,6 +120,7 @@ namespace   Stroika {
              *
              *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
             class   MultiSet : public UpdatableIterable<MultiSetEntry<T>> {
@@ -300,13 +301,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Synonym for Equals() (or !Equals());
-                 */
-                nonvirtual  bool    operator== (const MultiSet<T, TRAITS>& rhs) const;
-                nonvirtual  bool    operator!= (const MultiSet<T, TRAITS>& rhs) const;
-
-            public:
-                /**
                  *  Synonym for Add (), or AddAll() (depending on argument);
                  */
                 nonvirtual  MultiSet<T, TRAITS>&   operator+= (T item);
@@ -426,6 +420,15 @@ namespace   Stroika {
 #endif
                 struct  _UniqueElementsHelper;
             };
+
+
+            /**
+             *  Synonym for Equals() (or !Equals());
+             */
+            template    <typename T, typename TRAITS>
+            bool    operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
 
 
         }
