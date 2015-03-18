@@ -62,8 +62,8 @@ using   Time::DurationSecondsType;
  ********************************************************************************
  */
 auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType> {
-    Set<FileDescriptorType>     fds =   fFDs_.load ();
-    size_t                      sz      =   fds.size ();
+    Set<FileDescriptorType>     fds     { fFDs_.load () };
+    size_t                      sz      { fds.size () };
     Set<FileDescriptorType>     result;
 #if     qUse_ppoll_
     DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
@@ -79,8 +79,11 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
             Assert (pd->revents == 0);
             ++i;
         }
+        // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
+        // I ahve this wrong but I susepct docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
+        // which sounds backward...
         int timeout_msecs = timeoutAt * 1000;
-        int ret = poll(fds, 2, timeout_msecs);
+        int ret = poll (pollData.begin (), sz, timeout_msecs);
         if (ret > 0) {
             for (size_t i = 0; i < sz; ++i) {
                 if (pollData[i].revents != 0) {
