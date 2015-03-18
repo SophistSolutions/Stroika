@@ -157,21 +157,28 @@ namespace   Stroika {
                 return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
             }
             template    <typename T>
-            inline  bool  Queue<T>::operator== (const Queue<T>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T>
-            inline  bool    Queue<T>::operator!= (const Queue<T>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename T>
             inline  void    Queue<T>::_AssertRepValidType () const
             {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
 #endif
+            }
+
+
+            /*
+             ********************************************************************************
+             ***************************** Queue operators **********************************
+             ********************************************************************************
+             */
+            template    <typename T>
+            inline  bool  operator== (const Queue<T>& lhs, const Queue<T>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    operator!= (const Queue<T>& lhs, const Queue<T>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 

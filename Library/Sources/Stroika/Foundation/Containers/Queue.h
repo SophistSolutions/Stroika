@@ -98,6 +98,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
             class   Queue : public UpdatableIterable<T> {
@@ -232,24 +233,6 @@ namespace   Stroika {
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    Equals (const Queue<T>& rhs) const;
 
-            public:
-                /**
-                 *      Syntactic sugar for Equals()
-                 *
-                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
-                 *          use a different comparer, call Equals() directly.
-                 */
-                nonvirtual  bool    operator== (const Queue<T>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar for not Equals()
-                 *
-                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
-                 *          use a different comparer, call Equals() directly.
-                 */
-                nonvirtual  bool    operator!= (const Queue<T>& rhs) const;
-
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 template    <typename REP_SUB_TYPE>
@@ -317,6 +300,25 @@ namespace   Stroika {
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
             };
+
+
+            /**
+             *      Syntactic sugar for Equals()
+             *
+             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *          use a different comparer, call Equals() directly.
+             */
+            template    <typename T>
+            bool    operator== (const Queue<T>& lhs, const Queue<T>& rhs);
+
+            /**
+             *      Syntactic sugar for not Equals()
+             *
+             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *          use a different comparer, call Equals() directly.
+             */
+            template    <typename T>
+            bool    operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
 
 
         }
