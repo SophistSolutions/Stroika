@@ -65,6 +65,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
             class   Stack : public UpdatableIterable<T> {
@@ -138,7 +139,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Two Stacks are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  Two Stacks are considered equal if they contain the same elements (by comparing them with EQUALS_COMPARER)
                  *  in exactly the same order.
                  *
                  *  Equals is commutative().
@@ -158,24 +159,6 @@ namespace   Stroika {
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();
-
-            public:
-                /**
-                 *      Syntactic sugar for Equals()
-                 *
-                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
-                 *          use a different comparer, call Equals() directly.
-                 */
-                nonvirtual  bool    operator== (const Stack<T>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar for not Equals()
-                 *
-                 *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
-                 *          use a different comparer, call Equals() directly.
-                 */
-                nonvirtual  bool    operator!= (const Stack<T>& rhs) const;
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
@@ -239,6 +222,25 @@ namespace   Stroika {
                 virtual T                   Pop ()                                                  =   0;
                 virtual T                   Top () const                                            =   0;
             };
+
+
+            /**
+             *      Syntactic sugar for Equals()
+             *
+             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *          use a different comparer, call Equals() directly.
+             */
+            template    <typename T>
+            bool    operator== (const Stack<T>& lhs, const Stack<T>& rhs);
+
+            /**
+             *      Syntactic sugar for not Equals()
+             *
+             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *          use a different comparer, call Equals() directly.
+             */
+            template    <typename T>
+            bool    operator!= (const Stack<T>& lhs, const Stack<T>& rhs);
 
 
         }

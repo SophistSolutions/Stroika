@@ -101,21 +101,28 @@ namespace   Stroika {
                 return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
             }
             template    <typename T>
-            inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T>
-            inline  bool    Stack<T>::operator!= (const Stack<T>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename T>
             inline  void    Stack<T>::_AssertRepValidType () const
             {
 #if     qDebug
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
 #endif
+            }
+
+
+            /*
+             ********************************************************************************
+             **************************** Stack operators ***********************************
+             ********************************************************************************
+             */
+            template    <typename T>
+            inline  bool  operator== (const Stack<T>& lhs, const Stack<T>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    Stack<T>::operator!= (const Stack<T>& lhs, const Stack<T>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 
