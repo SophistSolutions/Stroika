@@ -114,6 +114,8 @@ namespace   Stroika {
              *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
              *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
              *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
+             *
+             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
@@ -377,18 +379,6 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar on not Equals()
-                 */
-                nonvirtual  bool    operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
-
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
                 template    <typename REP_SUB_TYPE>
@@ -466,6 +456,19 @@ namespace   Stroika {
             protected:
                 nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
             };
+
+
+            /**
+             *      Syntactic sugar on Equals()
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            bool    operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+
+            /**
+             *      Syntactic sugar on not Equals()
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            bool    operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
 
         }

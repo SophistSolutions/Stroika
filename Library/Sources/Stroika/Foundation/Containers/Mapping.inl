@@ -348,16 +348,6 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
-            {
-                return not Equals (rhs);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_AssertRepValidType () const
             {
                 AssertMember (&inherited::_ConstGetRep (), _IRep);
@@ -417,6 +407,23 @@ namespace   Stroika {
                 auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
 #endif
                 return MyIterable_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (rep));
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************** Mapping operators ***********************************
+             ********************************************************************************
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
+            {
+                return not lhs.Equals (rhs);
             }
 
 
