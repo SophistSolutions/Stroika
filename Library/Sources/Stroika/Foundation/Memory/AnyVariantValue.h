@@ -145,11 +145,11 @@ namespace   Stroika {
             };
 
             /**
-                */
+             */
             bool    operator== (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
 
             /**
-                */
+             */
             bool    operator!= (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
 
 
