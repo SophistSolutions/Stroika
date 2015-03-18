@@ -86,6 +86,13 @@ namespace   Stroika {
              *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>. Also
              *      since a Collection<> intrinsically has no ordering, I'm not totally sure what it would
              *      mean to Shake/change its ordering?
+             *
+             *  \note   Equals (operator==, operator!=)
+             *          We do not provide a notion of Equals() or operator==, operator!=, because
+             *          its not clear how to compare collections.
+             *
+             *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or ExactEquals()
+             *          as appropriate.
              */
             template    <typename T>
             class   Collection : public UpdatableIterable<T> {
