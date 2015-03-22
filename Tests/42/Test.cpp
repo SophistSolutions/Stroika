@@ -37,9 +37,7 @@ namespace   {
                 int aaa;
                 int* aaap;
             };
-#if !defined (qUseDirectlyEmbeddedDataInOptionalBackEndImpl_) || qUseDirectlyEmbeddedDataInOptionalBackEndImpl_
             VerifyTestResult (sizeof (Optional<int>) == sizeof (a));
-#endif
         }
 #endif
         {
