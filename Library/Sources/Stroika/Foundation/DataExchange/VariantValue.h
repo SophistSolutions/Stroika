@@ -36,7 +36,7 @@
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.
  *
- *      @todo   Use Debug::AssertExternallySynchonized<> to assure not used from multiple threads.
+ *      @todo   Use Debug::AssertExternallySynchronizedLock<> to assure not used from multiple threads.
  *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *              (mostly done but review)
