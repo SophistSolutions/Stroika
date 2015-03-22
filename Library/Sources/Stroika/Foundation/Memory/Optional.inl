@@ -128,7 +128,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>::ConstHolder_::ConstHolder_ (const Optional* p)
                 : fVal (p)
 #if     qDebug
-                , fCritSec_ { p->fDebugMutex_ }
+                , fCritSec_ { *p }
 #endif
             {
             }
@@ -164,7 +164,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS>::MutableHolder_::MutableHolder_ (Optional* p)
                 : fVal (p)
 #if     qDebug
-                , fCritSec_ { p->fDebugMutex_ }
+                , fCritSec_ { *p }
 #endif
             {
             }
@@ -217,9 +217,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
-#if     qDebug
-                auto fromCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
                 }
@@ -228,9 +226,7 @@ namespace   Stroika {
             template    <typename TRAITS2>
             inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS2>& from)
             {
-#if     qDebug
-                auto fromCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
                 }
@@ -238,9 +234,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (Optional&& from)
             {
-#if     qDebug
-                auto    rhsCritSec { Execution::make_unique_lock (from.fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.moveInitialize (move (from.fStorage_));
                     Assert (from.fStorage_.fValue_ == nullptr);
@@ -256,17 +250,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 fStorage_.destroy ();
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T> x;
@@ -285,9 +275,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () == &rhs) {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
@@ -306,14 +294,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () != rhs.fStorage_.peek ()) {
                     clear_ ();
-#if     qDebug
-                    auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> rhsCritSec { rhs };
                     if (rhs.fStorage_.peek () != nullptr) {
                         fStorage_.fValue_ = fStorage_.alloc (*rhs.fStorage_.peek ());
                     }
@@ -323,14 +307,10 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional && rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () != rhs.fStorage_.peek ()) {
                     clear_ ();
-#if     qDebug
-                    auto    rhsCritSec { Execution::make_unique_lock (rhs.fDebugMutex_) };
-#endif
+                    lock_guard<AssertExternallySynchronizedLock> rhsCritSec { rhs };
                     if (rhs.fStorage_.peek () != nullptr) {
                         fStorage_.moveInitialize (move (rhs.fStorage_));
                         Assert (rhs.fStorage_.fValue_ == nullptr);
@@ -341,9 +321,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ != rhs) {
                     if (rhs == nullptr) {
                         clear_ ();
@@ -362,9 +340,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 clear_ ();
                 Ensure (fStorage_.peek () == nullptr);
             }
@@ -400,18 +376,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 return IsMissing () ? defaultValue : *fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
             inline  T   Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsMissing ()) {
                     Execution::DoThrow (exception2ThrowIfMissing);
                 }
@@ -424,9 +396,7 @@ namespace   Stroika {
             inline  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
             {
                 RequireNotNull (to);
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsPresent ()) {
                     *to = *fStorage_.peek ();
                 }
@@ -449,9 +419,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  auto   Optional<T, TRAITS>::operator* () const -> T
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 //return ConstHolder_ { this };  when we embed mutex into holder
@@ -462,9 +430,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 *fStorage_.fValue_ += rhs;
@@ -473,9 +439,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 *fStorage_.fValue_ -= rhs;
@@ -484,9 +448,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 *fStorage_.fValue_ *= rhs;
@@ -495,9 +457,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 *fStorage_.fValue_ /= rhs;
@@ -506,9 +466,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return rhs.fStorage_.fValue_ == nullptr;
                 }
@@ -523,9 +481,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return false;
                 }
@@ -535,9 +491,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return (rhs.fStorage_.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
@@ -552,9 +506,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (T rhs) const
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fDebugMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }

@@ -238,7 +238,7 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            class   Optional {
+            class   Optional : private Debug::AssertExternallySynchronizedLock {
             public:
                 /**
                  */
@@ -458,12 +458,6 @@ namespace   Stroika {
 
             private:
                 nonvirtual  void    clear_ ();
-
-#if     qDebug
-            private:
-                // for NOW we have this in ifdefs to avoid SIZE increase in RELEASE build (STILL WORKING ON BETTER WAY, probs using SFINAE)
-                mutable Debug::AssertExternallySynchronizedLock fDebugMutex_;
-#endif
 
             private:
                 template    <typename T2, typename TRAITS2>
