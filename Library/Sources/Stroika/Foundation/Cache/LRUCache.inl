@@ -284,8 +284,8 @@ namespace   Stroika {
             LRUCache<KEY, VALUE, TRAITS>::LRUCache (const LRUCache& from)
                 : fRealCache_ (1)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
+                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };    // after above getMaxCacheSize to avoid recursive access
                 for (auto i : from.fRealCache_) {
                     if (i) {
                         Add (i->fKey, i->fValue);
@@ -295,9 +295,9 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto    LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> const LRUCache&
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (this != &rhs) {
                     SetMaxCacheSize (rhs.GetMaxCacheSize ());
+                    lock_guard<AssertExternallySynchronizedLock> critSec { *this };         // after above SetMaxCacheSize to avoid recursive access
                     fRealCache_.ClearCache ();
                     for (auto i : rhs.fRealCache_) {
                         if (i.fKey) {
