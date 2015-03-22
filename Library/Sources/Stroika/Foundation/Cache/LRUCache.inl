@@ -284,8 +284,8 @@ namespace   Stroika {
             LRUCache<KEY, VALUE, TRAITS>::LRUCache (const LRUCache& from)
                 : fRealCache_ (1)
             {
-                fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
+                fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
                 for (auto i : from.fRealCache_) {
                     if (i) {
                         Add (i->fKey, i->fValue);
@@ -295,9 +295,9 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto    LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> const LRUCache&
             {
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (this != &rhs) {
                     SetMaxCacheSize (rhs.GetMaxCacheSize ());
-                    lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                     fRealCache_.ClearCache ();
                     for (auto i : rhs.fRealCache_) {
                         if (i.fKey) {
@@ -391,8 +391,8 @@ namespace   Stroika {
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>> {
-                Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>  result;
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>  result;
                 for (auto i : fRealCache_)
                 {
                     if (i) {
