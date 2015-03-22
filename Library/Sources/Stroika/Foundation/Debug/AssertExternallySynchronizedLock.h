@@ -13,6 +13,21 @@
 
 
 
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *  TODO:
+ *
+ *      @todo   Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
+ *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
+ *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
+ *              Optioanl<> use without synchronized, if all readers, but as soon as a writer gets into the party – assert out!
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {

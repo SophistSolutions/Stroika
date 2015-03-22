@@ -131,7 +131,7 @@ namespace   Stroika {
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
              */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
-            class   LRUCache : /*private*/public Debug::AssertExternallySynchronizedLock {
+            class   LRUCache : /*private*/private Debug::AssertExternallySynchronizedLock {
             public:
                 using   TraitsType  =   TRAITS;
 

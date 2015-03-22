@@ -29,6 +29,11 @@
  *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
+ *       @todo  Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
+ *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
+ *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
+ *              Optioanl<> use without synchronized, if all readers, but as soon as a writer gets into the party – assert out!
+ *
  *      @todo   Consider adding NonConstHolder_, and return that from non-cost operator->(). More like std::optional.
  *              But harder to use safely, and maybe better to avoid (harder to control lifetime of update of returned pointer????
  *              mabye? maybe no diff than cosnt case? Consider???)
@@ -213,6 +218,9 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
              *          of internal pointers.
+             *
+             *          FOR NOW - this class does not evel allow multiple readers at the same time - due to
+             *          Debug::AssertExternallySynchronizedLock usage.
              *
              *  \note   \em Design-Note - Optional<void>
              *          I considered supporting Optional<void>, but there seemed no natural way to 'assign' something to it
