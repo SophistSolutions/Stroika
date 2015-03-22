@@ -361,7 +361,7 @@ namespace   Stroika {
                 struct  ConstHolder_ {
                     const Optional*   fVal;
 #if     qDebug
-                    std::unique_lock<Debug::AssertExternallySynchronizedLock> fCritSec_;
+                    std::unique_lock<const Debug::AssertExternallySynchronizedLock> fCritSec_;
 #endif
                     ConstHolder_ (const ConstHolder_&) = delete;
                     ConstHolder_ (const Optional* p);
