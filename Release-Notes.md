@@ -21,13 +21,15 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a87">v2.0a87x</a><br/>2015-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a87">v2.0a87</a><br/>2015-03-21</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Use Xerces 3.1.2</li>
+	<li>use openssl 1.0.1m</li>
 </ul>
 </td>
 </tr>
+
 
 
 
