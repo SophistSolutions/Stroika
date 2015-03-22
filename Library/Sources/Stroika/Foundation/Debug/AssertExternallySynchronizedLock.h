@@ -30,8 +30,13 @@ namespace   Stroika {
              *  In debug builds, it enforces this fact through assertions.
              *
              *  Use this as a BASECLASS instead of directly aggregating, due to C++'s queer
-             *  rules about sizeof() and members (all at least sizeof byte), but that appears to not apply to
-             *  base classes.
+             *  rules about sizeof() and members (all at least sizeof byte), but that does not apply
+             *  to base classes:
+             *      from http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf: section 1.8:
+             *          ...
+             *          "Unless it is a bit-field (9.6), a most derived object shall have a non-zero
+             *          size and shall occupy one or more bytes of storage. Base class subobjects may
+             *          have zero size"
              *
              *  EXAMPLE USAGE:
              *      struct foo : private Debug::AssertExternallySynchronizedLock {
