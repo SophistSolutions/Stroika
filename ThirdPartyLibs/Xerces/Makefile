@@ -2,7 +2,7 @@
 .PHONY:	all clean clobber check
 
 MIRROR_PREFIX_=http://psg.mtu.edu/pub/apache/
-VERSION=3.1.1
+VERSION=3.1.2
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
