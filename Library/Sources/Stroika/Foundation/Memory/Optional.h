@@ -84,9 +84,9 @@ namespace   Stroika {
                     StorageType (T* p);
 
                     template    <typename ...ARGS>
-                    T*      alloc (ARGS&& ...args);
-                    void    destroy ();
-                    void    moveInitialize (StorageType&& rhs);
+                    T*          alloc (ARGS&& ...args);
+                    void        destroy ();
+                    void        moveInitialize (StorageType&& rhs);
                     T*          peek ();
                     const T*    peek () const;
                 };
@@ -111,16 +111,19 @@ namespace   Stroika {
                     StorageType (AutomaticallyBlockAllocated<T>* p);
 
                     template    <typename ...ARGS>
-                    AutomaticallyBlockAllocated<T>*  alloc (ARGS&& ...args);
-                    void        destroy ();
-                    void        moveInitialize (StorageType&& rhs);
-                    T*          peek ();
-                    const T*    peek () const;
+                    AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
+                    void                            destroy ();
+                    void                            moveInitialize (StorageType&& rhs);
+                    T*                              peek ();
+                    const T*                        peek () const;
                 };
             };
 
 
             /**
+             *  By default, Optional (and Optional_Traits_Default) use  Optional_Traits_Inplace_Storage
+             *  since its probably generally more efficient, and more closely aligned with
+             *  std::optional<> behavior.
              */
             template    <typename T>
             using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
