@@ -285,6 +285,16 @@ namespace   Stroika {
                 return IsEmpty ();
             }
             template    <typename T>
+            inline  bool    Iterable<T>::Any () const
+            {
+                return not IsEmpty ();
+            }
+            template    <typename T>
+            inline  bool    Iterable<T>::Any (const function<bool(T)>& includeIfTrue) const
+            {
+                return not Where (includeIfTrue).IsEmpty ();
+            }
+            template    <typename T>
             inline  size_t  Iterable<T>::length () const
             {
                 return GetLength ();

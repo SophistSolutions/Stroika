@@ -208,6 +208,7 @@ namespace   Stroika {
              *              to encourage buggy usage? - Crash? - maybe add Assert, and throw overloads?/variants.
              *          o   Last() - same as First ()
              *          o   OrderBy (function<bool(T,T)> isLess) - NYI - @todo
+             *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -532,6 +533,15 @@ namespace   Stroika {
                  * \brief STL-ish alias for IsEmpty()
                  */
                 nonvirtual  bool    empty () const;
+
+            public:
+                /**
+                 * \brief not empty () - synonym for .net Any() Linq method.
+                 *
+                 *  Second overload (with filter function) same as .Where(filter).Any ();
+                 */
+                nonvirtual  bool    Any () const;
+                nonvirtual  bool    Any (const function<bool(T)>& includeIfTrue) const;
 
             public:
                 /**
