@@ -22,6 +22,9 @@
  *
  *  TODO:
  *
+ *      @todo   https://code.msdn.microsoft.com/101-LINQ-Samples-3fb9811b
+ *              Add stuff like Aggregate functions, etc... Set Project/etc...
+ *
  *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
  *              default parameter?
  *
@@ -196,6 +199,15 @@ namespace   Stroika {
              *
              *          This was rejected because it can easily be done directly with iterators, and seems
              *          a queeryly specific problem. I cannot see any patterns where one would want to do this.
+             *
+             *  *Design Note* - Microsoft Linq:
+             *      This API implements some of the Microsoft Linq API. For example, we implement
+             *          o   Where
+             *      We choose explicitly not to implement
+             *          o   First() - because based on seeing it used quite a bit in .net code, it appears
+             *              to encourage buggy usage? - Crash? - maybe add Assert, and throw overloads?/variants.
+             *          o   Last() - same as First ()
+             *          o   OrderBy (function<bool(T,T)> isLess) - NYI - @todo
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -503,7 +515,15 @@ namespace   Stroika {
                 nonvirtual  CONTAINER_OF_T    As () const;
 
             public:
-                /*EXPERIMENTAL
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Sequence<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
 
