@@ -12,6 +12,7 @@
  */
 #include    "../Debug/Assertions.h"
 
+#include    "IterableFromIterator.h"
 #include    "Generator.h"
 
 
