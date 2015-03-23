@@ -503,6 +503,11 @@ namespace   Stroika {
                 nonvirtual  CONTAINER_OF_T    As () const;
 
             public:
+                /*EXPERIMENTAL
+                 */
+                nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
+
+            public:
                 /**
                  * \brief STL-ish alias for IsEmpty()
                  */

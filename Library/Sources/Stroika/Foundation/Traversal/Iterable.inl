@@ -12,6 +12,8 @@
  */
 #include    "../Debug/Assertions.h"
 
+#include    "Generator.h"
+
 
 
 namespace   Stroika {
@@ -257,6 +259,24 @@ namespace   Stroika {
                 }
                 // only true if we get to end at the same time
                 return li == le and ri == re;
+            }
+            template    <typename T>
+            Iterable<T> Iterable<T>::Where (const function<bool(T)>& includeIfTrue) const
+            {
+                using   Memory::Optional;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<T>()> getNext = [tmpIt, includeIfTrue] () mutable -> Memory::Optional<T> {
+                    if (tmpIt)
+                    {
+                        ++tmpIt;
+                    }
+                    while (tmpIt and not includeIfTrue (*tmpIt))
+                    {
+                        ++tmpIt;
+                    }
+                    return tmpIt ?* tmpIt : Optional<T> ();
+                };
+                return CreateGenerator (getNext);
             }
             template    <typename T>
             inline  bool    Iterable<T>::empty () const

@@ -727,6 +727,28 @@ namespace {
 
 
 
+namespace {
+    void    Test16_LinqLikeFunctions_ ()
+    {
+        {
+            using Containers::Sequence;
+            Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Sequence<int> { 2, 4, 6 }));
+            {
+                Iterable<int>   w = c.Where ([] (int i) { return i % 2 == 0; });
+                VerifyTestResult (w.ExactEquals (Sequence<int> { 2, 4, 6 }));
+                VerifyTestResult (w.ExactEquals (Sequence<int> { 2, 4, 6 }));
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -746,6 +768,7 @@ namespace   {
         Test13_DisjointRange_ ();
         Test14_Format_ ();
         Test15_Partition_ ();
+        Test16_LinqLikeFunctions_ ();
     }
 }
 
