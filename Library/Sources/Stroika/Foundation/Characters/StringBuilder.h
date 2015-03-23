@@ -57,7 +57,7 @@ namespace   Stroika {
              *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
              *  @see Java StringBuilder - http://docs.oracle.com/javase/7/docs/api/java/lang/StringBuilder.html
              */
-            class   StringBuilder {
+            class   StringBuilder : private Debug::AssertExternallySynchronizedLock {
             public:
                 StringBuilder ();
                 StringBuilder (const StringBuilder&) = default;
@@ -176,7 +176,6 @@ namespace   Stroika {
             private:
                 mutable Memory::SmallStackBuffer<wchar_t>       fData_;     // maybe nul-terminated
                 size_t                                          fLength_;   // seperate from SmallStackBuffer<>::GetLength ()
-                mutable Debug::AssertExternallySynchronizedLock fLock_;
             };
 
 

@@ -128,7 +128,7 @@ namespace   Stroika {
              *
              */
             template    <typename   KEY, typename RESULT, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, RESULT>>
-            class   TimedCache {
+            class   TimedCache : private Debug::AssertExternallySynchronizedLock {
             public:
                 TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
                 TimedCache (const TimedCache&) = delete;
@@ -169,11 +169,6 @@ namespace   Stroika {
             private:
                 nonvirtual  void    ClearIfNeeded_ ();
                 nonvirtual  void    ClearOld_ ();
-
-#if     qDebug
-            private:
-                Debug::AssertExternallySynchronizedLock fMutex_;
-#endif
 
             private:
                 struct  MyResult_ {

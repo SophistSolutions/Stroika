@@ -78,13 +78,7 @@ namespace   Stroika {
             void    TimedCache<KEY, RESULT, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
             {
                 Require (timeoutInSeconds > 0.0f);
-#if     qDebug
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
-#else
-                auto    critSec { Execution::make_unique_lock (fMutex_) };
-#endif
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fTimeout_ != timeoutInSeconds) {
                     ClearIfNeeded_ ();
                     fTimeout_ = timeoutInSeconds;
@@ -94,13 +88,7 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             Memory::Optional<RESULT>    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key)
             {
-#if     qDebug
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
-#else
-                auto    critSec { Execution::make_unique_lock (fMutex_) };
-#endif
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
@@ -127,13 +115,7 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             void    TimedCache<KEY, RESULT, TRAITS>::AddElement (const KEY& key, const RESULT& result)
             {
-#if     qDebug
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
-#else
-                auto    critSec { Execution::make_unique_lock (fMutex_) };
-#endif
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
@@ -146,21 +128,13 @@ namespace   Stroika {
             template    <typename   KEY, typename RESULT, typename TRAITS>
             void    TimedCache<KEY, RESULT, TRAITS>::Remove (const KEY& key)
             {
-#if     qDebug
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex_);
-#else
-                auto    critSec { Execution::make_unique_lock (fMutex_) };
-#endif
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 fMap_.erase (key);
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>
             inline  void    TimedCache<KEY, RESULT, TRAITS>::DoBookkeeping ()
             {
-#if     qDebug
-                auto    critSec { Execution::make_unique_lock (fMutex_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearOld_ ();
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>

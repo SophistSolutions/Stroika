@@ -44,11 +44,7 @@ namespace   Stroika {
             {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
-#else
-                auto    critSec { Execution::make_unique_lock (fLock_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 size_t  i   =   fLength_;
                 size_t  rhsLen  =  e - s;
                 fData_.GrowToSize (i + rhsLen);
@@ -111,11 +107,7 @@ namespace   Stroika {
             }
             inline  void  StringBuilder::push_back (Character c)
             {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
-#else
-                auto    critSec { Execution::make_unique_lock (fLock_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 fData_.GrowToSize (fLength_ + 1);
                 fData_[fLength_] = c.GetCharacterCode ();
                 fLength_++;
@@ -135,11 +127,7 @@ namespace   Stroika {
             }
             inline  const wchar_t*  StringBuilder::c_str () const
             {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
-#else
-                auto    critSec { Execution::make_unique_lock (fLock_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 fData_.GrowToSize (fLength_ + 1);
                 fData_[fLength_] = '\0';
                 return fData_.begin ();
@@ -150,11 +138,7 @@ namespace   Stroika {
             }
             inline  String StringBuilder::str () const
             {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
-#else
-                auto    critSec { Execution::make_unique_lock (fLock_) };
-#endif
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 return String (fData_.begin (), fData_.begin () + fLength_);
             }
             template    <typename   T>
