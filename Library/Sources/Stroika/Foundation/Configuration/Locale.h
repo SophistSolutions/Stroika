@@ -20,6 +20,11 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *
+ *      @todo   I think GetPlatformDefaultLocale() can be optimized to use a static copy of locale("") since
+ *              I believe C++ now gaurantees multithreaded safe static construction and safe read only
+ *              access to objects (even from multiple reader threads).
+ *
  *      @todo   verify and document if for windows this is LOCALE_USER_DEFAULT or LOCALE_SYSTEM_DEFAULT.
  *              SB USER!
  *
@@ -46,7 +51,9 @@ namespace   Stroika {
 
 
             /**
-             *  In C++, the default locale is "C", not the one inherited from the OS.
+             *  In C++, the default locale is "C" (aka locale::classic ()), not the one
+             *  inherited from the OS.
+             *
              *  Its not hard to get/set the one from the OS, but I've found it not well documented,
              *  so this is intended to make it a little easier/more readable.
              */
