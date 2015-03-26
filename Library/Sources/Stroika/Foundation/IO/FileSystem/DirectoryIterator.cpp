@@ -14,6 +14,7 @@
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../IO/FileAccessException.h"
 
 #include    "../../Traversal/IterableFromIterator.h"
 
@@ -54,18 +55,21 @@ public:
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #endif
     {
+        try {
 #if     qPlatform_Windows
-        memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-        fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
+            memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
 #elif   qPlatform_POSIX
-        if (fDirIt_ == nullptr)
-        {
-            Execution::ThrowIfError_errno_t ();
-        }
-        else {
-            fCur_ = ::readdir (fDirIt_);
-        }
+            if (fDirIt_ == nullptr)
+            {
+                Execution::ThrowIfError_errno_t ();
+            }
+            else {
+                fCur_ = ::readdir (fDirIt_);
+            }
 #endif
+        }
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
     }
 #if     qPlatform_Windows
     Rep_ (const String& dir, int seekPos)
