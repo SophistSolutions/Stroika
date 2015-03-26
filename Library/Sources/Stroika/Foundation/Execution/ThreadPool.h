@@ -178,9 +178,17 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This INCLUDES those with properly IsPresent () - those running or ready to run
+                 *  This INCLUDES those with properly IsPresent () - those running or ready to run.
+                 *  This is GetRunningTasks().size () + GetPendingTasksCount ()
                  */
                 nonvirtual  size_t              GetTasksCount () const;
+
+            public:
+                /**
+                 *  This only tasks waiting to be run (queued but not yet running because the thread pool
+                 *  has no available slots).
+                 */
+                nonvirtual  size_t              GetPendingTasksCount () const;
 
             public:
                 /**

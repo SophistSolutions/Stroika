@@ -338,6 +338,16 @@ size_t  ThreadPool::GetTasksCount () const
     return count;
 }
 
+size_t   ThreadPool::GetPendingTasksCount () const
+{
+    size_t  count   =   0;
+    {
+        auto    critSec { make_unique_lock (fCriticalSection_) };
+        count += fTasks_.size ();
+    }
+    return count;
+}
+
 void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("ThreadPool::WaitForDoneUntil");
