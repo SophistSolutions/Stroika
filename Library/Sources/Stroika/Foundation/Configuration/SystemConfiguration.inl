@@ -15,6 +15,22 @@ namespace   Stroika {
         namespace   Configuration {
 
 
+
+            /*
+             ********************************************************************************
+             **************************** SystemConfiguration::CPU **************************
+             ********************************************************************************
+             */
+            inline  unsigned int    SystemConfiguration::CPU::GetNumberOfLogicalCores () const
+            {
+                return fCores.size ();
+            }
+            inline  String    SystemConfiguration::CPU::GetCPUModelPrintName () const
+            {
+                return fCores.empty () ? String () : fCores[0].fModelName;
+            }
+
+
             /*
              ********************************************************************************
              ****************** SystemConfiguration GetSystemConfiguration ******************

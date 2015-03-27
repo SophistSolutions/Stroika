@@ -15,12 +15,17 @@
 #include    "../Characters/SDKString.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/String2Int.h"
+#include    "../Containers/Set.h"
 #if     qPlatform_POSIX
 #include    "../Execution/ErrNoException.h"
 #elif   qPlatform_Windows
 #include    "../Execution/Platform/Windows/Exception.h"
 #endif
 #include    "../Memory/SmallStackBuffer.h"
+#include    "../IO/FileSystem/BinaryFileInputStream.h"
+#include    "../Streams/BasicBinaryInputOutputStream.h"
+#include    "../Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "SystemConfiguration.h"
 
@@ -38,6 +43,8 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
+using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Streams;
 
 
 using   Characters::String_Constant;
@@ -47,6 +54,19 @@ using   Characters::SDKChar;
 
 
 
+/*
+ ********************************************************************************
+ ***************** Configuration::SystemConfiguration::CPU **********************
+ ********************************************************************************
+ */
+unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
+{
+    Set<unsigned int>   socketIds;
+    for (auto i : fCores) {
+        socketIds.Add (i.fSocketID);
+    }
+    return socketIds.size ();
+}
 
 
 /*
@@ -58,14 +78,47 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
     using CPU = SystemConfiguration::CPU;
     CPU result;
-    // @todo fix - this is often about right, but is FAR from defined or gauranteed correct
-    result.fNumberOfLogicalCores = std::thread::hardware_concurrency ();
 
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+    {
+        using   IO::FileSystem::BinaryFileInputStream;
+        using   Characters::String2Int;
+        const   String_Constant kProcCPUInfoFileName_ { L"/proc/cpuinfo" };
+
+        CPU::CoreDetails    coreDetails;
+        // Note - /procfs files always unseekable
+        for (String line : Streams::TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (kProcCPUInfoFileName_, BinaryFileInputStream::eNotSeekable)).ReadLines ()) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ linesize=%s", line.c_str ());
+#endif
+            static  const   String_Constant kModelNameLabel_ { L"model name	: " };
+            //static    const   String_Constant kProcessorIDLabel_ { L"processor    : " };
+            static  const   String_Constant kSocketIDLabel_ { L"physical id	: " };          // a bit of a guess?
+            if (line.StartsWith (kModelNameLabel_)) {
+                coreDetails.fModelName = line.SubString (kModelNameLabel_.length ()).Trim ();
+            }
+            else if (line.StartsWith (kSocketIDLabel_)) {
+                unsigned int socketID = String2Int<unsigned int> (line.SubString (kSocketIDLabel_.length ()).Trim ());
+                coreDetails.fSocketID = socketID;
+            }
+            if (line.Trim ().empty ()) {
+                // ends each socket
+                result.fCores.Append (coreDetails);
+                coreDetails = CPU::CoreDetails ();
+            }
+        }
+        if (coreDetails.fSocketID != 0 or not coreDetails.fModelName.empty ()) {
+            result.fCores.Append (coreDetails);
+        }
+    }
+#elif   qPlatform_Windows
     SYSTEM_INFO sysInfo;
     ::GetNativeSystemInfo (&sysInfo);
     //unclear if this is count of logical or physical cores, or how to compute the other.
-    result.fNumberOfLogicalCores = sysInfo.dwNumberOfProcessors;
+    //@todo - fix as above for POSIX... maybe ask Sterl? But for now KISS
+    for (DWORD i = 0; i < sysInfo.dwNumberOfProcessors; ++i) {
+        result.fCores.Append (CPU::CoreDetails ());
+    }
 #endif
 
     return result;

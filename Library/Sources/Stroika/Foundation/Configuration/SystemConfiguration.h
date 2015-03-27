@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/String.h"
+#include    "../Containers/Sequence.h"
 #include    "Common.h"
 
 
@@ -44,24 +45,38 @@ namespace   Stroika {
                  */
                 struct  CPU {
                     /**
-                     *  Number of Physical Cores
+                     *  Number of Physical Sockets/CPU chips. Also this is the number of distinct 'socketids' from the fCores.
                      */
-                    unsigned int    fNumberOfPhysicalCores {};
+                    unsigned int    GetNumberOfSockets () const;
 
                     /**
-                     *  Number of Logical Cores (aka  max concurrent logical thread count)
+                     *  Number of Logical Cores (aka  max concurrent logical thread count). This will generally be
+                     *  divisible by fNumberOfSockets.
                      */
-                    unsigned int    fNumberOfLogicalCores {};
+                    unsigned int    GetNumberOfLogicalCores () const;
 
-                    /*
-                     *  Not sure we want to support this.
-                     *  Number of Sockets
-                     *  unsigned int    fNumberOfCPUSockets {};
+                    /**
+                     *  Each socket will typically have the identical model name. This returns the value from the first.
+                     *  check each fCore to see if they differ.
+                     *
+                     *  If the fCores is empty, this is safe, and returns an empty string.
                      */
+                    String    GetCPUModelPrintName () const;
 
-                    /*
-                     *  @todo Portable?? CPUInfo descripotion? Category
+                    /**
+                     *  Details we track per CPU (socket/chip). There is much more info in /proc/cpuinfo, like
+                     *  MHz, and cache size, and particular numerical model numbers. Possibly also add 'bogomips'?
                      */
+                    struct  CoreDetails {
+                        unsigned int    fSocketID {};       // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a differnt socket
+                        String          fModelName {};      // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
+                    };
+
+                    /**
+                     *  A computer may have multiple SPUCores, and in principle they can differ.
+                     *  The number of filled 'cpu sockets' is fCPUs.length ()
+                     */
+                    Containers::Sequence<CoreDetails>   fCores;
                 };
 
 
