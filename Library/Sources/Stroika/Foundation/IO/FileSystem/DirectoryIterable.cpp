@@ -4,7 +4,6 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Traversal/Iterable.h"
-#include    "../../Traversal/IterableFromIterator.h"
 #include    "DirectoryIterator.h"
 
 #include    "DirectoryIterable.h"
