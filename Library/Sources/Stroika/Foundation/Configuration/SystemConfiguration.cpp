@@ -51,6 +51,11 @@ using   Characters::String_Constant;
 using   Characters::SDKChar;
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 
 
@@ -81,15 +86,16 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 
 #if     qPlatform_POSIX
     {
+        using   Streams::TextInputStreamBinaryAdapter;
         using   IO::FileSystem::BinaryFileInputStream;
         using   Characters::String2Int;
         const   String_Constant kProcCPUInfoFileName_ { L"/proc/cpuinfo" };
 
         CPU::CoreDetails    coreDetails;
         // Note - /procfs files always unseekable
-        for (String line : Streams::TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (kProcCPUInfoFileName_, BinaryFileInputStream::eNotSeekable)).ReadLines ()) {
+        for (String line : TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (kProcCPUInfoFileName_, BinaryFileInputStream::eNotSeekable)).ReadLines ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ linesize=%s", line.c_str ());
+            DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
             static  const   String_Constant kModelNameLabel_ { L"model name	: " };
             //static    const   String_Constant kProcessorIDLabel_ { L"processor    : " };
@@ -116,6 +122,11 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     ::GetNativeSystemInfo (&sysInfo);
     //unclear if this is count of logical or physical cores, or how to compute the other.
     //@todo - fix as above for POSIX... maybe ask Sterl? But for now KISS
+    //
+    // Can use https://msdn.microsoft.com/en-us/library/hskdteyh%28v=vs.90%29.aspx?f=255&MSPPError=-2147217396
+    //  __cpuid
+    // to find this information (at least modelname string.
+    //
     for (DWORD i = 0; i < sysInfo.dwNumberOfProcessors; ++i) {
         result.fCores.Append (CPU::CoreDetails ());
     }
