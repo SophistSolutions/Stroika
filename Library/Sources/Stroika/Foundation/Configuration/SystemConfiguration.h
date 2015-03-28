@@ -44,25 +44,29 @@ namespace   Stroika {
                 /**
                  */
                 struct  CPU {
+                public:
                     /**
                      *  Number of Physical Sockets/CPU chips. Also this is the number of distinct 'socketids' from the fCores.
                      */
-                    unsigned int    GetNumberOfSockets () const;
+                    nonvirtual  unsigned int    GetNumberOfSockets () const;
 
+                public:
                     /**
                      *  Number of Logical Cores (aka  max concurrent logical thread count). This will generally be
                      *  divisible by fNumberOfSockets.
                      */
-                    unsigned int    GetNumberOfLogicalCores () const;
+                    nonvirtual  unsigned int    GetNumberOfLogicalCores () const;
 
+                public:
                     /**
                      *  Each socket will typically have the identical model name. This returns the value from the first.
                      *  check each fCore to see if they differ.
                      *
                      *  If the fCores is empty, this is safe, and returns an empty string.
                      */
-                    String    GetCPUModelPrintName () const;
+                    nonvirtual  String    GetCPUModelPrintName () const;
 
+                public:
                     /**
                      *  Details we track per CPU (socket/chip). There is much more info in /proc/cpuinfo, like
                      *  MHz, and cache size, and particular numerical model numbers. Possibly also add 'bogomips'?
@@ -72,6 +76,7 @@ namespace   Stroika {
                         String          fModelName {};      // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
                     };
 
+                public:
                     /**
                      *  A computer may have multiple SPUCores, and in principle they can differ.
                      *  The number of filled 'cpu sockets' is fCPUs.length ()

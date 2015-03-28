@@ -31,22 +31,6 @@ namespace   Stroika {
             }
 
 
-            /*
-             ********************************************************************************
-             ****************** SystemConfiguration GetSystemConfiguration ******************
-             ********************************************************************************
-             */
-            inline  SystemConfiguration GetSystemConfiguration ()
-            {
-                return SystemConfiguration {
-                    GetSystemConfiguration_CPU (),
-                    GetSystemConfiguration_Memory (),
-                    GetSystemConfiguration_OperatingSystem (),
-                    GetSystemConfiguration_ComputerNames ()
-                };
-            }
-
-
         }
     }
 }
