@@ -16,8 +16,6 @@
 #endif
 #include    "../../IO/FileAccessException.h"
 
-#include    "../../Traversal/IterableFromIterator.h"
-
 #include    "DirectoryIterator.h"
 
 
@@ -238,6 +236,3 @@ DirectoryIterator::DirectoryIterator (const String& directoryName)
     : Iterator<String> (SharedIRepPtr (new Rep_ (directoryName)))
 {
 }
-
-
-
