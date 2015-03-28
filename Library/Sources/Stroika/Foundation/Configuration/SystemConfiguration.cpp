@@ -173,7 +173,50 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
     using   OperatingSystem =   SystemConfiguration::OperatingSystem;
     static  const   OperatingSystem    kCachedResult_ = []() ->OperatingSystem {
         OperatingSystem    tmp;
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+        tmp.fTokenName = String_Constant (L"Unix");
+        try {
+            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
+        }
+        catch (...)
+        {
+            DbgTrace ("Failure running uname");
+        }
+        try {
+            ifstream s;
+            Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
+            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
+            tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
+            tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
+        }
+        catch (...)
+        {
+            DbgTrace ("Failure reading /etc/os-release");
+        }
+        if (tmp.fShortPrettyName.empty ())
+        {
+            tmp.fShortPrettyName = tmp.fTokenName;
+        }
+        if (tmp.fPrettyNameWithMajorVersion.empty ())
+        {
+            tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
+        }
+        if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
+        {
+            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
+            if (not tmp.fMajorMinorVersionString.empty ()) {
+                tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
+            }
+        }
+        //
+        // @todo FIX/FIND BETTER WAY!
+        //
+        //http://docs.oracle.com/cd/E36784_01/html/E36874/sysconf-3c.html
+        // Quite uncertain - this is not a good reference
+        //      --LGP 2014-10-18
+        //
+        tmp.fBits = sysconf(_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
+#elif   qPlatform_Windows
         tmp.fTokenName = String_Constant (L"Windows");
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
@@ -233,49 +276,6 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
-#elif   qPlatform_POSIX
-        tmp.fTokenName = String_Constant (L"Unix");
-        try {
-            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
-        }
-        catch (...)
-        {
-            DbgTrace ("Failure running uname");
-        }
-        try {
-            ifstream s;
-            Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
-            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
-            tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
-            tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
-        }
-        catch (...)
-        {
-            DbgTrace ("Failure reading /etc/os-release");
-        }
-        if (tmp.fShortPrettyName.empty ())
-        {
-            tmp.fShortPrettyName = tmp.fTokenName;
-        }
-        if (tmp.fPrettyNameWithMajorVersion.empty ())
-        {
-            tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
-        }
-        if (tmp.fRFC1945CompatProductTokenWithVersion.empty ())
-        {
-            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" ", L"-");
-            if (not tmp.fMajorMinorVersionString.empty ()) {
-                tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
-            }
-        }
-        //
-        // @todo FIX/FIND BETTER WAY!
-        //
-        //http://docs.oracle.com/cd/E36784_01/html/E36874/sysconf-3c.html
-        // Quite uncertain - this is not a good reference
-        //      --LGP 2014-10-18
-        //
-        tmp.fBits = sysconf(_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
 #else
         AssertNotImplemented ();
 #endif
