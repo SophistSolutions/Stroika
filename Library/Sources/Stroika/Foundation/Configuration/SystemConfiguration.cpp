@@ -118,7 +118,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         }
     }
 #elif   qPlatform_Windows
-    SYSTEM_INFO sysInfo;
+    SYSTEM_INFO sysInfo;        // GetNativeSystemInfo cannot fail so no need to initialize data
     ::GetNativeSystemInfo (&sysInfo);
     //unclear if this is count of logical or physical cores, or how to compute the other.
     //@todo - fix as above for POSIX... maybe ask Sterl? But for now KISS
