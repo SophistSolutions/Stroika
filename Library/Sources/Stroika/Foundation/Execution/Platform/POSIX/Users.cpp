@@ -27,7 +27,7 @@ using   Characters::String_Constant;
  */
 uid_t   Platform::POSIX::UserName2UID (const String& name)
 {
-    size_t  bufsize = sysconf (_SC_GETPW_R_SIZE_MAX);
+    size_t  bufsize = ::sysconf (_SC_GETPW_R_SIZE_MAX);
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
     }
@@ -55,7 +55,7 @@ uid_t   Platform::POSIX::UserName2UID (const String& name)
  */
 String  Platform::POSIX::uid_t2UserName (uid_t uid)
 {
-    size_t  bufsize = sysconf (_SC_GETPW_R_SIZE_MAX);
+    size_t  bufsize = ::sysconf (_SC_GETPW_R_SIZE_MAX);
     if (bufsize == -1) {          /* Value was indeterminate */
         bufsize = 16384;        /* Should be more than enough */
     }

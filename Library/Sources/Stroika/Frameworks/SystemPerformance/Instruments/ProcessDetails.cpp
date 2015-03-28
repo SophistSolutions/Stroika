@@ -519,7 +519,7 @@ namespace {
                 processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
                 processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
 
-                static  const   double  kClockTick_ = sysconf (_SC_CLK_TCK);
+                static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                 try {
                     StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
@@ -548,7 +548,7 @@ namespace {
                             break;
                     }
 
-                    static  const   size_t  kPageSizeInBytes = sysconf (_SC_PAGESIZE);
+                    static  const   size_t  kPageSizeInBytes = ::sysconf (_SC_PAGESIZE);
 
                     static  const time_t    kSecsSinceBoot_ = [] () {
                         struct sysinfo info;

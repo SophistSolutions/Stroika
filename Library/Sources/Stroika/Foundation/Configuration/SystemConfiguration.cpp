@@ -146,8 +146,8 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
     using   Memory = SystemConfiguration::Memory;
     Memory  result;
 #if     qPlatform_POSIX
-    result.fPageSize = sysconf (_SC_PAGESIZE);
-    result.fTotalPhysicalRAM = sysconf (_SC_PHYS_PAGES) * result.fPageSize;
+    result.fPageSize = ::sysconf (_SC_PAGESIZE);
+    result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * result.fPageSize;
 #elif   qPlatform_Windows
     SYSTEM_INFO sysInfo;
     ::GetNativeSystemInfo (&sysInfo);
