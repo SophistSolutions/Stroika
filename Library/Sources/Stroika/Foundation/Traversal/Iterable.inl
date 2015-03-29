@@ -368,7 +368,7 @@ namespace   Stroika {
                     return *m;
                 }
                 else {
-                    Execution::DoThrow (Execution::StringException (L"Cannot take Min() on empty list"));
+                    throw range_error ("Cannot take Min() on empty list");
                 }
             }
             template    <typename T>
@@ -388,7 +388,7 @@ namespace   Stroika {
                     return *m;
                 }
                 else {
-                    Execution::DoThrow (Execution::StringException (L"Cannot take Max() on empty list"));
+                    throw range_error ("Cannot take Max() on empty list");
                 }
             }
             template    <typename T>
@@ -411,7 +411,7 @@ namespace   Stroika {
                     return *m / count;
                 }
                 else {
-                    Execution::DoThrow (Execution::StringException (L"Cannot take Mean() on empty list"));
+                    throw range_error ("Cannot take Mean() on empty list");
                 }
             }
             template    <typename T>
@@ -422,7 +422,7 @@ namespace   Stroika {
                 sort (tmp.begin (), tmp.end ());
                 size_t  sz { tmp.size () };
                 if (sz == 0) {
-                    Execution::DoThrow (Execution::StringException (L"Cannot take Median () on empty list"));
+                    throw range_error ("Cannot take Median () on empty list");
                 }
                 if ((sz % 2) == 0) {
                     return (static_cast<RESULT_TYPE> (tmp[sz / 2])  + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
