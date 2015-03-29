@@ -764,6 +764,10 @@ namespace {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };
             VerifyTestResult (c.Max () == 6);
         }
+        {
+            Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+            VerifyTestResult (c.Mean () == 4);
+        }
     }
 }
 

@@ -392,6 +392,29 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
+            template    <typename   RESULT_TYPE>
+            RESULT_TYPE   Iterable<T>::Mean () const
+            {
+                using   Memory::Optional;
+                Optional<RESULT_TYPE> m;
+                unsigned int count {};
+                for (T i : *this) {
+                    if (m) {
+                        m = *m + i;
+                    }
+                    else {
+                        m = i;
+                    }
+                    ++count;
+                }
+                if (m) {
+                    return *m / count;
+                }
+                else {
+                    Execution::DoThrow (Execution::StringException (L"Cannot take Mean() on empty list"));
+                }
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();

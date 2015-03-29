@@ -628,6 +628,25 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Max () == 6);
+                 *
+                 *  Throws (docuemnt what) exception if list is empty.
+                 *
+                 *  AKA "Average"
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/bb548647(v=vs.100).aspx
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE Mean () const;
+
+            public:
+                /**
                  * \brief STL-ish alias for IsEmpty()
                  */
                 nonvirtual  bool    empty () const;
