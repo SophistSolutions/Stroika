@@ -22,8 +22,12 @@
  *
  *  TODO:
  *
- *      @todo   max should take lamnda that folds in the select
- *              distinat and take lambda
+ *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
+ *              into account (by default) their comparers... Eg. Set<> should overload Distinct to do nothing by
+ *              default.
+ *
+ *      @todo   max should take lambda that folds in the select,
+ *              and Distinct and take lambda
  *
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
  *              original source, and which force a pull (like where doesnt but max does).
@@ -32,9 +36,7 @@
  *              First/Last (have them throw),
  *              FirstValue/LastValue() - ahve them do default. DOCUMENT how this differences from
  *              LINQ versions.
- *
- *              Do GroupBy, and Select/Projections (-> tuples and maybe other structs).
- *              Add Distinct() method too!
+ *              Do GroupBy.
  *
  *      @todo   Add more 'linq' overloads, taking differnt kinds of compare functions, and field selectors.
  *
@@ -570,14 +572,14 @@ namespace   Stroika {
                  *  EXPERIMENTAL
                  *  BASED ON Microsoft .net Linq.
                  *
-                 *  This returns an Iterable<T> &&&&@todo
+                 *  This returns an Iterable<T> that contains just the subset of the items which are distinct (equality comparer)
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      xxxVerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
-                 &&&
-                 @todo need overloads taking lambda that projects
-                 &&&& for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
+                 *      Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
+                 *      VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
+                 *
+                 *  @todo need overloads taking lambda that projects
+                 *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
                  */
                 nonvirtual  Iterable<T> Distinct () const;
                 template    <typename RESULT>
