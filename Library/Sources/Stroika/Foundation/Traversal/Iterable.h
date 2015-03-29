@@ -22,6 +22,9 @@
  *
  *  TODO:
  *
+ *      @todo   max should take lamnda that folds in the select
+ *              distinat and take lambda
+ *
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
  *              original source, and which force a pull (like where doesnt but max does).
  *
@@ -561,6 +564,24 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  This returns an Iterable<T> &&&&@todo
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      xxxVerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
+                 &&&
+                 @todo need overloads taking lambda that projects
+                 &&&& for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
+                 */
+                nonvirtual  Iterable<T> Distinct () const;
+                template    <typename RESULT>
+                nonvirtual  Iterable<RESULT> Distinct (const function<RESULT(T)>& extractElt) const;
 
             public:
                 /**

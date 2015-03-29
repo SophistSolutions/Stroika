@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <set>
+
 #include    "../Debug/Assertions.h"
 
 #include    "Generator.h"
@@ -301,6 +303,47 @@ namespace   Stroika {
                 };
                 return CreateGenerator (getNext);
             }
+
+            template    <typename T>
+            Iterable<T>     Iterable<T>::Distinct () const
+            {
+                using   Memory::Optional;
+                set<T>   t1 (begin (), end ());     // Somewhat simplistic/stupid/weak implementation
+                vector<T>   tmp (t1.begin (), t1.end ());
+                size_t idx { 0 };
+                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Optional<T> {
+                    if (idx < tmp.size ())
+                    {
+                        return tmp[idx++];
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
+            template    <typename RESULT>
+            Iterable<RESULT>     Iterable<T>::Distinct (const function<RESULT(T)>& extractElt) const
+            {
+                using   Memory::Optional;
+                set<RESULT>   t1;
+                for (T i : *this) {
+                    t1.add (extractElt (i));
+                }
+                vector<RESULT>  tmp (t1.begin (), t1.end ());
+                size_t idx { 0 };
+                function<Optional<RESULT>()> getNext = [tmp, idx] () mutable -> Optional<RESULT> {
+                    if (idx < tmp.size ())
+                    {
+                        return tmp[idx++];
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
+            }
             template    <typename T>
             template    <typename   T1, typename RESULT>
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1) const
@@ -389,7 +432,7 @@ namespace   Stroika {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
                 sort (tmp.begin (), tmp.end (), compare);
                 size_t idx { 0 };
-                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Memory::Optional<T> {
+                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Optional<T> {
                     if (idx < tmp.size ())
                     {
                         return tmp[idx++];

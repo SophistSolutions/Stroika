@@ -740,6 +740,10 @@ namespace {
             }
         }
         {
+            Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
+            VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
+        }
+        {
             Iterable<pair<int, char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
             VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
         }
