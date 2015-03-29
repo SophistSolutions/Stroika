@@ -22,8 +22,19 @@
  *
  *  TODO:
  *
- *      @todo   https://code.msdn.microsoft.com/101-LINQ-Samples-3fb9811b
- *              Add stuff like Aggregate functions, etc... Set Project/etc...
+ *      @todo  Add more Linq-like functions, at least including:
+ *              First/Last (have them throw),
+ *              FirstValue/LastValue() - ahve them do default. DOCUMENT how this differences from
+ *              LINQ versions.
+ *
+ *              Do GroupBy, and Select/Projections (-> tuples and maybe other structs).
+ *              Add Distinct() method too!
+ *
+ *      @todo   Add more 'linq' overloads, taking differnt kinds of compare functions, and field selectors.
+ *
+ *      @todo   Consider having Linq-like functions do DELAYED EVALUATION, so the computation only
+ *              happens when you iterate. Maybe to some degree this already happens, but could do
+ *              more (as MSFT does).
  *
  *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
  *              default parameter?
@@ -648,7 +659,6 @@ namespace   Stroika {
             public:
                 /**
                  *  EXPERIMENTAL
-                 *  BASED ON Microsoft .net Linq.
                  *
                  *  EXAMPLE:
                  *      Iterable<int> c { 1, 2, 9, 4, 5, 3 };
@@ -661,18 +671,18 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \brief STL-ish alias for IsEmpty()
-                 */
-                nonvirtual  bool    empty () const;
-
-            public:
-                /**
                  * \brief not empty () - synonym for .net Any() Linq method.
                  *
                  *  Second overload (with filter function) same as .Where(filter).Any ();
                  */
                 nonvirtual  bool    Any () const;
                 nonvirtual  bool    Any (const function<bool(T)>& includeIfTrue) const;
+
+            public:
+                /**
+                 * \brief STL-ish alias for IsEmpty()
+                 */
+                nonvirtual  bool    empty () const;
 
             public:
                 /**
