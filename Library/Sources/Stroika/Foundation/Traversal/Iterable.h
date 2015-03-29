@@ -201,8 +201,14 @@ namespace   Stroika {
              *          a queeryly specific problem. I cannot see any patterns where one would want to do this.
              *
              *  *Design Note* - Microsoft Linq:
-             *      This API implements some of the Microsoft Linq API. For example, we implement
+             *      This API implements some of the Microsoft Linq API.
+             *          https://msdn.microsoft.com/en-us/library/system.linq.enumerable_methods(v=vs.100).aspx
+             *
+             *      For example, we implement:
              *          o   Where
+             *          o   Take
+             *          o   Skip
+             *
              *      We choose explicitly not to implement
              *          o   First() - because based on seeing it used quite a bit in .net code, it appears
              *              to encourage buggy usage? - Crash? - maybe add Assert, and throw overloads?/variants.
@@ -527,6 +533,43 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Sequence<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  This returns an Iterable<T> with a subset of data after skipping the argument number of items.
+                 *  If the number of items skipped is greater or equal to the length of the original Iterable, then
+                 *  an empty Iterable is returned.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+                 *      VerifyTestResult (c.Skip (3).ExactEquals (Sequence<int> { 4, 5, 6 }));
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *      @Take
+                 */
+                nonvirtual  Iterable<T> Skip (size_t nItems) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  This returns an Iterable<T> with up to nItems taken from the front of this starting iterable. If this Iterable
+                 *  is shorter, Take () returns just the original Iterable
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+                 *      VerifyTestResult (c.Take (3).ExactEquals (Sequence<int> { 1, 2, 3 }));
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *      @Skip
+                 */
+                nonvirtual  Iterable<T> Take (size_t nItems) const;
 
             public:
                 /**

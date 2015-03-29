@@ -746,6 +746,16 @@ namespace {
             VerifyTestResult (c.Any ([] (int i) { return i % 2 == 0; }));
             VerifyTestResult (not c.Any ([] (int i) { return i > 7; }));
         }
+        {
+            using Containers::Sequence;
+            Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+            VerifyTestResult (c.Skip (3).ExactEquals (Sequence<int> { 4, 5, 6 }));
+        }
+        {
+            using Containers::Sequence;
+            Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
+            VerifyTestResult (c.Take (3).ExactEquals (Sequence<int> { 1, 2, 3 }));
+        }
     }
 }
 

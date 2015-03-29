@@ -279,6 +279,54 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
+            Iterable<T> Iterable<T>::Skip (size_t nItems) const
+            {
+                using   Memory::Optional;
+                size_t  nItemsToSkip = nItems;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<T>()> getNext = [tmpIt, nItemsToSkip] () mutable -> Memory::Optional<T> {
+                    while (tmpIt and nItemsToSkip > 0)
+                    {
+                        nItemsToSkip--;
+                        ++tmpIt;
+                    }
+                    if (tmpIt)
+                    {
+                        T result = *tmpIt;
+                        ++tmpIt;
+                        return result;
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
+            Iterable<T> Iterable<T>::Take (size_t nItems) const
+            {
+                using   Memory::Optional;
+                size_t  nItemsToTake = nItems;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<T>()> getNext = [tmpIt, nItemsToTake] () mutable -> Memory::Optional<T> {
+                    if (nItemsToTake == 0)
+                    {
+                        return Optional<T> ();
+                    }
+                    nItemsToTake--;
+                    if (tmpIt)
+                    {
+                        T result = *tmpIt;
+                        ++tmpIt;
+                        return result;
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();
