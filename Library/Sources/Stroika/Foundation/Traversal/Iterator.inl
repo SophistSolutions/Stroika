@@ -123,18 +123,21 @@ namespace   Stroika {
                 return fCurrent_.peek ();
             }
             template    <typename T, typename BASE_STD_ITERATOR>
-            inline   void   Iterator<T, BASE_STD_ITERATOR>::operator++ ()
+            inline   Iterator<T>&   Iterator<T, BASE_STD_ITERATOR>::operator++ ()
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
                 fIterator_->More (&fCurrent_, true);
+                return *this;
             }
             template    <typename T, typename BASE_STD_ITERATOR>
-            inline   void   Iterator<T, BASE_STD_ITERATOR>::operator++ (int)
+            inline   Iterator<T>   Iterator<T, BASE_STD_ITERATOR>::operator++ (int)
             {
                 RequireNotNull (fIterator_);
                 Require (not Done ());
+                Iterator<T> tmp = *this;
                 fIterator_->More (&fCurrent_, true);
+                return tmp;
             }
             template    <typename T, typename BASE_STD_ITERATOR>
             inline   Iterator<T, BASE_STD_ITERATOR>   Iterator<T, BASE_STD_ITERATOR>::operator+ (int i) const

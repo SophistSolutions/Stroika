@@ -346,6 +346,8 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
+                 *      preincrement
+                 *
                  *      Advance iterator; support for range-based-for, and STL style iteration in
                  *      general (containers must also support begin, end).
                  *
@@ -360,10 +362,12 @@ namespace   Stroika {
                  *  when this method is called. Its legal to update the underlying container, but those
                  *  values won't be seen until the next iteration.
                  */
-                nonvirtual  void    operator++ ();
+                nonvirtual  Iterator<T>&    operator++ ();
 
                 /**
                  *  \brief
+                 *      postincrement
+                 *
                  *      Advance iterator; support for range-based-for, and STL style iteration in general
                  *      (containers must also support begin, end).
                  *
@@ -371,7 +375,7 @@ namespace   Stroika {
                  *
                  *  @see operator++()
                  */
-                nonvirtual  void    operator++ (int);
+                nonvirtual  Iterator<T>     operator++ (int);
 
             public:
                 /*
