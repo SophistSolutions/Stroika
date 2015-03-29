@@ -765,8 +765,10 @@ namespace {
             VerifyTestResult (c.Max () == 6);
         }
         {
-            Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-            VerifyTestResult (c.Mean () == 4);
+            using   Math::NearlyEquals;
+            Iterable<int> c { 1, 2, 9, 4, 5, 3 };
+            VerifyTestResult (c.Median () == 3);
+            VerifyTestResult (NearlyEquals (c.Median<double> (), 3.5));
         }
     }
 }

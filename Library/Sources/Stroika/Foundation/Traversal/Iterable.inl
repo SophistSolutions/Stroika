@@ -415,6 +415,23 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
+            template    <typename   RESULT_TYPE>
+            RESULT_TYPE   Iterable<T>::Median () const
+            {
+                vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
+                sort (tmp.begin (), tmp.end ());
+                size_t  sz { tmp.size () };
+                if (sz == 0) {
+                    Execution::DoThrow (Execution::StringException (L"Cannot take Median () on empty list"));
+                }
+                if ((sz % 2) == 0) {
+                    return (static_cast<RESULT_TYPE> (tmp[sz / 2])  + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
+                }
+                else {
+                    return tmp[sz / 2];
+                }
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();

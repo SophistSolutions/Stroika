@@ -632,8 +632,8 @@ namespace   Stroika {
                  *  BASED ON Microsoft .net Linq.
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Max () == 6);
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+                 *      VerifyTestResult (c.Mean () == 4);
                  *
                  *  Throws (docuemnt what) exception if list is empty.
                  *
@@ -644,6 +644,20 @@ namespace   Stroika {
                  */
                 template    <typename   RESULT_TYPE = T>
                 nonvirtual  RESULT_TYPE Mean () const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { 1, 2, 9, 4, 5, 3 };
+                 *      VerifyTestResult (NearlyEquals (c.Median (), 3.5));
+                 *
+                 *  Throws (docuemnt what) exception if list is empty.
+                 */
+                template    <typename   RESULT_TYPE = T>
+                nonvirtual  RESULT_TYPE Median () const;
 
             public:
                 /**
