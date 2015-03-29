@@ -311,6 +311,24 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
+            Iterable<T> Iterable<T>::OrderBy (const function<bool(T, T)>& compare) const
+            {
+                using   Memory::Optional;
+                vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
+                sort (tmp.begin (), tmp.end (), compare);
+                size_t idx { 0 };
+                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Memory::Optional<T> {
+                    if (idx < tmp.size ())
+                    {
+                        return tmp[idx++];
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();

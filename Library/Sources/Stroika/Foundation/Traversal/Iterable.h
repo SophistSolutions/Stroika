@@ -208,12 +208,12 @@ namespace   Stroika {
              *          o   Where
              *          o   Take
              *          o   Skip
+             *          o   OrderBy
              *
              *      We choose explicitly not to implement
              *          o   First() - because based on seeing it used quite a bit in .net code, it appears
              *              to encourage buggy usage? - Crash? - maybe add Assert, and throw overloads?/variants.
              *          o   Last() - same as First ()
-             *          o   OrderBy (function<bool(T,T)> isLess) - NYI - @todo
              *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
@@ -570,6 +570,21 @@ namespace   Stroika {
                  *      @Skip
                  */
                 nonvirtual  Iterable<T> Take (size_t nItems) const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  @todo FOR NOW VERY LIMITED API. Linq has params to let you select just the KEY to use in compare. Could add overloads
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { Sequence<int> {{3, 5, 9, 38, 3, 5 }}};
+                 *      VerifyTestResult (c.OrderBy ().ExactEquals (Sequence<int> { 3, 3, 5, 5, 9, 38 }));
+                 *
+                 *  See:
+                 */
+                nonvirtual  Iterable<T> OrderBy (const function<bool(T, T)>& compare = [] (T lhs, T rhs) { return lhs < rhs; }) const;
 
             public:
                 /**
