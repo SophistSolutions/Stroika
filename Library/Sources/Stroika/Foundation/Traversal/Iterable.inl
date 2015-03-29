@@ -290,15 +290,7 @@ namespace   Stroika {
                         nItemsToSkip--;
                         ++tmpIt;
                     }
-                    if (tmpIt)
-                    {
-                        T result = *tmpIt;
-                        ++tmpIt;
-                        return result;
-                    }
-                    else {
-                        return Optional<T> ();
-                    }
+                    return tmpIt ?* tmpIt++ : Optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
@@ -314,15 +306,7 @@ namespace   Stroika {
                         return Optional<T> ();
                     }
                     nItemsToTake--;
-                    if (tmpIt)
-                    {
-                        T result = *tmpIt;
-                        ++tmpIt;
-                        return result;
-                    }
-                    else {
-                        return Optional<T> ();
-                    }
+                    return tmpIt ?* tmpIt++ : Optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
