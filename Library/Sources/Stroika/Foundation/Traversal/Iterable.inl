@@ -352,6 +352,46 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
+            T   Iterable<T>::Min () const
+            {
+                using   Memory::Optional;
+                Optional<T> m;
+                for (T i : *this) {
+                    if (m) {
+                        m = min (i, *m);
+                    }
+                    else {
+                        m = i;
+                    }
+                }
+                if (m) {
+                    return *m;
+                }
+                else {
+                    Execution::DoThrow (Execution::StringException (L"Cannot take Min() on empty list"));
+                }
+            }
+            template    <typename T>
+            T   Iterable<T>::Max () const
+            {
+                using   Memory::Optional;
+                Optional<T> m;
+                for (T i : *this) {
+                    if (m) {
+                        m = max (i, *m);
+                    }
+                    else {
+                        m = i;
+                    }
+                }
+                if (m) {
+                    return *m;
+                }
+                else {
+                    Execution::DoThrow (Execution::StringException (L"Cannot take Max() on empty list"));
+                }
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();

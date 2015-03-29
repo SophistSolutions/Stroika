@@ -756,6 +756,14 @@ namespace {
             Iterable<int> c { 3, 5, 9, 38, 3, 5  };
             VerifyTestResult (c.OrderBy ().ExactEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
         }
+        {
+            Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+            VerifyTestResult (c.Min () == 1);
+        }
+        {
+            Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+            VerifyTestResult (c.Max () == 6);
+        }
     }
 }
 

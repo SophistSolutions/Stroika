@@ -594,6 +594,40 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Min () == 1);
+                 *
+                 *  Throws (docuemnt what) exception if list is empty.
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *      @Max
+                 */
+                nonvirtual  T Min () const;
+
+            public:
+                /**
+                 *  EXPERIMENTAL
+                 *  BASED ON Microsoft .net Linq.
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Max () == 6);
+                 *
+                 *  Throws (docuemnt what) exception if list is empty.
+                 *
+                 *  See:
+                 *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *      @Min
+                 */
+                nonvirtual  T Max () const;
+
+            public:
+                /**
                  * \brief STL-ish alias for IsEmpty()
                  */
                 nonvirtual  bool    empty () const;
