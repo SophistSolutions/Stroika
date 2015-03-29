@@ -22,6 +22,11 @@
  *
  *  TODO:
  *
+ *      @todo   Consider if we should use range_error, some other error, or assertion errors for invalid use
+ *              cases of Mean/Median, etc.
+ *
+ *              Probably do variants (default one asserts, and rest are OrDefault or OrException).
+ *
  *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
  *              into account (by default) their comparers... Eg. Set<> should overload Distinct to do nothing by
  *              default.
@@ -721,7 +726,7 @@ namespace   Stroika {
                  *  Throws (docuemnt what) exception if list is empty.
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE Median () const;
+                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
             public:
                 /**

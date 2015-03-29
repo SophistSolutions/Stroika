@@ -508,10 +508,10 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename   RESULT_TYPE>
-            RESULT_TYPE   Iterable<T>::Median () const
+            RESULT_TYPE   Iterable<T>::Median (const function<bool(T, T)>& compare) const
             {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
-                sort (tmp.begin (), tmp.end ());
+                sort (tmp.begin (), tmp.end (), compare);
                 size_t  sz { tmp.size () };
                 if (sz == 0) {
                     throw range_error ("Cannot take Median () on empty list");
