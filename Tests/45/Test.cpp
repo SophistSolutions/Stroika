@@ -731,13 +731,17 @@ namespace {
     void    Test16_LinqLikeFunctions_ ()
     {
         {
-            Iterable<int> c { { 1, 2, 3, 4, 5, 6 } };
+            Iterable<int> c { 1, 2, 3, 4, 5, 6 };
             VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Iterable<int> { 2, 4, 6 }));
             {
                 Iterable<int>   w = c.Where ([] (int i) { return i % 2 == 0; });
                 VerifyTestResult (w.ExactEquals (Iterable<int> { 2, 4, 6 }));
                 VerifyTestResult (w.ExactEquals (Iterable<int> { 2, 4, 6 }));
             }
+        }
+        {
+            Iterable<pair<int, char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
+            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).ExactEquals (Iterable<int> { 1, 2, 3 }));
         }
         {
             Iterable<int> c = { 1, 2, 3, 4, 5, 6 };

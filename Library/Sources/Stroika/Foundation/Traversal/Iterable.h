@@ -22,7 +22,10 @@
  *
  *  TODO:
  *
- *      @todo  Add more Linq-like functions, at least including:
+ *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
+ *              original source, and which force a pull (like where doesnt but max does).
+ *
+ *      @todo   Add more Linq-like functions, at least including:
  *              First/Last (have them throw),
  *              FirstValue/LastValue() - ahve them do default. DOCUMENT how this differences from
  *              LINQ versions.
@@ -290,6 +293,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @todo replace Iterable (const initializer_list<T>& from) CTOR with soemthing like
+
+                        template    <template CONTAINER <typename T>, typename ENABLE_IF = enable_if<hasBeginEndConcept>
+                        Iterable (const CONTAINER<T>& from);
+                 */
+
+            public:
+                /**
                  *  \brief  move CTOR - clears source
                  */
                 explicit Iterable (Iterable<T>&& from) noexcept;
@@ -550,6 +561,26 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Iterable<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
+
+            public:
+                /**
+                 *  \brief  Compute a projection of the given type T to some argument set of subtypes, and apply that projection
+                 *          to the entire iterable, creating a new iterable.
+                 *
+                 *  EXPERIMENTAL
+                 *
+                 *  EXAMPLE:
+                 *      Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
+                 *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).ExactEquals (Iterable<int> { 1, 2, 3 }));
+                 *
+                 *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
+                 */
+                template    <typename   T1, typename RESULT = T1>
+                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1) const;
+                template    <typename   T1, typename   T2, typename RESULT = pair<T1, T2>>
+                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const;
+                template    <typename   T1, typename   T2, typename   T3, typename RESULT = tuple<T1, T2, T3>>
+                nonvirtual  Iterable<RESULT>    Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2, const function<T3(const T&)>& extract3) const;
 
             public:
                 /**

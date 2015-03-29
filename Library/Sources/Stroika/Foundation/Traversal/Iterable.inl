@@ -284,7 +284,7 @@ namespace   Stroika {
                 return li == le and ri == re;
             }
             template    <typename T>
-            Iterable<T> Iterable<T>::Where (const function<bool(T)>& includeIfTrue) const
+            Iterable<T>     Iterable<T>::Where (const function<bool(T)>& includeIfTrue) const
             {
                 using   Memory::Optional;
                 Iterator<T> tmpIt { this->MakeIterator () };
@@ -298,6 +298,55 @@ namespace   Stroika {
                         ++tmpIt;
                     }
                     return tmpIt ?* tmpIt : Optional<T> ();
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
+            template    <typename   T1, typename RESULT>
+            Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1) const
+            {
+                using   Memory::Optional;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<RESULT>()> getNext = [tmpIt, extract1] () mutable -> Memory::Optional<RESULT> {
+                    if (tmpIt)
+                    {
+                        return RESULT (extract1 (*tmpIt++));
+                    }
+                    return Optional<RESULT> ();
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
+            template    <typename   T1, typename   T2, typename RESULT>
+            Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const
+            {
+                using   Memory::Optional;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<RESULT>()> getNext = [tmpIt, extract1, extract2] () mutable -> Memory::Optional<RESULT> {
+                    if (tmpIt)
+                    {
+                        RESULT result { extract1 (*tmpIt), extract2 (*tmpIt) };
+                        tmpIt++;
+                        return result;
+                    }
+                    return Optional<RESULT> ();
+                };
+                return CreateGenerator (getNext);
+            }
+            template    <typename T>
+            template    <typename   T1, typename   T2, typename   T3, typename RESULT>
+            Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2, const function<T3(const T&)>& extract3) const
+            {
+                using   Memory::Optional;
+                Iterator<T> tmpIt { this->MakeIterator () };
+                function<Optional<RESULT>()> getNext = [tmpIt, extract1, extract2, extract3] () mutable -> Memory::Optional<RESULT> {
+                    if (tmpIt)
+                    {
+                        RESULT result { extract1 (*tmpIt), extract2 (*tmpIt), extract3 (*tmpIt) };
+                        tmpIt++;
+                        return result;
+                    }
+                    return Optional<RESULT> ();
                 };
                 return CreateGenerator (getNext);
             }
