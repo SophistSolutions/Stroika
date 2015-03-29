@@ -115,6 +115,12 @@ namespace   Stroika {
 #endif
             }
             template    <typename T>
+            Iterable<T>::Iterable (const initializer_list<T>& from)
+                :
+                _fRep (mk_(from)._fRep)
+            {
+            }
+            template    <typename T>
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
 :
             _fRep (std::move (rep))
@@ -142,6 +148,23 @@ namespace   Stroika {
             inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
             {
                 return rep.Clone (forIterableEnvelope);
+            }
+            template    <typename T>
+            Iterable<T> Iterable<T>::mk_ (const initializer_list<T>& from)
+            {
+                using   Memory::Optional;
+                vector<T>   tmp (from.begin (), from.end ());     // Somewhat simplistic / inefficient implementation
+                size_t idx { 0 };
+                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Memory::Optional<T> {
+                    if (idx < tmp.size ())
+                    {
+                        return tmp[idx++];
+                    }
+                    else {
+                        return Optional<T> ();
+                    }
+                };
+                return CreateGenerator (getNext);
             }
             template    <typename T>
             inline  Memory::SharedByValue_State     Iterable<T>::_GetSharingState () const

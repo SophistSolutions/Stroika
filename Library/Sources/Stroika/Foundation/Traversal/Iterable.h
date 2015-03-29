@@ -273,6 +273,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Make a copy of the given argument, and treat it as an iterable.
+                 */
+                Iterable (const initializer_list<T>& from);
+
+            public:
+                /**
                  *  \brief  move CTOR - clears source
                  */
                 explicit Iterable (Iterable<T>&& from) noexcept;
@@ -529,8 +535,8 @@ namespace   Stroika {
                  *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
-                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Sequence<int> { 2, 4, 6 }));
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Iterable<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
 
@@ -544,8 +550,8 @@ namespace   Stroika {
                  *  an empty Iterable is returned.
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
-                 *      VerifyTestResult (c.Skip (3).ExactEquals (Sequence<int> { 4, 5, 6 }));
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Skip (3).ExactEquals (Iterable<int> { 4, 5, 6 }));
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -562,8 +568,8 @@ namespace   Stroika {
                  *  is shorter, Take () returns just the original Iterable
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { Sequence<int> {{1, 2, 3, 4, 5, 6 }}};
-                 *      VerifyTestResult (c.Take (3).ExactEquals (Sequence<int> { 1, 2, 3 }));
+                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *      VerifyTestResult (c.Take (3).ExactEquals (Iterable<int> { 1, 2, 3 }));
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -579,8 +585,8 @@ namespace   Stroika {
                  *  @todo FOR NOW VERY LIMITED API. Linq has params to let you select just the KEY to use in compare. Could add overloads
                  *
                  *  EXAMPLE:
-                 *      Iterable<int> c { Sequence<int> {{3, 5, 9, 38, 3, 5 }}};
-                 *      VerifyTestResult (c.OrderBy ().ExactEquals (Sequence<int> { 3, 3, 5, 5, 9, 38 }));
+                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *      VerifyTestResult (c.OrderBy ().ExactEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
                  *
                  *  See:
                  */
@@ -647,6 +653,9 @@ namespace   Stroika {
 
             private:
                 static  _SharedPtrIRep  Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
+
+            private:
+                static  Iterable<T> mk_ (const initializer_list<T>& from);
 
             protected:
                 /**
