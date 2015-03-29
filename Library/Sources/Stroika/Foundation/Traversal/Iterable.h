@@ -199,7 +199,7 @@ namespace   Stroika {
              *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
              *      their values were the same.
              *
-             *      ((REVISION - 2013-12-21 - SEE NEW SetEquals/MultiSetEquals/ExactEquals methods below)
+             *      ((REVISION - 2013-12-21 - SEE NEW SetEquals/MultiSetEquals/SequnceEquals methods below)
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,
@@ -412,14 +412,14 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  ExactEquals () - very measures if iteration over the two containers produces identical sequences
+                 *  SequnceEquals () - very measures if iteration over the two containers produces identical sequences
                  *  of elements (identical by compare with EQUALS_COMPARER).
                  *
                  *  \em Performance:
                  *      This algorithm is O(N)
                  */
                 template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    ExactEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                nonvirtual  bool    SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**
@@ -558,7 +558,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Iterable<int> { 2, 4, 6 }));
+                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
 
@@ -571,7 +571,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-                 *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).ExactEquals (Iterable<int> { 1, 2, 3 }));
+                 *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
                  */
@@ -593,7 +593,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Skip (3).ExactEquals (Iterable<int> { 4, 5, 6 }));
+                 *      VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -611,7 +611,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Take (3).ExactEquals (Iterable<int> { 1, 2, 3 }));
+                 *      VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *
                  *  See:
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -628,7 +628,7 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-                 *      VerifyTestResult (c.OrderBy ().ExactEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+                 *      VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
                  *
                  *  See:
                  */

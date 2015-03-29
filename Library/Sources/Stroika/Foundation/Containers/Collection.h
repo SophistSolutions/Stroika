@@ -91,7 +91,7 @@ namespace   Stroika {
              *          We do not provide a notion of Equals() or operator==, operator!=, because
              *          its not clear how to compare collections.
              *
-             *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or ExactEquals()
+             *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequnceEquals()
              *          as appropriate.
              */
             template    <typename T>

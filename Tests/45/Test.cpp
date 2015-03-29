@@ -732,16 +732,16 @@ namespace {
     {
         {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).ExactEquals (Iterable<int> { 2, 4, 6 }));
+            VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
             {
                 Iterable<int>   w = c.Where ([] (int i) { return i % 2 == 0; });
-                VerifyTestResult (w.ExactEquals (Iterable<int> { 2, 4, 6 }));
-                VerifyTestResult (w.ExactEquals (Iterable<int> { 2, 4, 6 }));
+                VerifyTestResult (w.SequnceEquals (Iterable<int> { 2, 4, 6 }));
+                VerifyTestResult (w.SequnceEquals (Iterable<int> { 2, 4, 6 }));
             }
         }
         {
             Iterable<pair<int, char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).ExactEquals (Iterable<int> { 1, 2, 3 }));
+            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
         }
         {
             Iterable<int> c = { 1, 2, 3, 4, 5, 6 };
@@ -750,15 +750,15 @@ namespace {
         }
         {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-            VerifyTestResult (c.Skip (3).ExactEquals (Iterable<int> { 4, 5, 6 }));
+            VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
         }
         {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-            VerifyTestResult (c.Take (3).ExactEquals (Iterable<int> { 1, 2, 3 }));
+            VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
         }
         {
             Iterable<int> c { 3, 5, 9, 38, 3, 5  };
-            VerifyTestResult (c.OrderBy ().ExactEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+            VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
         }
         {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };

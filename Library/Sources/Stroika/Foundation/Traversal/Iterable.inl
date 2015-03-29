@@ -269,7 +269,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-            bool    Iterable<T>::ExactEquals (const RHS_CONTAINER_TYPE& rhs) const
+            bool    Iterable<T>::SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const
             {
                 Iterator<T> li  { MakeIterator () };
                 Iterator<T> le  { end () };
