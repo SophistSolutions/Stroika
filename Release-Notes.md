@@ -17,9 +17,24 @@ History
     
 
 
+
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a88">v2.0a88x</a><br/>2015-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a88">v2.0a89x</a><br/>2015-04-??</td>
+<td>
+<ul>
+	<li>TODO</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+
+	
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a88">v2.0a88</a><br/>2015-03-30</td>
 <td>
 <ul>
 	<li>Cleanup Debug::AssertExternallySynchronizedLock and its use (empty base class optimization)</li>
