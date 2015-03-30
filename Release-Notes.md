@@ -22,7 +22,15 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a88">v2.0a88x</a><br/>2015-03-??</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Cleanup Debug::AssertExternallySynchronizedLock and its use (empty base class optimization)</li>
+	<li>Draft of MSFT LINQ style methods in Iterable<T> - enough to evaluate / test /consider</li>
+	<li>Fix some reporting of filenames with Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER</li>
+	<li>Minor ThreadPool cleanups</li>
+	<li>big revisions to SystemConfiguration::CPU code - to accomodate tracking per cor config info, model name, and reading /proc/cpuinfo on POSIX</li>
+	<li>renamed Iterable<>::ExactEquals to Iterable<>::SequenceEquals()</li>
+	<li>Draft ToString() function</li>
+	<li>new STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS to help define concepts - and simplify code</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever)</li>
 </ul>
 </td>
 </tr>
