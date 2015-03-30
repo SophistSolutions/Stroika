@@ -53,7 +53,7 @@ namespace   Stroika {
             inline  String  ToString (const T& t, typename enable_if < is_integral<T>::value>::type*)
             {
                 wchar_t buf[1024];
-                swprintf (buf, NElt (buf), L"%d", t);   //tmphack
+                swprintf (buf, NEltsOf (buf), L"%d", t);   //tmphack
                 return buf;
             }
             template    <typename T>
