@@ -716,7 +716,7 @@ namespace   Stroika {
                 nonvirtual  RESULT_TYPE Mean () const;
 
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-            public:
+            private:
                 inline  static  bool    DefaultCompareLessArg_ (const T& lhs, const T& rhs)               {       return lhs < rhs;       }
 #endif
 
