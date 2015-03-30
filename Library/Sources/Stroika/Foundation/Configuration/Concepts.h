@@ -66,16 +66,12 @@ namespace   Stroika {
             template <> struct substitution_succeeded<substitution_failure> : std::false_type {};
 
 
-            /*
-             *  BASED ON
-             *      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
+            /**
+             *  \brief  Define has_XXX (where you specify XXX) class which has a 'value' field saying
+             *          if the XXX property is present.
              *
-             *  But not in standard yet, and these not well documented. So go with definitions in
-             *      http://en.cppreference.com/w/cpp/concept/
-             *  for now
-             *
-             *  Starting to experiment...
-             *  But since I cannot do in a single simple statement/template, at least do this magic in a macro...
+             *  Since I cannot (so far figure out how to) do in a single simple statement/template,
+             *  at least do this magic in a macro...
              */
 #define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME,XTEST)\
     namespace Private_ {\
@@ -93,9 +89,6 @@ namespace   Stroika {
     struct  has_##NAME : integral_constant <bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> {};
 
 
-
-
-
             /*
              *  BASED ON
              *      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
@@ -106,60 +99,9 @@ namespace   Stroika {
              *
              *  Starting to experiment...
              */
-#if 1
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(eq, (x == x));
-#else
-            namespace Private_ {
-                template    <typename T>
-                struct  eq_result_impl {
-                    template    <typename X>
-                    static auto check(const X& x) -> decltype(x == x);
-                    static substitution_failure check(...);
-                    using type = decltype(check(declval<T>()));
-                };
-            }
-            template    <typename T>
-            using   eq_result = typename Private_::eq_result_impl<T>::type;
-            template    <typename T>
-            struct  has_eq : integral_constant <bool, not is_same<eq_result<T>, substitution_failure>::value> {};
-#endif
-
-#if 1
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(neq, (x != x));
-#else
-            namespace Private_ {
-                template    <typename T>
-                struct  neq_result_impl {
-                    template    <typename X>
-                    static auto check(const X& x) -> decltype(x != x);
-                    static substitution_failure check(...);
-                    using type = decltype(check(declval<T>()));
-                };
-            }
-            template    <typename T>
-            using   neq_result = typename Private_::neq_result_impl<T>::type;
-            template    <typename T>
-            struct  has_neq : integral_constant <bool, not is_same<neq_result<T>, substitution_failure>::value>   {};
-#endif
-
-
-#if 1
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(lt, (x < x));
-#else
-            namespace Private_ {
-                template    <typename T>
-                struct  lt_result_impl {
-                    template    <typename X>
-                    static auto check(const X& x) -> decltype(x < x);
-                    static substitution_failure check(...);
-                    using type = decltype(check(declval<T>()));
-                };
-            }
-            template    <typename T>
-            using   lt_result = typename Private_::lt_result_impl<T>::type;
-            template    <typename T>
-            struct  has_lt : integral_constant <bool, not is_same<lt_result<T>, substitution_failure>::value> {};
-#endif
 
 
             /**
@@ -180,7 +122,6 @@ namespace   Stroika {
             {
                 return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
             }
-
 
 
             /*
