@@ -30,7 +30,7 @@ namespace   Stroika {
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
 
-				template    <typename T>
+                template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
                     return t.ToString ();

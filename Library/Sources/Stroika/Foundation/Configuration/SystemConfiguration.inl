@@ -23,7 +23,7 @@ namespace   Stroika {
              */
             inline  unsigned int    SystemConfiguration::CPU::GetNumberOfLogicalCores () const
             {
-                return fCores.size ();
+                return static_cast<unsigned int> (fCores.size ());
             }
             inline  String    SystemConfiguration::CPU::GetCPUModelPrintName () const
             {
