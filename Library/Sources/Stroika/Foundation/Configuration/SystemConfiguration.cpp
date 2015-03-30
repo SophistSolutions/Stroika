@@ -70,7 +70,7 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
     for (auto i : fCores) {
         socketIds.Add (i.fSocketID);
     }
-    return socketIds.size ();
+    return static_cast<unsigned int> (socketIds.size ());
 }
 
 
