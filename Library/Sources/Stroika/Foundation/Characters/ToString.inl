@@ -36,6 +36,23 @@ namespace   Stroika {
 
 
 
+            namespace Private_ {
+                using   namespace   Configuration;
+                template    <typename T>
+                struct  beginenditerable_result_impl {
+                    template    <typename X>
+                    static auto check(const X& x) -> decltype(x.begin () != x.end ());
+                    static substitution_failure check(...);
+                    using type = decltype(check(declval<T>()));
+                };
+                template    <typename T>
+                using   beginenditerable_result = typename Private_::beginenditerable_result_impl<T>::type;
+                template    <typename T>
+                struct  has_beginenditerable : integral_constant <bool, not is_same<beginenditerable_result<T>, substitution_failure>::value> {};
+            }
+
+
+
             /*
              ********************************************************************************
              ********************************* ToString *************************************
@@ -47,6 +64,29 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<Private_::has_ToString<T>::value>::type* = 0)
                 {
                     return t.ToString ();
+                }
+
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<Private_::has_beginenditerable<T>::value and not is_convertible<T, String>::value>::type* = 0)
+                {
+                    StringBuilder sb;
+                    sb << L"{";
+                    bool didFirst { false };
+                    for (auto i : t) {
+                        if (didFirst) {
+                            sb << L", ";
+                        }
+                        else {
+                            sb << L" ";
+                        }
+                        sb << ToString (i);
+                        didFirst = true;
+                    }
+                    if (didFirst) {
+                        sb << L" ";
+                    }
+                    sb << L"}";
+                    return sb.str ();
                 }
 
                 template    <typename T>

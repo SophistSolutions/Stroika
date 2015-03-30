@@ -1329,11 +1329,15 @@ namespace {
     void    Test48_ToString_ ()
     {
         VerifyTestResult (ToString (3) == L"3");
-        VerifyTestResult (ToString (1.0) == L"1.0");
+        VerifyTestResult (ToString (1.0).StartsWith (L"1"));
         VerifyTestResult (ToString (L"abc") == L"abc");
         VerifyTestResult (ToString (String (L"abc")) == L"abc");
+        VerifyTestResult (ToString (initializer_list<int> { 3, 4, 5 }) == L"{ 3, 4, 5 }");
     }
 }
+
+
+
 
 
 
