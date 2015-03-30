@@ -22,6 +22,7 @@ namespace   Stroika {
 
 #if 1
             namespace Private_ {
+//              using namespace Stroika::Foundation::Configuration;
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
             }
 #else

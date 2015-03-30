@@ -79,19 +79,18 @@ namespace   Stroika {
              */
 #define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME,XTEST)\
     namespace Private_ {\
-        using   namespace Stroika::Foundation::Configuration;\
         template    <typename T>\
         struct  NAME##_result_impl {\
             template    <typename X>\
             static auto check(const X& x) -> decltype(XTEST);\
-            static substitution_failure check(...);\
+            static Stroika::Foundation::Configuration::substitution_failure check(...);\
             using type = decltype(check(declval<T>()));\
         };\
     }\
     template    <typename T>\
     using   NAME##_result = typename Private_::NAME##_result_impl<T>::type;\
     template    <typename T>\
-    struct  has_##NAME : integral_constant <bool, not is_same<NAME##_result<T>, substitution_failure>::value> {};
+    struct  has_##NAME : integral_constant <bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> {};
 
 
 
