@@ -26,6 +26,9 @@ namespace   Stroika {
              *  is not guarnateed, pretty, or parsable. This feature is generally for debugging purposes, but can be used
              *  to render/emit objects in any informal setting where you just need a rough sense of the object (again,
              *  the only case I can think of here would be for debugging).
+             *
+             *  \note *Implementation Note*
+             *      This implementation defaults to calling T().ToString ().
              */
             template    <typename T>
             String  ToString (const T& t);

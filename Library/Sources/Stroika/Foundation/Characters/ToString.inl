@@ -30,14 +30,16 @@ namespace   Stroika {
             }
 
 
-            // Predefined conversions
+            /*
+             *  Predefined conversions
+             */
+
             template    <>
             inline  String  ToString (const String& t)
             {
                 return t;
             }
 
-#if 0
             /*
              * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
              *      There are five standard signed integer types : signed char, short int, int,
@@ -48,21 +50,82 @@ namespace   Stroika {
              *      and unsigned long long int, each of which occupies the same amount of storage and has the
              *      same alignment requirements.
              */
-#endif
-            template    <typename T>
-            inline  String  ToString (const T& t, typename enable_if < is_integral<T>::value>::type*)
+            template    <>
+            inline  String  ToString (const signed char& t)
             {
                 wchar_t buf[1024];
-                swprintf (buf, NEltsOf (buf), L"%d", t);   //tmphack
+                swprintf (buf, NEltsOf (buf), L"%d", t);
                 return buf;
             }
+            template    <>
+            inline  String  ToString (const short int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"%d", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"%d", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const long int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"%ld", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const long long& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"%lld", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const unsigned char& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const unsigned short int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const unsigned int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const unsigned long int& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"0x%uld", t);
+                return buf;
+            }
+            template    <>
+            inline  String  ToString (const unsigned long long& t)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NEltsOf (buf), L"0x%ulld", t);
+                return buf;
+            }
+
             template    <typename T>
             inline  String  ToString (const T& t, typename enable_if < is_floating_point<T>::value>::type*)
             {
                 return Float2String (t);
             }
-
-
 
 
         }
