@@ -20,6 +20,11 @@ namespace   Stroika {
         namespace   Characters {
 
 
+#if 1
+            namespace Private_ {
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
+            }
+#else
             namespace Private_ {
                 using   namespace   Configuration;
                 template    <typename T>
@@ -34,9 +39,15 @@ namespace   Stroika {
                 template    <typename T>
                 struct  has_ToString : integral_constant <bool, not is_same<ToString_result<T>, substitution_failure>::value> {};
             }
+#endif
 
 
 
+#if 1
+            namespace Private_ {
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
+            }
+#else
             namespace Private_ {
                 using   namespace   Configuration;
                 template    <typename T>
@@ -51,6 +62,7 @@ namespace   Stroika {
                 template    <typename T>
                 struct  has_beginenditerable : integral_constant <bool, not is_same<beginenditerable_result<T>, substitution_failure>::value> {};
             }
+#endif
 
 
 
