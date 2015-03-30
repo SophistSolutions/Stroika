@@ -12,13 +12,14 @@ Objs	=	\
 	$(ObjDir)CodePage.o\
 	$(ObjDir)Float2String.o\
 	$(ObjDir)Format.o\
+	$(ObjDir)RegularExpression.o\
 	$(ObjDir)SDKChar.o\
 	$(ObjDir)SDKString.o\
 	$(ObjDir)String.o\
 	$(ObjDir)StringBuilder.o\
 	$(ObjDir)String2Float.o\
 	$(ObjDir)String2Int.o\
-	$(ObjDir)RegularExpression.o\
+	$(ObjDir)ToString.o\
 
 SubDirs	=	\
 	Concrete \
