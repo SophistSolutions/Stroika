@@ -20,53 +20,6 @@ namespace   Stroika {
         namespace   Characters {
 
 
-#if 1
-            namespace Private_ {
-//              using namespace Stroika::Foundation::Configuration;
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
-            }
-#else
-            namespace Private_ {
-                using   namespace   Configuration;
-                template    <typename T>
-                struct  ToString_result_impl {
-                    template    <typename X>
-                    static auto check(const X& x) -> decltype(x.ToString ());
-                    static substitution_failure check(...);
-                    using type = decltype(check(declval<T>()));
-                };
-                template    <typename T>
-                using   ToString_result = typename Private_::ToString_result_impl<T>::type;
-                template    <typename T>
-                struct  has_ToString : integral_constant <bool, not is_same<ToString_result<T>, substitution_failure>::value> {};
-            }
-#endif
-
-
-
-#if 1
-            namespace Private_ {
-                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
-            }
-#else
-            namespace Private_ {
-                using   namespace   Configuration;
-                template    <typename T>
-                struct  beginenditerable_result_impl {
-                    template    <typename X>
-                    static auto check(const X& x) -> decltype(x.begin () != x.end ());
-                    static substitution_failure check(...);
-                    using type = decltype(check(declval<T>()));
-                };
-                template    <typename T>
-                using   beginenditerable_result = typename Private_::beginenditerable_result_impl<T>::type;
-                template    <typename T>
-                struct  has_beginenditerable : integral_constant <bool, not is_same<beginenditerable_result<T>, substitution_failure>::value> {};
-            }
-#endif
-
-
-
             /*
              ********************************************************************************
              ********************************* ToString *************************************
@@ -74,14 +27,17 @@ namespace   Stroika {
              */
             namespace Private_ {
 
-                template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<Private_::has_ToString<T>::value>::type* = 0)
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
+
+				template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
                     return t.ToString ();
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<Private_::has_beginenditerable<T>::value and not is_convertible<T, String>::value>::type* = 0)
+                inline  String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not is_convertible<T, String>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
