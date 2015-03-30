@@ -29,6 +29,18 @@ namespace   Stroika {
              *
              *  \note *Implementation Note*
              *      This implementation defaults to calling T().ToString ().
+             *
+             *  Patterned after:
+             *      Java:
+             *          From the Object.toString() docs:
+             *          Returns a string representation of the object. In general, the toString method
+             *          returns a string that "textually represents" this object.
+             *      Javascript:
+             *          The toString() method returns a string representing object.
+             *          Every object has a toString() method that is automatically called when the object is
+             *          to be represented as a text value or when an object is referred to in a manner in which
+             *          a string is expected.
+             *
              */
             template    <typename T>
             String  ToString (const T& t);
