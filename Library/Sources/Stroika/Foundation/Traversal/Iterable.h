@@ -715,6 +715,11 @@ namespace   Stroika {
                 template    <typename   RESULT_TYPE = T>
                 nonvirtual  RESULT_TYPE Mean () const;
 
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+            public:
+                inline  static  bool    DefaultCompareLessArg_ (const T& lhs, const T& rhs)               {       return lhs < rhs;       }
+#endif
+
             public:
                 /**
                  *  EXPERIMENTAL
@@ -726,9 +731,14 @@ namespace   Stroika {
                  *  Throws (docuemnt what) exception if list is empty.
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
+                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare =
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+                                                    DefaultCompareLessArg_
+#else
+                                                    [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
+#endif
 #if     qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
-                                                , RESULT_TYPE ignored = {}
+                                                    , RESULT_TYPE ignored = {}
 #endif
                                                ) const;
 
