@@ -4,6 +4,9 @@
 #ifndef _Stroika_Foundation_Characters_ToString_inl_
 #define _Stroika_Foundation_Characters_ToString_inl_    1
 
+#include    <wchar.h>
+
+#include    "Float2String.h"
 
 /*
  ********************************************************************************
@@ -46,8 +49,20 @@ namespace   Stroika {
              *      same alignment requirements.
              */
 #endif
-            template    <>
-            String  ToString (const int& t);
+            template    <typename T>
+            inline  String  ToString (const T& t, typename enable_if < is_integral<T>::value>::type*)
+            {
+                wchar_t buf[1024];
+                swprintf (buf, NElt (buf), L"%d", t);   //tmphack
+                return buf;
+            }
+            template    <typename T>
+            inline  String  ToString (const T& t, typename enable_if < is_floating_point<T>::value>::type*)
+            {
+                return Float2String (t);
+            }
+
+
 
 
         }
