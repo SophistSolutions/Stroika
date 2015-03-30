@@ -19,6 +19,7 @@
 #include    "Stroika/Foundation/Characters/String_Constant.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/STL/Utilities.h"
@@ -1321,6 +1322,21 @@ namespace {
 }
 
 
+
+
+
+namespace {
+    void    Test48_ToString_ ()
+    {
+        VerifyTestResult (ToString (3) == L"3");
+        VerifyTestResult (ToString (1.0) == L"1.0");
+        VerifyTestResult (ToString (L"abc") == L"abc");
+        VerifyTestResult (ToString (String (L"abc")) == L"abc");
+    }
+}
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1366,6 +1382,7 @@ namespace   {
         Test45_Tokenize_ ();
         Test46_CompareLHSRHS_ ();
         Test47_SubString_ ();
+        Test48_ToString_ ();
     }
 }
 
