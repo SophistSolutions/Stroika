@@ -800,6 +800,18 @@ EXAMPLE:
 
 
 
+#ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#else
+#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        0
+#endif
+
+#endif
+
+
+
 
 
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy

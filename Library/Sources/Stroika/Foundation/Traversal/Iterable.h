@@ -726,7 +726,11 @@ namespace   Stroika {
                  *  Throws (docuemnt what) exception if list is empty.
                  */
                 template    <typename   RESULT_TYPE = T>
-                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+                nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare = [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
+#if     qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
+                                                , RESULT_TYPE ignored = {}
+#endif
+                                               ) const;
 
             public:
                 /**

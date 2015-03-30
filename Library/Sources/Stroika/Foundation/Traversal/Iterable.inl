@@ -508,7 +508,11 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename   RESULT_TYPE>
-            RESULT_TYPE   Iterable<T>::Median (const function<bool(T, T)>& compare) const
+            RESULT_TYPE   Iterable<T>::Median (const function<bool(T, T)>& compare
+#if     qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
+                                               , RESULT_TYPE ignored
+#endif
+                                              ) const
             {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
                 sort (tmp.begin (), tmp.end (), compare);
