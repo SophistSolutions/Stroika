@@ -8,6 +8,7 @@
 
 #include    "../Configuration/Concepts.h"
 #include    "Float2String.h"
+#include    "StringBuilder.h"
 
 /*
  ********************************************************************************
