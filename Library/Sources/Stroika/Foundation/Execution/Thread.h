@@ -66,10 +66,12 @@ namespace   Stroika {
             /**
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
-             *  Stroika threads add a number of useful features to std::threads:
+             *  Stroika threads add a number of very useful features to std::threads:
              *          o   Cancelation/Interuption/Aborting
              *          o   EINTR handling (POSIX only)
-             *          o   Copyability
+             *
+             *  as well as a couple modestly helpful features (that can be done other ways directly with std::thread):
+             *          o   Copyability (by reference - reference counted)
              *          o   Better lifetime management (the thread envelope - object you create - can go away, but
              *              the underlying thread can continue running, with its memory/resources being cleaned
              *              up autoamtically.
@@ -139,7 +141,7 @@ namespace   Stroika {
              *
              *  @todo   DOCUMENT IMPACT ON WaitableEvents, std::mutex, (etc), std::condition_variable, and AbortableEvent, etc.
              *
-             * HANDLE_EINTR_CALLER()
+             * Handle_ErrNoResultInteruption()
              *      The short of it is that you need to catch EINTR and restart the call for these system calls:
              *          o read, readv, write, writev, ioctl
              *          o open() when dealing with a fifo
@@ -155,8 +157,9 @@ namespace   Stroika {
              *          o close (although, on Linux, EINTR won't happen here)
              *          o any sleep functions (careful, you need to handle this are restart with
              *              different arguments)
+             *      This is integrated with Stroika's thread cancelation mechanism.
              *
-             *  @see HandleEINTR
+             *  @see Handle_ErrNoResultInteruption
              *
              *  @todo       To make STOP code more safe - and have Stop really throw AbortException
              *              - then associate a PROGRESS object with this REP, and
