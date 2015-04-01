@@ -15,8 +15,6 @@
 #include    "Function.h"
 #include    "Signals.h"
 
-#include    "IRunnable.h"
-
 
 
 /**
@@ -197,7 +195,6 @@ namespace   Stroika {
                  */
                 Thread ();
                 Thread (const Function<void()>& fun2CallOnce);
-                Thread (const IRunnablePtr& runnable);
                 template <typename FUNCTION>
                 Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 

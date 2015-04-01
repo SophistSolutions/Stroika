@@ -560,13 +560,6 @@ Thread::Thread (const Function<void()>& fun2CallOnce)
     Rep_::DoCreate (&fRep_);
 }
 
-DISABLE_COMPILER_MSC_WARNING_START(4996)
-Thread::Thread (const IRunnablePtr& runnable)
-    : Thread ([runnable] () { runnable->Run (); })
-{
-}
-DISABLE_COMPILER_MSC_WARNING_END(4996)
-
 void    Thread::SetThreadPriority (Priority priority)
 {
     RequireNotNull (fRep_);
