@@ -27,6 +27,8 @@
  *
  * TODO:
  *
+ *      @todo   Cleanup Min/Max stuff for enums in Date class and do EnumNames support for them.
+ *
  *      @todo   See if Year should maybe be based on uint16_t.
  *
  *      @todo   Maybe get rid of eFirstDayOfWeek/eLastDayOfWeek, and eFirstDayOfMonth/...
@@ -255,7 +257,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class ParseFormat : uint8_t {
+                enum  class     ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
