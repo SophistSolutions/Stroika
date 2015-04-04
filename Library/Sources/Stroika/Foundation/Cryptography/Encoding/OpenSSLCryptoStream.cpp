@@ -216,139 +216,139 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
     bool    enc = (direction == Direction::eEncrypt);
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_ECB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_OFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB1: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB8: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB128: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CBC: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_ECB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_OFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB1: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB8: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB128: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CBC: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_ECB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_OFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB1: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB8: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB128: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_CBC: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_bf_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_ECB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_bf_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_CFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_bf_cfb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_OFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_bf_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC2_CBC: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cbc (), NULL, NULL, NULL, enc);
                     ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
@@ -356,7 +356,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_ECB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ecb (), NULL, NULL, NULL, enc);
                     ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
@@ -364,7 +364,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_CFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cfb (), NULL, NULL, NULL, enc);
                     ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
@@ -372,7 +372,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_OFB: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ofb (), NULL, NULL, NULL, enc);
                     ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
@@ -380,7 +380,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC4: {
-                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
