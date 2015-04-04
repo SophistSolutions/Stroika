@@ -15,11 +15,11 @@
 
 
 /*
-@CONFIGVAR:     qHasLibrary_Xerces
+@CONFIGVAR:     qHasFeature_Xerces
 @DESCRIPTION:   <p>Stroika currently depends on Xerces to provide SAX-reader services./p>
 */
-#ifndef qHasLibrary_Xerces
-#error "qHasLibrary_Xerces should normally be defined indirectly by StroikaConfig.h"
+#ifndef qHasFeature_Xerces
+#error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 

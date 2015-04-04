@@ -27,8 +27,6 @@ my $forceWriteConfig	=	true;
 ########### CONFIG_Variables ###############
 my $PROJECTPLATFORMSUBDIR='';
 
-my $useThirdPartyXerces	=	true;
-
 my @useExtraCDefines;
 my @useExtraMakeDefines;
 
@@ -48,8 +46,8 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $ENABLE_OPENSSL = 0;
-my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
-#my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
+my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 1;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -78,8 +76,9 @@ sub	DoHelp_
         print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
         print("	    --libcurl {build-only|use|use-system|no}   /* enables/disables use of libcurl and build for the confguration being defined */\n");
-        print("	    --has-xerces                               /* enables openssl for the configuration being configured */\n");
-        print("	    --no-has-xerces                            /* disables openssl for the configuration being configured */\n");
+        print("	    --xerces {build-only|use|use-system|no}    /* enables/disables use of xerces and build for the confguration being defined */\n");
+        print("	    --has-xerces                               /* DEPRECATED --xerces use */\n");
+        print("	    --no-has-xerces                            /* DEPRECATED --xerces no */\n");
         print("	    --has-openssl                              /* enables openssl for the configuration being configured */\n");
         print("	    --no-has-openssl                           /* disables openssl for the configuration being configured */\n");
         print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
@@ -288,10 +287,12 @@ sub	ParseCommandLine_Remaining_
 			$ENABLE_WINHTTP = 0;
 		}
 		elsif ((lc ($var) eq "-has-xerces") or (lc ($var) eq "--has-xerces")) {
-			$useThirdPartyXerces = 1;
+			$FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+			print ("$var flag DEPRECATED - use --xerces\n");
 		}
 		elsif ((lc ($var) eq "-no-has-xerces") or (lc ($var) eq "--no-has-xerces")) {
-			$useThirdPartyXerces = 0;
+			$FEATUREFLAG_XERCES = $LIBFEATUREFLAG_No;
+			print ("$var flag DEPRECATED - use --xerces\n");
 		}
 		elsif ((lc ($var) eq "-has-zlib") or (lc ($var) eq "--has-zlib")) {
 			$ENABLE_ZLIB = 1;
@@ -364,7 +365,7 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
 	}
-    CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
+  	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
 
 sub	ParseCommandLine_
@@ -428,9 +429,9 @@ sub	WriteConfigFile_
 		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
 	}
 	
-	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");
-    print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
-    print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
+	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
+	print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
+	print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
 	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 

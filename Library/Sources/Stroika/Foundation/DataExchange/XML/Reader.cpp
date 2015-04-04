@@ -47,7 +47,7 @@ public:
     {
 
         // TODO - USE SAXREADER HERE!!!
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
         AssertNotImplemented ();
         return VariantValue ();
 #else

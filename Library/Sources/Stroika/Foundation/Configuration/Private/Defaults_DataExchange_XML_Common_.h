@@ -11,8 +11,8 @@
  */
 
 
-#ifndef qHasLibrary_Xerces
-#define qHasLibrary_Xerces  0
+#ifndef qHasFeature_Xerces
+#define qHasFeature_Xerces  0
 #endif
 
 

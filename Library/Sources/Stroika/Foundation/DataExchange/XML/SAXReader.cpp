@@ -19,7 +19,7 @@
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 #ifndef qUseMyXMLDBMemManager
 #define qUseMyXMLDBMemManager       qDebug
 //#define   qUseMyXMLDBMemManager       1
@@ -32,7 +32,7 @@
 #endif
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
 #define XML_LIBRARY 1
@@ -77,7 +77,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* t)
     {
@@ -99,7 +99,7 @@ namespace {
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 XERCES_CPP_NAMESPACE_USE
 #endif
 
@@ -138,7 +138,7 @@ namespace {
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace   {
     /*
      *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
@@ -215,7 +215,7 @@ namespace   {
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace   {
     DOMImplementation&  GetDOMIMPL_ ()
     {
@@ -232,7 +232,7 @@ namespace   {
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 class   MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
@@ -279,7 +279,7 @@ static  MyErrorReproter_ sMyErrorReproter_;
 
 
 namespace   {
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
     inline  void    SetupCommonParserFeatures_ (SAX2XMLReader& reader)
     {
         reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
@@ -316,7 +316,7 @@ namespace   {
  ************************ Private::UsingModuleHelper ****************************
  ********************************************************************************
  */
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace   {
 #if     qDebug
     atomic<uint32_t>    sStdIStream_InputStream_COUNT_ (0);
@@ -342,7 +342,7 @@ namespace   {
      *      -- LGP 2007-07-03
      */
     struct  UsingLibInterHelper {
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
         struct  UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ():
@@ -369,7 +369,7 @@ namespace   {
         UsingLibInterHelper ();
     };
     UsingLibInterHelper::UsingLibInterHelper ():
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
         fXERCES ()
 #endif
     {
@@ -398,7 +398,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
     : fDebugTraceDependency (Debug::MakeModuleDependency_Trace ())
 #endif
 {
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
     TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_");
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = new UsingLibInterHelper ();
@@ -407,7 +407,7 @@ SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 
 SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 {
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
     TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_");
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
@@ -419,7 +419,7 @@ SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
 
 
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace   {
     // These SHOULD be part of xerces! Perhaps someday post them?
     class   StdIStream_InputSource : public InputSource {
@@ -574,7 +574,7 @@ void    SAXCallbackInterface::CharactersInsideElement (const String& text)
  ********************************************************************************
  */
 
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
 namespace   {
     class SAX2PrintHandlers_
         : public DefaultHandler {
@@ -630,7 +630,7 @@ namespace   {
 
 void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
 {
-#if     qHasLibrary_Xerces
+#if     qHasFeature_Xerces
     SAX2PrintHandlers_  handler (callback);
     shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);

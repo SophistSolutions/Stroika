@@ -93,13 +93,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CompilerDriver'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qHasLibrary_Xerces>");
-		if (defined $pps) {
-			$configuration {'qHasLibrary_Xerces'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<qHasFeature_openssl>");
 		if (defined $pps) {
 			$configuration {'qHasFeature_openssl'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_Xerces>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_Xerces'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_libcurl>");
 		if (defined $pps) {

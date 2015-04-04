@@ -128,8 +128,11 @@ ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
 
-	ifeq ($(qHasLibrary_Xerces), 1)
+	ifeq ($(qFeatureFlag_Xerces), 'use')
 		StroikaFoundationSupportLibs	+=  $(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
+	endif
+	ifeq ($(qFeatureFlag_Xerces), 'use-system')
+		StroikaFoundationSupportLibs	+=  -lxerces
 	endif
 
 	ifeq ($(qFeatureFlag_libcurl), 'use')

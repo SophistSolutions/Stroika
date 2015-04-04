@@ -26,7 +26,6 @@ my $PROJECTPLATFORMSUBDIR='';
 
 my $forceRecreate = true;
 
-my $useThirdPartyXerces	=	true;
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
@@ -42,10 +41,11 @@ my $LIBFEATUREFLAG_UseSystem = "use-system";
 my $LIBFEATUREFLAG_No = "no";
 
 
-## FOR NOW ONLY USED ON LINUX BUILDS
+## FOR NOW ONLY USED ON LINUX BUILDS (may not be true anymore - gradually changing so always used)
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_OPENSSL = 0;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 0;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -104,10 +104,9 @@ sub	ReadConfiguration_
 	$platform = GetConfigurationParameter("Platform");
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 
-	$useThirdPartyXerces = ConfigParam2BoolInt (GetConfigurationParameter("qHasLibrary_Xerces"));
-
 	$ENABLE_OPENSSL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_openssl"));
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_libcurl");
+	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$ENABLE_ZLIB = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_zlib"));
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
@@ -306,16 +305,6 @@ sub WriteStroikaConfigCHeader
 
 
 	print (OUT "//Defaults overrides:\n");
-	if ($useThirdPartyXerces) {
-		print (OUT "#define	qHasLibrary_Xerces	1\n");
-	}
-	else {
-		print (OUT "#define	qHasLibrary_Xerces	0\n");
-	}
-	print (OUT "\n");
-	print (OUT "\n");
-
-
 
 	print (OUT "//--enable-assertions or --disable-assertions to force a particular value. --default-assertions to depend on NDEBUG\n");
 	if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
@@ -352,6 +341,17 @@ sub WriteStroikaConfigCHeader
 		print (OUT "#define	qHasFeature_libcurl 0\n");
 	}	
 	print (OUT "\n");
+
+    print (OUT "//--xerces {build-only|use|use-system|no}\n");
+	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
+		print (OUT "#define	qHasFeature_Xerces	1\n");
+	}
+	else {
+		print (OUT "#define	qHasFeature_Xerces	0\n");
+	}
+	print (OUT "\n");
+	print (OUT "\n");
+
 
 
 	print (OUT "//--has-winhttp or --no-has-winhttp\n");
@@ -457,28 +457,24 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "CPPSTD_VERSION_FLAG= \"$CPPSTD_VERSION_FLAG\"\n");
 	}
 
-	if ($useThirdPartyXerces) {
-		print (OUT "qHasLibrary_Xerces=1\n");
-	}	
-	else {
-		print (OUT "qHasLibrary_Xerces=0\n");
-	}	
 
-    print (OUT "qFeatureFlag_libcurl='$FEATUREFLAG_LIBCURL'\n");
+	print (OUT "qFeatureFlag_libcurl='$FEATUREFLAG_LIBCURL'\n");
+	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
+
 
 	print (OUT "#Third Party Product Libs to Build:\n");
-	# VERY ROUGH DRAFT - NEED UPSTREAM BETTER INFO ABOUT WHAT TO BUILD
-	if ($useThirdPartyXerces) {
+
+	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_BuildOnly)) {
+            print (OUT "qBuildThirdPartyProducts_libcurl=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
+	}	
+	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_BuildOnly)) {
 		print (OUT "qBuildThirdPartyProducts_Xerces=1\n");
 	}	
 	else {
 		print (OUT "qBuildThirdPartyProducts_Xerces=0\n");
-	}	
-        if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_BuildOnly)) {
-                print (OUT "qBuildThirdPartyProducts_libcurl=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
 	}	
 	if ($ENABLE_ZLIB) {
 		print (OUT "qBuildThirdPartyProducts_zlib=1\n");
