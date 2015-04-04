@@ -56,8 +56,8 @@ namespace {
                 const   Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
                 const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
                 const   Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
-#if     qHas_OpenSSL && 0
-                // have to fix makefiles before we can even get into this
+#if     qHasFeature_OpenSSL && 0
+                // Not yet working - crashes
                 // @todo!!!
                 VerifyTestResult (EncodeAES (key, src) == encodedVal);
                 VerifyTestResult (DecodeAES (key, encodedVal) == src);

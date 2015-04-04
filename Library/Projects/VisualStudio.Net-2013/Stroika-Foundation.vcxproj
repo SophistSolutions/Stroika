@@ -1926,7 +1926,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1934,8 +1934,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">
@@ -1949,7 +1949,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1957,8 +1957,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">
@@ -1972,7 +1972,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1980,8 +1980,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">
@@ -1995,7 +1995,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2003,8 +2003,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">
@@ -2018,7 +2018,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2026,8 +2026,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">
@@ -2041,7 +2041,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2049,8 +2049,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">
@@ -2070,7 +2070,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2080,8 +2080,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">
@@ -2101,7 +2101,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2111,8 +2111,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">
@@ -2132,7 +2132,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2142,8 +2142,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">
@@ -2163,7 +2163,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2173,8 +2173,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">
@@ -2194,7 +2194,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2204,8 +2204,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">
@@ -2225,7 +2225,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2235,8 +2235,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">
@@ -2256,7 +2256,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2266,8 +2266,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">
@@ -2287,7 +2287,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2297,8 +2297,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">
@@ -2318,7 +2318,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2328,8 +2328,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">
@@ -2349,7 +2349,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2359,8 +2359,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">
@@ -2380,7 +2380,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2390,8 +2390,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">
@@ -2411,7 +2411,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\inc32;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\Includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2421,8 +2421,8 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
