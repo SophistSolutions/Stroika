@@ -52,15 +52,21 @@ namespace {
                 // super quick hack - must validate results
                 const   char    kKey[] = "Mr Key";
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                const   Byte    kEncodedVal[] = { 0x22 };
+                /*
+                 *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
+                 */
+                const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
                 const   Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
                 const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
-                const   Memory::BLOB encodedVal (begin (kEncodedVal), end (kEncodedVal));
-#if     qHasFeature_OpenSSL && 0
+                const   Memory::BLOB encodedVal = Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
+#if     qHasFeature_OpenSSL
                 // Not yet working - crashes
                 // @todo!!!
-                VerifyTestResult (EncodeAES (key, src) == encodedVal);
-                VerifyTestResult (DecodeAES (key, encodedVal) == src);
+                VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
+                if (false) {
+                    VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
+                    VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
+                }
 #endif
 
             }
