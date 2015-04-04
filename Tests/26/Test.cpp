@@ -60,10 +60,9 @@ namespace {
                 const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
                 const   Memory::BLOB encodedVal = Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
 #if     qHasFeature_OpenSSL
-                // Not yet working - crashes
-                // @todo!!!
                 VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
                 if (false) {
+                    // @todo Not yet working - fully - gets differnt results than commandline tool
                     VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
                     VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
                 }
