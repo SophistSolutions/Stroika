@@ -18,6 +18,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   For CPUInfo, we have socketcount, and #logical cores (what msft calls logical processors in some places)
+ *              but we could use a placeholder for #physical cores, maybe. MSFT has this. Not sure its sueful. Document
+ *              why/why not depnding on what we decide.
+ *
  *      @todo   Quite incomplete, but hopefully usable implementation. Implment the rest of the attributes provided.
  *              some using linux /procfs, etc.
  *
@@ -72,14 +76,16 @@ namespace   Stroika {
                      *  MHz, and cache size, and particular numerical model numbers. Possibly also add 'bogomips'?
                      */
                     struct  CoreDetails {
-                        unsigned int    fSocketID {};       // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a differnt socket
+                        unsigned int    fSocketID {};       // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
                         String          fModelName {};      // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
                     };
 
                 public:
                     /**
-                     *  A computer may have multiple SPUCores, and in principle they can differ.
-                     *  The number of filled 'cpu sockets' is fCPUs.length ()
+                     *  A computer may have multiple CPUCores, and in principle they can differ.
+                     *  The number of filled 'cpu sockets' is fCPUs.length ().
+                     *
+                     *  Note that these are 'logical cores' and may not be physical cores.
                      */
                     Containers::Sequence<CoreDetails>   fCores;
                 };
