@@ -14,8 +14,8 @@
 /*
  * See DOCS in Stroika/Foundation/Cryptography/Common.h
  */
-#if     !defined (qHas_OpenSSL)
-#define qHas_OpenSSL 0
+#if     !defined (qHasFeature_OpenSSL)
+#define qHasFeature_OpenSSL 0
 #endif
 
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Cryptography_SSL_h_*/

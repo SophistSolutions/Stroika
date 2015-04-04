@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 namespace {
     OpenSSLCryptoParams cvt_ (const Memory::BLOB& key, OpenSSLCryptoParams::Direction direction)
     {
@@ -29,7 +29,7 @@ namespace {
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ***************************** Algorithm::DecodeRC4 *****************************
@@ -49,7 +49,7 @@ Memory::BLOB  Algorithm::DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB&
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::EncodeRC4 ****************************
@@ -71,7 +71,7 @@ Memory::BLOB  Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB&
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  **************************** Algorithm::RC4Encoder *****************************
@@ -87,7 +87,7 @@ Streams::BinaryOutputStream  Algorithm::RC4Decoder (const Memory::BLOB& key, Str
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::RC4Encoder ***************************

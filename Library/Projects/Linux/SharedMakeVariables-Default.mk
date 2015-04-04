@@ -135,6 +135,13 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  -lxerces
 	endif
 
+	ifeq ($(qFeatureFlag_OpenSSL), 'use')
+		StroikaFoundationSupportLibs	+=  $(RelPathToStroikaDevRoot)ThirdPartyLibs/OpenSSL/CURRENT/libssl.a $(RelPathToStroikaDevRoot)ThirdPartyLibs/OpenSSL/CURRENT/libcrypto.a
+	endif
+	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
+		StroikaFoundationSupportLibs	+=  -lopenssl -lcrypto
+	endif
+
 	ifeq ($(qFeatureFlag_libcurl), 'use')
 		StroikaFoundationSupportLibs += $(shell $(RelPathToStroikaDevRoot)ThirdPartyLibs/curl/Builds/bin/curl-config --static-libs)
 	endif

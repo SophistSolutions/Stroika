@@ -43,8 +43,8 @@ my $LIBFEATUREFLAG_No = "no";
 
 ## FOR NOW ONLY USED ON LINUX BUILDS (may not be true anymore - gradually changing so always used)
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
-my $ENABLE_OPENSSL = 0;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 0;
 my $ENABLE_WINHTTP = 0;
@@ -104,8 +104,8 @@ sub	ReadConfiguration_
 	$platform = GetConfigurationParameter("Platform");
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 
-	$ENABLE_OPENSSL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_openssl"));
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_libcurl");
+	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$ENABLE_ZLIB = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_zlib"));
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
@@ -323,16 +323,6 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-	print (OUT "//--has-openssl or --no-has-openssl\n");
-	if ($ENABLE_OPENSSL) {
-		print (OUT "#define	qHas_OpenSSL 1\n");
-	}	
-	else {
-		print (OUT "#define	qHas_OpenSSL 0\n");
-	}	
-	print (OUT "\n");
-
-
     print (OUT "//--libcurl {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_libcurl 1\n");
@@ -341,6 +331,17 @@ sub WriteStroikaConfigCHeader
 		print (OUT "#define	qHasFeature_libcurl 0\n");
 	}	
 	print (OUT "\n");
+
+
+    print (OUT "//--openssl {build-only|use|use-system|no}\n");
+	if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem)) {
+		print (OUT "#define	qHasFeature_OpenSSL 1\n");
+	}	
+	else {
+		print (OUT "#define	qHasFeature_OpenSSL 0\n");
+	}	
+	print (OUT "\n");
+
 
     print (OUT "//--xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
@@ -470,6 +471,12 @@ sub WriteStroikaConfigMakeHeader
 	else {
 		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
 	}	
+	if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_BuildOnly)) {
+		print (OUT "qBuildThirdPartyProducts_OpenSSL=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_OpenSSL=0\n");
+	}	
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_BuildOnly)) {
 		print (OUT "qBuildThirdPartyProducts_Xerces=1\n");
 	}	
@@ -481,12 +488,6 @@ sub WriteStroikaConfigMakeHeader
 	}	
 	else {
 		print (OUT "qBuildThirdPartyProducts_zlib=0\n");
-	}	
-	if ($ENABLE_OPENSSL) {
-		print (OUT "qBuildThirdPartyProducts_OpenSSL=1\n");
-	}	
-	else {
-		print (OUT "qBuildThirdPartyProducts_OpenSSL=0\n");
 	}	
 
 

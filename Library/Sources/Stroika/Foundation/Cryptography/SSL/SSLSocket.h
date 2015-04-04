@@ -23,7 +23,7 @@ namespace   Stroika {
 
 
                 // wrapper calss - real work is in protected REP subclasses from Socket Rep...
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                 class   SSLSocket : public IO::Network::Socket {
                 public:
                     SSLSocket ();

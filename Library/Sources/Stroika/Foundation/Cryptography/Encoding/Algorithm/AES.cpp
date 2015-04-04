@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 namespace {
     OpenSSLCryptoParams cvt_ (const Memory::BLOB& key, AESOptions options, OpenSSLCryptoParams::Direction direction)
     {
@@ -69,7 +69,7 @@ namespace {
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ***************************** Algorithm::DecodeAES *****************************
@@ -89,7 +89,7 @@ Memory::BLOB  Algorithm::DecodeAES (const Memory::BLOB& key, const Memory::BLOB&
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::EncodeAES ****************************
@@ -111,7 +111,7 @@ Memory::BLOB  Algorithm::EncodeAES (const Memory::BLOB& key, const Memory::BLOB&
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  **************************** Algorithm::AESEncoder *****************************
@@ -127,7 +127,7 @@ Streams::BinaryOutputStream  Algorithm::AESDecoder (const Memory::BLOB& key, Str
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ****************************** Algorithm::AESEncoder ***************************

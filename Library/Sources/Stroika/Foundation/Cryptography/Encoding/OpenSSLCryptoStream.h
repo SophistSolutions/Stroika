@@ -6,7 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 #include    <openssl/evp.h>
 #endif
 
@@ -50,7 +50,7 @@ namespace   Stroika {
             namespace   Encoding {
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                 class   OpenSSLCryptoParams {
                 public:
                     /**
@@ -111,7 +111,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                 /**
                  *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based decryption
                  *
@@ -127,7 +127,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                 /**
                  *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based decryption
                  *

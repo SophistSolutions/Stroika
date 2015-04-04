@@ -25,7 +25,7 @@ using   namespace   Stroika::Foundation::Streams;
 //// for details on what todo
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 namespace {
     struct InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams)
@@ -84,7 +84,7 @@ namespace {
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, private InOutStrmCommon_ {
 private:
     DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
@@ -150,7 +150,7 @@ private:
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, private InOutStrmCommon_ {
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut)
@@ -204,7 +204,7 @@ private:
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
@@ -397,7 +397,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
@@ -413,7 +413,7 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSLOutputStream **************************

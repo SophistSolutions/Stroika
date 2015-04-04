@@ -15,7 +15,7 @@ using   namespace   Stroika::Foundation::Cryptography::SSL;
 
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************************* Network::SSLSocket *****************************

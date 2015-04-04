@@ -28,11 +28,11 @@
 
 
 /*
-@CONFIGVAR:     qHas_OpenSSL
+@CONFIGVAR:     qHasFeature_OpenSSL
 @DESCRIPTION:   <p>0 or 1</p>
 */
-#if     !defined (qHas_OpenSSL)
-#error "qHas_OpenSSL should normally be defined indirectly by StroikaConfig.h"
+#if     !defined (qHasFeature_OpenSSL)
+#error "qHasFeature_OpenSSL should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 

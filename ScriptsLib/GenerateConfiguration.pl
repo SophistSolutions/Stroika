@@ -45,9 +45,9 @@ my $LIBFEATUREFLAG_No = "no";
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
-my $ENABLE_OPENSSL = 0;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_ZLIB = 1;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -75,12 +75,13 @@ sub	DoHelp_
         print("	    --disable-GLIBCXX_DEBUG                    /* disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
-        print("	    --libcurl {build-only|use|use-system|no}   /* enables/disables use of libcurl and build for the confguration being defined */\n");
-        print("	    --xerces {build-only|use|use-system|no}    /* enables/disables use of xerces and build for the confguration being defined */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of libcurl and build for the confguration being defined */\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of xerces and build for the confguration being defined */\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of openssl and build for the confguration being defined */\n");
         print("	    --has-xerces                               /* DEPRECATED --xerces use */\n");
         print("	    --no-has-xerces                            /* DEPRECATED --xerces no */\n");
-        print("	    --has-openssl                              /* enables openssl for the configuration being configured */\n");
-        print("	    --no-has-openssl                           /* disables openssl for the configuration being configured */\n");
+        print("	    --has-openssl                              /* DEPRECATED --openssl use */\n");
+        print("	    --no-has-openssl                           /* DEPRECATED --openssl no */\n");
         print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
         print("	    --no-has-winhttp                           /* disables winhttp for the configuration being configured */\n");
         print("	    --has-zlib                                 /* enables zlib for the configuration being configured */\n");
@@ -144,9 +145,6 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/openssl/conf.h') {
-		$ENABLE_OPENSSL = 1;
-	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
@@ -270,10 +268,12 @@ sub	ParseCommandLine_Remaining_
 			$CPPSTD_VERSION_FLAG = $var;
 		}
 		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
-			$ENABLE_OPENSSL = 1;
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+			print ("$var flag DEPRECATED - use --openssl\n");
 		}
 		elsif ((lc ($var) eq "-no-has-openssl") or (lc ($var) eq "--no-has-openssl")) {
-			$ENABLE_OPENSSL = 0;
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
+			print ("$var flag DEPRECATED - use --openssl\n");
 		}
         elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
             $i++;
@@ -429,10 +429,12 @@ sub	WriteConfigFile_
 		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
 	}
 	
-	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
+	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
+	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
-	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
+
+	#print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {

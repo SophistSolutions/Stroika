@@ -57,7 +57,7 @@ namespace   Stroika {
                     };
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryInputStream  DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
@@ -65,7 +65,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryInputStream  EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options = AESOptions::eDEFAULT);
@@ -73,7 +73,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
                      *  to the returned output stream is decrypted before being passed to the argument output stream.
@@ -82,7 +82,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
                      *  to the returned output stream is encrpted before being passed to the argument output stream.

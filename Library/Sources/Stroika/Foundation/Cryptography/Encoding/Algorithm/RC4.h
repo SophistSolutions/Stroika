@@ -30,7 +30,7 @@ namespace   Stroika {
                 namespace   Algorithm {
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryInputStream  DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
@@ -38,7 +38,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryInputStream  EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in);
@@ -46,14 +46,14 @@ namespace   Stroika {
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryOutputStream  RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
 #endif
 
 
-#if     qHas_OpenSSL
+#if     qHasFeature_OpenSSL
                     /**
                      */
                     Streams::BinaryOutputStream  RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out);
