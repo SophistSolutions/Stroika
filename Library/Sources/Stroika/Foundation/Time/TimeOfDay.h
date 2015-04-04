@@ -27,11 +27,6 @@
  *  \version    <a href="code_status.html">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
- *              stuff for kMin/kMax
- *
- *              If we cannot, may need to use ModuleInitializer<> stuff.
- *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *

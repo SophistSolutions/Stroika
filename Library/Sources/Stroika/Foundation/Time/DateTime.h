@@ -32,30 +32,6 @@
  *
  * TODO:
  *
- *      @todo   Only SetDate (const Date& d);/SetTimeOfDay are non-const methods. Consider making this const
- *              and just return a new date. Would matter from an API standpoint if the internl rep was BIGGER
- *              (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
- *              SharedByValue<> template. Maybe a boondoggle?
- *
- *              This is an ESPECIALLY good idea since we've now done this for the 'Date' class.
- *
- *              <<< NOTE - DID DEPRECATE AND NEW CTOR 2014-09-21>>>
- *
- *      @todo   ONCE we-ve gotten rid of SetDate/SetTimeOfDay () - ABOVE - 2014-09-21 -
- *              Think about if DateTime::empty () should work with way it does? Allow empty date
- *              but not empty time and still treat overall as empthy? Confusing and SB documented better!
- *
- *              Probably REQUIRE that Date not empty if TiemOfDay empoty on CTOR, then can assert thorughotu.
- *              OR - mahbe better to jsut fix CTORs to enforce this automatically (when date empty ignroe tod).
- *
- *              Probably better to assert, cuz probably confusing to silmently change.
- *
- *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
- *              use ModuleInit<> code to assure proper construction order.
- *
- *              So far this doesnt appear to have caused problems by the DurationRange<> code refrences
- *              these constants at its module init time.
- *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
@@ -243,10 +219,15 @@ namespace   Stroika {
                 nonvirtual  constexpr   bool    empty () const;
 
             public:
-                // Return the current DateTime (in LocalTime)
+                /*
+                 *  Return the current DateTime (in LocalTime)
+                 */
                 static  DateTime    Now ();
 
-                // Return the current Date (in LocalTime - local timezone)
+            public:
+                /*
+                 *  Return the current Date (in LocalTime - local timezone)
+                 */
                 static  Date        GetToday ();
 
             public:
@@ -259,6 +240,7 @@ namespace   Stroika {
                 static  constexpr   DateTime    kMin    {   Date::kMin, TimeOfDay::kMin  };
 #endif
 
+            public:
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
@@ -272,11 +254,17 @@ namespace   Stroika {
                 nonvirtual  Timezone    GetTimezone () const;
 
             public:
-                // Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
-                // conversion is also unknown (but either treat Kind as localtime or UTC)
+                /*
+                 *  Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
+                 * conversion is also unknown (but either treat Kind as localtime or UTC)
+                 */
                 nonvirtual  DateTime    AsLocalTime () const;
-                // Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
-                // conversion is also unknown (but either treat Kind as localtime or UTC)
+
+            public:
+                /*
+                 *  Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
+                 *  conversion is also unknown (but either treat Kind as localtime or UTC)
+                 */
                 nonvirtual  DateTime    AsUTC () const;
 
             public:
@@ -292,7 +280,7 @@ namespace   Stroika {
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
                  */
-                enum class  PrintFormat : uint8_t {
+                enum    class  PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -348,11 +336,14 @@ namespace   Stroika {
                  */
                 nonvirtual  DateTime    Add (const Duration& d) const;
 
+            public:
                 /*
                  * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
                 nonvirtual  DateTime    AddDays (int days) const;
+
+            public:
                 /*
                  * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
@@ -361,16 +352,18 @@ namespace   Stroika {
 
             public:
                 /**
-                 *Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
+                 *  Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
                  */
                 nonvirtual  Duration    Difference (const DateTime& rhs) const;
 
             public:
-                // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-                // this comparison function - see the notes about 'empty' in the class description.
-                //
-                // Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
-                // unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+                /*
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+                 *  this comparison function - see the notes about 'empty' in the class description.
+                 *
+                 *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
+                 *  unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+                 */
                 nonvirtual  int     Compare (const DateTime& rhs) const;
 
             private:
