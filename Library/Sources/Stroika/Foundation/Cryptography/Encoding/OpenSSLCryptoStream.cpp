@@ -3,6 +3,10 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#if     qHasFeature_OpenSSL
+#include    <openssl/evp.h>
+#endif
+
 #include    "../../Containers/Common.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Common.h"

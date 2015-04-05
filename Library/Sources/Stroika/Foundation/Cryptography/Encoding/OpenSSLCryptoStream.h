@@ -7,7 +7,10 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qHasFeature_OpenSSL
-#include    <openssl/evp.h>
+extern "C" {
+    using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
+}
+//#include    <openssl/evp.h>
 #endif
 
 #include    "../../Configuration/Common.h"
