@@ -36,7 +36,7 @@ namespace   Stroika {
                 namespace   Transfer {
 
 
-#if     qFeatureFlag_LibCurl
+#if     qHasFeature_LibCurl
                     class   LibCurlException : public Execution::StringException {
                     public:
                         using   CURLcode    =   int;       // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
@@ -57,7 +57,7 @@ namespace   Stroika {
 #endif
 
 
-#if     qFeatureFlag_LibCurl
+#if     qHasFeature_LibCurl
                     // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
                     // LibCurl connection rep objects
                     class   Connection_LibCurl : public Connection {

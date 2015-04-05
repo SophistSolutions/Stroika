@@ -17,7 +17,7 @@ namespace   Stroika {
                 namespace   Transfer {
 
 
-#if     qFeatureFlag_LibCurl
+#if     qHasFeature_LibCurl
                     // class LibCurlException
                     inline  LibCurlException::CURLcode  LibCurlException::GetCode () const
                     {
