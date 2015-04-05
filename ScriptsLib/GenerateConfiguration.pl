@@ -62,10 +62,11 @@ my $COMPILER_DRIVER = "";
 
 sub	DoHelp_
 {
-	print("Usage:\n");
+    print("Usage:\n");
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
         print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the configfiles if absent */\n");
-        print("	    --default-for-platform                     /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
+        print("	    --default-for-platform                     /* May create multiple targets (recursive call to configure) - but generates all the default");
+        print("                                                                       settings for this platform */\n");
         print("	    --platform {PLATFORM}                      /* specifies the directory under Builds/Intermediate Files to create */\n");
         print("	    --target {TARGET}                          /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
         print("	    --enable-assertions                        /* enables assertions for the configuration being configured */\n");
@@ -73,22 +74,24 @@ sub	DoHelp_
         print("	    --default-assertions                       /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
         print("	    --enable-GLIBCXX_DEBUG                     /* enables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --disable-GLIBCXX_DEBUG                    /* disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
-        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc) - UNIX ONLY */\n");
-        print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of libcurl and build for the confguration being defined */\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of xerces and build for the confguration being defined */\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of openssl and build for the confguration being defined */\n");
-        print("	    --has-xerces                               /* DEPRECATED --xerces use */\n");
-        print("	    --no-has-xerces                            /* DEPRECATED --xerces no */\n");
-        print("	    --has-openssl                              /* DEPRECATED --openssl use */\n");
-        print("	    --no-has-openssl                           /* DEPRECATED --openssl no */\n");
+        print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being");
+        print("                                                                configured - so */\n");
+        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc)");
+        print("                                                                                    - UNIX ONLY */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
+        print("	    --has-xerces                               /* DEPRECATED-2015-04-02 --xerces use */\n");
+        print("	    --no-has-xerces                            /* DEPRECATED-2015-04-02 --xerces no */\n");
+        print("	    --has-openssl                              /* DEPRECATED-2015-04-02 --openssl use */\n");
+        print("	    --no-has-openssl                           /* DEPRECATED-2015-04-02 --openssl no */\n");
         print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
         print("	    --no-has-winhttp                           /* disables winhttp for the configuration being configured */\n");
         print("	    --has-zlib                                 /* enables zlib for the configuration being configured */\n");
         print("	    --no-has-zlib                              /* disables zlib for the configuration being configured */\n");
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
-        print("	    --cpp-optimize-flag  {FLAG}                /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+        print("	    --cpp-optimize-flag  {FLAG}                /* Sets $$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given target */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given target */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
