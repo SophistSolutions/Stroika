@@ -115,10 +115,15 @@ namespace   Stroika {
 
 #if     qHasFeature_OpenSSL
                 /**
-                 *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based decryption
+                 *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
                  *
                  *  OpenSSLInputStream is a BinaryInputStream which wraps another BinaryInputStream
-                 *  and does OpenSSL-based decryption.
+                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+                 *
+                 *  Use OpenSSLInputStream is you wish to use the result of encryption in your program, so you prefer to structure
+                 *  your conversion code as a process of reading.
+                 *
+                 *  @see OpenSSLOutputStream
                  */
                 class   OpenSSLInputStream : public Streams::BinaryInputStream {
                 private:
@@ -131,10 +136,15 @@ namespace   Stroika {
 
 #if     qHasFeature_OpenSSL
                 /**
-                 *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based decryption
+                 *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
                  *
                  *  OpenSSLOutputStream is a BinaryOutputStream which wraps another BinaryOutputStream
-                 *  and does OpenSSL-based encryption.
+                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+                 *
+                 *  Use OpenSSLOutputStream is you wish to produce an artifact (e.g. external file) as a result of incrementally writing
+                 *  to a stream.
+                 *
+                 *  @see OpenSSLInputStream
                  */
                 class   OpenSSLOutputStream : public Streams::BinaryOutputStream {
                 private:
