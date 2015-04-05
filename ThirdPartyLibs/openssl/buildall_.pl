@@ -3,13 +3,20 @@
 #### NOTE - DONT CALL DIRECTLY - LEGACY CODE FROM OLD MAKE PROCESS TO BE MERGED
 #### INTO MAKEFILE
 
+
 require ("../../ScriptsLib/BuildUtils.pl");
 require ("../../ScriptsLib/StringUtils.pl");
 
 #print "PATH=";
 #print (" $ENV{'PATH'};");
 
-$ENV{'MAKEFLAGS'}='';
+# these environment flags appear to confuse nmake
+delete $ENV{'MAKEFLAGS'};
+delete $ENV{'MAKELEVEL'};
+delete $ENV{'MAKE_TERMERR'};
+delete $ENV{'MAKE_TERMOUT'};
+delete $ENV{'SHLVL'};
+delete $ENV{'MFLAGS'};
 
 
 sub	CopyBuilds2Out
@@ -80,26 +87,28 @@ else {if ("$^O" eq "cygwin") {
 	}
 	else {
 		chdir ("CURRENT");
-			system ("perl Configure VC-WIN64I no-asm --prefix=c:/some/openssl/dir");
-			## BASED ON ms\do_win64i.bat
-			system ("perl util/mkfiles.pl >MINFO");
-			system ("perl ms/uplink-ia64.pl > ms/uptable.asm");
-			system ("ias -o ms/uptable.obj ms/uptable.asm");
-			system ("perl util/mk1mf.pl VC-WIN64I >ms/nt.mak");
-			system ("perl util/mk1mf.pl debug VC-WIN64I >ms/nt-DBG.mak");
-			system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
-			system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
+			#system ("perl Configure VC-WIN64A no-asm --prefix=c:/some/openssl/dir");
+			system ("perl Configure no-asm VC-WIN64A");
+			system ("cmd /c \"ms\\do_win64a.bat\"");
+			system ("perl util/mk1mf.pl debug no-asm VC-WIN64A >ms/nt-DBG.mak");
+
 			system ("rm -f NUL");
 			system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
 	
 			print (" ...Make Release64...\n");
-			#nb: lose -s to see each compile line
-			system ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=  2>&1) | tee -a NT64.MAK.BUILD-Output.txt");
+			open(my $fh, '>', 'doRunNDB.bat');
+			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
+			print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRunNDB.bat 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
 	
 			print (" ...Make Debug64...\n");
-			#nb: lose -s to see each compile line
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak MAKEFLAGS=  2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
-	
+			open(my $fh, '>', 'doRunDbg.bat');
+			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
+			print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRunDbg.bat 2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
+
 			print (" ...Running openssl tests...");
 			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
 			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");

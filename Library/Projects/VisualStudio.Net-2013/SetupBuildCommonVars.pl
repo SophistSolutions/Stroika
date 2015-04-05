@@ -153,6 +153,17 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 $ENV{'LIB_32'} 	=	"$x";
 $ENV{'LIB_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/lib";
 
+sub GetString2InsertIntoBatchFileToInit64BitCompiles
+{
+	my $result = "";
+	$result 	.=	"call \"";
+	$result 	.=	"$VSDIR_VC\\bin\\amd64\\vcvars64.bat";
+	$result 	.=	"\";\n";
+	return $result;
+}
+
+
+
 #print "ENV{CC_32}= ", $ENV{'CC_32'}, "\n";
 #print "ENV{CC_64}= ", $ENV{'CC_64'}, "\n";
 #print "ENV{LINK_32}= ", $ENV{'LINK_32'}, "\n";
