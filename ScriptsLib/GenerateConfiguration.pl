@@ -46,10 +46,10 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
-my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
-my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
@@ -79,17 +79,18 @@ sub	DoHelp_
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc)");
         print("                                                                      - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
+        print("	    --WinHTTP {use-system|no}                  /* enables/disables use of WinHTTP and build for the confguration being defined [default use-system on windows, and no otherwise] */\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}      /* enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
         print("	    --has-xerces                               /* DEPRECATED-2015-04-02 --xerces use */\n");
         print("	    --no-has-xerces                            /* DEPRECATED-2015-04-02 --xerces no */\n");
         print("	    --has-openssl                              /* DEPRECATED-2015-04-02 --openssl use */\n");
         print("	    --no-has-openssl                           /* DEPRECATED-2015-04-02 --openssl no */\n");
-        print("	    --has-zlib                                 /* DEPRECATED-2015-04-02 --openssl use */\n");
-        print("	    --no-has-zlib                              /* DEPRECATED-2015-04-02 --openssl no */\n");
-        print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
-        print("	    --no-has-winhttp                           /* disables winhttp for the configuration being configured */\n");
+        print("	    --has-zlib                                 /* DEPRECATED-2015-04-02 --zlib use */\n");
+        print("	    --no-has-zlib                              /* DEPRECATED-2015-04-02 --zlib no */\n");
+        print("	    --has-winhttp                              /* DEPRECATED-2015-04-02 --winhttp use-system  */\n");
+        print("	    --no-has-winhttp                           /* DEPRECATED-2015-04-02 --winhttp no  */\n");
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
@@ -153,7 +154,7 @@ sub	SetInitialDefaults_
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 	if ("$^O" eq "cygwin") {
-		$ENABLE_WINHTTP = 1;
+		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
 }
 
@@ -284,11 +285,28 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_LIBCURL = $var;
         }
+        elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_OpenSSL = $var;
+        }
+        elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_ZLib = $var;
+        }
+        elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_WinHTTP = $var;
+        }
 		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
-			$ENABLE_WINHTTP = 1;
+			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+			print ("$var flag DEPRECATED - use --WinHTTP use-system\n");
 		}
 		elsif ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
-			$ENABLE_WINHTTP = 0;
+			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+			print ("$var flag DEPRECATED - use --WinHTTP\n");
 		}
 		elsif ((lc ($var) eq "-has-xerces") or (lc ($var) eq "--has-xerces")) {
 			$FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
@@ -437,10 +455,9 @@ sub	WriteConfigFile_
 	
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
+	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
-
-	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");

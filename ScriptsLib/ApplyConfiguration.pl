@@ -47,7 +47,6 @@ my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
-my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
@@ -106,9 +105,9 @@ sub	ReadConfiguration_
 
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
+	$FEATUREFLAG_WinHTTP = GetConfigurationParameter("qFeatureFlag_WinHTTP");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
-	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
 	$CPPSTD_VERSION_FLAG = GetConfigurationParameter("CPPSTD_VERSION_FLAG");
@@ -343,6 +342,16 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
+    print (OUT "//--WinHTTP {use-system|no}\n");
+	if ($ENABLE_WINHTTP) {
+		print (OUT "#define	qHasFeature_WinHTTP 1\n");
+	}	
+	else {
+		print (OUT "#define	qHasFeature_WinHTTP 0\n");
+	}	
+	print (OUT "\n");
+
+
     print (OUT "//--Xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_Xerces	1\n");
@@ -363,17 +372,9 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
+
 	print (OUT "\n");
-
-
-
-	print (OUT "//--has-winhttp or --no-has-winhttp\n");
-	if ($ENABLE_WINHTTP) {
-		print (OUT "#define	qHasFeature_WinHTTP 1\n");
-	}	
-	else {
-		print (OUT "#define	qHasFeature_WinHTTP 0\n");
-	}	
+	print (OUT "\n");
 	print (OUT "\n");
 
 
