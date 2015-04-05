@@ -93,9 +93,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CompilerDriver'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qFeatureFlag_libcurl>");
+		my $pps = ReadValue_($line, "<qFeatureFlag_LibCurl>");
 		if (defined $pps) {
-			$configuration {'qFeatureFlag_libcurl'} = $pps;
+			$configuration {'qFeatureFlag_LibCurl'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_OpenSSL>");
 		if (defined $pps) {

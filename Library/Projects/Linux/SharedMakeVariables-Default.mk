@@ -143,10 +143,10 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  -lopenssl -lcrypto
 	endif
 
-	ifeq ($(qFeatureFlag_libcurl), 'use')
+	ifeq ($(qFeatureFlag_LibCurl), 'use')
 		StroikaFoundationSupportLibs += $(shell $(RelPathToStroikaDevRoot)ThirdPartyLibs/curl/Builds/bin/curl-config --static-libs)
 	endif
-	ifeq ($(qFeatureFlag_libcurl), 'use-system')
+	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lcurl
 	endif
 

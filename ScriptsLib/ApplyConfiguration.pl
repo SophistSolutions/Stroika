@@ -104,7 +104,7 @@ sub	ReadConfiguration_
 	$platform = GetConfigurationParameter("Platform");
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 
-	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_libcurl");
+	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
@@ -323,17 +323,17 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-    print (OUT "//--libcurl {build-only|use|use-system|no}\n");
+    print (OUT "//--LibCurl {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem)) {
-		print (OUT "#define	qHasFeature_libcurl 1\n");
+		print (OUT "#define	qFeatureFlag_LibCurl 1\n");
 	}	
 	else {
-		print (OUT "#define	qHasFeature_libcurl 0\n");
+		print (OUT "#define	qFeatureFlag_LibCurl 0\n");
 	}	
 	print (OUT "\n");
 
 
-    print (OUT "//--openssl {build-only|use|use-system|no}\n");
+    print (OUT "//--OpenSSL {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_OpenSSL 1\n");
 	}	
@@ -343,7 +343,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-    print (OUT "//--xerces {build-only|use|use-system|no}\n");
+    print (OUT "//--Xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_Xerces	1\n");
 	}
@@ -351,6 +351,18 @@ sub WriteStroikaConfigCHeader
 		print (OUT "#define	qHasFeature_Xerces	0\n");
 	}
 	print (OUT "\n");
+
+
+    print (OUT "//--ZLib {build-only|use|use-system|no}\n");
+	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem)) {
+		print (OUT "#define	qHasFeature_ZLib	1\n");
+	}
+	else {
+		print (OUT "#define	qHasFeature_ZLib	0\n");
+	}
+	print (OUT "\n");
+
+
 	print (OUT "\n");
 
 
@@ -459,7 +471,7 @@ sub WriteStroikaConfigMakeHeader
 	}
 
 
-	print (OUT "qFeatureFlag_libcurl='$FEATUREFLAG_LIBCURL'\n");
+	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 
 

@@ -435,7 +435,7 @@ sub	WriteConfigFile_
 		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
 	}
 	
-	print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
+	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
