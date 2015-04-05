@@ -365,47 +365,40 @@ namespace {
 #if     qHasFeature_OpenSSL
             using   Memory::BLOB;
             auto roundTripTester_ = [] (const OpenSSLCryptoParams & cryptoParams, BLOB src) -> void {
-                BLOB    encodedData = OpenSSLInputStream (cryptoParams, src.As<Streams::BinaryInputStream> ()).ReadAll ();
-                BLOB    decodedData = OpenSSLInputStream (cryptoParams, encodedData.As<Streams::BinaryInputStream> ()).ReadAll ();
+                BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::BinaryInputStream> ()).ReadAll ();
+                BLOB    decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::BinaryInputStream> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 
             const   char    kKey1_[] = "Mr Key";
-            const BLOB  kKeys_ [] = {
+            const   char    kKey2_[] = "One Very Very Very Long key 123";
+            static  const BLOB  kKeys_ [] = {
                 BLOB ((const Byte*)kKey1_, (const Byte*)kKey1_ + ::strlen(kKey1_)),
+                BLOB ((const Byte*)kKey2_, (const Byte*)kKey2_ + ::strlen(kKey2_)),
             };
 
             const   char    kSrc1_[] = "This is a very good test of a very good test";
-            const BLOB  kTestMessages_ [] = {
+            const   char    kSrc2_[] = "";
+            const   char    kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
+            const   char    kSrc4_[] = "0123456789";
+            static  const BLOB  kTestMessages_ [] = {
                 BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen(kSrc1_)),
+                BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen(kSrc2_)),
+                BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen(kSrc3_)),
+#if 0
+                // DEBUG WHY THIS FAILS - I THINK WE NEED TO ENABLE PADDING FOR SOME CYPHERS!
+                BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen(kSrc4_)),
+#endif
             };
+
 
             for (BLOB key : kKeys_) {
                 for (BLOB inputMessage : kTestMessages_) {
+                    for (OpenSSLCryptoParams::Algorithm i = OpenSSLCryptoParams::Algorithm::eSTART; i != OpenSSLCryptoParams::Algorithm::eEND; i = Configuration::Inc (i)) {
+                        OpenSSLCryptoParams cryptoParams { i, key };
+                        roundTripTester_ (cryptoParams, inputMessage);
+                    }
                 }
-            }
-#endif
-#if 0
-            {
-                // super quick hack - must validate results
-                const   char    kKey[] = "Mr Key";
-                const   char    kSrc[] = "This is a very good test of a very good test";
-                /*
-                 *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
-                 */
-                const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
-                const   Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
-                const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
-                const   Memory::BLOB encodedVal = Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
-#if     qHasFeature_OpenSSL
-                VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
-                if (false) {
-                    // @todo Not yet working - fully - gets differnt results than commandline tool
-                    VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
-                    VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
-                }
-#endif
-
             }
 #endif
         }

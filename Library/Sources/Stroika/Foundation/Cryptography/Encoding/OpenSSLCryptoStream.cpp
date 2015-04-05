@@ -32,12 +32,12 @@ using   namespace   Stroika::Foundation::Streams;
 #if     qHasFeature_OpenSSL
 namespace {
     struct InOutStrmCommon_ {
-        InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams)
+        InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
             : fCTX_ ()
             , fFinalCalled_ (false)
         {
             ::EVP_CIPHER_CTX_init (&fCTX_);
-            cryptoParams.fInitializer (&fCTX_);
+            cryptoParams.fInitializer (&fCTX_, d);
         }
         ~InOutStrmCommon_ ()
         {
@@ -94,9 +94,9 @@ private:
     DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
 
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn)
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
-        , InOutStrmCommon_ (cryptoParams)
+        , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
         , fOutBufStart_ (nullptr)
@@ -157,9 +157,9 @@ private:
 #if     qHasFeature_OpenSSL
 class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, private InOutStrmCommon_ {
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut)
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const BinaryOutputStream& realOut)
         : BinaryOutputStream::_IRep ()
-        , InOutStrmCommon_ (cryptoParams)
+        , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fRealOut_ (realOut)
     {
@@ -214,14 +214,14 @@ private:
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV)
+OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
     bool    nopad = false;
-    bool    enc = (direction == Direction::eEncrypt);
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -230,7 +230,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_128_ECB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -239,7 +240,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_128_OFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -248,7 +250,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_128_CFB1: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -257,7 +260,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_128_CFB8: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -266,7 +270,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_128_CFB128: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -275,7 +280,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_CBC: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -284,7 +290,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_ECB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -293,7 +300,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_OFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -302,7 +310,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_CFB1: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -311,7 +320,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_CFB8: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -320,7 +330,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_192_CFB128: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -329,7 +340,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_CBC: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -338,7 +350,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_ECB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -347,7 +360,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_OFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -356,7 +370,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_CFB1: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -365,7 +380,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_CFB8: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -374,7 +390,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eAES_256_CFB128: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -383,7 +400,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eBlowfish_CBC: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -392,7 +410,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eBlowfish_ECB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -401,7 +420,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eBlowfish_CFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -410,7 +430,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eBlowfish_OFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -419,7 +440,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_CBC: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -430,7 +452,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_ECB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -441,7 +464,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_CFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -452,7 +476,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC2_OFB: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -463,7 +488,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
             }
             break;
         case Algorithm::eRC4: {
-                fInitializer = [nopad, key, initialIV, enc] (EVP_CIPHER_CTX * ctx) {
+                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    bool    enc = (d == Direction::eEncrypt);
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
@@ -489,8 +515,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn)
-    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (cryptoParams, realIn)))
+OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (cryptoParams, direction, realIn)))
 {
 }
 #endif
@@ -505,8 +531,8 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut)
-    : BinaryOutputStream (_SharedIRep (new IRep_ (cryptoParams, realOut)))
+OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut)
+    : BinaryOutputStream (_SharedIRep (new IRep_ (cryptoParams, direction, realOut)))
 {
 }
 #endif

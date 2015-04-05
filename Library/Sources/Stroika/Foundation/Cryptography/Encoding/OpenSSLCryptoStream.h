@@ -10,7 +10,6 @@
 extern "C" {
     using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
 }
-//#include    <openssl/evp.h>
 #endif
 
 #include    "../../Configuration/Common.h"
@@ -53,19 +52,19 @@ namespace   Stroika {
             namespace   Encoding {
 
 
+                /**
+                 */
+                enum    class   Direction {
+                    eEncrypt,
+                    eDecrypt,
+                };
+
+
 #if     qHasFeature_OpenSSL
                 class   OpenSSLCryptoParams {
                 public:
-                    /**
-                     */
-                    enum class Direction {
-                        eEncrypt,
-                        eDecrypt,
-                    };
-
-                public:
                     // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
-                    OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*)>& f);
+                    OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
 
 
                     /**
@@ -106,10 +105,10 @@ namespace   Stroika {
                         Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
                     };
                     // allowed Algorith's for this CTOR include eAES_*, eBlowfish_*, eRC2'
-                    OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV = Memory::BLOB ());
+                    OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV = Memory::BLOB ());
 
                 public:
-                    function<void(EVP_CIPHER_CTX*)>  fInitializer;
+                    function<void(EVP_CIPHER_CTX*, Direction)>  fInitializer;
                 };
 #endif
 
@@ -125,7 +124,7 @@ namespace   Stroika {
                 private:
                     class   IRep_;
                 public:
-                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn);
+                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn);
                 };
 #endif
 
@@ -141,7 +140,7 @@ namespace   Stroika {
                 private:
                     class   IRep_;
                 public:
-                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut);
+                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut);
                 };
 #endif
 
