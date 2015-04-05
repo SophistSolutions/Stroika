@@ -325,10 +325,10 @@ sub WriteStroikaConfigCHeader
 
     print (OUT "//--LibCurl {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem)) {
-		print (OUT "#define	qFeatureFlag_LibCurl 1\n");
+		print (OUT "#define	qHasFeature_LibCurl 1\n");
 	}	
 	else {
-		print (OUT "#define	qFeatureFlag_LibCurl 0\n");
+		print (OUT "#define	qHasFeature_LibCurl 0\n");
 	}	
 	print (OUT "\n");
 

@@ -13,7 +13,7 @@
 
 #include    "Client.h"
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 #include    "Client_libcurl.h"
 #endif
 #if     qHasFeature_WinHTTP
@@ -158,7 +158,7 @@ Response    Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
  */
 Connection  Transfer::CreateConnection (const Connection::Options& options)
 {
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
     return Connection_LibCurl (options);
 #endif
 #if     qHasFeature_WinHTTP

@@ -3,7 +3,7 @@
  */
 #include    "../../../StroikaPreComp.h"
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 #include    <curl/curl.h>
 #endif
 
@@ -34,7 +34,7 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 namespace   {
     struct  ModuleInit_ {
         ModuleInit_ ()
@@ -50,7 +50,7 @@ namespace   {
 
 
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 class   Connection_LibCurl::Rep_ : public _IRep {
 public:
     Connection::Options fOptions;
@@ -105,7 +105,7 @@ private:
 
 
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 namespace   {
     wstring mkExceptMsg_ (LibCurlException::CURLcode ccode)
     {
@@ -140,7 +140,7 @@ void    LibCurlException::DoThrowIfError (CURLcode status)
 
 
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 /*
  ********************************************************************************
  ****************** Transfer::Connection_LibCurl::Rep_ **************************
@@ -359,7 +359,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
 
 
 
-#if     qHasFeature_libcurl
+#if     qFeatureFlag_LibCurl
 /*
  ********************************************************************************
  ********************** Transfer::Connection_LibCurl ****************************
