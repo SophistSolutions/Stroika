@@ -76,8 +76,8 @@ sub	DoHelp_
         print("	    --disable-GLIBCXX_DEBUG                    /* disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being");
         print("                                                                configured - so */\n");
-        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, or --std=c++1y, etc)");
-        print("                                                                                    - UNIX ONLY */\n");
+        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc)");
+        print("                                                                      - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
@@ -91,7 +91,7 @@ sub	DoHelp_
         print("	    --no-has-zlib                              /* disables zlib for the configuration being configured */\n");
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
-        print("	    --cpp-optimize-flag  {FLAG}                /* Sets $$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+        print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given target */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given target */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
