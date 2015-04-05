@@ -48,7 +48,7 @@ my $CPPSTD_VERSION_FLAG = '';
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
-my $ENABLE_ZLIB = 1;
+my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
@@ -81,14 +81,15 @@ sub	DoHelp_
         print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
+        print("	    --ZLib {build-only|use|use-system|no}      /* enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
         print("	    --has-xerces                               /* DEPRECATED-2015-04-02 --xerces use */\n");
         print("	    --no-has-xerces                            /* DEPRECATED-2015-04-02 --xerces no */\n");
         print("	    --has-openssl                              /* DEPRECATED-2015-04-02 --openssl use */\n");
         print("	    --no-has-openssl                           /* DEPRECATED-2015-04-02 --openssl no */\n");
+        print("	    --has-zlib                                 /* DEPRECATED-2015-04-02 --openssl use */\n");
+        print("	    --no-has-zlib                              /* DEPRECATED-2015-04-02 --openssl no */\n");
         print("	    --has-winhttp                              /* enables winhttp for the configuration being configured */\n");
         print("	    --no-has-winhttp                           /* disables winhttp for the configuration being configured */\n");
-        print("	    --has-zlib                                 /* enables zlib for the configuration being configured */\n");
-        print("	    --no-has-zlib                              /* disables zlib for the configuration being configured */\n");
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
@@ -298,10 +299,12 @@ sub	ParseCommandLine_Remaining_
 			print ("$var flag DEPRECATED - use --xerces\n");
 		}
 		elsif ((lc ($var) eq "-has-zlib") or (lc ($var) eq "--has-zlib")) {
-			$ENABLE_ZLIB = 1;
+			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+			print ("$var flag DEPRECATED - use --zlib\n");
 		}
 		elsif ((lc ($var) eq "-no-has-zlib") or (lc ($var) eq "--no-has-zlib")) {
-			$ENABLE_ZLIB = 0;
+			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_No;
+			print ("$var flag DEPRECATED - use --zlib\n");
 		}
 		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
 			$ENABLE_TRACE2FILE = 1;
@@ -435,9 +438,8 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_libcurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_libcurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
-	print (OUT "    <qHasFeature_zlib>$ENABLE_ZLIB</qHasFeature_zlib>\n");
+	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 
-	#print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {

@@ -12,7 +12,7 @@ endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all
 endif
-ifeq ($(qBuildThirdPartyProducts_zlib), 1)
+ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all
 endif
 
@@ -33,7 +33,7 @@ endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory check
 endif
-ifeq ($(qBuildThirdPartyProducts_zlib), 1)
+ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check
 endif
 

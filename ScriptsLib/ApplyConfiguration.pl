@@ -46,7 +46,7 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
-my $ENABLE_ZLIB = 0;
+my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
@@ -107,7 +107,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_libcurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
-	$ENABLE_ZLIB = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_zlib"));
+	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
@@ -483,13 +483,12 @@ sub WriteStroikaConfigMakeHeader
 	else {
 		print (OUT "qBuildThirdPartyProducts_Xerces=0\n");
 	}	
-	if ($ENABLE_ZLIB) {
-		print (OUT "qBuildThirdPartyProducts_zlib=1\n");
+	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_BuildOnly)) {
+		print (OUT "qBuildThirdPartyProducts_ZLib=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_zlib=0\n");
+		print (OUT "qBuildThirdPartyProducts_ZLib=0\n");
 	}	
-
 
 
 	print (OUT "\n\n");

@@ -105,9 +105,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_Xerces'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qHasFeature_zlib>");
+		my $pps = ReadValue_($line, "<qFeatureFlag_ZLib>");
 		if (defined $pps) {
-			$configuration {'qHasFeature_zlib'} = $pps;
+			$configuration {'qFeatureFlag_ZLib'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qHasFeature_WinHTTP>");
 		if (defined $pps) {
