@@ -36,6 +36,8 @@ extern "C" {
  *              its the right lenght but the length is user-specified.. I may need to init to zero (or some such), and
  *              copy in user data.
  *
+ *              We maybe can (mostly/always) set iv to NULL???
+ *
  *      @todo   Generate exceptions on errors
  *
  *      @todo   this module includes <openssl> stuff in the header. Add additioanl modules inside
