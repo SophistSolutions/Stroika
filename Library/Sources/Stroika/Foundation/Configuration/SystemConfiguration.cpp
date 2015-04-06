@@ -344,7 +344,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
  ****************** SystemConfiguration GetSystemConfiguration ******************
  ********************************************************************************
  */
-inline  SystemConfiguration GetSystemConfiguration ()
+inline  SystemConfiguration Configuration::GetSystemConfiguration ()
 {
     return SystemConfiguration {
         GetSystemConfiguration_CPU (),
