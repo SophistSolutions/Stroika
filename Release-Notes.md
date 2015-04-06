@@ -22,10 +22,10 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a91">v2.0a91x</a><br/>2015-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a91">v2.0a91</a><br/>2015-04-05</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Another minor patch...</li>
 </ul>
 </td>
 </tr>
@@ -864,8 +864,8 @@ arguments, including this)
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a48">v2.0a48</a><br/>2014-10-19</td>
 <td>
 <ul>
-	<li>Refactored Configuration::Platform code into new Configuraiton::SystemConfiguration::OperatingSystem, and added tons
-		of functionaly to the reset of Configuraiton::SystemConfiguration</li>
+	<li>Refactored Configuration::Platform code into new Configuration::SystemConfiguration::OperatingSystem, and added tons
+		of functionaly to the reset of Configuration::SystemConfiguration</li>
 	<li>Several VariantValue improvements, including move constructors, and improved documentation and behavior
 	on the various As converters</li>
 	<li>Improvements to the POSIX ProcessRunner code - so closes unused (above 3 file) descriptors, and fixed
