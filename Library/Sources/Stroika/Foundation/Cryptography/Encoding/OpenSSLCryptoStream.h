@@ -25,7 +25,16 @@ extern "C" {
  *  \file
  *
  *  TODO:
- *      @todo   Very preliminary draft - not tested.
+ *      @todo   new test26 openssl warnings to investigate - memory leak reported by valgrind.
+ *
+ *      @todo   Review https://www.openssl.org/docs/crypto/EVP_EncryptInit.html and things like setkeylength etc to get
+ *              rc4 working (idnetically with windows version)
+ *
+ *              See nt do_crypt(FILE *in, FILE *out, int do_encrypt) example.,
+ *
+ *              From examples, one bug maybe the value of inital_iv - EVP_CipherInit_ex - that the call may expect
+ *              its the right lenght but the length is user-specified.. I may need to init to zero (or some such), and
+ *              copy in user data.
  *
  *      @todo   Generate exceptions on errors
  *

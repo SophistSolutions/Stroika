@@ -31,7 +31,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 #if     qHasFeature_OpenSSL
 namespace {
-    struct InOutStrmCommon_ {
+    struct  InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
             : fCTX_ ()
             , fFinalCalled_ (false)
@@ -39,6 +39,8 @@ namespace {
             ::EVP_CIPHER_CTX_init (&fCTX_);
             cryptoParams.fInitializer (&fCTX_, d);
         }
+        InOutStrmCommon_ (const InOutStrmCommon_&) = delete;
+        InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
         ~InOutStrmCommon_ ()
         {
             ::EVP_CIPHER_CTX_cleanup (&fCTX_);
