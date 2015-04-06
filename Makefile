@@ -130,6 +130,9 @@ check-tools:
 	@echo -n "  " && sh -c "type wget"
 	@echo -n "  " && sh -c "type perl"
 	@echo -n "  " && sh -c "type tar"
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+	@echo -n "  " && sh -c "type libtool"
+endif
 	@# NOT SURE NEEDED ANYMORE...#sh -c "type curl"
 	@echo -n "  " && sh -c "type patch"
 ifneq (,$(findstring CYGWIN,$(shell uname)))
