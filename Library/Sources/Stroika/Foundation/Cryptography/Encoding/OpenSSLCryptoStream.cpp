@@ -495,7 +495,9 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, NULL, NULL, enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;

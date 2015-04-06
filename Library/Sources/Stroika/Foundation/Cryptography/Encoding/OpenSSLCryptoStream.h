@@ -36,6 +36,9 @@ extern "C" {
  *              its the right lenght but the length is user-specified.. I may need to init to zero (or some such), and
  *              copy in user data.
  *
+ *              I think for BOTH key and iv we must look at expected keylen/iplen and pass in data that matches the
+ *              length. Maybe set what hack we did for Algorithm::eRC4?? set key length based on whats passed in?
+ *
  *              We maybe can (mostly/always) set iv to NULL???
  *
  *              #if 0
