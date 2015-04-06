@@ -290,15 +290,20 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_OpenSSL = $var;
         }
-        elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
-            $i++;
-            $var = $ARGV[$i];
-            $FEATUREFLAG_ZLib = $var;
-        }
         elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
             $i++;
             $var = $ARGV[$i];
             $FEATUREFLAG_WinHTTP = $var;
+        }
+        elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_Xerces = $var;
+        }
+        elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_ZLib = $var;
         }
 		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
 			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
