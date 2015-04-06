@@ -104,7 +104,7 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
                     };
-                    // allowed Algorith's for this CTOR include eAES_*, eBlowfish_*, eRC2'
+                    // allowed Algorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
                     OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV = Memory::BLOB ());
 
                 public:
