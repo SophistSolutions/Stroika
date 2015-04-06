@@ -24,10 +24,14 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a90">v2.0a90x</a><br/>2015-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a90">v2.0a90</a><br/>2015-04-05</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Minor patch release</li>
+	<li>fixed missing namespace in definition of function (was link error)</li>
+	<li>Minor cleanups to OpenSSLCryptoStream - didnt solve anything but a hint, and documented remaining angles to attack</li>
+	<li>fixed CPPSTD_VERSION_FLAG to default to --std=c++11 (since thats all that gcc49 supports)</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, and valgrind (one small thread warning I've had forever, AND new test26 openssl warnings to investigate)</li>
 </ul>
 </td>
 </tr>
