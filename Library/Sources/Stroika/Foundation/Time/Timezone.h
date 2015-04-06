@@ -38,6 +38,9 @@ namespace   Stroika {
              *  and offset.
              *
              *  @see http://en.wikipedia.org/wiki/Tz_database
+             *  @see http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+             *  @see http://www.iana.org/time-zones
+             *  @see http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz (this appears to be where the zones are defined)
              *
              *  e.g:
              *      ID                  STD ABBR    STD NAME                DST ABBR    DST NAME                GMT offset  DST adjustment  DST Start Date rule     Start time  DST End date rule   End time
