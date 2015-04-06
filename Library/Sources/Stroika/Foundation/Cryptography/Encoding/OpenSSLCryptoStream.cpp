@@ -54,7 +54,7 @@ namespace {
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
-            if(not ::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, data2ProcessEnd - data2ProcessStart)) {
+            if(not ::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart))) {
                 /* Error */
                 // THROW
                 return 0;
@@ -227,7 +227,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -237,7 +237,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -247,7 +247,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -257,7 +257,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -267,7 +267,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -277,7 +277,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -287,7 +287,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -297,7 +297,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -307,7 +307,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -317,7 +317,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -327,7 +327,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -337,7 +337,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -347,7 +347,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -357,7 +357,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -367,7 +367,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -377,7 +377,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -387,7 +387,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -397,7 +397,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -407,7 +407,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -417,7 +417,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -427,7 +427,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cfb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cfb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -437,7 +437,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -448,8 +448,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cbc (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -460,8 +460,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ecb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -472,8 +472,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cfb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -484,8 +484,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
                     ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ofb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;
@@ -495,7 +495,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                     if (nopad) {
                         EVP_CIPHER_CTX_set_padding (ctx, 0);
                     }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
                 };
             }
             break;

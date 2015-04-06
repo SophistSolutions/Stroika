@@ -38,6 +38,11 @@ extern "C" {
  *
  *              We maybe can (mostly/always) set iv to NULL???
  *
+ *              #if 0
+ *                // DEBUG WHY THIS FAILS - I THINK WE NEED TO ENABLE PADDING FOR SOME CYPHERS!
+ *               BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen(kSrc4_)),
+ *          #endif
+ *
  *      @todo   Generate exceptions on errors
  *
  *      @todo   this module includes <openssl> stuff in the header. Add additioanl modules inside
