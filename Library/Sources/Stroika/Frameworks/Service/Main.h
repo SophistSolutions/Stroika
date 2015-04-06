@@ -67,7 +67,7 @@
  *              Added the startedCB method - just so fewer incompatible API-breaking changes needed in the
  *              future.
  *
- *      @todo   Implement/test (it maybe implemented) --ReloadConfiguraiton operation.
+ *      @todo   Implement/test (it maybe implemented) --ReloadConfiguration operation.
  *
  *      @todo - Main::CommandNames - consider making these STRING params, and then this could be end-user configurable (good idea!)
  *
