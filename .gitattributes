@@ -9,10 +9,10 @@
 *.xsd text eol=crlf diff
 *.wsdl text eol=crlf diff
 README text diff
-Makefile* text diff
+Makefile* text eol=lf diff
 *.mk text diff
 *.pl text diff
-*.PATCH text diff
+*.PATCH text eol=lf diff
 *.h text diff
 *.inl text diff
 *.cpp text diff
