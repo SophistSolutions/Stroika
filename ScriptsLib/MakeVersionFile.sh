@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 VERSION_IN_FILE=$1
 VERSION_OUT_FILE=$2
 DEFINE_PROTECTOR=$3
