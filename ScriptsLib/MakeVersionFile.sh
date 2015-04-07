@@ -5,7 +5,7 @@ DEFINE_PROTECTOR=$3
 CPPNAMESPACE=$4
 
 function getawk() {
-    if command -v gawk 2>/dev/null; then
+    if command -v gawk &>/dev/null; then
         echo -n "gawk"
     else
         echo -n "awk";
