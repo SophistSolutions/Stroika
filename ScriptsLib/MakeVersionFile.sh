@@ -4,6 +4,16 @@ VERSION_OUT_FILE=$2
 DEFINE_PROTECTOR=$3
 CPPNAMESPACE=$4
 
+function getawk() {
+    if hash gawk 2>/dev/null; then
+        echo -n "gawk"
+    else
+        echo -n "awk";
+    fi
+}
+
+AWK=$(getawk)
+
 #echo "-----------"
 #echo VERSION_OUT_FILE=$VERSION_OUT_FILE
 #echo DEFINE_PROTECTOR=$DEFINE_PROTECTOR
