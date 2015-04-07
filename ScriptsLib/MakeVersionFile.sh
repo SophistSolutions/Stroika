@@ -4,7 +4,7 @@ VERSION_OUT_FILE=$2
 DEFINE_PROTECTOR=$3
 CPPNAMESPACE=$4
 
-function getawk() {
+getawk() {
     if command -v gawk &>/dev/null; then
         echo -n "gawk"
     else
