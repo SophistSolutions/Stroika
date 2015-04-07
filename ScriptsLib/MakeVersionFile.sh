@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 VERSION_IN_FILE=$1
 VERSION_OUT_FILE=$2
 DEFINE_PROTECTOR=$3
 CPPNAMESPACE=$4
 
 function getawk() {
-    if hash gawk 2>/dev/null; then
+    if command -v gawk 2>/dev/null; then
         echo -n "gawk"
     else
         echo -n "awk";
@@ -19,11 +19,11 @@ AWK=$(getawk)
 #echo DEFINE_PROTECTOR=$DEFINE_PROTECTOR
 #echo "-----------"
 
-MAJOR=`cat $VERSION_IN_FILE | gawk -F. '{ print $1 }'`
-MINOR=`cat $VERSION_IN_FILE | gawk -F. '{ print $2 }'`
-VERSIONSTAGE=`cat $VERSION_IN_FILE | gawk -F. '{ print $3 }'`
-VERSIONSUBSTAGE=`cat $VERSION_IN_FILE | gawk -F. '{ print $4 }'`
-VERSIONFINAL=`cat $VERSION_IN_FILE | gawk -F. '{ print $5 }'`
+MAJOR=`cat $VERSION_IN_FILE | $AWK -F. '{ print $1 }'`
+MINOR=`cat $VERSION_IN_FILE | $AWK -F. '{ print $2 }'`
+VERSIONSTAGE=`cat $VERSION_IN_FILE | $AWK -F. '{ print $3 }'`
+VERSIONSUBSTAGE=`cat $VERSION_IN_FILE | $AWK -F. '{ print $4 }'`
+VERSIONFINAL=`cat $VERSION_IN_FILE | $AWK -F. '{ print $5 }'`
 if [ "$VERSIONFINAL" == "x" ] ; then VERSIONFINAL="false"; fi
 if [ "$VERSIONFINAL" == "" ] ; then VERSIONFINAL="true"; fi
 if [ "$VERSIONFINAL" != "false" ] && [ "$VERSIONFINAL" != "true" ] ; then echo "BAD VERSIONFINAL"; fi
