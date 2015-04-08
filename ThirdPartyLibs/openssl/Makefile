@@ -43,17 +43,13 @@ $(TRGDIR):	$(ZIPPEDFILE)
 doPatch:
 	@echo -n "   ...Patching OpenSSL...   "
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@dos2unix -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 	@echo -n .
 	@patch --quiet -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
-	@unix2dos -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 endif
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
-	@dos2unix -q Patches/LosePRINTOfCopyingInUtils.PATCH
 	@echo -n .
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
-	@unix2dos -q Patches/LosePRINTOfCopyingInUtils.PATCH
 endif
 endif
 	@echo "   ...done"
