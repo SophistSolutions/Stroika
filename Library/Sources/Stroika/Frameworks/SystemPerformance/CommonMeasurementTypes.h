@@ -11,6 +11,7 @@
 
 /*
  * TODO:
+ *      @todo   Consider losing this file, and storing these in the module defining the instrument?
  */
 
 
