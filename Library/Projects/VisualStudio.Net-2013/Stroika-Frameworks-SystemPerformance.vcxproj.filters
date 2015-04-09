@@ -73,6 +73,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.cpp">
+      <Filter>Sources\Instruments</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
@@ -115,6 +118,9 @@
       <Filter>Sources\Instruments</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.h">
+      <Filter>Sources\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.h">
       <Filter>Sources\Instruments</Filter>
     </ClInclude>
   </ItemGroup>
