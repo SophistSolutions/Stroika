@@ -139,7 +139,6 @@ namespace {
         SysTimeCaptureContext_   result;
         using   IO::FileSystem::BinaryFileInputStream;
         using   Characters::String2Float;
-        Mapping<String, PerfStats_>   result;
         DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
         const   String_Constant kFileName_ { L"/proc/stat" };
         // Note - /procfs files always unseekable
@@ -270,7 +269,7 @@ namespace {
             }
 #endif
 #if     qPlatform_POSIX
-            WinSysTimeCaptureContext_   tmp;
+            SysTimeCaptureContext_   tmp;
             result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
             fContext_ = tmp;
 #elif     qPlatform_Windows
