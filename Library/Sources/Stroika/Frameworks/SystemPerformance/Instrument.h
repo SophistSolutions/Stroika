@@ -46,9 +46,9 @@ namespace   Stroika {
              *          <<<not sure we need this registry>>>
              */
             struct  Instrument {
-                InstrumentNameType          fInstrumentName;
-                CapturerCallback            fCaptureFunction;
-                Set<MeasurementType>        fCapturedMeasurements;
+                InstrumentNameType                  fInstrumentName;
+                CapturerCallback                    fCaptureFunction;
+                Set<MeasurementType>                fCapturedMeasurements;
                 DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
                 Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
