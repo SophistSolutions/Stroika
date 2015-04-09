@@ -168,12 +168,12 @@ namespace {
 #if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
         {
             double loadAve[3];
-            int result = ::getloadavg (loadAve, 3);
-            if (result == 3) {
+            int lr = ::getloadavg (loadAve, 3);
+            if (lr == 3) {
                 result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
             }
             else {
-                DbgTrace ("getloadave failed - with result = %d", result);
+                DbgTrace ("getloadave failed - with result = %d", lr);
             }
         }
 #endif
