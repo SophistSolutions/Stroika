@@ -13,6 +13,7 @@
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/Math/Common.h"
 
 #include    "SystemCPU.h"
 
@@ -128,15 +129,15 @@ namespace {
      *                       should be USER_HZ times the second entry in the
      *                       /proc/uptime pseudo-file.
      */
-    struct  SysTimeCaptureContext_ {
-        double  user {};
-        double  nice  {};
-        double  system  {};
-        double  idle  {};
+    struct  POSIXSysTimeCaptureContext_ {
+        double  user;
+        //double  nice;
+        double  system;
+        double  idle;
     };
-    inline  SysTimeCaptureContext_    GetSysTimes_ ()
+    inline  POSIXSysTimeCaptureContext_    GetSysTimes_ ()
     {
-        SysTimeCaptureContext_   result;
+        POSIXSysTimeCaptureContext_   result;
         using   IO::FileSystem::BinaryFileInputStream;
         using   Characters::String2Float;
         DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
@@ -150,32 +151,36 @@ namespace {
                 result.user = String2Float<double> (line[1]);
                 result.system = String2Float<double> (line[3]);
                 result.idle = String2Float<double> (line[4]);
+                break;  // once found no need to read the rest...
             }
         }
         return result;
     }
-
-    double  cputime_ (Optional<SysTimeCaptureContext_> prevContextObject = Optional<SysTimeCaptureContext_> (), SysTimeCaptureContext_* newContext = nullptr)
+    double  cputime_ (Optional<POSIXSysTimeCaptureContext_>* context2Update = nullptr)
     {
-        SysTimeCaptureContext_   baseline;
-        if (prevContextObject) {
-            baseline = *prevContextObject;
+        POSIXSysTimeCaptureContext_   baseline;
+        if (context2Update != nullptr and * context2Update) {
+            baseline = **context2Update;
         }
         else {
             baseline = GetSysTimes_ ();
             const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
             Execution::Sleep (kUseIntervalIfNoBaseline_);
         }
-        SysTimeCaptureContext_   newVal = GetSysTimes_ ();
-        if (newContext != nullptr) {
-            *newContext = newVal;
+        POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
+        if (context2Update != nullptr) {
+            *context2Update = newVal;
         }
-
         double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
         double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
+        if (Math::NearlyEquals (totalTime, 0)) {
+            // can happen if called too quickly together. No good answer
+            DbgTrace ("Warning - times too close together for cputime_");
+            return 0;
+        }
         Assert (totalTime > 0);
         double cpu =  usedSysTime * 100 / totalTime;
-        return cpu;
+        return Math::PinInRange<double> (cpu, 0, 100);
     }
 }
 #elif   qPlatform_Windows
@@ -188,12 +193,13 @@ namespace {
         // convert from 100-nanosecond units
         return static_cast<double> (ui.QuadPart) / 10000000;
     }
-
-    inline  void    GetSysTimes_ (double* idleTime, double* kernelTime, double* userTime)
+    struct  WinSysTimeCaptureContext_ {
+        double  IdleTime;
+        double  KernelTime;
+        double UserTime;
+    };
+    inline  WinSysTimeCaptureContext_    GetSysTimes_ ()
     {
-        RequireNotNull (idleTime);
-        RequireNotNull (kernelTime);
-        RequireNotNull (userTime);
         FILETIME    curIdleTime_;
         FILETIME    curKernelTime_;
         FILETIME    curUserTime_;
@@ -201,34 +207,23 @@ namespace {
         memset (&curKernelTime_, 0, sizeof (curKernelTime_));
         memset (&curUserTime_, 0, sizeof (curUserTime_));
         Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
-        *idleTime = GetAsSeconds_ (curIdleTime_);
-        *kernelTime = GetAsSeconds_ (curKernelTime_);
-        *userTime = GetAsSeconds_ (curUserTime_);
+        return WinSysTimeCaptureContext_ { GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_) };
     }
-
-    struct WinSysTimeCaptureContext_ {
-        double  IdleTime {};
-        double  KernelTime  {};
-        double UserTime  {};
-    };
-    double  cputime_ (Optional<WinSysTimeCaptureContext_> prevContextObject = Optional<WinSysTimeCaptureContext_> (), WinSysTimeCaptureContext_* newContext = nullptr)
+    double  cputime_ (Optional<WinSysTimeCaptureContext_>* context2Update = nullptr)
     {
         WinSysTimeCaptureContext_   baseline;
-        if (prevContextObject) {
-            baseline = *prevContextObject;
+        if (context2Update != nullptr and * context2Update) {
+            baseline = **context2Update;
         }
         else {
-            GetSysTimes_ (&baseline.IdleTime, &baseline.KernelTime, &baseline.UserTime);
+            baseline = GetSysTimes_ ();
             const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
             Execution::Sleep (kUseIntervalIfNoBaseline_);
         }
-        WinSysTimeCaptureContext_   newVal;
-        GetSysTimes_ (&newVal.IdleTime, &newVal.KernelTime, &newVal.UserTime);
-
-        if (newContext != nullptr) {
-            *newContext = newVal;
+        WinSysTimeCaptureContext_   newVal = GetSysTimes_ ();
+        if (context2Update != nullptr) {
+            *context2Update = newVal;
         }
-
         double  idleTimeOverInterval = newVal.IdleTime - baseline.IdleTime;
         double  kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
         double  userTimeOverInterval = newVal.UserTime - baseline.UserTime;
@@ -236,7 +231,7 @@ namespace {
         double sys = kernelTimeOverInterval + userTimeOverInterval;
         Assert (sys > 0);
         double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
-        return cpu;
+        return Math::PinInRange<double> (cpu, 0, 100);
     }
 }
 #endif
@@ -246,9 +241,9 @@ namespace {
 namespace {
     struct  CaptureContext_ {
 #if     qPlatform_POSIX
-        Optional<SysTimeCaptureContext_>    fContext_;
+        Optional<POSIXSysTimeCaptureContext_>   fContext_;
 #elif   qPlatform_Windows
-        Optional<WinSysTimeCaptureContext_> fContext_;
+        Optional<WinSysTimeCaptureContext_>     fContext_;
 #endif
         Info capture_ ()
         {
@@ -268,14 +263,8 @@ namespace {
                 }
             }
 #endif
-#if     qPlatform_POSIX
-            SysTimeCaptureContext_   tmp;
-            result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
-            fContext_ = tmp;
-#elif     qPlatform_Windows
-            WinSysTimeCaptureContext_   tmp;
-            result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
-            fContext_ = tmp;
+#if     qPlatform_POSIX or qPlatform_Windows
+            result.fTotalCPUUsage = cputime_ (&fContext_);
 #endif
             return result;
         }
@@ -293,7 +282,7 @@ namespace {
  */
 Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument ()
 {
-    CaptureContext_ useCaptureContext;
+    CaptureContext_ useCaptureContext;  // capture context so copyable in mutable lambda
     static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"System-CPU")),
