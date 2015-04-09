@@ -26,7 +26,7 @@ namespace   Stroika {
         namespace   SystemPerformance {
             namespace   Instruments {
 
-//#define qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage 1
+
 #ifndef qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
 #define qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage  qPlatform_POSIX
 #endif
@@ -35,10 +35,8 @@ namespace   Stroika {
                 namespace   SystemCPU {
 
 
-
-
                     using   DataExchange::ObjectVariantMapper;
-                    using   Memory::Optional_Indirect_Storage;
+                    using   Foundation::Memory::Optional_Indirect_Storage;
 
                     /**
                      *
