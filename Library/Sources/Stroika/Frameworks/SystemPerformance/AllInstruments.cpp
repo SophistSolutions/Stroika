@@ -7,6 +7,7 @@
 #include    "Instruments/MountedFilesystemUsage.h"
 #include    "Instruments/NetworkInterfaces.h"
 #include    "Instruments/ProcessDetails.h"
+#include    "Instruments/SystemCPU.h"
 #include    "Instruments/SystemTimes.h"
 
 #include    "AllInstruments.h"
@@ -41,6 +42,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
         Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),
         Instruments::MountedFilesystemUsage::GetInstrument (),
+        Instruments::SystemCPU::GetInstrument (),
     };
     return kInstruments_;
 }
