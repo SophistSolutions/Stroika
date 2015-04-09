@@ -381,8 +381,8 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>&);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
-                template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
+                template    <typename T, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>&);
                 template    <typename T, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&);
                 template    <typename T>
