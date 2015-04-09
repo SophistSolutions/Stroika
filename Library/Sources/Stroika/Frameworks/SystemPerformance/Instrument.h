@@ -17,7 +17,8 @@
 
 /*
  * TODO:
- *      @todo
+ *      @todo   Try to do specialization of CaptureOneMeasurement in each instrument that avoids the
+ *              serialize/deserialize part - and jsut returns the raw value.
  */
 
 
@@ -43,7 +44,10 @@ namespace   Stroika {
 
 
             /**
-             *          <<<not sure we need this registry>>>
+             *  \note   Design Note
+             *          Each instrument instance MAY maintain 'state' - that affects subsequent calls. For example, for instruments
+             *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
+             *          state, and return an average over the time since the last call to this instrument instance.
              */
             struct  Instrument {
                 InstrumentNameType                  fInstrumentName;
