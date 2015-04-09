@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)MountedFilesystemUsage.o\
 	$(ObjDir)NetworkInterfaces.o\
 	$(ObjDir)ProcessDetails.o\
+	$(ObjDir)SystemCPU.o\
 	$(ObjDir)SystemTimes.o\
 
 all:	$(Objs)
