@@ -85,7 +85,7 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
  ********************************************************************************
  */
 
-SystemConfiguration::BootInformation GetSystemConfiguration_BootInformation ()
+SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootInformation ()
 {
     SystemConfiguration::BootInformation    result;
 #if     qPlatform_POSIX
