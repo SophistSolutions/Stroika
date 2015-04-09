@@ -159,32 +159,38 @@ namespace {
 
 
 namespace {
-    Info capture_ ()
-    {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Instruments::SystemCPU capture_");
+    struct  CaptureContext_ {
+#if     qPlatform_Windows
+        Optional<WinSysTimeCaptureContext_> fContext_;
 #endif
-        Info    result;
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+        Info capture_ ()
         {
-            double loadAve[3];
-            int lr = ::getloadavg (loadAve, 3);
-            if (lr == 3) {
-                result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::SystemCPU capture_");
+#endif
+            Info    result;
+#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+            {
+                double loadAve[3];
+                int lr = ::getloadavg (loadAve, 3);
+                if (lr == 3) {
+                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+                }
+                else {
+                    DbgTrace ("getloadave failed - with result = %d", lr);
+                }
             }
-            else {
-                DbgTrace ("getloadave failed - with result = %d", lr);
-            }
-        }
 #endif
 #if     qPlatform_POSIX
-        //result.fTotalCPUUsage = cputime_ ();
+            //result.fTotalCPUUsage = cputime_ ();
 #elif     qPlatform_Windows
-        result.fTotalCPUUsage = cputime_ ();
+            WinSysTimeCaptureContext_   tmp;
+            result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
+            fContext_ = tmp;
 #endif
-
-        return result;
-    }
+            return result;
+        }
+    };
 }
 
 
@@ -198,13 +204,14 @@ namespace {
  */
 Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument ()
 {
+    CaptureContext_ useCaptureContext;
     static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"System-CPU")),
-    [] () -> MeasurementSet {
+    [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
-        Info rawMeasurement = capture_ ();
+        Info rawMeasurement = useCaptureContext.capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
