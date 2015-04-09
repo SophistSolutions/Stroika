@@ -91,7 +91,7 @@ SystemConfiguration::BootInformation GetSystemConfiguration_BootInformation ()
 #if     qPlatform_POSIX
     struct  sysinfo     info;
     ::sysinfo (&info);
-    result.fBootedAt = DateTime::Now ().AddSeconds (-info.update);
+    result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif   qPlatform_Windows
     // ::GetTickCount () is defined to return #seconds since boot
     result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount ()));
