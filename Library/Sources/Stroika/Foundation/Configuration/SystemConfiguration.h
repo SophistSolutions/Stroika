@@ -8,6 +8,8 @@
 
 #include    "../Characters/String.h"
 #include    "../Containers/Sequence.h"
+#include    "../Time/DateTime.h"
+
 #include    "Common.h"
 
 
@@ -28,6 +30,11 @@
  *      @todo   Review API provide, and document relationship with sysconf/etc (idea is simpler, and a bit more portable,
  *              but just subset).
  *
+ *      @todo   BootInformation: consider adding info like 'last shutdown at' and last shutdown reason.
+ *
+ *      @todo   BootInformation: simplistic impl - may not handle 'hibernate' properly... - must verify/test, and timezone
+ *              change etc... just uses seconds since boot on most plantforms??
+ *
  */
 
 
@@ -43,6 +50,13 @@ namespace   Stroika {
             /**
              */
             struct  SystemConfiguration {
+
+
+                /**
+                 */
+                struct  BootInformation {
+                    Time::DateTime  fBootedAt;
+                };
 
 
                 /**
@@ -166,6 +180,7 @@ namespace   Stroika {
                 };
 
 
+                BootInformation fBootInformation;
                 CPU             fCPU;
                 Memory          fMemory;
                 OperatingSystem fOperatingSystem;
@@ -176,6 +191,11 @@ namespace   Stroika {
             /**
              */
             SystemConfiguration GetSystemConfiguration ();
+
+
+            /**
+             */
+            SystemConfiguration::BootInformation GetSystemConfiguration_BootInformation ();
 
 
             /**

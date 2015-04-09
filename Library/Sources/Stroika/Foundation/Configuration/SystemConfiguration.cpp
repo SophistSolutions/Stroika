@@ -45,6 +45,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Streams;
+using   namespace   Stroika::Foundation::Time;
 
 
 using   Characters::String_Constant;
@@ -72,6 +73,34 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
     }
     return static_cast<unsigned int> (socketIds.size ());
 }
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************* Configuration::GetSystemConfiguration_BootInformation ************
+ ********************************************************************************
+ */
+
+SystemConfiguration::BootInformation GetSystemConfiguration_BootInformation ()
+{
+    SystemConfiguration::BootInformation    result;
+#if     qPlatform_POSIX
+    struct sysinfo info;
+    sysinfo(&info);
+    result.fBootedAt = DateTime::Now ().AddSeconds (-info.update);
+#elif   qPlatform_Windows
+    // ::GetTickCount () is defined to return #seconds since boot
+    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount ()));
+#else
+    AssertNotImplemented ();
+#endif
+    return result;
+}
+
+
 
 
 /*
@@ -347,6 +376,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
 SystemConfiguration Configuration::GetSystemConfiguration ()
 {
     return SystemConfiguration {
+        GetSystemConfiguration_BootInformation (),
         GetSystemConfiguration_CPU (),
         GetSystemConfiguration_Memory (),
         GetSystemConfiguration_OperatingSystem (),
