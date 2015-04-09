@@ -59,9 +59,10 @@ namespace   Stroika {
 
 #if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
                     struct  Info::LoadAverage {
-                        double  f1MinuteAve;
-                        double  f5MinuteAve;
-                        double  f15MinuteAve;
+                        double  f1MinuteAve {};
+                        double  f5MinuteAve {};
+                        double  f15MinuteAve {};
+                        LoadAverage () = default;
                         LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve);
                     };
 #endif
