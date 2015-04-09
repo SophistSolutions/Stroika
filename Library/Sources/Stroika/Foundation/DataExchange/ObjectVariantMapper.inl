@@ -228,13 +228,13 @@ namespace   Stroika {
             {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
-            template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>&)
+            template    <typename T, typename TRAITS>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>&)
             {
                 using   Memory::Optional;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
+                    const Optional<T, TRAITS>*  actualMember    =   reinterpret_cast<const Optional<T, TRAITS>*> (fromObjOfTypeT);
                     if (actualMember->IsPresent ())
                     {
                         return mapper.FromObject<T> (**actualMember);
@@ -245,7 +245,7 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
+                    Optional<T, TRAITS>*    actualInto  =   reinterpret_cast<Optional<T, TRAITS>*> (intoObjOfTypeT);
                     if (d.empty ())
                     {
                         actualInto->clear ();
@@ -254,7 +254,7 @@ namespace   Stroika {
                         *actualInto = mapper.ToObject<T> (d);
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&)
