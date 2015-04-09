@@ -8,8 +8,11 @@
 #endif
 
 #include    "../../../Foundation/Characters/String_Constant.h"
+#include    "../../../Foundation/Characters/String2Float.h"
+#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
+#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 
 #include    "SystemCPU.h"
 
@@ -93,7 +96,90 @@ ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
 
 
 
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+namespace {
+    /*
+     *  /proc/stat
+     *      EXAMPLE:
+     *          lewis@LewisLinuxDevVM2:~$ cat /proc/stat
+     *          cpu  361378 1170 50632 2812384 5609 3 2684 0 0 0
+     *          cpu0 202907 894 27261 1382587 3014 3 2672 0 0 0
+     *          cpu1 158471 276 23371 1429797 2595 0 12 0 0 0
+     *
+     *  From http://man7.org/linux/man-pages/man5/proc.5.html
+     *
+     *        kernel/system statistics.  Varies with architecture.  Common
+     *         entries include:
+     *
+     *         cpu  3357 0 4313 1362393
+     *                The amount of time, measured in units of USER_HZ
+     *                (1/100ths of a second on most architectures, use
+     *                sysconf(_SC_CLK_TCK) to obtain the right value), that
+     *                the system spent in various states:
+     *
+     *                user   (1) Time spent in user mode.
+     *
+     *                nice   (2) Time spent in user mode with low priority
+     *                       (nice).
+     *
+     *                system (3) Time spent in system mode.
+     *
+     *                idle   (4) Time spent in the idle task.  This value
+     *                       should be USER_HZ times the second entry in the
+     *                       /proc/uptime pseudo-file.
+     */
+    struct  SysTimeCaptureContext_ {
+        double  user {};
+        double  nice  {};
+        double  system  {};
+        double  idle  {};
+    };
+    inline  SysTimeCaptureContext_    GetSysTimes_ ()
+    {
+        SysTimeCaptureContext_   result;
+        using   IO::FileSystem::BinaryFileInputStream;
+        using   Characters::String2Float;
+        Mapping<String, PerfStats_>   result;
+        DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+        const   String_Constant kFileName_ { L"/proc/stat" };
+        // Note - /procfs files always unseekable
+        for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"***in Instruments::SystemCPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+            if (line.size () >= 5 and line[0] == L"cpu") {
+                result.user = String2Float<double> (line[1]);
+                result.system = String2Float<double> (line[3]);
+                result.idle = String2Float<double> (line[4]);
+            }
+        }
+        return result;
+    }
+
+    double  cputime_ (Optional<SysTimeCaptureContext_> prevContextObject = Optional<SysTimeCaptureContext_> (), SysTimeCaptureContext_* newContext = nullptr)
+    {
+        SysTimeCaptureContext_   baseline;
+        if (prevContextObject) {
+            baseline = *prevContextObject;
+        }
+        else {
+            baseline = GetSysTimes_ ();
+            const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+            Execution::Sleep (kUseIntervalIfNoBaseline_);
+        }
+        SysTimeCaptureContext_   newVal = GetSysTimes_ ();
+        if (newContext != nullptr) {
+            *newContext = newVal;
+        }
+
+        double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
+        double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
+        Assert (totalTime > 0);
+        double cpu =  usedSysTime * 100 / totalTime;
+        return cpu;
+    }
+}
+#elif   qPlatform_Windows
 namespace {
     inline  double  GetAsSeconds_ (FILETIME ft)
     {
@@ -160,7 +246,9 @@ namespace {
 
 namespace {
     struct  CaptureContext_ {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+        Optional<SysTimeCaptureContext_>    fContext_;
+#elif   qPlatform_Windows
         Optional<WinSysTimeCaptureContext_> fContext_;
 #endif
         Info capture_ ()
@@ -182,7 +270,9 @@ namespace {
             }
 #endif
 #if     qPlatform_POSIX
-            //result.fTotalCPUUsage = cputime_ ();
+            WinSysTimeCaptureContext_   tmp;
+            result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
+            fContext_ = tmp;
 #elif     qPlatform_Windows
             WinSysTimeCaptureContext_   tmp;
             result.fTotalCPUUsage = cputime_ (fContext_, &tmp);
