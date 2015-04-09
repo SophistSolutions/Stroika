@@ -552,7 +552,7 @@ namespace {
 
                     static  const time_t    kSecsSinceBoot_ = [] () {
                         struct sysinfo info;
-                        sysinfo(&info);
+                        ::sysinfo (&info);
                         return time(NULL) - info.uptime;
                     } ();
                     //starttime %llu (was %lu before Linux 2.6)
