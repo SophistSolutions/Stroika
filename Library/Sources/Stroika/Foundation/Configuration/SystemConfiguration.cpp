@@ -8,6 +8,7 @@
 #if     qPlatform_POSIX
 #include    <unistd.h>
 #include    <fstream>
+#include    <sys/sysinfo.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
@@ -88,8 +89,8 @@ SystemConfiguration::BootInformation GetSystemConfiguration_BootInformation ()
 {
     SystemConfiguration::BootInformation    result;
 #if     qPlatform_POSIX
-    struct sysinfo info;
-    sysinfo(&info);
+    struct  sysinfo     info;
+    ::sysinfo (&info);
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.update);
 #elif   qPlatform_Windows
     // ::GetTickCount () is defined to return #seconds since boot
