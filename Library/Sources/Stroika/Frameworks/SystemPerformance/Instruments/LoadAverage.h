@@ -18,7 +18,7 @@
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
  */
-
+_DeprecatedFile_ ("OBSOLETE - as of Stroika 2.0a92");
 
 
 namespace   Stroika {

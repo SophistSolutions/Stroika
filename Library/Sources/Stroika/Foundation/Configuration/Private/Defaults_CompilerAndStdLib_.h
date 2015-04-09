@@ -1629,6 +1629,19 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
+/*
+ *  Wrap this macro around entire declaration, as in:
+ *       _DeprecatedFile_ ("DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator");
+ */
+#define STRINGIFY(a) #a
+#if     !defined (_DeprecatedFile_)
+#define _DeprecatedFile_(MESSAGE) \
+	_Pragma (STRINGIFY (message ##  DEPRECATED  ## MESSAGE ))
+#endif
+
+
+
+
 
 
 /*
