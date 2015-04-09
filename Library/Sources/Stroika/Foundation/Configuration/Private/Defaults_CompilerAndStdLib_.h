@@ -1636,7 +1636,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #define STRINGIFY(a) #a
 #if     !defined (_DeprecatedFile_)
 #define _DeprecatedFile_(MESSAGE) \
-	_Pragma (STRINGIFY (message ##  DEPRECATED  ## MESSAGE ))
+    _Pragma (STRINGIFY (message ##  DEPRECATED  ## MESSAGE ))
 #endif
 
 
