@@ -18,7 +18,5 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 using   Characters::String_Constant;
 
 
-const   MeasurementType SystemPerformance::kLoadAverage         =   MeasurementType (String_Constant (L"Load-Average"));
 const   MeasurementType SystemPerformance::kMemoryUsage         =   MeasurementType (String_Constant (L"Memory-Usage"));
-const   MeasurementType SystemPerformance::kPercentCPUUsage     =   MeasurementType (String_Constant (L"Percent-CPU"));
 const   MeasurementType SystemPerformance::kMountedVolumeUsage  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));

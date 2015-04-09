@@ -21,21 +21,9 @@ namespace   Stroika {
 
 
             /*
-             * This is the standard UNIX load average value - 1min, 5min, and 15min trailing averages of
-             *  runq length. UNIX only
-             */
-            extern  const   MeasurementType kLoadAverage;
-
-            /*
              */
             extern  const   MeasurementType kMemoryUsage;
 
-            /*
-             * Portable average percent CPU usage(combines system and user time, and aggregates over installed CPUs).
-             *
-             *  @todo clarify what this means if you use all of 4 cpus - 100% or 400%? But I think max is 100%
-             */
-            extern  const   MeasurementType kPercentCPUUsage;
 
             /*
              * Portable listing of mounted disk usage (like UNIX df)
