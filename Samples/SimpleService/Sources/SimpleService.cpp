@@ -42,6 +42,7 @@ using   namespace Stroika::Frameworks::Service;
 
 
 using   Containers::Sequence;
+using   Characters::String_Constant;
 using   Execution::Thread;
 
 
