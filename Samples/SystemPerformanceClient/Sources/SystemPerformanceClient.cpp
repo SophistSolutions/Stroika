@@ -59,7 +59,7 @@ int main (int argc, const char* argv[])
     bool                        printUsage  =   false;
     bool                        printNames  =   false;
     bool                        oneLineMode =   false;
-    Time::DurationSecondsType   runFor      =   30.0;
+    Time::DurationSecondsType   runFor      =   0;              // default to runfor 0, so we do each once.
     Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
