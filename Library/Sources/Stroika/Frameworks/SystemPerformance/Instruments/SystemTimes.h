@@ -19,6 +19,7 @@
  *
  */
 
+_DeprecatedFile_ ("OBSOLETE - as of Stroika 2.0a92");
 
 
 namespace   Stroika {

@@ -3,12 +3,10 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "Instruments/LoadAverage.h"
 #include    "Instruments/MountedFilesystemUsage.h"
 #include    "Instruments/NetworkInterfaces.h"
 #include    "Instruments/ProcessDetails.h"
 #include    "Instruments/SystemCPU.h"
-#include    "Instruments/SystemTimes.h"
 
 #include    "AllInstruments.h"
 
@@ -33,12 +31,6 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
 {
     // OK to cache - copyable - but construct AFTER main (only when called here)
     static  InstrumentSet   kInstruments_ = {
-#if     qSupport_SystemPerformance_Instruments_LoadAverage
-        Instruments::LoadAverage::GetInstrument (),
-#endif
-#if     qSupport_SystemPerformance_Instruments_SystemTimes
-        Instruments::SystemTimes::GetInstrument (),
-#endif
         Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),
         Instruments::MountedFilesystemUsage::GetInstrument (),
