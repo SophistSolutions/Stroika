@@ -188,7 +188,14 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Add when T is already present has no effect on the container (not an error or exception).
+                 *  Add when T is already present has may have no effect (logically has no effect) on the
+                 *  container (not an error or exception).
+                 *
+                 *  So for a user-defined type T (or any type where the caller specifies the compare function)
+                 *  it is left undefined whether or not the new (not included) attributes assocaited with the added
+                 *  item make it into the Set.
+                 *
+                 *  If you really want an association list (Mapping) from one thing to another, use that.
                  */
                 nonvirtual  void    Add (T item);
 
