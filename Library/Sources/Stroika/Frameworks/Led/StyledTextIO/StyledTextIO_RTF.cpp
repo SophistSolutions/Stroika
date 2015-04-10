@@ -118,7 +118,7 @@ inline  static  Led_LineSpacing mkLineSpacing_From_RTFValues (Led_Coordinate sl,
         if (multi) {
             /*
              *  This / 12 is total guesswork. The RTF 1.5 Spec is TOTALLY VAGUE. Much of this was just guestimated
-             *  and infered from the Win32 Docs on PARAFORMAT2, plus the trial and error - which yeilded that
+             *  and infered from the Win32 Docs on PARAFORMAT2, plus the trial and error - which yielded that
              *  dividing by 12 got the right answer!
              *      -- LGP 2000/06/12
              */

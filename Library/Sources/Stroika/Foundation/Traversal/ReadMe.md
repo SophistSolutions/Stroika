@@ -14,7 +14,7 @@ Overview
 		}
 
 
-	// the question is - is there any way todo this without threads? I could run a look on a thread and yeild would 'send a message' back to the
+	// the question is - is there any way todo this without threads? I could run a look on a thread and yield would 'send a message' back to the
 	// iterator? That maybe how it needs to happen.
 		class generator : iterable<T> {
 			public:
