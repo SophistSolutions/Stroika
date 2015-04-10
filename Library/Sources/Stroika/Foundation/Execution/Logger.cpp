@@ -354,7 +354,8 @@ void    Logger::FileAppender::Log (Priority logLevel, const String& message)
  ************************ Execution::SysLogAppender *****************************
  ********************************************************************************
  */
-Logger::WindowsEventLogAppender::WindowsEventLogAppender ()
+Logger::WindowsEventLogAppender::WindowsEventLogAppender (const String& eventSourceName)
+    : fEventSourceName_ (eventSourceName)
 {
 }
 
@@ -363,7 +364,6 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
     /*
      * VERY QUICK HACK - AT LEAST DUMPS SOME INFO TO EVENTLOG - BUT MUCH TWEAKING LEFT TODO
      */
-    const   TCHAR   kEventSourceName[]  =   _T ("xxxtest");
     WORD    eventType   =   EVENTLOG_ERROR_TYPE;
     switch (logLevel) {
         case Priority::eDebug:
@@ -394,7 +394,7 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
     // by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
 #define EVENT_Message                    0x00000064L
     const   DWORD   kEventID            =   EVENT_Message;
-    HANDLE  hEventSource = RegisterEventSource (NULL, kEventSourceName);
+    HANDLE  hEventSource = RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
     SDKString tmp = message.AsSDKString ();
     const Characters::SDKChar* msg = tmp.c_str ();
