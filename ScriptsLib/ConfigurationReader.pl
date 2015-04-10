@@ -109,9 +109,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ZLib'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qHasFeature_WinHTTP>");
+		my $pps = ReadValue_($line, "<qFeatureFlag_WinHTTP>");
 		if (defined $pps) {
-			$configuration {'qHasFeature_WinHTTP'} = $pps;
+			$configuration {'qFeatureFlag_WinHTTP'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<IncludeDebugSymbtolsInExecutables>");
 		if (defined $pps) {
