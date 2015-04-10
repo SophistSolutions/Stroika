@@ -343,7 +343,7 @@ sub WriteStroikaConfigCHeader
 
 
     print (OUT "//--WinHTTP {use-system|no}\n");
-	if ($ENABLE_WINHTTP) {
+	if ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem) {
 		print (OUT "#define	qHasFeature_WinHTTP 1\n");
 	}	
 	else {
