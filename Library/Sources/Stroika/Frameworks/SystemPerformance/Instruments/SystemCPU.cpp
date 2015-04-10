@@ -173,7 +173,7 @@ namespace {
         }
         double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
         double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
-        if (Math::NearlyEquals (totalTime, 0)) {
+        if (Math::NearlyEquals<double> (totalTime, 0)) {
             // can happen if called too quickly together. No good answer
             DbgTrace ("Warning - times too close together for cputime_");
             return 0;
