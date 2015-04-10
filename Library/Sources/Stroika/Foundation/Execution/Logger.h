@@ -270,9 +270,11 @@ namespace   Stroika {
              */
             class   Logger::WindowsEventLogAppender : public Logger::IAppenderRep {
             public:
-                WindowsEventLogAppender ();
+                WindowsEventLogAppender (const String& eventSourceName);
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
+            private:
+                String  fEventSourceName_;
             };
 #endif
 
