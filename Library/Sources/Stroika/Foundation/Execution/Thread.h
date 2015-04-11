@@ -186,6 +186,9 @@ namespace   Stroika {
                 using   NativeHandleType    =   thread::native_handle_type;
 
             public:
+                enum    AutoStartFlag { eAutoStart };
+
+            public:
                 /**
                  *  No arg- constructor is available for use in applications like thread pools. Also, a variety
                  *  of cases, its handy to declare a Thread data member (and init in CTOR), but not
@@ -198,8 +201,11 @@ namespace   Stroika {
                  */
                 Thread ();
                 Thread (const Function<void()>& fun2CallOnce);
+                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag);
                 template <typename FUNCTION>
                 Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                template <typename FUNCTION>
+                Thread (FUNCTION f, AutoStartFlag, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
                 /**

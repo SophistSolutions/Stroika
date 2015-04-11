@@ -128,6 +128,11 @@ namespace   Stroika {
                 Thread (Function<void()>(f))
             {
             }
+            template    <typename FUNCTION>
+            inline  Thread::Thread (FUNCTION f, AutoStartFlag flag, typename enable_if<is_function<FUNCTION>::value>::type*) :
+                Thread (Function<void()>(f), flag)
+            {
+            }
 #if     qPlatform_POSIX
             inline  SignalID        Thread::GetSignalUsedForThreadAbort ()
             {
