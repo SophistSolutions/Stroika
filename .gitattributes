@@ -24,3 +24,4 @@ Makefile* text eol=lf diff
 *.manifest text eol=crlf diff
 *.rc text eol=crlf diff
 *.sh text eol=lf diff
+STROIKA_VERSION text diff
