@@ -57,7 +57,7 @@ clobber:
 
 
 documentation:
-	@cd Documentation; cd Doxygen; perl ./RunDoxygen.pl
+	@cd Documentation/Doxygen && perl ./RunDoxygen.pl
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
@@ -152,10 +152,12 @@ apply-configurations-if-needed:
 
 apply-configurations:
 	@#todo - must enahnce to support multiple configs
-	@# must check here/fail if zero configs and direct user to call (MAKE) default-configuration
-	@#@perl ApplyConfiguration.pl --only-if-unconfigured
-	@perl ScriptsLib/ApplyConfiguration.pl
+	@$(MAKE) ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) apply-configuration
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
+
+apply-configuration:
+	@#todo - must enahnce ApplyConfiguration to support configuration arg
+	@perl ScriptsLib/ApplyConfiguration.pl
 	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\"
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\"
