@@ -127,6 +127,7 @@ IntermediateFiles/TOOLS_CHECKED:
 check-tools:
 	@# no point in checking make ;-)
 	@echo "Checking for installed tools..."
+	@echo -n "  " && sh -c "type sed"
 	@echo -n "  " && sh -c "type wget"
 	@echo -n "  " && sh -c "type perl"
 	@echo -n "  " && sh -c "type tar"
@@ -144,10 +145,6 @@ endif
 
 
 
-IntermediateFiles/Stroika-Current-Version.h:       STROIKA_VERSION
-	@echo Creating $@
-	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/Stroika-Current-Version.h StroikaLibVersion
-
 
 apply-configurations-if-needed:
 	@test -e ConfigurationFiles/DefaultConfiguration.xml || $(MAKE) default-configuration --no-print-directory
@@ -159,6 +156,10 @@ apply-configurations:
 	@#@perl ApplyConfiguration.pl --only-if-unconfigured
 	@perl ScriptsLib/ApplyConfiguration.pl
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
+	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\"
+	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
+	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\"
+	@cp Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h
 
 default-configuration:
 	@perl ScriptsLib/GenerateConfiguration.pl --default-for-platform $(DEFAULT_CONFIGURATION_ARGS)
