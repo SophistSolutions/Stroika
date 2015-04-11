@@ -127,6 +127,7 @@ IntermediateFiles/TOOLS_CHECKED:
 check-tools:
 	@# no point in checking make ;-)
 	@echo "Checking for installed tools..."
+	@echo -n "  " && sh -c "type sed"
 	@echo -n "  " && sh -c "type wget"
 	@echo -n "  " && sh -c "type perl"
 	@echo -n "  " && sh -c "type tar"
