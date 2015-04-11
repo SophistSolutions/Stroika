@@ -48,7 +48,7 @@ my $CPPSTD_VERSION_FLAG = '';
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
-my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
@@ -314,11 +314,11 @@ sub	ParseCommandLine_Remaining_
 			print ("$var flag DEPRECATED - use --WinHTTP\n");
 		}
 		elsif ((lc ($var) eq "-has-xerces") or (lc ($var) eq "--has-xerces")) {
-			$FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 			print ("$var flag DEPRECATED - use --xerces\n");
 		}
 		elsif ((lc ($var) eq "-no-has-xerces") or (lc ($var) eq "--no-has-xerces")) {
-			$FEATUREFLAG_XERCES = $LIBFEATUREFLAG_No;
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 			print ("$var flag DEPRECATED - use --xerces\n");
 		}
 		elsif ((lc ($var) eq "-has-zlib") or (lc ($var) eq "--has-zlib")) {
@@ -461,7 +461,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
-	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_XERCES</qFeatureFlag_Xerces>\n");
+	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
