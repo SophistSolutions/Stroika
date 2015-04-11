@@ -561,6 +561,12 @@ Thread::Thread (const Function<void()>& fun2CallOnce)
     Rep_::DoCreate (&fRep_);
 }
 
+Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag)
+    : Thread (fun2CallOnce)
+{
+    Start ();
+}
+
 void    Thread::SetThreadPriority (Priority priority)
 {
     RequireNotNull (fRep_);
