@@ -248,7 +248,7 @@ int main (int argc, const char* argv[])
 #if     qHas_Syslog
     Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
 #elif   qPlatform_Windows
-    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::WindowsEventLogAppender ()));
+    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::WindowsEventLogAppender (L"Stroika-Sample-SimpleService")));
 #endif
 #endif
 

@@ -1,10 +1,10 @@
 sub	DoCheckBuilds {
 	my $testNumber = $_[0];
 	
-	CheckFileExists ("../../../../Builds/Windows/Debug-U-32/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Windows/Release-U-32/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Windows/Debug-U-64/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Windows/Release-U-64/Test$testNumber/Test$testNumber.exe");
+	CheckFileExists ("../../../../Builds/Debug-U-32/Test$testNumber/Test$testNumber.exe");
+	CheckFileExists ("../../../../Builds/Release-U-32/Test$testNumber/Test$testNumber.exe");
+	CheckFileExists ("../../../../Builds/Debug-U-64/Test$testNumber/Test$testNumber.exe");
+	CheckFileExists ("../../../../Builds/Release-U-64/Test$testNumber/Test$testNumber.exe");
 	
 	print "[SUCCEEDED]\r\n";
 	

@@ -1,12 +1,12 @@
-CheckFileExists ("../../../Builds/Windows/Debug-U-32/HTMLViewCompiler.exe");
-CheckFileExists ("../../../Builds/Windows/Debug-U-64/HTMLViewCompiler.exe");
-CheckFileExists ("../../../Builds/Windows/Release-U-32/HTMLViewCompiler.exe");
-CheckFileExists ("../../../Builds/Windows/Release-U-64/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Debug-U-32/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Debug-U-64/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Release-U-32/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Release-U-64/HTMLViewCompiler.exe");
 
-CheckFileExists ("../../../Builds/Windows/Release-Logging-U-32/HTMLViewCompiler.exe");
-CheckFileExists ("../../../Builds/Windows/Release-Logging-U-64/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Release-Logging-U-32/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Release-Logging-U-64/HTMLViewCompiler.exe");
 
-CheckFileExists ("../../../Builds/Windows/Release-DbgMemLeaks-U-32/HTMLViewCompiler.exe");
+CheckFileExists ("../../../Builds/Release-DbgMemLeaks-U-32/HTMLViewCompiler.exe");
 
 
 print "[SUCCEEDED]\r\n";
