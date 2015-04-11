@@ -165,36 +165,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SystemPerformanceClient\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SystemPerformanceClient\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">false</LinkIncremental>

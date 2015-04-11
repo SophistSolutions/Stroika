@@ -42,11 +42,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-ActiveLedIt\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-ActiveLedIt\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-ActiveLedIt\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-ActiveLedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-ActiveLedIt\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-ActiveLedIt\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-ActiveLedIt\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-ActiveLedIt\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">.dll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">.dll</TargetExt>
