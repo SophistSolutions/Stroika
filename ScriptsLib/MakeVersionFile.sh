@@ -9,9 +9,7 @@ OUT_FILE_TYPE=$3
 #echo OUT_FILE_TYPE=$OUT_FILE_TYPE
 #echo "-----------"
 
-FULLVERSIONSTRING=`sed 's/[ \t]*$//' STROIKA_VERSION | xargs echo -n`
-#FULLVERSIONSTRING=`cat $VERSION_IN_FILE | xargs echo -n`
-#echo "FULLVERSIONSTRING=$FULLVERSIONSTRING"
+FULLVERSIONSTRING=`sed 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
 MAJOR=`sed 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 MINOR=`sed 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr]\).*/\1/' $VERSION_IN_FILE`
