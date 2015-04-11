@@ -143,6 +143,12 @@ endif
 
 
 
+
+IntermediateFiles/Stroika-Current-Version.h:       STROIKA_VERSION
+	@echo Creating $@
+	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/Stroika-Current-Version.h StroikaLibVersion
+
+
 apply-configurations-if-needed:
 	@test -e ConfigurationFiles/DefaultConfiguration.xml || $(MAKE) default-configuration --no-print-directory
 	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || $(MAKE) apply-configurations --no-print-directory
