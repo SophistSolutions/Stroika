@@ -18,7 +18,7 @@ sub DoRun {
 		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/DefaultConfiguration/", "Test$testNumber");
 	}
 	else {
-		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Windows/", "Test$testNumber/Test$testNumber.exe");
+		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/", "Test$testNumber/Test$testNumber.exe");
 	}
 	
 	if ($progress) {
