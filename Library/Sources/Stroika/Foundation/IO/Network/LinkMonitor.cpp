@@ -45,6 +45,13 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
+#if     defined (_MSC_VER)
+// support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
+// easiser to see/modularize
+#pragma comment (lib, "Iphlpapi.lib")
+#endif
+
+
 #if 0
 // FOR POSIX DO SOMETHING LIKE THIS:
 #include <stdio.h>
