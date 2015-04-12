@@ -18,6 +18,28 @@ UNAME := $(shell uname)
 
 BUILDS_ROOT=../../Builds/
 
+ifeq (,$(findstring CYGWIN,$(UNAME)))
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/libxerces-c.a						\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
+else
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/xerces-c_static_3D.lib						\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/xerces-c_static_3.lib						\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/xerces-c_static_3.lib			\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp	\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/xerces-c_static_3.lib				\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp		\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/xerces-c_static_3D.lib						\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/xerces-c_static_3.lib						\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/xerces-c_static_3.lib				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
+endif
+
 
 
 all:
@@ -31,31 +53,13 @@ clean:
 
 check:
 	@echo -n "   ...Checking..."
-ifeq (,$(findstring CYGWIN,$(UNAME)))
-	@if [ ! -e $(BUILDS_ROOT)/DefaultConfiguration/ThirdPartyLibs/libxerces-c.a ]; then\
-		echo "   FAILED: missing $(BUILDS_ROOT)/DefaultConfiguration/ThirdPartyLibs/libxerces-c.a";\
-	else\
-		echo "   Stroika/ThirdPartyLibs/Xerces - [Succeeded]";\
-	fi
-else
-	@if [ ! -e $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/xerces-c_static_3D.lib ]; then\
-		echo "   FAILED: missing $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/xerces-c_static_3D.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/xerces-c_static_3.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Release-U-32/ThirdPartyLibs/xerces-c_static_3.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/xerces-c_static_3.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/xerces-c_static_3.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/xerces-c_static_3.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/xerces-c_static_3.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/xerces-c_static_3D.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/xerces-c_static_3D.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/xerces-c_static_3.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Release-U-64/ThirdPartyLibs/xerces-c_static_3.lib";\
-	elif [ ! -e $(BUILDS_ROOT)Release-Logging-U-64//ThirdPartyLibs/xerces-c_static_3.lib ]; then\
-		echo "   FAILED: missing (BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/xerces-c_static_3.lib";\
-	else\
-		echo "   Stroika/ThirdPartyLibs/Xerces - [Succeeded]";\
-	fi
-endif
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			echo "   FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@echo "   Stroika/ThirdPartyLibs/Xerces - [Succeeded]";
 
 
 clobber:
