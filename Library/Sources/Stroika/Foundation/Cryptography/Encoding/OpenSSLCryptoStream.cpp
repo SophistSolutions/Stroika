@@ -24,6 +24,16 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
+
+#if     qHasFeature_OpenSSL && defined (_MSC_VER)
+// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "libeay32.lib")
+#pragma comment (lib, "ssleay32.lib")
+#endif
+
+
+
+
 //// VERY ROUGH DRAFT - NOT VERY CLOSE TO CORRECT FOR ALL ALGORITHSM
 //// SEE http://www.openssl.org/docs/crypto/EVP_EncryptInit.html
 //// for details on what todo
