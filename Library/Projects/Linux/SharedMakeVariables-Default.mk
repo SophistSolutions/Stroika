@@ -39,9 +39,9 @@ endif
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
-	Includes	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
 else ifeq ($(qFeatureFlag_OpenSSL), 'use')
-	Includes	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
 endif
 
 
