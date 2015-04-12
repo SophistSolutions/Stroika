@@ -21,7 +21,7 @@
 
 #if     qHasFeature_Xerces && defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if		qDebug
+#if     qDebug
 #pragma comment (lib, "xerces-c_static_3d.lib")
 #else
 #pragma comment (lib, "xerces-c_static_3.lib")
