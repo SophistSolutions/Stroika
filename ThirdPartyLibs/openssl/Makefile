@@ -70,7 +70,6 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
-	echo rule triggerd for $@
 	
 CURRENT/Builds:
 	@echo "Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
@@ -136,7 +135,8 @@ doBuilds:
 	fi
 	@echo "   ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (,$(findstring CYGWIN,$(shell uname)))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp -r CURRENT/libcrypto.a CURRENT/libssl.a CURRENT/apps/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/apps/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libcrypto.a CURRENT/libssl.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
