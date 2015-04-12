@@ -161,17 +161,12 @@ namespace   {
     public:
         MyXercesMemMgr_ ()
 #if     qXMLDBTrackAllocs
-            :
-            fBaseAllocator (),
-            fAllocator (fBaseAllocator),
-            fLastSnapshot ()
+            : fBaseAllocator ()
+            , fAllocator (fBaseAllocator)
+            . fLastSnapshot ()
 #endif
         {
         }
-        ~MyXercesMemMgr_ ()
-        {
-        }
-
 
 #if     qXMLDBTrackAllocs
     public:
@@ -231,7 +226,6 @@ namespace   {
 namespace   {
     DOMImplementation&  GetDOMIMPL_ ()
     {
-        //const XMLCh   kDOMImplFeatureDeclaration[]    =   L"Core";
         constexpr   XMLCh   kDOMImplFeatureDeclaration[]    =   { 'C', 'o', 'r', 'e', '\0'};
         // safe to save in a static var? -- LGP 2007-05-20
         // from perusing implementation - this appears safe to cache and re-use in different threads
@@ -357,8 +351,8 @@ namespace   {
 #if     qHasFeature_Xerces
         struct  UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
-            UsingLibInterHelper_XERCES ():
-                fUseXercesMemoryManager (nullptr)
+            UsingLibInterHelper_XERCES ()
+                : fUseXercesMemoryManager (nullptr)
             {
 #if     qUseMyXMLDBMemManager
                 fUseXercesMemoryManager = new MyXercesMemMgr_ ();
