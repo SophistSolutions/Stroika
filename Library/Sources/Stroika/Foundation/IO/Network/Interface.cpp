@@ -47,8 +47,10 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 
-#if     qPlatform_Windows
-#pragma comment(lib, "iphlpapi.lib")
+#if     defined (_MSC_VER)
+// support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
+// easiser to see/modularize
+#pragma comment (lib, "Iphlpapi.lib")
 #endif
 
 
