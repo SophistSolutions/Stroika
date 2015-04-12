@@ -642,7 +642,6 @@ void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterfac
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
-    //const XMLCh kBufID[] = L"SAX::Parse";
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progres, 0.1f, 0.9f), kBufID));
 #else
