@@ -33,7 +33,7 @@ check:
 	@echo -n "   ...Checking..."
 ifeq (,$(findstring CYGWIN,$(UNAME)))
 	@if [ ! -e $(BUILDS_ROOT)/DefaultConfiguration/ThirdPartyLibs/libxerces-c.a ]; then\
-		echo "   FAILED: missing $(BUILDS_ROOT)/DefaultConfiguration/ThirdPartyLibs/libxerces-c.a;\
+		echo "   FAILED: missing $(BUILDS_ROOT)/DefaultConfiguration/ThirdPartyLibs/libxerces-c.a";\
 	else\
 		echo "   Stroika/ThirdPartyLibs/Xerces - [Succeeded]";\
 	fi
