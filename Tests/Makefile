@@ -8,7 +8,7 @@ TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 BASEEXEPATTERN=Test$$i.exe
-EXEPATTERN=../Builds/Windows/$$ci/Test$$i/Test$$i.exe
+EXEPATTERN=../Builds/$$ci/Test$$i/Test$$i.exe
 else
 BASEEXEPATTERN=Test$$i
 EXEPATTERN=../Builds/$$ci/Test$$i
