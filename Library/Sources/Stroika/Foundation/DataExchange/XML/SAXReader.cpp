@@ -163,7 +163,7 @@ namespace   {
 #if     qXMLDBTrackAllocs
             : fBaseAllocator ()
             , fAllocator (fBaseAllocator)
-            . fLastSnapshot ()
+            , fLastSnapshot ()
 #endif
         {
         }
