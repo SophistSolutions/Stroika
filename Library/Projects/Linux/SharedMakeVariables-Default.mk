@@ -37,6 +37,16 @@ ifndef Includes
 	Includes	=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
 endif
 
+
+ifeq ($(qFeatureFlag_Xerces), 'use')
+	Includes	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+else ifeq ($(qFeatureFlag_OpenSSL), 'use')
+	Includes	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+endif
+
+
+
+
 ifndef StroikaFoundationLib
 	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation.a
 endif
