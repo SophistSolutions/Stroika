@@ -1934,7 +1934,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1957,7 +1957,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1980,7 +1980,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2003,7 +2003,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2026,7 +2026,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2049,7 +2049,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Debug64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2080,7 +2080,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2111,7 +2111,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2142,7 +2142,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2173,7 +2173,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2204,7 +2204,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2235,7 +2235,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2266,7 +2266,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2297,7 +2297,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2328,7 +2328,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2359,7 +2359,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2390,7 +2390,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release32\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -2421,7 +2421,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib; libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib; ssleay32.lib;Iphlpapi.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\OpenSSL\CURRENT\Builds\Release64\; ..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
