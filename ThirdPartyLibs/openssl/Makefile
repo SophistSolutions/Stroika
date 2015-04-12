@@ -129,7 +129,7 @@ doBuilds:
 	fi
 	@echo "   ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (,$(findstring CYGWIN,$(shell uname)))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp -r CURRENT/libcrypto.a CURRENT/libssl.a CURRENT/app/openssl CURRENT/include $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp -r CURRENT/libcrypto.a CURRENT/libssl.a CURRENT/apps/openssl CURRENT/include $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs && cp -r CURRENT/Builds/Debug32/* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs && cp -r CURRENT/Builds/Release32/* $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
