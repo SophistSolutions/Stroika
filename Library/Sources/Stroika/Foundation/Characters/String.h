@@ -872,6 +872,9 @@ namespace   Stroika {
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
+                 *
+                 *  Example Usage:
+                 *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
                 /**
