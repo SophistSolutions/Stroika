@@ -59,6 +59,7 @@ namespace   Stroika {
                         struct  IOStats {
                             Optional<double>    fBytes;
                             Optional<double>    fTimeTransfering;
+                            Optional<double>    fTotalTransfers;
                         };
                         IOStats fReadIOStats;
                         IOStats fWriteIOStats;
