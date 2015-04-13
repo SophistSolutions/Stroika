@@ -161,8 +161,34 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     //  __cpuid
     // to find this information (at least modelname string.
     //
+
+    static  const   String  kProcessorType_ = [] () {
+        int CPUInfo[4] = { -1};
+        char CPUBrandString[0x40];
+        // Get the information associated with each extended ID.
+        __cpuid (CPUInfo, 0x80000000);
+        uint32_t nExIds = CPUInfo[0];
+        for (uint32_t i = 0x80000000; i <= nExIds; ++i)  {
+            __cpuid (CPUInfo, i);
+            // Interpret CPU brand string
+            if  (i == 0x80000002)
+                memcpy (CPUBrandString, CPUInfo, sizeof(CPUInfo));
+            else if  (i == 0x80000003)
+                memcpy (CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
+            else if  (i == 0x80000004)
+                memcpy (CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+        }
+        return String::FromAscii (CPUBrandString);
+    } ();
+
     for (DWORD i = 0; i < sysInfo.dwNumberOfProcessors; ++i) {
-        result.fCores.Append (CPU::CoreDetails ());
+        // @todo understand if MSFT compiler bug or my confusion that since we have object wtih initializers why cannot use
+        // aggregate uninform initialization?
+        CPU::CoreDetails    tmp;
+        tmp.fSocketID = static_cast<unsigned int> (i);
+        tmp.fModelName = kProcessorType_;
+        result.fCores.Append (tmp);
+        //result.fCores.Append (CPU::CoreDetails { static_cast<unsigned int> (i), kProcessorType_ });
     }
 #endif
 

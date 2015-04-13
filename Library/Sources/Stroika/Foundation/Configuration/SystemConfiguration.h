@@ -90,8 +90,8 @@ namespace   Stroika {
                      *  MHz, and cache size, and particular numerical model numbers. Possibly also add 'bogomips'?
                      */
                     struct  CoreDetails {
-                        unsigned int    fSocketID {};       // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
-                        String          fModelName {};      // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
+                        unsigned int    fSocketID   {};         // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
+                        String          fModelName  {};         // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
                     };
 
                 public:
