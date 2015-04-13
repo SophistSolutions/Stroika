@@ -94,7 +94,11 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif   qPlatform_Windows
     // ::GetTickCount () is defined to return #seconds since boot
-    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount ()));
+#if     _WIN32_WINNT >= 0x0600
+    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount64 () / 1000));
+#else
+    result.fBootedAt = DateTime::Now ().AddSeconds (-static_cast<int> (::GetTickCount () / 1000));
+#endif
 #else
     AssertNotImplemented ();
 #endif
