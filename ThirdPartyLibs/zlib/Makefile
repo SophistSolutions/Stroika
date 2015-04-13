@@ -68,12 +68,17 @@ TRGDIR=CURRENT
 BUILDS_DIR=	CURRENT/Builds/
 
 
-#TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
-all:
-	@echo Building Stroika/ThirdPartyLibs/zlib $(VERSION)...
+all:		$(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory check
+
+
+$(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
+	
+CURRENT/Builds:
+	@echo "Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
-	@$(MAKE) --no-print-directory check
+
 
 $(ZIPEDFILE):
 	@echo -n "   ..." 
