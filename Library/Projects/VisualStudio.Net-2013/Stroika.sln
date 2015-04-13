@@ -72,16 +72,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CONTAINER_BACKENDS2IMPORT",
 		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.inl
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{07E1639C-4B37-4DEB-8866-E9B6D735BDAF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika-Root", "Stroika-Root", "{07E1639C-4B37-4DEB-8866-E9B6D735BDAF}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\Documentation\Building Stroika.docx = ..\..\..\Documentation\Building Stroika.docx
-		..\..\..\Documentation\Building Stroika.pdf = ..\..\..\Documentation\Building Stroika.pdf
-		..\..\..\Documentation\Code-Status.md = ..\..\..\Documentation\Code-Status.md
-		..\..\..\Documentation\Coding Conventions.docx = ..\..\..\Documentation\Coding Conventions.docx
-		..\..\..\Documentation\Coding Conventions.pdf = ..\..\..\Documentation\Coding Conventions.pdf
 		..\..\..\README.md = ..\..\..\README.md
 		..\..\..\Release-Notes.md = ..\..\..\Release-Notes.md
-		..\..\..\Documentation\Thread-Safety.md = ..\..\..\Documentation\Thread-Safety.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312AE444-7947-4826-8B1C-19691D0568CD}"
