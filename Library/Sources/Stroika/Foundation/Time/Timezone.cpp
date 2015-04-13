@@ -14,6 +14,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/String.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Containers/Mapping.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "DateTime.h"
@@ -39,13 +40,7 @@ using   namespace   Stroika::Foundation::Time;
 TimeZoneInformationType    Time::GetTimezoneInfo ()
 {
     TimeZoneInformationType result;
-#if     qPlatform_Windows
-    TIME_ZONE_INFORMATION   tzInfo;
-    memset (&tzInfo, 0, sizeof (tzInfo));
-    (void)::GetTimeZoneInformation (&tzInfo);
-    result.fStandardTime.fName = tzInfo.StandardName;
-    result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
     try {
         result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
     }
@@ -55,6 +50,110 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fName = String::FromSDKString (tzname[0]);
     result.fDaylightSavingsTime.fName = String::FromSDKString (tzname[1]);
+#elif   qPlatform_Windows
+    using   Containers::Mapping;
+    using   Common::KeyValuePair;
+    static const    Mapping<String, String> kWinDoze2OlsonName_ =  {
+        KeyValuePair<String, String> { L"Afghanistan Standard Time", L"Asia/Kabul" },
+        KeyValuePair<String, String> { L"Alaskan Standard Time", L"America/Juneau" },
+        KeyValuePair<String, String> { L"Arab Standard Time", L"Asia/Riyadh" },
+        KeyValuePair<String, String> { L"Arabian Standard Time", L"Asia/Muscat" },
+        KeyValuePair<String, String> { L"Arabic Standard Time", L"Asia/Baghdad" },
+        KeyValuePair<String, String> { L"Argentina Standard Time", L"America/Rosario" },
+        KeyValuePair<String, String> { L"Atlantic Standard Time", L"America/Halifax" },
+        KeyValuePair<String, String> { L"AUS Central Standard Time", L"Australia/Darwin" },
+        KeyValuePair<String, String> { L"AUS Eastern Standard Time", L"Australia/Sydney" },
+        KeyValuePair<String, String> { L"Azerbaijan Standard Time", L"Asia/Baku" },
+        KeyValuePair<String, String> { L"Azores Standard Time", L"Atlantic/Azores" },
+        KeyValuePair<String, String> { L"Bahia Standard Time", L"America/Maceio" },
+        KeyValuePair<String, String> { L"Bangladesh Standard Time", L"Asia/Dhaka" },
+        KeyValuePair<String, String> { L"Canada Central Standard Time", L"America/Swift_Current" },
+        KeyValuePair<String, String> { L"Cape Verde Standard Time", L"Atlantic/Cape_Verde" },
+        KeyValuePair<String, String> { L"Caucasus Standard Time", L"Asia/Yerevan" },
+        KeyValuePair<String, String> { L"Cen. Australia Standard Time", L"Australia/Adelaide" },
+        KeyValuePair<String, String> { L"Central America Standard Time", L"America/Tegucigalpa" },
+        KeyValuePair<String, String> { L"Central Asia Standard Time", L"Asia/Almaty" },
+        KeyValuePair<String, String> { L"Central Brazilian Standard Time", L"America/Cuiaba" },
+        KeyValuePair<String, String> { L"Central Europe Standard Time", L"Europe/Prague" },
+        KeyValuePair<String, String> { L"Central European Standard Time", L"Europe/Skopje" },
+        KeyValuePair<String, String> { L"Central Pacific Standard Time", L"Pacific/Guadalcanal" },
+        KeyValuePair<String, String> { L"Central Standard Time", L"America/Chicago" },
+        KeyValuePair<String, String> { L"Central Standard Time (Mexico)", L"America/Monterrey" },
+        KeyValuePair<String, String> { L"China Standard Time", L"Asia/Urumqi" },
+        KeyValuePair<String, String> { L"E. Africa Standard Time", L"Africa/Nairobi" },
+        KeyValuePair<String, String> { L"E. Australia Standard Time", L"Australia/Brisbane" },
+        KeyValuePair<String, String> { L"E. Europe Standard Time", L"Europe/Bucharest" },
+        KeyValuePair<String, String> { L"E. South America Standard Time", L"America/Sao_Paulo" },
+        KeyValuePair<String, String> { L"Eastern Standard Time", L"America/New_York" },
+        KeyValuePair<String, String> { L"Egypt Standard Time", L"Africa/Cairo" },
+        KeyValuePair<String, String> { L"Ekaterinburg Standard Time", L"Asia/Yekaterinburg" },
+        KeyValuePair<String, String> { L"Fiji Standard Time", L"Pacific/Fiji" },
+        KeyValuePair<String, String> { L"FLE Standard Time", L"Europe/Helsinki" },
+        KeyValuePair<String, String> { L"Georgian Standard Time", L"Asia/Tbilisi" },
+        KeyValuePair<String, String> { L"GMT Standard Time", L"Europe/London" },
+        KeyValuePair<String, String> { L"Greenland Standard Time", L"America/Godthab" },
+        KeyValuePair<String, String> { L"Greenwich Standard Time", L"Atlantic/Reykjavik" },
+        KeyValuePair<String, String> { L"GTB Standard Time", L"Europe/Bucharest" },
+        KeyValuePair<String, String> { L"Hawaiian Standard Time", L"Pacific/Honolulu" },
+        KeyValuePair<String, String> { L"India Standard Time", L"Asia/Calcutta" },
+        KeyValuePair<String, String> { L"Iran Standard Time", L"Asia/Tehran" },
+        KeyValuePair<String, String> { L"Jerusalem Standard Time", L"Asia/Jerusalem" },
+        KeyValuePair<String, String> { L"Jordan Standard Time", L"Asia/Amman" },
+        KeyValuePair<String, String> { L"Kaliningrad Standard Time", L"Europe/Kaliningrad" },
+        KeyValuePair<String, String> { L"Korea Standard Time", L"Asia/Seoul" },
+        KeyValuePair<String, String> { L"Libya Standard Time", L"Africa/Tripoli" },
+        KeyValuePair<String, String> { L"Magadan Standard Time", L"Asia/Magadan" },
+        KeyValuePair<String, String> { L"Mauritius Standard Time", L"Indian/Mauritius" },
+        KeyValuePair<String, String> { L"Middle East Standard Time", L"Asia/Beirut" },
+        KeyValuePair<String, String> { L"Montevideo Standard Time", L"America/Montevideo" },
+        KeyValuePair<String, String> { L"Morocco Standard Time", L"Africa/Casablanca" },
+        KeyValuePair<String, String> { L"Mountain Standard Time", L"America/Denver" },
+        KeyValuePair<String, String> { L"Mountain Standard Time (Mexico)", L"America/Mazatlan" },
+        KeyValuePair<String, String> { L"Myanmar Standard Time", L"Asia/Rangoon" },
+        KeyValuePair<String, String> { L"N. Central Asia Standard Time", L"Asia/Novosibirsk" },
+        KeyValuePair<String, String> { L"Namibia Standard Time", L"Africa/Windhoek" },
+        KeyValuePair<String, String> { L"Nepal Standard Time", L"Asia/Katmandu" },
+        KeyValuePair<String, String> { L"New Zealand Standard Time", L"Pacific/Auckland" },
+        KeyValuePair<String, String> { L"Newfoundland Standard Time", L"America/St_Johns" },
+        KeyValuePair<String, String> { L"North Asia East Standard Time", L"Asia/Irkutsk" },
+        KeyValuePair<String, String> { L"North Asia Standard Time", L"Asia/Krasnoyarsk" },
+        KeyValuePair<String, String> { L"Pacific SA Standard Time", L"America/Santiago" },
+        KeyValuePair<String, String> { L"Pacific Standard Time", L"America/Los_Angeles" },
+        KeyValuePair<String, String> { L"Pacific Standard Time (Mexico)", L"America/Tijuana" },
+        KeyValuePair<String, String> { L"Pakistan Standard Time", L"Asia/Karachi" },
+        KeyValuePair<String, String> { L"Paraguay Standard Time", L"America/Asuncion" },
+        KeyValuePair<String, String> { L"Romance Standard Time", L"Europe/Paris" },
+        KeyValuePair<String, String> { L"Russian Standard Time", L"Europe/Moscow" },
+        KeyValuePair<String, String> { L"SA Eastern Standard Time", L"America/Cayenne" },
+        KeyValuePair<String, String> { L"SA Pacific Standard Time", L"America/Lima" },
+        KeyValuePair<String, String> { L"SA Western Standard Time", L"America/La_Paz" },
+        KeyValuePair<String, String> { L"SE Asia Standard Time", L"Asia/Jakarta" },
+        KeyValuePair<String, String> { L"Malay Peninsula Standard Time", L"Asia/Singapore" },
+        KeyValuePair<String, String> { L"South Africa Standard Time", L"Africa/Harare" },
+        KeyValuePair<String, String> { L"Syria Standard Time", L"Asia/Damascus" },
+        KeyValuePair<String, String> { L"Taipei Standard Time", L"Asia/Taipei" },
+        KeyValuePair<String, String> { L"Tasmania Standard Time", L"Australia/Hobart" },
+        KeyValuePair<String, String> { L"Tokyo Standard Time", L"Asia/Tokyo" },
+        KeyValuePair<String, String> { L"Tonga Standard Time", L"Pacific/Tongatapu" },
+        KeyValuePair<String, String> { L"Turkey Standard Time", L"Asia/Istanbul" },
+        KeyValuePair<String, String> { L"Ulaanbaatar Standard Time", L"Asia/Ulaanbaatar" },
+        KeyValuePair<String, String> { L"US Eastern Standard Time", L"America/Indianapolis" },
+        KeyValuePair<String, String> { L"US Mountain Standard Time", L"America/Denver" },
+        KeyValuePair<String, String> { L"Venezuela Standard Time", L"America/Caracas" },
+        KeyValuePair<String, String> { L"Vladivostok Standard Time", L"Asia/Vladivostok" },
+        KeyValuePair<String, String> { L"W. Australia Standard Time", L"Australia/Perth" },
+        KeyValuePair<String, String> { L"W. Central Africa Standard Time", L"Africa/Brazzaville" },
+        KeyValuePair<String, String> { L"W. Europe Standard Time", L"Europe/Vienna" },
+        KeyValuePair<String, String> { L"West Asia Standard Time", L"Asia/Tashkent" },
+        KeyValuePair<String, String> { L"West Pacific Standard Time", L"Pacific/Port_Moresby" },
+        KeyValuePair<String, String> { L"Yakutsk Standard Time", L"Asia/Yakutsk" }
+    };
+    TIME_ZONE_INFORMATION   tzInfo;
+    memset (&tzInfo, 0, sizeof (tzInfo));
+    (void)::GetTimeZoneInformation (&tzInfo);
+    result.fStandardTime.fName = tzInfo.StandardName;
+    result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
+    result.fID = kWinDoze2OlsonName_.LookupValue (tzInfo.StandardName, tzInfo.StandardName);
 #else
     AssertNotImplemented ();
     return String ();
