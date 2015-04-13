@@ -25,6 +25,44 @@ WIN_LIB32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommo
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
 endif
 
+
+BUILDS_ROOT=../../Builds/
+
+
+ifeq (,$(findstring CYGWIN,$(UNAME)))
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libz.a					\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zlib.h				\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zconf.h
+else
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zlib.h					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zconf.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/zlib.lib					\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zlib.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zconf.h				\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/zlib.lib		\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zlib.h	\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zconf.h	\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zconf.h		\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zlib.h					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zconf.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/zlib.lib					\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zlib.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zconf.h				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zconf.h
+endif
+
+
+
+
+
 TRGDIR=CURRENT
 
 BUILDS_DIR=	CURRENT/Builds/
@@ -62,6 +100,7 @@ ifeq (,$(findstring CYGWIN,$(UNAME)))
 endif
 	@echo "   ...done"
 
+
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
 		echo "   ...CURRENT dir already exists";\
@@ -74,6 +113,7 @@ doCreate:	$(ZIPEDFILE)
 		$(MAKE) --no-print-directory doConfigure;\
 	fi
 
+
 doBuilds:
 	@if [ -e  BUILD.OUT ]; then\
 		echo "   ...BUILD.OUT already exists";\
@@ -81,6 +121,27 @@ doBuilds:
 		echo "   ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		make doBuildInternal_ > BUILD.OUT 2>&1;\
 	fi
+	@echo "   ...Copying builds to ... $(BUILDS_ROOT)"
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
+else
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/
+endif
+
 	
 doBuildInternal_:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
@@ -93,7 +154,17 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MT -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' 'CC=$(WIN_CC32)' 'AR=$(WIN_LIB32)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Release32
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release32
+	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release32/
+
+	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='-DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' CC='$(WIN_CC64)' AR='$(WIN_LIB64)' zlib.lib"
+	@mkdir -p $(BUILDS_DIR)Debug64
+	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Debug64/
+
+	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='-DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' 'CC=$(WIN_CC64)' 'AR=$(WIN_LIB64)' zlib.lib"
+	@mkdir -p $(BUILDS_DIR)Release64
+	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release64/
 else
 	@$(MAKE) --directory CURRENT --no-print-directory
 endif
@@ -106,21 +177,13 @@ ORIGS:	$(ZIPEDFILE)
 
 check:
 	@echo -n "   ...Checking..."
-ifeq (,$(findstring CYGWIN,$(UNAME)))
-	@if [ ! -e CURRENT/libz.a ]; then\
-		echo "   FAILED: missing CURRENT/libz.a";\
-	else\
-		echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";\
-	fi
-else
-	@if [ ! -e CURRENT/Builds/Debug32/zlib.lib ]; then\
-		echo "   FAILED: missing CURRENT/Builds/Debug32/zlib.lib";\
-	elif [ ! -e CURRENT/Builds/Release32/zlib.lib ]; then\
-		echo "   FAILED: missing CURRENT/Builds/Release32/zlib.lib";\
-	else\
-		echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";\
-	fi
-endif
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			echo "   FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";
 
 clean:
 	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
