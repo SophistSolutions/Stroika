@@ -126,7 +126,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'AS_32'} 	=	"$x";
-$ENV{'AS_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/ml";
+$ENV{'AS_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/ml64";
 
 my $x = trim (`cmd /c 'which cl'`);
 if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl")) {
@@ -142,7 +142,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LINK_32'} 	=	"$x";
-$ENV{'LINK_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/link";
+$ENV{'LINK_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/link";
 
 
 my $x = trim (`cmd /c 'which lib'`);
@@ -151,7 +151,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LIB_32'} 	=	"$x";
-$ENV{'LIB_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/lib";
+$ENV{'LIB_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/lib";
 
 sub GetString2InsertIntoBatchFileToInit64BitCompiles
 {
