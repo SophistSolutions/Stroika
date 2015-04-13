@@ -91,6 +91,15 @@ check:
 			exit 1;\
 		fi;\
 	done
+ifeq (,$(findstring CYGWIN,$(UNAME)))
+	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt.txt | wc -l`;\
+	 if [ $$X1 -gt 44 ]; then\
+		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
+		echo "    Diff should be less than 40/44 to be safe.";\
+		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
+		exit 1;\
+	 fi
+else
 	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 44 ] || [ $$X2 -gt 44 ]; then\
@@ -100,6 +109,7 @@ check:
 		echo "      diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
+endif
 	@echo "   Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
 
 $(ZIPEDFILE):
