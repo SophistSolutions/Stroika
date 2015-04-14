@@ -8,8 +8,6 @@
 
 #if     qPlatform_Windows
 #include    <Pdh.h>
-#include    <PdhMsg.h>
-#include    <Windows.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
@@ -107,12 +105,15 @@ namespace   Stroika {
                     ~WMICollector ();
 
                 public:
-                    WMICollector& operator= (const WMICollector& rhs);
+                    nonvirtual	WMICollector& operator= (const WMICollector& rhs);
 
                 public:
                     /**
                      */
                     nonvirtual  void    Collect ();
+
+                public:
+                    nonvirtual  DurationSecondsType GetTimeOfLastCollection () const;
 
                 public:
                     /**
@@ -139,5 +140,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "WMICollector.inl"
 
 #endif  /*_Stroika_Framework_SystemPerformance_Support_WMICollector_h_*/
