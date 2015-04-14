@@ -105,7 +105,7 @@ namespace   Stroika {
                     ~WMICollector ();
 
                 public:
-                    nonvirtual	WMICollector& operator= (const WMICollector& rhs);
+                    nonvirtual  WMICollector& operator= (const WMICollector& rhs);
 
                 public:
                     /**
