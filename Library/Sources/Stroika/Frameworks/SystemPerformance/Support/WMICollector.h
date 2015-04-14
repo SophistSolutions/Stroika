@@ -77,11 +77,11 @@ namespace   Stroika {
                  *      "LogicalDisk"
                  *
                  *  Example:
-                 *      WMICollector  tmp { L"Processor", L"_Total", {L"% Processor Time"} };
+                 *      WMICollector  tmp { L"Processor", {L"_Total"}, {L"% Processor Time"} };
                  *      double x = tmp.GetCurrentValue ( L"_Total", L"% Processor Time");
                  *
                  *  Example:
-                 *      WMICollector  tmp { L"LogicalDisk", L"E:",  {L"% Free Space"} };
+                 *      WMICollector  tmp { L"LogicalDisk", {L"E:"},  {L"% Free Space"} };
                  *      double x = tmp.GetCurrentValue (L"E:", L"% Free Space");
                  *
                  * Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
@@ -94,8 +94,7 @@ namespace   Stroika {
                      *  \note the constructors may internally invoke 'collect'. (sensible for objectname/etc ctor, but less sensible
                      *          for copy CTOR, but I know of know other way to clone the queries/counters). Maybe we can fix the later?
                      */
-                    WMICollector (const String& objectName, const String& instance, const Iterable<String>& counterName);
-                    WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName);
+                    WMICollector (const String& objectName, const Iterable<String>& instances = {}, const Iterable<String>& counterName = {});
                     WMICollector() = delete;
                     WMICollector (const WMICollector& from);
 
@@ -191,7 +190,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 
