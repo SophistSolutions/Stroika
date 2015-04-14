@@ -93,6 +93,25 @@ namespace {
             capture_ ();        // for side-effect of setting fContextStats_
 #elif   qUseWMICollectionSupport_
             capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
+#endif
+        }
+        CapturerWithContext_ (const CapturerWithContext_& from)
+#if     qPlatform_POSIX
+            : fContextStats_ (from.fContextStats_)
+#elif   qUseWMICollectionSupport_
+            : fLogicalDiskWMICollector_ (from.fLogicalDiskWMICollector_)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
 #endif
         }
         Sequence<VolumeInfo> capture_ ()

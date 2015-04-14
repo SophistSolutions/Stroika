@@ -136,11 +136,6 @@ WMICollector::WMICollector (const String& objectName, const Iterable<String>& in
 #endif
     instances.Apply ([this] (String i) { AddInstance_ (i); });
     counterName.Apply ([this] (String i) { AddCounter_ (i); });
-    Collect ();
-    {
-        const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-        Execution::Sleep (kUseIntervalIfNoBaseline_);
-    }
 }
 
 WMICollector::WMICollector (const WMICollector& from)
@@ -166,11 +161,6 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
         fObjectName_ = rhs.fObjectName_;
         rhs.fInstanceData_.Keys ().Apply ([this] (String i) { AddInstance_ (i); });
         rhs.fCounterNames_.Apply ([this] (String i) { AddCounter_ (i); });
-        Collect ();
-        {
-            const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-            Execution::Sleep (kUseIntervalIfNoBaseline_);
-        }
     }
     return *this;
 }
@@ -180,8 +170,7 @@ void     WMICollector::Collect ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::Collect");
 #endif
-    // TMPHACK til we can get recursive AssertExternallySynchronizedLock
-    //lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     fInstanceData_.Apply ([this] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
         PDH_STATUS  x = ::PdhCollectQueryData (i.fValue->fQuery_);
         if (x != 0) {
@@ -199,7 +188,6 @@ void    WMICollector::AddCounters (const String& counterName)
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     AddCounter_ (counterName);
-    Collect ();
 }
 
 void    WMICollector::AddCounters (const Iterable<String>& counterNames)
@@ -209,7 +197,6 @@ void    WMICollector::AddCounters (const Iterable<String>& counterNames)
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     counterNames.Apply ([this] (String i) { AddCounter_ (i); });
-    Collect ();
 }
 
 void    WMICollector::AddInstances (const String& instance)
@@ -219,7 +206,6 @@ void    WMICollector::AddInstances (const String& instance)
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     AddInstance_ (instance);
-    Collect ();
 }
 
 void    WMICollector::AddInstances (const Iterable<String>& instances)
@@ -229,7 +215,6 @@ void    WMICollector::AddInstances (const Iterable<String>& instances)
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     instances.Apply ([this] (String i) { AddInstance_ (i); });
-    Collect ();
 }
 
 bool    WMICollector::AddInstancesIf (const String& instance)
@@ -240,11 +225,6 @@ bool    WMICollector::AddInstancesIf (const String& instance)
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (not fInstanceData_.ContainsKey (instance)) {
         AddInstance_ (instance);
-        Collect ();
-        {
-            const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-            Execution::Sleep (kUseIntervalIfNoBaseline_);
-        }
         return true;
     }
     return false;
@@ -263,9 +243,6 @@ bool    WMICollector::AddInstancesIf (const Iterable<String>& instances)
             anyAdded = true;
         }
     });
-    if (anyAdded) {
-        Collect ();
-    }
     return anyAdded;
 }
 
