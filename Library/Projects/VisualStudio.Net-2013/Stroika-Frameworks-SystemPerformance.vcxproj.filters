@@ -32,6 +32,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl">
       <Filter>Sources</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl">
+      <Filter>Sources\Support</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">

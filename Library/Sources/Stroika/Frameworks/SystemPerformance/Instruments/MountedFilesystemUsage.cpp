@@ -248,9 +248,9 @@ namespace {
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
         {
 #if     qUseWMICollectionSupport_
-            Time::DurationSecondsType   timeOfPrevCollection = fLogicalDiskWMICollector_.fTimeOfLastCollection;
+            Time::DurationSecondsType   timeOfPrevCollection = fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
             fLogicalDiskWMICollector_.Collect ();
-            Time::DurationSecondsType   timeCollecting { fLogicalDiskWMICollector_.fTimeOfLastCollection - timeOfPrevCollection };
+            Time::DurationSecondsType   timeCollecting { fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 #endif
             Sequence<VolumeInfo>   result;
             TCHAR volumeNameBuf[1024];

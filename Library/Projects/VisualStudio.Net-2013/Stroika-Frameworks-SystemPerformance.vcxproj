@@ -82,6 +82,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md" />
   </ItemGroup>
   <ItemGroup>
