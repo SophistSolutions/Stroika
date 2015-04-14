@@ -57,7 +57,7 @@ namespace   Stroika {
              *      struct foo : private Debug::AssertExternallySynchronizedLock {
              *          inline  void    DoStuffOnData ()
              *          {
-             *              auto    critSec { Execution::make_unique_lock (*this) };
+             *              lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
              *              // now do what you usually do for DOStuffOnData...
              *          }
              *      };
