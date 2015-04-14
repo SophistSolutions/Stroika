@@ -155,7 +155,7 @@ namespace {
                 if (updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
                     Time::DurationSecondsType   now = Time::GetTickCount ();
                     if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
-                        result.fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                        updateResult->fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
                     }
                     fSaved_MajorPageFaultsSinceBoot = *updateResult->fMajorPageFaultsSinceBoot;
                     fSaved_MajorPageFaultsSinceBoot_At = now;
@@ -243,7 +243,7 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_
-            : Foundation::Debug::AssertExternallySynchronizedLock
+            : Debug::AssertExternallySynchronizedLock
 #if     qPlatform_POSIX
             , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows

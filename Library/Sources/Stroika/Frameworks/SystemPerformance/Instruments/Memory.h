@@ -21,9 +21,6 @@
  *  TODO:
  *      @todo   Add options to GetInstrument (), for things like what to include, and maybe the time
  *              threshold for initial seeding of delta counters.
- *
- *      @todo   Find a way to restructure use of Debug::AssertExternallySynchronizedLock so it
- *              handles copy construction
  */
 
 
