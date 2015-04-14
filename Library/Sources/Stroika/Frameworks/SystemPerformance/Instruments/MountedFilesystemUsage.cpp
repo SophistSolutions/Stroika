@@ -228,7 +228,7 @@ namespace {
                             }
                             Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
                             Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
-                            if (oNew.IsPresent ()) {
+                            if (oOld.IsPresent () and oNew.IsPresent ()) {
                                 const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
                                 v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * kSectorSizeTmpHack_;
                                 v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
