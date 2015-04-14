@@ -86,11 +86,13 @@ namespace {
 #endif
         CapturerWithContext_ ()
 #if     qUseWMICollectionSupport_
-            : fLogicalDiskWMICollector_ { L"LogicalDisk", L"_Total",  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
+            : fLogicalDiskWMICollector_ { L"LogicalDisk", {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
         {
 #if     qPlatform_POSIX
             capture_ ();        // for side-effect of setting fContextStats_
+#elif   qUseWMICollectionSupport_
+            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
 #endif
         }
         Sequence<VolumeInfo> capture_ ()

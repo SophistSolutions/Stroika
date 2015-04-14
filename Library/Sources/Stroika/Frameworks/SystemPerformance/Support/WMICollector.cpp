@@ -128,14 +128,6 @@ Optional<double>    WMICollector::PerInstanceData_::PeekCurrentValue (const Stri
  ********************* SystemPerformance::Support::WMICollector *****************
  ********************************************************************************
  */
-WMICollector::WMICollector (const String& objectName, const String& instance, const Iterable<String>& counterName)
-    : WMICollector (objectName, Iterable<String> { instance }, counterName)
-{
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
-#endif
-}
-
 WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
     : fObjectName_ (objectName)
 {
