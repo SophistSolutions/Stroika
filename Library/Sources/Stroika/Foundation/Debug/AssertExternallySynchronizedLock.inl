@@ -37,7 +37,19 @@ namespace   Stroika {
                 lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };
                 lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
             }
+            inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src)
+                : AssertExternallySynchronizedLock ()
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };
+                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+            }
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
+                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                return *this;
+            }
+            inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock && rhs)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
                 lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
