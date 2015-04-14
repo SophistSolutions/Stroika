@@ -30,6 +30,18 @@ namespace   Stroika {
                 fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
 #endif
             }
+            inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src)
+                : AssertExternallySynchronizedLock ()
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };
+                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+            }
+            inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
+                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                return *this;
+            }
             inline  void    AssertExternallySynchronizedLock::lock () const
             {
 #if     qDebug
