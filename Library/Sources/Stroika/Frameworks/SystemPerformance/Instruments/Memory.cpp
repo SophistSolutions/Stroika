@@ -38,10 +38,9 @@ using   Containers::Set;
 using   IO::FileSystem::BinaryFileInputStream;
 
 
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-
 
 
 
@@ -60,47 +59,25 @@ using   SystemPerformance::Support::WMICollector;
 
 
 
-namespace {
 #if     qUseWMICollectionSupport_
+namespace {
+    const   String_Constant     kInstanceName_      { L"_Total" };
+
     const   String_Constant     kCommittedBytes_    { L"Committed Bytes" };
     const   String_Constant     kCommitLimit_       { L"Commit Limit" };
     const   String_Constant     kPagesPerSec_       { L"Pages/sec" };           // hard page faults/sec
-#endif
 }
-
-
-
-
-namespace {
-    template <typename T>
-    void    ReadMemInfoLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
-    {
-        if (line.size () >= 3 and line[0] == n) {
-            String  unit = line[2];
-            double  factor = (unit == L"kB") ? 1024 : 1;
-            *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
-        }
-    }
-    template <typename T>
-    void    ReadVMStatLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
-    {
-        if (line.size () >= 2 and line[0] == n) {
-            *result = Characters::String2Int<T> (line[1]);
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
-#endif
-        }
-    }
-}
+
+
+
+
 
 
 namespace {
     struct  CapturerWithContext_ {
 #if     qUseWMICollectionSupport_
-        WMICollector    fMemoryWMICollector_ { L"Memory", {L"_Total"},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        WMICollector    fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
 #endif
         CapturerWithContext_ ()
         {
@@ -135,59 +112,13 @@ namespace {
 
             Instruments::Memory::Info   result;
 #if     qPlatform_POSIX
-            {
-                DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
-                const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
-                //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
-                // Note - /procfs files always unseekable
-                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                    ReadMemInfoLine_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-                    ReadMemInfoLine_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
-                    ReadMemInfoLine_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
-                    ReadMemInfoLine_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
-                }
-            }
-            {
-                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
-                const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
-                Optional<uint64_t>  pgfault;
-                // Note - /procfs files always unseekable
-                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                    ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
-                    ReadVMStatLine_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
-                }
-                if (pgfault.IsPresent () and result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                    result.fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
-                }
-            }
+            Read_ProcMemInfo (&result);
+            Read_ProcVMStat_ (&result);
 #elif   qPlatform_Windows
+            Read_GlobalMemoryStatusEx_(&result);
 #if     qUseWMICollectionSupport_
-            fMemoryWMICollector_.Collect ();
-            {
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kCommittedBytes_)) {
-                    result.fUsedVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kCommitLimit_)) {
-                    // bad names - RETHINK
-                    result.fTotalVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kPagesPerSec_)) {
-                    result.fMajorPageFaultsPerSecond = *o ;
-                }
-            }
+            Read_WMI_ (&result);
 #endif
-            {
-                MEMORYSTATUSEX statex;
-                statex.dwLength = sizeof (statex);
-                Verify (::GlobalMemoryStatusEx (&statex) != 0);
-                result.fFreePhysicalMemory = statex.ullAvailPhys;
-            }
 #endif
             if (kManuallyComputePagesPerSecond_) {
                 static  mutex                       s_Mutex_;
@@ -205,6 +136,117 @@ namespace {
             }
             return result;
         }
+
+
+
+#if     qPlatform_POSIX
+#if 0
+        template <typename T>
+        static  void    ReadMemInfoLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
+        {
+            if (line.size () >= 3 and line[0] == n) {
+                String  unit = line[2];
+                double  factor = (unit == L"kB") ? 1024 : 1;
+                *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+            }
+        }
+#endif
+        void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
+        {
+            auto    ReadMemInfoLine_  = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
+                if (line.size () >= 3 and line[0] == n) {
+                    String  unit = line[2];
+                    double  factor = (unit == L"kB") ? 1024 : 1;
+                    *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+                }
+            };
+            static  const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
+            //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
+            DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
+            // Note - /procfs files always unseekable
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                ReadMemInfoLine_ (&updateResult->fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                ReadMemInfoLine_ (&updateResult->fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
+                ReadMemInfoLine_ (&updateResult->fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
+                ReadMemInfoLine_ (&updateResult->fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
+            }
+        }
+
+#if 0
+        template <typename T>
+        void    ReadVMStatLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
+        {
+            if (line.size () >= 2 and line[0] == n) {
+                *result = Characters::String2Int<T> (line[1]);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+            }
+        }
+#endif
+        void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
+        {
+            auto    ReadVMStatLine_ = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
+                if (line.size () >= 2 and line[0] == n) {
+                    *result = Characters::String2Int<T> (line[1]);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
+#endif
+                }
+            };
+            {
+                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
+                static  const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
+                Optional<uint64_t>  pgfault;
+                // Note - /procfs files always unseekable
+                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                    ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
+                    ReadVMStatLine_ (&updateResult->fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+                }
+                if (pgfault.IsPresent () and updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
+                    updateResult->fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
+                }
+            }
+        }
+#elif   qPlatform_Windows
+        void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)
+        {
+            MEMORYSTATUSEX statex;
+            memset (&statex, 0, sizeof (statex));
+            statex.dwLength = sizeof (statex);
+            Verify (::GlobalMemoryStatusEx (&statex) != 0);
+            updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
+        }
+        void    Read_WMI_ (Instruments::Memory::Info* updateResult)
+        {
+            fMemoryWMICollector_.Collect ();
+            {
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_)) {
+                    updateResult->fUsedVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_)) {
+                    // bad names - RETHINK
+                    updateResult->fTotalVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_)) {
+                    updateResult->fMajorPageFaultsPerSecond = *o ;
+                }
+            }
+        }
+#endif
+
     };
 }
 
