@@ -130,8 +130,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Note - as a side-effect, this function also calls Collect() when its done, so that all the counters
-                     *  are consitent.
+                     *  \note   Callers may wish to call 'Collect' after adding counters, to assure all counters are collected.
                      */
                     nonvirtual  void    AddCounters (const String& counterName);
                     nonvirtual  void    AddCounters (const Iterable<String>& counterNames);
