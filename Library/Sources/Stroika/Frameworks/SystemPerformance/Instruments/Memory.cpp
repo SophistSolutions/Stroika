@@ -10,6 +10,7 @@
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Execution/Sleep.h"
@@ -80,8 +81,8 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
-        uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
-        Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
+        uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
+        Time::DurationSecondsType  fSaved_MajorPageFaultsSinceBoot_At {};
 
         CapturerWithContext_POSIX_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
         {
@@ -94,25 +95,9 @@ namespace {
 
         Instruments::Memory::Info capture_ ()
         {
-            constexpr   bool    kManuallyComputePagesPerSecond_ { true };
-
             Instruments::Memory::Info   result;
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
-            if (kManuallyComputePagesPerSecond_) {
-//                static  mutex                       s_Mutex_;
-//               static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
-                //              static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
-                if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                    Time::DurationSecondsType   now = Time::GetTickCount ();
-                    //         auto    critSec { Execution::make_unique_lock (s_Mutex_) };
-                    if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
-                        result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
-                    }
-                    s_Saved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
-                    s_Saved_MajorPageFaultsSinceBoot_At = now;
-                }
-            }
             return result;
         }
 
@@ -153,10 +138,10 @@ namespace {
                 }
             };
             {
-                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
                 static  const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
                 Optional<uint64_t>  pgfault;
                 // Note - /procfs files always unseekable
+                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
                 for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
@@ -166,6 +151,14 @@ namespace {
                 }
                 if (pgfault.IsPresent () and updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
                     updateResult->fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fMajorPageFaultsSinceBoot;
+                }
+                if (updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
+                    Time::DurationSecondsType   now = Time::GetTickCount ();
+                    if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
+                        result.fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                    }
+                    fSaved_MajorPageFaultsSinceBoot = *updateResult->fMajorPageFaultsSinceBoot;
+                    fSaved_MajorPageFaultsSinceBoot_At = now;
                 }
             }
         }
@@ -250,10 +243,11 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_
+            : Foundation::Debug::AssertExternallySynchronizedLock
 #if     qPlatform_POSIX
-            : CapturerWithContext_POSIX_
+            , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
-            : CapturerWithContext_Windows_
+            , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_POSIX
@@ -267,6 +261,7 @@ namespace {
         }
         Instruments::Memory::Info capture_ ()
         {
+            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
 #endif
