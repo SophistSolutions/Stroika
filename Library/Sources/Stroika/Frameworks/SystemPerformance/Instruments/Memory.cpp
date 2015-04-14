@@ -75,60 +75,37 @@ namespace {
 
 
 
-namespace {
-    struct  CapturerWithContext_ {
-#if     qUseWMICollectionSupport_
-        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture;
-#endif
 
-        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
-#if     qUseWMICollectionSupport_
-            :   fMinTimeBeforeFirstCapture (minTimeBeforeFirstCapture)
-#endif
+
+#if     qPlatform_POSIX
+namespace {
+    struct  CapturerWithContext_POSIX_ {
+        uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
+        Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
+
+        CapturerWithContext_POSIX_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
         {
-#if     qUseWMICollectionSupport_
-            fMemoryWMICollector_.Collect ();
-            Execution::Sleep (minTimeBeforeFirstCapture);
-#endif
+            if (minTimeBeforeFirstCapture > 0) {
+                capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
+                Execution::Sleep (minTimeBeforeFirstCapture);
+            }
         }
-        CapturerWithContext_ (const CapturerWithContext_& from)
-#if     qUseWMICollectionSupport_
-            : fMemoryWMICollector_ (from.fMemoryWMICollector_)
-            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
-#endif
-        {
-#if   qUseWMICollectionSupport_
-            fMemoryWMICollector_.Collect ();
-            Execution::Sleep (fMinTimeBeforeFirstCapture);
-#endif
-        }
+        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
 
         Instruments::Memory::Info capture_ ()
         {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
-#endif
-
             constexpr   bool    kManuallyComputePagesPerSecond_ { true };
 
             Instruments::Memory::Info   result;
-#if     qPlatform_POSIX
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
-#elif   qPlatform_Windows
-            Read_GlobalMemoryStatusEx_(&result);
-#if     qUseWMICollectionSupport_
-            Read_WMI_ (&result);
-#endif
-#endif
             if (kManuallyComputePagesPerSecond_) {
-                static  mutex                       s_Mutex_;
-                static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
-                static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
+//                static  mutex                       s_Mutex_;
+//               static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
+                //              static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
                 if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
                     Time::DurationSecondsType   now = Time::GetTickCount ();
-                    auto    critSec { Execution::make_unique_lock (s_Mutex_) };
+                    //         auto    critSec { Execution::make_unique_lock (s_Mutex_) };
                     if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
                         result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
                     }
@@ -139,7 +116,6 @@ namespace {
             return result;
         }
 
-#if     qPlatform_POSIX
         void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
         {
             auto    ReadMemInfoLine_  = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
@@ -193,7 +169,52 @@ namespace {
                 }
             }
         }
-#elif   qPlatform_Windows
+    };
+}
+#endif
+
+
+
+
+#if     qPlatform_Windows
+namespace {
+    struct  CapturerWithContext_Windows_ {
+#if     qUseWMICollectionSupport_
+        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        DurationSecondsType fMinTimeBeforeFirstCapture;
+#endif
+
+        CapturerWithContext_Windows_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+#if     qUseWMICollectionSupport_
+            :   fMinTimeBeforeFirstCapture (minTimeBeforeFirstCapture)
+#endif
+        {
+#if     qUseWMICollectionSupport_
+            fMemoryWMICollector_.Collect ();
+            Execution::Sleep (minTimeBeforeFirstCapture);
+#endif
+        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+#if     qUseWMICollectionSupport_
+            : fMemoryWMICollector_ (from.fMemoryWMICollector_)
+            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            fMemoryWMICollector_.Collect ();
+            Execution::Sleep (fMinTimeBeforeFirstCapture);
+#endif
+        }
+
+        Instruments::Memory::Info capture_ ()
+        {
+            Instruments::Memory::Info   result;
+            Read_GlobalMemoryStatusEx_(&result);
+#if     qUseWMICollectionSupport_
+            Read_WMI_ (&result);
+#endif
+            return result;
+        }
         void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)
         {
             MEMORYSTATUSEX statex;
@@ -202,6 +223,7 @@ namespace {
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
             updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
         }
+#if     qUseWMICollectionSupport_
         void    Read_WMI_ (Instruments::Memory::Info* updateResult)
         {
             fMemoryWMICollector_.Collect ();
@@ -221,6 +243,39 @@ namespace {
 #endif
     };
 }
+#endif
+
+
+
+
+namespace {
+    struct  CapturerWithContext_
+#if     qPlatform_POSIX
+            : CapturerWithContext_POSIX_
+#elif   qPlatform_Windows
+            : CapturerWithContext_Windows_
+#endif
+    {
+#if     qPlatform_POSIX
+        using inherited = CapturerWithContext_POSIX_;
+#elif   qPlatform_Windows
+        using inherited = CapturerWithContext_Windows_;
+#endif
+        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+            : inherited (minTimeBeforeFirstCapture)
+        {
+        }
+        Instruments::Memory::Info capture_ ()
+        {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
+#endif
+            return inherited::capture_ ();
+        }
+    };
+}
+
+
 
 
 
@@ -271,8 +326,8 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
 {
     CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
-    static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (String_Constant (L"Memory")),
+    static  const   Instrument  kInstrument_    = Instrument (
+                InstrumentNameType (String_Constant (L"Memory")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -286,6 +341,6 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
     },
     {kMemoryUsage},
     GetObjectVariantMapper ()
-                                          );
+            );
     return kInstrument_;
 }
