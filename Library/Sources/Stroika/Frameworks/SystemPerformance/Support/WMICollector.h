@@ -62,6 +62,7 @@ namespace   Stroika {
                 using   Foundation::Characters::String;
                 using   Foundation::Containers::Mapping;
                 using   Foundation::Containers::Set;
+                using   Foundation::Memory::Optional;
                 using   Foundation::Time::DurationSecondsType;
                 using   Foundation::Traversal::Iterable;
 
@@ -121,12 +122,12 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Like AddInstancesIf, but does nothing if instance is already present.
+                     *  Like AddInstancesIf, but does nothing if instance is already present, and returns true iff an addition was performed.
                      *
                      *  @see AddInstances
                      */
-                    nonvirtual  void    AddInstancesIf (const String& instance);
-                    nonvirtual  void    AddInstancesIf (const Iterable<String>& instances);
+                    nonvirtual  bool    AddInstancesIf (const String& instance);
+                    nonvirtual  bool    AddInstancesIf (const Iterable<String>& instances);
 
                 public:
                     /**
@@ -138,8 +139,19 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  This will throw if there is an error capturing the given result.
+                     *
+                     *  @see PeekCurrentValue
                      */
                     nonvirtual  double  GetCurrentValue (const String& instance, const String& counterName);
+
+                public:
+                    /**
+                     *  Return 'missing' if the value is not available (for any reason, including obsolete instance, or whatever)
+                     *
+                     *  @see GetCurrentValue
+                     */
+                    nonvirtual  Optional<double>    PeekCurrentValue (const String& instance, const String& counterName);
 
                 private:
                     DurationSecondsType             fTimeOfLastCollection_ {};
@@ -157,8 +169,9 @@ namespace   Stroika {
                         PerInstanceData_ () = delete;
                         ~PerInstanceData_ ();
 
-                        void    AddCounter (const String& counterName);
-                        double  GetCurrentValue (const String& counterName);
+                        void                AddCounter (const String& counterName);
+                        double              GetCurrentValue (const String& counterName);
+                        Optional<double>    PeekCurrentValue (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two
                     // collecters refering to the same instance handles (bad)

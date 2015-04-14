@@ -302,6 +302,53 @@ namespace {
 #if     qUseWMICollectionSupport_
                                     String wmiInstanceName = v.fMountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
                                     fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
+
+                                    // which looks better???
+                                    if (false) {
+#if 0
+                                        function<double> a = [&v, timeCollecting] (double d) mutable { v.fReadIOStats.fBytesTransfered = d * timeCollecting;};
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_).DoIf (a);
+
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_).DoIf ([&] (double d) { v.fReadIOStats.fBytesTransfered = d * timeCollecting;});
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_).DoIf ([&] (double d) { v.fWriteIOStats.fBytesTransfered = d * timeCollecting;});
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_).DoIf ([&] (double d) { v.fReadIOStats.fTotalTransfers = d * timeCollecting;});
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_).DoIf ([&] (double d) { v.fWriteIOStats.fTotalTransfers = d * timeCollecting;});
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_).DoIf ([&] (double d) { v.fReadIOStats.fTimeTransfering = d * timeCollecting / 100;});
+                                        fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_).DoIf ([&] (double d) { v.fWriteIOStats.fTimeTransfering = d * timeCollecting / 100;});
+#endif
+                                    }
+                                    else {
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                                            v.fReadIOStats.fBytesTransfered = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                                            v.fWriteIOStats.fBytesTransfered = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                                            v.fReadIOStats.fTotalTransfers = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                                            v.fWriteIOStats.fTotalTransfers = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                                            v.fReadIOStats.fTimeTransfering = *o * timeCollecting / 100;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                            v.fWriteIOStats.fTimeTransfering = *o * timeCollecting / 100;
+                                        }
+                                    }
+
+                                    if (v.fReadIOStats.fBytesTransfered or v.fWriteIOStats.fBytesTransfered) {
+                                        v.fIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
+                                    }
+                                    if (v.fReadIOStats.fTotalTransfers or v.fWriteIOStats.fTotalTransfers) {
+                                        v.fIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
+                                    }
+                                    if (v.fReadIOStats.fTimeTransfering or v.fWriteIOStats.fTimeTransfering) {
+                                        v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
+                                    }
+
+#if 0
                                     v.fReadIOStats.fBytesTransfered = fLogicalDiskWMICollector_.GetCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_) * timeCollecting;
                                     v.fWriteIOStats.fBytesTransfered = fLogicalDiskWMICollector_.GetCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_) * timeCollecting;
                                     v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.GetCurrentValue (wmiInstanceName, kDiskReadsPerSec_) * timeCollecting;
@@ -312,6 +359,8 @@ namespace {
                                     v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                     v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
                                     v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+#endif
+
 #endif
                                 }
                                 result.push_back (v);

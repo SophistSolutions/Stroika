@@ -81,6 +81,7 @@ WMICollector::PerInstanceData_::~PerInstanceData_ ()
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::~PerInstanceData_");
 #endif
     AssertNotNull (fQuery_);
+    //@todo add cehck result (this SB assert??)Verify
     ::PdhCloseQuery (fQuery_);
 }
 
@@ -104,11 +105,18 @@ double  WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNa
     PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
     if (x != 0) {
         bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
-
-        //tmphacl
-        return 0;
-
         Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
+    }
+    return counterVal.doubleValue;
+}
+
+Optional<double>    WMICollector::PerInstanceData_::PeekCurrentValue (const String& counterName)
+{
+    PDH_FMT_COUNTERVALUE counterVal;
+    PDH_HCOUNTER    counter = *fCounters_.Lookup (counterName);
+    PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
+    if (x != 0) {
+        return Optional<double> ();
     }
     return counterVal.doubleValue;
 }
@@ -232,7 +240,7 @@ void    WMICollector::AddInstances (const Iterable<String>& instances)
     Collect ();
 }
 
-void    WMICollector::AddInstancesIf (const String& instance)
+bool    WMICollector::AddInstancesIf (const String& instance)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf");
@@ -245,11 +253,12 @@ void    WMICollector::AddInstancesIf (const String& instance)
             const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
             Execution::Sleep (kUseIntervalIfNoBaseline_);
         }
-
+        return true;
     }
+    return false;
 }
 
-void    WMICollector::AddInstancesIf (const Iterable<String>& instances)
+bool    WMICollector::AddInstancesIf (const Iterable<String>& instances)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf");
@@ -265,6 +274,7 @@ void    WMICollector::AddInstancesIf (const Iterable<String>& instances)
     if (anyAdded) {
         Collect ();
     }
+    return anyAdded;
 }
 
 double  WMICollector::GetCurrentValue (const String& instance, const String& counterName)
@@ -275,6 +285,16 @@ double  WMICollector::GetCurrentValue (const String& instance, const String& cou
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fInstanceData_.ContainsKey (instance));
     return fInstanceData_.Lookup (instance)->get ()->GetCurrentValue (counterName);
+}
+
+Optional<double>  WMICollector::PeekCurrentValue (const String& instance, const String& counterName)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PeekCurrentValue");
+#endif
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+    Require (fInstanceData_.ContainsKey (instance));
+    return fInstanceData_.Lookup (instance)->get ()->PeekCurrentValue (counterName);
 }
 
 void    WMICollector::AddCounter_ (const String& counterName)
