@@ -195,6 +195,9 @@ namespace {
             : fLogicalDiskWMICollector_ { L"LogicalDisk", L"_Total",  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
         {
+#if     qPlatform_POSIX
+            capture_ ();        // for side-effect of setting fContextStats_
+#endif
         }
         Sequence<VolumeInfo> capture_ ()
         {
