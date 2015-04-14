@@ -140,27 +140,13 @@ namespace {
 
 
 #if     qPlatform_POSIX
-#if 0
-        template <typename T>
-        static  void    ReadMemInfoLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
-        {
-            if (line.size () >= 3 and line[0] == n) {
-                String  unit = line[2];
-                double  factor = (unit == L"kB") ? 1024 : 1;
-                *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
-#endif
-            }
-        }
-#endif
         void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
         {
             auto    ReadMemInfoLine_  = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
                     String  unit = line[2];
                     double  factor = (unit == L"kB") ? 1024 : 1;
-                    *result = static_cast<T> (round (Characters::String2Float<double> (line[1]) * factor));
+                    *result = static_cast<uint64_t> (round (Characters::String2Float<double> (line[1]) * factor));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
@@ -180,24 +166,11 @@ namespace {
                 ReadMemInfoLine_ (&updateResult->fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
             }
         }
-
-#if 0
-        template <typename T>
-        void    ReadVMStatLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
-        {
-            if (line.size () >= 2 and line[0] == n) {
-                *result = Characters::String2Int<T> (line[1]);
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
-#endif
-            }
-        }
-#endif
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
         {
             auto    ReadVMStatLine_ = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
                 if (line.size () >= 2 and line[0] == n) {
-                    *result = Characters::String2Int<T> (line[1]);
+                    *result = Characters::String2Int<uint64_t> (line[1]);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
@@ -246,7 +219,6 @@ namespace {
             }
         }
 #endif
-
     };
 }
 
