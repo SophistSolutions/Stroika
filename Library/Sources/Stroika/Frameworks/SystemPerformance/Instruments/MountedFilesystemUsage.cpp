@@ -12,7 +12,6 @@
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Sequence.h"
-#include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
@@ -90,7 +89,7 @@ namespace {
         Mapping<String, PDH_HCOUNTER>   fCounters {};
 
         // Instance index is not numeric.. Often value is _Total
-        WMIVarCollector_ (const String& objectName, const String& instanceIndex, const Set<String>& counterName)
+        WMIVarCollector_ (const String& objectName, const String& instanceIndex, const Iterable<String>& counterName)
             : fObjectName_ (objectName)
             , fInstanceIndex_ (instanceIndex)
         {
@@ -110,7 +109,7 @@ namespace {
         }
         WMIVarCollector_() = delete;
         WMIVarCollector_ (const WMIVarCollector_& from)
-            : WMIVarCollector_ (from.fObjectName_, from.fInstanceIndex_, Set<String> (from.fCounters.Keys ()))
+            : WMIVarCollector_ (from.fObjectName_, from.fInstanceIndex_, from.fCounters.Keys ())
         {
             // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
         }
@@ -186,12 +185,14 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_ {
-#if     qUseWMICollectionSupport_
-        WMIVarCollector_    fWMICollector_;
+#if     qPlatform_POSIX
+        Optional<Mapping<String, PerfStats_>>   fContextStats_;
+#elif   qUseWMICollectionSupport_
+        WMIVarCollector_    fLogicalDiskWMICollector_;
 #endif
         CapturerWithContext_ ()
 #if     qUseWMICollectionSupport_
-            : fWMICollector_ { L"LogicalDisk", L"_Total",  Set<String> {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
+            : fLogicalDiskWMICollector_ { L"LogicalDisk", L"_Total",  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
         {
         }
@@ -205,28 +206,32 @@ namespace {
                 Sequence<VolumeInfo>    newV;
                 for (VolumeInfo v : results) {
                     if (v.fDeviceOrVolumeName.IsPresent ()) {
-                        String  devNameLessSlashes = *v.fDeviceOrVolumeName;
-                        size_t i = devNameLessSlashes.RFind ('/');
-                        if (i != string::npos) {
-                            devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
-                        }
-                        Optional<PerfStats_>    o = diskStats.Lookup (devNameLessSlashes);
-                        if (o.IsPresent ()) {
-                            const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
-                            v.fReadIOStats.fBytesTransfered = o->fSectorsRead * kSectorSizeTmpHack_;
-                            v.fReadIOStats.fTotalTransfers = o->fReadsCompleted;
-                            v.fReadIOStats.fTimeTransfering = o->fTimeSpentReading;
-                            v.fWriteIOStats.fBytesTransfered = o->fSectorsWritten * kSectorSizeTmpHack_;
-                            v.fWriteIOStats.fTotalTransfers = o->fWritesCompleted;
-                            v.fWriteIOStats.fTimeTransfering = o->fTimeSpentReading;
+                        if (fContextStats_) {
+                            String  devNameLessSlashes = *v.fDeviceOrVolumeName;
+                            size_t i = devNameLessSlashes.RFind ('/');
+                            if (i != string::npos) {
+                                devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
+                            }
+                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
+                            Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
+                            if (oNew.IsPresent ()) {
+                                const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
+                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * kSectorSizeTmpHack_;
+                                v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                v.fReadIOStats.fTimeTransfering = oNew->fTimeSpentReading - oOld->fTimeSpentReading;
+                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * kSectorSizeTmpHack_;
+                                v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentReading - oOld->fTimeSpentReading;
 
-                            v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
-                            v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
-                            v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+                                v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
+                                v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
+                                v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+                            }
                         }
                     }
                     newV.Append (v);
                 }
+                fContextStats_ = diskStats;
                 results = newV;
             }
             catch (...) {
@@ -354,9 +359,9 @@ namespace {
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
         {
 #if     qUseWMICollectionSupport_
-            Time::DurationSecondsType   timeOfPrevCollection = fWMICollector_.fTimeOfLastCollection;
-            fWMICollector_.Collect ();
-            Time::DurationSecondsType   timeCollecting { fWMICollector_.fTimeOfLastCollection - timeOfPrevCollection };
+            Time::DurationSecondsType   timeOfPrevCollection = fLogicalDiskWMICollector_.fTimeOfLastCollection;
+            fLogicalDiskWMICollector_.Collect ();
+            Time::DurationSecondsType   timeCollecting { fLogicalDiskWMICollector_.fTimeOfLastCollection - timeOfPrevCollection };
 #endif
             Sequence<VolumeInfo>   result;
             TCHAR volumeNameBuf[1024];
@@ -406,12 +411,12 @@ namespace {
                                     v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                     v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
 #if     qUseWMICollectionSupport_
-                                    v.fReadIOStats.fBytesTransfered = fWMICollector_.getCurrentValue (kDiskReadBytesPerSec_) * timeCollecting;
-                                    v.fWriteIOStats.fBytesTransfered = fWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
-                                    v.fReadIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
-                                    v.fWriteIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
-                                    v.fReadIOStats.fTimeTransfering = fWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
-                                    v.fWriteIOStats.fTimeTransfering = fWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
+                                    v.fReadIOStats.fBytesTransfered = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadBytesPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fBytesTransfered = fLogicalDiskWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
+                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
 
                                     v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                     v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
