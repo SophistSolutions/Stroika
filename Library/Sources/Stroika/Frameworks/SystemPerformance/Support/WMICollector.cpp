@@ -49,17 +49,66 @@ using   Characters::String_Constant;
 
 /*
  ********************************************************************************
+ ********** SystemPerformance::Support::WMICollector::PerInstanceData_ **********
+ ********************************************************************************
+ */
+WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, const String& instance)
+    : fObjectName_ (objectName)
+    , fInstance_ (instance)
+{
+    PDH_STATUS  x = ::PdhOpenQuery (NULL, NULL, &fQuery_);
+    if (x != 0) {
+        Execution::DoThrow (StringException (L"PdhOpenQuery"));
+    }
+}
+
+WMICollector::PerInstanceData_::~PerInstanceData_ ()
+{
+    AssertNotNull (fQuery_);
+    ::PdhCloseQuery (fQuery_);
+}
+
+void    WMICollector::PerInstanceData_::AddCounter (const String& counterName)
+{
+    Require (not fCounters_.ContainsKey (counterName));
+    PDH_HCOUNTER newCounter = nullptr;
+    PDH_STATUS  x = PdhAddCounter (fQuery_, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstance_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
+    if (x != 0) {
+        bool isPDH_CSTATUS_NO_OBJECT = (x == PDH_CSTATUS_NO_OBJECT);
+        bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
+        Execution::DoThrow (StringException (L"PdhAddCounter"));
+    }
+    fCounters_.Add (counterName, newCounter);
+}
+
+double  WMICollector::PerInstanceData_::GetCurrentValue (const String& counterName)
+{
+    PDH_FMT_COUNTERVALUE counterVal;
+    PDH_HCOUNTER    counter = *fCounters_.Lookup (counterName);
+    PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
+    if (x != 0) {
+        Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
+    }
+    return counterVal.doubleValue;
+}
+
+
+
+/*
+ ********************************************************************************
  ********************* SystemPerformance::Support::WMICollector *****************
  ********************************************************************************
  */
-WMICollector::WMICollector (const String& objectName, const String& instanceIndex, const Iterable<String>& counterName)
-    : fObjectName_ (objectName)
-    , fInstanceIndex_ (instanceIndex)
+WMICollector::WMICollector (const String& objectName, const String& instance, const Iterable<String>& counterName)
+    : WMICollector (objectName, Iterable<String> { instance }, counterName)
 {
-    PDH_STATUS  x = ::PdhOpenQuery (NULL, NULL, &fQuery);
-    for (String i : counterName) {
-        Add (i);
-    }
+}
+
+WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
+    : fObjectName_ (objectName)
+{
+    instances.Apply ([this] (String i) { AddInstance_ (i); });
+    counterName.Apply ([this] (String i) { AddCounter_ (i); });
     Collect ();
     {
         const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
@@ -67,13 +116,8 @@ WMICollector::WMICollector (const String& objectName, const String& instanceInde
     }
 }
 
-WMICollector::~WMICollector ()
-{
-    ::PdhCloseQuery (fQuery);
-}
-
 WMICollector::WMICollector (const WMICollector& from)
-    : WMICollector (from.fObjectName_, from.fInstanceIndex_, from.fCounters.Keys ())
+    : WMICollector (from.fObjectName_, from.fInstanceData_.Keys (), from.fCounterNames_)
 {
     // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
 }
@@ -81,49 +125,71 @@ WMICollector::WMICollector (const WMICollector& from)
 WMICollector& WMICollector::operator= (const WMICollector& rhs)
 {
     if (this != &rhs) {
+        fInstanceData_.clear ();
         fObjectName_ = rhs.fObjectName_;
-        fInstanceIndex_ = rhs.fInstanceIndex_;
-    }
-    PDH_STATUS  x = ::PdhOpenQuery (NULL, NULL, &fQuery);
-    for (String i : rhs.fCounters.Keys ()) {
-        Add (i);
-    }
-    Collect ();
-    {
-        const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-        Execution::Sleep (kUseIntervalIfNoBaseline_);
+        rhs.fInstanceData_.Keys ().Apply ([this] (String i) { AddInstance_ (i); });
+        rhs.fCounterNames_.Apply ([this] (String i) { AddCounter_ (i); });
+        Collect ();
+        {
+            const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+            Execution::Sleep (kUseIntervalIfNoBaseline_);
+        }
     }
     return *this;
 }
 
 void     WMICollector::Collect ()
 {
-    PDH_STATUS  x = PdhCollectQueryData (fQuery);
-    if (x != 0) {
-        Execution::DoThrow (StringException (L"PdhCollectQueryData"));
-    }
-    fTimeOfLastCollection = Time::GetTickCount ();
+    fInstanceData_.Apply ([this] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
+        PDH_STATUS  x = ::PdhCollectQueryData (i.fValue->fQuery_);
+        if (x != 0) {
+            Execution::DoThrow (StringException (L"PdhCollectQueryData"));
+        }
+    });
+    fTimeOfLastCollection_ = Time::GetTickCount ();
 }
 
-void    WMICollector::Add (const String& counterName)
+void    WMICollector::AddCounters (const String& counterName)
 {
-    PDH_HCOUNTER newCounter = nullptr;
-    PDH_STATUS  x = PdhAddCounter (fQuery, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstanceIndex_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
-    if (x != 0) {
-        bool isPDH_CSTATUS_NO_OBJECT = (x == PDH_CSTATUS_NO_OBJECT);
-        bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
-        Execution::DoThrow (StringException (L"PdhAddCounter"));
-    }
-    fCounters.Add (counterName, newCounter);
+    AddCounter_ (counterName);
+    Collect ();
 }
 
-double WMICollector::GetCurrentValue (const String& name)
+void    WMICollector::AddCounters (const Iterable<String>& counterNames)
 {
-    PDH_FMT_COUNTERVALUE counterVal;
-    PDH_HCOUNTER    counter = *fCounters.Lookup (name);
-    PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
-    if (x != 0) {
-        Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
-    }
-    return counterVal.doubleValue;
+    counterNames.Apply ([this] (String i) { AddCounter_ (i); });
+    Collect ();
+}
+
+void    WMICollector::AddInstances (const String& instance)
+{
+    AddInstance_ (instance);
+    Collect ();
+}
+
+void    WMICollector::AddInstances (const Iterable<String>& instances)
+{
+    instances.Apply ([this] (String i) { AddInstance_ (i); });
+    Collect ();
+}
+
+double  WMICollector::GetCurrentValue (const String& instance, const String& counterName)
+{
+    Require (fInstanceData_.ContainsKey (instance));
+    return fInstanceData_.Lookup (instance)->get ()->GetCurrentValue (counterName);
+}
+
+void    WMICollector::AddCounter_ (const String& counterName)
+{
+    Require (not fCounterNames_.Contains (counterName));
+    fInstanceData_.Apply ([this, counterName] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
+        i.fValue->AddCounter (counterName);
+    });
+    fCounterNames_.Add (counterName);
+}
+
+void    WMICollector::AddInstance_ (const String& instance)
+{
+    Require (not fInstanceData_.ContainsKey (instance));
+    fInstanceData_.Add (instance, make_shared<PerInstanceData_> (fObjectName_, instance) );
 }
