@@ -48,18 +48,21 @@ namespace   Stroika {
                         Optional<double>    fUsedSizeInBytes;
 
                         /**
-                         * @see https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
+                         *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
+                         *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.
                          *
-                         *  From total bytes read, and total 'time spent transfering' you can compute time
-                         *  spent reading and time spent writing and total time.
+                         *  fTimeTransfering is the number of seconds spent doing the transfers.
+                         *  From https://www.kernel.org/doc/Documentation/iostats.txt:
+                         *      This is the total number of milliseconds spent by all [sic] (as
+                         *      measured from __make_request() to end_that_request_last()).
                          *
-                         *  The reason total time is returned redundantly, is because some system may only be able
+                         *  The reason fIOStats is returned redundantly, is because some system may only be able
                          *  to report totals, and not read/write breakdown.
                          */
                         struct  IOStats {
-                            Optional<double>    fBytes;
-                            Optional<double>    fTimeTransfering;
+                            Optional<double>    fBytesTransfered;
                             Optional<double>    fTotalTransfers;
+                            Optional<double>    fTimeTransfering;
                         };
                         IOStats fReadIOStats;
                         IOStats fWriteIOStats;

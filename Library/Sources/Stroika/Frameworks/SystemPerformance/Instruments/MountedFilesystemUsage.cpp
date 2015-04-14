@@ -83,6 +83,7 @@ namespace {
     //
     // Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
     struct  WMIVarCollector_ {
+        Time::DurationSecondsType       fTimeOfLastCollection {};
         String                          fObjectName_;
         String                          fInstanceIndex_;
         PDH_HQUERY                      fQuery {};              // @todo use Synchonized<> on this as a locker
@@ -136,6 +137,7 @@ namespace {
             if (x != 0) {
                 Execution::DoThrow (StringException (L"PdhCollectQueryData"));
             }
+            fTimeOfLastCollection = Time::GetTickCount ();
         }
         void    Add (const String& counterName)
         {
@@ -173,6 +175,8 @@ namespace {
     const   String_Constant     kDiskWriteBytesPerSec_  { L"Disk Write Bytes/sec" };
     const   String_Constant     kDiskReadsPerSec_       { L"Disk Reads/sec" };
     const   String_Constant     kDiskWritesPerSec_      { L"Disk Writes/sec" };
+    const   String_Constant     kPctDiskReadTime_       { L"% Disk Read Time" };
+    const   String_Constant     kPctDiskWriteTime_      { L"% Disk Write Time" };
 #endif
 }
 
@@ -187,7 +191,7 @@ namespace {
 #endif
         CapturerWithContext_ ()
 #if     qUseWMICollectionSupport_
-            : fWMICollector_ { L"LogicalDisk", L"_Total",  Set<String> {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_} }
+            : fWMICollector_ { L"LogicalDisk", L"_Total",  Set<String> {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
         {
         }
@@ -208,13 +212,16 @@ namespace {
                         }
                         Optional<PerfStats_>    o = diskStats.Lookup (devNameLessSlashes);
                         if (o.IsPresent ()) {
-                            const unsigned int kSectorSizeTmpHack_ = 4 * 1024;  // @todo GET from disk stats
-                            v.fReadIOStats.fBytes = o->fSectorsRead * kSectorSizeTmpHack_;
+                            const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
+                            v.fReadIOStats.fBytesTransfered = o->fSectorsRead * kSectorSizeTmpHack_;
+                            v.fReadIOStats.fTotalTransfers = o->fReadsCompleted;
                             v.fReadIOStats.fTimeTransfering = o->fTimeSpentReading;
-                            v.fWriteIOStats.fBytes = o->fSectorsWritten * kSectorSizeTmpHack_;
+                            v.fWriteIOStats.fBytesTransfered = o->fSectorsWritten * kSectorSizeTmpHack_;
+                            v.fWriteIOStats.fTotalTransfers = o->fWritesCompleted;
                             v.fWriteIOStats.fTimeTransfering = o->fTimeSpentReading;
 
-                            v.fIOStats.fBytes = *v.fReadIOStats.fBytes + *v.fWriteIOStats.fBytes;
+                            v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
+                            v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
                             v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
                         }
                     }
@@ -296,8 +303,10 @@ namespace {
         struct PerfStats_ {
             double  fSectorsRead;
             double  fTimeSpentReading;
+            double  fReadsCompleted;
             double  fSectorsWritten;
             double  fTimeSpentWritingMS;
+            double  fWritesCompleted;
         };
         Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
         {
@@ -315,20 +324,27 @@ namespace {
                 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
                 //
                 //  3 - device name
+                //  4 - reads completed successfully
                 //  6 - sectors read
                 //  7 - time spent reading (ms)
+                //  8 - writes completed
                 //  10 - sectors written
                 //  11 - time spent writing (ms)
                 //
                 if (line.size () >= 13) {
                     String  devName = line[3 - 1];
+                    String  readsCompleted = line[4 - 1];
                     String  sectorsRead = line[6 - 1];
                     String  timeSpentReadingMS = line[7 - 1];
+                    String  writesCompleted = line[8 - 1];
                     String  sectorsWritten = line[10 - 1];
                     String  timeSpentWritingMS = line[11 - 1];
                     result.Add (
                         devName,
-                        PerfStats_ { String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000 }
+                    PerfStats_ {
+                        String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
+                        String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted)
+                    }
                     );
                 }
             }
@@ -337,7 +353,11 @@ namespace {
 #elif   qPlatform_Windows
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
         {
+#if     qUseWMICollectionSupport_
+            Time::DurationSecondsType   timeOfPrevCollection = fWMICollector_.fTimeOfLastCollection;
             fWMICollector_.Collect ();
+            Time::DurationSecondsType   timeCollecting { fWMICollector_.fTimeOfLastCollection - timeOfPrevCollection };
+#endif
             Sequence<VolumeInfo>   result;
             TCHAR volumeNameBuf[1024];
             for (HANDLE hVol = FindFirstVolume (volumeNameBuf, NEltsOf(volumeNameBuf)); hVol != INVALID_HANDLE_VALUE; ) {
@@ -385,13 +405,17 @@ namespace {
                                     DWORD xxx = GetDiskFreeSpaceEx (v.fMountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                                     v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                     v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
-
 #if     qUseWMICollectionSupport_
-                                    v.fReadIOStats.fBytes = fWMICollector_.getCurrentValue (kDiskReadBytesPerSec_);
-                                    v.fWriteIOStats.fBytes = fWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_);
+                                    v.fReadIOStats.fBytesTransfered = fWMICollector_.getCurrentValue (kDiskReadBytesPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fBytesTransfered = fWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTimeTransfering = fWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
+                                    v.fWriteIOStats.fTimeTransfering = fWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
 
-                                    v.fReadIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskReadsPerSec_);
-                                    v.fWriteIOStats.fTotalTransfers = fWMICollector_.getCurrentValue (kDiskWritesPerSec_);
+                                    v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
+                                    v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
+                                    v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
 #endif
                                 }
                                 result.push_back (v);
@@ -435,7 +459,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fBytes), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fBytesTransfered), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTimeTransfering), String_Constant (L"Time-Transfering"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTotalTransfers), String_Constant (L"Total-Transfers"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
@@ -446,9 +470,9 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), String_Constant (L"Mounted-On") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), String_Constant (L"Disk-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Disk-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"fReadIOStats") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"fWriteIOStats") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOStats), String_Constant (L"fIOStats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOStats), String_Constant (L"Combined-IO-Stats") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
