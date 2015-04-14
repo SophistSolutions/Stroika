@@ -135,7 +135,6 @@ namespace   Stroika {
                 private:
                     DurationSecondsType             fTimeOfLastCollection_ {};
                     String                          fObjectName_;
-                    Set<String>                     fInstances_;
                     Set<String>                     fCounterNames_;
 
                 private:
