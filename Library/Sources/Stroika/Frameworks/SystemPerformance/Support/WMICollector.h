@@ -84,7 +84,7 @@ namespace   Stroika {
                  *      WMICollector  tmp { L"LogicalDisk", {L"E:"},  {L"% Free Space"} };
                  *      double x = tmp.GetCurrentValue (L"E:", L"% Free Space");
                  *
-                 * Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
+                 * Use the Windows 'Performance Monitor' tool and click PerformanceMonitor and "Add Counters" to see more/list
                 */
                 class  WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
                 public:
