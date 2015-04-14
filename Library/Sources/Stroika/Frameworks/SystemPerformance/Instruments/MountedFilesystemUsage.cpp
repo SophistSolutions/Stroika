@@ -46,127 +46,10 @@ using   Characters::String_Constant;
 
 
 #if     qUseWMICollectionSupport_
-#include    <Pdh.h>
-#include    <PdhMsg.h>
+#include    "../Support/WMICollector.h"
+
+using   SystemPerformance::Support::WMICollector;
 #endif
-
-
-#if     defined (_MSC_VER) && qUseWMICollectionSupport_
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#pragma comment (lib, "Pdh.lib")
-#endif
-
-
-
-
-#if     qUseWMICollectionSupport_
-namespace {
-    //
-    //  @todo FIX THREADSAFTY OF THIS OBJECT!!!! (or add check to assure used extnerally Debug::AssertExtenrallySynchonized...)
-    //
-    //
-    //  @todo GOOD CANDIATE TO MOVE TO ANOTHER SHARED FILE??
-    //
-    // Known good WMI object names:
-    //  "Processor"
-    //  "PhysicalDisk"
-    //  "Memory"
-    //  "System"
-    //  "Network Interface"
-    //  "LogicalDisk"
-    //
-    //  Example:
-    //      WMIVarCollector_  tmp { L"Processor", L"_Total", Set<String> {L"% Processor Time"} };
-    //      double x = tmp.getCurrentValue (L"% Processor Time");
-    //
-    //  Example:
-    //      WMIVarCollector_  tmp { L"LogicalDisk", L"E:",  Set<String> {L"% Free Space"} };
-    //      double x = tmp.getCurrentValue (L"% Free Space");
-    //
-    // Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
-    struct  WMIVarCollector_ {
-        Time::DurationSecondsType       fTimeOfLastCollection {};
-        String                          fObjectName_;
-        String                          fInstanceIndex_;
-        PDH_HQUERY                      fQuery {};              // @todo use Synchonized<> on this as a locker
-        Mapping<String, PDH_HCOUNTER>   fCounters {};
-
-        // Instance index is not numeric.. Often value is _Total
-        WMIVarCollector_ (const String& objectName, const String& instanceIndex, const Iterable<String>& counterName)
-            : fObjectName_ (objectName)
-            , fInstanceIndex_ (instanceIndex)
-        {
-            PDH_STATUS  x = ::PdhOpenQuery (NULL, NULL, &fQuery);
-            for (String i : counterName) {
-                Add (i);
-            }
-            Collect ();
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
-        }
-        ~WMIVarCollector_ ()
-        {
-            ::PdhCloseQuery (fQuery);
-        }
-        WMIVarCollector_() = delete;
-        WMIVarCollector_ (const WMIVarCollector_& from)
-            : WMIVarCollector_ (from.fObjectName_, from.fInstanceIndex_, from.fCounters.Keys ())
-        {
-            // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
-        }
-        WMIVarCollector_& operator= (const WMIVarCollector_& rhs)
-        {
-            if (this != &rhs) {
-                fObjectName_ = rhs.fObjectName_;
-                fInstanceIndex_ = rhs.fInstanceIndex_;
-            }
-            PDH_STATUS  x = ::PdhOpenQuery (NULL, NULL, &fQuery);
-            for (String i : rhs.fCounters.Keys ()) {
-                Add (i);
-            }
-            Collect ();
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
-            return *this;
-        }
-        void    Collect ()
-        {
-            PDH_STATUS  x = PdhCollectQueryData (fQuery);
-            if (x != 0) {
-                Execution::DoThrow (StringException (L"PdhCollectQueryData"));
-            }
-            fTimeOfLastCollection = Time::GetTickCount ();
-        }
-        void    Add (const String& counterName)
-        {
-            PDH_HCOUNTER newCounter = nullptr;
-            PDH_STATUS  x = PdhAddCounter (fQuery, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstanceIndex_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
-            if (x != 0) {
-                bool isPDH_CSTATUS_NO_OBJECT = (x == PDH_CSTATUS_NO_OBJECT);
-                bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
-                Execution::DoThrow (StringException (L"PdhAddCounter"));
-            }
-            fCounters.Add (counterName, newCounter);
-        }
-        double getCurrentValue (const String& name)
-        {
-            PDH_FMT_COUNTERVALUE counterVal;
-            PDH_HCOUNTER    counter = *fCounters.Lookup (name);
-            PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
-            if (x != 0) {
-                Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
-            }
-            return counterVal.doubleValue;
-        }
-    };
-}
-#endif
-
-
 
 
 
@@ -199,7 +82,7 @@ namespace {
         };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
 #elif   qUseWMICollectionSupport_
-        WMIVarCollector_    fLogicalDiskWMICollector_;
+        WMICollector    fLogicalDiskWMICollector_;
 #endif
         CapturerWithContext_ ()
 #if     qUseWMICollectionSupport_

@@ -247,6 +247,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks3("Frameworks/UPnP/SSDP/Server", "Makefile-Frameworks-UPnP-SSDP-Server");
 		mkDirWithLinks("Frameworks/SystemPerformance", "Makefile-Frameworks-SystemPerformance");
 		mkDirWithLinks2("Frameworks/SystemPerformance/Instruments", "Makefile-Frameworks-SystemPerformance-Instruments");
+		mkDirWithLinks2("Frameworks/SystemPerformance/Support", "Makefile-Frameworks-SystemPerformance-Support");
 		mkDirWithLinks("Frameworks/WebServer", "Makefile-Frameworks-WebServer");
 
 		mkdir "$intermediateFiles$currentConfiguration/Tools";

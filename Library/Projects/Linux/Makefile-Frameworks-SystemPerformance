@@ -7,6 +7,7 @@ SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks
 
 SubDirs	=	\
 	Instruments	\
+	Support	\
 
 .PHONY:			$(SubDirs)
 
