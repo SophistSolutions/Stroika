@@ -20,6 +20,9 @@
  *
  *  TODO:
  *
+ *      @todo   We should add a RECURSIVE AssertExternallySynchronizedLock (or CTOR flag??). So we can check diff
+ *              threads but allow recursive code.
+ *
  *      @todo   Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
  *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
  *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
@@ -39,7 +42,7 @@ namespace   Stroika {
              * This class is used as a 'no op' in production builds, as a 'locker' for a class that needs
              *  no thread locking because its externally synchronized.
              *
-             *  Externally synchronized means that some external applicaiton control guarnatees the seciton of code (or data)
+             *  Externally synchronized means that some external applicaiton control guarantees the seciton of code (or data)
              *  is only accessed by a single thread.
              *
              *  In debug builds, it enforces this fact through assertions.
