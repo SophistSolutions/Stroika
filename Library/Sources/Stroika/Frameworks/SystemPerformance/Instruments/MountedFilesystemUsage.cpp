@@ -62,6 +62,9 @@ using   Characters::String_Constant;
 #if     qUseWMICollectionSupport_
 namespace {
     //
+    //  @todo FIX THREADSAFTY OF THIS OBJECT!!!! (or add check to assure used extnerally Debug::AssertExtenrallySynchonized...)
+    //
+    //
     //  @todo GOOD CANDIATE TO MOVE TO ANOTHER SHARED FILE??
     //
     // Known good WMI object names:
@@ -186,6 +189,14 @@ namespace {
 namespace {
     struct  CapturerWithContext_ {
 #if     qPlatform_POSIX
+        struct PerfStats_ {
+            double  fSectorsRead;
+            double  fTimeSpentReading;
+            double  fReadsCompleted;
+            double  fSectorsWritten;
+            double  fTimeSpentWritingMS;
+            double  fWritesCompleted;
+        };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
 #elif   qUseWMICollectionSupport_
         WMIVarCollector_    fLogicalDiskWMICollector_;
@@ -308,14 +319,6 @@ namespace {
                 return capture_Process_Run_DF_ (false);
             }
         }
-        struct PerfStats_ {
-            double  fSectorsRead;
-            double  fTimeSpentReading;
-            double  fReadsCompleted;
-            double  fSectorsWritten;
-            double  fTimeSpentWritingMS;
-            double  fWritesCompleted;
-        };
         Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
         {
             using   IO::FileSystem::BinaryFileInputStream;
