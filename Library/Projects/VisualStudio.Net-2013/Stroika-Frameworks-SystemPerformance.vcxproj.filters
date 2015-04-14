@@ -7,6 +7,9 @@
     <Filter Include="Sources\Instruments">
       <UniqueIdentifier>{8b72bc0d-f445-44ff-9830-4770676f0fb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Support">
+      <UniqueIdentifier>{881e9d3e-7843-48f1-ad40-cccf2930ec79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
@@ -76,6 +79,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp">
+      <Filter>Sources\Support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
@@ -122,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.h">
       <Filter>Sources\Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h">
+      <Filter>Sources\Support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -157,6 +157,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A6C00B9D-8B7F-4C43-A043-1127387E712D}</ProjectGuid>

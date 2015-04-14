@@ -1,0 +1,16 @@
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Support/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+
+
+### TODO ADD UNIX ONE	$(ObjDir)WMICollector.o\
+
+all:	$(Objs)
+
