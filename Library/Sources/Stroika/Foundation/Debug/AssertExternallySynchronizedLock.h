@@ -67,11 +67,17 @@ namespace   Stroika {
              */
             class   AssertExternallySynchronizedLock {
             public:
+                /**
+                 *  \note   Copy constructor locks and unlocks quickly to detect if other locks exist while copying.
+                 */
                 AssertExternallySynchronizedLock ();
-                AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock&) = delete;
+                AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src);
 
             public:
-                nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock&) = delete;
+                /**
+                 *  \note   operator= locks and unlocks quickly to detect if other locks exist while copying.
+                 */
+                nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
 
             public:
                 nonvirtual  void    lock () const;
