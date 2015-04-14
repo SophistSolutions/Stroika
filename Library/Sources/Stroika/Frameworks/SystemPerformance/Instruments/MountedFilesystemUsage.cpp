@@ -194,7 +194,7 @@ namespace {
             double  fTimeSpentReading;
             double  fReadsCompleted;
             double  fSectorsWritten;
-            double  fTimeSpentWritingMS;
+            double  fTimeSpentWriting;
             double  fWritesCompleted;
         };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
@@ -232,10 +232,10 @@ namespace {
                                 const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
                                 v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * kSectorSizeTmpHack_;
                                 v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                v.fReadIOStats.fTimeTransfering = oNew->fTimeSpentReading - oOld->fTimeSpentReading;
+                                v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
                                 v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * kSectorSizeTmpHack_;
                                 v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentReading - oOld->fTimeSpentReading;
+                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
                                 v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                 v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
@@ -422,7 +422,7 @@ namespace {
                                     v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
                                     v.fWriteIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
                                     v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
-                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
+                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskWriteTime_) * timeCollecting;
 
                                     v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                     v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
