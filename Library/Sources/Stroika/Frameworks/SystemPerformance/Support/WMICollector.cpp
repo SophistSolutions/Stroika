@@ -34,7 +34,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 using   namespace   Stroika::Frameworks::SystemPerformance::Support;
 
 using   Characters::String_Constant;
-
+using   Debug::AssertExternallySynchronizedLock;
 
 
 
@@ -119,12 +119,16 @@ WMICollector::WMICollector (const String& objectName, const Iterable<String>& in
 WMICollector::WMICollector (const WMICollector& from)
     : WMICollector (from.fObjectName_, from.fInstanceData_.Keys (), from.fCounterNames_)
 {
+    /// @todo auto    critSec1 { Execution::make_unique_lock (from) }; before copy elts!!!
+
     // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
 }
 
 WMICollector& WMICollector::operator= (const WMICollector& rhs)
 {
     if (this != &rhs) {
+        lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
+        lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
         fInstanceData_.clear ();
         fObjectName_ = rhs.fObjectName_;
         rhs.fInstanceData_.Keys ().Apply ([this] (String i) { AddInstance_ (i); });
@@ -140,6 +144,7 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
 
 void     WMICollector::Collect ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     fInstanceData_.Apply ([this] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
         PDH_STATUS  x = ::PdhCollectQueryData (i.fValue->fQuery_);
         if (x != 0) {
@@ -151,36 +156,42 @@ void     WMICollector::Collect ()
 
 void    WMICollector::AddCounters (const String& counterName)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     AddCounter_ (counterName);
     Collect ();
 }
 
 void    WMICollector::AddCounters (const Iterable<String>& counterNames)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     counterNames.Apply ([this] (String i) { AddCounter_ (i); });
     Collect ();
 }
 
 void    WMICollector::AddInstances (const String& instance)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     AddInstance_ (instance);
     Collect ();
 }
 
 void    WMICollector::AddInstances (const Iterable<String>& instances)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     instances.Apply ([this] (String i) { AddInstance_ (i); });
     Collect ();
 }
 
 double  WMICollector::GetCurrentValue (const String& instance, const String& counterName)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fInstanceData_.ContainsKey (instance));
     return fInstanceData_.Lookup (instance)->get ()->GetCurrentValue (counterName);
 }
 
 void    WMICollector::AddCounter_ (const String& counterName)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (not fCounterNames_.Contains (counterName));
     fInstanceData_.Apply ([this, counterName] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
         i.fValue->AddCounter (counterName);
@@ -190,6 +201,7 @@ void    WMICollector::AddCounter_ (const String& counterName)
 
 void    WMICollector::AddInstance_ (const String& instance)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (not fInstanceData_.ContainsKey (instance));
     fInstanceData_.Add (instance, make_shared<PerInstanceData_> (fObjectName_, instance) );
 }

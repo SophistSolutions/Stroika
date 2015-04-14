@@ -15,6 +15,7 @@
 
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Set.h"
+#include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Time/Realtime.h"
 
@@ -27,8 +28,6 @@
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
  *  TODO:
- *
- *      @todo   ASAP support multiple instances at a time.
  *
  *      @todo   Support remove of counters and instances.
  *
@@ -65,28 +64,25 @@ namespace   Stroika {
 
 
                 /**
-                 *  @todo FIX THREADSAFTY OF THIS OBJECT!!!! (or add check to assure used extnerally Debug::AssertExtenrallySynchonized...)
-                 *
-                 *
                  * Known good WMI object names:
-                 *  "Processor"
-                 *  "PhysicalDisk"
-                 *  "Memory"
-                 *  "System"
-                 *  "Network Interface"
-                 *  "LogicalDisk"
+                 *      "Processor"
+                 *      "PhysicalDisk"
+                 *      "Memory"
+                 *      "System"
+                 *      "Network Interface"
+                 *      "LogicalDisk"
                  *
                  *  Example:
-                 *      WMICollector  tmp { L"Processor", L"_Total", Set<String> {L"% Processor Time"} };
-                 *      double x = tmp.GetCurrentValue (L"% Processor Time");
+                 *      WMICollector  tmp { L"Processor", L"_Total", {L"% Processor Time"} };
+                 *      double x = tmp.GetCurrentValue ( L"_Total", L"% Processor Time");
                  *
                  *  Example:
-                 *      WMICollector  tmp { L"LogicalDisk", L"E:",  Set<String> {L"% Free Space"} };
-                 *      double x = tmp.GetCurrentValue (L"% Free Space");
+                 *      WMICollector  tmp { L"LogicalDisk", L"E:",  {L"% Free Space"} };
+                 *      double x = tmp.GetCurrentValue (L"E:", L"% Free Space");
                  *
                  * Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
                 */
-                class  WMICollector {
+                class  WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
                 public:
                     /**
                      * Instance index is not numeric.. Often value is _Total.
