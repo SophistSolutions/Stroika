@@ -18,6 +18,10 @@
  *
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
+ *  TODO:
+ *      @todo   Add options to GetInstrument (), for things like what to include, and maybe the time
+ *              threshold for initial seeding of delta counters.
+ *
  */
 
 

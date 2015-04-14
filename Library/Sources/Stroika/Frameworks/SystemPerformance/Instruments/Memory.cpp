@@ -36,6 +36,7 @@ using   Containers::Mapping;
 using   Containers::Sequence;
 using   Containers::Set;
 using   IO::FileSystem::BinaryFileInputStream;
+using   Time::DurationSecondsType;
 
 
 
@@ -77,31 +78,32 @@ namespace {
 namespace {
     struct  CapturerWithContext_ {
 #if     qUseWMICollectionSupport_
-        WMICollector    fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        DurationSecondsType fMinTimeBeforeFirstCapture;
 #endif
-        CapturerWithContext_ ()
+
+        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+#if     qUseWMICollectionSupport_
+            :   fMinTimeBeforeFirstCapture (minTimeBeforeFirstCapture)
+#endif
         {
 #if     qUseWMICollectionSupport_
             fMemoryWMICollector_.Collect ();
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
+            Execution::Sleep (minTimeBeforeFirstCapture);
 #endif
         }
         CapturerWithContext_ (const CapturerWithContext_& from)
 #if     qUseWMICollectionSupport_
             : fMemoryWMICollector_ (from.fMemoryWMICollector_)
+            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
 #endif
         {
 #if   qUseWMICollectionSupport_
             fMemoryWMICollector_.Collect ();
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
+            Execution::Sleep (fMinTimeBeforeFirstCapture);
 #endif
         }
+
         Instruments::Memory::Info capture_ ()
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -136,8 +138,6 @@ namespace {
             }
             return result;
         }
-
-
 
 #if     qPlatform_POSIX
         void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
@@ -189,7 +189,7 @@ namespace {
                     ReadVMStatLine_ (&updateResult->fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
                 if (pgfault.IsPresent () and updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
-                    updateResult->fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
+                    updateResult->fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fMajorPageFaultsSinceBoot;
                 }
             }
         }
