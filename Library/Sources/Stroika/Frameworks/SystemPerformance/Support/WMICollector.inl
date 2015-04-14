@@ -24,7 +24,7 @@ namespace   Stroika {
                  */
                 inline  Foundation::Time::DurationSecondsType    WMICollector::GetTimeOfLastCollection () const
                 {
-                    return fTimeOfLastCollection;
+                    return fTimeOfLastCollection_;
                 }
 
 

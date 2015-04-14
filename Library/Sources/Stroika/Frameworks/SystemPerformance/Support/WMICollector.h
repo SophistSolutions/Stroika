@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <memory>
 #if     qPlatform_Windows
 #include    <Pdh.h>
 #else
@@ -13,6 +14,7 @@
 #endif
 
 #include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Time/Realtime.h"
 
@@ -55,10 +57,11 @@ namespace   Stroika {
         namespace   SystemPerformance {
             namespace   Support {
 
-                using   Foundation::Containers::Mapping;
                 using   Foundation::Characters::String;
-                using   Foundation::Traversal::Iterable;
+                using   Foundation::Containers::Mapping;
+                using   Foundation::Containers::Set;
                 using   Foundation::Time::DurationSecondsType;
+                using   Foundation::Traversal::Iterable;
 
 
                 /**
@@ -84,12 +87,6 @@ namespace   Stroika {
                  * Use the Windows Performance Monitor tool and click PerformanceMonitor and "Add Counters" to see more/list
                 */
                 class  WMICollector {
-                    DurationSecondsType             fTimeOfLastCollection {};
-                    String                          fObjectName_;
-                    String                          fInstanceIndex_;
-                    PDH_HQUERY                      fQuery {};              // @todo use Synchonized<> on this as a locker
-                    Mapping<String, PDH_HCOUNTER>   fCounters {};
-
                 public:
                     /**
                      * Instance index is not numeric.. Often value is _Total.
@@ -97,12 +94,10 @@ namespace   Stroika {
                      *  \note the constructors may internally invoke 'collect'. (sensible for objectname/etc ctor, but less sensible
                      *          for copy CTOR, but I know of know other way to clone the queries/counters). Maybe we can fix the later?
                      */
-                    WMICollector (const String& objectName, const String& instanceIndex, const Iterable<String>& counterName);
+                    WMICollector (const String& objectName, const String& instance, const Iterable<String>& counterName);
+                    WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName);
                     WMICollector() = delete;
                     WMICollector (const WMICollector& from);
-
-                public:
-                    ~WMICollector ();
 
                 public:
                     nonvirtual  WMICollector& operator= (const WMICollector& rhs);
@@ -117,13 +112,53 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Note - as a side-effect, this function also calls Collect() when its done, so that all the counters
+                     *  are consitent.
                      */
-                    nonvirtual  void    Add (const String& counterName);
+                    nonvirtual  void    AddInstances (const String& instance);
+                    nonvirtual  void    AddInstances (const Iterable<String>& instances);
+
+                public:
+                    /**
+                     *  Note - as a side-effect, this function also calls Collect() when its done, so that all the counters
+                     *  are consitent.
+                     */
+                    nonvirtual  void    AddCounters (const String& counterName);
+                    nonvirtual  void    AddCounters (const Iterable<String>& counterNames);
 
                 public:
                     /**
                      */
-                    nonvirtual  double GetCurrentValue (const String& name);
+                    nonvirtual  double  GetCurrentValue (const String& instance, const String& counterName);
+
+
+                private:
+                    DurationSecondsType             fTimeOfLastCollection_ {};
+                    String                          fObjectName_;
+                    Set<String>                     fInstances_;
+                    Set<String>                     fCounterNames_;
+
+                private:
+                    struct  PerInstanceData_ {
+                        String                          fObjectName_;
+                        String                          fInstance_;
+                        PDH_HQUERY                      fQuery_ {};              // @todo use Synchonized<> on this as a locker
+                        Mapping<String, PDH_HCOUNTER>   fCounters_ {};
+
+                        PerInstanceData_ (const String& objectName, const String& instance);
+                        PerInstanceData_ () = delete;
+                        ~PerInstanceData_ ();
+
+                        void    AddCounter (const String& counterName);
+                        double  GetCurrentValue (const String& counterName);
+                    };
+                    Mapping<String, std::shared_ptr<PerInstanceData_>>  fInstanceData_;
+
+                private:
+                    nonvirtual  void    AddCounter_ (const String& counterName);
+
+                private:
+                    nonvirtual  void    AddInstance_ (const String& instance);
                 };
             }
 
