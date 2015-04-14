@@ -29,6 +29,9 @@
  *
  *  TODO:
  *
+ *      @todo   Cleanup use of  AssertExternallySynchronizedLock once we have RECURSIVE
+ *              flag.
+ *
  *      @todo   Support remove of counters and instances.
  *
  *      @todo   See if its possible to support other 'value' return types. Sterl thinks
@@ -110,9 +113,20 @@ namespace   Stroika {
                     /**
                      *  Note - as a side-effect, this function also calls Collect() when its done, so that all the counters
                      *  are consitent.
+                     *
+                     *  @see AddInstancesIf
                      */
                     nonvirtual  void    AddInstances (const String& instance);
                     nonvirtual  void    AddInstances (const Iterable<String>& instances);
+
+                public:
+                    /**
+                     *  Like AddInstancesIf, but does nothing if instance is already present.
+                     *
+                     *  @see AddInstances
+                     */
+                    nonvirtual  void    AddInstancesIf (const String& instance);
+                    nonvirtual  void    AddInstancesIf (const Iterable<String>& instances);
 
                 public:
                     /**
@@ -127,7 +141,6 @@ namespace   Stroika {
                      */
                     nonvirtual  double  GetCurrentValue (const String& instance, const String& counterName);
 
-
                 private:
                     DurationSecondsType             fTimeOfLastCollection_ {};
                     String                          fObjectName_;
@@ -140,13 +153,17 @@ namespace   Stroika {
                         PDH_HQUERY                      fQuery_ {};              // @todo use Synchonized<> on this as a locker
                         Mapping<String, PDH_HCOUNTER>   fCounters_ {};
 
-                        PerInstanceData_ (const String& objectName, const String& instance);
+                        PerInstanceData_ (const String& objectName, const String& instance, const Iterable<String>& counterNames);
                         PerInstanceData_ () = delete;
                         ~PerInstanceData_ ();
 
                         void    AddCounter (const String& counterName);
                         double  GetCurrentValue (const String& counterName);
                     };
+                    // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two
+                    // collecters refering to the same instance handles (bad)
+                    //
+                    // @todo should fInstanceData use unique_ptr??
                     Mapping<String, std::shared_ptr<PerInstanceData_>>  fInstanceData_;
 
                 private:
