@@ -300,12 +300,12 @@ namespace {
                                     v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                     v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
 #if     qUseWMICollectionSupport_
-                                    v.fReadIOStats.fBytesTransfered = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadBytesPerSec_) * timeCollecting;
-                                    v.fWriteIOStats.fBytesTransfered = fLogicalDiskWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
-                                    v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
-                                    v.fWriteIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
-                                    v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting / 100;
-                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskWriteTime_) * timeCollecting / 100;
+                                    v.fReadIOStats.fBytesTransfered = fLogicalDiskWMICollector_.GetCurrentValue (kDiskReadBytesPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fBytesTransfered = fLogicalDiskWMICollector_.GetCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.GetCurrentValue (kDiskReadsPerSec_) * timeCollecting;
+                                    v.fWriteIOStats.fTotalTransfers = fLogicalDiskWMICollector_.GetCurrentValue (kDiskWritesPerSec_) * timeCollecting;
+                                    v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.GetCurrentValue (kPctDiskReadTime_) * timeCollecting / 100;
+                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.GetCurrentValue (kPctDiskWriteTime_) * timeCollecting / 100;
 
                                     v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                     v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;

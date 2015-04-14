@@ -117,7 +117,7 @@ void    WMICollector::Add (const String& counterName)
     fCounters.Add (counterName, newCounter);
 }
 
-double WMICollector::getCurrentValue (const String& name)
+double WMICollector::GetCurrentValue (const String& name)
 {
     PDH_FMT_COUNTERVALUE counterVal;
     PDH_HCOUNTER    counter = *fCounters.Lookup (name);
