@@ -421,8 +421,8 @@ namespace {
                                     v.fWriteIOStats.fBytesTransfered = fLogicalDiskWMICollector_.getCurrentValue (kDiskWriteBytesPerSec_) * timeCollecting;
                                     v.fReadIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskReadsPerSec_) * timeCollecting;
                                     v.fWriteIOStats.fTotalTransfers = fLogicalDiskWMICollector_.getCurrentValue (kDiskWritesPerSec_) * timeCollecting;
-                                    v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting;
-                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskWriteTime_) * timeCollecting;
+                                    v.fReadIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskReadTime_) * timeCollecting / 100;
+                                    v.fWriteIOStats.fTimeTransfering = fLogicalDiskWMICollector_.getCurrentValue (kPctDiskWriteTime_) * timeCollecting / 100;
 
                                     v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
                                     v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
