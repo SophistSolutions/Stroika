@@ -12,6 +12,7 @@
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
@@ -43,6 +44,33 @@ using   IO::FileSystem::BinaryFileInputStream;
 
 
 
+
+
+#ifndef qUseWMICollectionSupport_
+#define qUseWMICollectionSupport_       qPlatform_Windows
+#endif
+
+
+#if     qUseWMICollectionSupport_
+#include    "../Support/WMICollector.h"
+
+using   SystemPerformance::Support::WMICollector;
+#endif
+
+
+
+
+namespace {
+#if     qUseWMICollectionSupport_
+    const   String_Constant     kCommittedBytes_    { L"Committed Bytes" };
+    const   String_Constant     kCommitLimit_       { L"Commit Limit" };
+    const   String_Constant     kPagesPerSec_       { L"Pages/sec" };           // hard page faults/sec
+#endif
+}
+
+
+
+
 namespace {
     template <typename T>
     void    ReadMemInfoLine_ (Optional<T>* result, const String& n, const Sequence<String>& line)
@@ -66,67 +94,119 @@ namespace {
 #endif
         }
     }
-    Instruments::Memory::Info capture_ ()
-    {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
-#endif
-
-        constexpr   bool    kManuallyComputePagesPerSecond_ { true };
-
-        Instruments::Memory::Info   result;
-#if     qPlatform_POSIX
-        {
-            DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
-            const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
-            //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
-            // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                ReadMemInfoLine_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-                ReadMemInfoLine_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
-                ReadMemInfoLine_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
-                ReadMemInfoLine_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
-            }
-        }
-        {
-            DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
-            const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
-            Optional<uint64_t>  pgfault;
-            // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
-                ReadVMStatLine_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
-            }
-            if (pgfault.IsPresent () and result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                result.fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
-            }
-        }
-#elif   qPlatform_Windows
-#endif
-        if (kManuallyComputePagesPerSecond_) {
-            static  mutex                       s_Mutex_;
-            static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
-            static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
-            if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                Time::DurationSecondsType   now = Time::GetTickCount ();
-                auto    critSec { Execution::make_unique_lock (s_Mutex_) };
-                if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
-                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
-                }
-                s_Saved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
-                s_Saved_MajorPageFaultsSinceBoot_At = now;
-            }
-        }
-        return result;
-    }
 }
 
+
+namespace {
+    struct  CapturerWithContext_ {
+#if     qUseWMICollectionSupport_
+        WMICollector    fMemoryWMICollector_ { L"Memory", {L"_Total"},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+#endif
+        CapturerWithContext_ ()
+        {
+#if     qUseWMICollectionSupport_
+            fMemoryWMICollector_.Collect ();
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
+#endif
+        }
+        CapturerWithContext_ (const CapturerWithContext_& from)
+#if     qUseWMICollectionSupport_
+            : fMemoryWMICollector_ (from.fMemoryWMICollector_)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            fMemoryWMICollector_.Collect ();
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
+#endif
+        }
+        Instruments::Memory::Info capture_ ()
+        {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
+#endif
+
+            constexpr   bool    kManuallyComputePagesPerSecond_ { true };
+
+            Instruments::Memory::Info   result;
+#if     qPlatform_POSIX
+            {
+                DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
+                const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
+                //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
+                // Note - /procfs files always unseekable
+                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                    ReadMemInfoLine_ (&result.fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                    ReadMemInfoLine_ (&result.fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
+                    ReadMemInfoLine_ (&result.fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
+                    ReadMemInfoLine_ (&result.fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
+                }
+            }
+            {
+                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
+                const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
+                Optional<uint64_t>  pgfault;
+                // Note - /procfs files always unseekable
+                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                    ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
+                    ReadVMStatLine_ (&result.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+                }
+                if (pgfault.IsPresent () and result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                    result.fMinorPageFaultsSinceBoot = *pgfault - *result.fMajorPageFaultsSinceBoot;
+                }
+            }
+#elif   qPlatform_Windows
+#if     qUseWMICollectionSupport_
+            fMemoryWMICollector_.Collect ();
+            {
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kCommittedBytes_)) {
+                    result.fUsedVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kCommitLimit_)) {
+                    // bad names - RETHINK
+                    result.fTotalVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (L"_Total", kPagesPerSec_)) {
+                    result.fMajorPageFaultsPerSecond = *o ;
+                }
+            }
+#endif
+            {
+                MEMORYSTATUSEX statex;
+                statex.dwLength = sizeof (statex);
+                Verify (::GlobalMemoryStatusEx (&statex) != 0);
+                result.fFreePhysicalMemory = statex.ullAvailPhys;
+            }
+#endif
+            if (kManuallyComputePagesPerSecond_) {
+                static  mutex                       s_Mutex_;
+                static  uint64_t                    s_Saved_MajorPageFaultsSinceBoot {};
+                static  Time::DurationSecondsType   s_Saved_MajorPageFaultsSinceBoot_At {};
+                if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                    Time::DurationSecondsType   now = Time::GetTickCount ();
+                    auto    critSec { Execution::make_unique_lock (s_Mutex_) };
+                    if (s_Saved_MajorPageFaultsSinceBoot_At != 0) {
+                        result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - s_Saved_MajorPageFaultsSinceBoot) / (now - s_Saved_MajorPageFaultsSinceBoot_At);
+                    }
+                    s_Saved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
+                    s_Saved_MajorPageFaultsSinceBoot_At = now;
+                }
+            }
+            return result;
+        }
+    };
+}
 
 
 
@@ -176,12 +256,13 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
  */
 Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
 {
+    CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"Memory")),
-    [] () -> MeasurementSet {
+    [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
-        Instruments::Memory::Info rawMeasurement = capture_ ();
+        Instruments::Memory::Info rawMeasurement = useCaptureContext.capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
