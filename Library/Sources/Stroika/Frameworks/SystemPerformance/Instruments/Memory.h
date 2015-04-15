@@ -45,7 +45,12 @@ namespace   Stroika {
                         /**
                          *  The amount of physical RAM, left unused by the system (in bytes).
                          *
-                         *  /proc/meminfo::MemFree
+                         *  From Linux:
+                         *      /proc/meminfo::MemFree
+                         *
+                         *  From Windows:
+                         *      ::GlobalMemoryStatusEx (&statex), statex.ullAvailPhys
+                         *
                          */
                         Optional<uint64_t>  fFreePhysicalMemory {};
 
@@ -55,6 +60,23 @@ namespace   Stroika {
                          *      /proc/meminfo::VMallocTotal
                          */
                         Optional<uint64_t>  fTotalVirtualMemory {};
+
+                        /**
+                         *     DEFINITION UNCLEAR (cross-platform):
+                         *          But roughtly - this is the number of bytes of pagefile allocated + number of bytes of physical memory.
+                         *
+                         *  We use as our definition of this "Limit" from http://en.wikipedia.org/wiki/Commit_charge
+                         *      Limit is the maximum possible value for Total; it is the sum of the current pagefile size plus the physical memory
+                         *      available for pageable contents (this excludes RAM that is assigned to non-pageable areas).
+                         *      The corresponding performance counter is called "Commit Limit".
+                         *
+                         *  From Linux:
+                         *      /proc/meminfo::CommitLimit
+                         *
+                         *  From Windows:
+                         *      WMI:    "Memory(_Total)/Commit Limit"
+                         */
+                        Optional<uint64_t>  fCommitLimit {};
 
                         /**
                          *      The total amount of used virtual address space (in bytes).
