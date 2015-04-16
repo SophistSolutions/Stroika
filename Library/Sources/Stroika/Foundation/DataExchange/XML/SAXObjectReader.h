@@ -73,7 +73,7 @@ namespace   Stroika {
                     nonvirtual  shared_ptr<ObjectBase>   GetTop () const;
 
                 public:
-                    // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve recieved
+                    // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                     // a HandleChildStar tand HandleEndTag() method call (exactly once).
                     nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::BinaryInputStream& in);
                     nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::BinaryInputStream& in);

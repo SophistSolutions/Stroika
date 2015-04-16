@@ -66,14 +66,14 @@ namespace   Stroika {
                          *  The total number of bytes of data transmitted or received by the interface.
                          */
                         Optional<uint64_t>  fTotalBytesSent;
-                        Optional<uint64_t>  fTotalBytesRecieved;
+                        Optional<uint64_t>  fTotalBytesReceived;
 
                         /**
                          *  packets
                          *  The total number of packets of data transmitted or received by the interface.
                          */
                         Optional<uint64_t>  fTotalPacketsSent;
-                        Optional<uint64_t>  fTotalPacketsRecieved;
+                        Optional<uint64_t>  fTotalPacketsReceived;
 
 
                         /**

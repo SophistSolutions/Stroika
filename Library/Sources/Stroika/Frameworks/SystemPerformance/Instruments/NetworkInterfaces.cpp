@@ -93,7 +93,7 @@ namespace {
                         InterfaceInfo   ii;
                         ii.fInterfaceID = line[0];
                         ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
-                        ii.fTotalBytesRecieved = Characters::String2Int<uint64_t> (line[1]);
+                        ii.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
                         ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
                         ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
                         ii.fTotalPacketsRecieved = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
@@ -151,7 +151,7 @@ namespace {
                 ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                 // @todo - FIX
                 // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
-                ii.fTotalPacketsRecieved = stats.dwInReceives;
+                ii.fTotalPacketsReceived = stats.dwInReceives;
                 ii.fTotalPacketsSent = stats.dwOutRequests;
                 result.Add (ii);
             }
@@ -253,9 +253,9 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesRecieved), String_Constant (L"Total-Bytes-Recieved"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsRecieved), String_Constant (L"Total-Packets-Recieved"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsReceived), String_Constant (L"Total-Packets-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalErrors), String_Constant (L"Total-Errors"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
