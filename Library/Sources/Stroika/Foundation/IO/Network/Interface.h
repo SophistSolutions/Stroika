@@ -54,27 +54,38 @@ namespace   Stroika {
                      *
                      *      On UNIX this is the fInterfaceName. On Windows, its an internally manufactured ID to allow these
                      *  strucutres to be uniquely idenfied and referenced
-
-                     *      @todo REWORD and see if this is needed (could use pAdapter->Index???)
+                     *
+                     *      UNIX:
+                     *          interface name - e.g. eth0
+                     *
+                     *      WINDOWS:
+                     *          IP_ADAPTER_ADDRESSES::fAdapterName
+                     *
+                     *          This is interface AdapterName, which is not particularly printable (usualy a GUID)
                      */
                     String  fInternalInterfaceID;
 
+#if     qPlatform_POSIX
                     /**
                      *  On unix, its the interface name, e.g. eth0, eth1, etc.
                      *  On Windows, this is concept doesn't really exist.
                      */
-                    Memory::Optional<String>  fInterfaceName;
+                    String      fInterfaceName;
+#endif
 
                     /**
-                     *  On Windows, this is interface AdapterName, which is not particularly printable (usualy a GUID)
+                     *  This is a generally good display name to describe a network interface.
+                     *
+                     *      WINDOWS:
+                     *          IP_ADAPTER_ADDRESSES::FriendlyName
+                     *
+                     *          A user-friendly name for the adapter. For example: "Local Area Connection 1." This name appears
+                     *          in contexts such as the ipconfig command line program and the Connection folder.
                      */
-                    Memory::Optional<String>  fAdapterName;
+                    String      fFriendlyName;
 
                     /**
-                     */
-                    Memory::Optional<String>    fFriendlyName;
-
-                    /**
+                     *      TBD
                      */
                     Memory::Optional<String>    fDescription;
 
