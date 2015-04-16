@@ -92,7 +92,7 @@ namespace {
                         constexpr   int kOffset2XMit_ = 8;
                         InterfaceInfo   ii;
                         ii.fInterfaceID = line[0];
-                        ii.fInternalInterfaceID = ii.fInterfaceID;  // @todo code cleanup - should have API to do this lookup/compare
+                        ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
                         ii.fTotalBytesRecieved = Characters::String2Int<uint64_t> (line[1]);
                         ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
                         ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
