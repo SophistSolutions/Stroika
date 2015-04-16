@@ -141,7 +141,7 @@
  *              means we need a backend, but no front-end?
  *
  *              OBSOLETE TODO
- *                  Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
+ *                  Consider adding a new subtype of string - OPTIMIZATION - which takes an ASCII argument (so can do less checking
  *                  and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
  *
  *                  CLOSELY RELATED - MAYBE DO part of above (no check CTOR except assert).

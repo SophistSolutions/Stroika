@@ -615,7 +615,7 @@ arguments, including this)
 <td>
 <ul>
 	<li>Optional<T, TRAITS> changes, including new CheckedValue, new strategy for operator== etc overloads, 
-	new use of Common::Equals....comarer, optimizaitons</li>
+	new use of Common::Equals....comarer, optimizations</li>
 	<li>use CheckForThreadAborting () in SpinLock::Yield_ ()</li>
 	<li>LRUCache name cleanups - migrating names to LEGACY_LRUCache ... etc as part of changeover</li>
 	<li>Renamed Synchonized to LEGACY_Synchonized to help conversion process</li>
@@ -1371,7 +1371,7 @@ arguments, including this)
 		Execution and Containers and Characters/Strings classes.
 
 		Overall, this was neutral to performance, but intrinsicially slowed things down about 3x to 10x. However,
-		I paired the changes with other performance optimizaitons to make up.
+		I paired the changes with other performance optimizations to make up.
 
 		See the tests/Performance regtest (now #46) for details.
 	</li>
