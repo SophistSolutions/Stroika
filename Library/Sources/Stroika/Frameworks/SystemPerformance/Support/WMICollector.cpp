@@ -183,36 +183,26 @@ void     WMICollector::Collect ()
 
 Iterable<String>  WMICollector::GetAvailableInstaces ()
 {
-    PDH_STATUS           pdhStatus = ERROR_SUCCESS;
-    LPTSTR               szCounterListBuffer = NULL;
-    DWORD                dwCounterListSize  = 0;
-    LPTSTR               szInstanceListBuffer = NULL;
-    DWORD                dwInstanceListSize  = 0;
-    DWORD                dwType = 0;
-    char                 szCounter[256] = {0};
+    /*
+     *  Note: we only want the instanceids here, but this appears to fail if you only request instance ids and not counters at the same time.
+     *  Perhaps try again more carefully once I understand PDH better.
+     */
+    DWORD   dwCounterListSize  = 0;
+    DWORD   dwInstanceListSize  = 0;
 
-    pdhStatus = PdhEnumObjectItems (NULL, NULL,
-                                    fObjectName_.c_str (),
-                                    nullptr,
-                                    nullptr,
-                                    szInstanceListBuffer,
-                                    &dwInstanceListSize,
-                                    PERF_DETAIL_WIZARD,
-                                    0);
+    PDH_STATUS pdhStatus = PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    Assert (pdhStatus == PDH_MORE_DATA);
 
+    SmallStackBuffer<Characters::SDKChar>       counterBuf(dwCounterListSize + 2);
     SmallStackBuffer<Characters::SDKChar>       instanceBuf(dwInstanceListSize + 2);
 
-    pdhStatus = PdhEnumObjectItems (NULL, NULL,
-                                    fObjectName_.c_str (),
-                                    nullptr,
-                                    nullptr,
-                                    instanceBuf.begin (),
-                                    &dwInstanceListSize,
-                                    PERF_DETAIL_WIZARD,
-                                    0);
+    pdhStatus = PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    if (pdhStatus != 0) {
+        Execution::DoThrow (StringException (L"PdhEnumObjectItems"));
+    }
 
     Set<String> result;
-    for (const TCHAR* p = szInstanceListBuffer; *p != '\0'; p += Characters::CString::Length (p) + 1) {
+    for (const TCHAR* p = instanceBuf.begin (); *p != '\0'; p += Characters::CString::Length (p) + 1) {
         result.Add (String::FromSDKString (p));
     }
     return result;
