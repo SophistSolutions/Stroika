@@ -199,7 +199,6 @@ Again:
         for (PIP_ADAPTER_ADDRESSES currAddresses  = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
             Interface   newInterface;
             String      adapterName     { String::FromNarrowSDKString (currAddresses->AdapterName) };
-            newInterface.fAdapterName = adapterName;
             newInterface.fInternalInterfaceID = adapterName;
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
