@@ -101,7 +101,7 @@ namespace   Stroika {
              *
              *  Examples of this might be:
              *      (1) A search user interface, which starts searching as the user types. Once the process
-             *          has recieved a certain number of characters it starts searching, but perhaps before
+             *          has received a certain number of characters it starts searching, but perhaps before
              *          the search is done, another character comes in, so the GUI code will want to Abort
              *          the existing search, and start a new one (with the extra character(s)).
              *      (2) A web server - which is serving up content, and it told to shut-down. It must interupt
