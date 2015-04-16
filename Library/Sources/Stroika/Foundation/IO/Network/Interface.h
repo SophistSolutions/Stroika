@@ -49,8 +49,19 @@ namespace   Stroika {
                  */
                 struct  Interface {
                     /**
+                     *      This is an artificial concept - which is introduced in Stroika. This is only guarnateed unique
+                     *  For the life of one program lifetime (wording).
+                     *
+                     *      On UNIX this is the fInterfaceName. On Windows, its an internally manufactured ID to allow these
+                     *  strucutres to be uniquely idenfied and referenced
+
+                     *      @todo REWORD and see if this is needed (could use pAdapter->Index???)
+                     */
+                    String  fInternalInterfaceID;
+
+                    /**
                      *  On unix, its the interface name, e.g. eth0, eth1, etc.
-                     *  On Windows, this is interface AdapterName, which is not particularly printable (usualy a GUID)
+                     *  On Windows, this is concept doesn't really exist.
                      */
                     Memory::Optional<String>  fInterfaceName;
 
