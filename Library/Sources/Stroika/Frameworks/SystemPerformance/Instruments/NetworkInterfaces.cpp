@@ -20,6 +20,7 @@
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
@@ -52,6 +53,31 @@ using   Time::DurationSecondsType;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+
+
+
+
+#ifndef qUseWMICollectionSupport_
+#define qUseWMICollectionSupport_       qPlatform_Windows
+#endif
+
+
+#if     qUseWMICollectionSupport_
+#include    "../Support/WMICollector.h"
+
+using   SystemPerformance::Support::WMICollector;
+#endif
+
+
+
+
+
+#if     qUseWMICollectionSupport_
+namespace {
+    const   String_Constant     kBytesReceivedPerSecond_    { L"Bytes Received/sec" };
+    const   String_Constant     kBytesSentPerSecond_        { L"Bytes Sent/sec" };
+}
+#endif
 
 
 
@@ -121,11 +147,46 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+#if     qUseWMICollectionSupport_
+        WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_ } };
+        DurationSecondsType fMinTimeBeforeFirstCapture;
+        Set<String>         fAvailableInstances_;
+#endif
         CapturerWithContext_Windows_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+#if     qUseWMICollectionSupport_
+            : fMinTimeBeforeFirstCapture (minTimeBeforeFirstCapture)
+#endif
         {
+#if     qUseWMICollectionSupport_
+            fAvailableInstances_ = Set<String> (fNetworkWMICollector_.GetAvailableInstaces ());
+            capture_ ();    //tmpack for siede effect
+            Execution::Sleep (minTimeBeforeFirstCapture);
+#endif
+        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+#if     qUseWMICollectionSupport_
+            : fNetworkWMICollector_ (from.fNetworkWMICollector_)
+            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
+            , fAvailableInstances_ (from.fAvailableInstances_)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            capture_ ();    //tmpack for siede effect
+            Execution::Sleep (fMinTimeBeforeFirstCapture);
+#endif
         }
         Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
         {
+
+#if 0
+            for (String instanceNames : fNetworkWMICollector_.GetAvailableInstaces ()) {
+                DbgTrace (L"WMI FREINDLYNAME = %s", instanceNames.c_str ());
+            }
+#endif
+
+
+
+
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             Collection<Instruments::NetworkInterfaces::InterfaceInfo>   result;
 
@@ -144,16 +205,26 @@ namespace {
                         Specifically the dwInOctets and dwOutOctets will be important to you : they specify the received and sent number of bytes over that interface.
              */
             Iterable<IO::Network::Interface> networkInterfacs {  IO::Network::GetInterfaces () };
-            for (IO::Network::Interface networkInterface : networkInterfacs) {
-                MIB_IPSTATS stats {};
-                Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
-                InterfaceInfo   ii;
-                ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
-                // @todo - FIX
-                // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
-                ii.fTotalPacketsReceived = stats.dwInReceives;
-                ii.fTotalPacketsSent = stats.dwOutRequests;
-                result.Add (ii);
+#if     qUseWMICollectionSupport_
+            IgnoreExceptionsForCall (fNetworkWMICollector_.Collect ());
+#endif
+            {
+                for (IO::Network::Interface networkInterface : networkInterfacs) {
+                    MIB_IPSTATS stats {};
+                    Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
+                    InterfaceInfo   ii;
+                    DbgTrace (L"NETINTERFACE FREINDLYNAME = %s", networkInterface.fFriendlyName.Value ().c_str ());
+                    DbgTrace (L"NETINTERFACE fDescription = %s", networkInterface.fDescription.Value ().c_str ());
+                    ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
+                    // @todo - FIX
+                    // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
+                    ii.fTotalPacketsReceived = stats.dwInReceives;
+                    ii.fTotalPacketsSent = stats.dwOutRequests;
+#if     qUseWMICollectionSupport_
+                    Read_WMI_ (networkInterface, &ii);
+#endif
+                    result.Add (ii);
+                }
             }
 #if     0
             wprintf(L"Default initial TTL: \t\t\t\t\t%u\n", pStats->dwDefaultTTL);
@@ -188,6 +259,81 @@ namespace {
 #endif
             return result;
         }
+#if     qUseWMICollectionSupport_
+        void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
+        {
+#if 0
+            if (auto o = fNetworkWMICollector_.PeekCurrentValue (kInstanceName_, kBytesReceivedPerSecond_)) {
+
+                double ddd = *o;
+                DbgTrace ("xxddd = %f", ddd);
+            }
+#endif
+            String wmiInstanceName/* = iFace.fID*/;
+            //wmiInstanceName = L"{5AE9D7E2-69E9-4F84-A9F6-316C75FAFE64}";
+            wmiInstanceName = L"Intel[R] Dual Band Wireless-AC 7260";
+
+            String xxx = wmiInstanceName;
+            String fred_wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]");
+            //wmiInstanceName = iFace.fFriendlyName.Value ();
+
+            wmiInstanceName = fred_wmiInstanceName;
+            DbgTrace (L"TRYING FRIENDLYNAME '%s'", wmiInstanceName.c_str ());
+#if 0
+            fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
+            fNetworkWMICollector_.AddInstancesIf (xxx);
+#endif
+
+            if (Set<String> (fNetworkWMICollector_.GetAvailableInstaces ()).Contains (fred_wmiInstanceName)) {
+                fNetworkWMICollector_.AddInstancesIf (fred_wmiInstanceName);
+            }
+
+            // fNetworkWMICollector_.AddInstancesIf (fred_wmiInstanceName);
+            if (xxx == wmiInstanceName) {
+                int breahere = 1;
+            }
+
+            wmiInstanceName = fred_wmiInstanceName;
+
+            if (fAvailableInstances_.Contains (wmiInstanceName)) {
+                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_)) {
+
+                    double ddd = *o;
+                    DbgTrace ("ddd = %f", ddd);
+                    updateResult->fTotalBytesReceived = ddd ;       // wrong but I can look at it
+                }
+                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_)) {
+
+                    double ddd = *o;
+                    DbgTrace ("ddd = %f", ddd);
+                    updateResult->fTotalBytesSent = ddd ;       // wrong but I can look at it
+                }
+            }
+#if 0
+            if (auto o = fNetworkWMICollector_.PeekCurrentValue (fred_wmiInstanceName, kBytesReceivedPerSecond_)) {
+
+                double ddd = *o;
+                DbgTrace ("ddd = %f", ddd);
+                updateResult->fTotalBytesSent = ddd ;       // wrong but I can look at it
+            }
+#endif
+#if 0
+            {
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_)) {
+                    updateResult->fUsedVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_)) {
+                    updateResult->fCommitLimit = *o ;
+                    // bad names - RETHINK
+                    updateResult->fTotalVirtualMemory = *o ;
+                }
+                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_)) {
+                    updateResult->fMajorPageFaultsPerSecond = *o ;
+                }
+            }
+#endif
+        }
+#endif
     };
 }
 #endif
