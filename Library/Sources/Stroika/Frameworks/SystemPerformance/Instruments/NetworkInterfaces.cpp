@@ -74,8 +74,10 @@ using   SystemPerformance::Support::WMICollector;
 
 #if     qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kBytesReceivedPerSecond_    { L"Bytes Received/sec" };
-    const   String_Constant     kBytesSentPerSecond_        { L"Bytes Sent/sec" };
+    const   String_Constant     kBytesReceivedPerSecond_        { L"Bytes Received/sec" };
+    const   String_Constant     kBytesSentPerSecond_            { L"Bytes Sent/sec" };
+    const   String_Constant     kPacketsReceivedPerSecond_      { L"Packets Received/sec" };
+    const   String_Constant     kPacketsSentPerSecond_          { L"Packets Sent/sec" };
 }
 #endif
 
@@ -143,12 +145,11 @@ namespace {
 
 
 
-
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
-        WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_ } };
+        WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture;
         Set<String>         fAvailableInstances_;
 #endif
@@ -158,7 +159,7 @@ namespace {
 #endif
         {
 #if     qUseWMICollectionSupport_
-            fAvailableInstances_ = Set<String> (fNetworkWMICollector_.GetAvailableInstaces ());
+            fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
             capture_ ();    //tmpack for siede effect
             Execution::Sleep (minTimeBeforeFirstCapture);
 #endif
@@ -177,16 +178,6 @@ namespace {
         }
         Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
         {
-
-#if 0
-            for (String instanceNames : fNetworkWMICollector_.GetAvailableInstaces ()) {
-                DbgTrace (L"WMI FREINDLYNAME = %s", instanceNames.c_str ());
-            }
-#endif
-
-
-
-
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             Collection<Instruments::NetworkInterfaces::InterfaceInfo>   result;
 
@@ -206,132 +197,52 @@ namespace {
              */
             Iterable<IO::Network::Interface> networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
-            IgnoreExceptionsForCall (fNetworkWMICollector_.Collect ());
+            Time::DurationSecondsType   timeOfPrevCollection = fNetworkWMICollector_.GetTimeOfLastCollection ();
+            //IgnoreExceptionsForCall (fNetworkWMICollector_.Collect ());
+            fNetworkWMICollector_.Collect ();
+            Time::DurationSecondsType   timeCollecting { fNetworkWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
                     MIB_IPSTATS stats {};
                     Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
                     InterfaceInfo   ii;
-                    DbgTrace (L"NETINTERFACE FREINDLYNAME = %s", networkInterface.fFriendlyName.c_str ());
-                    DbgTrace (L"NETINTERFACE fDescription = %s", networkInterface.fDescription.c_str ());
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     // @todo - FIX
                     // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
-                    ii.fTotalPacketsReceived = stats.dwInReceives;
-                    ii.fTotalPacketsSent = stats.dwOutRequests;
+                    //ii.fTotalPacketsReceived = stats.dwInReceives;
+                    //ii.fTotalPacketsSent = stats.dwOutRequests;
 #if     qUseWMICollectionSupport_
-                    Read_WMI_ (networkInterface, &ii);
+                    Read_WMI_ (networkInterface, timeCollecting, &ii);
 #endif
                     result.Add (ii);
                 }
             }
-#if     0
-            wprintf(L"Default initial TTL: \t\t\t\t\t%u\n", pStats->dwDefaultTTL);
-
-            wprintf(L"Number of received datagrams: \t\t\t\t%u\n", pStats->dwInReceives);
-            wprintf(L"Number of received datagrams with header errors: \t%u\n", pStats->dwInHdrErrors);
-            wprintf(L"Number of received datagrams with address errors: \t%u\n", pStats->dwInAddrErrors);
-
-            wprintf(L"Number of datagrams forwarded: \t\t\t\t%ld\n", pStats->dwForwDatagrams);
-
-            wprintf(L"Number of received datagrams with an unknown protocol: \t%u\n", pStats->dwInUnknownProtos);
-            wprintf(L"Number of received datagrams discarded: \t\t%u\n", pStats->dwInDiscards);
-            wprintf(L"Number of received datagrams delivered: \t\t%u\n", pStats->dwInDelivers);
-
-            wprintf(L"Number of outgoing datagrams requested to transmit: \t%u\n", pStats->dwOutRequests);
-            wprintf(L"Number of outgoing datagrams discarded for routing: \t%u\n", pStats->dwRoutingDiscards);
-            wprintf(L"Number of outgoing datagrams discarded: \t\t%u\n", pStats->dwOutDiscards);
-            wprintf(L"Number of outgoing datagrams with no route to destination discarded: %u\n", pStats->dwOutNoRoutes);
-
-            wprintf(L"Fragment reassembly timeout: \t\t\t\t%u\n", pStats->dwReasmTimeout);
-            wprintf(L"Number of datagrams that required reassembly: \t\t%u\n", pStats->dwReasmReqds);
-            wprintf(L"Number of datagrams successfully reassembled: \t\t%u\n", pStats->dwReasmOks);
-            wprintf(L"Number of datagrams that could not be reassembled: \t%u\n", pStats->dwReasmFails);
-
-            wprintf(L"Number of datagrams fragmented successfully: \t\t%u\n", pStats->dwFragOks);
-            wprintf(L"Number of datagrams not fragmented and discarded: \t%u\n", pStats->dwFragFails);
-            wprintf(L"Number of fragments created: \t\t\t\t%u\n", pStats->dwFragCreates);
-
-            wprintf(L"Number of interfaces: \t\t\t\t\t%u\n", pStats->dwNumIf);
-            wprintf(L"Number of IP addresses: \t\t\t\t%u\n", pStats->dwNumAddr);
-            wprintf(L"Number of routes: \t\t\t\t\t%u\n", pStats->dwNumRoutes);
-#endif
             return result;
         }
 #if     qUseWMICollectionSupport_
-        void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
+        void    Read_WMI_ (const IO::Network::Interface& iFace, DurationSecondsType timeCollecting, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
         {
-#if 0
-            if (auto o = fNetworkWMICollector_.PeekCurrentValue (kInstanceName_, kBytesReceivedPerSecond_)) {
+            String wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]");
 
-                double ddd = *o;
-                DbgTrace ("xxddd = %f", ddd);
+            if (fAvailableInstances_.Contains (wmiInstanceName)) {
+                fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
             }
-#endif
-            String wmiInstanceName/* = iFace.fID*/;
-            //wmiInstanceName = L"{5AE9D7E2-69E9-4F84-A9F6-316C75FAFE64}";
-            wmiInstanceName = L"Intel[R] Dual Band Wireless-AC 7260";
-
-            String xxx = wmiInstanceName;
-            String fred_wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]");
-            //wmiInstanceName = iFace.fFriendlyName.Value ();
-
-            wmiInstanceName = fred_wmiInstanceName;
-            DbgTrace (L"TRYING FRIENDLYNAME '%s'", wmiInstanceName.c_str ());
-#if 0
-            fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
-            fNetworkWMICollector_.AddInstancesIf (xxx);
-#endif
-
-            if (Set<String> (fNetworkWMICollector_.GetAvailableInstaces ()).Contains (fred_wmiInstanceName)) {
-                fNetworkWMICollector_.AddInstancesIf (fred_wmiInstanceName);
-            }
-
-            // fNetworkWMICollector_.AddInstancesIf (fred_wmiInstanceName);
-            if (xxx == wmiInstanceName) {
-                int breahere = 1;
-            }
-
-            wmiInstanceName = fred_wmiInstanceName;
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_)) {
-
-                    double ddd = *o;
-                    DbgTrace ("ddd = %f", ddd);
-                    updateResult->fTotalBytesReceived = ddd ;       // wrong but I can look at it
+                    updateResult->fTotalBytesReceived = *o * timeCollecting;
                 }
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_)) {
-
-                    double ddd = *o;
-                    DbgTrace ("ddd = %f", ddd);
-                    updateResult->fTotalBytesSent = ddd ;       // wrong but I can look at it
+                    updateResult->fTotalBytesSent = *o * timeCollecting;
+                }
+                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_)) {
+                    updateResult->fTotalPacketsReceived = *o * timeCollecting;
+                }
+                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_)) {
+                    updateResult->fTotalPacketsSent = *o * timeCollecting;
                 }
             }
-#if 0
-            if (auto o = fNetworkWMICollector_.PeekCurrentValue (fred_wmiInstanceName, kBytesReceivedPerSecond_)) {
-
-                double ddd = *o;
-                DbgTrace ("ddd = %f", ddd);
-                updateResult->fTotalBytesSent = ddd ;       // wrong but I can look at it
-            }
-#endif
-#if 0
-            {
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_)) {
-                    updateResult->fUsedVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_)) {
-                    updateResult->fCommitLimit = *o ;
-                    // bad names - RETHINK
-                    updateResult->fTotalVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_)) {
-                    updateResult->fMajorPageFaultsPerSecond = *o ;
-                }
-            }
-#endif
         }
 #endif
     };
