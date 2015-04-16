@@ -137,6 +137,12 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Get the list of available instances for this object
+                     */
+                    nonvirtual  Iterable<String>  GetAvailableInstaces ();
+
+                public:
+                    /**
                      *  This will throw if there is an error capturing the given result.
                      *
                      *  @see PeekCurrentValue

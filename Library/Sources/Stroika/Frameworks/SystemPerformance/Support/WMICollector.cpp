@@ -181,6 +181,43 @@ void     WMICollector::Collect ()
     fTimeOfLastCollection_ = Time::GetTickCount ();
 }
 
+Iterable<String>  WMICollector::GetAvailableInstaces ()
+{
+    PDH_STATUS           pdhStatus = ERROR_SUCCESS;
+    LPTSTR               szCounterListBuffer = NULL;
+    DWORD                dwCounterListSize  = 0;
+    LPTSTR               szInstanceListBuffer = NULL;
+    DWORD                dwInstanceListSize  = 0;
+    DWORD                dwType = 0;
+    char                 szCounter[256] = {0};
+
+    pdhStatus = PdhEnumObjectItems (NULL, NULL,
+                                    fObjectName_.c_str (),
+                                    nullptr,
+                                    nullptr,
+                                    szInstanceListBuffer,
+                                    &dwInstanceListSize,
+                                    PERF_DETAIL_WIZARD,
+                                    0);
+
+    SmallStackBuffer<Characters::SDKChar>       instanceBuf(dwInstanceListSize + 2);
+
+    pdhStatus = PdhEnumObjectItems (NULL, NULL,
+                                    fObjectName_.c_str (),
+                                    nullptr,
+                                    nullptr,
+                                    instanceBuf.begin (),
+                                    &dwInstanceListSize,
+                                    PERF_DETAIL_WIZARD,
+                                    0);
+
+    Set<String> result;
+    for (const TCHAR* p = szInstanceListBuffer; *p != '\0'; p += Characters::CString::Length (p) + 1) {
+        result.Add (String::FromSDKString (p));
+    }
+    return result;
+}
+
 void    WMICollector::AddCounters (const String& counterName)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
