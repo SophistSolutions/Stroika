@@ -45,6 +45,8 @@ namespace   Stroika {
                         /**
                          *  Stroika internal interface ID.
                          *  This cannot be persisted, but can be used within a  given process lifetime to check for object identity.
+                         *
+                         *  \note   This corresponds to the IO::Network::Interface::fInternalInterfaceID name and can be used to join.
                          */
                         String  fInternalInterfaceID;
 
@@ -53,6 +55,8 @@ namespace   Stroika {
                          *  For POSIX, this is the interface name (e.g. eth0).
                          *
                          *  For Windows, this concept doesn't appear to exist.
+                         *
+                         *      @todo I think we can lose this!!! Just have instead of getIntfaces - GetInterfaceByInterfalInterfaceID in IO::Network::Interaface code
                          */
                         Optional<String>  fInterfaceID {};
 
