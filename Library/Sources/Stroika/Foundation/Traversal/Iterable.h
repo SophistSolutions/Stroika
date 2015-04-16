@@ -785,7 +785,7 @@ namespace   Stroika {
                 /**
                  *  @see Memory::SharedByValue_State
                  *
-                 *  Don't call this lightly. This is just meant for low level or debugging, and for subclass optimizaitons
+                 *  Don't call this lightly. This is just meant for low level or debugging, and for subclass optimizations
                  *  based on the state of the shared common object.
                  */
                 nonvirtual  Memory::SharedByValue_State    _GetSharingState () const;
