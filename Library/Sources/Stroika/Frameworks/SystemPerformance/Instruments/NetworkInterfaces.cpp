@@ -122,7 +122,7 @@ namespace {
                         ii.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
                         ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
                         ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
-                        ii.fTotalPacketsRecieved = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
+                        ii.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
                         ii.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
                         ii.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
                         result.Add (ii);
