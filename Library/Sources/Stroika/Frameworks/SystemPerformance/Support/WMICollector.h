@@ -139,7 +139,7 @@ namespace   Stroika {
                     /**
                      *  Get the list of available instances for this object
                      */
-                    nonvirtual  Iterable<String>  GetAvailableInstaces ();
+                    nonvirtual  Set<String>  GetAvailableInstaces ();
 
                 public:
                     /**

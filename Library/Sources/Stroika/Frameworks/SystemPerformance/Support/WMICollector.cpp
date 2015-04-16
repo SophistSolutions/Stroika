@@ -181,7 +181,7 @@ void     WMICollector::Collect ()
     fTimeOfLastCollection_ = Time::GetTickCount ();
 }
 
-Iterable<String>  WMICollector::GetAvailableInstaces ()
+Set<String>  WMICollector::GetAvailableInstaces ()
 {
     /*
      *  Note: we only want the instanceids here, but this appears to fail if you only request instance ids and not counters at the same time.
@@ -190,13 +190,13 @@ Iterable<String>  WMICollector::GetAvailableInstaces ()
     DWORD   dwCounterListSize  = 0;
     DWORD   dwInstanceListSize  = 0;
 
-    PDH_STATUS pdhStatus = PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
     SmallStackBuffer<Characters::SDKChar>       counterBuf(dwCounterListSize + 2);
     SmallStackBuffer<Characters::SDKChar>       instanceBuf(dwInstanceListSize + 2);
 
-    pdhStatus = PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
         Execution::DoThrow (StringException (L"PdhEnumObjectItems"));
     }
