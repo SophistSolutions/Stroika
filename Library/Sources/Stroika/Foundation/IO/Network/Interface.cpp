@@ -188,7 +188,6 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         result.Add (newInterface);
     }
 #elif   qPlatform_Windows
-    static  Synchronized<Mapping<pair<String, IF_INDEX>, String>> sIDMap_;
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
     ULONG family = AF_UNSPEC;       // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte>  buf(0);
@@ -199,24 +198,9 @@ Again:
     if (dwRetVal == NO_ERROR) {
         for (PIP_ADAPTER_ADDRESSES currAddresses  = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
             Interface   newInterface;
-            newInterface.fAdapterName = String::FromNarrowSDKString (currAddresses->AdapterName);
-            {
-                auto    l   = sIDMap_.GetReference ();
-                auto    key = pair<String, IF_INDEX> (*newInterface.fAdapterName, currAddresses->IfIndex);
-                auto    o   = l->Lookup (key);
-                if (o) {
-                    newInterface.fInternalInterfaceID = *o;
-                }
-                else {
-                    // @todo may not need random number stuff - maybe able to use IF_INDEX as unique key (docs not clear)
-                    std::random_device rd;
-                    std::default_random_engine e1(rd());
-                    std::uniform_int_distribution<int> uniform_dist(1, numeric_limits<int>::max ());
-                    String  newID = *newInterface.fAdapterName + Characters::Format (L"_%d", uniform_dist (e1));
-                    newInterface.fInternalInterfaceID = newID;
-                    l->Add (key, newID);
-                }
-            }
+            String      adapterName     { String::FromNarrowSDKString (currAddresses->AdapterName) };
+            newInterface.fAdapterName = adapterName;
+            newInterface.fInternalInterfaceID = adapterName;
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
             switch (currAddresses->IfType) {
