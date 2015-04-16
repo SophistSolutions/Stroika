@@ -62,6 +62,12 @@ namespace   Stroika {
 
 
                         /**
+                         *  Pretty display name to identify a particular interface.
+                         */
+                        Optional<String>  fDisplayName {};
+
+
+                        /**
                          *  bytes
                          *  The total number of bytes of data transmitted or received by the interface.
                          */
