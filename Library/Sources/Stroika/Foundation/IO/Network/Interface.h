@@ -70,7 +70,7 @@ namespace   Stroika {
                      *  On unix, its the interface name, e.g. eth0, eth1, etc.
                      *  On Windows, this is concept doesn't really exist.
                      */
-                    String      fInterfaceName;
+                    String      GetInterfaceName () { return fInternalInterfaceID; } ;
 #endif
 
                     /**

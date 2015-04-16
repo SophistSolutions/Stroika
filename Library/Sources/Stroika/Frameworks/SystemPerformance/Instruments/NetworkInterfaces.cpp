@@ -134,7 +134,7 @@ namespace {
             }
             return result;
         }
-    }
+    };
 }
 #endif
 
@@ -213,8 +213,8 @@ namespace {
                     MIB_IPSTATS stats {};
                     Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
                     InterfaceInfo   ii;
-                    DbgTrace (L"NETINTERFACE FREINDLYNAME = %s", networkInterface.fFriendlyName.Value ().c_str ());
-                    DbgTrace (L"NETINTERFACE fDescription = %s", networkInterface.fDescription.Value ().c_str ());
+                    DbgTrace (L"NETINTERFACE FREINDLYNAME = %s", networkInterface.fFriendlyName.c_str ());
+                    DbgTrace (L"NETINTERFACE fDescription = %s", networkInterface.fDescription.c_str ());
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     // @todo - FIX
                     // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
