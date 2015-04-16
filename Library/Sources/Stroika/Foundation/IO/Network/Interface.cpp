@@ -125,8 +125,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
         Interface   newInterface;
-        newInterface.fInterfaceName = String::FromSDKString (ifreqs[i].ifr_name);
-        newInterface.fInternalInterfaceID = newInterface.fInterfaceName;
+        String interfaceName { String::FromSDKString (ifreqs[i].ifr_name) };
+        newInterface.fInterfaceName = interfaceName;
+        newInterface.fInternalInterfaceID = interfaceName;
         int flags = getFlags (sd, ifreqs[i].ifr_name);
 
         if (flags & IFF_LOOPBACK) {
