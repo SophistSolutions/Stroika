@@ -8,6 +8,7 @@
 
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Memory/Optional.h"
+#include    "../../../Foundation/IO/Network/Interface.h"
 
 #include    "../Instrument.h"
 
@@ -42,11 +43,18 @@ namespace   Stroika {
                      */
                     struct  InterfaceInfo {
                         /**
-                         *  For POSIX, this is the interface name (e.g. eth0)
-                         *
-                         *  For Windows, this is ???
+                         *  Stroika internal interface ID.
+                         *  This cannot be persisted, but can be used within a  given process lifetime to check for object identity.
                          */
-                        String  fInterfaceID {};
+                        String  fInternalInterfaceID;
+
+
+                        /**
+                         *  For POSIX, this is the interface name (e.g. eth0).
+                         *
+                         *  For Windows, this concept doesn't appear to exist.
+                         */
+                        Optional<String>  fInterfaceID {};
 
 
                         /**

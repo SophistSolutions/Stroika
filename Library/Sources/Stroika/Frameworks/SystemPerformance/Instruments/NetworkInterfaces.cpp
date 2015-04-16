@@ -31,6 +31,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
@@ -88,6 +89,7 @@ namespace {
                     constexpr   int kOffset2XMit_ = 8;
                     InterfaceInfo   ii;
                     ii.fInterfaceID = line[0];
+                    ii.fInternalInterfaceID = ii.fInterfaceID;  // @todo code cleanup - should have API to do this lookup/compare
                     ii.fTotalBytesRecieved = Characters::String2Int<uint64_t> (line[1]);
                     ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
                     ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
@@ -117,16 +119,18 @@ namespace {
 
                     Specifically the dwInOctets and dwOutOctets will be important to you : they specify the received and sent number of bytes over that interface.
          */
-
-        MIB_IPSTATS stats {};
-        Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
-        InterfaceInfo   ii;
-        ii.fInterfaceID = L"XXXX";
-        // @todo - FIX
-        // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
-        ii.fTotalPacketsRecieved = stats.dwInReceives;
-        ii.fTotalPacketsSent = stats.dwOutRequests;
-        result.Add (ii);
+        Iterable<IO::Network::Interface> networkInterfacs {  IO::Network::GetInterfaces () };
+        for (IO::Network::Interface networkInterface : networkInterfacs) {
+            MIB_IPSTATS stats {};
+            Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
+            InterfaceInfo   ii;
+            ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
+            // @todo - FIX
+            // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
+            ii.fTotalPacketsRecieved = stats.dwInReceives;
+            ii.fTotalPacketsSent = stats.dwOutRequests;
+            result.Add (ii);
+        }
 #if     0
         wprintf(L"Default initial TTL: \t\t\t\t\t%u\n", pStats->dwDefaultTTL);
 
@@ -179,18 +183,21 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
+
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
+        mapper.AddCommonType<Optional<String>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<InterfaceInfo> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesRecieved), String_Constant (L"Total-Bytes-Recieved") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsRecieved), String_Constant (L"Total-Packets-Recieved") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalErrors), String_Constant (L"Total-Errors") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesRecieved), String_Constant (L"Total-Bytes-Recieved"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsRecieved), String_Constant (L"Total-Packets-Recieved"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalErrors), String_Constant (L"Total-Errors"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
