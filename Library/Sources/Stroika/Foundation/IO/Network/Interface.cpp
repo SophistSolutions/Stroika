@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <cstdio>
+#include    <random>
 
 #if     qPlatform_POSIX
 #include    <unistd.h>
@@ -27,12 +28,15 @@
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Characters/Format.h"
 #include    "../../Containers/Collection.h"
+#include    "../../Containers/Mapping.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Finally.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../Execution/Synchronized.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "Socket.h"
@@ -42,9 +46,12 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
+
+
 
 
 #if     defined (_MSC_VER)
@@ -119,6 +126,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
         Interface   newInterface;
         newInterface.fInterfaceName = String::FromSDKString (ifreqs[i].ifr_name);
+        newInterface.fInternalInterfaceID = newInterface.fInterfaceName;
         int flags = getFlags (sd, ifreqs[i].ifr_name);
 
         if (flags & IFF_LOOPBACK) {
@@ -179,6 +187,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         result.Add (newInterface);
     }
 #elif   qPlatform_Windows
+    static  Synchronized<Mapping<pair<String, IF_INDEX>, String>> sIDMap_;
     ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
     ULONG family = AF_UNSPEC;       // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte>  buf(0);
@@ -190,6 +199,23 @@ Again:
         for (PIP_ADAPTER_ADDRESSES currAddresses  = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
             Interface   newInterface;
             newInterface.fAdapterName = String::FromNarrowSDKString (currAddresses->AdapterName);
+            {
+                auto    l   = sIDMap_.GetReference ();
+                auto    key = pair<String, IF_INDEX> (*newInterface.fAdapterName, currAddresses->IfIndex);
+                auto    o   = l->Lookup (key);
+                if (o) {
+                    newInterface.fInternalInterfaceID = *o;
+                }
+                else {
+                    // @todo may not need random number stuff - maybe able to use IF_INDEX as unique key (docs not clear)
+                    std::random_device rd;
+                    std::default_random_engine e1(rd());
+                    std::uniform_int_distribution<int> uniform_dist(1, numeric_limits<int>::max ());
+                    String  newID = *newInterface.fAdapterName + Characters::Format (L"_%d", uniform_dist (e1));
+                    newInterface.fInternalInterfaceID = newID;
+                    l->Add (key, newID);
+                }
+            }
             newInterface.fFriendlyName = currAddresses->FriendlyName;
             newInterface.fDescription = currAddresses->Description;
             switch (currAddresses->IfType) {
