@@ -344,12 +344,13 @@ namespace {
         Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
         for (Interface iFace : Network::GetInterfaces ()) {
             Debug::TraceContextBumper trcCtx ("iface");
-            if (iFace.fInterfaceName.IsPresent ()) {
-                DbgTrace (L"interface-name: %s", iFace.fInterfaceName->c_str ());
+            DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
+#if     qPlatform_POSIX
+            if (iFace.GetInterfaceName ()) {
+                DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ()->c_str ());
             }
-            if (iFace.fFriendlyName.IsPresent ()) {
-                DbgTrace (L"friendly-name: %s", iFace.fFriendlyName->c_str ());
-            }
+#endif
+            DbgTrace (L"Friendly-name: %s", iFace.fFriendlyName.c_str ());
             if (iFace.fDescription.IsPresent ()) {
                 DbgTrace (L"description: %s", iFace.fDescription->c_str ());
             }
