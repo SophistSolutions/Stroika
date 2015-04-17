@@ -83,7 +83,7 @@ namespace {
             double  fWritesCompleted;
         };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
-        CapturerWithContext_POSIX_ ()
+        CapturerWithContext_POSIX_ (Options options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
         }
@@ -253,7 +253,7 @@ namespace {
 #if   qUseWMICollectionSupport_
         WMICollector    fLogicalDiskWMICollector_;
 #endif
-        CapturerWithContext_Windows_ ()
+        CapturerWithContext_Windows_ (Options options)
 #if     qUseWMICollectionSupport_
             : fLogicalDiskWMICollector_ { String_Constant { L"LogicalDisk" }, {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
@@ -418,8 +418,8 @@ namespace {
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
-        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
-            : inherited (/*minTimeBeforeFirstCapture*/)
+        CapturerWithContext_ (Options options)
+            : inherited (options)
         {
         }
         Sequence<VolumeInfo> capture_ ()
@@ -487,9 +487,9 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
  ************* Instruments::MountedFilesystemUsage::GetInstrument ***************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument ()
+Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
+    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
     [useCaptureContext] () mutable -> MeasurementSet {

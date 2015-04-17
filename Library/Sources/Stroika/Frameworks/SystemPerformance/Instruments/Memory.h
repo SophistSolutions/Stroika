@@ -146,6 +146,7 @@ namespace   Stroika {
                      *  To control the behavior of the instrument.
                      */
                     struct  Options {
+                        Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
                     };
 
 

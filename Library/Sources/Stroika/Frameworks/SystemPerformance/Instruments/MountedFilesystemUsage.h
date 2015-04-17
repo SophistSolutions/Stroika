@@ -77,9 +77,16 @@ namespace   Stroika {
 
 
                     /**
+                     *  To control the behavior of the instrument.
+                     */
+                    struct  Options {
+                    };
+
+
+                    /**
                      *  Instrument returning Sequence<VolumeInfo> measurements (cross-platform).
                      */
-                    Instrument          GetInstrument ();
+                    Instrument          GetInstrument (Options options = Options ());
 
 
                 }
