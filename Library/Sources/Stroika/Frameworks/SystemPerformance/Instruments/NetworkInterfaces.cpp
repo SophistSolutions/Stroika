@@ -144,7 +144,6 @@ namespace {
                         ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
                         ii.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
                         ii.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
-                        result.Add (ii);
 
                         DurationSecondsType now = Time::GetTickCount ();
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
@@ -156,6 +155,8 @@ namespace {
                                 ii.fPacketsPerSecondSent = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                             }
                         }
+
+                        result.Add (ii);
                         fLast.Add (ii.fInternalInterfaceID, Last { *ii.fTotalBytesReceived, *ii.fTotalBytesSent, *ii.fTotalPacketsReceived, *ii.fTotalPacketsSent, now });
                     }
                     else {
