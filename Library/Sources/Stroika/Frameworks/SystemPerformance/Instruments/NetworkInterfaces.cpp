@@ -274,7 +274,7 @@ namespace {
                     updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
                 }
                 if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
-                    updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
+                    updateResult->fTCPRetransmittedSegmentsPerSecond = updateResult->fTCPRetransmittedSegmentsPerSecond.Value () + *o ;
                 }
             }
         }
