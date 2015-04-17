@@ -74,10 +74,12 @@ using   SystemPerformance::Support::WMICollector;
 
 #if     qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kBytesReceivedPerSecond_        { L"Bytes Received/sec" };
-    const   String_Constant     kBytesSentPerSecond_            { L"Bytes Sent/sec" };
-    const   String_Constant     kPacketsReceivedPerSecond_      { L"Packets Received/sec" };
-    const   String_Constant     kPacketsSentPerSecond_          { L"Packets Sent/sec" };
+    const   String_Constant     kBytesReceivedPerSecond_			{ L"Bytes Received/sec" };
+    const   String_Constant     kBytesSentPerSecond_				{ L"Bytes Sent/sec" };
+    const   String_Constant     kPacketsReceivedPerSecond_			{ L"Packets Received/sec" };
+    const   String_Constant     kPacketsSentPerSecond_				{ L"Packets Sent/sec" };
+
+    const   String_Constant     kSegmentsRetransmittedPerSecond_	{ L"Segments Retransmitted/sec" };
 }
 #endif
 
@@ -171,6 +173,7 @@ namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
+        WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kSegmentsRetransmittedPerSecond_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture;
         Set<String>         fAvailableInstances_;
 #endif
@@ -188,6 +191,7 @@ namespace {
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
 #if     qUseWMICollectionSupport_
             : fNetworkWMICollector_ (from.fNetworkWMICollector_)
+            , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
             , fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
             , fAvailableInstances_ (from.fAvailableInstances_)
 #endif
@@ -206,6 +210,7 @@ namespace {
             Iterable<Interface>         networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
+            fTCPv4WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -245,6 +250,7 @@ namespace {
              */
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
                 fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
+                fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
@@ -259,6 +265,9 @@ namespace {
                 }
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_)) {
                     updateResult->fPacketsPerSecondSent = *o ;
+                }
+                if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
+                    updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
                 }
             }
         }
@@ -335,6 +344,7 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fBytesPerSecondSent), String_Constant (L"Bytes-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fBytesPerSecondReceived), String_Constant (L"Bytes-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTCPRetransmittedSegmentsPerSecond), String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsReceived), String_Constant (L"Total-Packets-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fPacketsPerSecondSent), String_Constant (L"Packets-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
