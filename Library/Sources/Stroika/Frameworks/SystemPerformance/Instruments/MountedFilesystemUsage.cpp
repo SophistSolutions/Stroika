@@ -37,6 +37,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::MountedFilesystemUsage;
 
 using   Characters::String_Constant;
+using   Time::DurationSecondsType;
 
 
 // for io stats
@@ -69,9 +70,10 @@ namespace {
 
 
 
-namespace {
-    struct  CapturerWithContext_ {
+
 #if     qPlatform_POSIX
+namespace {
+    struct  CapturerWithContext_POSIX_ {
         struct PerfStats_ {
             double  fSectorsRead;
             double  fTimeSpentReading;
@@ -81,43 +83,14 @@ namespace {
             double  fWritesCompleted;
         };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
-#elif   qUseWMICollectionSupport_
-        WMICollector    fLogicalDiskWMICollector_;
-#endif
-        CapturerWithContext_ ()
-#if     qUseWMICollectionSupport_
-            : fLogicalDiskWMICollector_ { L"LogicalDisk", {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
-#endif
+        CapturerWithContext_POSIX_ ()
         {
-#if     qPlatform_POSIX
             capture_ ();        // for side-effect of setting fContextStats_
-#elif   qUseWMICollectionSupport_
-            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
-#endif
         }
-        CapturerWithContext_ (const CapturerWithContext_& from)
-#if     qPlatform_POSIX
-            : fContextStats_ (from.fContextStats_)
-#elif   qUseWMICollectionSupport_
-            : fLogicalDiskWMICollector_ (from.fLogicalDiskWMICollector_)
-#endif
-        {
-#if   qUseWMICollectionSupport_
-            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
-            {
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
-#endif
-        }
+        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_& from) = default;
         Sequence<VolumeInfo> capture_ ()
         {
             Sequence<VolumeInfo>   results;
-#if     qPlatform_POSIX
             results = capture_Process_Run_DF_ ();
             try {
                 Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
@@ -155,12 +128,8 @@ namespace {
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
             }
-#elif       qPlatform_Windows
-            results = capture_Windows_GetVolumeInfo_ ();
-#endif
             return results;
         }
-#if     qPlatform_POSIX
         Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
         {
             Sequence<VolumeInfo>   result;
@@ -265,7 +234,57 @@ namespace {
             }
             return result;
         }
-#elif   qPlatform_Windows
+    };
+}
+#endif
+
+
+
+
+
+
+
+
+
+
+#if     qPlatform_Windows
+namespace {
+    struct  CapturerWithContext_Windows_ {
+#if   qUseWMICollectionSupport_
+        WMICollector    fLogicalDiskWMICollector_;
+#endif
+        CapturerWithContext_Windows_ ()
+#if     qUseWMICollectionSupport_
+            : fLogicalDiskWMICollector_ { String_Constant { L"LogicalDisk" }, {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
+#endif
+        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+#if   qUseWMICollectionSupport_
+            : fLogicalDiskWMICollector_ (from.fLogicalDiskWMICollector_)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            {
+                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
+                Execution::Sleep (kUseIntervalIfNoBaseline_);
+            }
+#endif
+        }
+        Sequence<VolumeInfo> capture_ ()
+        {
+            Sequence<VolumeInfo>   results;
+            results = capture_Windows_GetVolumeInfo_ ();
+            return results;
+        }
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
         {
 #if     qUseWMICollectionSupport_
@@ -371,9 +390,49 @@ namespace {
             }
             return result;
         }
-#endif
     };
 }
+#endif
+
+
+
+
+
+
+
+
+
+
+
+namespace {
+    struct  CapturerWithContext_
+            : Debug::AssertExternallySynchronizedLock
+#if     qPlatform_POSIX
+            , CapturerWithContext_POSIX_
+#elif   qPlatform_Windows
+            , CapturerWithContext_Windows_
+#endif
+    {
+#if     qPlatform_POSIX
+        using inherited = CapturerWithContext_POSIX_;
+#elif   qPlatform_Windows
+        using inherited = CapturerWithContext_Windows_;
+#endif
+        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+            : inherited (/*minTimeBeforeFirstCapture*/)
+        {
+        }
+        Sequence<VolumeInfo> capture_ ()
+        {
+            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
+#endif
+            return inherited::capture_ ();
+        }
+    };
+}
+
 
 
 
@@ -418,6 +477,8 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
     } ();
     return sMapper_;
 }
+
+
 
 
 
