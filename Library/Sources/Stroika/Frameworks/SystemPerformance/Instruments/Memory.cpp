@@ -39,6 +39,7 @@ using   Containers::Set;
 using   IO::FileSystem::BinaryFileInputStream;
 using   Time::DurationSecondsType;
 
+using   Stroika::Frameworks::SystemPerformance::Instruments::Memory::Options;
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -82,13 +83,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_POSIX_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
-        Time::DurationSecondsType  fSaved_MajorPageFaultsSinceBoot_At {};
+        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
-        CapturerWithContext_POSIX_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+        CapturerWithContext_POSIX_ (Options options)
         {
-            if (minTimeBeforeFirstCapture > 0) {
+            if (options.fMinTimeBeforeCapture > 0) {
                 capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
-                Execution::Sleep (minTimeBeforeFirstCapture);
+                Execution::Sleep (options.fMinTimeBeforeCapture);
             }
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
@@ -178,14 +179,14 @@ namespace {
         DurationSecondsType fMinTimeBeforeFirstCapture;
 #endif
 
-        CapturerWithContext_Windows_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
+        CapturerWithContext_Windows_ (Options options)
 #if     qUseWMICollectionSupport_
-            :   fMinTimeBeforeFirstCapture (minTimeBeforeFirstCapture)
+            :   fMinTimeBeforeFirstCapture (options.fMinimumAveragingInterval)
 #endif
         {
 #if     qUseWMICollectionSupport_
             fMemoryWMICollector_.Collect ();
-            Execution::Sleep (minTimeBeforeFirstCapture);
+            Execution::Sleep (options.fMinimumAveragingInterval);
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -257,8 +258,8 @@ namespace {
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
-        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
-            : inherited (minTimeBeforeFirstCapture)
+        CapturerWithContext_ (Options options)
+            : inherited (options)
         {
         }
         Instruments::Memory::Info capture_ ()
@@ -323,7 +324,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
  */
 Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
+    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     static  const   Instrument  kInstrument_    = Instrument (
                 InstrumentNameType (String_Constant (L"Memory")),
     [useCaptureContext] () mutable -> MeasurementSet {

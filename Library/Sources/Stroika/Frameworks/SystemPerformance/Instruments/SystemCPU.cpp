@@ -105,6 +105,9 @@ ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
+        CapturerWithContext_POSIX_ (Options options)
+        {
+        }
         /*
          *  /proc/stat
          *      EXAMPLE:
@@ -223,6 +226,9 @@ namespace {
 #if   qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+        CapturerWithContext_Windows_ (Options options)
+        {
+        }
         static  inline  double  GetAsSeconds_ (FILETIME ft)
         {
             ULARGE_INTEGER  ui;
@@ -305,8 +311,8 @@ namespace {
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
-        CapturerWithContext_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
-            : inherited (/*minTimeBeforeFirstCapture*/)
+        CapturerWithContext_ (Options options)
+            : inherited (options)
         {
         }
         Info capture_ ()
@@ -334,7 +340,7 @@ namespace {
  */
 Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
+    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));
     static  Instrument  kInstrument_    = Instrument (
             InstrumentNameType (String_Constant (L"System-CPU")),
