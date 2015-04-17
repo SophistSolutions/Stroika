@@ -5,6 +5,10 @@
 
 #if     qPlatform_POSIX
 #include    <sys/sysinfo.h>
+#elif   qPlatform_Windows
+#include    <Windows.h>
+
+#include    <psapi.h>
 #endif
 
 #include    "../../../Foundation/Characters/CString/Utilities.h"
@@ -62,6 +66,17 @@ const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = Me
 #ifndef     qUseProcFS_
 #define     qUseProcFS_ qPlatform_POSIX
 #endif
+
+
+
+
+
+#if     defined (_MSC_VER)
+// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "psapi.lib")
+#endif
+
+
 
 
 
@@ -630,13 +645,70 @@ namespace {
         ProcessMapType  capture_ ()
         {
             ProcessMapType  results;
-            ProcessType test;
-            test.fCommandLine = L"Hi mom comamndline";
-            Mapping<String, String> env;
-            env.Add (L"Home", L"/home/lewis");
-            test.fEnvironmentVariables = env;
-            results.Add (101, test);
+            for (pid_t pid : GetAllProcessIDs_ ()) {
+                ProcessType test;
+                //test.fCommandLine = L"Hi mom comamndline";
+                test.fEXEPath = LookupProcessName_ (pid);
+                //Mapping<String, String> env;
+                //env.Add (L"Home", L"/home/lewis");
+                //test.fEnvironmentVariables = env;
+                results.Add (pid, test);
+            }
             return results;
+        }
+        Set<pid_t>  GetAllProcessIDs_ ()
+        {
+            DWORD aProcesses[10 * 1024];
+            DWORD cbNeeded;
+            DWORD cProcesses;
+
+            Set<pid_t> result;
+            if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) ) {
+                AssertNotReached ();
+                return result;
+            }
+
+            // Calculate how many process identifiers were returned.
+
+            cProcesses = cbNeeded / sizeof(DWORD);
+            for (int i = 0; i < cProcesses; ++i) {
+                result.Add (aProcesses[i]);
+            }
+            return result;
+        }
+        String LookupProcessName_ ( pid_t processID )
+        {
+            TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
+
+            // Get a handle to the process.
+
+            HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION |
+                                           PROCESS_VM_READ,
+                                           FALSE, processID );
+
+            // Get the process name.
+
+            if (NULL != hProcess ) {
+                HMODULE hMod;
+                DWORD cbNeeded;
+
+                if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
+                                         &cbNeeded) ) {
+                    GetModuleBaseName( hProcess, hMod, szProcessName,
+                                       sizeof(szProcessName) / sizeof(TCHAR) );
+                }
+            }
+
+            String result { String::FromSDKString (szProcessName) };
+
+            // Print the process name and identifier.
+
+//   _tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
+
+            // Release the handle to the process.
+
+            CloseHandle( hProcess );
+            return result;
         }
     };
 };
