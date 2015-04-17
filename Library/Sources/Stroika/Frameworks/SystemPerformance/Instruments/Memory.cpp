@@ -87,9 +87,9 @@ namespace {
 
         CapturerWithContext_POSIX_ (Options options)
         {
-            if (options.fMinTimeBeforeCapture > 0) {
+            if (options.fMinimumAveragingInterval > 0) {
                 capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
-                Execution::Sleep (options.fMinTimeBeforeCapture);
+                Execution::Sleep (options.fMinimumAveragingInterval);
             }
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
