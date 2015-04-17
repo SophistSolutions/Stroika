@@ -148,7 +148,7 @@ namespace {
                         DurationSecondsType now = Time::GetTickCount ();
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
                             double scanTime = now - o->fAt;
-                            if (scanTime > now) {
+                            if (scanTime > 0) {
                                 ii.fBytesPerSecondReceived = (*ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
                                 ii.fBytesPerSecondSent = (*ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
                                 ii.fPacketsPerSecondReceived = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
