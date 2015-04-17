@@ -181,61 +181,45 @@ namespace {
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
-            capture_ ();    //tmpack for siede effect
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
             Execution::Sleep (minTimeBeforeFirstCapture);
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
 #if     qUseWMICollectionSupport_
             : fNetworkWMICollector_ (from.fNetworkWMICollector_)
-            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
+            , fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
             , fAvailableInstances_ (from.fAvailableInstances_)
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture_ ();    //tmpack for siede effect
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
             Execution::Sleep (fMinTimeBeforeFirstCapture);
 #endif
         }
         Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
         {
+            using   IO::Network::Interface;
             using   Instruments::NetworkInterfaces::InterfaceInfo;
-            Collection<Instruments::NetworkInterfaces::InterfaceInfo>   result;
 
-            /*
-             *  TODO
-             *      @todo xxx
-                        Use the functions GetIfTable() or GetIfEntry() :
-
-                        http://msdn.microsoft.com/library/en-us/iphlp/iphlp/getiftable.asp?frame=true
-                        http://msdn.microsoft.com/library/en-us/iphlp/iphlp/getifentry.asp?frame=true
-
-                        which will return the MIB_IFROW object for the selected interface :
-
-                        http://msdn.microsoft.com/library/en-us/mib/mib/mib_ifrow.asp
-
-                        Specifically the dwInOctets and dwOutOctets will be important to you : they specify the received and sent number of bytes over that interface.
-             */
-            Iterable<IO::Network::Interface> networkInterfacs {  IO::Network::GetInterfaces () };
+            Collection<InterfaceInfo>   result;
+            Iterable<Interface>         networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
-            Time::DurationSecondsType   timeOfPrevCollection = fNetworkWMICollector_.GetTimeOfLastCollection ();
-            //IgnoreExceptionsForCall (fNetworkWMICollector_.Collect ());
             fNetworkWMICollector_.Collect ();
-            Time::DurationSecondsType   timeCollecting { fNetworkWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
-                    MIB_IPSTATS stats {};
-                    Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
                     InterfaceInfo   ii;
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     ii.fDisplayName = networkInterface.fFriendlyName;
-                    // @todo - FIX
-                    // rough guess and not sure how to break down by interface??? - Maybe use GetInterfaces and see what is up?? But ambiguous...
+#if 0
+                    MIB_IPSTATS stats {};
+                    Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
                     //ii.fTotalPacketsReceived = stats.dwInReceives;
                     //ii.fTotalPacketsSent = stats.dwOutRequests;
+#endif
 #if     qUseWMICollectionSupport_
-                    Read_WMI_ (networkInterface, timeCollecting, &ii);
+                    Read_WMI_ (networkInterface, &ii);
 #endif
                     result.Add (ii);
                 }
@@ -243,10 +227,22 @@ namespace {
             return result;
         }
 #if     qUseWMICollectionSupport_
-        void    Read_WMI_ (const IO::Network::Interface& iFace, DurationSecondsType timeCollecting, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
+        void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
         {
+            /*
+             *  @todo - this mapping of descriptions to WMI instance names is an INCREDIBLE KLUDGE. Not sure how to do this properly.
+             *          a research question.
+             *          --LGP 2015-04-16
+             */
             String wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]");
 
+            /*
+             *  @todo   this fAvailableInstances_.Contains code all over the place is a horible kludge prevent WMI crashes. Not sure
+             *          what the best solution is. COULD just pre-add all interfaces. BUt that might monitor/collect too much?
+             *
+             *          And it might miss if new interfaces are added dynamically.
+             *          --LGP 2015-04-16
+             */
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
                 fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
             }
@@ -270,6 +266,8 @@ namespace {
     };
 }
 #endif
+
+
 
 
 
