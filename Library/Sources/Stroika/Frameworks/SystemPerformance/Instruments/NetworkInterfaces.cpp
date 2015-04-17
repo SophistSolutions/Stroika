@@ -95,10 +95,10 @@ namespace {
     struct  CapturerWithContext_POSIX_ {
 
         struct Last {
-            uint64_t  fTotalBytesSent;
             uint64_t  fTotalBytesReceived;
-            uint64_t  fTotalPacketsSent;
+            uint64_t  fTotalBytesSent;
             uint64_t  fTotalPacketsReceived;
+            uint64_t  fTotalPacketsSent;
             DurationSecondsType  fAt;
         };
         Mapping<String, Last>    fLast;
@@ -139,16 +139,16 @@ namespace {
                         ii.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
                         result.Add (ii);
 
-                        DuractionSecondsType now = Time::GetTickCount ();
+                        DurationSecondsType now = Time::GetTickCount ();
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
                             double scanTime = now - o->fAt;
                             Assert (scanTime > now);
                             ii.fBytesPerSecondReceived = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
-                            ii.fBytesPerSecondSent = (ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime
-                                                     ii.fPacketsPerSecondReceived = (ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                            ii.fBytesPerSecondSent = (ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
+                            ii.fPacketsPerSecondReceived = (ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                             ii.fPacketsPerSecondSent = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
                         }
-                        fLast.Add (ii.fInternalInterfaceID, Last {ii.fTotalBytesSent.Value (), ii.fTotalBytesReceived.Value (), ii.fTotalPacketsSent.Value (), ii.fTotalPacketsReceived.Value (), now });
+                        fLast.Add (ii.fInternalInterfaceID, Last { ii.fTotalBytesReceived.Value (), ii.fTotalBytesSent.Value (), ii.fTotalPacketsReceived.Value (), ii.fTotalPacketsSent.Value (), now });
                     }
                     else {
                         DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
