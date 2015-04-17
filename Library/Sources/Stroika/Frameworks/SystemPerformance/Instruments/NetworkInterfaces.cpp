@@ -174,6 +174,7 @@ namespace {
 #if     qUseWMICollectionSupport_
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
         WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kSegmentsRetransmittedPerSecond_ } };
+        WMICollector        fTCPv6WMICollector_ { String_Constant { L"TCPv6" }, {},  { kSegmentsRetransmittedPerSecond_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture;
         Set<String>         fAvailableInstances_;
 #endif
@@ -192,6 +193,7 @@ namespace {
 #if     qUseWMICollectionSupport_
             : fNetworkWMICollector_ (from.fNetworkWMICollector_)
             , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
+            , fTCPv6WMICollector_ (from.fTCPv6WMICollector_)
             , fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
             , fAvailableInstances_ (from.fAvailableInstances_)
 #endif
@@ -211,6 +213,7 @@ namespace {
 #if     qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
             fTCPv4WMICollector_.Collect ();
+            fTCPv6WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -251,6 +254,7 @@ namespace {
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
                 fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
                 fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
+                fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
@@ -267,6 +271,9 @@ namespace {
                     updateResult->fPacketsPerSecondSent = *o ;
                 }
                 if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
+                    updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
+                }
+                if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
                     updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
                 }
             }
