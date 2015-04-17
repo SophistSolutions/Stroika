@@ -332,7 +332,7 @@ namespace {
  ******************* Instruments::SystemCPU::GetInstrument **********************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument ()
+Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
     static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));

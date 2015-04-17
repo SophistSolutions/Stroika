@@ -72,8 +72,15 @@ namespace   Stroika {
 
 
                     /**
+                     *  To control the behavior of the instrument.
                      */
-                    Instrument          GetInstrument ();
+                    struct  Options {
+                    };
+
+
+                    /**
+                     */
+                    Instrument          GetInstrument (Options options = Options ());
 
 
                 }

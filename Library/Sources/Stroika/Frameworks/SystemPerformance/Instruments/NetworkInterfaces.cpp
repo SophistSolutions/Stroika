@@ -375,7 +375,7 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
  ************ Instruments::NetworkInterfaces::GetInstrument *********************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument ()
+Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
     static  Instrument  kInstrument_    = Instrument (
