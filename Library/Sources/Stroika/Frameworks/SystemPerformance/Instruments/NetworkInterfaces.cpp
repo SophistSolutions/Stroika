@@ -143,12 +143,12 @@ namespace {
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
                             double scanTime = now - o->fAt;
                             Assert (scanTime > now);
-                            ii.fBytesPerSecondReceived = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
-                            ii.fBytesPerSecondSent = (ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
-                            ii.fPacketsPerSecondReceived = (ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
-                            ii.fPacketsPerSecondSent = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                            ii.fBytesPerSecondReceived = (*ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                            ii.fBytesPerSecondSent = (*ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
+                            ii.fPacketsPerSecondReceived = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                            ii.fPacketsPerSecondSent = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                         }
-                        fLast.Add (ii.fInternalInterfaceID, Last { ii.fTotalBytesReceived.Value (), ii.fTotalBytesSent.Value (), ii.fTotalPacketsReceived.Value (), ii.fTotalPacketsSent.Value (), now });
+                        fLast.Add (ii.fInternalInterfaceID, Last { *ii.fTotalBytesReceived, *ii.fTotalBytesSent, *ii.fTotalPacketsReceived, *ii.fTotalPacketsSent, now });
                     }
                     else {
                         DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
