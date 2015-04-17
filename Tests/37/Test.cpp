@@ -346,9 +346,7 @@ namespace {
             Debug::TraceContextBumper trcCtx ("iface");
             DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
 #if     qPlatform_POSIX
-            if (iFace.GetInterfaceName ()) {
-                DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
-            }
+            DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
 #endif
             DbgTrace (L"Friendly-name: %s", iFace.fFriendlyName.c_str ());
             if (iFace.fDescription.IsPresent ()) {
