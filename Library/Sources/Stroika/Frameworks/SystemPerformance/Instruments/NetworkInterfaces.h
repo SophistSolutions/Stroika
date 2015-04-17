@@ -80,6 +80,10 @@ namespace   Stroika {
                         Optional<double>  fBytesPerSecondSent;
                         Optional<double>  fBytesPerSecondReceived;
 
+                        /**
+                         *  @todo TBD
+                         */
+                        Optional<double>  fTCPRetransmittedSegmentsPerSecond;
 
                         /**
                          *  packets
