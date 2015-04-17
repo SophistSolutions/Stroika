@@ -321,7 +321,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
  ******************* Instruments::Memory::GetInstrument *************************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::Memory::GetInstrument ()
+Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext;  // capture context so copyable in mutable lambda
     static  const   Instrument  kInstrument_    = Instrument (

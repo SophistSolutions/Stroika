@@ -143,9 +143,16 @@ namespace   Stroika {
 
 
                     /**
+                     *  To control the behavior of the instrument.
+                     */
+                    struct  Options {
+                    };
+
+
+                    /**
                      *  Instrument returning Info measurements.
                      */
-                    Instrument          GetInstrument ();
+                    Instrument          GetInstrument (Options options = Options ());
 
 
                 }
