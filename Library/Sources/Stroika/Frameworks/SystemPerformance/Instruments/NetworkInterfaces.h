@@ -64,7 +64,7 @@ namespace   Stroika {
                         /**
                          *  Pretty display name to identify a particular interface.
                          */
-                        Optional<String>  fDisplayName {};
+                        String  fDisplayName {};
 
 
                         /**
@@ -75,12 +75,24 @@ namespace   Stroika {
                         Optional<uint64_t>  fTotalBytesReceived;
 
                         /**
+                         *  @todo TBD
+                         */
+                        Optional<double>  fBytesPerSecondSent;
+                        Optional<double>  fBytesPerSecondReceived;
+
+
+                        /**
                          *  packets
                          *  The total number of packets of data transmitted or received by the interface.
                          */
                         Optional<uint64_t>  fTotalPacketsSent;
                         Optional<uint64_t>  fTotalPacketsReceived;
 
+                        /**
+                         *  @todo TBD
+                         */
+                        Optional<double>  fPacketsPerSecondSent;
+                        Optional<double>  fPacketsPerSecondReceived;
 
                         /**
                          *  errs
