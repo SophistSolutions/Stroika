@@ -93,6 +93,15 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
+
+        struct Last {
+            uint64_t  fTotalBytesSent;
+            uint64_t  fTotalBytesReceived;
+            uint64_t  fTotalPacketsSent;
+            uint64_t  fTotalPacketsReceived;
+            DurationSecondsType  fAt;
+        };
+        Mapping<String, Last>    fLast;
         CapturerWithContext_POSIX_ (DurationSecondsType minTimeBeforeFirstCapture = 1.0)
         {
         }
@@ -124,11 +133,22 @@ namespace {
                         ii.fDisplayName = line[0];
                         ii.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
                         ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
-                        ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
                         ii.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
+                        ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
                         ii.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
                         ii.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
                         result.Add (ii);
+
+                        DuractionSecondsType now = Time::GetTickCount ();
+                        if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
+                            double scanTime = now - o->fAt;
+                            Assert (scanTime > now);
+                            ii.fBytesPerSecondReceived = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                            ii.fBytesPerSecondSent = (ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime
+                                                     ii.fPacketsPerSecondReceived = (ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                            ii.fPacketsPerSecondSent = (ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                        }
+                        fLast.Add (ii.fInternalInterfaceID, Last {ii.fTotalBytesSent.Value (), ii.fTotalBytesReceived.Value (), ii.fTotalPacketsSent.Value (), ii.fTotalPacketsReceived.Value (), now });
                     }
                     else {
                         DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
