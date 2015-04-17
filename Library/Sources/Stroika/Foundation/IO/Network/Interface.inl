@@ -16,6 +16,23 @@ namespace   Stroika {
             namespace   Network {
 
 
+                /*
+                 ********************************************************************************
+                 ************************************* Interface ********************************
+                 ********************************************************************************
+                 */
+#if     qPlatform_POSIX
+                /**
+                 *  On unix, its the interface name, e.g. eth0, eth1, etc.
+                 *  On Windows, this is concept doesn't really exist.
+                 */
+                inline  String      Interface::GetInterfaceName () const
+                {
+                    return fInternalInterfaceID;
+                }
+#endif
+
+
             }
         }
     }

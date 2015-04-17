@@ -49,14 +49,11 @@ namespace   Stroika {
                  */
                 struct  Interface {
                     /**
-                     *      This is an artificial concept - which is introduced in Stroika. This is only guarnateed unique
-                     *  For the life of one program lifetime (wording).
-                     *
-                     *      On UNIX this is the fInterfaceName. On Windows, its an internally manufactured ID to allow these
-                     *  strucutres to be uniquely idenfied and referenced
+                     *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guarnateed
+                     *   unique or the life of one program lifetime (@todo - not even sure we can do that much).
                      *
                      *      UNIX:
-                     *          interface name - e.g. eth0
+                     *          interface name - e.g. eth0 - in the first column reported in ifconfig.
                      *
                      *      WINDOWS:
                      *          IP_ADAPTER_ADDRESSES::fAdapterName
@@ -70,7 +67,7 @@ namespace   Stroika {
                      *  On unix, its the interface name, e.g. eth0, eth1, etc.
                      *  On Windows, this is concept doesn't really exist.
                      */
-                    String      GetInterfaceName () { return fInternalInterfaceID; } ;
+                    nonvirtual  String      GetInterfaceName () const;
 #endif
 
                     /**
@@ -85,7 +82,7 @@ namespace   Stroika {
                     String      fFriendlyName;
 
                     /**
-                     *      TBD
+                     *      @todo TBD (sadly subtle and important - used in current WMI code)
                      */
                     Memory::Optional<String>    fDescription;
 
@@ -116,12 +113,12 @@ namespace   Stroika {
                     Memory::Optional<double>    fReceiveLinkSpeedBaud;
 
                     /**
-                    */
+                     */
                     Containers::Set<InternetAddress>            fBindings;  // can be IPv4 or IPv6
 
                     /**
-                    // @todo document these - 'eRunning' == LINUX RUNNING
-                    */
+                     * @todo document these - 'eRunning' == LINUX RUNNING
+                     */
                     enum    class   Status {
                         eConnected,
                         eRunning,
