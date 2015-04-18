@@ -53,7 +53,7 @@ namespace {
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
         ~InOutStrmCommon_ ()
         {
-            ::EVP_CIPHER_CTX_cleanup (&fCTX_);
+            Verify (::EVP_CIPHER_CTX_cleanup (&fCTX_) == 1);
         }
         static  constexpr   size_t _GetMinOutBufSize (size_t n)
         {
@@ -233,15 +233,15 @@ namespace {
         RequireNotNull (cipher);
         bool    enc = (d == Direction::eEncrypt);
         if (nopad) {
-            EVP_CIPHER_CTX_set_padding (ctx, 0);
+            Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
-        ::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr/*initialIV.begin ()*/, enc);
+        Verify (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc) == 1);
         size_t keyLen = EVP_CIPHER_CTX_key_length(ctx);
         size_t ivLen = EVP_CIPHER_CTX_iv_length(ctx);
 
         if (useArgumentKeyLength) {
             keyLen = key.length ();
-            ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen));
+            Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 0);
         }
 
         Memory::SmallStackBuffer<Byte> useKey { keyLen };
@@ -253,7 +253,7 @@ namespace {
         memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
         memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
 
-        ::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc);
+        Verify (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc) == 1);
     }
 }
 OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
