@@ -227,9 +227,10 @@ private:
  ********************************************************************************
  */
 namespace {
-    void    ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, Memory::BLOB key, Memory::BLOB initialIV)
+    void    ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, const Memory::BLOB& key, const Memory::BLOB& initialIV)
     {
         RequireNotNull (ctx);
+        RequireNotNull (cipher);
         bool    enc = (d == Direction::eEncrypt);
         if (nopad) {
             EVP_CIPHER_CTX_set_padding (ctx, 0);
