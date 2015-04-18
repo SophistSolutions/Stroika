@@ -38,7 +38,7 @@ extern "C" {
  *              copy in user data.
  *
  *              I think for BOTH key and iv we must look at expected keylen/iplen and pass in data that matches the
- *              length. Maybe set what hack we did for Algorithm::eRC4?? set key length based on whats passed in?
+ *              length. Maybe set what hack we did for CipherAlgorithm::eRC4?? set key length based on whats passed in?
  *
  *              We maybe can (mostly/always) set iv to NULL???
  *
@@ -70,6 +70,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
+
+
+                using   Memory::BLOB;
+                using   Memory::Byte;
 
 
 #if     qHasFeature_OpenSSL
@@ -125,7 +129,7 @@ namespace   Stroika {
                     /**
                      *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
                      */
-                    enum    class   Algorithm {
+                    enum    class   CipherAlgorithm {
                         eAES_128_CBC,
                         eAES_128_ECB,
                         eAES_128_OFB,
@@ -159,8 +163,13 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
                     };
-                    // allowed Algorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
-                    OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV = Memory::BLOB ());
+                    // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
+                    OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV = BLOB ());
+
+					/// ROUGH DRAFT 
+                    enum HashAlg { eMD5, eSHA1 };
+                    static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen);
+                    static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen);
 
                 public:
                     function<void(EVP_CIPHER_CTX*, Direction)>  fInitializer;
