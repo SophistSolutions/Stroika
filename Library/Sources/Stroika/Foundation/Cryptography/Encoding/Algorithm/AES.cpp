@@ -22,44 +22,44 @@ namespace {
     {
         switch (options) {
             case AESOptions::e128_CBC:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_CBC, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_CBC, key);
             case AESOptions::e128_ECB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_ECB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_ECB, key);
             case AESOptions::e128_OFB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_OFB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_OFB, key);
             case AESOptions::e128_CFB1:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_CFB1, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_CFB1, key);
             case AESOptions::e128_CFB8:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_CFB8, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_CFB8, key);
             case AESOptions::e128_CFB128:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_CFB128, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_128_CFB128, key);
             case AESOptions::e192_CBC:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CBC, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_CBC, key);
             case AESOptions::e192_ECB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_ECB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_ECB, key);
             case AESOptions::e192_OFB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_OFB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_OFB, key);
             case AESOptions::e192_CFB1:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB1, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_CFB1, key);
             case AESOptions::e192_CFB8:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB8, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_CFB8, key);
             case AESOptions::e192_CFB128:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB128, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_192_CFB128, key);
             case AESOptions::e256_CBC:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_CBC, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_CBC, key);
             case AESOptions::e256_ECB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_ECB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_ECB, key);
             case AESOptions::e256_OFB:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_OFB, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_OFB, key);
             case AESOptions::e256_CFB1:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_CFB1, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_CFB1, key);
             case AESOptions::e256_CFB8:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_CFB8, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_CFB8, key);
             case AESOptions::e256_CFB128:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_CFB128, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_CFB128, key);
             default:
                 RequireNotReached ();
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_256_CFB128, key);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eAES_256_CFB128, key);
         }
     }
 }

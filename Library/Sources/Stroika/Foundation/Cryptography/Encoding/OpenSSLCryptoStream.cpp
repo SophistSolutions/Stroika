@@ -23,6 +23,7 @@ using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Memory::BLOB;
 
 
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
@@ -262,6 +263,93 @@ void    OpenSSLException::DoThrowLastError ()
  ********************************************************************************
  */
 namespace {
+    using   CipherAlgorithm = OpenSSLCryptoParams::CipherAlgorithm;
+    const EVP_CIPHER* cvt2Cipher_ (CipherAlgorithm alg)
+    {
+        switch (alg) {
+            case CipherAlgorithm::eAES_128_CBC:
+                return ::EVP_aes_128_cbc ();
+            case CipherAlgorithm::eAES_128_ECB:
+                return ::EVP_aes_128_ecb ();
+            case CipherAlgorithm::eAES_128_OFB:
+                return ::EVP_aes_128_ofb ();
+            case CipherAlgorithm::eAES_128_CFB1:
+                return ::EVP_aes_128_cfb1 ();
+            case CipherAlgorithm::eAES_128_CFB8:
+                return ::EVP_aes_128_cfb8 ();
+            case CipherAlgorithm::eAES_128_CFB128:
+                return ::EVP_aes_128_cfb128 ();
+            case CipherAlgorithm::eAES_192_CBC:
+                return ::EVP_aes_192_cbc ();
+            case CipherAlgorithm::eAES_192_ECB:
+                return ::EVP_aes_192_ecb ();
+            case CipherAlgorithm::eAES_192_OFB:
+                return ::EVP_aes_192_ofb ();
+            case CipherAlgorithm::eAES_192_CFB1:
+                return ::EVP_aes_192_cfb1 ();
+            case CipherAlgorithm::eAES_192_CFB8:
+                return ::EVP_aes_192_cfb8 ();
+            case CipherAlgorithm::eAES_192_CFB128:
+                return ::EVP_aes_192_cfb128 ();
+            case CipherAlgorithm::eAES_256_CBC:
+                return ::EVP_aes_256_cbc ();
+            case CipherAlgorithm::eAES_256_ECB:
+                return ::EVP_aes_256_ecb ();
+            case CipherAlgorithm::eAES_256_OFB:
+                return ::EVP_aes_256_ofb ();
+            case CipherAlgorithm::eAES_256_CFB1:
+                return ::EVP_aes_256_cfb1 ();
+            case CipherAlgorithm::eAES_256_CFB8:
+                return ::EVP_aes_256_cfb8 ();
+            case CipherAlgorithm::eAES_256_CFB128:
+                return ::EVP_aes_256_cfb128 ();
+            case CipherAlgorithm::eBlowfish_CBC:
+                return ::EVP_bf_cbc ();
+            case CipherAlgorithm::eBlowfish_ECB:
+                return ::EVP_bf_ecb ();
+            case CipherAlgorithm::eBlowfish_CFB:
+                return ::EVP_bf_cfb ();
+            case CipherAlgorithm::eBlowfish_OFB:
+                return ::EVP_bf_ofb ();
+            case CipherAlgorithm::eRC2_CBC:
+                return ::EVP_rc2_cbc ();
+            case CipherAlgorithm::eRC2_ECB:
+                return ::EVP_rc2_ecb ();
+            case CipherAlgorithm::eRC2_CFB:
+                return ::EVP_rc2_cfb ();
+            case CipherAlgorithm::eRC2_OFB:
+                return ::EVP_rc2_ofb ();
+            case CipherAlgorithm::eRC4:
+                return ::EVP_rc4 ();
+            default:
+                RequireNotReached();
+                return nullptr;
+        }
+    }
+}
+pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen)
+{
+    int i;
+    int nrounds = 5;
+    unsigned char key[32];
+    unsigned char iv[32];
+    const void* salt = nullptr;   // null or 8byte value
+
+    /*
+     * Gen key & IV for AES 256 CBC mode. A SHA1 digest is used to hash the supplied key material.
+     * nrounds is the number of times the we hash the material. More rounds are more secure but
+     * slower.
+     */
+//    i = EVP_BytesToKey(cvt2Cipher_ (alg), EVP_sha1(), salt, key_data, key_data_len, nrounds, key, iv);
+    return pair<BLOB, BLOB> ();
+}
+
+pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen);
+{
+	return DoDerviveKey (hashAlg, alg, passwd.c_str (), passwd.c_str () + passwd.length (), keyLen);
+}
+
+namespace {
     void    ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, const Memory::BLOB& key, const Memory::BLOB& initialIV)
     {
         RequireNotNull (ctx);
@@ -291,177 +379,48 @@ namespace {
         OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
 }
-OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
+OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
     bool    nopad = false;
     switch (alg) {
-        case Algorithm::eAES_128_CBC: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cbc (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_128_ECB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_ecb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_128_OFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_ofb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_128_CFB1: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb1 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_128_CFB8: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb8 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_128_CFB128: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb128 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_CBC: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cbc (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_ECB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_ecb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_OFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_ofb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_CFB1: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb1 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_CFB8: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb8 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_192_CFB128: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb128 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_CBC: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cbc (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_ECB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_ecb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_OFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_ofb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_CFB1: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb1 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_CFB8: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb8 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eAES_256_CFB128: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb128 (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eBlowfish_CBC: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_bf_cbc (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eBlowfish_ECB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_bf_ecb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eBlowfish_CFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_bf_cfb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eBlowfish_OFB: {
-                fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, ::EVP_bf_ofb (), d, nopad, false, key, initialIV);
-                };
-            }
-            break;
-        case Algorithm::eRC2_CBC: {
+        case CipherAlgorithm::eRC2_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
                     ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
                 };
             }
             break;
-        case Algorithm::eRC2_ECB: {
+        case CipherAlgorithm::eRC2_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
                     ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
-        case Algorithm::eRC2_CFB: {
+        case CipherAlgorithm::eRC2_CFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
                     ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
-        case Algorithm::eRC2_OFB: {
+        case CipherAlgorithm::eRC2_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
                     ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
-        case Algorithm::eRC4: {
+        case CipherAlgorithm::eRC4: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
                     ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
                 };
             }
             break;
         default: {
-                RequireNotReached();
+                fInitializer = [alg, nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
+                    ApplySettings2CTX_ (ctx, cvt2Cipher_ (alg), d, nopad, false, key, initialIV);
+                };
+                break;
+
             }
-            break;
     }
 }
 #endif

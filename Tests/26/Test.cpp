@@ -394,7 +394,7 @@ namespace {
 
             for (BLOB key : kKeys_) {
                 for (BLOB inputMessage : kTestMessages_) {
-                    for (OpenSSLCryptoParams::Algorithm i = OpenSSLCryptoParams::Algorithm::eSTART; i != OpenSSLCryptoParams::Algorithm::eEND; i = Configuration::Inc (i)) {
+                    for (OpenSSLCryptoParams::CipherAlgorithm i = OpenSSLCryptoParams::CipherAlgorithm::eSTART; i != OpenSSLCryptoParams::CipherAlgorithm::eEND; i = Configuration::Inc (i)) {
                         OpenSSLCryptoParams cryptoParams { i, key };
                         roundTripTester_ (cryptoParams, inputMessage);
                     }

@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
 namespace {
     OpenSSLCryptoParams cvt_ (const Memory::BLOB& key)
     {
-        return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eRC4, key);
+        return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eRC4, key);
     }
 }
 #endif
