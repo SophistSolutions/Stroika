@@ -226,6 +226,35 @@ private:
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
+namespace {
+    void    ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, Memory::BLOB key, Memory::BLOB initialIV)
+    {
+        RequireNotNull (ctx);
+        bool    enc = (d == Direction::eEncrypt);
+        if (nopad) {
+            EVP_CIPHER_CTX_set_padding (ctx, 0);
+        }
+        ::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr/*initialIV.begin ()*/, enc);
+        size_t keyLen = EVP_CIPHER_CTX_key_length(ctx);
+        size_t ivLen = EVP_CIPHER_CTX_iv_length(ctx);
+
+        if (useArgumentKeyLength) {
+            keyLen = key.length ();
+            ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen));
+        }
+
+        Memory::SmallStackBuffer<Byte> useKey { keyLen };
+        Memory::SmallStackBuffer<Byte> useIV { ivLen };
+
+        memset (useKey.begin (), 0, keyLen);
+        memset (useIV.begin (), 0, ivLen);
+
+        memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
+        memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
+
+        ::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc);
+    }
+}
 OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
@@ -233,281 +262,163 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cbc (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_128_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_ecb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_128_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_ofb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB1: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb1 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB8: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb8 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB128: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_128_cfb128 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cbc (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_ecb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_ofb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB1: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb1 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB8: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb8 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB128: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_192_cfb128 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cbc (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_ecb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_ofb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB1: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb1 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb1 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB8: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb8 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb8 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB128: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb128 (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_aes_256_cfb128 (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eBlowfish_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cbc (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_bf_cbc (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eBlowfish_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ecb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_bf_ecb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eBlowfish_CFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cfb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_bf_cfb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eBlowfish_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ofb (), NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_bf_ofb (), d, nopad, false, key, initialIV);
                 };
             }
             break;
         case Algorithm::eRC2_CBC: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cbc (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
                 };
             }
             break;
         case Algorithm::eRC2_ECB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ecb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
         case Algorithm::eRC2_CFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cfb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
         case Algorithm::eRC2_OFB: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ofb (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
                 };
             }
             break;
         case Algorithm::eRC4: {
                 fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    bool    enc = (d == Direction::eEncrypt);
-                    if (nopad) {
-                        EVP_CIPHER_CTX_set_padding (ctx, 0);
-                    }
-                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, NULL, NULL, enc);
-                    ::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (key.length ()));
-                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), nullptr/*initialIV.begin ()*/, enc);
+                    ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
                 };
             }
             break;
