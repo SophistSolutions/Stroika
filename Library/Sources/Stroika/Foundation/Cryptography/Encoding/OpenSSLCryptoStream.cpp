@@ -5,6 +5,7 @@
 
 #if     qHasFeature_OpenSSL
 #include    <openssl/evp.h>
+#include    <openssl/err.h>
 #endif
 
 #include    "../../Containers/Common.h"
@@ -22,6 +23,9 @@ using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
+
+
+// @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
 
 
@@ -64,11 +68,7 @@ namespace {
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
-            if(not ::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart))) {
-                /* Error */
-                // THROW
-                return 0;
-            }
+            OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
@@ -82,11 +82,7 @@ namespace {
                 return 0;   // not an error - just zero more bytes
             }
             int outLen = 0;
-            if (not ::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen)) {
-                /* Error */
-                // THROW
-                return 0;
-            }
+            OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen));
             fFinalCalled_ = true;
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
@@ -219,6 +215,45 @@ private:
 
 
 
+#if     qHasFeature_OpenSSL
+/*
+ ********************************************************************************
+ ********************** Cryptography::OpenSSLException **************************
+ ********************************************************************************
+ */
+OpenSSLException::OpenSSLException (InternalErrorCodeType errorCode)
+    : StringException (GetMessage (errorCode))
+    , fErrorCode_ (errorCode)
+{
+}
+
+OpenSSLException::InternalErrorCodeType OpenSSLException::GetErrorCode () const
+{
+    return fErrorCode_;
+}
+
+Characters::String  OpenSSLException::GetMessage (InternalErrorCodeType errorCode)
+{
+    char    buf[10 * 1024];
+    buf[0] = '\0';
+    ERR_error_string_n (errorCode, buf, NEltsOf (buf));
+    return Characters::String::FromNarrowSDKString (buf);
+}
+
+void    OpenSSLException::DoThrowLastErrorIfFailed (int status)
+{
+    if (status != 1) {
+        DoThrowLastError ();
+    }
+}
+
+void    OpenSSLException::DoThrowLastError ()
+{
+    Execution::DoThrow (OpenSSLException (ERR_get_error ()));
+}
+#endif
+
+
 
 #if     qHasFeature_OpenSSL
 /*
@@ -235,13 +270,13 @@ namespace {
         if (nopad) {
             Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
-        Verify (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc) == 1);
-        size_t keyLen = EVP_CIPHER_CTX_key_length(ctx);
-        size_t ivLen = EVP_CIPHER_CTX_iv_length(ctx);
+        OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
+        size_t keyLen = EVP_CIPHER_CTX_key_length (ctx);
+        size_t ivLen = EVP_CIPHER_CTX_iv_length (ctx);
 
         if (useArgumentKeyLength) {
             keyLen = key.length ();
-            Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 0);
+            Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 1);
         }
 
         Memory::SmallStackBuffer<Byte> useKey { keyLen };
@@ -253,7 +288,7 @@ namespace {
         memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
         memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
 
-        Verify (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc) == 1);
+        OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
 }
 OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)

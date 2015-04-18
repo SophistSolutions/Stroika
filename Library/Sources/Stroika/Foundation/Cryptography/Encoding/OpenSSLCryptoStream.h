@@ -14,6 +14,7 @@ extern "C" {
 
 #include    "../../Configuration/Common.h"
 #include    "../../Cryptography/SSL/Common.h"
+#include    "../../Execution/StringException.h"
 #include    "../../Memory/Common.h"
 #include    "../../Memory/BLOB.h"
 #include    "../../Streams/BinaryInputStream.h"
@@ -69,6 +70,41 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
+
+
+#if     qHasFeature_OpenSSL
+                /**
+                 *  @todo maybe move elsewhere?
+                 */
+                class   OpenSSLException : public Execution::StringException {
+                public:
+                    using   InternalErrorCodeType = unsigned long;
+
+                public:
+                    OpenSSLException (InternalErrorCodeType errorCode);
+
+                public:
+                    nonvirtual  InternalErrorCodeType   GetErrorCode () const;
+
+                public:
+                    static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
+
+                public:
+                    /*
+                     * DoThrowLastErrorIfFailed throws if status is not = 1
+                     */
+                    static  void    DoThrowLastErrorIfFailed (int status);
+
+                public:
+                    /*
+                     * DoThrowLastError () throws error in ERR_get_error
+                     */
+                    static  void    DoThrowLastError ();
+
+                private:
+                    InternalErrorCodeType   fErrorCode_;
+                };
+#endif
 
 
                 /**
