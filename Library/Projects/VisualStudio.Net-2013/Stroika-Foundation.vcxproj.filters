@@ -160,6 +160,9 @@
     <Filter Include="Sources\IO\Network\Platform\Windows">
       <UniqueIdentifier>{de6d3307-094f-4e56-9f90-5a1a1919a053}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cryptography\OpenSSL">
+      <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -743,6 +746,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1731,6 +1737,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2630,6 +2639,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
   </ItemGroup>
 </Project>
