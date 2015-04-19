@@ -364,6 +364,8 @@ namespace {
         {
 #if     qHasFeature_OpenSSL
             using   Memory::BLOB;
+            using   namespace   Stroika::Foundation::Cryptography::Encoding::OpenSSL;
+
             auto roundTripTester_ = [] (const OpenSSLCryptoParams & cryptoParams, BLOB src) -> void {
                 BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::BinaryInputStream> ()).ReadAll ();
                 BLOB    decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::BinaryInputStream> ()).ReadAll ();
@@ -376,6 +378,8 @@ namespace {
                 BLOB ((const Byte*)kKey1_, (const Byte*)kKey1_ + ::strlen(kKey1_)),
                 BLOB ((const Byte*)kKey2_, (const Byte*)kKey2_ + ::strlen(kKey2_)),
             };
+
+            DerivedKey tmpk { CipherAlgorithm::eAES_128_CBC, HashAlg::eMD5, "hello" };
 
             const   char    kSrc1_[] = "This is a very good test of a very good test";
             const   char    kSrc2_[] = "";
@@ -394,8 +398,9 @@ namespace {
 
             for (BLOB key : kKeys_) {
                 for (BLOB inputMessage : kTestMessages_) {
-                    for (OpenSSLCryptoParams::CipherAlgorithm i = OpenSSLCryptoParams::CipherAlgorithm::eSTART; i != OpenSSLCryptoParams::CipherAlgorithm::eEND; i = Configuration::Inc (i)) {
-                        OpenSSLCryptoParams cryptoParams { i, key };
+                    for (CipherAlgorithm i = CipherAlgorithm::eSTART; i != CipherAlgorithm::eEND; i = Configuration::Inc (i)) {
+                        DerivedKey tmpk { i, HashAlg::eMD5, "hello" };
+                        OpenSSLCryptoParams cryptoParams { i, tmpk };
                         roundTripTester_ (cryptoParams, inputMessage);
                     }
                 }

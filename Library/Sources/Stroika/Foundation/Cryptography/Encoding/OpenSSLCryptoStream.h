@@ -26,8 +26,6 @@ extern "C" {
  *  \file
  *
  *  TODO:
- *      @todo   new test26 openssl warnings to investigate - memory leak reported by valgrind.
- *
  *      @todo   Review https://www.openssl.org/docs/crypto/EVP_EncryptInit.html and things like setkeylength etc to get
  *              rc4 working (idnetically with windows version)
  *
@@ -70,62 +68,57 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Encoding {
+                namespace OpenSSL {
 
 
-                using   Memory::BLOB;
-                using   Memory::Byte;
+                    using   Memory::BLOB;
+                    using   Memory::Byte;
 
 
 #if     qHasFeature_OpenSSL
-                /**
-                 *  @todo maybe move elsewhere?
-                 */
-                class   OpenSSLException : public Execution::StringException {
-                public:
-                    using   InternalErrorCodeType = unsigned long;
-
-                public:
-                    OpenSSLException (InternalErrorCodeType errorCode);
-
-                public:
-                    nonvirtual  InternalErrorCodeType   GetErrorCode () const;
-
-                public:
-                    static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
-
-                public:
-                    /*
-                     * DoThrowLastErrorIfFailed throws if status is not = 1
+                    /**
+                     *  @todo maybe move elsewhere?
                      */
-                    static  void    DoThrowLastErrorIfFailed (int status);
+                    class   OpenSSLException : public Execution::StringException {
+                    public:
+                        using   InternalErrorCodeType = unsigned long;
 
-                public:
-                    /*
-                     * DoThrowLastError () throws error in ERR_get_error
-                     */
-                    static  void    DoThrowLastError ();
+                    public:
+                        OpenSSLException (InternalErrorCodeType errorCode);
 
-                private:
-                    InternalErrorCodeType   fErrorCode_;
-                };
+                    public:
+                        nonvirtual  InternalErrorCodeType   GetErrorCode () const;
+
+                    public:
+                        static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
+
+                    public:
+                        /*
+                         * DoThrowLastErrorIfFailed throws if status is not = 1
+                         */
+                        static  void    DoThrowLastErrorIfFailed (int status);
+
+                    public:
+                        /*
+                         * DoThrowLastError () throws error in ERR_get_error
+                         */
+                        static  void    DoThrowLastError ();
+
+                    private:
+                        InternalErrorCodeType   fErrorCode_;
+                    };
 #endif
 
 
-                /**
-                 */
-                enum    class   Direction {
-                    eEncrypt,
-                    eDecrypt,
-                };
+                    /**
+                     */
+                    enum    class   Direction {
+                        eEncrypt,
+                        eDecrypt,
+                    };
 
 
 #if     qHasFeature_OpenSSL
-                class   OpenSSLCryptoParams {
-                public:
-                    // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
-                    OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
-
-
                     /**
                      *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
                      */
@@ -163,62 +156,98 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
                     };
-                    // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
-                    OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV = BLOB ());
 
-                    /// ROUGH DRAFT
-                    enum HashAlg { eMD5, eSHA1 };
-                    static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen);
-                    static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen);
 
-                public:
-                    function<void(EVP_CIPHER_CTX*, Direction)>  fInitializer;
-                };
+                    /**
+                     *  ROUGH DRAFT
+                     */
+                    enum    class   HashAlg  {
+                        eMD5,
+                        eSHA1
+                    };
 #endif
 
 
 #if     qHasFeature_OpenSSL
-                /**
-                 *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
-                 *
-                 *  OpenSSLInputStream is a BinaryInputStream which wraps another BinaryInputStream
-                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
-                 *
-                 *  Use OpenSSLInputStream is you wish to use the result of encryption in your program, so you prefer to structure
-                 *  your conversion code as a process of reading.
-                 *
-                 *  @see OpenSSLOutputStream
-                 */
-                class   OpenSSLInputStream : public Streams::BinaryInputStream {
-                private:
-                    class   IRep_;
-                public:
-                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn);
-                };
+                    /**
+                     */
+                    struct  DerivedKey {
+                        BLOB    fKey;
+                        BLOB    fIV;
+
+                        /*
+                         * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
+                         * nrounds is the number of times the we hash the material. More rounds are more secure but
+                         * slower.
+                         *
+                         *  @todo Internally we don't need the CipherAlgorithm - just the IV length and hte keyhlenght so add overloads for that)
+                         */
+                        DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1);
+                        DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, const string& passwd, unsigned int nRounds = 1);
+                    };
 #endif
 
 
 #if     qHasFeature_OpenSSL
-                /**
-                 *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
-                 *
-                 *  OpenSSLOutputStream is a BinaryOutputStream which wraps another BinaryOutputStream
-                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
-                 *
-                 *  Use OpenSSLOutputStream is you wish to produce an artifact (e.g. external file) as a result of incrementally writing
-                 *  to a stream.
-                 *
-                 *  @see OpenSSLInputStream
-                 */
-                class   OpenSSLOutputStream : public Streams::BinaryOutputStream {
-                private:
-                    class   IRep_;
-                public:
-                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut);
-                };
+                    class   OpenSSLCryptoParams {
+                    public:
+                        // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
+                        OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
+
+                        // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
+                        OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV);
+
+                        OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey);
+
+                    public:
+                        function<void(EVP_CIPHER_CTX*, Direction)>  fInitializer;
+                    };
 #endif
 
 
+#if     qHasFeature_OpenSSL
+                    /**
+                     *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
+                     *
+                     *  OpenSSLInputStream is a BinaryInputStream which wraps another BinaryInputStream
+                     *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+                     *
+                     *  Use OpenSSLInputStream is you wish to use the result of encryption in your program, so you prefer to structure
+                     *  your conversion code as a process of reading.
+                     *
+                     *  @see OpenSSLOutputStream
+                     */
+                    class   OpenSSLInputStream : public Streams::BinaryInputStream {
+                    private:
+                        class   IRep_;
+                    public:
+                        OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn);
+                    };
+#endif
+
+
+#if     qHasFeature_OpenSSL
+                    /**
+                     *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
+                     *
+                     *  OpenSSLOutputStream is a BinaryOutputStream which wraps another BinaryOutputStream
+                     *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+                     *
+                     *  Use OpenSSLOutputStream is you wish to produce an artifact (e.g. external file) as a result of incrementally writing
+                     *  to a stream.
+                     *
+                     *  @see OpenSSLInputStream
+                     */
+                    class   OpenSSLOutputStream : public Streams::BinaryOutputStream {
+                    private:
+                        class   IRep_;
+                    public:
+                        OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut);
+                    };
+#endif
+
+
+                }
             }
         }
     }

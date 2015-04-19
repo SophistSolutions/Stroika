@@ -13,14 +13,17 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
+using   namespace   Stroika::Foundation::Cryptography::Encoding::OpenSSL;
+
+using   Memory::BLOB;
 
 
 
 #if     qHasFeature_OpenSSL
 namespace {
-    OpenSSLCryptoParams cvt_ (const Memory::BLOB& key)
+    OpenSSLCryptoParams cvt_ (const BLOB& key)
     {
-        return OpenSSLCryptoParams (OpenSSLCryptoParams::CipherAlgorithm::eRC4, key);
+        return OpenSSLCryptoParams (CipherAlgorithm::eRC4, key, BLOB ());
     }
 }
 #endif
@@ -35,11 +38,11 @@ namespace {
  ***************************** Algorithm::DecodeRC4 *****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream  Algorithm::DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream in)
+Streams::BinaryInputStream  Algorithm::DecodeRC4 (const BLOB& key, Streams::BinaryInputStream in)
 {
     return OpenSSLInputStream (cvt_ (key), Direction::eDecrypt, in);
 }
-Memory::BLOB  Algorithm::DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
+Memory::BLOB  Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
 {
     return DecodeRC4 (key, in.As<Streams::BinaryInputStream> ()).ReadAll ();
 }
