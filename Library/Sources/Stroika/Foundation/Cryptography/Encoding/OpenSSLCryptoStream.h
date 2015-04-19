@@ -20,7 +20,7 @@ extern "C" {
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/BinaryOutputStream.h"
 
-
+#include    "../OpenSSL/Exception.h"
 
 /**
  *  \file
@@ -74,40 +74,6 @@ namespace   Stroika {
                     using   Memory::BLOB;
                     using   Memory::Byte;
 
-
-#if     qHasFeature_OpenSSL
-                    /**
-                     *  @todo maybe move elsewhere?
-                     */
-                    class   OpenSSLException : public Execution::StringException {
-                    public:
-                        using   InternalErrorCodeType = unsigned long;
-
-                    public:
-                        OpenSSLException (InternalErrorCodeType errorCode);
-
-                    public:
-                        nonvirtual  InternalErrorCodeType   GetErrorCode () const;
-
-                    public:
-                        static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
-
-                    public:
-                        /*
-                         * DoThrowLastErrorIfFailed throws if status is not = 1
-                         */
-                        static  void    DoThrowLastErrorIfFailed (int status);
-
-                    public:
-                        /*
-                         * DoThrowLastError () throws error in ERR_get_error
-                         */
-                        static  void    DoThrowLastError ();
-
-                    private:
-                        InternalErrorCodeType   fErrorCode_;
-                    };
-#endif
 
 
                     /**

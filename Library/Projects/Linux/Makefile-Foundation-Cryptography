@@ -10,6 +10,7 @@ SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Crypt
 SubDirs	=	\
 	Digest		\
 	Encoding	\
+	OpenSSL		\
 	SSL			\
 
 .PHONY:			$(SubDirs)
@@ -26,6 +27,7 @@ all:	$(Objs) $(SubDirs)
 
 Digest_OBJS := $(addprefix "Digest/", $(shell $(MAKE) --directory Digest -s list-objs))
 Encoding_OBJS := $(addprefix "Encoding/", $(shell $(MAKE) --directory Encoding -s list-objs))
+OpenSSL_OBJS := $(addprefix "OpenSSL/", $(shell $(MAKE) --directory OpenSSL -s list-objs))
 SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
 
 
@@ -37,6 +39,9 @@ Digest:
 
 Encoding:
 	@$(MAKE) --directory Encoding -s
+
+OpenSSL:
+	@$(MAKE) --directory OpenSSL -s
 
 SSL:
 	@$(MAKE) --directory SSL -s
