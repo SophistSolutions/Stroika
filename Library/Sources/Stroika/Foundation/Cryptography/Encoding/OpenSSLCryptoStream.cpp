@@ -326,27 +326,56 @@ namespace {
                 return nullptr;
         }
     }
+    const EVP_MD*   cvt2HashAlg_ (OpenSSLCryptoParams::HashAlg hashAlg)
+    {
+        using   HashAlg =   OpenSSLCryptoParams::HashAlg;
+        switch (hashAlg) {
+            case HashAlg::eMD5:
+                return EVP_md5 ();
+            case HashAlg::eSHA1:
+                return EVP_sha1 ();
+            default:
+                RequireNotReached ();
+                return nullptr;
+        }
+    }
 }
 pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen)
 {
     int i;
     int nrounds = 5;
-    unsigned char key[32];
-    unsigned char iv[32];
-    const void* salt = nullptr;   // null or 8byte value
+//    unsigned char key[32];
+//   unsigned char iv[32];
+    const unsigned char* salt = nullptr;   // null or 8byte value
 
     /*
      * Gen key & IV for AES 256 CBC mode. A SHA1 digest is used to hash the supplied key material.
      * nrounds is the number of times the we hash the material. More rounds are more secure but
      * slower.
      */
-//    i = EVP_BytesToKey(cvt2Cipher_ (alg), EVP_sha1(), salt, key_data, key_data_len, nrounds, key, iv);
-    return pair<BLOB, BLOB> ();
+    i = ::EVP_BytesToKey (cvt2Cipher_ (alg), cvt2HashAlg_ (hashAlg), salt, nullptr, 0, nrounds, nullptr, nullptr);
+    if (i == 0) {
+        OpenSSLException::DoThrowLastError ();
+    }
+    Verify (i >= 1);
+
+    keyLen = i;
+    size_t ivLen = i;
+
+    Memory::SmallStackBuffer<Byte> useKey { keyLen };
+    Memory::SmallStackBuffer<Byte> useIV { ivLen };
+
+    i = ::EVP_BytesToKey (cvt2Cipher_ (alg), cvt2HashAlg_ (hashAlg), salt, passwd.first, passwd.second - passwd.first, nrounds, useKey.begin (), useIV.begin ());
+    if (i == 0) {
+        OpenSSLException::DoThrowLastError ();
+    }
+    return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
 }
 
-pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen);
+pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen)
 {
-	return DoDerviveKey (hashAlg, alg, passwd.c_str (), passwd.c_str () + passwd.length (), keyLen);
+    auto pwAsBytes  = pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ());
+    return DoDerviveKey (hashAlg, alg, pwAsBytes, keyLen);
 }
 
 namespace {

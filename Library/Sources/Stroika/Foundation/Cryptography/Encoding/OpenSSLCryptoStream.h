@@ -166,7 +166,7 @@ namespace   Stroika {
                     // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
                     OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV = BLOB ());
 
-					/// ROUGH DRAFT 
+                    /// ROUGH DRAFT
                     enum HashAlg { eMD5, eSHA1 };
                     static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen);
                     static  pair<BLOB, BLOB> DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen);
