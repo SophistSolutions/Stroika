@@ -20,6 +20,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::Encoding;
+using   namespace   Stroika::Foundation::Cryptography::Encoding::OpenSSL;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
@@ -216,7 +217,26 @@ private:
 
 
 
+
+
 #if     qHasFeature_OpenSSL
+
+namespace {
+    struct ErrStringIniter_ {
+        ErrStringIniter_ ()
+        {
+            ERR_load_crypto_strings ();
+            //SSL_load_error_strings ();
+        }
+        ~ErrStringIniter_ ()
+        {
+            ERR_free_strings ();
+        }
+
+    } _InitOpenSSLErrStrings_;
+}
+
+
 /*
  ********************************************************************************
  ********************** Cryptography::OpenSSLException **************************
@@ -263,7 +283,6 @@ void    OpenSSLException::DoThrowLastError ()
  ********************************************************************************
  */
 namespace {
-    using   CipherAlgorithm = OpenSSLCryptoParams::CipherAlgorithm;
     const EVP_CIPHER* cvt2Cipher_ (CipherAlgorithm alg)
     {
         switch (alg) {
@@ -326,56 +345,42 @@ namespace {
                 return nullptr;
         }
     }
-    const EVP_MD*   cvt2HashAlg_ (OpenSSLCryptoParams::HashAlg hashAlg)
+    const EVP_MD*   cvt2HashAlg_ (HashAlg hashAlg)
     {
-        using   HashAlg =   OpenSSLCryptoParams::HashAlg;
         switch (hashAlg) {
             case HashAlg::eMD5:
-                return EVP_md5 ();
+                return ::EVP_md5 ();
             case HashAlg::eSHA1:
-                return EVP_sha1 ();
+                return ::EVP_sha1 ();
             default:
                 RequireNotReached ();
                 return nullptr;
         }
     }
 }
-pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, pair<const Byte*, const Byte*> passwd, unsigned int keyLen)
+
+DerivedKey::DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds)
 {
-    int i;
-    int nrounds = 5;
-//    unsigned char key[32];
-//   unsigned char iv[32];
+    Require (nRounds >= 1);
     const unsigned char* salt = nullptr;   // null or 8byte value
 
-    /*
-     * Gen key & IV for AES 256 CBC mode. A SHA1 digest is used to hash the supplied key material.
-     * nrounds is the number of times the we hash the material. More rounds are more secure but
-     * slower.
-     */
-    i = ::EVP_BytesToKey (cvt2Cipher_ (alg), cvt2HashAlg_ (hashAlg), salt, nullptr, 0, nrounds, nullptr, nullptr);
+    const EVP_CIPHER* useOpenSSLCipher    =   cvt2Cipher_ (alg);
+    AssertNotNull (useOpenSSLCipher);
+
+    Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (useOpenSSLCipher->key_len) };
+    Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (useOpenSSLCipher->iv_len) };
+
+    int i = ::EVP_BytesToKey (useOpenSSLCipher, cvt2HashAlg_ (hashAlg), salt, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         OpenSSLException::DoThrowLastError ();
     }
-    Verify (i >= 1);
-
-    keyLen = i;
-    size_t ivLen = i;
-
-    Memory::SmallStackBuffer<Byte> useKey { keyLen };
-    Memory::SmallStackBuffer<Byte> useIV { ivLen };
-
-    i = ::EVP_BytesToKey (cvt2Cipher_ (alg), cvt2HashAlg_ (hashAlg), salt, passwd.first, passwd.second - passwd.first, nrounds, useKey.begin (), useIV.begin ());
-    if (i == 0) {
-        OpenSSLException::DoThrowLastError ();
-    }
-    return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
+    fKey = BLOB (useKey.begin (), useKey.end ());
+    fIV = BLOB (useIV.begin (), useIV.end ());
 }
 
-pair<BLOB, BLOB> OpenSSLCryptoParams::DoDerviveKey (HashAlg hashAlg, CipherAlgorithm alg, const string& passwd, unsigned int keyLen)
+DerivedKey::DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, const string& passwd, unsigned int nRounds)
+    : DerivedKey (alg, hashAlg, pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ()), nRounds)
 {
-    auto pwAsBytes  = pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ());
-    return DoDerviveKey (hashAlg, alg, pwAsBytes, keyLen);
 }
 
 namespace {
@@ -408,6 +413,7 @@ namespace {
         OpenSSLException::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
 }
+
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
@@ -451,6 +457,11 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key,
 
             }
     }
+}
+
+OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey)
+    : OpenSSLCryptoParams (alg, derivedKey.fKey, derivedKey.fIV)
+{
 }
 #endif
 
