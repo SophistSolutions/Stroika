@@ -214,6 +214,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/Cryptography/Encoding", "Makefile-Foundation-Cryptography-Encoding");
 		mkDirWithLinks3("Foundation/Cryptography/Encoding/Algorithm", "Makefile-Foundation-Cryptography-Encoding-Algorithm");
 		mkDirWithLinks2("Foundation/Cryptography/Hash", "Makefile-Foundation-Cryptography-Hash");
+		mkDirWithLinks2("Foundation/Cryptography/OpenSSL", "Makefile-Foundation-Cryptography-OpenSSL");
 		mkDirWithLinks2("Foundation/Cryptography/SSL", "Makefile-Foundation-Cryptography-SSL");
 		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
 		mkDirWithLinks("Foundation/DataExchange", "Makefile-Foundation-DataExchange");
