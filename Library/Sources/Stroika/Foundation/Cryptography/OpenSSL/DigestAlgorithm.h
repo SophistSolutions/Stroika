@@ -6,6 +6,12 @@
 
 #include    "../../StroikaPreComp.h"
 
+#if     qHasFeature_OpenSSL
+extern "C" {
+    using  EVP_MD   =   struct env_md_st;
+}
+#endif
+
 #include    "../../Configuration/Common.h"
 #include    "../../Execution/StringException.h"
 #include    "../../Memory/Common.h"
@@ -16,6 +22,8 @@
  *  \file
  *
  *  TODO:
+ *      @todo   AddLookupByName functions.
+ *
  *
  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
  *
@@ -37,6 +45,17 @@ namespace   Stroika {
                     eMD5,
                     eSHA1
                 };
+#endif
+
+
+
+#if     qHasFeature_OpenSSL
+                /**
+                 *  \req valid algorithm from above enum, and \ens not nullptr.
+                 *
+                 *  \note - the returned pointer is immutable, and the data remains valid until the end of the program.
+                 */
+                const EVP_MD*   Convert2OpenSSL (DigestAlgorithm hashAlg);
 #endif
 
 

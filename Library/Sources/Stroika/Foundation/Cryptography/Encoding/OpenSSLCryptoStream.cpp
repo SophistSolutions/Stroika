@@ -226,95 +226,18 @@ private:
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-namespace {
-    const EVP_CIPHER* cvt2Cipher_ (CipherAlgorithm alg)
-    {
-        switch (alg) {
-            case CipherAlgorithm::eAES_128_CBC:
-                return ::EVP_aes_128_cbc ();
-            case CipherAlgorithm::eAES_128_ECB:
-                return ::EVP_aes_128_ecb ();
-            case CipherAlgorithm::eAES_128_OFB:
-                return ::EVP_aes_128_ofb ();
-            case CipherAlgorithm::eAES_128_CFB1:
-                return ::EVP_aes_128_cfb1 ();
-            case CipherAlgorithm::eAES_128_CFB8:
-                return ::EVP_aes_128_cfb8 ();
-            case CipherAlgorithm::eAES_128_CFB128:
-                return ::EVP_aes_128_cfb128 ();
-            case CipherAlgorithm::eAES_192_CBC:
-                return ::EVP_aes_192_cbc ();
-            case CipherAlgorithm::eAES_192_ECB:
-                return ::EVP_aes_192_ecb ();
-            case CipherAlgorithm::eAES_192_OFB:
-                return ::EVP_aes_192_ofb ();
-            case CipherAlgorithm::eAES_192_CFB1:
-                return ::EVP_aes_192_cfb1 ();
-            case CipherAlgorithm::eAES_192_CFB8:
-                return ::EVP_aes_192_cfb8 ();
-            case CipherAlgorithm::eAES_192_CFB128:
-                return ::EVP_aes_192_cfb128 ();
-            case CipherAlgorithm::eAES_256_CBC:
-                return ::EVP_aes_256_cbc ();
-            case CipherAlgorithm::eAES_256_ECB:
-                return ::EVP_aes_256_ecb ();
-            case CipherAlgorithm::eAES_256_OFB:
-                return ::EVP_aes_256_ofb ();
-            case CipherAlgorithm::eAES_256_CFB1:
-                return ::EVP_aes_256_cfb1 ();
-            case CipherAlgorithm::eAES_256_CFB8:
-                return ::EVP_aes_256_cfb8 ();
-            case CipherAlgorithm::eAES_256_CFB128:
-                return ::EVP_aes_256_cfb128 ();
-            case CipherAlgorithm::eBlowfish_CBC:
-                return ::EVP_bf_cbc ();
-            case CipherAlgorithm::eBlowfish_ECB:
-                return ::EVP_bf_ecb ();
-            case CipherAlgorithm::eBlowfish_CFB:
-                return ::EVP_bf_cfb ();
-            case CipherAlgorithm::eBlowfish_OFB:
-                return ::EVP_bf_ofb ();
-            case CipherAlgorithm::eRC2_CBC:
-                return ::EVP_rc2_cbc ();
-            case CipherAlgorithm::eRC2_ECB:
-                return ::EVP_rc2_ecb ();
-            case CipherAlgorithm::eRC2_CFB:
-                return ::EVP_rc2_cfb ();
-            case CipherAlgorithm::eRC2_OFB:
-                return ::EVP_rc2_ofb ();
-            case CipherAlgorithm::eRC4:
-                return ::EVP_rc4 ();
-            default:
-                RequireNotReached();
-                return nullptr;
-        }
-    }
-    const EVP_MD*   cvt2HashAlg_ (DigestAlgorithm hashAlg)
-    {
-        switch (hashAlg) {
-            case DigestAlgorithm::eMD5:
-                return ::EVP_md5 ();
-            case DigestAlgorithm::eSHA1:
-                return ::EVP_sha1 ();
-            default:
-                RequireNotReached ();
-                return nullptr;
-        }
-    }
-}
-
 DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds)
 {
     Require (nRounds >= 1);
     const unsigned char* salt = nullptr;   // null or 8byte value
 
-    const EVP_CIPHER* useOpenSSLCipher    =   cvt2Cipher_ (alg);
+    const EVP_CIPHER* useOpenSSLCipher    =   Convert2OpenSSL (alg);
     AssertNotNull (useOpenSSLCipher);
 
     Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (useOpenSSLCipher->key_len) };
     Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (useOpenSSLCipher->iv_len) };
 
-    int i = ::EVP_BytesToKey (useOpenSSLCipher, cvt2HashAlg_ (hashAlg), salt, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
+    int i = ::EVP_BytesToKey (useOpenSSLCipher, Convert2OpenSSL (hashAlg), salt, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         Cryptography::OpenSSL::Exception::DoThrowLastError ();
     }
@@ -395,7 +318,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, Memory::BLOB key,
             break;
         default: {
                 fInitializer = [alg, nopad, key, initialIV] (EVP_CIPHER_CTX * ctx, Direction d) {
-                    ApplySettings2CTX_ (ctx, cvt2Cipher_ (alg), d, nopad, false, key, initialIV);
+                    ApplySettings2CTX_ (ctx, Convert2OpenSSL (alg), d, nopad, false, key, initialIV);
                 };
                 break;
 
