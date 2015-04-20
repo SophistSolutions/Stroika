@@ -22,6 +22,7 @@ extern "C" {
 
 #include    "../OpenSSL/CipherAlgorithm.h"
 #include    "../OpenSSL/DigestAlgorithm.h"
+#include    "../OpenSSL/DerivedKey.h"
 #include    "../OpenSSL/Exception.h"
 
 
@@ -78,7 +79,6 @@ namespace   Stroika {
                     using   Memory::Byte;
 
 
-
                     /**
                      */
                     enum    class   Direction {
@@ -90,28 +90,7 @@ namespace   Stroika {
 #if     qHasFeature_OpenSSL
                     using   Cryptography::OpenSSL::CipherAlgorithm;
                     using   Cryptography::OpenSSL::DigestAlgorithm;
-
-
-#endif
-
-
-#if     qHasFeature_OpenSSL
-                    /**
-                     */
-                    struct  DerivedKey {
-                        BLOB    fKey;
-                        BLOB    fIV;
-
-                        /*
-                         * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
-                         * nrounds is the number of times the we hash the material. More rounds are more secure but
-                         * slower.
-                         *
-                         *  @todo Internally we don't need the CipherAlgorithm - just the IV length and hte keyhlenght so add overloads for that)
-                         */
-                        DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1);
-                        DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, unsigned int nRounds = 1);
-                    };
+                    using   Cryptography::OpenSSL::DerivedKey;
 #endif
 
 

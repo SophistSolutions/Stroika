@@ -756,6 +756,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1752,6 +1755,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2653,6 +2659,9 @@
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
   </ItemGroup>
