@@ -6,19 +6,9 @@
 
 #include    "../../StroikaPreComp.h"
 
-#if     qHasFeature_OpenSSL
-extern "C" {
-    using  EVP_CIPHER_CTX   =   struct evp_cipher_ctx_st;
-}
-#endif
-
 #include    "../../Configuration/Common.h"
-#include    "../../Cryptography/SSL/Common.h"
 #include    "../../Execution/StringException.h"
 #include    "../../Memory/Common.h"
-#include    "../../Memory/BLOB.h"
-#include    "../../Streams/BinaryInputStream.h"
-#include    "../../Streams/BinaryOutputStream.h"
 
 
 
@@ -66,6 +56,12 @@ namespace   Stroika {
                      * DoThrowLastError () throws error in ERR_get_error
                      */
                     static  void    DoThrowLastError ();
+
+                public:
+                    static  bool    GetNamesSupported ();
+
+                public:
+                    static  void    SetNamesSupported (bool openSSLStringsSupported);
 
                 private:
                     InternalErrorCodeType   fErrorCode_;
