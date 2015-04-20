@@ -49,6 +49,9 @@ namespace {
 
         void    DoRegressionTests_ ()
         {
+            /// @todo fix this test after I switch to using DerviedKey - this is useless as is - not doig anywhere near the rihgt htin
+            /// which is why not working. I HTINK it will work if I use derviedKey!!!
+            ///
             {
                 // super quick hack - must validate results
                 const   char    kKey[] = "Mr Key";
@@ -374,12 +377,10 @@ namespace {
 
             const   char    kKey1_[] = "Mr Key";
             const   char    kKey2_[] = "One Very Very Very Long key 123";
-            static  const BLOB  kKeys_ [] = {
+            static  const BLOB  kPassphrases_ [] = {
                 BLOB ((const Byte*)kKey1_, (const Byte*)kKey1_ + ::strlen(kKey1_)),
                 BLOB ((const Byte*)kKey2_, (const Byte*)kKey2_ + ::strlen(kKey2_)),
             };
-
-            DerivedKey tmpk { DigestAlgorithm::eMD5, CipherAlgorithm::eAES_128_CBC, "hello" };
 
             const   char    kSrc1_[] = "This is a very good test of a very good test";
             const   char    kSrc2_[] = "";
@@ -396,12 +397,13 @@ namespace {
             };
 
 
-            for (BLOB key : kKeys_) {
+            for (BLOB passphrase : kPassphrases_) {
                 for (BLOB inputMessage : kTestMessages_) {
-                    for (CipherAlgorithm i = CipherAlgorithm::eSTART; i != CipherAlgorithm::eEND; i = Configuration::Inc (i)) {
-                        DerivedKey tmpk { DigestAlgorithm::eMD5, i, "hello" };
-                        OpenSSLCryptoParams cryptoParams { i, tmpk };
-                        roundTripTester_ (cryptoParams, inputMessage);
+                    for (CipherAlgorithm ci = CipherAlgorithm::eSTART; ci != CipherAlgorithm::eEND; ci = Configuration::Inc (ci)) {
+                        for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
+                            OpenSSLCryptoParams cryptoParams { ci, DerivedKey  { di, ci, passphrase } };
+                            roundTripTester_ (cryptoParams, inputMessage);
+                        }
                     }
                 }
             }

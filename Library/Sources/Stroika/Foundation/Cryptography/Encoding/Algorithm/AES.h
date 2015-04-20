@@ -17,7 +17,8 @@
  *  \file
  *
  * TODO:
- *
+ *      @todo   REDO THIS API - USELESS AS IS. Pass in DervivedKey object - but only after I've made it
+ *              more portable.
  *
  */
 

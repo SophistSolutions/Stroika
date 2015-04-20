@@ -37,13 +37,19 @@ using   namespace   Stroika::Foundation::Memory;
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
  ********************************************************************************
  */
-const EVP_MD* OpenSSL::Convert2OpenSSL (DigestAlgorithm alg)
+const EVP_MD* OpenSSL::Convert2OpenSSL (DigestAlgorithm digestAlgorithm)
 {
-    switch (alg) {
+    switch (digestAlgorithm) {
+        case DigestAlgorithm::eDSS:
+            return ::EVP_dss ();
         case DigestAlgorithm::eMD5:
             return ::EVP_md5 ();
         case DigestAlgorithm::eSHA1:
             return ::EVP_sha1 ();
+        case DigestAlgorithm::eSHA224:
+            return ::EVP_sha224 ();
+        case DigestAlgorithm::eSHA256:
+            return ::EVP_sha256 ();
         default:
             RequireNotReached ();
             return nullptr;
