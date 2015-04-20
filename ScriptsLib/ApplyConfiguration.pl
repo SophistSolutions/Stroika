@@ -464,6 +464,15 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 
+	if ($ENABLE_ASSERTIONS) {
+		print (OUT "qFeatureFlag_EnableAssertions=1\n");
+	}	
+	else {
+		print (OUT "qFeatureFlag_EnableAssertions=0\n");
+	}
+
+
+
 	#if $ENABLE_GLIBCXX_DEBUG defaulted, use $ENABLE_ASSERTIONS
 	if ($ENABLE_GLIBCXX_DEBUG == 1 || ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS && $ENABLE_ASSERTIONS == 1)) {
 		print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
