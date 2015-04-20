@@ -399,6 +399,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-OpenSSL-Exception.obj</ObjectFileName>
@@ -1080,6 +1081,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
@@ -1442,6 +1444,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
