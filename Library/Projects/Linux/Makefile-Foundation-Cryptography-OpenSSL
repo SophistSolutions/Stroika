@@ -14,6 +14,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)CipherAlgorithm.o\
 	$(ObjDir)DigestAlgorithm.o\
+	$(ObjDir)DervicedKey.o\
 	$(ObjDir)Exception.o\
 
 all:	$(Objs)  $(SubDirs)
