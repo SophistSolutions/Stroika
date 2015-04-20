@@ -364,7 +364,7 @@ namespace {
         {
 #if     qHasFeature_OpenSSL
             using   Memory::BLOB;
-            using   namespace   Stroika::Foundation::Cryptography::Encoding::OpenSSL;
+            using   namespace   Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [] (const OpenSSLCryptoParams & cryptoParams, BLOB src) -> void {
                 BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::BinaryInputStream> ()).ReadAll ();

@@ -13,7 +13,6 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::Encoding;
 using   namespace   Stroika::Foundation::Cryptography::Encoding::Algorithm;
-using   namespace   Stroika::Foundation::Cryptography::Encoding::OpenSSL;
 
 using   Memory::BLOB;
 
