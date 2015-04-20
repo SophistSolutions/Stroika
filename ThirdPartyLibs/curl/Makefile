@@ -127,6 +127,13 @@ else
                 make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
 endif
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp -r Builds/lib/*.a Builds/lib/*.la pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
+else
+	@todo - INCOMPLETE WINDOZE BUILD
+endif
 
 check:
 	@##THMPHACK
