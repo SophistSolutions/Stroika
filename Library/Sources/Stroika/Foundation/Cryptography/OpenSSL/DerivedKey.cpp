@@ -42,18 +42,16 @@ using   namespace   Stroika::Foundation::Memory;
  ******************* Cryptography::OpenSSL::DerivedKey **************************
  ********************************************************************************
  */
-DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds)
+DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
 {
     Require (nRounds >= 1);
-    const unsigned char* salt = nullptr;   // null or 8byte value
-
     const EVP_CIPHER* useOpenSSLCipher    =   Convert2OpenSSL (alg);
     AssertNotNull (useOpenSSLCipher);
 
     Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (useOpenSSLCipher->key_len) };
     Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (useOpenSSLCipher->iv_len) };
 
-    int i = ::EVP_BytesToKey (useOpenSSLCipher, Convert2OpenSSL (hashAlg), salt, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
+    int i = ::EVP_BytesToKey (useOpenSSLCipher, Convert2OpenSSL (hashAlg), salt ? &salt.Value ().at (0) : nullptr, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         Cryptography::OpenSSL::Exception::DoThrowLastError ();
     }
@@ -61,8 +59,8 @@ DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const
     fIV = BLOB (useIV.begin (), useIV.end ());
 }
 
-DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, unsigned int nRounds)
-    : DerivedKey (alg, hashAlg, pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ()), nRounds)
+DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (alg, hashAlg, pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ()), salt, nRounds)
 {
 }
 #endif

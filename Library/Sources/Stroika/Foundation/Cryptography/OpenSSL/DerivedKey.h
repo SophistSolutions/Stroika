@@ -7,8 +7,9 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Memory/Common.h"
 #include    "../../Memory/BLOB.h"
+#include    "../../Memory/Common.h"
+#include    "../../Memory/Optional.h"
 
 #include    "CipherAlgorithm.h"
 #include    "DigestAlgorithm.h"
@@ -38,12 +39,18 @@ namespace   Stroika {
 
                 using   Memory::BLOB;
                 using   Memory::Byte;
+                using   Memory::Optional;
 #if     qHasFeature_OpenSSL
                 /**
                   */
                 struct  DerivedKey {
                     BLOB    fKey;
                     BLOB    fIV;
+
+                    /**
+                     *  In OpenSSL, the Salt must either by an 8-byte array or omitted.
+                     */
+                    using   SaltType = std::array<Byte, 8>;
 
                     /*
                      * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
@@ -52,8 +59,8 @@ namespace   Stroika {
                      *
                      *  @todo Internally we don't need the CipherAlgorithm - just the IV length and hte keyhlenght so add overloads for that)
                      */
-                    DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1);
-                    DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, unsigned int nRounds = 1);
+                    DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds = 1);
+                    DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds = 1);
                 };
 #endif
 
