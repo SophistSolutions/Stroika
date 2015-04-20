@@ -39,27 +39,35 @@ using   Execution::Synchronized;
 
 #if     qHasFeature_OpenSSL
 namespace {
-    Synchronized<bool>  sNamesSupported_	{ true };
-    atomic<bool>		sNamesLoaded_		{ false };
+    Synchronized<bool>  sNamesSupported_    { true };
+    Synchronized<bool>  sNamesLoaded_       { false };
 
     struct ErrStringIniter_ {
         ~ErrStringIniter_ ()
         {
-            if (sNamesLoaded_) {
-                ERR_free_strings ();
-                sNamesLoaded_ = false;
+            if (sNamesSupported_) {
+                auto l = sNamesLoaded_.GetReference ();
+                if (static_cast<bool> (l)) {
+                    ERR_free_strings ();
+                    l = false;
+                }
             }
         }
     } _InitOpenSSLErrStrings_;
     void    LoadStringsIfNeeded_ ()
     {
         if (not sNamesLoaded_ and sNamesSupported_) {
-            ERR_load_crypto_strings ();
-            //SSL_load_error_strings ();
-            sNamesLoaded_ = true;
+            auto l = sNamesLoaded_.GetReference ();
+            if (not static_cast<bool> (l)) {
+                ERR_load_crypto_strings ();
+                //SSL_load_error_strings ();
+                l = true;
+            }
         }
     }
 }
+
+
 
 
 /*
@@ -109,11 +117,16 @@ void    Exception::SetNamesSupported (bool openSSLStringsSupported)
     auto l = sNamesSupported_.GetReference ();
     if (static_cast<bool> (l) != openSSLStringsSupported) {
         if (openSSLStringsSupported) {
+            // nothing todo - just
         }
         else {
+            auto l = sNamesLoaded_.GetReference ();
+            if (static_cast<bool> (l)) {
+                ERR_free_strings ();
+                l = false;
+            }
         }
         sNamesSupported_ = openSSLStringsSupported;
     }
 }
 #endif
-
