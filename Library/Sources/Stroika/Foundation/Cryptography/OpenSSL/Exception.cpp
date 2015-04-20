@@ -11,6 +11,7 @@
 #include    "../../Containers/Common.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Common.h"
+#include    "../../Execution/Synchronized.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "Exception.h"
@@ -21,10 +22,6 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::OpenSSL;
 using   namespace   Stroika::Foundation::Memory;
-using   namespace   Stroika::Foundation::Streams;
-
-using   Memory::BLOB;
-
 
 
 
@@ -34,26 +31,34 @@ using   Memory::BLOB;
 #pragma comment (lib, "ssleay32.lib")
 #endif
 
+using   Execution::Synchronized;
 
 
 
 
 
 #if     qHasFeature_OpenSSL
-
 namespace {
+    Synchronized<bool>  sNamesSupported_	{ true };
+    atomic<bool>		sNamesLoaded_		{ false };
+
     struct ErrStringIniter_ {
-        ErrStringIniter_ ()
-        {
-            ERR_load_crypto_strings ();
-            //SSL_load_error_strings ();
-        }
         ~ErrStringIniter_ ()
         {
-            ERR_free_strings ();
+            if (sNamesLoaded_) {
+                ERR_free_strings ();
+                sNamesLoaded_ = false;
+            }
         }
-
     } _InitOpenSSLErrStrings_;
+    void    LoadStringsIfNeeded_ ()
+    {
+        if (not sNamesLoaded_ and sNamesSupported_) {
+            ERR_load_crypto_strings ();
+            //SSL_load_error_strings ();
+            sNamesLoaded_ = true;
+        }
+    }
 }
 
 
@@ -75,6 +80,7 @@ Exception::InternalErrorCodeType Exception::GetErrorCode () const
 
 Characters::String  Exception::GetMessage (InternalErrorCodeType errorCode)
 {
+    LoadStringsIfNeeded_ ();
     char    buf[10 * 1024];
     buf[0] = '\0';
     ERR_error_string_n (errorCode, buf, NEltsOf (buf));
@@ -91,6 +97,23 @@ void    Exception::DoThrowLastErrorIfFailed (int status)
 void    Exception::DoThrowLastError ()
 {
     Execution::DoThrow (Exception (ERR_get_error ()));
+}
+
+bool    Exception::GetNamesSupported ()
+{
+    return sNamesSupported_.load ();
+}
+
+void    Exception::SetNamesSupported (bool openSSLStringsSupported)
+{
+    auto l = sNamesSupported_.GetReference ();
+    if (static_cast<bool> (l) != openSSLStringsSupported) {
+        if (openSSLStringsSupported) {
+        }
+        else {
+        }
+        sNamesSupported_ = openSSLStringsSupported;
+    }
 }
 #endif
 
