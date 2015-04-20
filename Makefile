@@ -125,16 +125,13 @@ IntermediateFiles/TOOLS_CHECKED:
 
 # Force TOOLS_CHECKED test
 check-tools:
+	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
 	@echo "Checking for installed tools..."
 	@echo -n "  " && sh -c "type sed"
 	@echo -n "  " && sh -c "type wget"
 	@echo -n "  " && sh -c "type perl"
 	@echo -n "  " && sh -c "type tar"
-ifeq (,$(findstring CYGWIN,$(shell uname)))
-	@echo -n "  " && sh -c "type libtool"
-endif
-	@# NOT SURE NEEDED ANYMORE...#sh -c "type curl"
 	@echo -n "  " && sh -c "type patch"
 ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@echo -n "  " && sh -c "type dos2unix"
