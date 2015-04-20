@@ -37,30 +37,40 @@ namespace   Stroika {
                     using   InternalErrorCodeType = unsigned long;
 
                 public:
+                    /**
+                     */
                     Exception (InternalErrorCodeType errorCode);
 
                 public:
+                    /**
+                     */
                     nonvirtual  InternalErrorCodeType   GetErrorCode () const;
 
                 public:
+                    /**
+                     */
                     static  Characters::String  GetMessage (InternalErrorCodeType errorCode);
 
                 public:
-                    /*
+                    /**
                      * DoThrowLastErrorIfFailed throws if status is not = 1
                      */
                     static  void    DoThrowLastErrorIfFailed (int status);
 
                 public:
-                    /*
+                    /**
                      * DoThrowLastError () throws error in ERR_get_error
                      */
                     static  void    DoThrowLastError ();
 
                 public:
+                    /**
+                     */
                     static  bool    GetNamesSupported ();
 
                 public:
+                    /**
+                     */
                     static  void    SetNamesSupported (bool openSSLStringsSupported);
 
                 private:
