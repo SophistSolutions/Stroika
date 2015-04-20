@@ -154,7 +154,9 @@ ifndef StroikaFoundationSupportLibs
 	endif
 
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
-		StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/curl-config --static-libs)
+		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
+		#StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/curl-config --static-libs)
+		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcurl.a
 	endif
 	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lcurl
@@ -162,7 +164,7 @@ ifndef StroikaFoundationSupportLibs
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
-	StroikaFoundationSupportLibs	+=	  -lpthread -lrt 
+	StroikaFoundationSupportLibs	+=	  -lpthread -lrt
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
