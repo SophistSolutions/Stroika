@@ -14,15 +14,12 @@
 
 /*
  * TODO:
- *      (o)     Very rough draft. This code is completely untested, and really only about 1/2 written. Even the high level
- *              usage (container) pattern is just a draft.
- *
- *      (o)     Must do basic METHOD support - setting CURLOPT_GET for gets, etc.
+ *      @todo   Must do basic METHOD support - setting CURLOPT_GET for gets, etc.
  *              Need extended MEHTOD support for DELETE (just specify string)
  *              And for PUT/POST special setopt(CURLOPT_POST/PUT, and do reader function for pUT ajnd direct data pass for Post -
  *              since I THINK thats what curl requires - use common API if I can find a way).
  *
- *      (o)     Handle pass in of headers. Treat special headers like content type proeprly. Same for content-length.
+ *      @todo   Handle pass in of headers. Treat special headers like content type proeprly. Same for content-length.
  *
  *
  */
