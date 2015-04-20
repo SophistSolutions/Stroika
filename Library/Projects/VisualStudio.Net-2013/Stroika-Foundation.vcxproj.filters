@@ -750,6 +750,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
