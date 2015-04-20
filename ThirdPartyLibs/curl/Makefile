@@ -16,6 +16,9 @@ USE_DIRNAME=CURRENT
 
 FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
 
+BUILDS_ROOT=../../Builds/
+
+
 UNAME := $(shell uname)
 
 ifneq (,$(findstring CYGWIN,$(UNAME)))
