@@ -3,6 +3,9 @@
 
 DoCreateSymLink=0
 
+-include $(shell pwd)/../../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
+
+
 VERSION=7_38_0
 BASENAME=curl-curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
@@ -59,6 +62,44 @@ $(BUILDS_DIR):	$(TRGDIR)
 	make --no-print-directory doBuilds
 
 
+LIBCURL_CONFIGURE =
+LIBCURL_CONFIGURE += --enable-static
+LIBCURL_CONFIGURE += --without-openssl
+LIBCURL_CONFIGURE += --without-ssl
+LIBCURL_CONFIGURE += --disable-shared
+LIBCURL_CONFIGURE += --without-cyassl
+LIBCURL_CONFIGURE += --without-librtmp
+### for now - I think we want this one!
+LIBCURL_CONFIGURE += --without-libidn
+LIBCURL_CONFIGURE += --without-libssh2
+LIBCURL_CONFIGURE += --without-nghttp2
+LIBCURL_CONFIGURE += --without-axtls
+LIBCURL_CONFIGURE += --disable-smtp
+LIBCURL_CONFIGURE += --disable-ldap --disable-ldaps
+LIBCURL_CONFIGURE += --disable-manual
+LIBCURL_CONFIGURE += --disable-rtsp
+LIBCURL_CONFIGURE += --disable-gopher
+LIBCURL_CONFIGURE += --disable-dict
+LIBCURL_CONFIGURE += --disable-telnet
+LIBCURL_CONFIGURE += --disable-pop3
+LIBCURL_CONFIGURE += --disable-imap
+## really want ares but hindrance for static linking for now
+LIBCURL_CONFIGURE += --disable-ares
+## really want zlib but until we can do relative build/static link... leave out..
+LIBCURL_CONFIGURE += --without-zlib
+ifeq ($(qFeatureFlag_EnableAssertions), 1)
+LIBCURL_CONFIGURE += --enable-debug
+LIBCURL_CONFIGURE += --disable-optimize
+LIBCURL_CONFIGURE += --enable-curldebug
+else
+LIBCURL_CONFIGURE += --disable-debug
+LIBCURL_CONFIGURE += --enable-optimize
+LIBCURL_CONFIGURE += --disable-curldebug
+endif
+
+
+
+
 doBuilds:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo "   ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
@@ -79,9 +120,11 @@ else
 		echo "      ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
-		echo "      ...TODO - fix to use my copy of ssl, if we build SSL...";\
-		./configure --prefix=$(BUILDS_DIR) --without-openssl --disable-shared  > CONFIGURE.OUT 2>&1;\
-		make --no-print-directory install > MAKE.OUT 2>&1;\
+                echo "      ...TODO - fix to use my copy of ssl, if we build SSL...";\
+                echo "      ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
+                ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)  > CONFIGURE.OUT 2>&1;\
+                echo "      ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
+                make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
 endif
 
