@@ -12,7 +12,7 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
-#if     qHasFeature_libcurl
+#if     qHasFeature_LibCurl
 #include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
 #endif
 #if     qHasFeature_WinHTTP
@@ -76,7 +76,7 @@ namespace {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
-#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
 #else
@@ -84,7 +84,7 @@ namespace {
 #endif
             }
 
-#if     qHasFeature_libcurl
+#if     qHasFeature_LibCurl
             DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
 #endif
 #if     qHasFeature_WinHTTP
@@ -212,7 +212,7 @@ namespace {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
-#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
 #else
@@ -220,7 +220,7 @@ namespace {
 #endif
             }
 
-#if     qHasFeature_libcurl
+#if     qHasFeature_LibCurl
             DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
 #endif
 #if     qHasFeature_WinHTTP
@@ -264,7 +264,7 @@ namespace {
                 DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
-#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
 #else
@@ -272,7 +272,7 @@ namespace {
 #endif
             }
 
-#if     qHasFeature_libcurl
+#if     qHasFeature_LibCurl
             DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
 #endif
 #if     qHasFeature_WinHTTP
