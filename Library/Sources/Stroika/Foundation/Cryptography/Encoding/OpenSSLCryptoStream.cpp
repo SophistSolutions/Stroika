@@ -289,12 +289,12 @@ namespace {
                 return nullptr;
         }
     }
-    const EVP_MD*   cvt2HashAlg_ (HashAlg hashAlg)
+    const EVP_MD*   cvt2HashAlg_ (DigestAlgorithm hashAlg)
     {
         switch (hashAlg) {
-            case HashAlg::eMD5:
+            case DigestAlgorithm::eMD5:
                 return ::EVP_md5 ();
-            case HashAlg::eSHA1:
+            case DigestAlgorithm::eSHA1:
                 return ::EVP_sha1 ();
             default:
                 RequireNotReached ();
@@ -303,7 +303,7 @@ namespace {
     }
 }
 
-DerivedKey::DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds)
+DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds)
 {
     Require (nRounds >= 1);
     const unsigned char* salt = nullptr;   // null or 8byte value
@@ -322,7 +322,7 @@ DerivedKey::DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, pair<const Byte*, 
     fIV = BLOB (useIV.begin (), useIV.end ());
 }
 
-DerivedKey::DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, const string& passwd, unsigned int nRounds)
+DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, unsigned int nRounds)
     : DerivedKey (alg, hashAlg, pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ()), nRounds)
 {
 }

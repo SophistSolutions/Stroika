@@ -1077,6 +1077,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />

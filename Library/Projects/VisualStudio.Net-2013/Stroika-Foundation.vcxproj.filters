@@ -1740,6 +1740,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

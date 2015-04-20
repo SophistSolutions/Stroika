@@ -20,6 +20,8 @@ extern "C" {
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/BinaryOutputStream.h"
 
+#include    "../OpenSSL/CipherAlgorithm.h"
+#include    "../OpenSSL/DigestAlgorithm.h"
 #include    "../OpenSSL/Exception.h"
 
 
@@ -86,52 +88,10 @@ namespace   Stroika {
 
 
 #if     qHasFeature_OpenSSL
-                    /**
-                     *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
-                     */
-                    enum    class   CipherAlgorithm {
-                        eAES_128_CBC,
-                        eAES_128_ECB,
-                        eAES_128_OFB,
-                        eAES_128_CFB1,
-                        eAES_128_CFB8,
-                        eAES_128_CFB128,
-                        eAES_192_CBC,
-                        eAES_192_ECB,
-                        eAES_192_OFB,
-                        eAES_192_CFB1,
-                        eAES_192_CFB8,
-                        eAES_192_CFB128,
-                        eAES_256_CBC,
-                        eAES_256_ECB,
-                        eAES_256_OFB,
-                        eAES_256_CFB1,
-                        eAES_256_CFB8,
-                        eAES_256_CFB128,
-
-                        eBlowfish_CBC,
-                        eBlowfish_ECB,
-                        eBlowfish_CFB,
-                        eBlowfish_OFB,
-
-                        eRC2_CBC,
-                        eRC2_ECB,
-                        eRC2_CFB,
-                        eRC2_OFB,
-
-                        eRC4,
-
-                        Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
-                    };
+                    using   Cryptography::OpenSSL::CipherAlgorithm;
+                    using   Cryptography::OpenSSL::DigestAlgorithm;
 
 
-                    /**
-                     *  ROUGH DRAFT
-                     */
-                    enum    class   HashAlg  {
-                        eMD5,
-                        eSHA1
-                    };
 #endif
 
 
@@ -149,8 +109,8 @@ namespace   Stroika {
                          *
                          *  @todo Internally we don't need the CipherAlgorithm - just the IV length and hte keyhlenght so add overloads for that)
                          */
-                        DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1);
-                        DerivedKey (CipherAlgorithm alg, HashAlg hashAlg, const string& passwd, unsigned int nRounds = 1);
+                        DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1);
+                        DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, unsigned int nRounds = 1);
                     };
 #endif
 
