@@ -24,6 +24,8 @@ using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Cryptography::OpenSSL;
 using   namespace   Stroika::Foundation::Memory;
 
+using   Memory::BLOB;
+using   Memory::SmallStackBuffer;
 
 
 #if     qHasFeature_OpenSSL && defined (_MSC_VER)
@@ -47,8 +49,8 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* ciphe
     Require (nRounds >= 1);
     RequireNotNull (cipherAlgorithm);
 
-    Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
-    Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
+    SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
+    SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
 
     int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
@@ -81,6 +83,11 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_
 
 DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
     : DerivedKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), passwd, salt, nRounds)
+{
+}
+
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, cipherAlgorithm, passwd.As<pair<const Byte*, const Byte*>> (), salt, nRounds)
 {
 }
 

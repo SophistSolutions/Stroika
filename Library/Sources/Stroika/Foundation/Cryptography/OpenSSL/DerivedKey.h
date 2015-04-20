@@ -60,6 +60,7 @@ namespace   Stroika {
                     DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
+                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const wstring& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                 };
