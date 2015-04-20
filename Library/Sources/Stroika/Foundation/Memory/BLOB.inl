@@ -160,6 +160,19 @@ namespace   Stroika {
                 As<vector<Byte>> (&result);
                 return result;
             }
+            template    <>
+            inline  void    BLOB::As (pair<const Byte*, const Byte*>* into) const
+            {
+                RequireNotNull (into);
+                *into = fRep_->GetBounds ();
+            }
+            template    <>
+            inline  pair<const Byte*, const Byte*> BLOB::As () const
+            {
+                pair<const Byte*, const Byte*>    result;
+                As<pair<const Byte*, const Byte*>> (&result);
+                return result;
+            }
             inline  bool    BLOB::empty () const
             {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
