@@ -42,8 +42,13 @@ namespace   Stroika {
                  *  ROUGH DRAFT
                  */
                 enum    class   DigestAlgorithm  {
+                    eDSS,
                     eMD5,
-                    eSHA1
+                    eSHA1,
+                    eSHA224,
+                    eSHA256,
+
+                    Stroika_Define_Enum_Bounds(eDSS, eSHA256)
                 };
 #endif
 
@@ -55,7 +60,7 @@ namespace   Stroika {
                  *
                  *  \note - the returned pointer is immutable, and the data remains valid until the end of the program.
                  */
-                const EVP_MD*   Convert2OpenSSL (DigestAlgorithm hashAlg);
+                const EVP_MD*   Convert2OpenSSL (DigestAlgorithm digestAlgorithm);
 #endif
 
 
