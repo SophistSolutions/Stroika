@@ -39,7 +39,7 @@ using   Execution::Synchronized;
 
 #if     qHasFeature_OpenSSL
 namespace {
-    Synchronized<bool>  sNamesSupported_    { true };
+    Synchronized<bool>  sNamesSupported_    { true };		// @todo note locking not done right yet here - not safely...
     Synchronized<bool>  sNamesLoaded_       { false };
 
     struct ErrStringIniter_ {
@@ -72,7 +72,7 @@ namespace {
 
 /*
  ********************************************************************************
- ********************** Cryptography::OpenSSLException **************************
+ ***************************** Cryptography::Exception **************************
  ********************************************************************************
  */
 Exception::Exception (InternalErrorCodeType errorCode)
