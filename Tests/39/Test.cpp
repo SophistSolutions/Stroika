@@ -57,7 +57,7 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
 #if     qHasFeature_LibCurl
-                catch (LibCurlException lce) {
+                catch (const Transfer::LibCurlException& lce) {
                     DbgTrace ("Warning - ignored exception doing lubcurl/ssl - for now probably just no SSL support with libcurl");
                 }
 #endif
