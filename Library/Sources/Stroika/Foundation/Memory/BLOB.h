@@ -171,14 +171,20 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>,
-                 *  or Streams::BinaryInputStream supported)
+                 *  Convert BLOB losslessly into a standard C++ type.
+                 *      Supported Types for 'T' include:
+                 *          o   vector<Byte>
+                 *          o   Streams::BinaryInputStream
+                 *          o   pair<const Byte*, const Byte*>
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
                 /**
-                 *  Convert BLOB losslessly into a standard C++ type (right now just <vector<Byte>>
-                 *  supported)
+                 *  Convert BLOB losslessly into a standard C++ type.
+                 *      Supported Types for 'T' include:
+                 *          o   vector<Byte>
+                 *          o   Streams::BinaryInputStream
+                 *          o   pair<const Byte*, const Byte*>
                  */
                 template    <typename   T>
                 nonvirtual  void   As (T* into) const;
