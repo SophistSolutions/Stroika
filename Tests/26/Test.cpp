@@ -379,7 +379,7 @@ namespace {
                 BLOB ((const Byte*)kKey2_, (const Byte*)kKey2_ + ::strlen(kKey2_)),
             };
 
-            DerivedKey tmpk { CipherAlgorithm::eAES_128_CBC, DigestAlgorithm::eMD5, "hello" };
+            DerivedKey tmpk { DigestAlgorithm::eMD5, CipherAlgorithm::eAES_128_CBC, "hello" };
 
             const   char    kSrc1_[] = "This is a very good test of a very good test";
             const   char    kSrc2_[] = "";
@@ -399,7 +399,7 @@ namespace {
             for (BLOB key : kKeys_) {
                 for (BLOB inputMessage : kTestMessages_) {
                     for (CipherAlgorithm i = CipherAlgorithm::eSTART; i != CipherAlgorithm::eEND; i = Configuration::Inc (i)) {
-                        DerivedKey tmpk { i, DigestAlgorithm::eMD5, "hello" };
+                        DerivedKey tmpk { DigestAlgorithm::eMD5, i, "hello" };
                         OpenSSLCryptoParams cryptoParams { i, tmpk };
                         roundTripTester_ (cryptoParams, inputMessage);
                     }
