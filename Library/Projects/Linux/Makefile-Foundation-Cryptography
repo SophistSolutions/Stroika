@@ -32,7 +32,7 @@ SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
 
 
 list-objs::
-	@echo $(Digest_OBJS) $(Encoding_OBJS) $(SSL_OBJS)
+	@echo $(Digest_OBJS) $(Encoding_OBJS) $(SSL_OBJS) $(OpenSSL_OBJS)
 
 Digest:
 	@$(MAKE) --directory Digest -s
