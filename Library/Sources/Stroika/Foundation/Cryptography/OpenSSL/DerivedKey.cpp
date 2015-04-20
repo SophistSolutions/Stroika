@@ -42,16 +42,15 @@ using   namespace   Stroika::Foundation::Memory;
  ******************* Cryptography::OpenSSL::DerivedKey **************************
  ********************************************************************************
  */
-DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
 {
     Require (nRounds >= 1);
-    const EVP_CIPHER* useOpenSSLCipher    =   Convert2OpenSSL (alg);
-    AssertNotNull (useOpenSSLCipher);
+    RequireNotNull (cipherAlgorithm);
 
-    Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (useOpenSSLCipher->key_len) };
-    Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (useOpenSSLCipher->iv_len) };
+    Memory::SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
+    Memory::SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
 
-    int i = ::EVP_BytesToKey (useOpenSSLCipher, Convert2OpenSSL (hashAlg), salt ? &salt.Value ().at (0) : nullptr, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
+    int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         Cryptography::OpenSSL::Exception::DoThrowLastError ();
     }
@@ -59,8 +58,39 @@ DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, pair<const
     fIV = BLOB (useIV.begin (), useIV.end ());
 }
 
-DerivedKey::DerivedKey (CipherAlgorithm alg, DigestAlgorithm hashAlg, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-    : DerivedKey (alg, hashAlg, pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str ()) + passwd.length ()), salt, nRounds)
+namespace {
+    // This trick counts on the fact that EVP_BytesToKey() only ever looks at key_len and iv_len
+    struct  FakeCryptoAlgo_ : EVP_CIPHER {
+        FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
+        {
+            memset (this, 0, sizeof (*this));
+            this->key_len = keyLength;
+            this->iv_len = ivLength;
+        }
+        operator const EVP_CIPHER* () const
+        {
+            return this;
+        }
+    };
+}
+
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, FakeCryptoAlgo_ (keyLength, ivLength), passwd, salt, nRounds)
+{
+}
+
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), passwd, salt, nRounds)
+{
+}
+
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str () + passwd.length ())), salt, nRounds)
+{
+}
+
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const wstring& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str () + passwd.length ())), salt, nRounds)
 {
 }
 #endif
