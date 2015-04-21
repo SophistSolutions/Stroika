@@ -22,6 +22,6 @@ all:	$(TARGETEXE)
 
 
 $(TARGETEXE):	$(Objs)
-	$(Linker) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
+	$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
 
 
