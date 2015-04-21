@@ -191,6 +191,13 @@ endif
 
 
 
+
+ifndef LinkerPrefixArgs
+	LinkerPrefixArgs	=	
+endif
+
+
+
 ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
 	CFLAGS +=  -D_GLIBCXX_DEBUG 
 endif
