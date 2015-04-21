@@ -60,6 +60,10 @@ namespace {
                 catch (const LibCurlException& lce) {
                     DbgTrace ("Warning - ignored exception doing lubcurl/ssl - for now probably just no SSL support with libcurl");
                 }
+#else
+                catch (...) {
+                    throw;
+                }
 #endif
             }
             void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
