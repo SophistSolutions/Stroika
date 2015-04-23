@@ -484,7 +484,7 @@ sub WriteStroikaConfigMakeHeader
 
 
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
-	print (OUT "qFeatureFlag_LibOpenSSL='$FEATUREFLAG_OpenSSL'\n");
+	print (OUT "qFeatureFlag_OpenSSL='$FEATUREFLAG_OpenSSL'\n");
 	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 	print (OUT "qFeatureFlag_LibZLib='$FEATUREFLAG_ZLib'\n");
