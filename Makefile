@@ -76,12 +76,14 @@ project-files-visual-studio.net:
 project-files-qt-creator:	project-files-qt-creator-load
 
 project-files-qt-creator-load:
-	@echo "Loading qt-creator project files"
-	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$i .; done;
+	@echo -n "Loading qt-creator project files..."
+	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
+	@echo "done"
 
 project-files-qt-creator-save:
-	@echo "Saving qt-creator project files"
-	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $i Library/Projects/QtCreator/ ; done;
+	@echo -n "Saving qt-creator project files..."
+	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
+	@echo "done"
 
 tools:	libraries
 	@cd Tools; perl buildall.pl build
