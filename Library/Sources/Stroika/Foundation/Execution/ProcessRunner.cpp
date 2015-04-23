@@ -739,9 +739,7 @@ DoneWithProcess:
             int result = waitpid (cpid, &status, flags);                /* Wait for child */
             if (result != cpid || status != 0) {
                 // @todo fix this message
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("cpid=%d, result=%d, status=%d", cpid, result, status);
-#endif
                 DoThrow (StringException (L"sub-process failed"));
             }
         }
