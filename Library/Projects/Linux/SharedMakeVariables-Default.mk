@@ -147,7 +147,7 @@ ifndef StroikaFoundationSupportLibs
 	endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcrypto.a
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcrypto.a -ldl
 	endif
 	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lopenssl -lcrypto
