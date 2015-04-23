@@ -68,9 +68,19 @@ third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
-project-files:
+project-files:	project-files-visual-studio.net project-files-qt-creator
+
+project-files-visual-studio.net:
 	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
 
+project-files-qt-creator:	project-files-qt-creator-copy-out
+
+project-files-qt-creator-copy-out:
+	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
+	cp Library/Projects/QtCreator/{StroikaDevRoot.config,StroikaDevRoot.creator,StroikaDevRoot.files,StroikaDevRoot.includes} .
+
+project-files-qt-creator-copy-in:
+	cp {StroikaDevRoot.config,StroikaDevRoot.creator,StroikaDevRoot.files,StroikaDevRoot.includes} Library/Projects/QtCreator/
 
 tools:	libraries
 	@cd Tools; perl buildall.pl build
