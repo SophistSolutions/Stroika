@@ -73,14 +73,15 @@ project-files:	project-files-visual-studio.net project-files-qt-creator
 project-files-visual-studio.net:
 	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
 
-project-files-qt-creator:	project-files-qt-creator-copy-out
+project-files-qt-creator:	project-files-qt-creator-load
 
-project-files-qt-creator-copy-out:
-	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
-	cp Library/Projects/QtCreator/{StroikaDevRoot.config,StroikaDevRoot.creator,StroikaDevRoot.files,StroikaDevRoot.includes} .
+project-files-qt-creator-load:
+	@echo "Loading qt-creator project files"
+	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$i .; done;
 
-project-files-qt-creator-copy-in:
-	cp {StroikaDevRoot.config,StroikaDevRoot.creator,StroikaDevRoot.files,StroikaDevRoot.includes} Library/Projects/QtCreator/
+project-files-qt-creator-save:
+	@echo "Saving qt-creator project files"
+	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $i Library/Projects/QtCreator/ ; done;
 
 tools:	libraries
 	@cd Tools; perl buildall.pl build
