@@ -154,8 +154,9 @@ namespace {
             Read_proc_net_snmp_ (&accumSummary);
             return Info { interfaceResults, accumSummary };
         }
-        void    Read_proc_net_dev_ (Collection<InterfaceInfo>* interfaceResults, IOStatistic* accumSummary)
+        void    Read_proc_net_dev_ (Collection<Instruments::NetworkInterfaces::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
         {
+            using   Instruments::NetworkInterfaces::InterfaceInfo;
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
