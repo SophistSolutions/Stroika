@@ -86,6 +86,12 @@ namespace   Stroika {
                          *  The total number of packets dropped by the device driver.
                          */
                         Optional<uint64_t>  fTotalPacketsDropped;
+
+                        /**
+                         *  Utility to accomulate statistics. This simply sums each member, and if one side or the other was missing, it starts at zero.
+                         *  If both sides missing, the result stays missing.
+                         */
+                        nonvirtual  IOStatistics&   operator+= (const IOStatistics& rhs);
                     };
 
 
