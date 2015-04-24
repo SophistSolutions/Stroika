@@ -150,10 +150,11 @@ namespace {
             using   Instruments::NetworkInterfaces::Info;
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;
-            ReadNetDev_ (&interfaceResults, &accumSummary);
+            Read_proc_net_dev_ (&interfaceResults, &accumSummary);
+            Read_proc_net_snmp_ (&accumSummary);
             return Info { interfaceResults, accumSummary };
         }
-        void    ReadNetDev_ (Collection<InterfaceInfo>* interfaceResults, IOStatistics > * accumSummary)
+        void    Read_proc_net_dev_ (Collection<InterfaceInfo>* interfaceResults, IOStatistic* accumSummary)
         {
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
@@ -203,6 +204,84 @@ namespace {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
                 }
             }
+        }
+        void    Read_proc_net_netstat_ (IOStatistics* accumSummary)
+        {
+            AssertNotReached ();    // dont use this for now
+            RequireNotNull (accumSummary);
+            DataExchange::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
+            static  const   String_Constant kProcFileName_ { L"/proc/net/netstat" };
+            // Note - /procfs files always unseekable
+            bool    firstTime = true;
+            Mapping<String, size_t> labelMap;
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"in Instruments::NetworkInterfaces::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                if (line.size () >= 2 and line[0].Trim () == L"TcpExt:") {
+                    if (firstTime) {
+                        size_t  idx = 0;
+                        for (String i : line) {
+                            labelMap.Add (i.Trim (), idx++);
+                        }
+                        firstTime = false;
+                    }
+                    else {
+                        // @todo must sum several fields - NYI
+                        if (auto oTCPSynRetransIdx = labelMap.Lookup (L"TCPSynRetrans")) {
+                            if (*oTCPSynRetransIdx < line.length ()) {
+                                uint64_t TCPSynRetrans =  Characters::String2Int<uint64_t> (line[*oTCPSynRetransIdx]);
+                                accumSummary->fTotalTCPRetransmittedSegments = TCPSynRetrans;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        void    Read_proc_net_snmp_ (IOStatistics* accumSummary)
+        {
+            RequireNotNull (accumSummary);
+            DataExchange::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
+            static  const   String_Constant kProcFileName_ { L"/proc/net/snmp" };
+            // Note - /procfs files always unseekable
+            bool    firstTime = true;
+            Mapping<String, size_t> labelMap;
+            Optional<uint64_t>  totalTCPSegments;
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"in Instruments::NetworkInterfaces::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                if (line.size () >= 2 and line[0].Trim () == L"Tcp:") {
+                    if (firstTime) {
+                        size_t  idx = 0;
+                        for (String i : line) {
+                            labelMap.Add (i.Trim (), idx++);
+                        }
+                        firstTime = false;
+                    }
+                    else {
+                        static  const   String_Constant     kInSegs_        { L"InSegs" };
+                        static  const   String_Constant     kOutSegs_       { L"OutSegs" };
+                        static  const   String_Constant     kRetransSegs_   { L"RetransSegs" };
+                        if (auto idx = labelMap.Lookup (kInSegs_)) {
+                            if (*idx < line.length ()) {
+                                totalTCPSegments.AccumulateIf (Characters::String2Int<uint64_t> (line[*idx]));
+                            }
+                        }
+                        if (auto idx = labelMap.Lookup (kOutSegs_)) {
+                            if (*idx < line.length ()) {
+                                totalTCPSegments.AccumulateIf (Characters::String2Int<uint64_t> (line[*idx]));
+                            }
+                        }
+                        if (auto idx = labelMap.Lookup (kRetransSegs_)) {
+                            if (*idx < line.length ()) {
+                                accumSummary->fTotalTCPRetransmittedSegments = Characters::String2Int<uint64_t> (line[*idx]);
+                            }
+                        }
+                    }
+                }
+            }
+            totalTCPSegments.AssignIf (&accumSummary->fTotalTCPSegments);
         }
     };
 }
