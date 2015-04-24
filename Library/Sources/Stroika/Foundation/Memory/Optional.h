@@ -353,6 +353,18 @@ namespace   Stroika {
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
+            public:
+                /**
+                 *  EXPERIEMNTAL - 2015-04-24
+                 */
+                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, function<T(T, T)> op = [] (T lhs, T rhs) { return lhs + rhs; })
+                {
+                    if (*this or rhsOptionalValue) {
+                        *this = op (Value (), rhsOptionalValue.Value ());
+                    }
+                }
+
+
             private:
                 /*
                  *  Implementation detail to allow returning 'short lived' internal pointers to optional which preserve our
