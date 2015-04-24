@@ -116,7 +116,8 @@ namespace {
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
-            Info   result;
+            Info                        result;
+            Collection<InterfaceInfo>   interfaceResults;
             {
                 DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
                 static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
@@ -156,8 +157,7 @@ namespace {
                                 ii.fPacketsPerSecondSent = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                             }
                         }
-
-                        result.fInterfaceStatistics.Add (ii);
+                        interfaceResults.Add (ii);
                         fLast.Add (ii.fInternalInterfaceID, Last { *ii.fTotalBytesReceived, *ii.fTotalBytesSent, *ii.fTotalPacketsReceived, *ii.fTotalPacketsSent, now });
                     }
                     else {
@@ -165,6 +165,7 @@ namespace {
                     }
                 }
             }
+            result.fInterfaceStatistics = interfaceResults;
             return result;
         }
     };
@@ -217,7 +218,8 @@ namespace {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
 
-            Info    result;
+            Info                        result;
+            Collection<InterfaceInfo>   interfaceResults;
             Iterable<Interface>         networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
@@ -238,9 +240,10 @@ namespace {
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
-                    result.fInterfaceStatistics.Add (ii);
+                    interfaceResults.Add (ii);
                 }
             }
+            result.fInterfaceStatistics = interfaceResults;
             return result;
         }
 #if     qUseWMICollectionSupport_
@@ -330,8 +333,9 @@ namespace {
 
 
 
-
-const   MeasurementType Instruments::NetworkInterfaces::kNetworkInterfacesMeasurement = MeasurementType (String_Constant (L"Network-Interfaces"));
+namespace {
+    const   MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType (String_Constant (L"Network-Interfaces"));
+}
 
 
 
@@ -370,6 +374,7 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
+        mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
@@ -400,11 +405,11 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kNetworkInterfacesMeasurement;
+        m.fType = kNetworkInterfacesMeasurement_;
         results.fMeasurements.Add (m);
         return results;
     },
-    {kNetworkInterfacesMeasurement},
+    {kNetworkInterfacesMeasurement_},
     GetObjectVariantMapper ()
                                           );
     return kInstrument_;
