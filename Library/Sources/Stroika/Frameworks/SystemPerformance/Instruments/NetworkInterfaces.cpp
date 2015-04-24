@@ -137,6 +137,12 @@ namespace {
             DurationSecondsType  fAt;
         };
         Mapping<String, Last>    fLast;
+        struct LastSum {
+            uint64_t  fTotalTCPSegments;
+            uint64_t  fTotalTCPRetransmittedSegments;
+            DurationSecondsType  fAt;
+        };
+        Optional<LastSum>    fLastSum;
         CapturerWithContext_POSIX_ (Options options)
         {
             if (options.fMinimumAveragingInterval > 0) {
@@ -152,6 +158,20 @@ namespace {
             IOStatistics                accumSummary;
             Read_proc_net_dev_ (&interfaceResults, &accumSummary);
             Read_proc_net_snmp_ (&accumSummary);
+
+            DurationSecondsType now = Time::GetTickCount ();
+            if (fLastSum and accumSummary.fTotalTCPSegments) {
+                Time::DurationSecondsType timespan  { now - fLastSum->At };
+                accumSummary.fTCPSegmentsPerSecond = (accumSummary.fTotalTCPSegments.Value () - fLastSum->fTotalTCPSegments) / timespan;
+            }
+            if (fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
+                Time::DurationSecondsType timespan  { now - fLastSum->At };
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (accumSummary.fTotalTCPRetransmittedSegments.Value () - fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+            }
+            if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
+                fLastSum = LastSum { *accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now };
+            }
+
             return Info { interfaceResults, accumSummary };
         }
         void    Read_proc_net_dev_ (Collection<Instruments::NetworkInterfaces::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
