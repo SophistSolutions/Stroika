@@ -186,7 +186,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
 #else
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
     ssize_t n;
-    while ( (n = readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ( (n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
