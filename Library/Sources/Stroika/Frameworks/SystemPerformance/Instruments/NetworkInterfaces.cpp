@@ -80,7 +80,7 @@ namespace {
     const   String_Constant     kBytesSentPerSecond_                { L"Bytes Sent/sec" };
     const   String_Constant     kPacketsReceivedPerSecond_          { L"Packets Received/sec" };
     const   String_Constant     kPacketsSentPerSecond_              { L"Packets Sent/sec" };
-
+    const   String_Constant     kTCPSegmentsPerSecond_              { L"Segments/sec" };
     const   String_Constant     kSegmentsRetransmittedPerSecond_    { L"Segments Retransmitted/sec" };
 }
 #endif
@@ -107,14 +107,14 @@ IOStatistics&   IOStatistics::operator+= (const IOStatistics& rhs)
     fTotalBytesReceived.AccumulateIf (rhs.fTotalBytesReceived);
     fBytesPerSecondSent.AccumulateIf (rhs.fBytesPerSecondSent);
     fBytesPerSecondReceived.AccumulateIf (rhs.fBytesPerSecondReceived);
+    fTotalTCPSegments.AccumulateIf (rhs.fTotalTCPSegments);
+    fTCPSegmentsPerSecond.AccumulateIf (rhs.fTCPSegmentsPerSecond);
+    fTotalTCPRetransmittedSegments.AccumulateIf (rhs.fTotalTCPRetransmittedSegments);
     fTCPRetransmittedSegmentsPerSecond.AccumulateIf (rhs.fTCPRetransmittedSegmentsPerSecond);
-
     fTotalPacketsSent.AccumulateIf (rhs.fTotalPacketsSent);
     fTotalPacketsReceived.AccumulateIf (rhs.fTotalPacketsReceived);
-
     fPacketsPerSecondSent.AccumulateIf (rhs.fPacketsPerSecondSent);
     fPacketsPerSecondReceived.AccumulateIf (rhs.fPacketsPerSecondReceived);
-
     fTotalErrors.AccumulateIf (rhs.fTotalErrors);
     fTotalPacketsDropped.AccumulateIf (rhs.fTotalPacketsDropped);
     return *this;
@@ -218,8 +218,8 @@ namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
-        WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kSegmentsRetransmittedPerSecond_ } };
-        WMICollector        fTCPv6WMICollector_ { String_Constant { L"TCPv6" }, {},  { kSegmentsRetransmittedPerSecond_ } };
+        WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
+        WMICollector        fTCPv6WMICollector_ { String_Constant { L"TCPv6" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture;
         Set<String>         fAvailableInstances_;
 #endif
@@ -268,12 +268,6 @@ namespace {
                     InterfaceInfo   ii;
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     ii.fDisplayName = networkInterface.fFriendlyName;
-#if 0
-                    MIB_IPSTATS stats {};
-                    Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
-                    //ii.fTotalPacketsReceived = stats.dwInReceives;
-                    //ii.fTotalPacketsSent = stats.dwOutRequests;
-#endif
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
@@ -282,6 +276,13 @@ namespace {
                 }
             }
             result.fInterfaceStatistics = interfaceResults;
+            {
+                MIB_IPSTATS stats {};       // maybe more useful stats we could pull out of this?
+                memset (&stats, 0, sizeof (stats));
+                Execution::Platform::Windows::ThrowIfNot_NO_ERROR (::GetIpStatistics (&stats));
+                accumSummary.fTotalPacketsReceived = stats.dwInReceives;
+                accumSummary.fTotalPacketsSent = stats.dwOutRequests;
+            }
             result.fSummaryIOStatistics = accumSummary;
             return result;
         }
@@ -309,6 +310,18 @@ namespace {
             }
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
+#if 1
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondReceived);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondSent);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_).AssignIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived);
+
+                updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+
+                updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+#else
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_)) {
                     updateResult->fIOStatistics.fBytesPerSecondReceived = *o;
                 }
@@ -321,12 +334,22 @@ namespace {
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_)) {
                     updateResult->fIOStatistics.fPacketsPerSecondSent = *o ;
                 }
+
+                //  @todo use new Accumualte function in Optional
+                if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_)) {
+                    updateResult->fIOStatistics.fTCPSegmentsPerSecond = *o ;
+                }
+                if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_)) {
+                    updateResult->fIOStatistics.fTCPSegmentsPerSecond = updateResult->fIOStatistics.fTCPSegmentsPerSecond.Value () + *o ;
+                }
+
                 if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
                     updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = *o ;
                 }
                 if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
                     updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.Value () + *o ;
                 }
+#endif
             }
         }
 #endif
@@ -399,6 +422,9 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fBytesPerSecondSent), String_Constant (L"Bytes-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fBytesPerSecondReceived), String_Constant (L"Bytes-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalTCPSegments), String_Constant (L"Total-TCP-Segments"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTCPSegmentsPerSecond), String_Constant (L"TCP-Segments-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalTCPRetransmittedSegments), String_Constant (L"Total-TCP-Retransmitted-Segments"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTCPRetransmittedSegmentsPerSecond), String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsReceived), String_Constant (L"Total-Packets-Received"), StructureFieldInfo::NullFieldHandling::eOmit },

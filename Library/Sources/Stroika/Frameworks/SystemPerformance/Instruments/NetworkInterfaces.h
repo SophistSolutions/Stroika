@@ -42,6 +42,8 @@ namespace   Stroika {
 
 
                     /**
+                     *  Note that the total values are 'total ever' while the OS has been running, and the rate values are
+                     *  averaged over the collection interval.
                      */
                     struct  IOStatistics {
                         /**
@@ -60,7 +62,14 @@ namespace   Stroika {
                         /**
                          *  @todo TBD
                          */
-                        Optional<double>  fTCPRetransmittedSegmentsPerSecond;
+                        Optional<uint64_t>  fTotalTCPSegments;
+                        Optional<double>    fTCPSegmentsPerSecond;
+
+                        /**
+                         *  @todo TBD
+                         */
+                        Optional<uint64_t>  fTotalTCPRetransmittedSegments;
+                        Optional<double>    fTCPRetransmittedSegmentsPerSecond;
 
                         /**
                          *  packets
@@ -134,6 +143,12 @@ namespace   Stroika {
                      */
                     struct  Info {
                         Optional<Collection<InterfaceInfo>>     fInterfaceStatistics;
+
+
+                        /**
+                         *  Conceptually fSummaryIOStatistics is just the sum of the stats for each fInterfaceStatistics member, but
+                         *  it maybe fetched via a different OS API, and may differ.
+                         */
                         Optional<IOStatistics>                  fSummaryIOStatistics;
                     };
 
@@ -146,6 +161,8 @@ namespace   Stroika {
 
                     /**
                      *  To control the behavior of the instrument.
+                     *
+                     *      @todo add option controlling if we return details and if we return sumamry
                      */
                     struct  Options {
                         Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
