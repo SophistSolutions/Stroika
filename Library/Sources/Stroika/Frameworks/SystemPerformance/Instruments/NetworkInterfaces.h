@@ -43,32 +43,7 @@ namespace   Stroika {
 
                     /**
                      */
-                    struct  InterfaceInfo {
-                        /**
-                         *  Stroika internal interface ID.
-                         *  This cannot be persisted, but can be used within a  given process lifetime to check for object identity.
-                         *
-                         *  \note   This corresponds to the IO::Network::Interface::fInternalInterfaceID name and can be used to join.
-                         */
-                        String  fInternalInterfaceID;
-
-
-                        /**
-                         *  For POSIX, this is the interface name (e.g. eth0).
-                         *
-                         *  For Windows, this concept doesn't appear to exist.
-                         *
-                         *      @todo I think we can lose this!!! Just have instead of getIntfaces - GetInterfaceByInterfalInterfaceID in IO::Network::Interaface code
-                         */
-                        Optional<String>  fInterfaceID {};
-
-
-                        /**
-                         *  Pretty display name to identify a particular interface.
-                         */
-                        String  fDisplayName {};
-
-
+                    struct  IOStatistics {
                         /**
                          *  bytes
                          *  The total number of bytes of data transmitted or received by the interface.
@@ -115,10 +90,45 @@ namespace   Stroika {
 
 
                     /**
+                     */
+                    struct  InterfaceInfo {
+                        /**
+                         *  Stroika internal interface ID.
+                         *  This cannot be persisted, but can be used within a  given process lifetime to check for object identity.
+                         *
+                         *  \note   This corresponds to the IO::Network::Interface::fInternalInterfaceID name and can be used to join.
+                         */
+                        String  fInternalInterfaceID;
+
+
+                        /**
+                         *  For POSIX, this is the interface name (e.g. eth0).
+                         *
+                         *  For Windows, this concept doesn't appear to exist.
+                         *
+                         *      @todo I think we can lose this!!! Just have instead of getIntfaces - GetInterfaceByInterfalInterfaceID in IO::Network::Interaface code
+                         */
+                        Optional<String>  fInterfaceID {};
+
+
+                        /**
+                         *  Pretty display name to identify a particular interface.
+                         */
+                        String  fDisplayName {};
+
+                        /**
+                         *  Per interface I/O transfer statistics.
+                         */
+                        IOStatistics    fIOStatistics;
+                    };
+
+
+                    /**
                      *  A single captured network status measurement.
                      */
                     struct  Info {
-                        Optional<Collection<InterfaceInfo>>   fInterfaceStatistics;
+                        Optional<Collection<InterfaceInfo>>     fInterfaceStatistics;
+                        Optional<IOStatistics>                  fSummaryIOStatistics;
                     };
 
 
