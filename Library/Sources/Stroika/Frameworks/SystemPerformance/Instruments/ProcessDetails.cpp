@@ -189,12 +189,12 @@ namespace {
                     processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
                     processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
                     processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
-                    if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)") {
-                    processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
+                    if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
+                        processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
                     }
                     processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
 
-                                           static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
+                    static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                     try {
                         StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
