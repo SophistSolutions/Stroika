@@ -185,10 +185,10 @@ namespace {
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
                             double scanTime = now - o->fAt;
                             if (scanTime > 0) {
-                                ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o.fIOStatistics->fTotalBytesReceived) / scanTime;
-                                ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o.fIOStatistics->fTotalBytesSent) / scanTime;
-                                ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o.fIOStatistics->fTotalPacketsReceived) / scanTime;
-                                ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o.fIOStatistics->fTotalPacketsReceived) / scanTime;
+                                ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                                ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
+                                ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                                ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                             }
                         }
                         accumSummary += ii.fIOStatistics;
