@@ -148,61 +148,61 @@ namespace {
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
-            Info                        result;
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;
-
-            {
-                DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
-                static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
-                //static    const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
-                // Note - /procfs files always unseekable
-                unsigned int    nLine   = 0;
-                unsigned int    n2Skip  = 2;
-                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+            ReadNetDev_ (&interfaceResults, &accumSummary);
+            return Info { interfaceResults, accumSummary };
+        }
+        void    ReadNetDev_ (Collection<InterfaceInfo>* interfaceResults, IOStatistics > * accumSummary)
+        {
+            RequireNotNull (interfaceResults);
+            RequireNotNull (accumSummary);
+            DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
+            static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
+            //static    const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
+            // Note - /procfs files always unseekable
+            unsigned int    nLine   = 0;
+            unsigned int    n2Skip  = 2;
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"in Instruments::NetworkInterfaces::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::NetworkInterfaces::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                    nLine++;
-                    if (n2Skip > 0) {
-                        --n2Skip;
-                        continue;
-                    }
-                    if (line.size () >= 17) {
-                        constexpr   int kOffset2XMit_ = 8;
-                        InterfaceInfo   ii;
-                        ii.fInterfaceID = line[0];
-                        ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
-                        ii.fDisplayName = line[0];
-                        ii.fIOStatistics.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
-                        ii.fIOStatistics.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
-                        ii.fIOStatistics.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
-                        ii.fIOStatistics.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
-                        ii.fIOStatistics.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
-                        ii.fIOStatistics.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
+                nLine++;
+                if (n2Skip > 0) {
+                    --n2Skip;
+                    continue;
+                }
+                if (line.size () >= 17) {
+                    constexpr   int kOffset2XMit_ = 8;
+                    InterfaceInfo   ii;
+                    ii.fInterfaceID = line[0];
+                    ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
+                    ii.fDisplayName = line[0];
+                    ii.fIOStatistics.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
+                    ii.fIOStatistics.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
+                    ii.fIOStatistics.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
+                    ii.fIOStatistics.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
+                    ii.fIOStatistics.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
+                    ii.fIOStatistics.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
-                        DurationSecondsType now = Time::GetTickCount ();
-                        if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
-                            double scanTime = now - o->fAt;
-                            if (scanTime > 0) {
-                                ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
-                                ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
-                                ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
-                                ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
-                            }
+                    DurationSecondsType now = Time::GetTickCount ();
+                    if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
+                        double scanTime = now - o->fAt;
+                        if (scanTime > 0) {
+                            ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
+                            ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
+                            ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                            ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
                         }
-                        accumSummary += ii.fIOStatistics;
-                        interfaceResults.Add (ii);
-                        fLast.Add (ii.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
                     }
-                    else {
-                        DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
-                    }
+                    (*accumSummary) += ii.fIOStatistics;
+                    interfaceResults->Add (ii);
+                    fLast.Add (ii.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
+                }
+                else {
+                    DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
                 }
             }
-            result.fInterfaceStatistics = interfaceResults;
-            result.fSummaryIOStatistics = accumSummary;
-            return result;
         }
     };
 }
