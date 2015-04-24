@@ -140,25 +140,25 @@ namespace {
                         ii.fInterfaceID = line[0];
                         ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
                         ii.fDisplayName = line[0];
-                        ii.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
-                        ii.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
-                        ii.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
-                        ii.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
-                        ii.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
-                        ii.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
+                        ii.fIOStatistics.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
+                        ii.fIOStatistics.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
+                        ii.fIOStatistics.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
+                        ii.fIOStatistics.fTotalPacketsSent = Characters::String2Int<uint64_t> (line[2]);
+                        ii.fIOStatistics.fTotalErrors = Characters::String2Int<uint64_t> (line[3]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 3]);
+                        ii.fIOStatistics.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                         DurationSecondsType now = Time::GetTickCount ();
                         if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
                             double scanTime = now - o->fAt;
                             if (scanTime > 0) {
-                                ii.fBytesPerSecondReceived = (*ii.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
-                                ii.fBytesPerSecondSent = (*ii.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
-                                ii.fPacketsPerSecondReceived = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
-                                ii.fPacketsPerSecondSent = (*ii.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                                ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fIOStatistics.fTotalBytesReceived) / scanTime;
+                                ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fIOStatistics.fTotalBytesSent) / scanTime;
+                                ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fIOStatistics.fTotalPacketsReceived) / scanTime;
+                                ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o->fIOStatistics.fTotalPacketsReceived) / scanTime;
                             }
                         }
                         interfaceResults.Add (ii);
-                        fLast.Add (ii.fInternalInterfaceID, Last { *ii.fTotalBytesReceived, *ii.fTotalBytesSent, *ii.fTotalPacketsReceived, *ii.fTotalPacketsSent, now });
+                        fLast.Add (ii.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
                     }
                     else {
                         DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
@@ -271,22 +271,22 @@ namespace {
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_)) {
-                    updateResult->fBytesPerSecondReceived = *o;
+                    updateResult->fIOStatistics.fBytesPerSecondReceived = *o;
                 }
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_)) {
-                    updateResult->fBytesPerSecondSent = *o;
+                    updateResult->fIOStatistics.fBytesPerSecondSent = *o;
                 }
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_)) {
-                    updateResult->fPacketsPerSecondReceived = *o;
+                    updateResult->fIOStatistics.fPacketsPerSecondReceived = *o;
                 }
                 if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_)) {
-                    updateResult->fPacketsPerSecondSent = *o ;
+                    updateResult->fIOStatistics.fPacketsPerSecondSent = *o ;
                 }
                 if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
-                    updateResult->fTCPRetransmittedSegmentsPerSecond = *o ;
+                    updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = *o ;
                 }
                 if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
-                    updateResult->fTCPRetransmittedSegmentsPerSecond = updateResult->fTCPRetransmittedSegmentsPerSecond.Value () + *o ;
+                    updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.Value () + *o ;
                 }
             }
         }
@@ -355,30 +355,35 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<String>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<IOStatistics> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fBytesPerSecondSent), String_Constant (L"Bytes-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fBytesPerSecondReceived), String_Constant (L"Bytes-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTCPRetransmittedSegmentsPerSecond), String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsReceived), String_Constant (L"Total-Packets-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fPacketsPerSecondSent), String_Constant (L"Packets-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fPacketsPerSecondReceived), String_Constant (L"Packets-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalErrors), String_Constant (L"Total-Errors"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped"), StructureFieldInfo::NullFieldHandling::eOmit },
+        });
         mapper.AddClass<InterfaceInfo> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fDisplayName), String_Constant (L"Display-Name") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fBytesPerSecondSent), String_Constant (L"Bytes-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fBytesPerSecondReceived), String_Constant (L"Bytes-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTCPRetransmittedSegmentsPerSecond), String_Constant (L"TCP-Retransmitted-Segments-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsSent), String_Constant (L"Total-Packets-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsReceived), String_Constant (L"Total-Packets-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fPacketsPerSecondSent), String_Constant (L"Packets-Per-Second-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fPacketsPerSecondReceived), String_Constant (L"Packets-Per-Second-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalErrors), String_Constant (L"Total-Errors"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fIOStatistics), String_Constant (L"IO-Statistics") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
         mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
+        mapper.AddCommonType<Optional<IOStatistics>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInterfaceStatistics), String_Constant (L"Interface-Statistics") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInterfaceStatistics), String_Constant (L"Interface-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fSummaryIOStatistics), String_Constant (L"Summary-IO-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         return mapper;
     } ();
