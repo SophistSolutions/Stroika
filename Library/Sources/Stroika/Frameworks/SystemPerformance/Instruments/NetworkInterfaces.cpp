@@ -390,7 +390,6 @@ namespace {
             }
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
-#if 1
                 fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondReceived);
                 fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondSent);
                 fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived);
@@ -401,35 +400,6 @@ namespace {
 
                 updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
                 updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
-#else
-                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_)) {
-                    updateResult->fIOStatistics.fBytesPerSecondReceived = *o;
-                }
-                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_)) {
-                    updateResult->fIOStatistics.fBytesPerSecondSent = *o;
-                }
-                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_)) {
-                    updateResult->fIOStatistics.fPacketsPerSecondReceived = *o;
-                }
-                if (auto o = fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_)) {
-                    updateResult->fIOStatistics.fPacketsPerSecondSent = *o ;
-                }
-
-                //  @todo use new Accumualte function in Optional
-                if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_)) {
-                    updateResult->fIOStatistics.fTCPSegmentsPerSecond = *o ;
-                }
-                if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_)) {
-                    updateResult->fIOStatistics.fTCPSegmentsPerSecond = updateResult->fIOStatistics.fTCPSegmentsPerSecond.Value () + *o ;
-                }
-
-                if (auto o = fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
-                    updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = *o ;
-                }
-                if (auto o = fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_)) {
-                    updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond = updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.Value () + *o ;
-                }
-#endif
             }
         }
 #endif
