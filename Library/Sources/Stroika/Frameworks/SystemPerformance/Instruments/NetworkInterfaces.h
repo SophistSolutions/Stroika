@@ -114,17 +114,13 @@ namespace   Stroika {
                     };
 
 
+                    /**
+                     *  A single captured network status measurement.
+                     */
                     struct  Info {
-                        Collection<InterfaceInfo>   fInterfaceStatistics;
+                        Optional<Collection<InterfaceInfo>>   fInterfaceStatistics;
                     };
 
-
-                    /**
-                     *  For Info type.
-
-                     }&&&todo lose
-                     */
-                    extern  const   MeasurementType kNetworkInterfacesMeasurement;
 
                     /**
                      *  For Info type.
