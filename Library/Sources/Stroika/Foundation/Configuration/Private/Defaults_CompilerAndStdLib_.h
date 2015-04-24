@@ -38,7 +38,7 @@
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 4))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.4")
 #endif
-#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ >= 6))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 6))
 #pragma message ("Info: Stroika untested with this version of clang++")
 #endif
 
@@ -380,7 +380,7 @@
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      1
 #elif   defined (__clang__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
@@ -527,7 +527,7 @@
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 5)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
@@ -592,7 +592,7 @@ EXAMPLE:
 #if     defined (__clang__)
 // Dont know how to test for libstdc++ version, but that seems the problem. For example, though fixed with gcc 49, clang-34 not
 // compatible with that fix...
-#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 6))
+#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 6))
 #elif   defined (__GNUC__)
 // Note - Verified FIXED in gcc 4.9, so it was gcc / libstdc++ bug
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
@@ -852,11 +852,13 @@ EXAMPLE:
 /*
 @CONFIGVAR:     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
 @DESCRIPTION:
+    error: no matching constructor for initialization of 'std::codecvt_byname<wchar_t, char, mbstate_t>'
+        deletable_facet_ (Args&& ...args) : FACET (std::forward<Args> (args)...) {}
 */
 #ifndef qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 6))
+#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
@@ -895,7 +897,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 6))
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
@@ -1407,7 +1409,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_string_conversions_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 5))
+#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 6))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
