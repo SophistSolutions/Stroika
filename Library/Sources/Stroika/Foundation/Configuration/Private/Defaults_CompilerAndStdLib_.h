@@ -736,7 +736,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #else
 #define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy        0
 #endif
@@ -817,9 +817,9 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy      ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #elif     defined (__GNUC__)
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       0
 #endif
@@ -837,7 +837,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 4))
 #else
 #define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     0
 #endif
@@ -926,7 +926,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #elif     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_thread_local_keyword_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_thread_local_keyword_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #else
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       0
 #endif
@@ -941,7 +941,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ < 6))
+#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ <= 5))
 #else
 #define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   qCompilerAndStdLib_thread_local_keyword_Buggy
 #endif
@@ -1052,7 +1052,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #else
 #define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            0
 #endif
@@ -1082,7 +1082,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_thread_local_initializers_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_thread_local_initializers_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_thread_local_initializers_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #else
 #define qCompilerAndStdLib_thread_local_initializers_Buggy      0
 #endif
@@ -1125,7 +1125,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     !defined (qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy       0
 #endif
@@ -1173,7 +1173,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
@@ -1202,9 +1202,9 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__clang_major__ == 3 && (__clang_minor__ < 5))
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__clang_major__ == 3 && (__clang_minor__ <= 4))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
@@ -1348,7 +1348,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 #if     defined (__clang__)
 // Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 6))
+#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy      ((__clang_major__ == 3) && (__clang_minor__ <= 5))
 #else
 #define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy       0
 #endif
