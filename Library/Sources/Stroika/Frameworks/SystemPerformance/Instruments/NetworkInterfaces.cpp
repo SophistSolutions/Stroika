@@ -112,10 +112,11 @@ namespace {
                 Execution::Sleep (options.fMinimumAveragingInterval);
             }
         }
-        Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
+        Instruments::NetworkInterfaces::Info    capture_ ()
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
-            Collection<Instruments::NetworkInterfaces::InterfaceInfo>   result;
+            using   Instruments::NetworkInterfaces::Info;
+            Info   result;
             {
                 DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
                 static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
@@ -156,7 +157,7 @@ namespace {
                             }
                         }
 
-                        result.Add (ii);
+                        result.fInterfaceStatistics.Add (ii);
                         fLast.Add (ii.fInternalInterfaceID, Last { *ii.fTotalBytesReceived, *ii.fTotalBytesSent, *ii.fTotalPacketsReceived, *ii.fTotalPacketsSent, now });
                     }
                     else {
@@ -210,12 +211,13 @@ namespace {
             Execution::Sleep (fMinTimeBeforeFirstCapture);
 #endif
         }
-        Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
+        Instruments::NetworkInterfaces::Info capture_ ()
         {
             using   IO::Network::Interface;
             using   Instruments::NetworkInterfaces::InterfaceInfo;
+            using   Instruments::NetworkInterfaces::Info;
 
-            Collection<InterfaceInfo>   result;
+            Info    result;
             Iterable<Interface>         networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
@@ -236,7 +238,7 @@ namespace {
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
-                    result.Add (ii);
+                    result.fInterfaceStatistics.Add (ii);
                 }
             }
             return result;
@@ -314,7 +316,7 @@ namespace {
             : inherited (options)
         {
         }
-        Collection<Instruments::NetworkInterfaces::InterfaceInfo> capture_ ()
+        Instruments::NetworkInterfaces::Info    capture_ ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -343,7 +345,6 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
-
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
@@ -369,6 +370,11 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInterfaceStatistics), String_Constant (L"Interface-Statistics") },
+        });
         return mapper;
     } ();
     return sMapper_;
@@ -390,7 +396,7 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
-        Collection<Instruments::NetworkInterfaces::InterfaceInfo> rawMeasurement = useCaptureContext.capture_ ();
+        Instruments::NetworkInterfaces::Info rawMeasurement = useCaptureContext.capture_ ();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);

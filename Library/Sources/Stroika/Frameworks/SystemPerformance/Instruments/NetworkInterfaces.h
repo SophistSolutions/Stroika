@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/Containers/Collection.h"
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/IO/Network/Interface.h"
@@ -35,6 +36,7 @@ namespace   Stroika {
                 namespace   NetworkInterfaces {
 
 
+                    using   Containers::Collection;
                     using   DataExchange::ObjectVariantMapper;
                     using   Foundation::Memory::Optional;
 
@@ -112,8 +114,15 @@ namespace   Stroika {
                     };
 
 
+                    struct  Info {
+                        Collection<InterfaceInfo>   fInterfaceStatistics;
+                    };
+
+
                     /**
                      *  For Info type.
+
+                     }&&&todo lose
                      */
                     extern  const   MeasurementType kNetworkInterfacesMeasurement;
 
