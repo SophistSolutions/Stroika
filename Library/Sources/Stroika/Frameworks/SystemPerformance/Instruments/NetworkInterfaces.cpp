@@ -48,6 +48,7 @@ using   IO::FileSystem::BinaryFileInputStream;
 using   Time::DurationSecondsType;
 
 using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::Options;
+using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::IOStatistics;
 
 
 
@@ -93,6 +94,37 @@ namespace {
 
 
 
+
+
+/*
+ ********************************************************************************
+ ****************** Instruments::NetworkInterfaces::IOStatistics ****************
+ ********************************************************************************
+ */
+IOStatistics&   IOStatistics::operator+= (const IOStatistics& rhs)
+{
+    fTotalBytesSent.AccumulateIf (rhs.fTotalBytesSent);
+    fTotalBytesReceived.AccumulateIf (rhs.fTotalBytesReceived);
+    fBytesPerSecondSent.AccumulateIf (rhs.fBytesPerSecondSent);
+    fBytesPerSecondReceived.AccumulateIf (rhs.fBytesPerSecondReceived);
+    fTCPRetransmittedSegmentsPerSecond.AccumulateIf (rhs.fTCPRetransmittedSegmentsPerSecond);
+
+    fTotalPacketsSent.AccumulateIf (rhs.fTotalPacketsSent);
+    fTotalPacketsReceived.AccumulateIf (rhs.fTotalPacketsReceived);
+
+    fPacketsPerSecondSent.AccumulateIf (rhs.fPacketsPerSecondSent);
+    fPacketsPerSecondReceived.AccumulateIf (rhs.fPacketsPerSecondReceived);
+
+    fTotalErrors.AccumulateIf (rhs.fTotalErrors);
+    fTotalPacketsDropped.AccumulateIf (rhs.fTotalPacketsDropped);
+    return *this;
+}
+
+
+
+
+
+
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
@@ -118,6 +150,8 @@ namespace {
             using   Instruments::NetworkInterfaces::Info;
             Info                        result;
             Collection<InterfaceInfo>   interfaceResults;
+            IOStatistics                accumSummary;
+
             {
                 DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
                 static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
@@ -157,6 +191,7 @@ namespace {
                                 ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o.fIOStatistics->fTotalPacketsReceived) / scanTime;
                             }
                         }
+                        accumSummary += ii.fIOStatistics;
                         interfaceResults.Add (ii);
                         fLast.Add (ii.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
                     }
@@ -166,6 +201,7 @@ namespace {
                 }
             }
             result.fInterfaceStatistics = interfaceResults;
+            result.fSummaryIOStatistics = accumSummary;
             return result;
         }
     };
@@ -220,6 +256,7 @@ namespace {
 
             Info                        result;
             Collection<InterfaceInfo>   interfaceResults;
+            IOStatistics                accumSummary;
             Iterable<Interface>         networkInterfacs {  IO::Network::GetInterfaces () };
 #if     qUseWMICollectionSupport_
             fNetworkWMICollector_.Collect ();
@@ -240,10 +277,12 @@ namespace {
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
+                    accumSummary += ii.fIOStatistics;
                     interfaceResults.Add (ii);
                 }
             }
             result.fInterfaceStatistics = interfaceResults;
+            result.fSummaryIOStatistics = accumSummary;
             return result;
         }
 #if     qUseWMICollectionSupport_
