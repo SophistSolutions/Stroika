@@ -348,6 +348,11 @@ namespace   Stroika {
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
                  *      oVal.AssignIf (&curValue);
                  *
+                 *  EXAMPLE-USE:
+                 *      Optional<int> curValue;
+                 *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+                 *      oVal.AssignIf (&curValue);      // curValue retains its value from before AssignIf if oVal was missing
+                 *
                  *  @see Value
                  */
                 template    <typename   CONVERTABLE_TO_TYPE = T>
