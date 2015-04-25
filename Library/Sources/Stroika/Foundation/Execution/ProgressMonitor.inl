@@ -73,7 +73,9 @@ namespace   Stroika {
             inline  ProgressMonitor::CurrentTaskInfo    ProgressMonitor::GetCurrentTaskInfo () const
             {
                 RequireNotNull (fRep_);
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                 return fRep_->fCurrentTaskInfo_;
             }
 
@@ -132,7 +134,9 @@ namespace   Stroika {
             inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 if (fRep_.get () != nullptr) {
+                    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                     auto    critSec { make_unique_lock (fRep_->fCurTaskInfo_CritSect_) };
+                    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                     fRep_->fCurrentTaskInfo_ = taskInfo;
                 }
             }

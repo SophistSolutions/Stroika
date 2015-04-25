@@ -736,9 +736,9 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy		((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #else
-#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy		0
+#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       0
 #endif
 
 #endif
@@ -817,7 +817,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy		((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #elif     defined (__GNUC__)
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
@@ -1125,9 +1125,9 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     !defined (qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy		(__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
-#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy		0
+#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      0
 #endif
 
 #endif
@@ -1144,9 +1144,9 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug		(__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug		0
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      0
 #endif
 
 #endif
@@ -1349,9 +1349,9 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (__clang__)
 // Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
 // Works fine with clang++-3.6
-#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy		((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy        ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #else
-#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy		0
+#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy        0
 #endif
 
 #endif

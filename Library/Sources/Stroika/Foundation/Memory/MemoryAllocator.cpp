@@ -256,7 +256,9 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
     void*   memptr  =   fBaseAllocator_.Allocate (size);
     AssertNotNull (memptr);
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCritSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     try {
         fAllocations_.insert (PTRMAP::value_type (memptr, size));
         return memptr;
@@ -270,7 +272,9 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 {
     RequireNotNull (p);
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCritSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     PTRMAP::iterator    i   =   fAllocations_.find (p);
     SUPER_ASSERT_ (i != fAllocations_.end ());
     fAllocations_.erase (i);
@@ -279,13 +283,17 @@ void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCritSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     return fAllocations_.size ();
 }
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCritSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     size_t  total   =   0;
     for (auto i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
         total += i->second;
@@ -295,7 +303,9 @@ size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 
 LeakTrackingGeneralPurposeAllocator::Snapshot   LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCritSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     return Snapshot (fAllocations_);
 }
 

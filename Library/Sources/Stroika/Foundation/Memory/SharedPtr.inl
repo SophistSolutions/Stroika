@@ -512,7 +512,9 @@ namespace std {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
         return result;
@@ -530,7 +532,9 @@ namespace std {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         storeTo->swap (o);
     }
@@ -548,7 +552,9 @@ namespace std {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         shared_ptr<T> result = *copyFrom;
         return result;
@@ -566,7 +572,9 @@ namespace std {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (Memory::Private_::sSharedPtrCopyLock_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         storeTo->swap (o);
     }
