@@ -35,9 +35,7 @@ public:
         , fCriticalSection_ ()
         , fBuffer_ ()
         , fRealOut_ (realOut)
-#if     qDebug
         , fAborted_ (false)
-#endif
     {
         fBuffer_.reserve (kDefaultBufSize);
     }
@@ -78,16 +76,13 @@ public:
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
-#if     qDebug
         fAborted_ = true;   // for debug sake track this
-#endif
         fBuffer_.clear ();
     }
 
     //
-    nonvirtual  void    Flush ()
+    virtual  void    Flush () override
     {
-        Require (not fAborted_ or fBuffer_.empty ());
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
@@ -95,11 +90,16 @@ public:
         auto    critSec { make_unique_lock (fCriticalSection_) };
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
-        if (not fBuffer_.empty ()) {
-            fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
+        if (fAborted_) {
             fBuffer_.clear ();
         }
-        fRealOut_.Flush ();
+        else {
+            if (not fBuffer_.empty ()) {
+                fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
+                fBuffer_.clear ();
+            }
+            fRealOut_.Flush ();
+        }
         Ensure (fBuffer_.empty ());
     }
 
@@ -160,9 +160,7 @@ private:
     mutable recursive_mutex             fCriticalSection_;
     vector<Byte>                        fBuffer_;
     BinaryOutputStream                  fRealOut_;
-#if     qDebug
     bool                                fAborted_;
-#endif
 };
 
 
@@ -182,19 +180,7 @@ BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream
 void    BufferedBinaryOutputStream::Abort ()
 {
     _SharedIRep rep = _GetRep ();
-
-    // @todo CLEANUP
     IRep_* r = dynamic_cast<IRep_*> (rep.get ());
     AssertNotNull (r);
     r->Abort ();
-}
-
-void    BufferedBinaryOutputStream::Flush ()
-{
-    _SharedIRep rep = _GetRep ();
-
-    // @todo CLEANUP
-    IRep_* r = dynamic_cast<IRep_*> (rep.get ());
-    AssertNotNull (r);
-    r->Flush ();
 }
