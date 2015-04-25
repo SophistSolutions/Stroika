@@ -302,7 +302,7 @@ namespace {
                     }
                 }
             }
-            totalTCPSegments.AssignIf (&accumSummary->fTotalTCPSegments);
+            totalTCPSegments.CopyToIf (&accumSummary->fTotalTCPSegments);
         }
     };
 }
@@ -410,10 +410,10 @@ namespace {
             }
 
             if (fAvailableInstances_.Contains (wmiInstanceName)) {
-                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondReceived);
-                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_).AssignIf (&updateResult->fIOStatistics.fBytesPerSecondSent);
-                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_).AssignIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived);
-                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_).AssignIf (&updateResult->fIOStatistics.fPacketsPerSecondSent);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_).CopyToIf (&updateResult->fIOStatistics.fBytesPerSecondReceived);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_).CopyToIf (&updateResult->fIOStatistics.fBytesPerSecondSent);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_).CopyToIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived);
+                fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_).CopyToIf (&updateResult->fIOStatistics.fPacketsPerSecondSent);
 
                 updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
                 updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
