@@ -402,6 +402,13 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
+            void     Optional<T, TRAITS>::AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op)
+            {
+                if (*this or rhsOptionalValue) {
+                    *this = op (Value (), rhsOptionalValue.Value ());
+                }
+            }
+            template    <typename T, typename TRAITS>
             inline  auto Optional<T, TRAITS>::operator-> () const -> ConstHolder_
             {
                 // No lock on fDebugMutex_ cuz done in ConstHolder_
