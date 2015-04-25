@@ -11,21 +11,23 @@ ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(
 help:
 	@echo "Help for making Stroika"
 	@echo "Targets"
-	@echo "    all:                    -    Builds everything"
-	@echo "    check:                  -    Checks everything was built properly"
+	@echo "    all:                         -    Builds everything"
+	@echo "    check:                       -    Checks everything was built properly"
 	@echo "    clean:"
 	@echo "    clobber:"
-	@echo "    libraries:              -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
-	@echo "    project-files:          -    Builds project files for things like visual studio.net etc"
+	@echo "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
+	@echo "    project-files:               -    Builds project-files project-files-visual-studio"
+	@echo "    project-files-visual-studio: -    Builds project files for visual studio.net"
+	@echo "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
 	@echo "    tests:"
-	@echo "    format-code:            -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
+	@echo "    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
 	@echo "    samples:"
 	@echo "    documentation:"
 	@echo "    third-party-libs:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
-	@echo "    apply-configurations:   -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
-	@echo "    default-configuration:  -    Creates the default configuration in Configurations folder (target takes DEFAULT_CONFIGURATION_ARGS, for example: make default-configuration DEFAULT_CONFIGURATION_ARGS=\"--help\")"
-	@echo "    check-tools:            -    Check the tools needed to build Stroika are installed."
+	@echo "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@echo "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
+	@echo "    default-configuration:       -    Creates the default configuration in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
+	@echo "    check-tools:                 -    Check the tools needed to build Stroika are installed."
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
@@ -68,9 +70,9 @@ third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
 
 
-project-files:	project-files-visual-studio.net project-files-qt-creator
+project-files:	project-files-visual-studio project-files-qt-creator
 
-project-files-visual-studio.net:
+project-files-visual-studio:
 	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
 
 project-files-qt-creator:	project-files-qt-creator-load
