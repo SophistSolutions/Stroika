@@ -138,7 +138,9 @@ void    WaitableEvent::Set ()
 #endif
     fWE_.Set ();
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     for (auto i : fExtraWaitableEvents_) {
         i->Set ();
     }

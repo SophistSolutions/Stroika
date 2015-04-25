@@ -43,7 +43,9 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fReadCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -59,7 +61,9 @@ public:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (fCriticalSection_) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             size_t  roomLeft        =   fData_.end () - fWriteCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
@@ -86,13 +90,17 @@ public:
 
     virtual SeekOffsetType      ReadGetOffset () const override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fReadCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset) override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -138,13 +146,17 @@ public:
 
     virtual SeekOffsetType      WriteGetOffset () const override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fWriteCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset) override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -187,19 +199,25 @@ public:
 
     Memory::BLOB   AsBLOB () const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return Memory::BLOB (fData_);
     }
 
     vector<Byte>   AsVector () const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fData_;
     }
 
     string   AsString () const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }
 

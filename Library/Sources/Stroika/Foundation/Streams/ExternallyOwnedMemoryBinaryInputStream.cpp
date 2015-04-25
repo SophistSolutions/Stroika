@@ -42,7 +42,9 @@ protected:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
         size_t  nAvail      =   fEnd_ - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -53,13 +55,17 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };  // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fCursor_ - fStart_;
     }
 
     virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

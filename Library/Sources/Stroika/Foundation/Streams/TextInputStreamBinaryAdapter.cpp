@@ -39,7 +39,9 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #if 1
         if (fTmpHackTextRemaining_.empty ()) {
             // only happens once
@@ -74,13 +76,17 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fOffset_;
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

@@ -123,7 +123,9 @@ public:
              *  and use that to re-populate fOutBuf_.
              */
             Require (intoStart < intoEnd);
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             if (fOutBufStart_ == fOutBufEnd_) {
                 Byte toDecryptBuf[kInBufSize_];
                 size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
@@ -191,7 +193,9 @@ public:
     {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);

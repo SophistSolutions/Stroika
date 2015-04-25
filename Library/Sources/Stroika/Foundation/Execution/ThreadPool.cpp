@@ -34,7 +34,9 @@ public:
 public:
     ThreadPool::TaskType    GetCurrentTask () const
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
         Assert (fCurTask_ == nullptr or fNextTask_ == nullptr);   // one or both must be null
@@ -50,7 +52,9 @@ public:
         while (true) {
             {
                 fThreadPool_.WaitForNextTask_ (&fNextTask_);            // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                 Assert (fNextTask_ != nullptr);
                 Assert (fCurTask_ == nullptr);
                 fCurTask_ = fNextTask_;
@@ -63,12 +67,16 @@ public:
                 fCurTask_ = nullptr;
             }
             catch (const Thread::AbortException&) {
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                 fCurTask_ = nullptr;
                 throw;  // cancel this thread
             }
             catch (...) {
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                 fCurTask_ = nullptr;
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
             }
@@ -129,7 +137,9 @@ void    ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx ("ThreadPool::SetPoolSize");
     Require (not fAborted_);
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (fCriticalSection_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
     }
@@ -161,7 +171,9 @@ ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
     //Debug::TraceContextBumper ctx ("ThreadPool::AddTask");
     Require (not fAborted_);
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         fTasks_.push_back (task);
     }
 
@@ -177,7 +189,9 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
     {
         // First see if its in the Q
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 fTasks_.erase (i);
@@ -199,7 +213,9 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
     Thread  thread2Kill;
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
             TaskType                    ct      { tr->GetCurrentTask () };
@@ -220,17 +236,23 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTasks");
     auto tps = GetPoolSize ();
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         fTasks_.clear ();
     }
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (TPInfo_ ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (TPInfo_ ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.fThread.AbortAndWaitForDone (timeout);
@@ -246,7 +268,9 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
     Require (task != nullptr);
     {
         // First see if its in the Q
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
@@ -260,7 +284,9 @@ bool    ThreadPool::IsRunning (const TaskType& task) const
 {
     Require (task != nullptr);
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
             TaskType                    rTask   { tr->GetCurrentTask () };
@@ -291,7 +317,9 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
 {
     Collection<ThreadPool::TaskType>    result;
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
@@ -308,7 +336,9 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetRunningTasks () const
 {
     Collection<ThreadPool::TaskType>    result;
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
             TaskType                    task    { tr->GetCurrentTask () };
@@ -325,7 +355,9 @@ size_t  ThreadPool::GetTasksCount () const
     size_t  count   =   0;
     {
         // First see if its in the Q
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         count += fTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
@@ -342,7 +374,9 @@ size_t   ThreadPool::GetPendingTasksCount () const
 {
     size_t  count   =   0;
     {
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         count += fTasks_.size ();
     }
     return count;
@@ -355,7 +389,9 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     {
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
         {
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (fCriticalSection_) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             for (auto ti : fThreads_) {
                 threadsToShutdown.Add (ti.fThread);
             }
@@ -372,7 +408,9 @@ void    ThreadPool::Abort ()
     fAborted_ = true;
     {
         // Clear the task Q and then abort each thread
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         fTasks_.clear ();
         for (auto ti : fThreads_) {
             ti.fThread.Abort ();
@@ -398,7 +436,9 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
     while (true) {
         {
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (fCriticalSection_) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             if (not fTasks_.empty ()) {
                 *result =   fTasks_.front ();
                 fTasks_.pop_front ();

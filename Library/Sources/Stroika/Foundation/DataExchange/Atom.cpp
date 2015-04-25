@@ -69,7 +69,9 @@ AtomManager_Default::AtomInternalType   AtomManager_Default::Intern (const Strin
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { Execution::make_unique_lock (sCritSec_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         auto i = sMap_->Lookup (s);
         if (i.IsPresent ()) {
@@ -89,7 +91,9 @@ String  AtomManager_Default::Extract (AtomInternalType atomI)
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
     MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
 #else
+    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { Execution::make_unique_lock (sCritSec_) };
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
     return (*sSeq_)[atomI];
 }

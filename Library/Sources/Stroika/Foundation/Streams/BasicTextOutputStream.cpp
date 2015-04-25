@@ -41,7 +41,9 @@ public:
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
             MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (fCriticalSection_) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
             size_t  roomLeft        =   fData_.end () - fCursor_;
             size_t  roomRequired    =   end - start;
@@ -72,7 +74,9 @@ public:
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };    // needed only if fetch of pointer not atomic
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         return fCursor_ - fData_.begin ();
     }
@@ -82,7 +86,9 @@ public:
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         switch (whence) {
             case    Whence::eFromStart: {
@@ -146,7 +152,9 @@ public:
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
+        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
+        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
         return String (Containers::Start (fData_), Containers::End (fData_));
     }

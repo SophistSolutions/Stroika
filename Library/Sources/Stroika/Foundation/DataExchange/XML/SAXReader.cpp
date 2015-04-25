@@ -181,7 +181,9 @@ namespace   {
         void    DUMPCurMemStats ()
         {
             TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { Execution::make_unique_lock (fLastSnapshot_CritSection) };
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();
