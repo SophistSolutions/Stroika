@@ -16,7 +16,7 @@ help:
 	@echo "    clean:"
 	@echo "    clobber:"
 	@echo "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
-	@echo "    project-files:               -    Builds project-files project-files-visual-studio"
+	@echo "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
 	@echo "    project-files-visual-studio: -    Builds project files for visual studio.net"
 	@echo "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
 	@echo "    tests:"
