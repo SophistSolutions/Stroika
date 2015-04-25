@@ -61,14 +61,14 @@ namespace   Stroika {
             public:
                 /**
                  *  Throws away all data about to be written (buffered). Once this is called,
-                 *  its illegal to call Flush or another write
+                 *  the effect of future Flush () calls is undefined. This can be used when the stream
+                 *  wraps an underlying object like a socket, and you dont want to waste effort
+                 *  talking to it, but its harmless todo so.
+                 *
+                 *  One a stream is aborted, its undefined what other operations will do (they wont crash
+                 *  but they may or may not write).
                  */
                 nonvirtual  void    Abort ();
-
-            public:
-                /**
-                 */
-                nonvirtual  void    Flush ();
             };
 
 
