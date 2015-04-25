@@ -393,7 +393,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename   CONVERTABLE_TO_TYPE>
-            inline  void    Optional<T, TRAITS>::AssignIf (CONVERTABLE_TO_TYPE* to) const
+            inline  void    Optional<T, TRAITS>::CopyToIf (CONVERTABLE_TO_TYPE* to) const
             {
                 RequireNotNull (to);
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };

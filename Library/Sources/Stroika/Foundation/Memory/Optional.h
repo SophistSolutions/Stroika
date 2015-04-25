@@ -353,18 +353,17 @@ namespace   Stroika {
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
                  *      oVal.AssignIf (&curValue);      // curValue retains its value from before AssignIf if oVal was missing
                  *
-                 *
-                 *      \note   ITS CONFUSING direction of iftest for this versus AssignIf AccumulateIf
-                 *              Maybe reanme to AssignToArgumentIf(...)
-                 *
                  *  @see Value
                  */
                 template    <typename   CONVERTABLE_TO_TYPE = T>
-                nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
+                nonvirtual  void    CopyToIf (CONVERTABLE_TO_TYPE* to) const;
+
+                template    <typename   CONVERTABLE_TO_TYPE = T>
+                _DeprecatedFunction_(void    AssignIf (CONVERTABLE_TO_TYPE* to) const, "Instead use CopyToIf() - to be removed after v2.0a92");
 
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
             private:
-                inline  static  auto    DefaultAccumulateIfArg_ (const T& lhs, const T& rhs)              {       return lhs + rhs;       };
+                inline  static  T    DefaultAccumulateIfArg_ (const T& lhs, const T& rhs)            {       return lhs + rhs;       };
 #endif
 
             public:
