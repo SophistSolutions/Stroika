@@ -353,22 +353,43 @@ namespace   Stroika {
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
                  *      oVal.AssignIf (&curValue);      // curValue retains its value from before AssignIf if oVal was missing
                  *
+                 *
+                 *      \note   ITS CONFUSING direction of iftest for this versus AssignIf AccumulateIf
+                 *              Maybe reanme to AssignToArgumentIf(...)
+                 *
                  *  @see Value
                  */
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    AssignIf (CONVERTABLE_TO_TYPE* to) const;
 
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+            private:
+                inline  static  auto    DefaultAccumulateIfArg_ (const T& lhs, const T& rhs)              {       return lhs + rhs;       };
+#endif
+
             public:
                 /**
                  *  EXPERIEMNTAL - 2015-04-24
+                 *  \brief  AccumulateIf () add in the argument value to this optional, but if both were missing leave 'this'
+                 *          as still missing.
+                 *
+                 *  EXAMPLE:
+                 *      Optional<int>   accumulator;
+                 *      Optional<int>   SomeFunctionToGetOptionalValue();
+                 *
+                 *      if (accumulator or (tmp = SomeFunctionToGetOptionalValue())) {
+                 *              accumulator = accumulator.Value () + tmp;
+                 *      }
+                 *      VERSUS
+                 *      accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
+                 *
+                 *      \note   ITS CONFUSING direction of iftest for this versus AssignIf
                  */
-                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, function<T(T, T)> op = [] (T lhs, T rhs) { return lhs + rhs; })
-                {
-                    if (*this or rhsOptionalValue) {
-                        *this = op (Value (), rhsOptionalValue.Value ());
-                    }
-                }
-
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = DefaultAccumulateIfArg_);
+#else
+                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; });
+#endif
 
             private:
                 /*
