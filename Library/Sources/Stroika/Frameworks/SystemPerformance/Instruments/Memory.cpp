@@ -222,19 +222,10 @@ namespace {
         void    Read_WMI_ (Instruments::Memory::Info* updateResult)
         {
             fMemoryWMICollector_.Collect ();
-            {
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_)) {
-                    updateResult->fUsedVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_)) {
-                    updateResult->fCommitLimit = *o ;
-                    // bad names - RETHINK
-                    updateResult->fTotalVirtualMemory = *o ;
-                }
-                if (auto o = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_)) {
-                    updateResult->fMajorPageFaultsPerSecond = *o ;
-                }
-            }
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fUsedVirtualMemory);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fCommitLimit);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fTotalVirtualMemory);        // bad names - RETHINK
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fMajorPageFaultsPerSecond);
         }
 #endif
     };
