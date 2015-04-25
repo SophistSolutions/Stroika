@@ -191,7 +191,7 @@ Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID sug
                 result->clear ();
             }
         }
-        virtual bool    Equals (const IRep* rhs) const
+        virtual bool    Equals (const IRep* rhs) const override
         {
             RequireNotNull (rhs);
             RequireMember (rhs, MyIterRep_);
