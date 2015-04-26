@@ -80,14 +80,6 @@ sub	DoHelp_
         print("	    --WinHTTP {use-system|no}                  /* enables/disables use of WinHTTP and build for the confguration being defined [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}      /* enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
-        print("	    --has-xerces                               /* DEPRECATED-2015-04-02 --xerces use */\n");
-        print("	    --no-has-xerces                            /* DEPRECATED-2015-04-02 --xerces no */\n");
-        print("	    --has-openssl                              /* DEPRECATED-2015-04-02 --openssl use */\n");
-        print("	    --no-has-openssl                           /* DEPRECATED-2015-04-02 --openssl no */\n");
-        print("	    --has-zlib                                 /* DEPRECATED-2015-04-02 --zlib use */\n");
-        print("	    --no-has-zlib                              /* DEPRECATED-2015-04-02 --zlib no */\n");
-        print("	    --has-winhttp                              /* DEPRECATED-2015-04-02 --winhttp use-system  */\n");
-        print("	    --no-has-winhttp                           /* DEPRECATED-2015-04-02 --winhttp no  */\n");
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
@@ -302,30 +294,6 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_ZLib = $var;
         }
-		elsif ((lc ($var) eq "-has-winhttp") or (lc ($var) eq "--has-winhttp")) {
-			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
-			print ("$var flag DEPRECATED - use --WinHTTP use-system\n");
-		}
-		elsif ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
-			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
-			print ("$var flag DEPRECATED - use --WinHTTP\n");
-		}
-		elsif ((lc ($var) eq "-has-xerces") or (lc ($var) eq "--has-xerces")) {
-			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
-			print ("$var flag DEPRECATED - use --xerces\n");
-		}
-		elsif ((lc ($var) eq "-no-has-xerces") or (lc ($var) eq "--no-has-xerces")) {
-			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
-			print ("$var flag DEPRECATED - use --xerces\n");
-		}
-		elsif ((lc ($var) eq "-has-zlib") or (lc ($var) eq "--has-zlib")) {
-			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
-			print ("$var flag DEPRECATED - use --zlib\n");
-		}
-		elsif ((lc ($var) eq "-no-has-zlib") or (lc ($var) eq "--no-has-zlib")) {
-			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_No;
-			print ("$var flag DEPRECATED - use --zlib\n");
-		}
 		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
 			$ENABLE_TRACE2FILE = 1;
 		}
@@ -357,14 +325,6 @@ sub	ParseCommandLine_Remaining_
                     }
                     elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
                         $i++;
-                    }
-                    elsif (lc ($var) eq "-has-libcurl" or lc ($var) eq "--has-libcurl") {
-                        print ("UNRECOGNIZED ARG: $var: use --libcurl use\n");
-                        DoHelp_ ();
-                    }
-                    elsif (lc ($var) eq "-no-has-libcurl" or lc ($var) eq "--no-has-libcurl") {
-                        print ("UNRECOGNIZED ARG: $var: use --libcurl no\n");
-                        DoHelp_ ();
                     }
                     else {
                         print ("UNRECOGNIZED ARG: $var\n");
