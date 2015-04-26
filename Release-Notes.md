@@ -19,6 +19,17 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a93">v2.0a93x</a><br/>2015-04-??</td>
+<td>
+<ul>
+	<li>TODO</li>
+</ul>
+</td>
+</tr>
+
+
+
 
 
 	
@@ -34,7 +45,6 @@ History
 	<li>Scripts and makefile etc support to compute version strings/makefile stuff from single file, and #include from that common place - STROIKA_VERSION - ScriptsLib/MakeVersionFile.sh</li>
 	<li>Fixed threading bug that caused valgrind leak (was mostly bug in regtest on thread code) but discovered
 	and documemented a bug with thread code (deferred in todo {Thread d;} leak)</li>
-	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, cand valgrind </li>
 	<li>new experiemntal Optional helpers (like Accumulate)</li>
 	<li>BufferedBinaryOutputStream::Flush () not needed - inherited; and refined/loosed support for aborted in BufferedBinaryOutputStream</li>
 	<li>Major improvements/cleanups/progress to SystemPerformance code - including WMI support</li>
@@ -46,6 +56,7 @@ History
 	<li>Optional AutoStartFlag arg to Thread CTOR</li>
 	<li>WindowsEventLogAppender::WindowsEventLogAppender () needs appName param for name of source of events</li>
 	<li>fix (little tested) for ObjectVariantMapper::MakeCommonSerializer_ to support Optional with non-standard traits</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, cand valgrind </li>
 </ul>
 </td>
 </tr>
