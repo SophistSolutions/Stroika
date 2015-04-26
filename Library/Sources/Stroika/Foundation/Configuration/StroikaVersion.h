@@ -31,7 +31,7 @@ namespace   Stroika {
 #endif
 
 
-			#include "Stroika-Current-Version.h"
+#include "Stroika-Current-Version.h"
 
 
 #if     defined (__cplusplus)
