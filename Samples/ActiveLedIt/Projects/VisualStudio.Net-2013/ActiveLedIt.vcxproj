@@ -73,7 +73,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>Headers;..\..\..\..\Library\Sources;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Headers;..\..\..\..\Library\Sources;;$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration);;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_USRDLL;_DEBUG;qDebug;qHeavyDebugging;WIN32;_WINDOWS;qSupportOLEControlEmbedding=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -88,7 +88,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>.\..\..\Sources;..\..\..\..\Library\Sources;$(INTDIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\..\Sources;..\..\..\..\Library\Sources;$(INTDIR);$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
@@ -133,7 +133,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\Headers;..\..\..\..\Library\Sources;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Headers;..\..\..\..\Library\Sources;;$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration);;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_USRDLL;WIN32;_WINDOWS;qSupportOLEControlEmbedding=0;_WINDLL;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -147,7 +147,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;qWindows=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>.\..\..\Sources;..\..\..\..\Library\Sources;$(INTDIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\..\Sources;..\..\..\..\Library\Sources;$(INTDIR);$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
@@ -209,7 +209,10 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <None Include="..\..\Sources\URLEmbeddingIcon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\ActiveLedIt.cpp" />
+    <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">Headers;..\..\..\..\Library\Sources;..\..\..\..\IntermediateFiles\$(Configuration);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">Headers;..\..\..\..\Library\Sources;..\..\..\..\IntermediateFiles\$(Configuration);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\ActiveLedItControl.cpp" />
     <ClCompile Include="..\..\Sources\ActiveLedItPpg.cpp" />
     <ClCompile Include="..\..\Sources\FontMenu.cpp" />
@@ -231,8 +234,8 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\..\Sources\ActiveLedIt.odl">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\Headers;..\..\..\..\Library\Sources;$(ProjectDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">..\Headers;..\..\..\..\Library\Sources;$(ProjectDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\Headers;..\..\..\..\Library\Sources;$(ProjectDir);$(IntDir);;..\..\..\..\IntermediateFiles\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">..\Headers;..\..\..\..\Library\Sources;$(ProjectDir);$(IntDir);;..\..\..\..\IntermediateFiles\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MkTypLibCompatible Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">false</MkTypLibCompatible>
       <MkTypLibCompatible Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</MkTypLibCompatible>
     </Midl>
