@@ -37,9 +37,7 @@ protected:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
 
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 
         fOriginalStream_.write (reinterpret_cast<const char*> (start), end - start);
         if (fOriginalStream_.fail ()) {
@@ -49,9 +47,7 @@ protected:
 
     virtual void    Flush () override
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         fOriginalStream_.flush ();
         if (fOriginalStream_.fail ()) {
             Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to flush ostream")));
@@ -61,17 +57,13 @@ protected:
     virtual SeekOffsetType  GetOffset () const override
     {
         // instead of tellg () - avoids issue with EOF where fail bit set???
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekp (offset, ios::beg);

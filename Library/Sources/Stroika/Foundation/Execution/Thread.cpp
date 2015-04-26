@@ -446,9 +446,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
     if (*fTLSInterruptFlag_ /*fStatus_ == Status::eAborting*/) {
 #if     qPlatform_POSIX
         {
-            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
-            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
             if (not sHandlerInstalled_)
             {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
@@ -654,9 +652,7 @@ void    Thread::SetThreadPriority (Priority priority)
 #if     qPlatform_POSIX
 void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 {
-    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { make_unique_lock (sHandlerInstalled_) };
-    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     if (sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;

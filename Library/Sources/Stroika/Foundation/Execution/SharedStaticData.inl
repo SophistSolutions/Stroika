@@ -38,9 +38,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (sMutex_);
 #else
-                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (sMutex_) };
-                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
                 ++sCountUses_;
                 if (sCountUses_ == 1) {
@@ -54,9 +52,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (sMutex_);
 #else
-                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (sMutex_) };
-                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #endif
                 --sCountUses_;
                 if (sCountUses_ == 0) {
