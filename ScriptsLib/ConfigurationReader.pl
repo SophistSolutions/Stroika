@@ -137,6 +137,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CPPSTD_VERSION_FLAG'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<CWARNING_FLAGS>");
+		if (defined $pps) {
+			$configuration {'CWARNING_FLAGS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
