@@ -483,7 +483,7 @@ namespace   Stroika {
                 }
                 AssertNotNull (fStorage_.fValue_);
                 AssertNotNull (rhs.fStorage_.fValue_);
-                return Common::ComparerWithWellOrder<T>::Equals (*fStorage_.fValue_, *rhs.fStorage_.fValue_);
+                return Common::ComparerWithEquals<T>::Equals (*fStorage_.fValue_, *rhs.fStorage_.fValue_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
@@ -493,7 +493,7 @@ namespace   Stroika {
                     return false;
                 }
                 AssertNotNull (fStorage_.fValue_);
-                return Common::ComparerWithWellOrder<T>::Equals (*fStorage_.fValue_, rhs);
+                return Common::ComparerWithEquals<T>::Equals (*fStorage_.fValue_, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
