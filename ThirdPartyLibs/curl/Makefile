@@ -140,7 +140,7 @@ endif
 
 check:
 	@##THMPHACK
-	@echo "   ...Checking..."
+	@echo -n "   ...Checking..."
 	@echo "      ThirdPartyLibs/curl - [Succeeded]"
 
 clean:
