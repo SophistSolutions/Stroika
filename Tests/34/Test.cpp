@@ -519,24 +519,25 @@ namespace   {
         Debug::TraceContextBumper traceCtx ("RegressionTest9_ThreadsAbortingEarly_");
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
-        struct  FRED {
-            static  void    DoItInnerThread ()
-            {
-                Execution::Sleep (.01);
-            }
-            static  void    DoOuterThread ()
-            {
-                while (true) {
-                    Thread t (DoItInnerThread);
-                    Execution::Sleep (.02);
-                    t.Start ();
-                }
+        Containers::Collection<Thread>  innerThreads;
+        auto DoItInnerThread = [] () {
+            Execution::Sleep (.01);
+        };
+        auto DoOuterThread = [DoItInnerThread, &innerThreads] () {
+            while (true) {
+                Thread t (DoItInnerThread);
+                innerThreads.Add (t);
+                Execution::Sleep (.02);
+                t.Start ();
             }
         };
-        Thread  thread (&FRED::DoOuterThread);
+        Thread  thread (DoOuterThread);
         thread.Start ();
         Execution::Sleep (.5);
         thread.AbortAndWaitForDone ();
+        // NB: we must call AbortAndWaitForDone on innerThreads because we could have created the thread but not started it, so
+        // wait for done will never terminate
+        innerThreads.Apply ([] (Thread t) { t.AbortAndWaitForDone (); });  // assure subthreads  complete before the text exits (else valgrind may report leak)
     }
 }
 
