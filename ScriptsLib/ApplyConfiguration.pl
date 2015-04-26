@@ -111,6 +111,8 @@ sub	ReadConfiguration_
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
 	$CPPSTD_VERSION_FLAG = GetConfigurationParameter("CPPSTD_VERSION_FLAG");
+	$CWARNING_FLAGS = GetConfigurationParameter("CWARNING_FLAGS");
+	
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_TRACE2FILE"));
 	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbtolsInExecutables"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter("OptimizerFlag");
@@ -481,6 +483,10 @@ sub WriteStroikaConfigMakeHeader
 	if (not ($CPPSTD_VERSION_FLAG eq '')) {
 		print (OUT "CPPSTD_VERSION_FLAG= \"$CPPSTD_VERSION_FLAG\"\n");
 	}
+	if (not ($CWARNING_FLAGS eq '')) {
+		print (OUT "CWARNING_FLAGS= \"$CWARNING_FLAGS\"\n");
+	}
+	
 
 
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
