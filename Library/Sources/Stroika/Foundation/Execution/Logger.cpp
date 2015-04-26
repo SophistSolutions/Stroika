@@ -158,9 +158,7 @@ void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsTyp
     DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
 #endif
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
-    DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
     auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
-    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
     if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         sSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         UpdateBookkeepingThread_ ();

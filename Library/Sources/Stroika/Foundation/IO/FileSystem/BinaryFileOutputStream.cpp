@@ -83,9 +83,7 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
             auto    critSec { make_unique_lock (fCriticalSection_) };
-            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 
             const Byte* i = start;
             while (i < end) {
@@ -114,9 +112,7 @@ public:
     }
     virtual Streams::SeekOffsetType  GetOffset () const override
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
@@ -126,9 +122,7 @@ public:
     virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {

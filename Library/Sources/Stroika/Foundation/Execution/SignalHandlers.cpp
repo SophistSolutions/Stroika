@@ -163,9 +163,7 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
      */
     shared_ptr<SignalHandlerRegistry>   sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;
     if (sp == nullptr) {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fMutex) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;    // avoid race, and avoid locking unless needed
         if (sp == nullptr) {
             sp.reset (new SignalHandlerRegistry ());

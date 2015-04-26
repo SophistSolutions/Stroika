@@ -55,9 +55,7 @@ public:
     }
     void    AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
         auto    critSec { make_unique_lock (fCritSection_) };
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void    Start (const String& serviceType)
@@ -166,9 +164,7 @@ public:
             }
             {
                 // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
-                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wfuture-compat\"");
                 auto    critSec { make_unique_lock (fCritSection_) };
-                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wfuture-compat\"");
                 for (auto i : fFoundCallbacks_) {
                     i (d);
                 }
