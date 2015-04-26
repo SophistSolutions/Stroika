@@ -170,9 +170,9 @@ apply-configurations:
 apply-configuration:
 	@#todo - must enahnce ApplyConfiguration to support configuration arg
 	@perl ScriptsLib/ApplyConfiguration.pl
-	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\"
+	@echo "    ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
-	@echo Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\"
+	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\""
 	@cp Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h
 
 default-configuration:
