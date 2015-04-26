@@ -34,8 +34,11 @@ endif
 
 
 ifndef Includes
-	Includes	=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
+	Includes	=	
 endif
+
+Includes	+=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
+Includes	+=	-I$(RelPathToStroikaDevRoot)/IntermediateFiles/DefaultConfiguration/
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
