@@ -484,9 +484,8 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "CPPSTD_VERSION_FLAG= \"$CPPSTD_VERSION_FLAG\"\n");
 	}
 	if (not ($CWARNING_FLAGS eq '')) {
-		print (OUT "CWARNING_FLAGS= \"$CWARNING_FLAGS\"\n");
+		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
-	
 
 
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
