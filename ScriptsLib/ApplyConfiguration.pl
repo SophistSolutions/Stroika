@@ -137,6 +137,8 @@ sub	ReadConfiguration_
 }
 
 
+print("Applying configuration...\n");
+
 ParseCommandLine_ ();
 
 ReadConfiguration_();
@@ -571,12 +573,12 @@ unless (-e $intermediateFiles) {
 }
 
 unless (-e $configFileCName) {
-	print("Writing \"$configFileCName\"...\n");
+	print("    Writing \"$configFileCName\"...\n");
 	WriteStroikaConfigCHeader ();
 }
 
 
 unless (-e $configFileMakeName) {
-	print("Writing \"$configFileMakeName\"...\n");
+	print("    Writing \"$configFileMakeName\"...\n");
 	WriteStroikaConfigMakeHeader ();
 }
