@@ -45,9 +45,9 @@ my $LIBFEATUREFLAG_No = "no";
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
-my $CWARNING_FLAGS = '';
+my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 ####
-my $CWARNING_FLAGS = '-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Wno-unused-value -Wno-strict-aliasing -Wno-unused-local-typedefs -Wno-comment -Wno-unused-function -Wno-unknown-warning-option'
+my $DEFAULT_CWARNING_FLAGS = '-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Wno-unused-value -Wno-strict-aliasing -Wno-unused-local-typedefs -Wno-comment -Wno-unused-function -Wno-unknown-warning-option'
 
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
@@ -418,6 +418,11 @@ sub	WriteConfigFile_
 
 	if (not ($CPPSTD_VERSION_FLAG eq "")) {
 		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
+	}
+
+	if ($CWARNING_FLAGS eq "<<USE_DEFAULTS>>") {
+		#todo fix so we check compiler and adjust
+		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS;
 	}
 	if (not ($CWARNING_FLAGS eq "")) {
 		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
