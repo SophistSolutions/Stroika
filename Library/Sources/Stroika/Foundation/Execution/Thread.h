@@ -23,6 +23,13 @@
  *  \file
  *
  *
+ *      @todo   MAYBE should change the DTOR for Thead object - so taht if use_count () == 1 or 2
+ *              and 'never started' - then call Abort();
+ *
+ *              Bug/Issue:
+ *                  { Thread t; }
+ *              is a memory leak.
+ *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
  *
  *      @todo   Consider using ThrowIfDoneWithException () more thoroughly, possibly

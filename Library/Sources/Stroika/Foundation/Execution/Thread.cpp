@@ -321,8 +321,28 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
 #endif
 
-            incRefCnt->fOK2StartEvent_.Wait (); // we used to 'SuspendThread' but that was flakey. Instead - wait until teh caller says
-            // we really want to start this thread.
+            /*
+             *  We used to 'SuspendThread' but that was flakey. Instead - wait until the caller says
+             *  we really want to start this thread.
+             *
+             *  But - even that's not good enough. The caller COULD create a thread (which creates this
+             *  c++ thread object) but never call Thread::Start(). In which case - this would never return.
+             *
+             *  Luckily, we can detect that (rare uninteresting) case without much cost. Just wait for a while,
+             *  and then check if refcount==1 (so nobody owns this and we're not started yet).
+             *      while (not incRefCnt->fOK2StartEvent_.WaitQuietly (5)) {
+             *          if (incRefCnt.unique ()) {
+             *               Execution::DoThrow (InterruptException ());
+             *          }
+             *      }
+             *
+             *  Actually - there is no need todo this. NVM... The caller should be responsible for calling Abort()
+             *  the thread it never started.
+             *
+             *  @todo   MAYBE should change the DTOR for Thead object - so taht if use_count () == 1 or 2 and 'never started' - then
+             *          call Abort();
+             */
+            incRefCnt->fOK2StartEvent_.Wait ();
 
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             bool    doRun   =   false;
