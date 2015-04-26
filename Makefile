@@ -143,16 +143,16 @@ check-tools:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
 	@echo "Checking for installed tools..."
-	@echo -n "  " && sh -c "type sed"
-	@echo -n "  " && sh -c "type wget"
-	@echo -n "  " && sh -c "type perl"
-	@echo -n "  " && sh -c "type tar"
-	@echo -n "  " && sh -c "type patch"
+	@echo -n "   ..." && sh -c "type sed"
+	@echo -n "   ..." && sh -c "type wget"
+	@echo -n "   ..." && sh -c "type perl"
+	@echo -n "   ..." && sh -c "type tar"
+	@echo -n "   ..." && sh -c "type patch"
 ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@echo -n "  " && sh -c "type dos2unix"
-	@echo -n "  " && sh -c "type unix2dos"
+	@echo -n "   ..." && sh -c "type dos2unix"
+	@echo -n "   ..." && sh -c "type unix2dos"
 endif
-	@echo "All Required Tools Present"
+	@echo "   All Required Tools Present"
 
 
 
