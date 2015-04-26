@@ -1,6 +1,11 @@
 ACTIVE_CONFIGURATION 	?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(ACTIVE_CONFIGURATION) ProjectPlatformSubdir)
 
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+ALL_CONFIGURATIONS		=	$(ACTIVE_CONFIGURATION)
+else
+ALL_CONFIGURATIONS		=	Debug-A-32 Debug-U-32 Debug-U-64 Release-A-32 Release-DbgMemLeaks-U-32 Release-Logging-U-32 Release-Logging-U-64 Release-U-32 Release-U-64
+endif
 
 .NOTPARALLEL: run-tests check apply-configurations third-party-libs
 .PHONY:	tests documentation all check clobber libraries
@@ -163,12 +168,16 @@ apply-configurations-if-needed:
 	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || $(MAKE) apply-configurations --no-print-directory
 
 apply-configurations:
-	@#todo - must enahnce to support multiple configs
-	@$(MAKE) ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) apply-configuration
+	@for i in $(ALL_CONFIGURATIONS);\
+	do\
+		$(MAKE) --no-print-directory ACTIVE_CONFIGURATION=$$i apply-configuration;\
+	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 apply-configuration:
+	@echo "Applying configuraiton $(ACTIVE_CONFIGURATION)..."
 	@#todo - must enahnce ApplyConfiguration to support configuration arg
+	@mkdir -p "IntermediateFiles/$(ACTIVE_CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl
 	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion

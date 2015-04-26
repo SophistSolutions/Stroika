@@ -137,8 +137,6 @@ sub	ReadConfiguration_
 }
 
 
-print("Applying configuration...\n");
-
 ParseCommandLine_ ();
 
 ReadConfiguration_();
