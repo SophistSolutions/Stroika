@@ -47,7 +47,7 @@ my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 my $DEFAULT_CWARNING_FLAGS = '-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Wno-unused-value -Wno-strict-aliasing -Wno-unused-local-typedefs -Wno-comment -Wno-unused-function -Wno-unknown-warning-option ';
-my $DEFAULT_CWARNING_FLAGS_EXTRA4 = 'Wfuture-compat ';
+my $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46 = 'Wno-future-compat ';
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
@@ -161,7 +161,7 @@ sub	SetDefaultForCompilerDriver_
 		#todo fix so we check compiler and adjust
 		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS;
 		if ($COMPILER_DRIVER eq "clang++-4.6") {
-			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4;
+			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46;
 		}
 	}
 }
