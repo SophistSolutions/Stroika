@@ -23,10 +23,29 @@ History
 
 	
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a92">v2.0a92x</a><br/>2015-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a92">v2.0a92</a><br/>2015-04-26</td>
 <td>
 <ul>
-	<li>TOOD</li>
+	<li>MAJOR changes</li>
+	<li>Added Debug-A-32, Release-A-32 builds (windows) and major restructing of build process
+	so ThirdPartyProducts built to to level Builds directory (incomplete but mostly done). Major changes
+	to apply configuraitons etc - all related to making the configuraiton stuff work more closely to
+	new deisgn. Includes fixing OpenSSL build for 64 bits</li>
+	<li>Scripts and makefile etc support to compute version strings/makefile stuff from single file, and #include from that common place - STROIKA_VERSION - ScriptsLib/MakeVersionFile.sh</li>
+	<li>Fixed threading bug that caused valgrind leak (was mostly bug in regtest on thread code) but discovered
+	and documemented a bug with thread code (deferred in todo {Thread d;} leak)</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, cand valgrind </li>
+	<li>new experiemntal Optional helpers (like Accumulate)</li>
+	<li>BufferedBinaryOutputStream::Flush () not needed - inherited; and refined/loosed support for aborted in BufferedBinaryOutputStream</li>
+	<li>Major improvements/cleanups/progress to SystemPerformance code - including WMI support</li>
+	<li>Improved make project-files (and related)</li>
+	<li>Major progress (though incomplete) on OpenSSL support - including new DerviedKey and much more</li>
+	<li>Debug::AssertExternallySynchronizedLock copyable</li>
+	<li>Improved SystemConfiguraiton support - especially for windows</li>
+	<li>Improved Windows timezone support - olsen DB</li>
+	<li>Optional AutoStartFlag arg to Thread CTOR</li>
+	<li>WindowsEventLogAppender::WindowsEventLogAppender () needs appName param for name of source of events</li>
+	<li>fix (little tested) for ObjectVariantMapper::MakeCommonSerializer_ to support Optional with non-standard traits</li>
 </ul>
 </td>
 </tr>
