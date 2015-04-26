@@ -169,7 +169,7 @@ namespace   Stroika {
                  *
                  *  \note   WaitQuietly (0) will always return false regardless of the state of the event/trigger
                  *
-                 *  \note   WaitQuietly() can raise exceptions, but only Thread::AbortException
+                 *  \note   WaitQuietly() can raise exceptions, but only Thread::InteruptException
                  *
                  *  @see Wait ()
                  *  @see WaitUntil ()
