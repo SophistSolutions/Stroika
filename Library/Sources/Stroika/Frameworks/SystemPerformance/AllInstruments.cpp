@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "Instruments/Memory.h"
 #include    "Instruments/MountedFilesystemUsage.h"
 #include    "Instruments/NetworkInterfaces.h"
 #include    "Instruments/ProcessDetails.h"
@@ -31,6 +32,7 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
 {
     // OK to cache - copyable - but construct AFTER main (only when called here)
     static  InstrumentSet   kInstruments_ = {
+        Instruments::Memory::GetInstrument (),
         Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),
         Instruments::MountedFilesystemUsage::GetInstrument (),
