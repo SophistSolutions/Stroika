@@ -40,9 +40,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.cpp">
-      <Filter>Sources\Instruments</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -51,9 +48,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.cpp">
-      <Filter>Sources\Instruments</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.cpp">
       <Filter>Sources</Filter>
@@ -90,9 +84,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\LoadAverage.h">
-      <Filter>Sources\Instruments</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -101,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h">
       <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemTimes.h">
-      <Filter>Sources\Instruments</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.h">
       <Filter>Sources</Filter>
