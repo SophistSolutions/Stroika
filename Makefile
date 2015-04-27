@@ -182,7 +182,9 @@ apply-configuration:
 	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\""
-	@cp Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h
+ifneq (,$(findstring CYGWIN,$(shell uname)))
+	@cp IntermediateFiles/DefaultConfiguration/Stroika-Current-Configuration.h IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h
+endif
 
 default-configuration:
 	@perl ScriptsLib/GenerateConfiguration.pl --default-for-platform $(DEFAULT_CONFIGURATION_ARGS)
