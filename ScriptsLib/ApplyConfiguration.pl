@@ -154,7 +154,7 @@ mkdir ($intermediateFiles);
 #
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
-my $configFileCName		=	"$intermediateFiles$currentConfiguration/Library/Stroika-Current-Configuration.h";
+my $configFileCName		=	"$intermediateFiles$currentConfiguration/Stroika-Current-Configuration.h";
 my $configFileMakeName	=	"$intermediateFiles$currentConfiguration/Library/Configuration.mk";
 
 
