@@ -342,8 +342,8 @@ Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options op
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));
-    static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (String_Constant (L"System-CPU")),
+    return Instrument (
+               InstrumentNameType (String_Constant (L"System-CPU")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -357,6 +357,5 @@ Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options op
     },
     {kSystemCPUMeasurment_},
     GetObjectVariantMapper ()
-                                          );
-    return kInstrument_;
+           );
 }

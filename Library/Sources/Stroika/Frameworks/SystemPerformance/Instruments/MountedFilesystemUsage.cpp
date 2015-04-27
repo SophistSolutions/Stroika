@@ -490,8 +490,8 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
 Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
-    static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
+    return Instrument (
+               InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -505,6 +505,5 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
     },
     {kMountedVolumeUsage},
     GetObjectVariantMapper ()
-                                          );
-    return kInstrument_;
+           );
 }

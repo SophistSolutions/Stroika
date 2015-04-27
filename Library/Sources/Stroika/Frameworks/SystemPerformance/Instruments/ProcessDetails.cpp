@@ -768,9 +768,8 @@ namespace {
 Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
-    // @todo can only use static one if right options passed in...
-    static  Instrument  kInstrument_    = Instrument (
-            InstrumentNameType (String_Constant (L"ProcessDetails")),
+    return Instrument (
+               InstrumentNameType (String_Constant (L"ProcessDetails")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -784,6 +783,5 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
     },
     {kProcessMapMeasurement},
     GetObjectVariantMapper ()
-                                          );
-    return kInstrument_;
+           );
 }

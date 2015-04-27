@@ -316,8 +316,8 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
-    static  const   Instrument  kInstrument_    = Instrument (
-                InstrumentNameType (String_Constant (L"Memory")),
+    return Instrument (
+               InstrumentNameType (String_Constant (L"Memory")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
@@ -331,6 +331,5 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options optio
     },
     {kMemoryUsage},
     GetObjectVariantMapper ()
-            );
-    return kInstrument_;
+           );
 }
