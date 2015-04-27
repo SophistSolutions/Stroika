@@ -176,6 +176,10 @@ apply-configurations:
 
 apply-configuration:
 	@echo "Applying configuraiton $(ACTIVE_CONFIGURATION)..."
+ifneq (,$(findstring CYGWIN,$(shell uname)))
+	@#tmphack
+	@mkdir -p IntermediateFiles/DefaultConfiguration
+endif
 	@#todo - must enahnce ApplyConfiguration to support configuration arg
 	@mkdir -p "IntermediateFiles/$(ACTIVE_CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl
