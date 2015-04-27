@@ -19,7 +19,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************** CaptureSetTraits_::EqualsCompareFunctionType ******************
+             *********************** SystemPerformance::CaptureSet **************************
              ********************************************************************************
              */
             inline  CaptureSet::CaptureSet (const Duration& period, const InstrumentSet& instruments)
