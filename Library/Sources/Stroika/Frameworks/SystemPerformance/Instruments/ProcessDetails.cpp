@@ -666,7 +666,7 @@ namespace {
             DWORD cProcesses;
 
             Set<pid_t> result;
-            if ( !EnumProcesses( aProcesses, sizeof(aProcesses), &cbNeeded ) ) {
+            if (not ::EnumProcesses (aProcesses, sizeof(aProcesses), &cbNeeded )) {
                 AssertNotReached ();
                 return result;
             }
@@ -674,7 +674,7 @@ namespace {
             // Calculate how many process identifiers were returned.
 
             cProcesses = cbNeeded / sizeof(DWORD);
-            for (int i = 0; i < cProcesses; ++i) {
+            for (DWORD i = 0; i < cProcesses; ++i) {
                 result.Add (aProcesses[i]);
             }
             return result;
