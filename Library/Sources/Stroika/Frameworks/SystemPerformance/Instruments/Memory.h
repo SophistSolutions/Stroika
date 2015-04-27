@@ -18,9 +18,11 @@
  *
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
+ *
  *  TODO:
- *      @todo   Add options to GetInstrument (), for things like what to include, and maybe the time
- *              threshold for initial seeding of delta counters.
+ *      @todo   Fix handling of fMinimumAveragingInterval to do on second capture - and do that by setting a 'wait until', rather than
+ *              waiting initially
+ *
  */
 
 
@@ -146,6 +148,10 @@ namespace   Stroika {
                      *  To control the behavior of the instrument.
                      */
                     struct  Options {
+                        /**
+                         *  \req fMinimumAveragingInterval >= 0
+                         *      if == 0, skip initial capture, and if > 0, do initial capture and wait that long before second capture
+                         */
                         Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
                     };
 

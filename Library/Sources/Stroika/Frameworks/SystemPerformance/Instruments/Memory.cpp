@@ -176,28 +176,32 @@ namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
         WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture;
+        DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
 
         CapturerWithContext_Windows_ (Options options)
 #if     qUseWMICollectionSupport_
-            :   fMinTimeBeforeFirstCapture (options.fMinimumAveragingInterval)
+            :   fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
 #endif
         {
 #if     qUseWMICollectionSupport_
-            fMemoryWMICollector_.Collect ();
-            Execution::Sleep (options.fMinimumAveragingInterval);
+            if (fMinTimeBeforeFirstCapture_ > 0) {
+                fMemoryWMICollector_.Collect ();
+                Execution::Sleep (fMinTimeBeforeFirstCapture_);
+            }
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
 #if     qUseWMICollectionSupport_
             : fMemoryWMICollector_ (from.fMemoryWMICollector_)
-            ,   fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
+            ,   fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
 #endif
         {
 #if   qUseWMICollectionSupport_
-            fMemoryWMICollector_.Collect ();
-            Execution::Sleep (fMinTimeBeforeFirstCapture);
+            if (fMinTimeBeforeFirstCapture_ > 0) {
+                fMemoryWMICollector_.Collect ();
+                Execution::Sleep (fMinTimeBeforeFirstCapture_);
+            }
 #endif
         }
 
@@ -288,15 +292,15 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVirtualMemory), String_Constant (L"Total-Virtual-Memory") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fUsedVirtualMemory), String_Constant (L"Used-Virtual-Memory") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLargestAvailableVirtualChunk), String_Constant (L"Largest-Available-Virtual-Chunk") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsSinceBoot), String_Constant (L"Major-Page-Faults-Since-Boot") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Page-Faults-Since-Boot") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsPerSecond), String_Constant (L"Major-Page-Faults-Per-Second") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Page-Faults-Per-Second") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVirtualMemory), String_Constant (L"Total-Virtual-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fUsedVirtualMemory), String_Constant (L"Used-Virtual-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLargestAvailableVirtualChunk), String_Constant (L"Largest-Available-Virtual-Chunk"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsSinceBoot), String_Constant (L"Major-Page-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Page-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsPerSecond), String_Constant (L"Major-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
