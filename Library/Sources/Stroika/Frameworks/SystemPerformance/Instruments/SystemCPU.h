@@ -17,6 +17,14 @@
  *
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
+ *  TODO:
+ *
+ *      @todo   Fix fMinimumAveragingInterval handling to work at all - now written differntly than the opther so
+ *              I need to restrucutre a little to fix this.
+ *
+ *      @todo   Fix handling of fMinimumAveragingInterval to do on second capture - and do that by setting a 'wait until', rather than
+ *              waiting initially
+ *
  */
 
 
@@ -75,6 +83,11 @@ namespace   Stroika {
                      *  To control the behavior of the instrument.
                      */
                     struct  Options {
+                        /**
+                         *  \req fMinimumAveragingInterval >= 0
+                         *      if == 0, skip initial capture, and if > 0, do initial capture and wait that long before second capture
+                         */
+                        Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
                     };
 
 
