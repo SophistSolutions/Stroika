@@ -17,7 +17,11 @@
 
 
 /*
- * TODO:
+ *
+ *  TODO:
+ *      @todo   Fix handling of fMinimumAveragingInterval to do on second capture - and do that by setting a 'wait until', rather than
+ *              waiting initially
+ *
  *      @todo   Eventually allow configuration of whether to use procfs or ps process grep, but default to
  *              procfs is available.
  *

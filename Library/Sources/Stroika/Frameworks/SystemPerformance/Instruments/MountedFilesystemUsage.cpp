@@ -21,8 +21,6 @@
 #include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
-#include    "../CommonMeasurementTypes.h"
-
 #include    "MountedFilesystemUsage.h"
 
 
@@ -496,6 +494,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
  */
 Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
+    static  const   MeasurementType	kMountedVolumeUsage_  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
@@ -510,7 +509,7 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
         results.fMeasurements.Add (m);
         return results;
     },
-    {kMountedVolumeUsage},
+    {kMountedVolumeUsage_},
     GetObjectVariantMapper ()
            );
 }

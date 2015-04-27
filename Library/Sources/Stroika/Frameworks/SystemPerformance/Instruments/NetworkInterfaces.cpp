@@ -24,8 +24,6 @@
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
-#include    "../CommonMeasurementTypes.h"
-
 #include    "NetworkInterfaces.h"
 
 

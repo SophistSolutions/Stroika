@@ -89,7 +89,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.cpp">
@@ -124,7 +123,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CommonMeasurementTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.h" />

@@ -272,10 +272,6 @@ namespace {
 
 
 
-const   MeasurementType Instruments::Memory::kSystemMemoryMeasurement = MeasurementType (String_Constant (L"System-Memory"));
-
-
-
 
 /*
  ********************************************************************************
@@ -319,6 +315,9 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
  */
 Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
+    static  const   MeasurementType kMemoryUsage_         =   MeasurementType (String_Constant (L"Memory-Usage"));
+    static  const   MeasurementType kSystemMemoryMeasurement_ = MeasurementType (String_Constant (L"System-Memory"));
+
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Memory")),
@@ -329,11 +328,11 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options optio
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kSystemMemoryMeasurement;
+        m.fType = kSystemMemoryMeasurement_;
         results.fMeasurements.Add (m);
         return results;
     },
-    {kMemoryUsage},
+    {kMemoryUsage_},
     GetObjectVariantMapper ()
            );
 }

@@ -136,11 +136,6 @@ namespace   Stroika {
                     /**
                      *  For Info type.
                      */
-                    extern  const   MeasurementType kSystemMemoryMeasurement;
-
-                    /**
-                     *  For Info type.
-                     */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
 

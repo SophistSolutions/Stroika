@@ -31,8 +31,6 @@
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
-#include    "../CommonMeasurementTypes.h"
-
 #include    "ProcessDetails.h"
 
 
