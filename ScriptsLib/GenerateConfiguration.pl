@@ -478,6 +478,5 @@ if (not (-e $masterXMLConfigFile) or $forceWriteConfig) {
 	print("Writing \"$masterXMLConfigFile\"...\n");
 	WriteConfigFile_ ();
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
-	system ("rm -f Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h");
 }
 
