@@ -150,6 +150,7 @@ namespace {
                 Execution::Sleep (options.fMinimumAveragingInterval);
             }
         }
+        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
         Instruments::NetworkInterfaces::Info    capture_ ()
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
@@ -320,18 +321,20 @@ namespace {
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
         WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
         WMICollector        fTCPv6WMICollector_ { String_Constant { L"TCPv6" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture;
+        DurationSecondsType fMinTimeBeforeFirstCapture_;
         Set<String>         fAvailableInstances_;
 #endif
         CapturerWithContext_Windows_ (Options options)
 #if     qUseWMICollectionSupport_
-            : fMinTimeBeforeFirstCapture (options.fMinimumAveragingInterval)
+            : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
 #endif
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
-            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
-            Execution::Sleep (options.fMinimumAveragingInterval);
+            if (fMinTimeBeforeFirstCapture_ > 0) {
+                capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+                Execution::Sleep (fMinTimeBeforeFirstCapture_);
+            }
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -339,13 +342,15 @@ namespace {
             : fNetworkWMICollector_ (from.fNetworkWMICollector_)
             , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
             , fTCPv6WMICollector_ (from.fTCPv6WMICollector_)
-            , fMinTimeBeforeFirstCapture (from.fMinTimeBeforeFirstCapture)
+            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
             , fAvailableInstances_ (from.fAvailableInstances_)
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
-            Execution::Sleep (fMinTimeBeforeFirstCapture);
+            if (fMinTimeBeforeFirstCapture_ > 0) {
+                capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+                Execution::Sleep (fMinTimeBeforeFirstCapture_);
+            }
 #endif
         }
         Instruments::NetworkInterfaces::Info capture_ ()
