@@ -29,11 +29,16 @@ namespace   Stroika {
 
 
             namespace Private_ {
-                struct   CaptureSetTraits_ {
+                struct   InstrumentSetTraits_ {
                     struct EqualsCompareFunctionType  {
                         static bool Equals (const Instrument& l, const Instrument& r);
                     };
-                    using   SetTraitsType = CaptureSetTraits_;
+                    struct WellOrderCompareFunctionType  {
+                        static int  Compare (const Instrument& l, const Instrument& r);
+                        static bool Equals (const Instrument& l, const Instrument& r);
+                    };
+
+                    using   SetTraitsType = InstrumentSetTraits_;
                 };
             }
 
@@ -41,7 +46,7 @@ namespace   Stroika {
             /*
              *
              */
-            using InstrumentSet = Set<Instrument, Private_::CaptureSetTraits_>;
+            using InstrumentSet = Set<Instrument, Private_::InstrumentSetTraits_>;
 
 
         }

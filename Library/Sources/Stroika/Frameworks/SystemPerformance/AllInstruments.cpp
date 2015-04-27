@@ -30,8 +30,12 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
  */
 InstrumentSet   SystemPerformance::GetAllInstruments ()
 {
-    // OK to cache - copyable - but construct AFTER main (only when called here)
-    static  InstrumentSet   kInstruments_ = {
+    /*
+     *  OK to cache - copyable - but construct AFTER main (only when called here).
+     *
+     *  Return a sorted set. Not strictly required, but looks better in some uses, and doesn't cost anything.
+     */
+    static  InstrumentSet   kInstruments_ = SortedSet<Instrument, Private_::InstrumentSetTraits_> {
         Instruments::Memory::GetInstrument (),
         Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),

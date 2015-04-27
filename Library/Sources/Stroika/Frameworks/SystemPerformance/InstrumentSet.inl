@@ -19,10 +19,25 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************** CaptureSetTraits_::EqualsCompareFunctionType ******************
+             **************** InstrumentSetTraits_::EqualsCompareFunctionType ***************
              ********************************************************************************
              */
-            inline  bool    Private_::CaptureSetTraits_::EqualsCompareFunctionType::Equals (const Instrument& l, const Instrument& r)
+            inline  bool    Private_::InstrumentSetTraits_::EqualsCompareFunctionType::Equals (const Instrument& l, const Instrument& r)
+            {
+                return l.fInstrumentName == r.fInstrumentName;
+            }
+
+
+            /*
+             ********************************************************************************
+             **************** InstrumentSetTraits_::WellOrderCompareFunctionType ************
+             ********************************************************************************
+             */
+            inline  int    Private_::InstrumentSetTraits_::WellOrderCompareFunctionType::Compare (const Instrument& l, const Instrument& r)
+            {
+                return l.fInstrumentName.GetPrintName ().Compare (r.fInstrumentName.GetPrintName ());
+            }
+            inline  bool    Private_::InstrumentSetTraits_::WellOrderCompareFunctionType::Equals (const Instrument& l, const Instrument& r)
             {
                 return l.fInstrumentName == r.fInstrumentName;
             }
