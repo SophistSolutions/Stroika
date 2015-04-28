@@ -638,6 +638,8 @@ namespace {
 
 
 
+
+
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
@@ -648,13 +650,14 @@ namespace {
         {
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
-                ProcessType test;
+                ProcessType processInfo;
+
+                String  processEXEPath;
+                LookupProcessPath_ (pid,  &processEXEPath);
                 //test.fCommandLine = L"Hi mom comamndline";
-                test.fEXEPath = LookupProcessName_ (pid);
-                //Mapping<String, String> env;
-                //env.Add (L"Home", L"/home/lewis");
-                //test.fEnvironmentVariables = env;
-                results.Add (pid, test);
+                //test.fName = processName;
+                processInfo.fEXEPath = processEXEPath;
+                results.Add (pid, processInfo);
             }
             return results;
         }
@@ -662,31 +665,26 @@ namespace {
         {
             DWORD aProcesses[10 * 1024];
             DWORD cbNeeded;
-            DWORD cProcesses;
 
             Set<pid_t> result;
-            if (not ::EnumProcesses (aProcesses, sizeof(aProcesses), &cbNeeded )) {
+            if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
                 AssertNotReached ();
                 return result;
             }
 
             // Calculate how many process identifiers were returned.
-
-            cProcesses = cbNeeded / sizeof(DWORD);
+            DWORD   cProcesses = cbNeeded / sizeof(DWORD);
             for (DWORD i = 0; i < cProcesses; ++i) {
                 result.Add (aProcesses[i]);
             }
             return result;
         }
-        String LookupProcessName_ ( pid_t processID )
+        void    LookupProcessPath_ ( pid_t processID, String* processEXEPath )
         {
-            TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
-
+            // CLEANUP AND MAKE EXCEPTION SAFE
             // Get a handle to the process.
 
-            HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION |
-                                           PROCESS_VM_READ,
-                                           FALSE, processID );
+            HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID);
 
             // Get the process name.
 
@@ -694,23 +692,19 @@ namespace {
                 HMODULE hMod;
                 DWORD cbNeeded;
 
-                if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
-                                         &cbNeeded) ) {
-                    GetModuleBaseName( hProcess, hMod, szProcessName,
-                                       sizeof(szProcessName) / sizeof(TCHAR) );
+                if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), &cbNeeded) ) {
+                    {
+                        TCHAR moduleFullPath[MAX_PATH];
+                        moduleFullPath[0] = '\0';
+                        GetModuleFileNameEx( hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath) );
+                        *processEXEPath =  String::FromSDKString (moduleFullPath);
+                    }
                 }
             }
-
-            String result { String::FromSDKString (szProcessName) };
-
-            // Print the process name and identifier.
-
-//   _tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
 
             // Release the handle to the process.
 
             CloseHandle( hProcess );
-            return result;
         }
     };
 };
