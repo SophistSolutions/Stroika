@@ -153,6 +153,26 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
 
 
 
+/*
+ ********************************************************************************
+ ******** FileSystem::WellKnownLocations::GetRuntimeVariableData ****************
+ ********************************************************************************
+ */
+String FileSystem::WellKnownLocations::GetRuntimeVariableData ()
+{
+#if     qPlatform_POSIX
+    return String_Constant { L"/var/run/" };
+#elif   qPlatform_Windows
+    return GetTemporary () ;
+#else
+    AssertNotImplemented ();
+    return String ();
+#endif
+}
+
+
+
+
 
 
 #if     qPlatform_Windows

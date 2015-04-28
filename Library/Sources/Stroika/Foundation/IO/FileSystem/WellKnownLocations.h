@@ -82,6 +82,20 @@ namespace   Stroika {
 
                     /**
                      *  Returns:
+                     *      Return runtime variable data - like pid files.
+                     *
+                     *      PID files go there. Transient UNIX-domain sockets must place them in this directory.
+                     *
+                     *      POSIX:
+                     *              /var/run
+                     *      Windows:
+                     *              Alias for GetTemporary()
+                     */
+                    String GetRuntimeVariableData ();
+
+
+                    /**
+                     *  Returns:
                      *      This returns the directory where an appliation may write temporary files -
                      *      files which should not be preserved across reboots (though the OS may not enforce this).
                      *      This directory may or may not be current-user-specific.
