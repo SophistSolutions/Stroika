@@ -4,7 +4,7 @@ ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(
 ifeq (,$(findstring CYGWIN,$(shell uname)))
 ALL_CONFIGURATIONS		=	$(ACTIVE_CONFIGURATION)
 else
-ALL_CONFIGURATIONS		=	Debug-A-32 Debug-U-32 Debug-U-64 Release-A-32 Release-DbgMemLeaks-U-32 Release-Logging-U-32 Release-Logging-U-64 Release-U-32 Release-U-64
+ALL_CONFIGURATIONS		=	Debug-U-32 Debug-U-64 Release-DbgMemLeaks-U-32 Release-Logging-U-32 Release-Logging-U-64 Release-U-32 Release-U-64
 endif
 
 .NOTPARALLEL: run-tests check apply-configurations third-party-libs

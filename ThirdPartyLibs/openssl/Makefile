@@ -24,21 +24,11 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/openssl/aes.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Libs/libeay32.lib						\
-	$(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Libs/ssleay32.lib						\
-	$(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/openssl.exe								\
-	$(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/openssl.pdb								\
-	$(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Includes/openssl/aes.h					\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/libeay32.lib						\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/ssleay32.lib						\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/openssl.exe								\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/openssl.pdb								\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/openssl/aes.h					\
-	$(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Libs/libeay32.lib						\
-	$(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Libs/ssleay32.lib						\
-	$(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/openssl.exe							\
-	$(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/openssl.pdb							\
-	$(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Includes/openssl/aes.h				\
 	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/libeay32.lib						\
 	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/ssleay32.lib						\
 	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/openssl.exe							\
@@ -168,15 +158,9 @@ ifeq (,$(findstring CYGWIN,$(shell uname)))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libcrypto.a CURRENT/libssl.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else
-	@mkdir -p $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Libs && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Debug-A-32/ThirdPartyLibs/Includes/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Libs && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-A-32/ThirdPartyLibs/Includes/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/
