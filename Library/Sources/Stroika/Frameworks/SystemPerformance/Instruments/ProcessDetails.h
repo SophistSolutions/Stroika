@@ -118,9 +118,6 @@ namespace   Stroika {
                     using ProcessMapType = Mapping<pid_t, ProcessType>;
 
 
-                    extern  const   MeasurementType kProcessMapMeasurement;
-
-
                     /**
                      *  For ProcessType and ProcessMapType types.
                      */

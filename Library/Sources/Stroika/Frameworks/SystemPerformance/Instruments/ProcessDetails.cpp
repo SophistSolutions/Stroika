@@ -56,14 +56,27 @@ using   IO::FileSystem::BinaryFileInputStream;
 
 
 
-const   MeasurementType Instruments::ProcessDetails::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
-
 //tmphack to test
 //#define qUseProcFS_ 1
 
 #ifndef     qUseProcFS_
 #define     qUseProcFS_ qPlatform_POSIX
 #endif
+
+
+
+
+#ifndef qUseWMICollectionSupport_
+#define qUseWMICollectionSupport_       qPlatform_Windows
+#endif
+
+
+#if     qUseWMICollectionSupport_
+#include    "../Support/WMICollector.h"
+
+using   SystemPerformance::Support::WMICollector;
+#endif
+
 
 
 
@@ -838,6 +851,8 @@ namespace {
  */
 Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
 {
+    static  const   MeasurementType kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
+
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Process-Details")),
