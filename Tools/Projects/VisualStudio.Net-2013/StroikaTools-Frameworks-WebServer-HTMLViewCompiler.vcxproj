@@ -80,7 +80,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
-      <Private>false</Private>
+      <Private>true</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -408,7 +408,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -435,7 +435,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -461,7 +461,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -488,7 +488,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -515,7 +515,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -541,7 +541,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -572,7 +572,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -606,7 +606,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -640,7 +640,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -674,7 +674,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -708,7 +708,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -742,7 +742,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -776,7 +776,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -810,7 +810,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -844,7 +844,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -878,7 +878,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -912,7 +912,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -946,7 +946,7 @@
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration);  $(ProjectDir)..\..\..\Library\Sources\; $(ProjectDir)..\..\..\Builds\$(Configuration)\ThirdPartyLibs\Includes\; %(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
