@@ -358,9 +358,6 @@ namespace   Stroika {
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    CopyToIf (CONVERTABLE_TO_TYPE* to) const;
 
-                template    <typename   CONVERTABLE_TO_TYPE = T>
-                _DeprecatedFunction_(void    AssignIf (CONVERTABLE_TO_TYPE* to) const, "Instead use CopyToIf() - to be removed after v2.0a92");
-
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
             private:
                 inline  static  T    DefaultAccumulateIfArg_ (const T& lhs, const T& rhs)            {       return lhs + rhs;       };
