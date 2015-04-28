@@ -66,7 +66,7 @@ using   IO::FileSystem::BinaryFileInputStream;
 
 
 
-#define qUseWMICollectionSupport_       0
+//#define qUseWMICollectionSupport_       0
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows
 #endif
@@ -679,10 +679,11 @@ namespace {
 
 #if     qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kThreadCount_       { L"Thread Count" };
+    const   String_Constant     kProcessID              { L"ID Process" };
+    const   String_Constant     kThreadCount_           { L"Thread Count" };
+    const   String_Constant     kPageFaultsPerSecond    { L"Page Faults/sec" };
 }
 #endif
-
 
 
 
@@ -690,7 +691,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
-        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {},  {kThreadCount_ } };
+        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID, kThreadCount_, kPageFaultsPerSecond } };
         DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
         CapturerWithContext_Windows_ (const Options& options)
@@ -718,6 +719,19 @@ namespace {
 
             for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
                 DbgTrace (L"wmi isntance name %s", i.c_str ());
+            }
+
+#if 0
+            Mapping<String, double>  t = fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_);
+            for (KeyValuePair<String, double> i : t) {
+                DbgTrace (L"%s => %f", i.fKey.c_str (), i.fValue);
+            }
+#endif
+
+            // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
+            Mapping<pid_t, String>  pid2InstanceMap;
+            for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kProcessID)) {
+                pid2InstanceMap.Add (static_cast<int> (i.fValue), i.fKey);
             }
 #endif
 
@@ -751,14 +765,32 @@ namespace {
                     }
                 }
 #if   qUseWMICollectionSupport_
+                if (true) {
 
+                    // gross hack to get started...
+#if 0
+                    Mapping<String, double>  t = fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_);
+                    for (KeyValuePair<String, double> i : t) {
+                        DbgTrace (L"%s => %f", i.fKey.c_str (), i.fValue);
+                    }
+#endif
 
+                    String instanceVal = pid2InstanceMap.LookupValue (pid);
 
-                String wmiInstanceName = Characters::Format (L"%d", pid);
-                fProcessWMICollector_.AddInstancesIf (wmiInstanceName);
+                    // Not the most efficient appraoch ;-)
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_)) {
+                        if (instanceVal == i.fKey) {
+                            processInfo.fThreadCount = i.fValue;
+                        }
+                    }
+                }
+                if (false) {
+                    String wmiInstanceName = Characters::Format (L"%d", pid);
+                    //fProcessWMICollector_.AddInstancesIf (wmiInstanceName);
 
-                if (auto o = fProcessWMICollector_.PeekCurrentValue (wmiInstanceName, kThreadCount_)) {
-                    processInfo.fThreadCount = *o;
+                    if (auto o = fProcessWMICollector_.PeekCurrentValue (wmiInstanceName, kThreadCount_)) {
+                        processInfo.fThreadCount = *o;
+                    }
                 }
 #endif
 

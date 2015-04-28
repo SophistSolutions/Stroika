@@ -121,6 +121,33 @@ Optional<double>    WMICollector::PerInstanceData_::PeekCurrentValue (const Stri
     return counterVal.doubleValue;
 }
 
+Mapping<String, double>  WMICollector::PerInstanceData_::GetCurrentValues (const String& counterName)
+{
+    PDH_FMT_COUNTERVALUE counterVal;
+    PDH_HCOUNTER    counter = *fCounters_.Lookup (counterName);
+
+    DWORD dwBufferSize = 0;         // Size of the pItems buffer
+    DWORD dwItemCount = 0;          // Number of items in the pItems buffer
+    Memory::SmallStackBuffer<PDH_FMT_COUNTERVALUE_ITEM> items (0);
+    // Get the required size of the pItems buffer.
+    PDH_STATUS status = PdhGetFormattedCounterArray(counter, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, nullptr);
+    if (PDH_MORE_DATA == status) {
+        items.GrowToSize ((dwBufferSize + sizeof (PDH_FMT_COUNTERVALUE_ITEM) - 1) / sizeof (PDH_FMT_COUNTERVALUE_ITEM));
+    }
+
+    status = PdhGetFormattedCounterArray(counter, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, items.begin ());
+    if (status != 0) {
+        bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
+        Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
+    }
+
+    Mapping<String, double> result;
+    for (DWORD i = 0; i < dwItemCount; i++) {
+        result.Add (items[i].szName, items[i].FmtValue.doubleValue);
+    }
+    return result;
+}
+
 
 
 /*
@@ -128,6 +155,8 @@ Optional<double>    WMICollector::PerInstanceData_::PeekCurrentValue (const Stri
  ********************* SystemPerformance::Support::WMICollector *****************
  ********************************************************************************
  */
+String  WMICollector::kWildcardInstance     =   String_Constant { L"*" };
+
 WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
     : fObjectName_ (objectName)
 {
@@ -291,6 +320,16 @@ Optional<double>  WMICollector::PeekCurrentValue (const String& instance, const 
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fInstanceData_.ContainsKey (instance));
     return fInstanceData_.Lookup (instance)->get ()->PeekCurrentValue (counterName);
+}
+
+Mapping<String, double>  WMICollector::GetCurrentValues (const String& instance, const String& counterName)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValues");
+#endif
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+    Require (fInstanceData_.ContainsKey (instance));
+    return fInstanceData_.Lookup (instance)->get ()->GetCurrentValues (counterName);
 }
 
 void    WMICollector::AddCounter_ (const String& counterName)

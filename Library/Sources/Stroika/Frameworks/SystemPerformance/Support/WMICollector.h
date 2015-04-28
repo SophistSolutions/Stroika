@@ -88,6 +88,12 @@ namespace   Stroika {
                 */
                 class  WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
                 public:
+                    /*
+                     *      Special, and cannot be combined with other instances
+                     */
+                    static  String  kWildcardInstance;
+
+                public:
                     /**
                      * Instance index is not numeric.. Often value is _Total.
                      *
@@ -149,6 +155,13 @@ namespace   Stroika {
                      */
                     nonvirtual  double  GetCurrentValue (const String& instance, const String& counterName);
 
+
+                public:
+                    /**
+                     *  experimental wildcard API
+                     */
+                    nonvirtual  Mapping<String, double>  GetCurrentValues (const String& instance, const String& counterName);
+
                 public:
                     /**
                      *  Return 'missing' if the value is not available (for any reason, including obsolete instance, or whatever)
@@ -173,9 +186,10 @@ namespace   Stroika {
                         PerInstanceData_ () = delete;
                         ~PerInstanceData_ ();
 
-                        void                AddCounter (const String& counterName);
-                        double              GetCurrentValue (const String& counterName);
-                        Optional<double>    PeekCurrentValue (const String& counterName);
+                        void                    AddCounter (const String& counterName);
+                        double                  GetCurrentValue (const String& counterName);
+                        Optional<double>        PeekCurrentValue (const String& counterName);
+                        Mapping<String, double>  GetCurrentValues (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two
                     // collecters refering to the same instance handles (bad)
