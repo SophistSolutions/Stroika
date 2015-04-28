@@ -173,7 +173,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
-        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
 

@@ -66,6 +66,7 @@ using   IO::FileSystem::BinaryFileInputStream;
 
 
 
+#define qUseWMICollectionSupport_       0
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows
 #endif
@@ -676,15 +677,50 @@ namespace {
 
 
 
+#if     qUseWMICollectionSupport_
+namespace {
+    const   String_Constant     kThreadCount_       { L"Thread Count" };
+}
+#endif
+
+
+
 
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+#if     qUseWMICollectionSupport_
+        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {},  {kThreadCount_ } };
+        DurationSecondsType fMinTimeBeforeFirstCapture_;
+#endif
         CapturerWithContext_Windows_ (const Options& options)
         {
+            capture_ ();// hack so we prefill with each process capture
+        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+#if     qUseWMICollectionSupport_
+            : fProcessWMICollector_ (from.fProcessWMICollector_)
+#endif
+        {
+#if   qUseWMICollectionSupport_
+            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
+#endif
         }
         ProcessMapType  capture_ ()
         {
+
+#if   qUseWMICollectionSupport_
+
+            Time::DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
+            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
+            Time::DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
+
+
+            for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
+                DbgTrace (L"wmi isntance name %s", i.c_str ());
+            }
+#endif
+
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
                 ProcessType         processInfo;
@@ -714,6 +750,18 @@ namespace {
                         }
                     }
                 }
+#if   qUseWMICollectionSupport_
+
+
+
+                String wmiInstanceName = Characters::Format (L"%d", pid);
+                fProcessWMICollector_.AddInstancesIf (wmiInstanceName);
+
+                if (auto o = fProcessWMICollector_.PeekCurrentValue (wmiInstanceName, kThreadCount_)) {
+                    processInfo.fThreadCount = *o;
+                }
+#endif
+
                 results.Add (pid, processInfo);
             }
             return results;
