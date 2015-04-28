@@ -645,14 +645,13 @@ namespace {
         PWSTR Buffer;
     };
     struct PROCESS_BASIC_INFORMATION {
-        DWORD ExitStatus;
-        PVOID PebBaseAddress;
-        DWORD AffinityMask;
-        DWORD BasePriority;
-        DWORD UniqueProcessId;
-        DWORD ParentProcessId;
+        PVOID Reserved1;
+        PVOID /*PPEB*/ PebBaseAddress;
+        PVOID Reserved2[2];
+        ULONG_PTR UniqueProcessId;
+        PVOID Reserved3;
     };
-    PVOID GetPebAddress (HANDLE ProcessHandle)
+    PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
         static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
         PROCESS_BASIC_INFORMATION pbi;
@@ -661,6 +660,7 @@ namespace {
     }
 }
 #endif
+
 
 
 
@@ -737,18 +737,26 @@ namespace {
                             *parentProcessID =  pbi[5];
 
                             // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
-                            void*   pebAddress = GetPebAddress (hProcess);
+                            void*   pebAddress = GetPebAddress_ (hProcess);
                             if (pebAddress != nullptr) {
                                 void*   rtlUserProcParamsAddress {};
 
+
+#ifdef  _WIN64
+                                const int kUserProcParamsOffset_ = 0x20;
+                                const int kCmdLineOffset_ = 112;
+#else
+                                const int kUserProcParamsOffset_ = 0x10;
+                                const int kCmdLineOffset_ = 0x40;
+#endif
                                 /* get the address of ProcessParameters */
-                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + 0x10, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
+                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 UNICODE_STRING commandLine;
 
                                 /* read the CommandLine UNICODE_STRING structure */
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + 0x40,  &commandLine, sizeof(commandLine), NULL)) {
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 {
