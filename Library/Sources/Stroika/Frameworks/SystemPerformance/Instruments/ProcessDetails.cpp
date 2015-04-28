@@ -674,14 +674,33 @@ namespace {
         {
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
-                ProcessType processInfo;
-                Optional<String>    processEXEPath;
-                Optional<pid_t>     parentProcessID;
-                Optional<String>    cmdLine;
-                LookupProcessPath_ (pid,  &processEXEPath, &parentProcessID, &cmdLine);
-                processEXEPath.CopyToIf (&processInfo.fEXEPath);
-                parentProcessID.CopyToIf (&processInfo.fParentProcessID);
-                cmdLine.CopyToIf (&processInfo.fCommandLine);
+                ProcessType         processInfo;
+                {
+                    HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+                    if (hProcess != nullptr) {
+                        Execution::Finally cleanup {[hProcess] ()
+                        {
+                            Verify (::CloseHandle (hProcess));
+                        }
+                                                   };
+                        {
+                            Optional<String>    processEXEPath;
+                            Optional<pid_t>     parentProcessID;
+                            Optional<String>    cmdLine;
+                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, &cmdLine);
+                            processEXEPath.CopyToIf (&processInfo.fEXEPath);
+                            parentProcessID.CopyToIf (&processInfo.fParentProcessID);
+                            cmdLine.CopyToIf (&processInfo.fCommandLine);
+                        }
+                        {
+                            // @todo - Way off - most carefully remap/review settings
+                            PROCESS_MEMORY_COUNTERS_EX  memInfo;
+                            if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof(memInfo))) {
+                                processInfo.fResidentMemorySize = memInfo.WorkingSetSize;   // wag
+                            }
+                        }
+                    }
+                }
                 results.Add (pid, processInfo);
             }
             return results;
@@ -704,76 +723,63 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ ( pid_t processID, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine )
+        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine )
         {
-            // CLEANUP AND MAKE EXCEPTION SAFE
-            // Get a handle to the process.
-
-            HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID);
-            if (NULL != hProcess ) {
-                Execution::Finally cleanup1 {[hProcess] ()
-                {
-                    Verify (::CloseHandle (hProcess));
+            RequireNotNull (hProcess);
+            HMODULE hMod {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
+            DWORD cbNeeded  {};
+            if (::EnumProcessModules (hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
+                TCHAR moduleFullPath[MAX_PATH];
+                moduleFullPath[0] = '\0';
+                if (::GetModuleFileNameEx ( hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
+                    *processEXEPath =  String::FromSDKString (moduleFullPath);
                 }
-                                            };
+            }
 
-                HMODULE hMod {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
-                DWORD cbNeeded  {};
-                if (::EnumProcessModules (hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
-                    TCHAR moduleFullPath[MAX_PATH];
-                    moduleFullPath[0] = '\0';
-                    if (::GetModuleFileNameEx ( hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
-                        *processEXEPath =  String::FromSDKString (moduleFullPath);
-                    }
-                }
+            {
+                const ULONG ProcessBasicInformation  = 0;
+                static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+                if (NtQueryInformationProcess) {
+                    ULONG_PTR pbi[6];
+                    ULONG ulSize = 0;
+                    if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
+                        *parentProcessID =  pbi[5];
 
-                {
-                    const ULONG ProcessBasicInformation  = 0;
-                    static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
-                    if (NtQueryInformationProcess) {
-                        ULONG_PTR pbi[6];
-                        ULONG ulSize = 0;
-                        if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
-                            *parentProcessID =  pbi[5];
-
-                            // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
-                            void*   pebAddress = GetPebAddress_ (hProcess);
-                            if (pebAddress != nullptr) {
-                                void*   rtlUserProcParamsAddress {};
-
-
+                        // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
+                        void*   pebAddress = GetPebAddress_ (hProcess);
+                        if (pebAddress != nullptr) {
+                            void*   rtlUserProcParamsAddress {};
 #ifdef  _WIN64
-                                const int kUserProcParamsOffset_ = 0x20;
-                                const int kCmdLineOffset_ = 112;
+                            const int kUserProcParamsOffset_ = 0x20;
+                            const int kCmdLineOffset_ = 112;
 #else
-                                const int kUserProcParamsOffset_ = 0x10;
-                                const int kCmdLineOffset_ = 0x40;
+                            const int kUserProcParamsOffset_ = 0x10;
+                            const int kCmdLineOffset_ = 0x40;
 #endif
-                                /* get the address of ProcessParameters */
-                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
-                                    goto SkipCmdLine_;
-                                }
-                                UNICODE_STRING commandLine;
-
-                                /* read the CommandLine UNICODE_STRING structure */
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
-                                    goto SkipCmdLine_;
-                                }
-                                {
-                                    size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
-                                    Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
-                                    /* read the command line */
-                                    if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
-                                        goto SkipCmdLine_;
-                                    }
-                                    commandLineContents[strLen] = 0;
-                                    *cmdLine = commandLineContents.begin ();
-                                }
-SkipCmdLine_:
-                                ;
+                            /* get the address of ProcessParameters */
+                            if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
+                                goto SkipCmdLine_;
                             }
+                            UNICODE_STRING commandLine;
 
+                            /* read the CommandLine UNICODE_STRING structure */
+                            if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
+                                goto SkipCmdLine_;
+                            }
+                            {
+                                size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
+                                Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
+                                /* read the command line */
+                                if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                    goto SkipCmdLine_;
+                                }
+                                commandLineContents[strLen] = 0;
+                                *cmdLine = commandLineContents.begin ();
+                            }
+SkipCmdLine_:
+                            ;
                         }
+
                     }
                 }
             }
