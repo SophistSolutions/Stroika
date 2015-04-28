@@ -156,10 +156,11 @@ namespace {
         }
         ProcessMapType  capture_ ()
         {
+            ProcessMapType  result {};
 #if     qUseProcFS_
-            return ExtractFromProcFS_ ();
+            result = ExtractFromProcFS_ ();
 #endif
-            return ProcessMapType ();
+            return result;
         }
 #if     qUseProcFS_
         ProcessMapType  ExtractFromProcFS_ ()
