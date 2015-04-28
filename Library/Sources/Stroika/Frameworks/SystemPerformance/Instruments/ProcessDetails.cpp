@@ -651,12 +651,12 @@ namespace {
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
                 ProcessType processInfo;
-
-                String  processEXEPath;
-                LookupProcessPath_ (pid,  &processEXEPath);
+                Optional<String>    processEXEPath;
+                Optional<pid_t>     parentProcessID;
+                LookupProcessPath_ (pid,  &processEXEPath, &parentProcessID);
                 //test.fCommandLine = L"Hi mom comamndline";
-                //test.fName = processName;
-                processInfo.fEXEPath = processEXEPath;
+                processEXEPath.CopyToIf (&processInfo.fEXEPath);
+                parentProcessID.CopyToIf (&processInfo.fParentProcessID);
                 results.Add (pid, processInfo);
             }
             return results;
@@ -679,20 +679,26 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ ( pid_t processID, String* processEXEPath )
+        void    LookupProcessPath_ ( pid_t processID, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID )
         {
             // CLEANUP AND MAKE EXCEPTION SAFE
             // Get a handle to the process.
 
             HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID);
 
-            // Get the process name.
-
             if (NULL != hProcess ) {
+                Execution::Finally cleanup {[hProcess] ()
+                {
+                    Verify (::CloseHandle (hProcess));
+                }
+                                           };
+
+                // Get the process name.
+
                 HMODULE hMod;
                 DWORD cbNeeded;
 
-                if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), &cbNeeded) ) {
+                if (::EnumProcessModules (hProcess, &hMod, sizeof(hMod), &cbNeeded) ) {
                     {
                         TCHAR moduleFullPath[MAX_PATH];
                         moduleFullPath[0] = '\0';
@@ -700,11 +706,18 @@ namespace {
                         *processEXEPath =  String::FromSDKString (moduleFullPath);
                     }
                 }
+
+                {
+                    static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+                    if (NtQueryInformationProcess) {
+                        ULONG_PTR pbi[6];
+                        ULONG ulSize = 0;
+                        if (NtQueryInformationProcess (hProcess, 0,  &pbi, sizeof(pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
+                            *parentProcessID =  pbi[5];
+                        }
+                    }
+                }
             }
-
-            // Release the handle to the process.
-
-            CloseHandle( hProcess );
         }
     };
 };
