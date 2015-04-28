@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Containers/Set.h"
+#include    "../Containers/Sequence.h"
 #include    "../Traversal/DiscreteRange.h"
 #include    "../Traversal/Range.h"
 
@@ -119,6 +120,11 @@ namespace   Stroika {
                      *  \req 0 <= bucket and bucket < GetBucketCount ()
                      */
                     nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
+
+                public:
+                    /*
+                     */
+                    nonvirtual  Containers::Seqeunce<ValueType>  GetValues () const;
 
                 protected:
                     const ValueType*    _fBucketDataStart;
