@@ -540,7 +540,7 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return  Instrument (
-                InstrumentNameType (String_Constant (L"NetworkInterfaces")),
+                InstrumentNameType (String_Constant (L"Network-Interfaces")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();

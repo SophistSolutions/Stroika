@@ -767,7 +767,7 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
-               InstrumentNameType (String_Constant (L"ProcessDetails")),
+               InstrumentNameType (String_Constant (L"Process-Details")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = DateTime::Now ();
