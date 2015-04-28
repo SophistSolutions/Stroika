@@ -494,7 +494,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
  */
 Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
-    static  const   MeasurementType	kMountedVolumeUsage_  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));
+    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
@@ -505,7 +505,7 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
         m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
-        m.fType = kMountedVolumeUsage;
+        m.fType = kMountedVolumeUsage_;
         results.fMeasurements.Add (m);
         return results;
     },
