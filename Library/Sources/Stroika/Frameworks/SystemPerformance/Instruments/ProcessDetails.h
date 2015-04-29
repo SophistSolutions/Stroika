@@ -118,7 +118,7 @@ namespace   Stroika {
                         /**
                          *    in seconds - combines system and user time
                          */
-                        Optional<DurationSecondsType>       fTotalTimeUsed;
+                        Optional<DurationSecondsType>       fTotalCPUTimeUsed;
 
                         /**
                          */

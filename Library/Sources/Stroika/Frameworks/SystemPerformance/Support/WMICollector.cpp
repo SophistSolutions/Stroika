@@ -331,14 +331,14 @@ Optional<double>  WMICollector::PeekCurrentValue (const String& instance, const 
     return fInstanceData_.Lookup (instance)->get ()->PeekCurrentValue (counterName);
 }
 
-Mapping<String, double>  WMICollector::GetCurrentValues (const String& instance, const String& counterName)
+Mapping<String, double>  WMICollector::GetCurrentValues (const String& counterName)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValues");
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-    Require (fInstanceData_.ContainsKey (instance));
-    return fInstanceData_.Lookup (instance)->get ()->GetCurrentValues (counterName);
+    Require (fInstanceData_.ContainsKey (WMICollector::kWildcardInstance));
+    return fInstanceData_.Lookup (WMICollector::kWildcardInstance)->get ()->GetCurrentValues (counterName);
 }
 
 void    WMICollector::AddCounter_ (const String& counterName)

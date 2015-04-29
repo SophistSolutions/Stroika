@@ -56,20 +56,19 @@ using   IO::FileSystem::BinaryFileInputStream;
 
 
 
-//tmphack to test
-//#define qUseProcFS_ 1
 
 #ifndef     qUseProcFS_
 #define     qUseProcFS_ qPlatform_POSIX
 #endif
 
 
-
-
-//#define qUseWMICollectionSupport_       0
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows
 #endif
+
+
+
+
 
 
 #if     qUseWMICollectionSupport_
@@ -147,7 +146,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateBytes), String_Constant (L"Private-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fWorkingSetSize), String_Constant (L"Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalTimeUsed), String_Constant (L"Total-Time-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeUsed), String_Constant (L"Total-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadRate), String_Constant (L"IO-Total-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteRate), String_Constant (L"IO-Total-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -254,7 +253,7 @@ namespace {
                         // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
                         processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
 
-                        processDetails.fTotalTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                        processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (stats.nlwp != 0) {
                             processDetails.fThreadCount = stats.nlwp;
                         }
@@ -264,7 +263,7 @@ namespace {
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", (*processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
-                        DbgTrace (L"loaded processDetails.fTotalTimeUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalTimeUsed), stats.utime , stats.stime);
+                        DbgTrace (L"loaded processDetails.fTotalCPUTimeUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeUsed), stats.utime , stats.stime);
 #endif
                     }
                     catch (...) {
@@ -684,13 +683,20 @@ namespace {
 
 #if     qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kProcessID              { L"ID Process" };
+    const   String_Constant     kProcessID_             { L"ID Process" };
     const   String_Constant     kThreadCount_           { L"Thread Count" };
-    //const   String_Constant     kPageFaultsPerSecond    { L"Page Faults/sec" };
-    const   String_Constant     kIOReadBytesPerSecond   { L"IO Read Bytes/sec" };
-    const   String_Constant     kIOWriteBytesPerSecond  { L"IO Write Bytes/sec" };
+    const   String_Constant     kIOReadBytesPerSecond_  { L"IO Read Bytes/sec" };
+    const   String_Constant     kIOWriteBytesPerSecond_ { L"IO Write Bytes/sec" };
+    const   String_Constant     kPercentProcessorTime_  { L"% Processor Time" };            // % Processor Time is the percentage of elapsed time that all of process threads
+    // used the processor to execution instructions. An instruction is the basic unit of
+    // execution in a computer, a thread is the object that executes instructions, and a
+    // process is the object created when a program is run. Code executed to handle some
+    // hardware interrupts and trap conditions are included in this count.
+    const   String_Constant     kElapsedTime_           { L"Elapsed Time" };                // The total elapsed time, in seconds, that this process has been running.
 }
 #endif
+
+
 
 
 
@@ -698,7 +704,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
-        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID, kThreadCount_, kIOReadBytesPerSecond, kIOWriteBytesPerSecond } };
+        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
         CapturerWithContext_Windows_ (const Options& options)
@@ -716,28 +722,18 @@ namespace {
         }
         ProcessMapType  capture_ ()
         {
-
-#if   qUseWMICollectionSupport_
-
+#if     qUseWMICollectionSupport_
             Time::DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             Time::DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
-
 
             for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
                 DbgTrace (L"wmi isntance name %s", i.c_str ());
             }
 
-#if 0
-            Mapping<String, double>  t = fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_);
-            for (KeyValuePair<String, double> i : t) {
-                DbgTrace (L"%s => %f", i.fKey.c_str (), i.fValue);
-            }
-#endif
-
             // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
             Mapping<pid_t, String>  pid2InstanceMap;
-            for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kProcessID)) {
+            for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kProcessID_)) {
                 pid2InstanceMap.Add (static_cast<int> (i.fValue), i.fKey);
             }
 #endif
@@ -773,50 +769,50 @@ namespace {
                     }
                 }
 #if   qUseWMICollectionSupport_
-                if (true) {
-
-                    // gross hack to get started...
-#if 0
-                    Mapping<String, double>  t = fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_);
-                    for (KeyValuePair<String, double> i : t) {
-                        DbgTrace (L"%s => %f", i.fKey.c_str (), i.fValue);
-                    }
-#endif
-
+                {
                     String instanceVal = pid2InstanceMap.LookupValue (pid);
 
                     // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_)) {
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kThreadCount_)) {
                         if (instanceVal == i.fKey) {
-                            processInfo.fThreadCount = i.fValue;
+                            processInfo.fThreadCount = static_cast<unsigned int> (i.fValue);
                             break;
                         }
                     }
                     // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kIOReadBytesPerSecond)) {
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_)) {
                         if (instanceVal == i.fKey) {
                             processInfo.fIOTotalReadRate = i.fValue;
                             break;
                         }
                     }
                     // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kIOWriteBytesPerSecond)) {
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_)) {
                         if (instanceVal == i.fKey) {
                             processInfo.fIOTotalWriteRate = i.fValue;
                             break;
                         }
                     }
-                }
-                if (false) {
-                    String wmiInstanceName = Characters::Format (L"%d", pid);
-                    //fProcessWMICollector_.AddInstancesIf (wmiInstanceName);
-
-                    if (auto o = fProcessWMICollector_.PeekCurrentValue (wmiInstanceName, kThreadCount_)) {
-                        processInfo.fThreadCount = *o;
+                    // Not the most efficient appraoch ;-)
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_)) {
+                        if (instanceVal == i.fKey) {
+                            // @todo wrong - pct over capture interval
+                            processInfo.fTotalCPUTimeUsed = i.fValue;
+                            break;
+                        }
                     }
+                    // Not the most efficient appraoch ;-)
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kElapsedTime_)) {
+                        if (instanceVal == i.fKey) {
+                            processInfo.fProcessStartedAt = DateTime::Now ().AddSeconds (-static_cast<time_t> (i.fValue));
+                            break;
+                        }
+                    }
+
+
+
                 }
 #endif
-
                 results.Add (pid, processInfo);
             }
             return results;
@@ -839,21 +835,24 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine )
+        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine)
         {
             RequireNotNull (hProcess);
-            HMODULE hMod {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
-            DWORD cbNeeded  {};
-            if (::EnumProcessModules (hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
+            RequireNotNull (processEXEPath);
+            RequireNotNull (parentProcessID);
+            RequireNotNull (cmdLine);
+            HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
+            DWORD       cbNeeded    {};
+            if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
                 TCHAR moduleFullPath[MAX_PATH];
                 moduleFullPath[0] = '\0';
-                if (::GetModuleFileNameEx ( hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
+                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
                     *processEXEPath =  String::FromSDKString (moduleFullPath);
                 }
             }
 
             {
-                const ULONG ProcessBasicInformation  = 0;
+                const   ULONG   ProcessBasicInformation  = 0;
                 static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
                 if (NtQueryInformationProcess) {
                     ULONG_PTR pbi[6];
@@ -941,6 +940,7 @@ namespace {
         }
     };
 }
+
 
 
 

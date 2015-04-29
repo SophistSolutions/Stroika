@@ -159,8 +159,10 @@ namespace   Stroika {
                 public:
                     /**
                      *  experimental wildcard API
+                     *
+                     *  \req WMICollector::kWildcardInstance
                      */
-                    nonvirtual  Mapping<String, double>  GetCurrentValues (const String& instance, const String& counterName);
+                    nonvirtual  Mapping<String, double>  GetCurrentValues (const String& counterName);
 
                 public:
                     /**
