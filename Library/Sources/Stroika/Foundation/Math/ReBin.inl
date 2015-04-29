@@ -99,8 +99,8 @@ namespace   Stroika {
                     return _fBucketDataStart[bucket];
                 }
                 template    <typename X_TYPE, typename VALUE_TYPE>
-                inline  auto  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValues () const -> Containers::Seqeunce<ValueType> {
-                    return Containers::Seqeunce<ValueType> (_fBucketDataStart, _fBucketDataEnd);
+                inline  auto  BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValues () const -> Containers::Sequence<ValueType> {
+                    return Containers::Sequence<ValueType> (_fBucketDataStart, _fBucketDataEnd);
                 }
 
 

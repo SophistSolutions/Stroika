@@ -124,7 +124,7 @@ namespace   Stroika {
                 public:
                     /*
                      */
-                    nonvirtual  Containers::Seqeunce<ValueType>  GetValues () const;
+                    nonvirtual  Containers::Sequence<ValueType>  GetValues () const;
 
                 protected:
                     const ValueType*    _fBucketDataStart;
