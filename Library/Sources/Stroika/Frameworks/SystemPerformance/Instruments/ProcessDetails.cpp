@@ -173,7 +173,7 @@ namespace {
         struct PerfStats_ {
             double  fTotalCPUTimeUsed;
         };
-        DurationSecondsType         fContextStatsCapturedAt_ {}
+        DurationSecondsType         fContextStatsCapturedAt_ {};
         Mapping<pid_t, PerfStats_>  fContextStats_;
 
         CapturerWithContext_POSIX_ (const Options& options)
