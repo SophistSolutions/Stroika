@@ -147,6 +147,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fWorkingSetSize), String_Constant (L"Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeUsed), String_Constant (L"Total-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPercentCPUTime), String_Constant (L"Percent-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadRate), String_Constant (L"IO-Total-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteRate), String_Constant (L"IO-Total-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -796,8 +797,7 @@ namespace {
                     // Not the most efficient appraoch ;-)
                     for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_)) {
                         if (instanceVal == i.fKey) {
-                            // @todo wrong - pct over capture interval
-                            processInfo.fTotalCPUTimeUsed = i.fValue;
+                            processInfo.fPercentCPUTime = i.fValue;
                             break;
                         }
                     }
@@ -808,9 +808,6 @@ namespace {
                             break;
                         }
                     }
-
-
-
                 }
 #endif
                 results.Add (pid, processInfo);

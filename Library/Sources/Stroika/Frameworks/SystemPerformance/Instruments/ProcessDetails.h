@@ -116,8 +116,13 @@ namespace   Stroika {
                         Optional<MemorySizeType>   fWorkingSetSize;
 
                         /**
-                         *    in seconds - combines system and user time
+                         *    Percent (of a single???) CPU time used (summed over user / system)
                          */
+                        Optional<DurationSecondsType>       fPercentCPUTime;
+
+                        /**
+                          *    in seconds - combines system and user time
+                          */
                         Optional<DurationSecondsType>       fTotalCPUTimeUsed;
 
                         /**
