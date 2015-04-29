@@ -826,7 +826,7 @@ namespace {
             }
 
             // Calculate how many process identifiers were returned.
-            DWORD   cProcesses = cbNeeded / sizeof(DWORD);
+            DWORD   cProcesses = cbNeeded / sizeof (DWORD);
             for (DWORD i = 0; i < cProcesses; ++i) {
                 result.Add (aProcesses[i]);
             }
