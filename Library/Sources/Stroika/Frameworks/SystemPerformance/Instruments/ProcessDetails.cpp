@@ -176,10 +176,10 @@ namespace {
         };
         DurationSecondsType         fContextStatsCapturedAt_ {};
         Mapping<pid_t, PerfStats_>  fContextStats_;
-		Options						fOptions_;
+        Options                     fOptions_;
 
         CapturerWithContext_POSIX_ (const Options& options)
-			: fOptions_ (options)
+            : fOptions_ (options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
             if (options.fMinimumAveragingInterval > 0) {
