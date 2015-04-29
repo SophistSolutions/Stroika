@@ -39,9 +39,6 @@
  *              strings (for stuff like disk name, or process name). And the API seems to ahve some
  *              support for this, but getformattedvalue doesnt seem to support it?
  *
- *      @todo   Support 'wildcards/array' somehow. Not sure what this means, but maybe just a more compact
- *              way to do some queries.
- *
  *      @todo   Consider if we should support multiple objects at a time.
  *
  *      @todo   Consider use of Atom manager for tokens - as would be more efficeint than strings.
@@ -49,6 +46,9 @@
  *
  *      @todo   Consider implementation based on COM calls, since Sterl believes those maybe
  *              more efficient
+ *
+ *      @todo   Better exception message reporting - LoadModule/FormatMEssage -
+ *              see https://msdn.microsoft.com/en-us/library/windows/desktop/aa373046(v=vs.85).aspx
  *
  */
 

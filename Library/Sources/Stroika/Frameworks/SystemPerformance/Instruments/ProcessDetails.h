@@ -86,6 +86,8 @@ namespace   Stroika {
                          *  been demand-loaded in, or which are swapped out.
                          *
                          *  This  does NOT include 'shared' memory (e.g. for mapped .so files)
+                         *
+                         *  This value is commonly used/available in UNIX
                          */
                         Optional<MemorySizeType>            fResidentMemorySize;
 
@@ -99,6 +101,8 @@ namespace   Stroika {
                          *  Private bytes however only refers to the processes private memory, so this value may not reflect
                          *  shared resources (even if the shared resource is only used by this process at present).
                          *
+                         *  This value is commonly used/available in Windows
+                         *
                          *  @todo This MAYBE windows only(?)
                          */
                         Optional<MemorySizeType>           fPrivateBytes;
@@ -111,10 +115,16 @@ namespace   Stroika {
                          */
                         Optional<MemorySizeType>   fWorkingSetSize;
 
-                        Optional<DurationSecondsType>       fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
+                        /**
+                         *    in seconds - combines system and user time
+                         */
+                        Optional<DurationSecondsType>       fTotalTimeUsed;
+
+                        /**
+                         */
                         Optional<unsigned int>              fThreadCount;
 
-                        /*
+                        /**
                          *  Rate in bytes per second.
                          *  This is summed accross all IO devices, including disk and network.
                          */
