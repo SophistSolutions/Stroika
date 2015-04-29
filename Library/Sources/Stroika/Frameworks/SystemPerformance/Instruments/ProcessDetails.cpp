@@ -178,6 +178,8 @@ namespace {
         Mapping<pid_t, PerfStats_>  fContextStats_;
         Options                     fOptions_;
 
+        DateTime    fLastCapturedAt;
+
         CapturerWithContext_POSIX_ (const Options& options)
             : fOptions_ (options)
         {
@@ -192,6 +194,7 @@ namespace {
 #if     qUseProcFS_
             result = ExtractFromProcFS_ ();
 #endif
+            fLastCapturedAt = DateTime::Now ();
             return result;
         }
 #if     qUseProcFS_
@@ -729,14 +732,20 @@ namespace {
         WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
         DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
+        DateTime    fLastCapturedAt;
+
+
         CapturerWithContext_Windows_ (const Options& options)
         {
             capture_ ();// hack so we prefill with each process capture
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+            : fLastCapturedAt (from.fLastCapturedAt)
 #if     qUseWMICollectionSupport_
-            : fProcessWMICollector_ (from.fProcessWMICollector_)
+            , fProcessWMICollector_ (from.fProcessWMICollector_)
+            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
 #endif
+
         {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
@@ -833,6 +842,7 @@ namespace {
 #endif
                 results.Add (pid, processInfo);
             }
+            fLastCapturedAt = DateTime::Now ();
             return results;
         }
         Set<pid_t>  GetAllProcessIDs_ ()
@@ -979,7 +989,8 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
                InstrumentNameType (String_Constant (L"Process-Details")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = DateTime::Now ();
+        //DateTime    before = DateTime::Now ();
+        DateTime    before = useCaptureContext.fLastCapturedAt;
         auto rawMeasurement = useCaptureContext.capture_();
         results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
         Measurement m;
