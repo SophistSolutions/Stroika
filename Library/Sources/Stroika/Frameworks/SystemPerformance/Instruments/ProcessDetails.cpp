@@ -175,12 +175,14 @@ namespace {
         };
         DurationSecondsType         fContextStatsCapturedAt_ {};
         Mapping<pid_t, PerfStats_>  fContextStats_;
+		Options						fOptions_;
 
         CapturerWithContext_POSIX_ (const Options& options)
+			: fOptions_ (options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
-            if (fOptions_.fMinimumAveragingInterval > 0) {
-                Execution::Sleep (fOptions_.fMinimumAveragingInterval);
+            if (options.fMinimumAveragingInterval > 0) {
+                Execution::Sleep (options.fMinimumAveragingInterval);
             }
         }
         ProcessMapType  capture_ ()
