@@ -170,8 +170,18 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
+        struct PerfStats_ {
+            double  fTotalCPUTimeUsed;
+        };
+        DurationSecondsType         fContextStatsCapturedAt_ {}
+        Mapping<pid_t, PerfStats_>  fContextStats_;
+
         CapturerWithContext_POSIX_ (const Options& options)
         {
+            capture_ ();        // for side-effect of setting fContextStats_
+            if (fOptions_.fMinimumAveragingInterval > 0) {
+                Execution::Sleep (fOptions_.fMinimumAveragingInterval);
+            }
         }
         ProcessMapType  capture_ ()
         {
@@ -189,6 +199,8 @@ namespace {
             //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
             //
             ProcessMapType  results;
+
+            Mapping<pid_t, PerfStats_>  newContextStats;
 
             for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
                 bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
@@ -255,6 +267,9 @@ namespace {
                         processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
 
                         processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                        if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                            processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - p->fTotalCPUTimeUsed) * 100.0 / (Time::GetTickCount () - fContextStatsCapturedAt_);
+                        }
                         if (stats.nlwp != 0) {
                             processDetails.fThreadCount = stats.nlwp;
                         }
@@ -287,6 +302,8 @@ namespace {
                     catch (...) {
                     }
 
+                    fContextStatsCapturedAt_ = Time::GetTickCount ();
+                    newContextStats.Add (pid, PerfStats_ { *processDetails.fTotalCPUTimeUsed });
                     results.Add (pid, processDetails);
                 }
             }
