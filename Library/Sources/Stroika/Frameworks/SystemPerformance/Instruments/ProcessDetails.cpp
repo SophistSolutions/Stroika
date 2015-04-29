@@ -144,8 +144,13 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRunStatus), String_Constant (L"Run-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fVirtualMemorySize), String_Constant (L"Virtual-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fResidentMemorySize), String_Constant (L"Resident-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateBytes), String_Constant (L"Private-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fWorkingSetSize), String_Constant (L"Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalTimeUsed), String_Constant (L"Total-Time-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadRate), String_Constant (L"IO-Total-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteRate), String_Constant (L"IO-Total-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadBytes), String_Constant (L"IO-Total-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteBytes), String_Constant (L"IO-Total-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
@@ -681,7 +686,9 @@ namespace {
 namespace {
     const   String_Constant     kProcessID              { L"ID Process" };
     const   String_Constant     kThreadCount_           { L"Thread Count" };
-    const   String_Constant     kPageFaultsPerSecond    { L"Page Faults/sec" };
+    //const   String_Constant     kPageFaultsPerSecond    { L"Page Faults/sec" };
+    const   String_Constant     kIOReadBytesPerSecond   { L"IO Read Bytes/sec" };
+    const   String_Constant     kIOWriteBytesPerSecond  { L"IO Write Bytes/sec" };
 }
 #endif
 
@@ -691,7 +698,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ {
 #if     qUseWMICollectionSupport_
-        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID, kThreadCount_, kPageFaultsPerSecond } };
+        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID, kThreadCount_, kIOReadBytesPerSecond, kIOWriteBytesPerSecond } };
         DurationSecondsType fMinTimeBeforeFirstCapture_;
 #endif
         CapturerWithContext_Windows_ (const Options& options)
@@ -756,10 +763,11 @@ namespace {
                             cmdLine.CopyToIf (&processInfo.fCommandLine);
                         }
                         {
-                            // @todo - Way off - most carefully remap/review settings
                             PROCESS_MEMORY_COUNTERS_EX  memInfo;
                             if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof(memInfo))) {
-                                processInfo.fResidentMemorySize = memInfo.WorkingSetSize;   // wag
+                                processInfo.fWorkingSetSize = memInfo.WorkingSetSize;
+                                processInfo.fPrivateBytes = memInfo.PrivateUsage;
+                                processInfo.fPageFaultCount = memInfo.PageFaultCount;
                             }
                         }
                     }
@@ -781,6 +789,21 @@ namespace {
                     for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kThreadCount_)) {
                         if (instanceVal == i.fKey) {
                             processInfo.fThreadCount = i.fValue;
+                            break;
+                        }
+                    }
+                    // Not the most efficient appraoch ;-)
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kIOReadBytesPerSecond)) {
+                        if (instanceVal == i.fKey) {
+                            processInfo.fIOTotalReadRate = i.fValue;
+                            break;
+                        }
+                    }
+                    // Not the most efficient appraoch ;-)
+                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (WMICollector::kWildcardInstance, kIOWriteBytesPerSecond)) {
+                        if (instanceVal == i.fKey) {
+                            processInfo.fIOTotalWriteRate = i.fValue;
+                            break;
                         }
                     }
                 }

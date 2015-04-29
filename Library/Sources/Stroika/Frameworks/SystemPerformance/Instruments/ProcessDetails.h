@@ -81,28 +81,63 @@ namespace   Stroika {
                         Optional<MemorySizeType>            fVirtualMemorySize;
 
                         /**
-                         * Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
-                         * pages which count toward text, data, or stack space. This does not include pages which have not
-                         * been demand-loaded in, or which are swapped out.
+                         *  Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
+                         *  pages which count toward text, data, or stack space. This does not include pages which have not
+                         *  been demand-loaded in, or which are swapped out.
                          *
-                         * This  does NOT include 'shared' memory (e.g. for mapped .so files)
-                         *
-                         *  @todo   This is similar to the Windows concept of PrivateBytes (but not exactly - maybe - review)
+                         *  This  does NOT include 'shared' memory (e.g. for mapped .so files)
                          */
                         Optional<MemorySizeType>            fResidentMemorySize;
+
+                        /*
+                         *  From http://superuser.com/questions/618686/private-bytes-vs-working-set-in-process-explorer:
+                         *  Private Bytes refers to the amount of Page file space that is allocated to the process
+                         *  (not necessarily used) in the event that the process's private memory footprint is completely
+                         *  paged out to swap. most of the time, the process is not entirely (or at all) page-file resident,
+                         *  so that's why private bytes appears to have "room" for further allocation. It is not however the case.
+                         *
+                         *  Private bytes however only refers to the processes private memory, so this value may not reflect
+                         *  shared resources (even if the shared resource is only used by this process at present).
+                         *
+                         *  @todo This MAYBE windows only(?)
+                         */
+                        Optional<MemorySizeType>           fPrivateBytes;
+
+                        /**
+                         */
+                        Optional<unsigned int> fPageFaultCount;
+
+                        /**
+                         */
+                        Optional<MemorySizeType>   fWorkingSetSize;
 
                         Optional<DurationSecondsType>       fTotalTimeUsed;     // ps time field - in seconds - combines system and user time
                         Optional<unsigned int>              fThreadCount;
 
+                        /*
+                         *  Rate in bytes per second.
+                         *  This is summed accross all IO devices, including disk and network.
+                         */
+                        Optional<double>        fIOTotalReadRate;
+                        /*
+                         *  Rate in bytes per second
+                         *  This is summed accross all IO devices, including disk and network.
+                         */
+                        Optional<double>        fIOTotalWriteRate;
+
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
                          *  search for 'read_bytes'
+                         *
+                         *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
                         Optional<double>        fIOTotalReadBytes;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
                          *  search for 'write_bytes'
+                         *
+                         *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
                         Optional<double>        fIOTotalWriteBytes;
                     };

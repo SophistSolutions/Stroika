@@ -133,7 +133,19 @@ Mapping<String, double>  WMICollector::PerInstanceData_::GetCurrentValues (const
         items.GrowToSize ((dwBufferSize + sizeof (PDH_FMT_COUNTERVALUE_ITEM) - 1) / sizeof (PDH_FMT_COUNTERVALUE_ITEM));
     }
     status = ::PdhGetFormattedCounterArray (counter, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, items.begin ());
+
+    if (status == PDH_CSTATUS_INVALID_DATA) {
+        /*
+         *  From: https://msdn.microsoft.com/en-us/library/windows/desktop/aa371894%28v=vs.85%29.aspx
+         *      PDH_CSTATUS_INVALID_DATA    The counter was successfully found, but the data returned is not valid.
+         *      This error can occur if the counter value is less than the previous value. (Because counter values always
+         *      increment, the counter value rolls over to zero when it reaches its maximum value.)
+         *      Another possible cause is a system timer that is not correct.
+         */
+        return Mapping<String, double> {};
+    }
     if (status != 0) {
+        //PDH_CSTATUS_INVALID_DATA
         bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
         Execution::DoThrow (StringException (L"PdhGetFormattedCounterValue"));
     }
