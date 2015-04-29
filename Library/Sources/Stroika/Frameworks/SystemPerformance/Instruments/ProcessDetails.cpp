@@ -18,6 +18,7 @@
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
+#include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/Execution/Thread.h"
 #if     qPlatform_POSIX
 #include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
