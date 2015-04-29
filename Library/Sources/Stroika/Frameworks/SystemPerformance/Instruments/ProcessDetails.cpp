@@ -172,9 +172,9 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 namespace {
     struct  CapturerWithContext_POSIX_ {
         struct PerfStats_ {
-            double  fTotalCPUTimeUsed;
+            DurationSecondsType fCapturedAt;
+            double              fTotalCPUTimeUsed;
         };
-        DurationSecondsType         fContextStatsCapturedAt_ {};
         Mapping<pid_t, PerfStats_>  fContextStats_;
         Options                     fOptions_;
 
@@ -213,6 +213,7 @@ namespace {
 #endif
                 if (isAllNumeric) {
                     pid_t pid = String2Int<pid_t> (dir);
+                    DurationSecondsType now { Time::GetTickCount () };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
@@ -271,7 +272,7 @@ namespace {
 
                         processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
-                            processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - p->fTotalCPUTimeUsed) * 100.0 / (Time::GetTickCount () - fContextStatsCapturedAt_);
+                            processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - p->fTotalCPUTimeUsed) * 100.0 / (now - p->fCapturedAt);
                         }
                         if (stats.nlwp != 0) {
                             processDetails.fThreadCount = stats.nlwp;
@@ -305,11 +306,11 @@ namespace {
                     catch (...) {
                     }
 
-                    fContextStatsCapturedAt_ = Time::GetTickCount ();
-                    newContextStats.Add (pid, PerfStats_ { *processDetails.fTotalCPUTimeUsed });
+                    newContextStats.Add (pid, PerfStats_ { now, *processDetails.fTotalCPUTimeUsed });
                     results.Add (pid, processDetails);
                 }
             }
+            fContextStats_ = newContextStats;
             return results;
         }
         template    <typename T>
