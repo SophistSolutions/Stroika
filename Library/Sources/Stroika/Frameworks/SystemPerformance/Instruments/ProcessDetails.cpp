@@ -939,6 +939,8 @@ namespace {
 }
 
 
+const   MeasurementType SystemPerformance::Instruments::ProcessDetails::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
+
 
 
 
@@ -951,8 +953,6 @@ namespace {
  */
 Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
 {
-    static  const   MeasurementType kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
-
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Process-Details")),

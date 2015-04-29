@@ -165,8 +165,20 @@ namespace   Stroika {
                         /// many more TBD
                     };
 
+                    /**
+                     */
                     using ProcessMapType = Mapping<pid_t, ProcessType>;
 
+                    /**
+                     *  This instrument produce a measurement of type kProcessMapMeasurement, whcih can be converted to ProcessMapType.
+                     *
+                     *  EXAMPLE USAGE:
+                     *       for (Measurement m : ms.fMeasurements) {
+                     *          if (m.fType == SystemPerformance::Instruments::ProcessDetails::kProcessMapMeasurement) {
+                     *              AccumulateMeasurement_ProcessDetails_ (m);
+                     *          }
+                     */
+                    extern  const   MeasurementType kProcessMapMeasurement;
 
                     /**
                      *  For ProcessType and ProcessMapType types.
