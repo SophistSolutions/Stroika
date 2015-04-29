@@ -52,7 +52,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Process
 
 using   Characters::String_Constant;
 using   IO::FileSystem::BinaryFileInputStream;
-
+using   Time::DurationSecondsType;
 
 
 
@@ -127,7 +127,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<unsigned int>> ();
         mapper.AddCommonType<Optional<MemorySizeType>> ();
         mapper.AddCommonType<Optional<Time::DateTime>> ();
-        mapper.AddCommonType<Optional<Time::DurationSecondsType>> ();
+        mapper.AddCommonType<Optional<DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
@@ -741,9 +741,9 @@ namespace {
         ProcessMapType  capture_ ()
         {
 #if     qUseWMICollectionSupport_
-            Time::DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
+            DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            Time::DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
+            DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 
             for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
                 DbgTrace (L"wmi isntance name %s", i.c_str ());
