@@ -81,19 +81,18 @@ namespace {
             double  fWritesCompleted;
         };
         Options                                 fOptions_;
+        DurationSecondsType                     fPostponeCaptureUntil_ { 0 };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
         CapturerWithContext_POSIX_ (Options options)
             : fOptions_ (options)
         {
-            if (fOptions_.fMinimumAveragingInterval > 0) {
-                capture_ ();        // for side-effect of setting fContextStats_
-                Execution::Sleep (fOptions_.fMinimumAveragingInterval);
-            }
+            capture_ ();        // for side-effect of setting fContextStats_
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
         Sequence<VolumeInfo> capture_ ()
         {
             Sequence<VolumeInfo>   results;
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             results = capture_Process_Run_DF_ ();
             try {
                 Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
@@ -131,6 +130,7 @@ namespace {
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
             }
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
             return results;
         }
         Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
@@ -253,9 +253,10 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
-        Options         fOptions_;
+        Options                 fOptions_;
+        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
 #if   qUseWMICollectionSupport_
-        WMICollector    fLogicalDiskWMICollector_;
+        WMICollector            fLogicalDiskWMICollector_;
 #endif
         CapturerWithContext_Windows_ (Options options)
             : fOptions_ (options)
@@ -264,11 +265,7 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            if (fOptions_.fMinimumAveragingInterval > 0)
-            {
-                capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
-                Execution::Sleep (fOptions_.fMinimumAveragingInterval);
-            }
+            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -279,15 +276,14 @@ namespace {
         {
 #if   qUseWMICollectionSupport_
             capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_ (due to bug/misfeature in not being able  to copy query object - we choose to re-call here even if possibly not needed)
-            if (fOptions_.fMinimumAveragingInterval > 0) {
-                Execution::Sleep (fOptions_.fMinimumAveragingInterval);
-            }
 #endif
         }
         Sequence<VolumeInfo> capture_ ()
         {
             Sequence<VolumeInfo>   results;
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             results = capture_Windows_GetVolumeInfo_ ();
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
             return results;
         }
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
