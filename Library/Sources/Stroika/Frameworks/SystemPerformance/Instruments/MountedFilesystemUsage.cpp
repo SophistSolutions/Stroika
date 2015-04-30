@@ -69,9 +69,33 @@ namespace {
 
 
 
+
+
+
+namespace {
+    struct  CapturerWithContext_COMMON_ {
+        Options                     fOptions_;
+        DurationSecondsType         fMinimumAveragingInterval_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        DateTime                    fLastCapturedAt;
+        CapturerWithContext_COMMON_ (const Options& options)
+            : fOptions_ (options)
+            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+        {
+        }
+        void    NoteCompletedCapture_ ()
+        {
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = DateTime::Now ();
+        }
+    };
+}
+
+
+
 #if     qPlatform_POSIX
 namespace {
-    struct  CapturerWithContext_POSIX_ {
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             double  fSectorsRead;
             double  fTimeSpentReading;
@@ -80,11 +104,9 @@ namespace {
             double  fTimeSpentWriting;
             double  fWritesCompleted;
         };
-        Options                                 fOptions_;
-        DurationSecondsType                     fPostponeCaptureUntil_ { 0 };
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
         CapturerWithContext_POSIX_ (Options options)
-            : fOptions_ (options)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
         }
@@ -130,7 +152,7 @@ namespace {
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
             }
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
+            NoteCompletedCapture_ ();
             return results;
         }
         Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
@@ -252,30 +274,30 @@ namespace {
 
 #if     qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ {
-        Options                 fOptions_;
-        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
+    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if   qUseWMICollectionSupport_
         WMICollector            fLogicalDiskWMICollector_;
 #endif
         CapturerWithContext_Windows_ (Options options)
-            : fOptions_ (options)
+            : CapturerWithContext_COMMON_ (options)
 #if     qUseWMICollectionSupport_
             , fLogicalDiskWMICollector_ { String_Constant { L"LogicalDisk" }, {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
 #endif
         {
 #if   qUseWMICollectionSupport_
             capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            NoteCompletedCapture_ ();
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : fOptions_ (from.fOptions_)
+            : CapturerWithContext_COMMON_ (from)
 #if   qUseWMICollectionSupport_
             , fLogicalDiskWMICollector_ (from.fLogicalDiskWMICollector_)
 #endif
         {
 #if   qUseWMICollectionSupport_
             capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_ (due to bug/misfeature in not being able  to copy query object - we choose to re-call here even if possibly not needed)
+            NoteCompletedCapture_ ();
 #endif
         }
         Sequence<VolumeInfo> capture_ ()
@@ -283,7 +305,7 @@ namespace {
             Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             results = capture_Windows_GetVolumeInfo_ ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
+            NoteCompletedCapture_ ();
             return results;
         }
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
@@ -496,9 +518,9 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
                InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = DateTime::Now ();
+        DateTime    before = useCaptureContext.fLastCapturedAt;
         Sequence<VolumeInfo> volumes   =   useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
         m.fType = kMountedVolumeUsage_;

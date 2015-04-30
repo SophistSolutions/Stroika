@@ -168,22 +168,49 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
 
 
 
+
+
+
+
+
+
+
+
+namespace {
+    struct  CapturerWithContext_COMMON_ {
+        Options                     fOptions_;
+        DurationSecondsType         fMinimumAveragingInterval_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        DateTime                    fLastCapturedAt;
+        CapturerWithContext_COMMON_ (const Options& options)
+            : fOptions_ (options)
+            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+        {
+        }
+        void    NoteCompletedCapture_ ()
+        {
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = DateTime::Now ();
+        }
+    };
+}
+
+
+
+
+
+
 #if     qPlatform_POSIX
 namespace {
-    struct  CapturerWithContext_POSIX_ {
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             DurationSecondsType fCapturedAt;
             double              fTotalCPUTimeUsed;
         };
         Mapping<pid_t, PerfStats_>  fContextStats_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        Options                     fOptions_;
-        DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DateTime                    fLastCapturedAt;
 
         CapturerWithContext_POSIX_ (const Options& options)
-            : fOptions_ (options)
-            , fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
         }
@@ -195,7 +222,7 @@ namespace {
             result = ExtractFromProcFS_ ();
 #endif
             fLastCapturedAt = DateTime::Now ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             return result;
         }
 #if     qUseProcFS_
@@ -730,25 +757,21 @@ namespace {
 
 #if     qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ {
-        DateTime                    fLastCapturedAt;
-        DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-
+    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
         WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
 #endif
         CapturerWithContext_Windows_ (const Options& options)
+            : CapturerWithContext_COMMON_ (options)
         {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt = DateTime::Now ();
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : fLastCapturedAt (from.fLastCapturedAt)
-            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
+            : CapturerWithContext_COMMON_ (from)
 #if     qUseWMICollectionSupport_
             , fProcessWMICollector_ (from.fProcessWMICollector_)
 #endif
@@ -756,7 +779,7 @@ namespace {
         {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt = DateTime::Now ();
 #endif
         }
@@ -853,7 +876,7 @@ namespace {
                 results.Add (pid, processInfo);
             }
             fLastCapturedAt = DateTime::Now ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             return results;
         }
         Set<pid_t>  GetAllProcessIDs_ ()
@@ -1000,10 +1023,9 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
                InstrumentNameType (String_Constant (L"Process-Details")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        //DateTime    before = DateTime::Now ();
         DateTime    before = useCaptureContext.fLastCapturedAt;
         auto rawMeasurement = useCaptureContext.capture_();
-        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
         m.fType = kProcessMapMeasurement;

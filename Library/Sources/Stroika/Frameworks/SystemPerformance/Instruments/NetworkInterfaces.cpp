@@ -123,9 +123,37 @@ IOStatistics&   IOStatistics::operator+= (const IOStatistics& rhs)
 
 
 
+
+
+
+namespace {
+    struct  CapturerWithContext_COMMON_ {
+        Options                     fOptions_;
+        DurationSecondsType         fMinimumAveragingInterval_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        DateTime                    fLastCapturedAt;
+        CapturerWithContext_COMMON_ (const Options& options)
+            : fOptions_ (options)
+            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+        {
+        }
+        void    NoteCompletedCapture_ ()
+        {
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = DateTime::Now ();
+        }
+    };
+}
+
+
+
+
+
+
+
 #if     qPlatform_POSIX
 namespace {
-    struct  CapturerWithContext_POSIX_ {
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
 
         struct Last {
             uint64_t  fTotalBytesReceived;
@@ -141,10 +169,8 @@ namespace {
             DurationSecondsType  fAt;
         };
         Optional<LastSum>           fLastSum;
-        DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         CapturerWithContext_POSIX_ (Options options)
-            : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
@@ -173,7 +199,7 @@ namespace {
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
                 fLastSum = LastSum { *accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now };
             }
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            NoteCompletedCapture_ ();
             return Info { interfaceResults, accumSummary };
         }
         void    Read_proc_net_dev_ (Collection<Instruments::NetworkInterfaces::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
@@ -317,9 +343,7 @@ namespace {
 
 #if     qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ {
-        DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
         WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
@@ -327,7 +351,7 @@ namespace {
         Set<String>         fAvailableInstances_;
 #endif
         CapturerWithContext_Windows_ (Options options)
-            : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
+            : CapturerWithContext_COMMON_ (options)
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
@@ -335,8 +359,8 @@ namespace {
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+            : CapturerWithContext_COMMON_ (from)
 #if     qUseWMICollectionSupport_
-            : fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
             , fNetworkWMICollector_ (from.fNetworkWMICollector_)
             , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
             , fTCPv6WMICollector_ (from.fTCPv6WMICollector_)
@@ -385,7 +409,7 @@ namespace {
                 accumSummary.fTotalPacketsSent = stats.dwOutRequests;
             }
             result.fSummaryIOStatistics = accumSummary;
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            NoteCompletedCapture_ ();
             return result;
         }
 #if     qUseWMICollectionSupport_
@@ -542,9 +566,9 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
                 InstrumentNameType (String_Constant (L"Network-Interfaces")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = DateTime::Now ();
+        DateTime    before = useCaptureContext.fLastCapturedAt;
         Instruments::NetworkInterfaces::Info rawMeasurement = useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
         m.fType = kNetworkInterfacesMeasurement_;

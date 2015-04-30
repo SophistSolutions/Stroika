@@ -99,23 +99,40 @@ ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
 
 
 
+namespace {
+    struct  CapturerWithContext_COMMON_ {
+        Options                     fOptions_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        DateTime                    fLastCapturedAt;
+        DurationSecondsType         fMinimumAveragingInterval_;
+        CapturerWithContext_COMMON_ (const Options& options)
+            : fOptions_ (options)
+            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+        {
+        }
+        void    NoteCompletedCapture_ ()
+        {
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = DateTime::Now ();
+        }
+    };
+}
+
 
 
 
 #if     qPlatform_POSIX
 namespace {
-    struct  CapturerWithContext_POSIX_ {
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct  POSIXSysTimeCaptureContext_ {
             double  user;
             //double  nice;
             double  system;
             double  idle;
         };
-        Options                         fOptions_;
-        DurationSecondsType             fPostponeCaptureUntil_ { 0 };
         POSIXSysTimeCaptureContext_     fContext_ {};
         CapturerWithContext_POSIX_ (const Options& options)
-            : fOptions_ (options)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // Force fill of context - ignore results
         }
@@ -204,7 +221,7 @@ namespace {
             }
 #endif
             result.fTotalCPUUsage = cputime_ ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
+            NoteCompletedCapture_ ();
             return result;
         }
     };
@@ -223,17 +240,15 @@ namespace {
 
 #if   qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ {
+    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
         struct  WinSysTimeCaptureContext_ {
             double  IdleTime;
             double  KernelTime;
-            double UserTime;
+            double  UserTime;
         };
-        Options                     fOptions_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         WinSysTimeCaptureContext_   fContext_;
         CapturerWithContext_Windows_ (const Options& options)
-            : fOptions_ (options)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // Force fill of context
         }
@@ -276,7 +291,7 @@ namespace {
             Info    result;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             result.fTotalCPUUsage = cputime_ ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
+            NoteCompletedCapture_ ();
             return result;
         }
     };
@@ -341,9 +356,9 @@ Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options op
                InstrumentNameType (String_Constant (L"System-CPU")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = DateTime::Now ();
+        DateTime    before = useCaptureContext.fLastCapturedAt;
         Info rawMeasurement = useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
         m.fType = kSystemCPUMeasurment_;

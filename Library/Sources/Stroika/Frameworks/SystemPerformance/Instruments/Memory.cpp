@@ -77,15 +77,37 @@ namespace {
 
 
 
+
+namespace {
+    struct  CapturerWithContext_COMMON_ {
+        Options                     fOptions_;
+        DurationSecondsType         fMinimumAveragingInterval_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        DateTime                    fLastCapturedAt;
+        CapturerWithContext_COMMON_ (const Options& options)
+            : fOptions_ (options)
+            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+        {
+        }
+        void    NoteCompletedCapture_ ()
+        {
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = DateTime::Now ();
+        }
+    };
+}
+
+
+
+
 #if     qPlatform_POSIX
 namespace {
-    struct  CapturerWithContext_POSIX_ {
-        DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
         Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
         CapturerWithContext_POSIX_ (Options options)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
@@ -97,7 +119,7 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            NoteCompletedCapture_ ();
             return result;
         }
 
@@ -172,20 +194,17 @@ namespace {
 
 #if     qPlatform_Windows
 namespace {
-    struct  CapturerWithContext_Windows_ {
-        DurationSecondsType     fMinTimeBeforeFirstCapture_;
-        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
+    struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
         WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
 #endif
-
-        CapturerWithContext_Windows_ (Options options)
-            : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
+        CapturerWithContext_Windows_ (const Options& options)
+            : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // to pre-seed context
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
+            : CapturerWithContext_COMMON_ (from)
 #if     qUseWMICollectionSupport_
             , fMemoryWMICollector_ (from.fMemoryWMICollector_)
 #endif
@@ -203,7 +222,7 @@ namespace {
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result);
 #endif
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            NoteCompletedCapture_ ();
             return result;
         }
         void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)
@@ -315,9 +334,9 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options optio
                InstrumentNameType (String_Constant (L"Memory")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = DateTime::Now ();
+        DateTime    before = useCaptureContext.fLastCapturedAt;
         Instruments::Memory::Info rawMeasurement = useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, DateTime::Now ());
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
         m.fType = kSystemMemoryMeasurement_;
