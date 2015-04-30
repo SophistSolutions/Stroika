@@ -80,8 +80,8 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
-        DurationSecondsType			fMinTimeBeforeFirstCapture_;
-        DurationSecondsType			fPostponeCaptureUntil_ { 0 };
+        DurationSecondsType         fMinTimeBeforeFirstCapture_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
         Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
@@ -94,7 +94,7 @@ namespace {
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
-			Execution::SleepUntil (fPostponeCaptureUntil_);
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
@@ -173,16 +173,16 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
-        DurationSecondsType		fMinTimeBeforeFirstCapture_;
+        DurationSecondsType     fMinTimeBeforeFirstCapture_;
         DurationSecondsType     fPostponeCaptureUntil_ { 0 };
 #if     qUseWMICollectionSupport_
-        WMICollector			fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
 #endif
 
         CapturerWithContext_Windows_ (Options options)
             : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
         {
-			capture_ ();	// to pre-seed context
+            capture_ ();    // to pre-seed context
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
@@ -191,14 +191,14 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-			capture_ ();	// to pre-seed context
+            capture_ ();    // to pre-seed context
 #endif
         }
 
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
-			Execution::SleepUntil (fPostponeCaptureUntil_);
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_GlobalMemoryStatusEx_(&result);
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result);
