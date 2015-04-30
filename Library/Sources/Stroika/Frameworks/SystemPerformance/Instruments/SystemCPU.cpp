@@ -165,11 +165,11 @@ namespace {
             }
             return result;
         }
-        static  double  cputime_ (Optional<POSIXSysTimeCaptureContext_>* context2Update = nullptr)
+        double  cputime_ ()
         {
             POSIXSysTimeCaptureContext_   baseline;
-            if (context2Update != nullptr and * context2Update) {
-                baseline = **context2Update;
+            if (fContext_) {
+                baseline = *fContext_;
             }
             else {
                 baseline = GetSysTimes_ ();
@@ -177,9 +177,7 @@ namespace {
                 Execution::Sleep (kUseIntervalIfNoBaseline_);
             }
             POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
-            if (context2Update != nullptr) {
-                *context2Update = newVal;
-            }
+            fContext_ = newVal;
             double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
             double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
             if (Math::NearlyEquals<double> (totalTime, 0)) {
@@ -207,6 +205,7 @@ namespace {
                 }
             }
 #endif
+            result.fTotalCPUUsage = cputime_ ();
             return result;
         }
     };
@@ -253,11 +252,11 @@ namespace {
             Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
             return WinSysTimeCaptureContext_ { GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_) };
         }
-        static  double  cputime_ (Optional<WinSysTimeCaptureContext_>* context2Update = nullptr)
+        double  cputime_ ()
         {
             WinSysTimeCaptureContext_   baseline;
-            if (context2Update != nullptr and * context2Update) {
-                baseline = **context2Update;
+            if (fContext_) {
+                baseline = *fContext_;
             }
             else {
                 baseline = GetSysTimes_ ();
@@ -265,9 +264,7 @@ namespace {
                 Execution::Sleep (kUseIntervalIfNoBaseline_);
             }
             WinSysTimeCaptureContext_   newVal = GetSysTimes_ ();
-            if (context2Update != nullptr) {
-                *context2Update = newVal;
-            }
+            fContext_ = newVal;
             double  idleTimeOverInterval = newVal.IdleTime - baseline.IdleTime;
             double  kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
             double  userTimeOverInterval = newVal.UserTime - baseline.UserTime;
@@ -281,7 +278,7 @@ namespace {
         Info capture_ ()
         {
             Info    result;
-            result.fTotalCPUUsage = cputime_ (&fContext_);
+            result.fTotalCPUUsage = cputime_ ();
             return result;
         }
     };
