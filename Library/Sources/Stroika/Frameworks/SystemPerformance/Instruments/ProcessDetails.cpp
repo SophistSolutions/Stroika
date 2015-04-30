@@ -311,7 +311,9 @@ namespace {
                     catch (...) {
                     }
 
-                    newContextStats.Add (pid, PerfStats_ { now, *processDetails.fTotalCPUTimeUsed });
+                    if (processDetails.fTotalCPUTimeUsed) {
+                        newContextStats.Add (pid, PerfStats_ { now, *processDetails.fTotalCPUTimeUsed });
+                    }
                     results.Add (pid, processDetails);
                 }
             }
