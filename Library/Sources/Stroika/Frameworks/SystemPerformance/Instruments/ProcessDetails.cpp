@@ -176,6 +176,7 @@ namespace {
             double              fTotalCPUTimeUsed;
         };
         Mapping<pid_t, PerfStats_>  fContextStats_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         Options                     fOptions_;
 
         DateTime    fLastCapturedAt;
@@ -184,17 +185,16 @@ namespace {
             : fOptions_ (options)
         {
             capture_ ();        // for side-effect of setting fContextStats_
-            if (options.fMinimumAveragingInterval > 0) {
-                Execution::Sleep (options.fMinimumAveragingInterval);
-            }
         }
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
+            Execution::SleepUntil (fPostponeCaptureUntil_);
 #if     qUseProcFS_
             result = ExtractFromProcFS_ ();
 #endif
             fLastCapturedAt = DateTime::Now ();
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return result;
         }
 #if     qUseProcFS_
@@ -728,22 +728,22 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+        DateTime                    fLastCapturedAt;
+        DurationSecondsType         fMinTimeBeforeFirstCapture_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+
 #if     qUseWMICollectionSupport_
-        WMICollector        fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture_;
+        WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
 #endif
-        DateTime    fLastCapturedAt;
-
-
         CapturerWithContext_Windows_ (const Options& options)
         {
             capture_ ();// hack so we prefill with each process capture
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : fLastCapturedAt (from.fLastCapturedAt)
+            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
 #if     qUseWMICollectionSupport_
             , fProcessWMICollector_ (from.fProcessWMICollector_)
-            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
 #endif
 
         {
@@ -753,6 +753,7 @@ namespace {
         }
         ProcessMapType  capture_ ()
         {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
 #if     qUseWMICollectionSupport_
             DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
@@ -843,6 +844,7 @@ namespace {
                 results.Add (pid, processInfo);
             }
             fLastCapturedAt = DateTime::Now ();
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return results;
         }
         Set<pid_t>  GetAllProcessIDs_ ()
