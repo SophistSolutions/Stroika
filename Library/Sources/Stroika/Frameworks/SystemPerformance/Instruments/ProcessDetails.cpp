@@ -178,11 +178,13 @@ namespace {
         Mapping<pid_t, PerfStats_>  fContextStats_;
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         Options                     fOptions_;
+        DurationSecondsType         fMinTimeBeforeFirstCapture_;
 
         DateTime    fLastCapturedAt;
 
         CapturerWithContext_POSIX_ (const Options& options)
             : fOptions_ (options)
+            , fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
         {
             capture_ ();        // for side-effect of setting fContextStats_
         }
@@ -737,7 +739,10 @@ namespace {
 #endif
         CapturerWithContext_Windows_ (const Options& options)
         {
-            capture_ ();// hack so we prefill with each process capture
+#if   qUseWMICollectionSupport_
+            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+#endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : fLastCapturedAt (from.fLastCapturedAt)
@@ -749,6 +754,7 @@ namespace {
         {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
 #endif
         }
         ProcessMapType  capture_ ()
