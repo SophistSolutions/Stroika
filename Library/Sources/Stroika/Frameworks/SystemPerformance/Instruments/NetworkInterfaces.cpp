@@ -134,25 +134,28 @@ namespace {
             uint64_t  fTotalPacketsSent;
             DurationSecondsType  fAt;
         };
-        Mapping<String, Last>    fLast;
+        Mapping<String, Last>       fLast;
         struct LastSum {
             uint64_t  fTotalTCPSegments;
             uint64_t  fTotalTCPRetransmittedSegments;
             DurationSecondsType  fAt;
         };
-        Optional<LastSum>    fLastSum;
+        Optional<LastSum>           fLastSum;
+        DurationSecondsType         fMinTimeBeforeFirstCapture_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         CapturerWithContext_POSIX_ (Options options)
+            : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
         {
-            if (options.fMinimumAveragingInterval > 0) {
-                capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
-                Execution::Sleep (options.fMinimumAveragingInterval);
-            }
+            capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
         Instruments::NetworkInterfaces::Info    capture_ ()
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
+
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;
             Read_proc_net_dev_ (&interfaceResults, &accumSummary);
@@ -170,7 +173,7 @@ namespace {
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
                 fLastSum = LastSum { *accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now };
             }
-
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return Info { interfaceResults, accumSummary };
         }
         void    Read_proc_net_dev_ (Collection<Instruments::NetworkInterfaces::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
@@ -315,40 +318,33 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+        DurationSecondsType         fMinTimeBeforeFirstCapture_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
 #if     qUseWMICollectionSupport_
         WMICollector        fNetworkWMICollector_ { String_Constant { L"Network Interface" }, {},  { kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_ } };
         WMICollector        fTCPv4WMICollector_ { String_Constant { L"TCPv4" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
         WMICollector        fTCPv6WMICollector_ { String_Constant { L"TCPv6" }, {},  { kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture_;
         Set<String>         fAvailableInstances_;
 #endif
         CapturerWithContext_Windows_ (Options options)
-#if     qUseWMICollectionSupport_
             : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
-#endif
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
-            if (fMinTimeBeforeFirstCapture_ > 0) {
-                capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
-                Execution::Sleep (fMinTimeBeforeFirstCapture_);
-            }
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
 #if     qUseWMICollectionSupport_
-            : fNetworkWMICollector_ (from.fNetworkWMICollector_)
+            : fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
+            , fNetworkWMICollector_ (from.fNetworkWMICollector_)
             , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
             , fTCPv6WMICollector_ (from.fTCPv6WMICollector_)
-            , fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
             , fAvailableInstances_ (from.fAvailableInstances_)
 #endif
         {
 #if   qUseWMICollectionSupport_
-            if (fMinTimeBeforeFirstCapture_ > 0) {
-                capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
-                Execution::Sleep (fMinTimeBeforeFirstCapture_);
-            }
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
         Instruments::NetworkInterfaces::Info capture_ ()
@@ -356,6 +352,8 @@ namespace {
             using   IO::Network::Interface;
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
+
+            Execution::SleepUntil (fPostponeCaptureUntil_);
 
             Info                        result;
             Collection<InterfaceInfo>   interfaceResults;
@@ -387,6 +385,7 @@ namespace {
                 accumSummary.fTotalPacketsSent = stats.dwOutRequests;
             }
             result.fSummaryIOStatistics = accumSummary;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return result;
         }
 #if     qUseWMICollectionSupport_
