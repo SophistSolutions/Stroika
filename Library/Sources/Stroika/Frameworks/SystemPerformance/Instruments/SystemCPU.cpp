@@ -105,8 +105,19 @@ ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
-        CapturerWithContext_POSIX_ (Options options)
+        struct  POSIXSysTimeCaptureContext_ {
+            double  user;
+            //double  nice;
+            double  system;
+            double  idle;
+        };
+        Options                         fOptions_;
+        DurationSecondsType             fPostponeCaptureUntil_ { 0 };
+        POSIXSysTimeCaptureContext_     fContext_ {};
+        CapturerWithContext_POSIX_ (const Options& options)
+            : fOptions_ (options)
         {
+            capture_ ();    // Force fill of context - ignore results
         }
         /*
          *  /proc/stat
@@ -138,12 +149,6 @@ namespace {
          *                       should be USER_HZ times the second entry in the
          *                       /proc/uptime pseudo-file.
          */
-        struct  POSIXSysTimeCaptureContext_ {
-            double  user;
-            //double  nice;
-            double  system;
-            double  idle;
-        };
         static  inline  POSIXSysTimeCaptureContext_    GetSysTimes_ ()
         {
             POSIXSysTimeCaptureContext_   result;
@@ -167,17 +172,10 @@ namespace {
         }
         double  cputime_ ()
         {
-            POSIXSysTimeCaptureContext_   baseline;
-            if (fContext_) {
-                baseline = *fContext_;
-            }
-            else {
-                baseline = GetSysTimes_ ();
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
+            POSIXSysTimeCaptureContext_   baseline = fContext_;
             POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
             fContext_ = newVal;
+
             double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
             double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
             if (Math::NearlyEquals<double> (totalTime, 0)) {
@@ -189,9 +187,9 @@ namespace {
             double cpu =  usedSysTime * 100 / totalTime;
             return Math::PinInRange<double> (cpu, 0, 100);
         }
-        Optional<POSIXSysTimeCaptureContext_>   fContext_;
         Info capture_ ()
         {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             Info    result;
 #if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
             {
@@ -206,6 +204,7 @@ namespace {
             }
 #endif
             result.fTotalCPUUsage = cputime_ ();
+            fPostponeCaptureUntil_ = GetTickCount () + fOptions_.fMinimumAveragingInterval;
             return result;
         }
     };
@@ -225,8 +224,18 @@ namespace {
 #if   qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
-        CapturerWithContext_Windows_ (Options options)
+        struct  WinSysTimeCaptureContext_ {
+            double  IdleTime;
+            double  KernelTime;
+            double UserTime;
+        };
+        Options                     fOptions_;
+        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
+        WinSysTimeCaptureContext_   fContext_;
+        CapturerWithContext_Windows_ (const Options& options)
+            : fOptions_ (options)
         {
+            capture_ ();    // Force fill of context
         }
         static  inline  double  GetAsSeconds_ (FILETIME ft)
         {
@@ -236,11 +245,6 @@ namespace {
             // convert from 100-nanosecond units
             return static_cast<double> (ui.QuadPart) / 10000000;
         }
-        struct  WinSysTimeCaptureContext_ {
-            double  IdleTime;
-            double  KernelTime;
-            double UserTime;
-        };
         static  inline  WinSysTimeCaptureContext_    GetSysTimes_ ()
         {
             FILETIME    curIdleTime_;
@@ -254,17 +258,10 @@ namespace {
         }
         double  cputime_ ()
         {
-            WinSysTimeCaptureContext_   baseline;
-            if (fContext_) {
-                baseline = *fContext_;
-            }
-            else {
-                baseline = GetSysTimes_ ();
-                const Time::DurationSecondsType kUseIntervalIfNoBaseline_ { 1.0 };
-                Execution::Sleep (kUseIntervalIfNoBaseline_);
-            }
+            WinSysTimeCaptureContext_   baseline = fContext_;
             WinSysTimeCaptureContext_   newVal = GetSysTimes_ ();
             fContext_ = newVal;
+
             double  idleTimeOverInterval = newVal.IdleTime - baseline.IdleTime;
             double  kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
             double  userTimeOverInterval = newVal.UserTime - baseline.UserTime;
@@ -274,11 +271,12 @@ namespace {
             double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
             return Math::PinInRange<double> (cpu, 0, 100);
         }
-        Optional<WinSysTimeCaptureContext_>     fContext_;
         Info capture_ ()
         {
             Info    result;
+            Execution::SleepUntil (fPostponeCaptureUntil_);
             result.fTotalCPUUsage = cputime_ ();
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
             return result;
         }
     };

@@ -57,14 +57,15 @@ namespace   Stroika {
             /*
              *  Wait until the tickCount is >= the given value.
              *
-             *  This function facilitates writing code like:
+             *  EXAMPLE USAGE:
              *      Time::DurationSeconds startedAt =   Time::GetTickCount ();
              *      do_someting_dont_know_how_long_it_will_take();
-             *      Execution::SleepUntil (1.0 + startedAt);
+             *      Execution::SleepUntil (1.0 + startedAt);        // make sure do_someting_dont_know_how_long_it_will_take () took at least one second
              *
              *  @see Sleep ();
              *
              *  \note   This always calls CheckForThreadInterruption () at least once, but may not call Sleep() if not needed.
+             *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed
              */
             void    SleepUntil (Time::DurationSecondsType untilTickCount);
 
