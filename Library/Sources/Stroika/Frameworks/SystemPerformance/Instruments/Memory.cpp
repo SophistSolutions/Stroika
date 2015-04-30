@@ -80,23 +80,24 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ {
+        DurationSecondsType			fMinTimeBeforeFirstCapture_;
+        DurationSecondsType			fPostponeCaptureUntil_ { 0 };
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
         Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
         CapturerWithContext_POSIX_ (Options options)
         {
-            if (options.fMinimumAveragingInterval > 0) {
-                capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
-                Execution::Sleep (options.fMinimumAveragingInterval);
-            }
+            capture_ ();    // for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
 
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
+			Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return result;
         }
 
@@ -172,44 +173,37 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ {
+        DurationSecondsType		fMinTimeBeforeFirstCapture_;
+        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
 #if     qUseWMICollectionSupport_
-        WMICollector        fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
-        DurationSecondsType fMinTimeBeforeFirstCapture_;
+        WMICollector			fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
 #endif
 
         CapturerWithContext_Windows_ (Options options)
-#if     qUseWMICollectionSupport_
             : fMinTimeBeforeFirstCapture_ (options.fMinimumAveragingInterval)
-#endif
         {
-#if     qUseWMICollectionSupport_
-            if (fMinTimeBeforeFirstCapture_ > 0) {
-                fMemoryWMICollector_.Collect ();
-                Execution::Sleep (fMinTimeBeforeFirstCapture_);
-            }
-#endif
+			capture_ ();	// to pre-seed context
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
+            : fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
 #if     qUseWMICollectionSupport_
-            : fMemoryWMICollector_ (from.fMemoryWMICollector_)
-            ,   fMinTimeBeforeFirstCapture_ (from.fMinTimeBeforeFirstCapture_)
+            , fMemoryWMICollector_ (from.fMemoryWMICollector_)
 #endif
         {
 #if   qUseWMICollectionSupport_
-            if (fMinTimeBeforeFirstCapture_ > 0) {
-                fMemoryWMICollector_.Collect ();
-                Execution::Sleep (fMinTimeBeforeFirstCapture_);
-            }
+			capture_ ();	// to pre-seed context
 #endif
         }
 
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
+			Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_GlobalMemoryStatusEx_(&result);
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result);
 #endif
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
             return result;
         }
         void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)

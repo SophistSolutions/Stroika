@@ -18,11 +18,6 @@
  *
  *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
  *
- *
- *  TODO:
- *      @todo   Fix handling of fMinimumAveragingInterval to do on second capture - and do that by setting a 'wait until', rather than
- *              waiting initially
- *
  */
 
 
