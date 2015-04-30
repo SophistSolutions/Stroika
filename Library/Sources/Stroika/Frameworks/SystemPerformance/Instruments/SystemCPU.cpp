@@ -204,7 +204,7 @@ namespace {
             }
 #endif
             result.fTotalCPUUsage = cputime_ ();
-            fPostponeCaptureUntil_ = GetTickCount () + fOptions_.fMinimumAveragingInterval;
+            fPostponeCaptureUntil_ = Time::GetTickCount () + fOptions_.fMinimumAveragingInterval;
             return result;
         }
     };
