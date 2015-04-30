@@ -179,7 +179,7 @@ namespace {
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         Options                     fOptions_;
         DurationSecondsType         fMinTimeBeforeFirstCapture_;
-        DateTime					fLastCapturedAt;
+        DateTime                    fLastCapturedAt;
 
         CapturerWithContext_POSIX_ (const Options& options)
             : fOptions_ (options)
@@ -743,6 +743,7 @@ namespace {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fLastCapturedAt = DateTime::Now ();
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -756,6 +757,7 @@ namespace {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinTimeBeforeFirstCapture_;
+            fLastCapturedAt = DateTime::Now ();
 #endif
         }
         ProcessMapType  capture_ ()
