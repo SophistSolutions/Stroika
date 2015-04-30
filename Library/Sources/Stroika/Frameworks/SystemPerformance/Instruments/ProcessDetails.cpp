@@ -179,8 +179,7 @@ namespace {
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         Options                     fOptions_;
         DurationSecondsType         fMinTimeBeforeFirstCapture_;
-
-        DateTime    fLastCapturedAt;
+        DateTime					fLastCapturedAt;
 
         CapturerWithContext_POSIX_ (const Options& options)
             : fOptions_ (options)
