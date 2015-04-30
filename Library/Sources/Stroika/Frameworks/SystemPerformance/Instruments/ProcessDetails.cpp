@@ -305,7 +305,7 @@ namespace {
 
                         processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
-                            if (p.fTotalCPUTimeUsed) {
+                            if (p->fTotalCPUTimeUsed) {
                                 processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - *p->fTotalCPUTimeUsed) * 100.0 / (now - p->fCapturedAt);
                             }
                         }
@@ -337,10 +337,10 @@ namespace {
                             processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
-                                if (p.fCombinedIOReadBytes) {
+                                if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate =   (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) * 100.0 / (now - p->fCapturedAt);
                                 }
-                                if (p.fCombinedIOWriteBytes) {
+                                if (p->fCombinedIOWriteBytes) {
                                     processDetails.fCombinedIOWriteRate =   (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) * 100.0 / (now - p->fCapturedAt);
                                 }
                             }

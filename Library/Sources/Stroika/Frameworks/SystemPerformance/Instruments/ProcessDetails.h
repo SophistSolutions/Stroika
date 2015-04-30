@@ -139,6 +139,10 @@ namespace   Stroika {
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
                          *  search for 'read_bytes'
                          *
+                         *  This reflects the total number of bytes read over the process lifetime.
+                         *
+                         *  This (I believe) - includes paging reads/writes.
+                         *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
                         Optional<double>        fCombinedIOReadBytes;
@@ -146,6 +150,10 @@ namespace   Stroika {
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
                          *  search for 'write_bytes'
+                         *
+                         *  This reflects the total number of bytes written over the process lifetime.
+                         *
+                         *  This (I believe) - includes paging reads/writes.
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
