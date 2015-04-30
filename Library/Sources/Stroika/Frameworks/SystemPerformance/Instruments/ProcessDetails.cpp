@@ -150,10 +150,10 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeUsed), String_Constant (L"Total-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPercentCPUTime), String_Constant (L"Percent-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadRate), String_Constant (L"IO-Total-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteRate), String_Constant (L"IO-Total-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalReadBytes), String_Constant (L"IO-Total-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fIOTotalWriteBytes), String_Constant (L"IO-Total-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCombinedIOReadRate), String_Constant (L"Combined-IO-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCombinedIOWriteRate), String_Constant (L"Combined-IO-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCombinedIOReadBytes), String_Constant (L"Combined-IO-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCombinedIOWriteBytes), String_Constant (L"Combined-IO-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -302,8 +302,8 @@ namespace {
                     try {
                         Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
                         if (stats.IsPresent ()) {
-                            processDetails.fIOTotalReadBytes = (*stats).read_bytes;
-                            processDetails.fIOTotalWriteBytes = (*stats).write_bytes;
+                            processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
+                            processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                         }
                     }
                     catch (...) {
@@ -813,14 +813,14 @@ namespace {
                     // Not the most efficient appraoch ;-)
                     for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_)) {
                         if (instanceVal == i.fKey) {
-                            processInfo.fIOTotalReadRate = i.fValue;
+                            processInfo.fCombinedIOReadRate = i.fValue;
                             break;
                         }
                     }
                     // Not the most efficient appraoch ;-)
                     for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_)) {
                         if (instanceVal == i.fKey) {
-                            processInfo.fIOTotalWriteRate = i.fValue;
+                            processInfo.fCombinedIOWriteRate = i.fValue;
                             break;
                         }
                     }

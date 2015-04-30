@@ -133,12 +133,12 @@ namespace   Stroika {
                          *  Rate in bytes per second.
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double>        fIOTotalReadRate;
+                        Optional<double>        fCombinedIOReadRate;
                         /*
                          *  Rate in bytes per second
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double>        fIOTotalWriteRate;
+                        Optional<double>        fCombinedIOWriteRate;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -146,7 +146,7 @@ namespace   Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double>        fIOTotalReadBytes;
+                        Optional<double>        fCombinedIOReadBytes;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -154,7 +154,7 @@ namespace   Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double>        fIOTotalWriteBytes;
+                        Optional<double>        fCombinedIOWriteBytes;
                     };
 
 
