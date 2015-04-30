@@ -8,11 +8,11 @@ SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)CPU.o\
 	$(ObjDir)Memory.o\
 	$(ObjDir)MountedFilesystemUsage.o\
 	$(ObjDir)NetworkInterfaces.o\
 	$(ObjDir)ProcessDetails.o\
-	$(ObjDir)SystemCPU.o\
 
 all:	$(Objs)
 

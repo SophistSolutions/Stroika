@@ -3,11 +3,11 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "Instruments/CPU.h"
 #include    "Instruments/Memory.h"
 #include    "Instruments/MountedFilesystemUsage.h"
 #include    "Instruments/NetworkInterfaces.h"
 #include    "Instruments/ProcessDetails.h"
-#include    "Instruments/SystemCPU.h"
 
 #include    "AllInstruments.h"
 
@@ -36,11 +36,11 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
      *  Return a sorted set. Not strictly required, but looks better in some uses, and doesn't cost anything.
      */
     static  InstrumentSet   kInstruments_ = SortedSet<Instrument, Private_::InstrumentSetTraits_> {
+        Instruments::CPU::GetInstrument (),
         Instruments::Memory::GetInstrument (),
+        Instruments::MountedFilesystemUsage::GetInstrument (),
         Instruments::NetworkInterfaces::GetInstrument (),
         Instruments::ProcessDetails::GetInstrument (),
-        Instruments::MountedFilesystemUsage::GetInstrument (),
-        Instruments::SystemCPU::GetInstrument (),
     };
     return kInstruments_;
 }

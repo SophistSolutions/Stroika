@@ -70,11 +70,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.cpp">
       <Filter>Sources\Instruments</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.cpp">
-      <Filter>Sources\Instruments</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp">
       <Filter>Sources\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.cpp">
+      <Filter>Sources\Instruments</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,11 +111,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.h">
       <Filter>Sources\Instruments</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\SystemCPU.h">
-      <Filter>Sources\Instruments</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h">
       <Filter>Sources\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.h">
+      <Filter>Sources\Instruments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Math/Common.h"
 
-#include    "SystemCPU.h"
+#include    "CPU.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -25,7 +25,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::SystemCPU;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::CPU;
 
 using   Characters::String_Constant;
 using   Time::DurationSecondsType;
@@ -44,13 +44,13 @@ using   Time::DurationSecondsType;
 
 
 
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 /*
  ********************************************************************************
- ********************* Instruments::SystemCPU::Info::LoadAverage ****************
+ *********************** Instruments::CPU::Info::LoadAverage ********************
  ********************************************************************************
  */
-Instruments::SystemCPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve)
+Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve)
     : f1MinuteAve (oneMinuteAve)
     , f5MinuteAve (fiveMinuteAve)
     , f15MinuteAve (fifteenMinuteAve)
@@ -65,17 +65,17 @@ Instruments::SystemCPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, dou
 
 /*
  ********************************************************************************
- ***************** Instruments::SystemCPU::GetObjectVariantMapper ***************
+ ***************** Instruments::CPU::GetObjectVariantMapper *********************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
+ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         mapper.AddClass<Info::LoadAverage> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::LoadAverage, f1MinuteAve), String_Constant (L"1-minute") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::LoadAverage, f5MinuteAve), String_Constant (L"5-minute") },
@@ -84,7 +84,7 @@ ObjectVariantMapper Instruments::SystemCPU::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional_Indirect_Storage<Info::LoadAverage>> ();
 #endif
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLoadAverage), String_Constant (L"Load-Average"), StructureFieldInfo::NullFieldHandling::eOmit },
 #endif
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalCPUUsage), String_Constant (L"Total-CPU-Usage") },
@@ -176,7 +176,7 @@ namespace {
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::SystemCPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 if (line.size () >= 5 and line[0] == L"cpu") {
                     result.user = String2Float<double> (line[1]);
@@ -208,7 +208,7 @@ namespace {
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             Info    result;
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {
                 double loadAve[3];
                 int lr = ::getloadavg (loadAve, 3);
@@ -329,7 +329,7 @@ namespace {
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::SystemCPU capture_");
+            Debug::TraceContextBumper ctx ("Instruments::CPU capture_");
 #endif
             return inherited::capture_ ();
         }
@@ -345,15 +345,15 @@ namespace {
 
 /*
  ********************************************************************************
- ******************* Instruments::SystemCPU::GetInstrument **********************
+ ************************* Instruments::CPU::GetInstrument **********************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options options)
+Instrument  SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
-    static  const   MeasurementType kSystemCPUMeasurment_         =   MeasurementType (String_Constant (L"System-CPU-Usage"));
+    static  const   MeasurementType kCPUMeasurment_         =   MeasurementType (String_Constant (L"CPU-Usage"));
     return Instrument (
-               InstrumentNameType (String_Constant (L"System-CPU")),
+               InstrumentNameType (String_Constant (L"CPU")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = useCaptureContext.fLastCapturedAt;
@@ -361,11 +361,11 @@ Instrument  SystemPerformance::Instruments::SystemCPU::GetInstrument (Options op
         results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kSystemCPUMeasurment_;
+        m.fType = kCPUMeasurment_;
         results.fMeasurements.Add (m);
         return results;
     },
-    {kSystemCPUMeasurment_},
+    {kCPUMeasurment_},
     GetObjectVariantMapper ()
            );
 }

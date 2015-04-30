@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Instruments_SystemCPU_h_
-#define _Stroika_Framework_SystemPerformance_Instruments_SystemCPU_h_ 1
+#ifndef _Stroika_Framework_SystemPerformance_Instruments_CPU_h_
+#define _Stroika_Framework_SystemPerformance_Instruments_CPU_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -26,12 +26,12 @@ namespace   Stroika {
             namespace   Instruments {
 
 
-#ifndef qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage  qPlatform_POSIX
+#ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  qPlatform_POSIX
 #endif
 
 
-                namespace   SystemCPU {
+                namespace   CPU {
 
 
                     using   DataExchange::ObjectVariantMapper;
@@ -41,7 +41,7 @@ namespace   Stroika {
                      *
                      */
                     struct  Info {
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
                         struct  LoadAverage;
                         Optional_Indirect_Storage<LoadAverage>  fLoadAverage;
 #endif
@@ -54,7 +54,7 @@ namespace   Stroika {
                     };
 
 
-#if     qSupport_SystemPerformance_Instruments_SystemCPU_LoadAverage
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
                     struct  Info::LoadAverage {
                         double  f1MinuteAve {};
                         double  f5MinuteAve {};
@@ -102,4 +102,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_SystemCPU_h_*/
+#endif  /*_Stroika_Framework_SystemPerformance_Instruments_CPU_h_*/
