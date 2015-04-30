@@ -204,8 +204,10 @@ namespace {
 namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
-            DurationSecondsType fCapturedAt;
-            double              fTotalCPUTimeUsed;
+            DurationSecondsType     fCapturedAt;
+            Optional<double>        fTotalCPUTimeUsed;
+            Optional<double>        fCombinedIOReadBytes;
+            Optional<double>        fCombinedIOWriteBytes;
         };
         Mapping<pid_t, PerfStats_>  fContextStats_;
 
@@ -303,7 +305,9 @@ namespace {
 
                         processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
-                            processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - p->fTotalCPUTimeUsed) * 100.0 / (now - p->fCapturedAt);
+                            if (p.fTotalCPUTimeUsed) {
+                                processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - *p->fTotalCPUTimeUsed) * 100.0 / (now - p->fCapturedAt);
+                            }
                         }
                         if (stats.nlwp != 0) {
                             processDetails.fThreadCount = stats.nlwp;
@@ -332,13 +336,21 @@ namespace {
                         if (stats.IsPresent ()) {
                             processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
+                            if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                                if (p.fCombinedIOReadBytes) {
+                                    processDetails.fCombinedIOReadRate =   (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) * 100.0 / (now - p->fCapturedAt);
+                                }
+                                if (p.fCombinedIOWriteBytes) {
+                                    processDetails.fCombinedIOWriteRate =   (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) * 100.0 / (now - p->fCapturedAt);
+                                }
+                            }
                         }
                     }
                     catch (...) {
                     }
 
-                    if (processDetails.fTotalCPUTimeUsed) {
-                        newContextStats.Add (pid, PerfStats_ { now, *processDetails.fTotalCPUTimeUsed });
+                    if (processDetails.fTotalCPUTimeUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
+                        newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
                     }
                     results.Add (pid, processDetails);
                 }
