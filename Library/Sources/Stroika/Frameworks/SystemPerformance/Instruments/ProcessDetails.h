@@ -19,13 +19,8 @@
 /*
  *
  *  TODO:
- *      @todo   Fix handling of fMinimumAveragingInterval to do on second capture - and do that by setting a 'wait until', rather than
- *              waiting initially
- *
  *      @todo   Eventually allow configuration of whether to use procfs or ps process grep, but default to
  *              procfs is available.
- *
- *      @todo   Do Windoze impl using windows APIs for process enumeration etc (EnumProcesses)
  */
 
 
@@ -197,7 +192,6 @@ namespace   Stroika {
                     struct  Options {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
-                         *      if == 0, skip initial capture, and if > 0, do initial capture and wait that long before second capture
                          */
                         Time::DurationSecondsType       fMinimumAveragingInterval { 1.0 };
 

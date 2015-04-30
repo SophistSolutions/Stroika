@@ -76,7 +76,6 @@ namespace   Stroika {
                     struct  Options {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
-                         *      if == 0, skip initial capture, and if > 0, do initial capture and wait that long before second capture
                          */
                         Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
                     };
