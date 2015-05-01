@@ -22,6 +22,8 @@
 #include    "../../../Foundation/Execution/Thread.h"
 #if     qPlatform_POSIX
 #include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
+#elif   qPlatform_Windows
+#include    "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
@@ -996,19 +998,9 @@ SkipCmdLine_:
                     TOKEN_USER* tokenUser = reinterpret_cast<TOKEN_USER*> (begin (tokenUserBuf));
                     if (::GetTokenInformation (processToken, TokenUser, tokenUser, sizeof (tokenUserBuf), &nlen) != 0) {
                         Assert (nlen >= sizeof (TOKEN_USER));
-                        SID_NAME_USE    iUse {};
-                        SDKChar         name[1024];
-                        SDKChar         domain[1024];
-                        DWORD           nameLen     { NEltsOf (name) };
-                        DWORD           domainLen   { NEltsOf (domain) };
-                        if (::LookupAccountSid (nullptr, tokenUser->User.Sid, name, &nameLen, domain, &domainLen, &iUse) != 0) {
-                            if (domainLen == 0) {
-                                *userName = String::FromSDKString (name);
-                            }
-                            else {
-                                *userName = String::FromSDKString (name) + L"@" + String::FromSDKString (domain);
-                            }
-                        }
+                        // @todo not sure we need this IgnoreExceptionsForCall
+                        *userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid);
+                        //IgnoreExceptionsForCall (*userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid));
                     }
                 }
             }
