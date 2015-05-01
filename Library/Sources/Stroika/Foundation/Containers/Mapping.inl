@@ -123,6 +123,11 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Keys ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Iterable<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Values () const
+            {
+                return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Values ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
             {
                 if (item == nullptr) {
@@ -398,6 +403,55 @@ namespace   Stroika {
                     };
                     MyIterable_ (const MyMapping_& map)
                         : Iterable<KEY_TYPE> (typename Iterable<KEY_TYPE>::_SharedPtrIRep (new MyIterableRep_ (map)))
+                    {
+                    }
+                };
+#if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+                auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep> (const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+#else
+                auto rep = const_cast<typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
+#endif
+                return MyIterable_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (rep));
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Iterable<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Values_Reference_Implementation () const
+            {
+                struct  MyIterable_ : Iterable<VALUE_TYPE> {
+                    using   MyMapping_      =   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>;
+                    struct  MyIterableRep_ : Traversal::IterableFromIterator<VALUE_TYPE>::_Rep {
+                        using   inherited       = typename Traversal::IterableFromIterator<VALUE_TYPE>::_Rep;
+                        using   _SharedPtrIRep  = typename Iterable<VALUE_TYPE>::_SharedPtrIRep;
+                        MyMapping_  fMapping_;
+                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                        MyIterableRep_ (const MyMapping_& map)
+                            : inherited ()
+                            , fMapping_ (map)
+                        {
+                        }
+                        virtual Iterator<VALUE_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        {
+                            auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (fMapping_.MakeIterator ());
+                            auto getNext = [myContext] () -> Memory::Optional<VALUE_TYPE> {
+                                if (myContext->Done ())
+                                {
+                                    return Memory::Optional<VALUE_TYPE> ();
+                                }
+                                else {
+                                    auto result = (*myContext)->fValue;
+                                    (*myContext)++;
+                                    return result;
+                                }
+                            };
+                            return Traversal::CreateGeneratorIterator<VALUE_TYPE> (getNext);
+                        }
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                        {
+                            // For now - ignore forIterableEnvelope
+                            return _SharedPtrIRep (new MyIterableRep_ (*this));
+                        }
+                    };
+                    MyIterable_ (const MyMapping_& map)
+                        : Iterable<VALUE_TYPE> (typename Iterable<VALUE_TYPE>::_SharedPtrIRep (new MyIterableRep_ (map)))
                     {
                     }
                 };

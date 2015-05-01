@@ -63,14 +63,15 @@ namespace   Stroika {
 
                     // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterable<KEY_TYPE>  Keys () const override;
-                    virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
-                    virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual void                Remove (KEY_TYPE key) override;
-                    virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
+                    virtual Iterable<KEY_TYPE>      Keys () const override;
+                    virtual Iterable<VALUE_TYPE>    Values () const override;
+                    virtual bool                    Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                    Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual void                    Remove (KEY_TYPE key) override;
+                    virtual void                    Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 #if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
 
                 public:
@@ -193,6 +194,11 @@ namespace   Stroika {
                 Iterable<KEY_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
                 {
                     return this->_Keys_Reference_Implementation ();
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Iterable<VALUE_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Values () const
+                {
+                    return this->_Values_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const

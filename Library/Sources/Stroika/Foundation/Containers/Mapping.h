@@ -27,11 +27,6 @@
  *
  *  TODO:
  *
- *
- *      @todo   Add Values () - which returns a collection of all values (not necesarily unique) - just like
- *              Keys(). MIGHT be nice to have Keys() return a Set<> but that implies values can be compared, which
- *              isnt necesarily so. Instead - have it return Iterable() and if you wnat t set say Set<>(Values())
- *
  *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
  *              like Equals()
  *
@@ -43,11 +38,7 @@
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
- *      @todo   At the same time - Keys() method should probably retunr Set<KeyType> - instead of Iterable<KeyType>.
- *
- *      @todo   Add method Iterable<T>  Image () - returns a set (maybe say return set not iterable?) of items
- *              which are the 'target' of this mapping (all the VALUES collected in a set). Note in docs - range
- *              is the containing set of plusaible possible values, but image is the set of actual values
+ *      @todo    Keys() method should probably retunr Set<KeyType> - instead of Iterable<KeyType>.
  *
  */
 
@@ -218,8 +209,36 @@ namespace   Stroika {
                  *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
                  *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
                  *      keys a logical copy at the point 'keys' is called.
+                 *
+                 *  See:
+                 *      @see Keys ()
                  */
                 nonvirtual  Iterable<KeyType>   Keys () const;
+
+            public:
+                /**
+                 *  Values () returns an Iterable object with just the value part of the Mapping.
+                 *
+                 *  Note this method may not return a collection which is sorted. Note also, the
+                 *  returned value is a copy of the keys (by value) - at least logically (implementations
+                 *  maybe smart enough to use lazy copying).
+                 *
+                 *  \em Design Note:
+                 *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
+                 *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
+                 *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
+                 *
+                 *      In .net, the typical model is that you have a pointer to an object, and pass around that
+                 *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
+                 *
+                 *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
+                 *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
+                 *      keys a logical copy at the point 'keys' is called.
+                 *
+                 *  See:
+                 *      @see Keys ()
+                 */
+                nonvirtual  Iterable<ValueType>   Values () const;
 
             public:
                 /**
@@ -441,20 +460,22 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
 
             public:
-                virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual  Iterable<KeyType>  Keys () const                                                           =   0;
+                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
+                virtual  Iterable<KeyType>      Keys () const                                                           =   0;
+                virtual  Iterable<ValueType>    Values () const                                                         =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool               Lookup (KeyType key, Memory::Optional<ValueType>* item) const           =   0;
-                virtual  void               Add (KeyType key, ValueType newElt)                                     =   0;
-                virtual  void               Remove (KeyType key)                                                    =   0;
-                virtual  void               Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)                 =   0;
+                virtual  bool                   Lookup (KeyType key, Memory::Optional<ValueType>* item) const           =   0;
+                virtual  void                   Add (KeyType key, ValueType newElt)                                     =   0;
+                virtual  void                   Remove (KeyType key)                                                    =   0;
+                virtual  void                   Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)                 =   0;
 #if     qDebug
-                virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
+                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif
 
             protected:
                 nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
+                nonvirtual Iterable<ValueType>  _Values_Reference_Implementation () const;
             };
 
 

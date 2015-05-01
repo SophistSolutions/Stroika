@@ -65,6 +65,7 @@ namespace   Stroika {
                 public:
                     virtual _MappingSharedPtrIRep   CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual Iterable<KEY_TYPE>      Keys () const override;
+                    virtual Iterable<VALUE_TYPE>    Values () const override;
                     virtual bool                    Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
                     virtual void                    Add (KEY_TYPE key, VALUE_TYPE newElt) override;
                     virtual void                    Remove (KEY_TYPE key) override;
@@ -178,6 +179,11 @@ namespace   Stroika {
                 Iterable<KEY_TYPE>    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
                 {
                     return this->_Keys_Reference_Implementation ();
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Iterable<VALUE_TYPE>    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Values () const
+                {
+                    return this->_Values_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const
