@@ -404,6 +404,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             void     Optional<T, TRAITS>::AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op)
             {
+                //logigcally do this but need recursive mutex lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (*this or rhsOptionalValue) {
                     *this = op (Value (), rhsOptionalValue.Value ());
                 }
@@ -435,39 +436,27 @@ namespace   Stroika {
                 return *fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const Optional& rhs)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                Require (IsPresent ());
-                AssertNotNull (fStorage_.fValue_);
-                *fStorage_.fValue_ += rhs;
+                AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs + rhs; });
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator-= (const Optional& rhs)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                Require (IsPresent ());
-                AssertNotNull (fStorage_.fValue_);
-                *fStorage_.fValue_ -= rhs;
+                AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs - rhs; });
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator*= (const Optional& rhs)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                Require (IsPresent ());
-                AssertNotNull (fStorage_.fValue_);
-                *fStorage_.fValue_ *= rhs;
+                AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs * rhs; });
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const T& rhs)
+            inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator/= (const Optional& rhs)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                Require (IsPresent ());
-                AssertNotNull (fStorage_.fValue_);
-                *fStorage_.fValue_ /= rhs;
+                AccumulateIf (rhs, [] (T lhs, T rhs) { return lhs / rhs; });
                 return *this;
             }
             template    <typename T, typename TRAITS>

@@ -459,14 +459,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \req (IsPresent ())
-                 *
                  *  Each of these methods (+=, -=, *=, /= are defined iff the underlying operator is defined on T.
+                 *
+                 *  These are aliases for calls to AccumulateIf () - with the appropirate operator. So its OK if the RHS or LHS is optional.
+                 *  @see AccumulateIf
                  */
-                nonvirtual  Optional&    operator+= (const T& rhs);
-                nonvirtual  Optional&    operator-= (const T& rhs);
-                nonvirtual  Optional&    operator*= (const T& rhs);
-                nonvirtual  Optional&    operator/= (const T& rhs);
+                nonvirtual  Optional&    operator+= (const Optional& rhs);
+                nonvirtual  Optional&    operator-= (const Optional& rhs);
+                nonvirtual  Optional&    operator*= (const Optional& rhs);
+                nonvirtual  Optional&    operator/= (const Optional& rhs);
 
             public:
                 /**
