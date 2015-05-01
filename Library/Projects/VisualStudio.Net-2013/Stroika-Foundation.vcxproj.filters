@@ -759,6 +759,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1757,6 +1760,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
