@@ -340,10 +340,10 @@ namespace {
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
-                                    processDetails.fCombinedIOReadRate =   (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) * 100.0 / (now - p->fCapturedAt);
+                                    processDetails.fCombinedIOReadRate =   (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
                                 if (p->fCombinedIOWriteBytes) {
-                                    processDetails.fCombinedIOWriteRate =   (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) * 100.0 / (now - p->fCapturedAt);
+                                    processDetails.fCombinedIOWriteRate =   (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
                                 }
                             }
                         }
