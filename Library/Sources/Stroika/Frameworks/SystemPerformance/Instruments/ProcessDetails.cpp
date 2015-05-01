@@ -829,10 +829,12 @@ namespace {
                             Optional<String>    processEXEPath;
                             Optional<pid_t>     parentProcessID;
                             Optional<String>    cmdLine;
-                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, &cmdLine);
+                            Optional<String>    userName;
+                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, &cmdLine, &userName);
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
                             parentProcessID.CopyToIf (&processInfo.fParentProcessID);
                             cmdLine.CopyToIf (&processInfo.fCommandLine);
+                            userName.CopyToIf (&processInfo.fUserName);
                         }
                         {
                             PROCESS_MEMORY_COUNTERS_EX  memInfo;
@@ -909,12 +911,13 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine)
+        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
             RequireNotNull (parentProcessID);
             RequireNotNull (cmdLine);
+            RequireNotNull (userName);
             HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
             DWORD       cbNeeded    {};
             if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
@@ -969,6 +972,43 @@ SkipCmdLine_:
                             ;
                         }
 
+                    }
+                }
+            }
+            {
+                /*
+                 *  This can fail for a variety of reasons - mostly lack of security access. Capture the data if we can, and just don't
+                 *  if we cannot.
+                 */
+                HANDLE processToken = 0;
+                if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
+                    Execution::Finally cleanup {[processToken] ()
+                    {
+                        Verify (::CloseHandle (processToken));
+                    }
+                                               };
+                    DWORD       nlen {};
+                    // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
+                    //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
+                    //          TokenUser
+                    //              The buffer receives a TOKEN_USER structure that contains the user account of the token.
+                    Byte        tokenUserBuf[1024];
+                    TOKEN_USER* tokenUser = reinterpret_cast<TOKEN_USER*> (begin (tokenUserBuf));
+                    if (::GetTokenInformation (processToken, TokenUser, tokenUser, sizeof (tokenUserBuf), &nlen) != 0) {
+                        Assert (nlen >= sizeof (TOKEN_USER));
+                        SID_NAME_USE    iUse {};
+                        SDKChar         name[1024];
+                        SDKChar         domain[1024];
+                        DWORD           nameLen     { NEltsOf (name) };
+                        DWORD           domainLen   { NEltsOf (domain) };
+                        if (::LookupAccountSid (nullptr, tokenUser->User.Sid, name, &nameLen, domain, &domainLen, &iUse) != 0) {
+                            if (domainLen == 0) {
+                                *userName = String::FromSDKString (name);
+                            }
+                            else {
+                                *userName = String::FromSDKString (name) + L"@" + String::FromSDKString (domain);
+                            }
+                        }
                     }
                 }
             }

@@ -46,7 +46,7 @@ namespace   Stroika {
                      */
                     struct  ProcessType {
                         Optional<pid_t>                     fParentProcessID;
-                        Optional<String>                    fUserName;
+                        Optional<String>                    fUserName;          // on windows, this is in the form of username@domain if a domain is present
                         Optional<String>                    fCommandLine;
                         Optional<String>                    fCurrentWorkingDirectory;
                         Optional<Mapping<String, String>>   fEnvironmentVariables;
