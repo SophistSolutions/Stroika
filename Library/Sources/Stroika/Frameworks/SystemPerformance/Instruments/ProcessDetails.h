@@ -158,7 +158,7 @@ namespace   Stroika {
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
                         Optional<double>        fCombinedIOWriteBytes;
-                    };
+					};
 
 
                     enum    class   Fields2Capture {
