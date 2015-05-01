@@ -211,7 +211,7 @@ namespace   Stroika {
                  *      keys a logical copy at the point 'keys' is called.
                  *
                  *  See:
-                 *      @see Keys ()
+                 *      @see Values ()
                  */
                 nonvirtual  Iterable<KeyType>   Keys () const;
 
@@ -224,8 +224,8 @@ namespace   Stroika {
                  *  maybe smart enough to use lazy copying).
                  *
                  *  \em Design Note:
-                 *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
-                 *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
+                 *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
+                 *      (https://msdn.microsoft.com/en-us/library/x8bctb9c%28v=vs.110%29.aspx).aspx) returns a live reference
                  *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
                  *
                  *      In .net, the typical model is that you have a pointer to an object, and pass around that
@@ -234,6 +234,8 @@ namespace   Stroika {
                  *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
                  *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
                  *      keys a logical copy at the point 'keys' is called.
+                 *
+                 *  \note   Alias - this could also have been called Image ()
                  *
                  *  See:
                  *      @see Keys ()
