@@ -1711,8 +1711,8 @@ namespace   {
             L"BLOB versus vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
-            8440,
-            0.26,
+            8500,
+            0.27,
             &failedTests
         );
         Tester (
