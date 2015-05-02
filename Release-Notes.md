@@ -20,10 +20,20 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a93">v2.0a93x</a><br/>2015-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a93">v2.0a93</a><br/>2015-05-02</td>
 <td>
 <ul>
-	<li>TODO</li>
+	<li>Cleaned up Stroika-Config code - so now that builds ONLY do the IntermediateFiles direactory and gets included</li>
+	<li>Refactoring of SystemPerformacne code and lots of new system performance functionality - esp using WMI, using new wildcard
+		support and reading back process ids from WMI, ProcessDetails,
+		bind context, SleepUntil style, and much more</li>
+	<li>undo mistake of adding Debug-A-32 and Release-A-32 to normal windows projhects.</li>
+	<li>Added FileSystem::WellKnownLocations::GetRuntimeVariableData () and used that to store PID files</li>
+	<li>new Rebin BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetValues ()</li>
+	<li>Added Mapping<>::Values() method</li>
+	<li> Redefined Optional<>::operator+/*- = methods to use AccumulateIf()</li>
+	<li>Imprved regression test code to use median so more stable, and then could weak down range of regtest checks and still pass</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, cand valgrind </li>
 </ul>
 </td>
 </tr>
