@@ -60,7 +60,13 @@ namespace   Stroika {
                     tmp.push_back (*i);
                 }
                 nth_element (tmp.begin(), tmp.begin() + size / 2, tmp.end());
-                return tmp[size / 2];
+                if ((size % 2) == 0)
+                {
+                    return (tmp[size / 2] + tmp[size / 2 - 1]) / static_cast<T> (2);
+                }
+                else {
+                    return tmp[size / 2];
+                }
             }
             template    <typename   CONTAINER_OF_T>
             auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type {
