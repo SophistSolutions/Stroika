@@ -72,11 +72,6 @@ using   namespace   Stroika::Foundation::Time;
 /*
  *  TODO:
  *
- *      @todo   PERFORAMNCE SCORES/PERFORAMNCE REGTEST
- *              (add todo - could use multiple samples and take median)
- *              (once we have new median code) *
- *              (create todo)
- *
  */
 
 
@@ -1513,7 +1508,7 @@ namespace   {
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
-            17000,
+            18800,
             .5,
             &failedTests
         );
@@ -1522,7 +1517,7 @@ namespace   {
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
-            17600,
+            18900,
             .35,
             &failedTests
         );
@@ -1532,7 +1527,7 @@ namespace   {
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
-            24000,
+            26900,
             .8,
             &failedTests
         );
@@ -1541,8 +1536,8 @@ namespace   {
             L"IRunnable versus std::function",
             Test_VirtualFunctionBasedRunnable, L"IRunnable",
             Test_stdFunctionBaseline, L"std::function",
-            180000,
-            1.05,
+            168000,
+            1.15,
             &failedTests
         );
 #if 0
@@ -1559,7 +1554,7 @@ namespace   {
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String",
-            48700,
+            51900,
             0.5,
             &failedTests
         );
@@ -1567,7 +1562,7 @@ namespace   {
             L"Simple Struct With Strings Filling And Copying2",
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
-            59000,
+            65300,
             0.66,
             &failedTests
         );
@@ -1575,32 +1570,32 @@ namespace   {
             L"Simple String append test (+='string object') 10x",
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
-            1310000,
-            4.0,
+            1500000,
+            4.1,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 10x",
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
-            1270000,
-            3.6,
+            1580000,
+            3.65,
             &failedTests
         );
         Tester (
             L"Simple String append test (+=wchar_t[]) 100x",
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
-            267000,
-            8.2,
+            310000,
+            8.45,
             &failedTests
         );
         Tester (
             L"String a + b",
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
-            2290000,
-            2.25,
+            2380000,
+            2.3,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1608,7 +1603,7 @@ namespace   {
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
             Test_OperatorINSERT_ostream_<String>, L"Charactes::String",
-            6300,
+            7400,
             1.65,
             &failedTests
         );
@@ -1617,8 +1612,8 @@ namespace   {
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
-            3760000,
-            1.95,
+            3740000,
+            1.98,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1626,7 +1621,7 @@ namespace   {
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
-        250000,
+        244000,
         4.0,
         &failedTests
         );
@@ -1636,7 +1631,7 @@ namespace   {
             L"wstringstream versus StringBuilder",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
-        231000 ,
+        248000 ,
         .14,
         &failedTests
         );
@@ -1645,8 +1640,8 @@ namespace   {
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
-            44000,
-            1.15,
+            56500,
+            1.25,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1654,15 +1649,15 @@ namespace   {
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>",
-            150000,
-            7.35,
+            170000,
+            7.7,
             &failedTests
         );
         Tester (
             L"Sequence<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
-            9660,
+            10600,
             1.35,
             &failedTests
         );
@@ -1670,15 +1665,15 @@ namespace   {
             L"Sequence_DoublyLinkedList<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence_DoublyLinkedList<int>",
-            190000,
-            7.4,
+            168000,
+            7.7,
             &failedTests
         );
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
-            10310,
+            10700,
             1.35,
             &failedTests
         );
@@ -1686,15 +1681,15 @@ namespace   {
             L"Collection<int> basics",
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([](vector<int>* c) {c->push_back(2); });} , L"vector<int>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([](Collection<int>* c) {c->Add(2); });}, L"Collection<int>",
-        105700,
-        7.7,
+        113000,
+        7.9,
         &failedTests
         );
         Tester (
             L"Collection<string> basics",
         [] () {Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([](vector<string>* c) {c->push_back(string ()); });} , L"vector<string>",
         [] () {Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([](Collection<string>* c) {c->Add(string()); });}, L"Collection<string>",
-        9100,
+        9600,
         0.8,
         &failedTests
         );
@@ -1703,7 +1698,7 @@ namespace   {
             L"String Chracters::Format ()",
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
-            2090000,
+            2040000,
             1.5,
             &failedTests
         );
@@ -1711,8 +1706,8 @@ namespace   {
             L"BLOB versus vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
-            8500,
-            0.27,
+            10100,
+            0.28,
             &failedTests
         );
         Tester (
@@ -1734,7 +1729,7 @@ namespace   {
             L"UTF82WString win32API vs codecvt_utf8",
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
-            4490000,
+            5950000,
             1.6,
             &failedTests
         );
@@ -1744,7 +1739,7 @@ namespace   {
             L"WString2UTF8 win32API vs codecvt_utf8",
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
-            3090000,
+            3570000,
             1.9,
             &failedTests
         );
