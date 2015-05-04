@@ -39,6 +39,10 @@ namespace   Stroika {
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
             }
+            inline  TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds)
+                : TimeOfDay (static_cast<uint32_t> (((hour * 60) + minute) + seconds))
+            {
+            }
             inline  constexpr   bool    TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);
