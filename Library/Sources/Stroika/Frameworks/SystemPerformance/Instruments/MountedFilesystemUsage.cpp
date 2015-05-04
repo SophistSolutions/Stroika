@@ -10,6 +10,7 @@
 #include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
+#include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
@@ -35,7 +36,10 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::MountedFilesystemUsage;
 
 using   Characters::String_Constant;
+using   Characters::String2Int;
 using   Time::DurationSecondsType;
+using   IO::FileSystem::BinaryFileInputStream;
+using   Streams::TextInputStreamBinaryAdapter;
 
 
 // for io stats
@@ -104,6 +108,7 @@ namespace {
             double  fTimeSpentWriting;
             double  fWritesCompleted;
         };
+        Mapping<String, uint32_t>                fDeviceName2SectorSizeMap_;
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
@@ -130,11 +135,11 @@ namespace {
                             Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
                             Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
                             if (oOld.IsPresent () and oNew.IsPresent ()) {
-                                const unsigned int kSectorSizeTmpHack_ = 4 * 1024;      // @todo GET from disk stats
-                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * kSectorSizeTmpHack_;
+                                unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
+                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
                                 v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
-                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * kSectorSizeTmpHack_;
+                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
                                 v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
@@ -154,6 +159,25 @@ namespace {
             }
             NoteCompletedCapture_ ();
             return results;
+        }
+        uint32_t    GetSectorSize_ (const String& deviceName)
+        {
+            auto    o   =   fDeviceName2SectorSizeMap_.Lookup (deviceName);
+            if (o.IsMissing ()) {
+                String  fn = Characters::Format (L"/sys/block/%s/queue/hw_sector_size", deviceName.c_str ());
+                try {
+                    o = String2Int<uint32_t> (TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (fn, BinaryFileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                    fDeviceName2SectorSizeMap_.Add (deviceName, *o);
+                }
+                catch (...) {
+                    DbgTrace (L"unknonwn error reading %s", fn.c_str ());
+                    // ignore
+                }
+            }
+            if (o.IsMissing ()) {
+                o = 512;    // seems the typical answer on UNIX
+            }
+            return *o;
         }
         Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
         {
@@ -219,7 +243,6 @@ namespace {
         }
         Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
         {
-            using   IO::FileSystem::BinaryFileInputStream;
             using   Characters::String2Float;
             Mapping<String, PerfStats_>   result;
             DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
