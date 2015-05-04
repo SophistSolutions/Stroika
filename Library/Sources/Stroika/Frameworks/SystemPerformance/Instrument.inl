@@ -34,9 +34,12 @@ namespace   Stroika {
                 return fCaptureFunction ();
             }
             template    <>
-            inline  VariantValue    Instrument::CaptureOneMeasurement () const
+            inline  VariantValue    Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut) const
             {
                 MeasurementSet ms = Capture ();
+                if (measurementTimeOut != nullptr) {
+                    *measurementTimeOut = ms.fMeasuredAt;
+                }
                 for (auto ii : ms.fMeasurements) {
                     return ii.fValue;
                 }
@@ -44,9 +47,9 @@ namespace   Stroika {
                 return VariantValue ();
             }
             template    <typename T>
-            inline  T   Instrument::CaptureOneMeasurement () const
+            inline  T   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut) const
             {
-                return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> ());
+                return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
             }
 
 

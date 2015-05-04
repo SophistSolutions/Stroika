@@ -67,7 +67,7 @@ namespace   Stroika {
                  *  Require just one measurmenet
                  */
                 template    <typename T>
-                nonvirtual    T CaptureOneMeasurement () const;
+                nonvirtual    T CaptureOneMeasurement (DateTimeRange* measurementTimeOut = nullptr) const;
             };
 
 
