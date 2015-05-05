@@ -271,6 +271,9 @@ namespace   Stroika {
                 /**
                  *  Convert the given datetime to a floating point offset in seconds based on the same reference as the tickcount.
                  *
+                 *  \note   Time::GetTickCount () normally returns a positive number but if you go back in time before
+                 *          its zero point, ToTickCount () will return negative numbers.
+                 *
                  *  EXAMPLE:
                  *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
                  */
