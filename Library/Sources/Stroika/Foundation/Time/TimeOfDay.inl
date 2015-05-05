@@ -40,7 +40,7 @@ namespace   Stroika {
             {
             }
             inline  TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds)
-                : TimeOfDay (static_cast<uint32_t> (((hour * 60) + minute) + seconds))
+                : TimeOfDay (static_cast<uint32_t> (((hour * 60) + minute) * 60 + seconds))
             {
             }
             inline  constexpr   bool    TimeOfDay::empty () const
