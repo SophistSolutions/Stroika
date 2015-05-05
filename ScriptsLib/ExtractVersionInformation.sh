@@ -13,7 +13,8 @@ MINOR=`sed 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr]\).*/\1/' $VERSION_IN_FILE`
 VERSIONSUBSTAGE=`sed 's/[0-9]*\.[0-9]*[abdr]\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 VERSIONFINAL=`sed 's/[0-9]*\.[0-9]*[abdr][0-9]*\(.*\)/\1/' $VERSION_IN_FILE`
-
+SHORT_VERSION_STAGE=$VERSIONSTAGE
+SHORT_VERSIONFINAL=$VERSIONFINAL
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
 if [ "$VERSIONSTAGE" == "b" ] ; then VERSIONSTAGE="Beta"; fi
 if [ "$VERSIONSTAGE" == "d" ] ; then VERSIONSTAGE="Dev"; fi
@@ -49,4 +50,8 @@ fi
 if [ "$OUT_FIELD_NAME" == "Major.Minor" ]
   then
 	echo -n "$MAJOR.$MINOR"
+fi
+if [ "$OUT_FIELD_NAME" == "DecoratedStageInfo" ]
+  then
+	echo -n "$SHORT_VERSION_STAGE$VERSIONSUBSTAGE$SHORT_VERSIONFINAL"
 fi
