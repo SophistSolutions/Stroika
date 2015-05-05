@@ -37,9 +37,67 @@ namespace   Stroika {
 
 
                     /**
+                    */
+                    enum    DriveType {
+                        /**
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk"
+                         */
+                        eRemovableDisk,
+
+                        /**
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk"
+                         */
+                        eLocalDisk,
+
+                        /**
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive"
+                         */
+                        eNetworkDrive,
+
+                        /**
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk"
+                         *  On Linux, this is tmpfs
+                         */
+                        eTemporaryFiles,
+
+                        /**
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc"
+                         */
+                        eReadOnlyEjectable,
+
+                        /**
+                         *  e.g. procfs
+                         */
+                        eSystemInformation,
+
+                        Stroika_Define_Enum_Bounds(eRemovableDisk, eSystemInformation)
+                    };
+
+
+                    /**
+                     *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
+                     *          persistence (so be sure to version).
+                     */
+                    constexpr   Configuration::EnumNames<DriveType>    Stroika_Enum_Names(DriveType)
+                    {
+                        Configuration::EnumNames<DriveType>::BasicArrayInitializer {
+                            {
+                                { DriveType::eRemovableDisk, L"Removable-Disk" },
+                                { DriveType::eLocalDisk, L"Local-Disk" },
+                                { DriveType::eNetworkDrive, L"Network-Drive" },
+                                { DriveType::eTemporaryFiles, L"Temporary-Files" },
+                                { DriveType::eReadOnlyEjectable, L"Read-Only-Ejectable" },
+                                { DriveType::eSystemInformation, L"System-Information" },
+                            }
+                        }
+                    };
+
+
+                    /**
                      *
                      */
                     struct  VolumeInfo {
+                        Optional<DriveType> fDriveType;
                         Optional<String>    fFileSystemType;
                         Optional<String>    fDeviceOrVolumeName;
                         Optional<String>    fVolumeID;
