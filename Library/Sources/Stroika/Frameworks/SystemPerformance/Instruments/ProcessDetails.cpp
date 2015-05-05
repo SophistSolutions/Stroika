@@ -805,9 +805,11 @@ namespace {
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             DurationSecondsType   timeCollecting { fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
-                DbgTrace (L"wmi isntance name %s", i.c_str ());
+                DbgTrace (L"WMI instance name %s", i.c_str ());
             }
+#endif
 
             // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
             Mapping<pid_t, String>  pid2InstanceMap;
