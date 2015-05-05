@@ -254,18 +254,27 @@ namespace   Stroika {
                 nonvirtual  Timezone    GetTimezone () const;
 
             public:
-                /*
+                /**
                  *  Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
                  * conversion is also unknown (but either treat Kind as localtime or UTC)
                  */
                 nonvirtual  DateTime    AsLocalTime () const;
 
             public:
-                /*
+                /**
                  *  Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
                  *  conversion is also unknown (but either treat Kind as localtime or UTC)
                  */
                 nonvirtual  DateTime    AsUTC () const;
+
+            public:
+                /**
+                 *  Convert the given datetime to a floating point offset in seconds based on the same reference as the tickcount.
+                 *
+                 *  EXAMPLE:
+                 *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
+                 */
+                nonvirtual  DurationSecondsType    ToTickCount () const;
 
             public:
                 /**

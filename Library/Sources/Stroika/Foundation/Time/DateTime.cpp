@@ -394,6 +394,16 @@ DateTime    DateTime::Now ()
 #endif
 }
 
+DurationSecondsType    DateTime::ToTickCount () const
+{
+    // quick hack impl
+    static  DateTime sTimeZero_ = [] () {
+        DateTime    now = Now ();
+        return now.AddSeconds (-Time::GetTickCount ());
+    } ();
+    return (*this - sTimeZero_).As<DurationSecondsType> ();
+}
+
 String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {
