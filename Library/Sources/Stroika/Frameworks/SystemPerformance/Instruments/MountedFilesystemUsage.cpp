@@ -509,6 +509,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<String>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<DriveType> (Stroika_Enum_Names(DriveType)));
+        mapper.AddCommonType<Optional<DriveType>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
