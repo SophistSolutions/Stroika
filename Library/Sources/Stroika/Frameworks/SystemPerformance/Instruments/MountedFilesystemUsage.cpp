@@ -121,41 +121,43 @@ namespace {
             Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             results = capture_Process_Run_DF_ ();
-            try {
-                Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
-                Sequence<VolumeInfo>    newV;
-                for (VolumeInfo v : results) {
-                    if (v.fDeviceOrVolumeName.IsPresent ()) {
-                        if (fContextStats_) {
-                            String  devNameLessSlashes = *v.fDeviceOrVolumeName;
-                            size_t i = devNameLessSlashes.RFind ('/');
-                            if (i != string::npos) {
-                                devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
-                            }
-                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
-                            Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
-                            if (oOld.IsPresent () and oNew.IsPresent ()) {
-                                unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
-                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+            if (fOptions_.fIOStatistics) {
+                try {
+                    Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
+                    Sequence<VolumeInfo>    newV;
+                    for (VolumeInfo v : results) {
+                        if (v.fDeviceOrVolumeName.IsPresent ()) {
+                            if (fContextStats_) {
+                                String  devNameLessSlashes = *v.fDeviceOrVolumeName;
+                                size_t i = devNameLessSlashes.RFind ('/');
+                                if (i != string::npos) {
+                                    devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
+                                }
+                                Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
+                                Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
+                                if (oOld.IsPresent () and oNew.IsPresent ()) {
+                                    unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
+                                    v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                                    v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                    v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
+                                    v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                                    v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                    v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
-                                v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
-                                v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
-                                v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+                                    v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
+                                    v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
+                                    v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+                                }
                             }
                         }
+                        newV.Append (v);
                     }
-                    newV.Append (v);
+                    fContextStats_ = diskStats;
+                    results = newV;
                 }
-                fContextStats_ = diskStats;
-                results = newV;
-            }
-            catch (...) {
-                DbgTrace ("Exception gathering procfs disk io stats");
+                catch (...) {
+                    DbgTrace ("Exception gathering procfs disk io stats");
+                }
             }
             NoteCompletedCapture_ ();
             return results;
@@ -308,7 +310,10 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            if (fOptions_.fIOStatistics)
+            {
+                capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
+            }
             NoteCompletedCapture_ ();
 #endif
         }
@@ -319,7 +324,9 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_ (due to bug/misfeature in not being able  to copy query object - we choose to re-call here even if possibly not needed)
+            if (fOptions_.fIOStatistics) {
+                capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_ (due to bug/misfeature in not being able  to copy query object - we choose to re-call here even if possibly not needed)
+            }
             NoteCompletedCapture_ ();
 #endif
         }
@@ -386,36 +393,38 @@ namespace {
                                     v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                     v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
 #if     qUseWMICollectionSupport_
-                                    String wmiInstanceName = v.fMountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
-                                    fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
+                                    if (fOptions_.fIOStatistics) {
+                                        String wmiInstanceName = v.fMountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
+                                        fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                                        v.fReadIOStats.fBytesTransfered = *o * timeCollecting;
-                                    }
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                                        v.fWriteIOStats.fBytesTransfered = *o * timeCollecting;
-                                    }
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
-                                        v.fReadIOStats.fTotalTransfers = *o * timeCollecting;
-                                    }
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
-                                        v.fWriteIOStats.fTotalTransfers = *o * timeCollecting;
-                                    }
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                        v.fReadIOStats.fTimeTransfering = *o * timeCollecting / 100;
-                                    }
-                                    if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                        v.fWriteIOStats.fTimeTransfering = *o * timeCollecting / 100;
-                                    }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                                            v.fReadIOStats.fBytesTransfered = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                                            v.fWriteIOStats.fBytesTransfered = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                                            v.fReadIOStats.fTotalTransfers = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                                            v.fWriteIOStats.fTotalTransfers = *o * timeCollecting;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                                            v.fReadIOStats.fTimeTransfering = *o * timeCollecting / 100;
+                                        }
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                            v.fWriteIOStats.fTimeTransfering = *o * timeCollecting / 100;
+                                        }
 
-                                    if (v.fReadIOStats.fBytesTransfered or v.fWriteIOStats.fBytesTransfered) {
-                                        v.fIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
-                                    }
-                                    if (v.fReadIOStats.fTotalTransfers or v.fWriteIOStats.fTotalTransfers) {
-                                        v.fIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
-                                    }
-                                    if (v.fReadIOStats.fTimeTransfering or v.fWriteIOStats.fTimeTransfering) {
-                                        v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
+                                        if (v.fReadIOStats.fBytesTransfered or v.fWriteIOStats.fBytesTransfered) {
+                                            v.fIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
+                                        }
+                                        if (v.fReadIOStats.fTotalTransfers or v.fWriteIOStats.fTotalTransfers) {
+                                            v.fIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
+                                        }
+                                        if (v.fReadIOStats.fTimeTransfering or v.fWriteIOStats.fTimeTransfering) {
+                                            v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
+                                        }
                                     }
 #endif
                                 }

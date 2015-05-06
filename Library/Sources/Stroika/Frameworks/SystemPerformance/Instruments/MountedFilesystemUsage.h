@@ -142,6 +142,14 @@ namespace   Stroika {
                          *  \req fMinimumAveragingInterval >= 0
                          */
                         Time::DurationSecondsType   fMinimumAveragingInterval { 1.0 };
+
+                        /**
+                         */
+                        bool    fDiskspaceUsage { true };
+
+                        /**
+                         */
+                        bool    fIOStatistics { true };
                     };
 
 
