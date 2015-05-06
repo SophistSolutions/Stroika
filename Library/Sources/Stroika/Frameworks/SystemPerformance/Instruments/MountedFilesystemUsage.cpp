@@ -152,10 +152,17 @@ namespace {
             else {
                 results = RunDF_ ();
             }
+            ApplyDiskTypes_ (&results);
+			if (not fOptions.fIncludeSystemDevices) {
+				for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
+					if (i->fMountedDeviceType == MountedDeviceType::eSystemInformation) {
+						results.Remove (i);
+					}
+				}
+			}
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results);
             }
-            ApplyDiskTypes_ (&results);
             _NoteCompletedCapture ();
             return results;
         }
@@ -234,7 +241,7 @@ namespace {
                 if (vi.fFileSystemType == L"ext2" or vi.fFileSystemType == L"ext3" or vi.fFileSystemType == L"ext4") {
                     vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
                 }
-                else if (vi.fFileSystemType == L"devtmpfs") {
+                else if (vi.fFileSystemType == L"sysfs" or vi.fFileSystemType == L"devtmpfs" or vi.fFileSystemType == L"proc" or vi.fFileSystemType == L"devpts" or vi.fFileSystemType == L"securityfs" or vi.fFileSystemType == L"cgroup") {
                     vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
                 }
                 else if (vi.fFileSystemType == L"tmpfs") {
