@@ -38,35 +38,40 @@ namespace   Stroika {
 
                     /**
                     */
-                    enum    DriveType {
+                    enum    MountedDeviceType {
                         /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk"
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
+                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
                          */
                         eRemovableDisk,
 
                         /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk"
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk" or
+                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_FIXED
                          */
                         eLocalDisk,
 
                         /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive"
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive" or
+                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOTE
                          */
                         eNetworkDrive,
 
                         /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk"
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk" or
+                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_RAMDISK
                          *  On Linux, this is tmpfs
                          */
                         eTemporaryFiles,
 
                         /**
-                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc"
+                         *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc" or
+                         *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_CDROM
                          */
                         eReadOnlyEjectable,
 
                         /**
-                         *  e.g. procfs
+                         *  e.g. Linux procfs
                          */
                         eSystemInformation,
 
@@ -78,16 +83,16 @@ namespace   Stroika {
                      *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
                      *          persistence (so be sure to version).
                      */
-                    constexpr   Configuration::EnumNames<DriveType>    Stroika_Enum_Names(DriveType)
+                    constexpr   Configuration::EnumNames<MountedDeviceType>    Stroika_Enum_Names(MountedDeviceType)
                     {
-                        Configuration::EnumNames<DriveType>::BasicArrayInitializer {
+                        Configuration::EnumNames<MountedDeviceType>::BasicArrayInitializer {
                             {
-                                { DriveType::eRemovableDisk, L"Removable-Disk" },
-                                { DriveType::eLocalDisk, L"Local-Disk" },
-                                { DriveType::eNetworkDrive, L"Network-Drive" },
-                                { DriveType::eTemporaryFiles, L"Temporary-Files" },
-                                { DriveType::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                                { DriveType::eSystemInformation, L"System-Information" },
+                                { MountedDeviceType::eRemovableDisk, L"Removable-Disk" },
+                                { MountedDeviceType::eLocalDisk, L"Local-Disk" },
+                                { MountedDeviceType::eNetworkDrive, L"Network-Drive" },
+                                { MountedDeviceType::eTemporaryFiles, L"Temporary-Files" },
+                                { MountedDeviceType::eReadOnlyEjectable, L"Read-Only-Ejectable" },
+                                { MountedDeviceType::eSystemInformation, L"System-Information" },
                             }
                         }
                     };
@@ -97,13 +102,13 @@ namespace   Stroika {
                      *
                      */
                     struct  VolumeInfo {
-                        Optional<DriveType> fDriveType;
-                        Optional<String>    fFileSystemType;
-                        Optional<String>    fDeviceOrVolumeName;
-                        Optional<String>    fVolumeID;
-                        String              fMountedOnName;
-                        Optional<double>    fDiskSizeInBytes;
-                        Optional<double>    fUsedSizeInBytes;
+                        Optional<MountedDeviceType> fMountedDeviceType;
+                        Optional<String>            fFileSystemType;
+                        Optional<String>            fDeviceOrVolumeName;
+                        Optional<String>            fVolumeID;
+                        String                      fMountedOnName;
+                        Optional<double>            fDiskSizeInBytes;
+                        Optional<double>            fUsedSizeInBytes;
 
                         /**
                          *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers

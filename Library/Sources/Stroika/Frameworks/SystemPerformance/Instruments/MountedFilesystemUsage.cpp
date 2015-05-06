@@ -357,6 +357,24 @@ namespace {
                     VolumeInfo v;
                     v.fFileSystemType = String::FromSDKString (FileSysNameBuf);
                     v.fVolumeID = String::FromSDKString (volumeNameBuf);
+                    switch (::GetDriveType (volumeNameBuf)) {
+                        case    DRIVE_REMOVABLE:
+                            v.fMountedDeviceType = MountedDeviceType::eRemovableDisk;
+                            break;
+                        case    DRIVE_FIXED:
+                            v.fMountedDeviceType = MountedDeviceType::eLocalDisk;
+                            break;
+                        case    DRIVE_REMOTE:
+                            v.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                            break;
+                        case    DRIVE_RAMDISK:
+                            v.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
+                            break;
+                        case    DRIVE_CDROM:
+                            v.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
+                            break;
+                        default:;   /*ignored - if it doesnt map or error - nevermind */
+                    }
                     {
                         /*
                          *  On Windoze, each volume object can have multiple sub-volumes (logical volumes) and we return the size of each).
@@ -508,8 +526,8 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<String>> ();
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<DriveType> (Stroika_Enum_Names(DriveType)));
-        mapper.AddCommonType<Optional<DriveType>> ();
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<MountedDeviceType> (Stroika_Enum_Names(MountedDeviceType)));
+        mapper.AddCommonType<Optional<MountedDeviceType>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
@@ -518,7 +536,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTotalTransfers), String_Constant (L"Total-Transfers"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         mapper.AddClass<VolumeInfo> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDriveType), String_Constant (L"Drive-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedDeviceType), String_Constant (L"Mounted-Device-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
