@@ -613,9 +613,9 @@ DoneWithProcess:
         const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
         char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
 
-        int cpid = ::fork ();
-        Execution::ThrowErrNoIfNegative (cpid);
-        if (cpid == 0) {
+        int childPID = ::fork ();
+        Execution::ThrowErrNoIfNegative (childPID);
+        if (childPID == 0) {
             try {
                 /*
                  *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
@@ -657,7 +657,7 @@ DoneWithProcess:
         }
         else {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("In Parent Fork: child process PID= %d", cpid);
+            DbgTrace ("In Parent Fork: child process PID=%d", childPID);
 #endif
             /*
              * WE ARE PARENT
@@ -736,10 +736,11 @@ DoneWithProcess:
             // not sure we need?
             int status = 0;
             int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
-            int result = waitpid (cpid, &status, flags);                /* Wait for child */
-            if (result != cpid || status != 0) {
+            int result = waitpid (childPID, &status, flags);                /* Wait for child */
+            // throw / warn if result other than child exited normally
+            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0)) {
                 // @todo fix this message
-                DbgTrace ("cpid=%d, result=%d, status=%d", cpid, result, status);
+                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
                 DoThrow (StringException (L"sub-process failed"));
             }
         }
