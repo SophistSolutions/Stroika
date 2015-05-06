@@ -78,16 +78,24 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_COMMON_ {
+    protected:
         Options                     fOptions_;
         DurationSecondsType         fMinimumAveragingInterval_;
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         DateTime                    fLastCapturedAt;
+
+    public:
+        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
+
+    protected:
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
-        void    NoteCompletedCapture_ ()
+
+    protected:
+        void    _NoteCompletedCapture ()
         {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt = DateTime::Now ();
@@ -108,59 +116,64 @@ namespace {
             double  fTimeSpentWriting;
             double  fWritesCompleted;
         };
-        Mapping<String, uint32_t>                fDeviceName2SectorSizeMap_;
+        Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();        // for side-effect of setting fContextStats_
+            capture ();        // for side-effect of setting fContextStats_
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
-        Sequence<VolumeInfo> capture_ ()
+        Sequence<VolumeInfo> capture ()
         {
             Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
-            results = capture_Process_Run_DF_ ();
+            results = RunDF_ ();
             if (fOptions_.fIOStatistics) {
-                try {
-                    Mapping<String, PerfStats_> diskStats = capture_ProcFSDiskStats_ ();
-                    Sequence<VolumeInfo>    newV;
-                    for (VolumeInfo v : results) {
-                        if (v.fDeviceOrVolumeName.IsPresent ()) {
-                            if (fContextStats_) {
-                                String  devNameLessSlashes = *v.fDeviceOrVolumeName;
-                                size_t i = devNameLessSlashes.RFind ('/');
-                                if (i != string::npos) {
-                                    devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
-                                }
-                                Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
-                                Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
-                                if (oOld.IsPresent () and oNew.IsPresent ()) {
-                                    unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                                    v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                    v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                    v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
-                                    v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                    v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                    v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+                ReadAndApplyProcFS_diskstats_ (&results);
+            }
+            _NoteCompletedCapture ();
+            return results;
+        }
+    private:
+        void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
+        {
+            try {
+                Mapping<String, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
+                Sequence<VolumeInfo>    newV;
+                for (VolumeInfo v : *volumes) {
+                    if (v.fDeviceOrVolumeName.IsPresent ()) {
+                        if (fContextStats_) {
+                            String  devNameLessSlashes = *v.fDeviceOrVolumeName;
+                            size_t i = devNameLessSlashes.RFind ('/');
+                            if (i != string::npos) {
+                                devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
+                            }
+                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
+                            Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
+                            if (oOld.IsPresent () and oNew.IsPresent ()) {
+                                unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
+                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                                v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
+                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                                v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
-                                    v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
-                                    v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
-                                    v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
-                                }
+                                v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
+                                v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
+                                v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
                             }
                         }
-                        newV.Append (v);
                     }
-                    fContextStats_ = diskStats;
-                    results = newV;
+                    newV.Append (v);
                 }
-                catch (...) {
-                    DbgTrace ("Exception gathering procfs disk io stats");
-                }
+                fContextStats_ = diskStats;
+                *volumes = newV;
             }
-            NoteCompletedCapture_ ();
-            return results;
+            catch (...) {
+                DbgTrace ("Exception gathering procfs disk io stats");
+            }
         }
         uint32_t    GetSectorSize_ (const String& deviceName)
         {
@@ -181,7 +194,7 @@ namespace {
             }
             return *o;
         }
-        Sequence<VolumeInfo> capture_Process_Run_DF_ (bool includeFSTypes)
+        Sequence<VolumeInfo> RunDF_ (bool includeFSTypes)
         {
             Sequence<VolumeInfo>   result;
             //
@@ -234,16 +247,16 @@ namespace {
             }
             return result;
         }
-        Sequence<VolumeInfo> capture_Process_Run_DF_ ()
+        Sequence<VolumeInfo> RunDF_ ()
         {
             try {
-                return capture_Process_Run_DF_ (true);
+                return RunDF_ (true);
             }
             catch (...) {
-                return capture_Process_Run_DF_ (false);
+                return RunDF_ (false);
             }
         }
-        Mapping<String, PerfStats_> capture_ProcFSDiskStats_ ()
+        Mapping<String, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using   Characters::String2Float;
             Mapping<String, PerfStats_>   result;
@@ -252,7 +265,7 @@ namespace {
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::MountedFilesystemUsage::capture_ProcFSDiskStats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::MountedFilesystemUsage::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 //
                 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
@@ -314,7 +327,7 @@ namespace {
             {
                 capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_
             }
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -327,17 +340,18 @@ namespace {
             if (fOptions_.fIOStatistics) {
                 capture_Windows_GetVolumeInfo_ ();   // for side-effect of setting fLogicalDiskWMICollector_ (due to bug/misfeature in not being able  to copy query object - we choose to re-call here even if possibly not needed)
             }
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
 #endif
         }
-        Sequence<VolumeInfo> capture_ ()
+        Sequence<VolumeInfo> capture ()
         {
             Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             results = capture_Windows_GetVolumeInfo_ ();
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
             return results;
         }
+    private:
         Sequence<VolumeInfo> capture_Windows_GetVolumeInfo_ ()
         {
 #if     qUseWMICollectionSupport_
@@ -497,13 +511,13 @@ namespace {
             : inherited (options)
         {
         }
-        Sequence<VolumeInfo> capture_ ()
+        Sequence<VolumeInfo> capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture_");
+            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
 #endif
-            return inherited::capture_ ();
+            return inherited::capture ();
         }
     };
 }
@@ -573,9 +587,9 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
                InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
-        DateTime    before = useCaptureContext.fLastCapturedAt;
-        Sequence<VolumeInfo> volumes   =   useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
+        DateTime    before = useCaptureContext.GetLastCaptureAt ();
+        Sequence<VolumeInfo> volumes   =   useCaptureContext.capture ();
+        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.GetLastCaptureAt ());
         Measurement m;
         m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
         m.fType = kMountedVolumeUsage_;
