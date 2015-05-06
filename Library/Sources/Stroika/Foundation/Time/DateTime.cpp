@@ -399,7 +399,7 @@ DurationSecondsType    DateTime::ToTickCount () const
     // quick hack impl
     static  DateTime sTimeZero_ = [] () {
         DateTime    now = Now ();
-        return now.AddSeconds (-Time::GetTickCount ());
+        return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
     } ();
     return (*this - sTimeZero_).As<DurationSecondsType> ();
 }
