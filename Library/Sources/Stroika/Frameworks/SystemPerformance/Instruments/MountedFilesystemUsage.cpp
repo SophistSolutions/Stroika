@@ -3,7 +3,9 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+#include    <sys/statvfs.h>
+#elif     qPlatform_Windows
 #include    <Windows.h>
 #endif
 
@@ -130,13 +132,86 @@ namespace {
         {
             Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
-            results = RunDF_ ();
+
+            constexpr   bool    kUseProcFSForMounts_ { true };
+            if (kUseProcFSForMounts_) {
+                results = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
+            }
+            else {
+                results = RunDF_ ();
+            }
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results);
             }
             ApplyDiskTypes_ (&results);
             _NoteCompletedCapture ();
             return results;
+        }
+    private:
+        Sequence<VolumeInfo>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
+        {
+            Sequence<VolumeInfo>    result;
+            for (MountInfo_ mi : Read_proc_mounts_ ()) {
+                VolumeInfo  vi;
+                vi.fMountedOnName = mi.fMountedOn;
+                vi.fDeviceOrVolumeName = mi.fDeviceName;
+                vi.fFileSystemType = mi.fFilesystemFormat;
+                UpdateVolumneInfo_statvfs (&vi);
+                result.Append (vi);
+            }
+            return result;
+        }
+
+    private:
+        void    UpdateVolumneInfo_statvfs (VolumeInfo* v)
+        {
+            RequireNotNull (v);
+            statvfs sbuf;
+            memset (&sbuf, 0, sizeof (sbuf));
+            if (::statvfs (v->fMountedOnName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+                uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
+                v->fDiskSizeInBytes = diskSize;
+                v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree ;
+            }
+            else {
+                DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
+            }
+        }
+    private:
+        struct MountInfo_ {
+            String  fDeviceName;
+            String  fMountedOn;
+            String  fFilesystemFormat;
+        };
+        Sequence<MountInfo_>    Read_proc_mounts_ ()
+        {
+            Sequence<MountInfo_>   result;
+            DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+            const   String_Constant kProcMountsFileName_ { L"/proc/mounts" };
+            // Note - /procfs files always unseekable
+            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMountsFileName_, BinaryFileInputStream::eNotSeekable))) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"***in Instruments::MountedFilesystemUsage::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+#endif
+                //
+                // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
+                //
+                //  1 - device name
+                //  2 - mounted on
+                //  3 - fstype
+                //
+                if (line.size () >= 3) {
+                    String  devName = line[0];
+                    String  mountedOn = line[1];
+                    String  fstype = line[2];
+                    result.Append (
+                    MountInfo_ {
+                        devName, mountedOn, fstype
+                    }
+                    );
+                }
+            }
+            return result;
         }
     private:
         void    ApplyDiskTypes_ (Sequence<VolumeInfo>* volumes)
