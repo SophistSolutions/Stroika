@@ -172,6 +172,12 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
         strcpy (ifreq.ifr_name, name);
 
         int r = ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
+        // Since this is used only to filter the list of addresses, if we get an error, dont throw but
+        // return 0
+        if (r < 0) {
+            DbgTrace ("ioctl on getFlags returned %d, errno=%d", r, ::errno);
+            return 0;
+        }
         Assert (r == 0);
         return (ifreq.ifr_flags);
     };
