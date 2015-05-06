@@ -14,6 +14,7 @@
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
@@ -153,13 +154,13 @@ namespace {
                 results = RunDF_ ();
             }
             ApplyDiskTypes_ (&results);
-			if (not fOptions.fIncludeSystemDevices) {
-				for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
-					if (i->fMountedDeviceType == MountedDeviceType::eSystemInformation) {
-						results.Remove (i);
-					}
-				}
-			}
+            if (not fOptions_.fIncludeSystemDevices) {
+                for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
+                    if (i->fMountedDeviceType == MountedDeviceType::eSystemInformation) {
+                        results.Remove (i);
+                    }
+                }
+            }
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results);
             }
@@ -180,7 +181,6 @@ namespace {
             }
             return result;
         }
-
     private:
         void    UpdateVolumneInfo_statvfs (VolumeInfo* v)
         {
@@ -235,14 +235,29 @@ namespace {
     private:
         void    ApplyDiskTypes_ (Sequence<VolumeInfo>* volumes)
         {
+            static  Set<String> kRealDiskFS {
+                String_Constant { L"ext2" },
+                String_Constant { L"ext3" },
+                String_Constant { L"ext4" },
+            };
+            static  Set<String> kSysFSList_ {
+                String_Constant { L"autofs" },
+                String_Constant { L"binfmt_misc" },
+                String_Constant { L"cgroup" },
+                String_Constant { L"devpts" },
+                String_Constant { L"devtmpfs" },
+                String_Constant { L"fuse.gvfsd-fuse" },
+                String_Constant { L"hugetlbfs" },
+                String_Constant { L"pstore" },
+                String_Constant { L"proc" },
+                String_Constant { L"securityfs" },
+                String_Constant { L"sysfs" },
+            };
             for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                 // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
                 VolumeInfo vi = *i;
-                if (vi.fFileSystemType == L"ext2" or vi.fFileSystemType == L"ext3" or vi.fFileSystemType == L"ext4") {
+                if (kRealDiskFS.Contains (vi.fFileSystemType)) {
                     vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
-                }
-                else if (vi.fFileSystemType == L"sysfs" or vi.fFileSystemType == L"devtmpfs" or vi.fFileSystemType == L"proc" or vi.fFileSystemType == L"devpts" or vi.fFileSystemType == L"securityfs" or vi.fFileSystemType == L"cgroup") {
-                    vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
                 }
                 else if (vi.fFileSystemType == L"tmpfs") {
                     vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
@@ -252,6 +267,9 @@ namespace {
                 }
                 else if (vi.fFileSystemType == L"iso9660") {
                     vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
+                }
+                else if (kSysFSList_.Contains (vi.fFileSystemType)) {
+                    vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
                 }
                 volumes->Update (i, vi);
             }

@@ -160,7 +160,7 @@ namespace   Stroika {
                         bool    fIOStatistics { true };
 
                         /**
-						 *	On unix, there are many 'fake' disks, like 'procfs'. For many purposes, this are uninteresting to list/query.
+                         *  On unix, there are many 'fake' disks, like 'procfs'. For many purposes, this are uninteresting to list/query.
                          */
                         bool    fIncludeSystemDevices { true };
                     };
