@@ -738,7 +738,7 @@ DoneWithProcess:
             int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
             int result = waitpid (childPID, &status, flags);                /* Wait for child */
             // throw / warn if result other than child exited normally
-            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0)) {
+            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
                 DoThrow (StringException (L"sub-process failed"));
