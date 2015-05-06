@@ -181,7 +181,9 @@ namespace {
             for (MountInfo_ mi : Read_proc_mounts_ ()) {
                 VolumeInfo  vi;
                 vi.fMountedOnName = mi.fMountedOn;
-                vi.fDeviceOrVolumeName = mi.fDeviceName;
+                if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
+                    vi.fDeviceOrVolumeName = mi.fDeviceName;
+                }
                 vi.fFileSystemType = mi.fFilesystemFormat;
                 UpdateVolumneInfo_statvfs (&vi);
                 result.Append (vi);
