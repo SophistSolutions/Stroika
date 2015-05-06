@@ -342,7 +342,9 @@ namespace {
         {
 #if     qUseWMICollectionSupport_
             Time::DurationSecondsType   timeOfPrevCollection = fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
-            fLogicalDiskWMICollector_.Collect ();
+            if (fOptions_.fIOStatistics) {
+                fLogicalDiskWMICollector_.Collect ();
+            }
             Time::DurationSecondsType   timeCollecting { fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection };
 #endif
             Sequence<VolumeInfo>   result;
