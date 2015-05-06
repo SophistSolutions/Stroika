@@ -44,6 +44,18 @@ using   IO::FileSystem::BinaryFileInputStream;
 using   Streams::TextInputStreamBinaryAdapter;
 
 
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
+
 // for io stats
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows
@@ -166,9 +178,9 @@ namespace {
         void    UpdateVolumneInfo_statvfs (VolumeInfo* v)
         {
             RequireNotNull (v);
-            statvfs sbuf;
+            struct  statvfs sbuf;
             memset (&sbuf, 0, sizeof (sbuf));
-            if (::statvfs (v->fMountedOnName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+            if (::statvfs (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fDiskSizeInBytes = diskSize;
                 v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree ;
@@ -287,7 +299,7 @@ namespace {
                     fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                 }
                 catch (...) {
-                    DbgTrace (L"unknonwn error reading %s", fn.c_str ());
+                    DbgTrace (L"Unknown error reading %s", fn.c_str ());
                     // ignore
                 }
             }
@@ -618,9 +630,7 @@ namespace {
         Sequence<VolumeInfo> capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
-#endif
+            Debug::TraceContextBumper ctx ("Instruments::MountedFilesystemUsage capture");
             return inherited::capture ();
         }
     };
