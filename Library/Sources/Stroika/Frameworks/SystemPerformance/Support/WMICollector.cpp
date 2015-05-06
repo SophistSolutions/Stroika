@@ -213,7 +213,11 @@ void     WMICollector::Collect ()
         PDH_STATUS  x = ::PdhCollectQueryData (i.fValue->fQuery_);
         if (x != 0) {
             bool isPDH_PDH_NO_DATA = (x == PDH_NO_DATA);
-            Execution::DoThrow (StringException (L"PdhCollectQueryData"));
+            if (not isPDH_PDH_NO_DATA) {
+                // happens when we try to read data about compact disk??? anyhow - best to just not throw here I think?
+                // --LGP 2015-05-06 - at least not til I underand better
+                Execution::DoThrow (StringException (L"PdhCollectQueryData"));
+            }
         }
     });
     fTimeOfLastCollection_ = Time::GetTickCount ();
