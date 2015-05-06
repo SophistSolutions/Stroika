@@ -154,6 +154,13 @@ namespace {
                 results = RunDF_ ();
             }
             ApplyDiskTypes_ (&results);
+            if (not fOptions_.fIncludeTemporaryDevices) {
+                for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
+                    if (i->fMountedDeviceType == MountedDeviceType::eTemporaryFiles) {
+                        results.Remove (i);
+                    }
+                }
+            }
             if (not fOptions_.fIncludeSystemDevices) {
                 for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
                     if (i->fMountedDeviceType == MountedDeviceType::eSystemInformation) {
@@ -244,10 +251,13 @@ namespace {
                 String_Constant { L"autofs" },
                 String_Constant { L"binfmt_misc" },
                 String_Constant { L"cgroup" },
+                String_Constant { L"debugfs" },
                 String_Constant { L"devpts" },
                 String_Constant { L"devtmpfs" },
+                String_Constant { L"fusectl" },
                 String_Constant { L"fuse.gvfsd-fuse" },
                 String_Constant { L"hugetlbfs" },
+                String_Constant { L"mqueue" },
                 String_Constant { L"pstore" },
                 String_Constant { L"proc" },
                 String_Constant { L"securityfs" },
@@ -256,20 +266,23 @@ namespace {
             for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                 // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
                 VolumeInfo vi = *i;
-                if (kRealDiskFS.Contains (vi.fFileSystemType)) {
-                    vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
-                }
-                else if (vi.fFileSystemType == L"tmpfs") {
-                    vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
-                }
-                else if (vi.fFileSystemType == L"vboxsf") {
-                    vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
-                }
-                else if (vi.fFileSystemType == L"iso9660") {
-                    vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
-                }
-                else if (kSysFSList_.Contains (vi.fFileSystemType)) {
-                    vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
+                if (vi.fFileSystemType) {
+                    String  fstype = *vi.fFileSystemType;
+                    if (kRealDiskFS.Contains (fstype)) {
+                        vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
+                    }
+                    else if (fstype == L"tmpfs") {
+                        vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
+                    }
+                    else if (fstype == L"vboxsf") {
+                        vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                    }
+                    else if (fstype == L"iso9660") {
+                        vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
+                    }
+                    else if (kSysFSList_.Contains (fstype)) {
+                        vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
+                    }
                 }
                 volumes->Update (i, vi);
             }

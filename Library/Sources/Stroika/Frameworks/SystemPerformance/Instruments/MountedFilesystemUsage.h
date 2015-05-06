@@ -160,6 +160,11 @@ namespace   Stroika {
                         bool    fIOStatistics { true };
 
                         /**
+                         *  Include 'ram disks' - that are intended to store temporary files a short period (MountedDeviceType::eTemporaryFiles)
+                         */
+                        bool    fIncludeTemporaryDevices { true };
+
+                        /**
                          *  On unix, there are many 'fake' disks, like 'procfs'. For many purposes, this are uninteresting to list/query.
                          */
                         bool    fIncludeSystemDevices { true };
