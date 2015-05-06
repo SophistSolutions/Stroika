@@ -119,8 +119,8 @@ namespace   Stroika {
                          *      This is the total number of milliseconds spent by all [sic] (as
                          *      measured from __make_request() to end_that_request_last()).
                          *
-                         *  The reason fIOStats is returned redundantly, is because some system may only be able
-                         *  to report totals, and not read/write breakdown.
+                         *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
+                         *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
                          */
                         struct  IOStats {
                             Optional<double>    fBytesTransfered;
@@ -129,7 +129,7 @@ namespace   Stroika {
                         };
                         IOStats fReadIOStats;
                         IOStats fWriteIOStats;
-                        IOStats fIOStats;
+                        IOStats fCombinedIOStats;
                     };
 
 

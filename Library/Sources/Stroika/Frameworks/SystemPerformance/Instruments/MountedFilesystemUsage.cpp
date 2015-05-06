@@ -143,7 +143,7 @@ namespace {
         {
             for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                 // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
-                VolumneInfo vi = *i;
+                VolumeInfo vi = *i;
                 if (vi.fFileSystemType == L"ext2" or vi.fFileSystemType == L"ext3" or vi.fFileSystemType == L"ext4") {
                     vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
                 }
@@ -157,9 +157,9 @@ namespace {
                     vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
                 }
                 else if (vi.fFileSystemType == L"iso9660") {
-                    vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                    vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
                 }
-                volumnes->Update (i, vi);
+                volumes->Update (i, vi);
             }
         }
     private:
@@ -167,11 +167,11 @@ namespace {
         {
             try {
                 Mapping<String, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
-                Sequence<VolumeInfo>    newV;
-                for (VolumeInfo v : *volumes) {
-                    if (v.fDeviceOrVolumeName.IsPresent ()) {
+                for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
+                    VolumeInfo vi = *i;
+                    if (vi.fDeviceOrVolumeName.IsPresent ()) {
                         if (fContextStats_) {
-                            String  devNameLessSlashes = *v.fDeviceOrVolumeName;
+                            String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
                             size_t i = devNameLessSlashes.RFind ('/');
                             if (i != string::npos) {
                                 devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
@@ -180,28 +180,28 @@ namespace {
                             Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
                             if (oOld.IsPresent () and oNew.IsPresent ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                                v.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                v.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                v.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
-                                v.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                v.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                v.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+                                vi.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                                vi.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                vi.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
+                                vi.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                                vi.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                vi.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
-                                v.fIOStats.fBytesTransfered = *v.fReadIOStats.fBytesTransfered + *v.fWriteIOStats.fBytesTransfered;
-                                v.fIOStats.fTotalTransfers = *v.fReadIOStats.fTotalTransfers + *v.fWriteIOStats.fTotalTransfers;
-                                v.fIOStats.fTimeTransfering = *v.fReadIOStats.fTimeTransfering + *v.fWriteIOStats.fTimeTransfering;
+                                vi.fCombinedIOStats.fBytesTransfered = *vi.fReadIOStats.fBytesTransfered + *vi.fWriteIOStats.fBytesTransfered;
+                                vi.fCombinedIOStats.fTotalTransfers = *vi.fReadIOStats.fTotalTransfers + *vi.fWriteIOStats.fTotalTransfers;
+                                vi.fCombinedIOStats.fTimeTransfering = *vi.fReadIOStats.fTimeTransfering + *vi.fWriteIOStats.fTimeTransfering;
                             }
                         }
                     }
-                    newV.Append (v);
+                    volumes->Update (i, vi);
                 }
                 fContextStats_ = diskStats;
-                *volumes = newV;
             }
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
             }
         }
+    private:
         uint32_t    GetSectorSize_ (const String& deviceName)
         {
             auto    o   =   fDeviceName2SectorSizeMap_.Lookup (deviceName);
@@ -221,6 +221,7 @@ namespace {
             }
             return *o;
         }
+    private:
         Sequence<VolumeInfo> RunDF_ (bool includeFSTypes)
         {
             Sequence<VolumeInfo>   result;
@@ -274,7 +275,7 @@ namespace {
             }
             return result;
         }
-        Sequence<VolumeInfo> RunDF_ ()
+        Sequence<VolumeInfo>    RunDF_ ()
         {
             try {
                 return RunDF_ (true);
@@ -283,6 +284,7 @@ namespace {
                 return RunDF_ (false);
             }
         }
+    private:
         Mapping<String, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using   Characters::String2Float;
@@ -478,13 +480,13 @@ namespace {
                                         }
 
                                         if (v.fReadIOStats.fBytesTransfered or v.fWriteIOStats.fBytesTransfered) {
-                                            v.fIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
+                                            v.fCombinedIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
                                         }
                                         if (v.fReadIOStats.fTotalTransfers or v.fWriteIOStats.fTotalTransfers) {
-                                            v.fIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
+                                            v.fCombinedIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
                                         }
                                         if (v.fReadIOStats.fTimeTransfering or v.fWriteIOStats.fTimeTransfering) {
-                                            v.fIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
+                                            v.fCombinedIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
                                         }
                                     }
 #endif
@@ -586,7 +588,7 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Disk-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOStats), String_Constant (L"Combined-IO-Stats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fCombinedIOStats), String_Constant (L"Combined-IO-Stats") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
