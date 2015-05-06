@@ -108,6 +108,7 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    private:
         struct PerfStats_ {
             double  fSectorsRead;
             double  fTimeSpentReading;
@@ -118,6 +119,7 @@ namespace {
         };
         Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
         Optional<Mapping<String, PerfStats_>>   fContextStats_;
+    public:
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
@@ -132,8 +134,33 @@ namespace {
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results);
             }
+            ApplyDiskTypes_ (&results);
             _NoteCompletedCapture ();
             return results;
+        }
+    private:
+        void    ApplyDiskTypes_ (Sequence<VolumeInfo>* volumes)
+        {
+            for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
+                // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
+                VolumneInfo vi = *i;
+                if (vi.fFileSystemType == L"ext2" or vi.fFileSystemType == L"ext3" or vi.fFileSystemType == L"ext4") {
+                    vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
+                }
+                else if (vi.fFileSystemType == L"devtmpfs") {
+                    vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
+                }
+                else if (vi.fFileSystemType == L"tmpfs") {
+                    vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
+                }
+                else if (vi.fFileSystemType == L"vboxsf") {
+                    vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                }
+                else if (vi.fFileSystemType == L"iso9660") {
+                    vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                }
+                volumnes->Update (i, vi);
+            }
         }
     private:
         void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
