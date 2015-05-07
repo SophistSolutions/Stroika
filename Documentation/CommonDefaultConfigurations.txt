@@ -38,3 +38,7 @@ make default-configuration DEFAULT_CONFIGURATION_ARGS="--disable-assertions --en
 
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --enable-trace2file --compiler-driver clang++-3.6"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --enable-trace2file --compiler-driver clang++-3.6 --cppstd-version-flag '--std=c++1y'"
+
+
+### For Windows to use particular version of Windows SDK
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--c-define '\#define WINVER 0x600'  --c-define '\#define _WIN32_WINNT 0x600'  --c-define '\#define _WIN32_WINDOWS 0x600'"
