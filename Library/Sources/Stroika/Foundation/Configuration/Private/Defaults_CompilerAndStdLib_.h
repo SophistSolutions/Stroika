@@ -544,6 +544,8 @@
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_UsingInheritedConstructor_Buggy
 @DESCRIPTION:
@@ -603,6 +605,27 @@ EXAMPLE:
 #endif
 
 #endif
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_inet_ntop_const_Buggy
+    MSFT API bug - second arg to inet_ntop SB const 0 http://pubs.opengroup.org/onlinepubs/009695399/functions/inet_ntop.html
+*/
+#ifndef qCompilerAndStdLib_inet_ntop_const_Buggy
+
+#if     defined (_MSC_VER)
+// Still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_inet_ntop_const_Buggy          (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qCompilerAndStdLib_inet_ntop_const_Buggy          0
+#endif
+
+#endif
+
+
 
 
 
