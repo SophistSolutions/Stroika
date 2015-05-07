@@ -139,6 +139,14 @@ namespace   Stroika {
                 Traversal::Iterable<Interface>  GetInterfaces ();
 
 
+                /**
+                 *  Find the interface object with the given ID.
+                 *
+                 *  @see Interface::fInternalInterfaceID
+                 */
+                Memory::Optional<Interface>  GetInterfaceById (const String& internalInterfaceID);
+
+
             }
         }
     }

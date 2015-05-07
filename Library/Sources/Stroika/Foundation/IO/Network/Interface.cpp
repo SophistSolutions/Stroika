@@ -243,8 +243,9 @@ Again:
                 if (sa.IsInternetAddress ()) {
                     newInterface.fBindings.Add (sa.GetInternetAddress ());
                 }
+
             }
-#if     (NTDDI_VERSION >= NTDDI_LONGHORN)
+#if     (NTDDI_VERSION >= NTDDI_WIN6)
             newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
             newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
@@ -265,4 +266,23 @@ Again:
     AssertNotImplemented ();
 #endif
     return result;
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** Network::GetInterfaceById ***************************
+ ********************************************************************************
+ */
+Optional<Interface>  Network::GetInterfaceById (const String& internalInterfaceID)
+{
+    // @todo - a much more efficent implemenation
+    for (Interface i : Network::GetInterfaces ()) {
+        if (i.fInternalInterfaceID == internalInterfaceID) {
+            return i;
+        }
+    }
+    return Optional<Interface> ();
 }
