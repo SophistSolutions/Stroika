@@ -273,6 +273,11 @@ namespace {
         }
         double  cputime_ ()
         {
+            /*
+             *  This logic seems queer (sys = kern + user, and why isnt numerator userTime?), but is cribbed from
+             *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
+             *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
+             */
             WinSysTimeCaptureContext_   baseline = fContext_;
             WinSysTimeCaptureContext_   newVal = GetSysTimes_ ();
             fContext_ = newVal;
