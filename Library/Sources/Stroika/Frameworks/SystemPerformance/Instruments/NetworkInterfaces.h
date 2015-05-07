@@ -138,11 +138,11 @@ namespace   Stroika {
                      *  A single captured network status measurement.
                      */
                     struct  Info {
-                        Optional<Collection<InterfaceInfo>>     fInterfaceStatistics;
+                        Optional<Collection<InterfaceInfo>>     fInterfaces;
 
 
                         /**
-                         *  Conceptually fSummaryIOStatistics is just the sum of the stats for each fInterfaceStatistics member, but
+                         *  Conceptually fSummaryIOStatistics is just the sum of the stats for each fInterfaces member, but
                          *  it maybe fetched via a different OS API, and may differ.
                          */
                         Optional<IOStatistics>                  fSummaryIOStatistics;

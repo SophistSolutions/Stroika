@@ -400,7 +400,7 @@ namespace {
                     interfaceResults.Add (ii);
                 }
             }
-            result.fInterfaceStatistics = interfaceResults;
+            result.fInterfaces = interfaceResults;
             {
                 MIB_IPSTATS stats {};       // maybe more useful stats we could pull out of this?
                 memset (&stats, 0, sizeof (stats));
@@ -543,7 +543,7 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInterfaceStatistics), String_Constant (L"Interface-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInterfaces), String_Constant (L"Interfaces"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fSummaryIOStatistics), String_Constant (L"Summary-IO-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         return mapper;
