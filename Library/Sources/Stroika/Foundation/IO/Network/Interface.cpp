@@ -80,6 +80,7 @@ const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(
     { Interface::Type::eLoopback, L"Loopback" },
     { Interface::Type::eWiredEthernet, L"WiredEthernet" },
     { Interface::Type::eWIFI, L"WIFI" },
+    { Interface::Type::eTunnel, L"Tunnel" },
     { Interface::Type::eOther, L"Other" },
 };
 
@@ -194,6 +195,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 Again:
     ULONG ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
     PIP_ADAPTER_ADDRESSES   pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
+    // NB: we use GetAdapaterAddresses () instead of GetInterfaceInfo  () so we get non-ipv4 addresses
     DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
         for (PIP_ADAPTER_ADDRESSES currAddresses  = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
@@ -215,6 +217,9 @@ Again:
                 default:
                     newInterface.fType = Interface::Type::eOther;
                     break;
+            }
+            if (currAddresses->TunnelType != TUNNEL_TYPE_NONE) {
+                newInterface.fType = Interface::Type::eTunnel;
             }
             switch (currAddresses->OperStatus) {
                 case    IfOperStatusUp:

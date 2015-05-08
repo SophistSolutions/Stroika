@@ -78,11 +78,14 @@ namespace   Stroika {
                      *
                      *          A user-friendly name for the adapter. For example: "Local Area Connection 1." This name appears
                      *          in contexts such as the ipconfig command line program and the Connection folder.
+                     *
+                     *          Note this name is often user-editable
                      */
                     String      fFriendlyName;
 
                     /**
-                     *      @todo TBD (sadly subtle and important - used in current WMI code)
+                     *  This description of the adpapter is typically a short string describing the hardware, such as
+                     *      "Intel(R) Dual Band Wireless-AC 7260"
                      */
                     Memory::Optional<String>    fDescription;
 
@@ -92,6 +95,7 @@ namespace   Stroika {
                         eLoopback,
                         eWiredEthernet,
                         eWIFI,
+                        eTunnel,
                         eOther,
 
                         Stroika_Define_Enum_Bounds(eLoopback, eOther)
