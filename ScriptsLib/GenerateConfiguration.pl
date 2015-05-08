@@ -439,7 +439,7 @@ sub	WriteConfigFile_
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");
 	}
-	print (OUT "    <IncludeDebugSymbtolsInExecutables>$INCLUDE_SYMBOLS</IncludeDebugSymbtolsInExecutables>\n");
+	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS</IncludeDebugSymbolsInExecutables>\n");
 	if (not ($COPTIMIZE_FLAGS eq "")) {
 		print (OUT "    <OptimizerFlag>$COPTIMIZE_FLAGS</OptimizerFlag>\n");
 	}

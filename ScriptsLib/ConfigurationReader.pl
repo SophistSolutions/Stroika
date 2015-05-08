@@ -113,9 +113,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_WinHTTP'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<IncludeDebugSymbtolsInExecutables>");
+		my $pps = ReadValue_($line, "<IncludeDebugSymbolsInExecutables>");
 		if (defined $pps) {
-			$configuration {'IncludeDebugSymbtolsInExecutables'} = $pps;
+			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
 		if (defined $pps) {

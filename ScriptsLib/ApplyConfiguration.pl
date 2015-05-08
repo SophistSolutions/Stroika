@@ -114,7 +114,7 @@ sub	ReadConfiguration_
 	$CWARNING_FLAGS = GetConfigurationParameter("CWARNING_FLAGS");
 	
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_TRACE2FILE"));
-	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbtolsInExecutables"));
+	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbolsInExecutables"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter("OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
