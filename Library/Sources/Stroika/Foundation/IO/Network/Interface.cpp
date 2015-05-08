@@ -127,6 +127,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         Interface   newInterface;
         String interfaceName { String::FromSDKString (ifreqs[i].ifr_name) };
         newInterface.fInternalInterfaceID = interfaceName;
+        newInterface.fFriendlyName = interfaceName;         // not great - maybe find better name - but this will do for now...
         int flags = getFlags (sd, ifreqs[i].ifr_name);
 
         if (flags & IFF_LOOPBACK) {
