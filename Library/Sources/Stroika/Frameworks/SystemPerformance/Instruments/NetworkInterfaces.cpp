@@ -240,8 +240,8 @@ namespace {
                     ii.fInternalInterfaceID = line[0];
                     if (auto info = IO::Network::GetInterfaceById (line[0])) {
                         ii.fDisplayName = info->fFriendlyName;
-                        ii.fInterfaceType = networkInterface.fType;
-                        ii.fInterfaceStatus = networkInterface.fStatus;
+                        ii.fInterfaceType = info->fType;
+                        ii.fInterfaceStatus = info->fStatus;
                     }
                     else {
                         ii.fDisplayName = line[0];
