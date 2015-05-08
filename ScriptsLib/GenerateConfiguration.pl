@@ -14,7 +14,6 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 my $configurationFiles	=	"ConfigurationFiles/";
 my $platform			=	"";
-my $target			=	"";
 
 my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
 
@@ -69,9 +68,8 @@ sub	DoHelp_
     print("Usage:\n");
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
         print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the config files if absent */\n");
-        print("	    --default-for-platform                     /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
+        print("	    --default-for-platform                     /* May create multiple configurations (recursive call to configure) - but generates all the default settings for this platform */\n");
         print("	    --platform {PLATFORM}                      /* specifies the directory under Builds/Intermediate Files to create */\n");
-        print("	    --target {TARGET}                          /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
         print("	    --enable-assertions                        /* enables assertions for the configuration being configured */\n");
         print("	    --disable-assertions                       /* disables assertions for the configuration being configured */\n");
         print("	    --default-assertions                       /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
@@ -87,8 +85,8 @@ sub	DoHelp_
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-        print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given target */\n");
-        print("	    --make-define {ARG}                        /* Define makefile define for the given target */\n");
+        print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given configuration */\n");
+        print("	    --make-define {ARG}                        /* Define makefile define for the given configuration */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
 
 	exit (0);
@@ -176,7 +174,6 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "g++ -V4.5";
 		#$COMPILER_DRIVER = "g++ -V4.6";
 		$platform = "Platform_Linux";
-		$target			=	"Debug";
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'VisualStudio.Net-2012') {
 		$COMPILER_DRIVER = "CL";
@@ -202,19 +199,6 @@ sub	ParseCommandLine_Platform_
 		}
 		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
 			SetDefaultForPlatform_ ();
-		}
-	}
-}
-
-### Do initial pass, just looking for platform
-sub	ParseCommandLine_Target_
-{
-	for ($i = 0; $i <= $#ARGV; $i++) {
-		my $var = $ARGV[$i];
-		if ((lc ($var) eq "-target") or (lc ($var) eq "--target")) {
-			$i++;
-			$var = $ARGV[$i];
-			$target = $var;
 		}
 	}
 }
@@ -331,9 +315,6 @@ sub	ParseCommandLine_Remaining_
                     }
                     elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
                     }
-                    elsif ((lc ($var) eq "-target") or (lc ($var) eq "--target")) {
-                        $i++;
-                    }
                     elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
                         $i++;
                     }
@@ -383,8 +364,6 @@ sub	ParseCommandLine_
 	ParseCommandLine_Platform_ ();
 	SetDefaultForPlatform_ ();
 
-	ParseCommandLine_Target_ ();
-	
 	ParseCommandLine_CompilerDriver_ ();
 	SetDefaultForCompilerDriver_();
 
@@ -410,9 +389,6 @@ sub	WriteConfigFile_
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	print (OUT "    <Platform>$platform</Platform>\n");
-	if (not ($target eq "")) {
-		print (OUT "    <Target>$target</Target>\n");
-	}
 
 	print (OUT "    <CompilerDriver>$COMPILER_DRIVER</CompilerDriver>\n");
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {

@@ -19,7 +19,6 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 my $intermediateFiles	=	"IntermediateFiles/";
 my $platform			=	"Platform_Linux";
-my $target			=	"Debug";
 my $currentConfiguration	=	"DefaultConfiguration";
 
 my $PROJECTPLATFORMSUBDIR='';
@@ -99,7 +98,6 @@ sub	ConfigParam2BoolInt
 sub	ReadConfiguration_
 {
 	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter("ProjectPlatformSubdir");
-	$target = GetConfigurationParameter("Target");
 	$platform = GetConfigurationParameter("Platform");
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 
@@ -132,7 +130,6 @@ sub	ReadConfiguration_
 
 
 	#print "PROJECTPLATFORMSUBDIR = $PROJECTPLATFORMSUBDIR\n";
-	#print "TARGET = $target\n";
 	#print "platform = $platform\n";
 }
 

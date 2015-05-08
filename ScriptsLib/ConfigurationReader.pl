@@ -81,10 +81,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'Platform'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<Target>");
-		if (defined $pps) {
-			$configuration {'Target'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<OptimizerFlag>");
 		if (defined $pps) {
 			$configuration {'OptimizerFlag'} = $pps;
