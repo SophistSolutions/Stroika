@@ -105,12 +105,12 @@ namespace   Stroika {
                     /**
                      *  bits per second
                      */
-                    Memory::Optional<double>    fTransmitSpeedBaud;
+                    Memory::Optional<uint64_t>    fTransmitSpeedBaud;
 
                     /**
                      *  bits per second
                      */
-                    Memory::Optional<double>    fReceiveLinkSpeedBaud;
+                    Memory::Optional<uint64_t>    fReceiveLinkSpeedBaud;
 
                     /**
                      */

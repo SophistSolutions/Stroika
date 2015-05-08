@@ -139,7 +139,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         }
 
         {
-            auto getSpeed = [] (int sd, const char* name) -> Optional<double> {
+            auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
                 struct ifreq ifreq;
                 memset(&ifreq, 0, sizeof (ifreq));
                 strcpy (ifreq.ifr_name, name);
@@ -151,9 +151,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
                 if (r != 0)
                 {
                     DbgTrace ("No speed for interface %s, errno=%d", name, errno);
-                    return Optional<double> ();;
+                    return Optional<uint64_t> ();
                 }
-                constexpr double kMegabit_ = 1000 * 1000;
+                constexpr uint64_t kMegabit_ = 1000 * 1000;
                 DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
                 switch (ethtool_cmd_speed (&edata))
                 {
@@ -168,7 +168,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
                     case SPEED_10000:
                         return 10000 * kMegabit_;
                     default:
-                        return Optional<double> ();
+                        return Optional<uint64_t> ();
                 }
             };
             newInterface.fTransmitSpeedBaud = getSpeed (sd, ifreqs[i].ifr_name);
