@@ -45,8 +45,9 @@ using   Containers::Set;
 using   IO::FileSystem::BinaryFileInputStream;
 using   Time::DurationSecondsType;
 
-using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::Options;
+using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::InterfaceInfo;
 using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::IOStatistics;
+using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::Options;
 
 
 
@@ -90,6 +91,16 @@ namespace {
 #endif
 
 
+
+
+
+/*
+ ********************************************************************************
+ ****************** Instruments::NetworkInterfaces::InterfaceInfo ***************
+ ********************************************************************************
+ */
+const Configuration::EnumNames<InterfaceInfo::Type>&   InterfaceInfo::Stroika_Enum_Names(Type)          =   IO::Network::Interface::Stroika_Enum_Names(Type);
+const Configuration::EnumNames<InterfaceInfo::Status>&   InterfaceInfo::Stroika_Enum_Names(Status)      =   IO::Network::Interface::Stroika_Enum_Names(Status);
 
 
 
@@ -226,8 +237,15 @@ namespace {
                     constexpr   int kOffset2XMit_ = 8;
                     InterfaceInfo   ii;
                     ii.fInterfaceID = line[0];
-                    ii.fInternalInterfaceID = line[0];  // @todo code cleanup - should have API to do this lookup/compare
-                    ii.fDisplayName = line[0];
+                    ii.fInternalInterfaceID = line[0];
+                    if (auto info = IO::Network::GetInterfaceById (line[0])) {
+                        ii.fDisplayName = info->fFriendlyName;
+                        ii.fInterfaceType = networkInterface.fType;
+                        ii.fInterfaceStatus = networkInterface.fStatus;
+                    }
+                    else {
+                        ii.fDisplayName = line[0];
+                    }
                     ii.fIOStatistics.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
                     ii.fIOStatistics.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
                     ii.fIOStatistics.fTotalPacketsReceived = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 2]);
@@ -393,6 +411,8 @@ namespace {
                     InterfaceInfo   ii;
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     ii.fDisplayName = networkInterface.fFriendlyName;
+                    ii.fInterfaceType = networkInterface.fType;
+                    ii.fInterfaceStatus = networkInterface.fStatus;
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
@@ -511,6 +531,11 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<String>> ();
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<InterfaceInfo::Type> (InterfaceInfo::Stroika_Enum_Names(Type)));
+        mapper.AddCommonType<Optional<InterfaceInfo::Type>> ();
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<InterfaceInfo::Status> (InterfaceInfo::Stroika_Enum_Names(Status)));
+        mapper.AddCommonType<Set<InterfaceInfo::Status>> ();
+        mapper.AddCommonType<Optional<Set<InterfaceInfo::Status>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<IOStatistics> (initializer_list<StructureFieldInfo> {
@@ -533,6 +558,8 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fDisplayName), String_Constant (L"Display-Name") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceType), String_Constant (L"Interface=Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceStatus), String_Constant (L"Interface-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fIOStatistics), String_Constant (L"IO-Statistics") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");

@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Containers/Collection.h"
+#include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/IO/Network/Interface.h"
@@ -123,9 +124,24 @@ namespace   Stroika {
 
 
                         /**
+                         */
+                        using   Type    =   Foundation::IO::Network::Interface::Type;
+                        static  const Configuration::EnumNames<Type>&   Stroika_Enum_Names(Type);
+                        Optional<Type>  fInterfaceType;
+
+
+                        /**
+                         */
+                        using   Status  =   Foundation::IO::Network::Interface::Status;
+                        static  const Configuration::EnumNames<Status>&   Stroika_Enum_Names(Status);
+                        Optional<Containers::Set<Status>>   fInterfaceStatus;
+
+
+                        /**
                          *  Pretty display name to identify a particular interface.
                          */
                         String  fDisplayName {};
+
 
                         /**
                          *  Per interface I/O transfer statistics.
