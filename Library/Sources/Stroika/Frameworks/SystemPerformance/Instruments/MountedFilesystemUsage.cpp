@@ -219,7 +219,7 @@ namespace {
              *
              *  So the last one with a given mount point in the file wins.
              */
-            Mapping<mountedOn, MountInfo_>   result;
+            Mapping<String, MountInfo_>   result;
             DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
             const   String_Constant kProcMountsFileName_ { L"/proc/mounts" };
             // Note - /procfs files always unseekable
