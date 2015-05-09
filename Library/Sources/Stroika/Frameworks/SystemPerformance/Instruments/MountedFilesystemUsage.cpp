@@ -213,7 +213,13 @@ namespace {
         };
         Sequence<MountInfo_>    Read_proc_mounts_ ()
         {
-            Sequence<MountInfo_>   result;
+            /*
+             *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
+             *  See https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
+             *
+             *  So the last one with a given mount point in the file wins.
+             */
+            Mapping<mountedOn, MountInfo_>   result;
             DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
             const   String_Constant kProcMountsFileName_ { L"/proc/mounts" };
             // Note - /procfs files always unseekable
@@ -232,14 +238,15 @@ namespace {
                     String  devName = line[0];
                     String  mountedOn = line[1];
                     String  fstype = line[2];
-                    result.Append (
+                    result.Add (
+                        mountedOn,
                     MountInfo_ {
                         devName, mountedOn, fstype
                     }
                     );
                 }
             }
-            return result;
+            return Sequence<MountInfo_> (result.Values ());
         }
     private:
         void    ApplyDiskTypes_ (Sequence<VolumeInfo>* volumes)
