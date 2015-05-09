@@ -248,6 +248,7 @@ namespace {
                 String_Constant { L"ext2" },
                 String_Constant { L"ext3" },
                 String_Constant { L"ext4" },
+                String_Constant { L"xfs" },
             };
             static  Set<String> kSysFSList_ {
                 String_Constant { L"autofs" },
