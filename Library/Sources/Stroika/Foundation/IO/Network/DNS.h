@@ -50,6 +50,10 @@ namespace   Stroika {
                      */
                     static  DNS Default ();
 
+
+                public:
+                    DNS ();
+
                 public:
                     /**
                      */

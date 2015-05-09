@@ -21,6 +21,7 @@
 #include    "../../Execution/Finally.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Platform/Windows/WinSock.h"
 #endif
 #include    "../../Execution/StringException.h"
 #include    "SocketAddress.h"
@@ -62,6 +63,13 @@ DNS DNS::Default ()
     return sDefaultDNS_;
 }
 
+DNS::DNS ()
+{
+#if     qPlatform_Windows
+    IO::Network::Platform::Windows::WinSock::AssureStarted ();
+#endif
+}
+
 DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
 {
     HostEntry   result;
@@ -80,7 +88,6 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
 #endif
     string  tmp =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
     int errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
-    AssertNotNull (res);
     Execution::Finally cleanup ([res] {
         freeaddrinfo (res);
     });
@@ -88,6 +95,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
         DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 
+    AssertNotNull (res);
     // @todo proplerly support http://www.ietf.org/rfc/rfc3987.txt and UTF8 etc.
     // See http://linux.die.net/man/3/getaddrinfo for info on glibc support for AI_IDN etc..
     // and how todo on windows (or do myself portably?)
