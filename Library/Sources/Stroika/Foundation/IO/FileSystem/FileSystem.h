@@ -70,8 +70,13 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  This returns what is pointed to by a shortcut. On Windows - this refers to shortcut files, and on
+                     *  If the given file is a shortcut (or symbolic link), returns what is pointed to by a shortcut.
+                     *  On Windows - this refers to shortcut files, and on
                      *  LINUX this is the same as POSIX readlink.
+                     *
+                     *  If the target file exists and is not a shortcut, just return that file name.
+                     *
+                     *  Raise an exception if the given path name does not exist (OK if thing pointed to doesn't exist).
                      */
                     nonvirtual  String  ResolveShortcut (const String& path2FileOrShortcut);
 

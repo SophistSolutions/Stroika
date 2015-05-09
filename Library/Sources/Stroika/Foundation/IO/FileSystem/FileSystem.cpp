@@ -125,6 +125,10 @@ void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath,
 String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
 {
 #if     qPlatform_Windows
+    // @todo WRONG semantics if file doesnt exist. Wed should raise an exception here.
+    // But OK if not a shortcut. THEN just rutn the givne file
+    //
+    //
     // NB: this requires COM, and for now - I don't want the support module depending on the COM module,
     // so just allow this to fail if COM isn't initialized.
     //      -- LGP 2007-09-23
@@ -190,7 +194,14 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
-        Execution::errno_ErrorException::DoThrow (errno);
+        errno_t e   =   errno;
+        if (e == EINVAL) {
+            // According to http://linux.die.net/man/2/readlink - this means the target is not a shortcut which is OK
+            return path2FileOrShortcut;
+        }
+        else {
+            Execution::errno_ErrorException::DoThrow (e);
+        }
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
