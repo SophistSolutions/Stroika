@@ -236,6 +236,11 @@ namespace {
                 //
                 if (line.size () >= 3) {
                     String  devName = line[0];
+                    // procfs/mounts often contains symbolic links to device files
+                    // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
+                    if (devName.StartsWith (L"/")) {
+                        IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().ResolveShortcut (devName));
+                    }
                     String  mountedOn = line[1];
                     String  fstype = line[2];
                     result.Add (
