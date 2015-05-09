@@ -194,7 +194,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
-        errno_t e   =   errno;
+        auto    e   =   errno;
         if (e == EINVAL) {
             // According to http://linux.die.net/man/2/readlink - this means the target is not a shortcut which is OK
             return path2FileOrShortcut;

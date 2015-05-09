@@ -22,6 +22,7 @@
 #include    "../../../Foundation/Execution/StringException.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
