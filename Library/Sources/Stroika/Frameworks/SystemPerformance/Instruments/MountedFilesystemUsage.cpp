@@ -255,6 +255,7 @@ namespace {
                 String_Constant { L"ext2" },
                 String_Constant { L"ext3" },
                 String_Constant { L"ext4" },
+                String_Constant { L"xfs" },
             };
             static  Set<String> kSysFSList_ {
                 String_Constant { L"autofs" },
@@ -270,7 +271,9 @@ namespace {
                 String_Constant { L"pstore" },
                 String_Constant { L"proc" },
                 String_Constant { L"securityfs" },
+                String_Constant { L"selinuxfs" },
                 String_Constant { L"sysfs" },
+                String_Constant { L"usbfs" },
             };
             for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                 // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
