@@ -240,7 +240,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = fLast.Lookup (ii.fInternalInterfaceID)) {
+                    if (auto o = fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -251,7 +251,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    fLast.Add (ii.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
+                    fLast.Add (ii.fInterface.fInternalInterfaceID, Last { *ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now });
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
