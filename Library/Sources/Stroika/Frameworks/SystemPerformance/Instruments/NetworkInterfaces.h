@@ -104,43 +104,19 @@ namespace   Stroika {
                     /**
                      */
                     struct  InterfaceInfo {
+
+
                         /**
-                         *  Stroika internal interface ID.
-                         *  This cannot be persisted, but can be used within a  given process lifetime to check for object identity.
+                         */
+                        using   Interface = Foundation::IO::Network::Interface;
+
+
+                        /**
+                         *  This sub-object contains most of the configuration information about the interface.
                          *
-                         *  \note   This corresponds to the IO::Network::Interface::fInternalInterfaceID name and can be used to join.
+                         *      @todo replace most of whats below
                          */
-                        String  fInternalInterfaceID;
-
-
-                        /**
-                         *  For POSIX, this is the interface name (e.g. eth0).
-                         *
-                         *  For Windows, this concept doesn't appear to exist.
-                         *
-                         *      @todo I think we can lose this!!! Just have instead of getIntfaces - GetInterfaceByInterfalInterfaceID in IO::Network::Interaface code
-                         */
-                        Optional<String>  fInterfaceID {};
-
-
-                        /**
-                         */
-                        using   Type    =   Foundation::IO::Network::Interface::Type;
-                        static  const Configuration::EnumNames<Type>&   Stroika_Enum_Names(Type);
-                        Optional<Type>  fInterfaceType;
-
-
-                        /**
-                         */
-                        using   Status  =   Foundation::IO::Network::Interface::Status;
-                        static  const Configuration::EnumNames<Status>&   Stroika_Enum_Names(Status);
-                        Optional<Containers::Set<Status>>   fInterfaceStatus;
-
-
-                        /**
-                         *  Pretty display name to identify a particular interface.
-                         */
-                        String  fDisplayName {};
+                        Interface   fInterface;
 
 
                         /**

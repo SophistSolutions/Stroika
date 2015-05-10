@@ -96,17 +96,6 @@ namespace {
 
 /*
  ********************************************************************************
- ****************** Instruments::NetworkInterfaces::InterfaceInfo ***************
- ********************************************************************************
- */
-const Configuration::EnumNames<InterfaceInfo::Type>&   InterfaceInfo::Stroika_Enum_Names(Type)          =   IO::Network::Interface::Stroika_Enum_Names(Type);
-const Configuration::EnumNames<InterfaceInfo::Status>&   InterfaceInfo::Stroika_Enum_Names(Status)      =   IO::Network::Interface::Stroika_Enum_Names(Status);
-
-
-
-
-/*
- ********************************************************************************
  ****************** Instruments::NetworkInterfaces::IOStatistics ****************
  ********************************************************************************
  */
@@ -236,15 +225,12 @@ namespace {
                 if (line.size () >= 17) {
                     constexpr   int kOffset2XMit_ = 8;
                     InterfaceInfo   ii;
-                    ii.fInterfaceID = line[0];
-                    ii.fInternalInterfaceID = line[0];
                     if (auto info = IO::Network::GetInterfaceById (line[0])) {
-                        ii.fDisplayName = info->fFriendlyName;
-                        ii.fInterfaceType = info->fType;
-                        ii.fInterfaceStatus = info->fStatus;
+                        ii.fInterface = *info;
                     }
                     else {
-                        ii.fDisplayName = line[0];
+                        ii.fInterface.fInternalInterfaceID = line[0];
+                        ii.fInterface.fFriendlyName = line[0];
                     }
                     ii.fIOStatistics.fTotalBytesReceived = Characters::String2Int<uint64_t> (line[1]);
                     ii.fIOStatistics.fTotalBytesSent = Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 1]);
@@ -409,10 +395,13 @@ namespace {
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
                     InterfaceInfo   ii;
+#if 0
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
                     ii.fDisplayName = networkInterface.fFriendlyName;
                     ii.fInterfaceType = networkInterface.fType;
                     ii.fInterfaceStatus = networkInterface.fStatus;
+#endif
+                    ii.fInterface = networkInterface;
 #if     qUseWMICollectionSupport_
                     Read_WMI_ (networkInterface, &ii);
 #endif
@@ -531,13 +520,25 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<String>> ();
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<InterfaceInfo::Type> (InterfaceInfo::Stroika_Enum_Names(Type)));
-        mapper.AddCommonType<Optional<InterfaceInfo::Type>> ();
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<InterfaceInfo::Status> (InterfaceInfo::Stroika_Enum_Names(Status)));
-        mapper.AddCommonType<Set<InterfaceInfo::Status>> ();
-        mapper.AddCommonType<Optional<Set<InterfaceInfo::Status>>> ();
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> (Interface::Stroika_Enum_Names(Type)));
+        mapper.AddCommonType<Optional<Interface::Type>> ();
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> (Interface::Stroika_Enum_Names(Status)));
+        mapper.AddCommonType<Set<Interface::Status>> ();
+        mapper.AddCommonType<Optional<Set<Interface::Status>>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        using   Interface = InterfaceInfo::Interface;
+        mapper.AddClass<Interface> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fFriendlyName), String_Constant (L"Friendly-Name") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fDescription), String_Constant (L"Description"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fType), String_Constant (L"Interface-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fStatus), String_Constant (L"Interface-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fTransmitSpeedBaud), String_Constant (L"Transmit-Speed-Baud"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Interface, fReceiveLinkSpeedBaud), String_Constant (L"Receive-Link-Speed-Baud"), StructureFieldInfo::NullFieldHandling::eOmit },
+            // TODO ADD:
+            //Containers::Set<InternetAddress>            fBindings;
+        });
         mapper.AddClass<IOStatistics> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalBytesSent), String_Constant (L"Total-Bytes-Sent"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalBytesReceived), String_Constant (L"Total-Bytes-Received"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -555,11 +556,7 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (IOStatistics, fTotalPacketsDropped), String_Constant (L"Total-Packets-Dropped"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         mapper.AddClass<InterfaceInfo> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fDisplayName), String_Constant (L"Display-Name") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceID), String_Constant (L"Interface-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceType), String_Constant (L"Interface=Type"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterfaceStatus), String_Constant (L"Interface-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fInterface), String_Constant (L"Interface") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (InterfaceInfo, fIOStatistics), String_Constant (L"IO-Statistics") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
