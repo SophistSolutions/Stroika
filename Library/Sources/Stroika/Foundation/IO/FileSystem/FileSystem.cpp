@@ -11,6 +11,8 @@
 #include    <unistd.h>
 #endif
 
+#include    "../../Characters/StringBuilder.h"
+#include    "../../Containers/Set.h"
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
@@ -28,6 +30,8 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
@@ -210,6 +214,122 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
 
 
 
+
+/*
+ ********************************************************************************
+ ************************* FileSystem::CanonicalizeName *************************
+ ********************************************************************************
+ */
+String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut)
+{
+#if     qPlatform_POSIX
+    char*   tmp { ::canonicalize_file_name (path2FileOrShortcut.AsSDKString ().c_str ()) };
+    if (tmp == nullptr) {
+        errno_ErrorException::DoThrow (errno);
+    }
+    String  result  { String::FromNarrowSDKString (tmp) };
+    free (tmp);
+    return result;
+#elif   qPlatform_Windows
+
+    // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
+    /*
+     *  Note:   PathCanonicalize has lots of problems, PathCanonicalizeCh, and
+     *  PathCchCanonicalizeEx is better, but only works with windows 8 or later.
+     */
+    using   Characters::StringBuilder;
+    String  tmp =   ResolveShortcut (path2FileOrShortcut);
+    StringBuilder sb;
+    Components  c   =   GetPathComponents (path2FileOrShortcut);
+    if (c.fAbsolutePath == Components::eAbsolutePath) {
+        // use UNC notation
+        sb += L"\\\\?";
+        if (c.fDriveLetter) {
+            sb += *c.fDriveLetter;
+        }
+        else if (c.fServerAndShare) {
+            sb += c.fServerAndShare->fServer + L"\\" +  c.fServerAndShare->fShare;
+        }
+        else {
+            Execution::DoThrow (Execution::StringException (L"for absolute path need drive letter or server/share"));
+        }
+    }
+    else {
+        if (c.fDriveLetter) {
+            sb += *c.fDriveLetter + L":";
+        }
+    }
+    bool    prefixWIthSlash  = false;
+    for (String i : c.fPath) {
+        if (prefixWIthSlash) {
+            sb += L"\\";
+        }
+        sb += i;
+        prefixWIthSlash = true;
+    }
+    return sb.str ();
+#else
+    AssertNotImplemented ();
+    return path2FileOrShortcut;
+#endif
+}
+
+String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory)
+{
+    AssertNotImplemented ();
+    return path2FileOrShortcut;
+}
+
+IO::FileSystem::FileSystem::Components    IO::FileSystem::FileSystem::GetPathComponents (const String& fileName)
+{
+    // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
+    // See http://en.wikipedia.org/wiki/Path_%28computing%29 to write this
+#if 0
+//windows
+C:
+    \user\docs\Letter.txt
+    / user / docs / Letter.txt
+C:
+    Letter.txt
+    \\Server01\user\docs\Letter.txt
+    \\ ? \UNC\Server01\user\docs\Letter.txt
+    \\ ? \C : \user\docs\Letter.txt
+    C : \user\docs\somefile.ext : alternate_stream_name
+    . / inthisdir
+    .. / .. / greatgrandparent
+#endif
+#if 0
+// unix
+    / home / user / docs / Letter.txt
+    . / inthisdir
+    .. / .. / greatgrandparent
+    ~ / .rcinfo
+#endif
+    IO::FileSystem::FileSystem::Components  result;
+    using   Traversal::Iterator;
+    using   Characters::Character;
+
+#if     qPlatform_Windows
+    bool    isUNCName = fileName.length () > 2 and fileName.StartsWith (L"\\\\");
+    bool    isAbsolutePath = fileName.length () >= 1 and fileName.StartsWith (L"\\");
+#else
+#endif
+#if     qPlatform_Windows
+    const   Set<Character>  kSlashChars_ = { '\\', '/' };
+#else
+    const   Set<Character>  kSlashChars_ = { '/' };
+#endif
+    Sequence<String>    rawComponents = fileName.Tokenize (kSlashChars_, false);
+    Iterator<String>    i   =   rawComponents.begin ();
+    if (isUNCName) {
+        // work todo
+    }
+    for (; i != rawComponents.end (); ++i) {
+        result.fPath.Append (*i);
+    }
+    AssertNotImplemented ();
+    return result;
+}
 
 
 

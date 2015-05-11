@@ -8,6 +8,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Containers/Sequence.h"
 #include    "../../Time/DateTime.h"
 
 #include    "../FileAccessMode.h"
@@ -77,8 +78,61 @@ namespace   Stroika {
                      *  If the target file exists and is not a shortcut, just return that file name.
                      *
                      *  Raise an exception if the given path name does not exist (OK if thing pointed to doesn't exist).
+                     *
+                     *  @see CanonicalizeName
                      */
                     nonvirtual  String  ResolveShortcut (const String& path2FileOrShortcut);
+
+                public:
+                    /**
+                     *  The CanonicalizeName () function returns a String containing the canonicalized absolute pathname
+                     *  corresponding to argument 'path2FileOrShortcut'. In the returned string, symbolic links
+                     *  (or windows shortcuts) are resolved, as are . and .. pathname components. Consecutive slash (/)
+                     *  characters are replaced by a single slash.
+                     *
+                     *  Note - if argument path is a relative path, it is relative to the process current-working-directory
+                     *  or the argument relativeToDirectory
+                     *
+                     *  @todo CONSIDER
+                     *      Raise an exception if the given path name does not exist (OK if thing pointed to doesn't exist).
+                     *
+                     *      a pathname component is unreadable or does not exist
+                     *
+                     *  @todo consider if this should assureDirectoryEndsInSlash - tricky cuz noit sre ure we know if its a dir
+                     */
+                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut);
+                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory);    //nyi
+
+                public:
+                    /**
+                     *  This breaks a string at 'path-separator' boundaries, and returns each component.
+                     *
+                     *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
+                     */
+                    struct  Components {
+                        enum    AbsolueteOrRelative { eAbsolutePath, eRelativePath };
+                        AbsolueteOrRelative  fAbsolutePath;
+#if     qPlatform_Windows
+                        struct ServerAndShare {
+                            String        fServer;
+                            String        fShare;
+                        };
+                        // REDO AS UNION BUT MUST BE CAREFUL OF DESTRUCTION/CONSTRUCTION
+                        // can be C:, or \\SMB-DRIVE
+                        //struct {
+                        Memory::Optional<String>            fDriveLetter;   // this string incldues the colon, so example "C:"
+                        Memory::Optional<ServerAndShare>    fServerAndShare;
+                        //};
+#endif
+                        Containers::Sequence<String>    fPath;
+                    };
+                public:
+                    /**
+                     *  This breaks a string at 'path-separator' boundaries, and returns each component.
+                     *
+                     *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
+                     */
+                    nonvirtual  Components    GetPathComponents (const String& fileName);
 
                 public:
                     nonvirtual  FileOffset_t    GetFileSize (const String& fileName);
