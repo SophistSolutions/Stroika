@@ -32,6 +32,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
@@ -321,9 +322,11 @@ C:
 #endif
     Sequence<String>    rawComponents = fileName.Tokenize (kSlashChars_, false);
     Iterator<String>    i   =   rawComponents.begin ();
+#if     qPlatform_Windows
     if (isUNCName) {
         // work todo
     }
+#endif
     for (; i != rawComponents.end (); ++i) {
         result.fPath.Append (*i);
     }
