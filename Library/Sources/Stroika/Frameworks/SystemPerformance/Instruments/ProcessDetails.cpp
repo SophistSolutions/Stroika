@@ -939,7 +939,7 @@ namespace {
                     ULONG_PTR pbi[6];
                     ULONG ulSize = 0;
                     if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
-                        *parentProcessID =  pbi[5];
+                        *parentProcessID =  static_cast<pid_t> (pbi[5]);
 
                         // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
                         void*   pebAddress = GetPebAddress_ (hProcess);
