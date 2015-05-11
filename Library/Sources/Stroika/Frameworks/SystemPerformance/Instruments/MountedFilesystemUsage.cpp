@@ -267,6 +267,7 @@ namespace {
                 String_Constant { L"autofs" },
                 String_Constant { L"binfmt_misc" },
                 String_Constant { L"cgroup" },
+                String_Constant { L"configfs" },
                 String_Constant { L"debugfs" },
                 String_Constant { L"devpts" },
                 String_Constant { L"devtmpfs" },
@@ -276,8 +277,10 @@ namespace {
                 String_Constant { L"mqueue" },
                 String_Constant { L"pstore" },
                 String_Constant { L"proc" },
+                String_Constant { L"rpc_pipefs" },
                 String_Constant { L"securityfs" },
                 String_Constant { L"selinuxfs" },
+                String_Constant { L"sunrpc" },
                 String_Constant { L"sysfs" },
                 String_Constant { L"usbfs" },
             };
