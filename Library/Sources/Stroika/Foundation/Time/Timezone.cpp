@@ -56,7 +56,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
             DbgTrace ("Ignoring missing ID from date +%Z");
         }
     }
-    if (result.fID.empty ()) {
+    if (result.fID.IsMissing ()) {
         // We could look to see if /etc/localtime is a symlink or a copy of any named file from /usr/share/zoneinfo, but
         // hope thats not needed!
     }
