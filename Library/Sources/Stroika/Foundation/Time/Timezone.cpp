@@ -48,7 +48,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
     }
-    if (result.fID.empty ()) {
+    if (result.fID.IsMissing ()) {
         try {
             result.fID = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
         }
