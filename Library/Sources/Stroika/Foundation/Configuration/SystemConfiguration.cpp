@@ -456,6 +456,28 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         }
         if (tmp.fShortPrettyName.empty ())
         {
+            try {
+                String n = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
+                tmp.fShortPrettyName = L"Centos";
+                tmp.fPrettyNameWithMajorVersion = n;
+            }
+            catch (...) {
+                DbgTrace ("Failure reading /etc/centos-release");
+            }
+        }
+        if (tmp.fShortPrettyName.empty ())
+        {
+            try {
+                String n = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
+                tmp.fShortPrettyName = L"RedHat";
+                tmp.fPrettyNameWithMajorVersion = n;
+            }
+            catch (...) {
+                DbgTrace ("Failure reading /etc/redhat-release");
+            }
+        }
+        if (tmp.fShortPrettyName.empty ())
+        {
             tmp.fShortPrettyName = tmp.fTokenName;
         }
         if (tmp.fPrettyNameWithMajorVersion.empty ())
