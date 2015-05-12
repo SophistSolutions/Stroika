@@ -18,6 +18,7 @@
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "DateTime.h"
+#include    "../Execution/ProcessRunner.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
 
@@ -46,6 +47,18 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
+    }
+    if (result.fID.empty ()) {
+        try {
+            result.fID = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
+        }
+        catch (...) {
+            DbgTrace ("Ignoring missing ID from date +%Z");
+        }
+    }
+    if (result.fID.empty ()) {
+        // We could look to see if /etc/localtime is a symlink or a copy of any named file from /usr/share/zoneinfo, but
+        // hope thats not needed!
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fName = String::FromSDKString (tzname[0]);
