@@ -70,6 +70,26 @@ namespace   Stroika {
                          *  From Linux:
                          *      /proc/meminfo::CommitLimit
                          *
+                         *      Note - on Linux - this value is controlled BOTH by the amount of RAM, and overcommit ratio.
+                         *      @see  https://www.kernel.org/doc/Documentation/vm/overcommit-accounting about
+                         *      sysctl vm.overcommit_memory vm.overcommit_ratio
+                         *
+                         *      So from: http://liyiadam.blogspot.com/2008/01/procmeminfo.html
+                         *          CommitLimit: Based on the overcommit ratio ('vm.overcommit_ratio'),
+                         *          this is the total amount of memory currently available to
+                         *          be allocated on the system. This limit is only adhered to
+                         *          if strict overcommit accounting is enabled (mode 2 in
+                         *          'vm.overcommit_memory').
+                         *
+                         *          The CommitLimit is calculated with the following formula:
+                         *              CommitLimit = ('vm.overcommit_ratio' * Physical RAM) + Swap
+                         *
+                         *          For example, on a system with 1G of physical RAM and 7G
+                         *          of swap with a `vm.overcommit_ratio` of 30 it would
+                         *          yield a CommitLimit of 7.3G
+                         *
+                         *          (note that overcommit_ratio is a PERCENTAGE).
+                         *
                          *  From Windows:
                          *      WMI:    "Memory(_Total)/Commit Limit"
                          */
