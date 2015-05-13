@@ -255,13 +255,19 @@ namespace {
                     String  processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                     ProcessType processDetails;
                     processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
-                    processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
-                    processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
+                    if (fOptions_.fCaptureCurrentWorkingDirectory) {
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
+                    }
+                    if (fOptions_.fCaptureEnvironmentVariables) {
+                        processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
+                    }
                     processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
                     if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                         processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
                     }
-                    processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
+                    if (fOptions_.fCaptureRoot) {
+                        processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
+                    }
 
                     static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
 

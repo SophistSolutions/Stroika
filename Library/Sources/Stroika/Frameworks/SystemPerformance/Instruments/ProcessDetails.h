@@ -161,13 +161,6 @@ namespace   Stroika {
                     };
 
 
-                    enum    class   Fields2Capture {
-                        eCommandLine,
-                        eCurrentWorkingDirectory,
-                        eEnvironmentVariables,
-                        /// many more TBD
-                    };
-
                     /**
                      */
                     using ProcessMapType = Mapping<pid_t, ProcessType>;
@@ -203,7 +196,9 @@ namespace   Stroika {
                          */
                         Time::DurationSecondsType       fMinimumAveragingInterval { 1.0 };
 
-                        Optional<Set<Fields2Capture>>   fOnlyCaptureFields;
+                        bool                            fCaptureEnvironmentVariables { true };
+                        bool                            fCaptureCurrentWorkingDirectory { true };
+                        bool                            fCaptureRoot { true };
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
                         CachePolicy                     fCachePolicy { CachePolicy::eIncludeAllRequestedValues };
