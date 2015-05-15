@@ -9,7 +9,7 @@ CheckFileExists ("../../../Builds/Release-Logging-U-64/HTMLViewCompiler.exe");
 CheckFileExists ("../../../Builds/Release-DbgMemLeaks-U-32/HTMLViewCompiler.exe");
 
 
-print "[SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\r\n";
 
 
 sub	CheckFileExists {

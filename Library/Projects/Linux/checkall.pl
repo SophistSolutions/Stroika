@@ -18,7 +18,7 @@ CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Foundation.a");
 CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Frameworks.a");
 
 
-print "[SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\r\n";
 
 
 sub	CheckFileExists {

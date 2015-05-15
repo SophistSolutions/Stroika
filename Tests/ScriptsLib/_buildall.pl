@@ -18,7 +18,8 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 }
 
 
-print ("   Building Tests...\n");
+my $level = $ENV{'MAKELEVEL'};
+print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...\n");
 
 my $useBld = lc ($BLD_TRG);
 

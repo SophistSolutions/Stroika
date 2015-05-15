@@ -9,7 +9,7 @@ CheckFileExists ("../../../Builds/Release-Logging-U-64/Library/Stroika-Foundatio
 CheckFileExists ("../../../Builds/Release-DbgMemLeaks-U-32/Library/Stroika-Foundation.lib");
 
 
-print "[SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\r\n";
 
 
 sub	CheckFileExists {

@@ -13,7 +13,7 @@ CheckFileExists ("../../../Builds/DefaultConfiguration/HTMLViewCompiler");
 #CheckFileExists ("../../../Builds/Windows/Release-DbgMemLeaks-U-32/HTMLViewCompiler.exe");
 
 
-print "[SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\r\n";
 
 
 sub	CheckFileExists {

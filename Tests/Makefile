@@ -74,7 +74,7 @@ tests:
 	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
 run-tests:	tests
-	@echo "   Running Tests..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Tests..."
 	@for i in $(TESTS);\
 	do\
 	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
@@ -92,7 +92,7 @@ run-tests:	tests
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-	        echo "      [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
+	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 	done
 
