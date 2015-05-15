@@ -16,7 +16,7 @@ my @kConfigurations = (
 
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
-print("      Building Samples/SSDPServer...\n");
+print("   Building Samples/SSDPServer...\n");
 if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	use Cwd;
 	use Cwd 'abs_path';

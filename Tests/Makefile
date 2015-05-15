@@ -5,6 +5,8 @@ UNAME := $(shell uname)
 TEST_BUILD_DIR=	$(shell perl ScriptsLib/PrintTestBuildDir.pl)
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
+INDENT_LEVEL=	0
+
 
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 BASEEXEPATTERN=Test$$i.exe
@@ -74,7 +76,7 @@ tests:
 	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
 run-tests:	tests
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Tests..."
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests..."
 	@for i in $(TESTS);\
 	do\
 	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
@@ -95,5 +97,6 @@ run-tests:	tests
 	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 	done
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Tests...done"
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests...done"
+
 

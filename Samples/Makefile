@@ -57,12 +57,12 @@ clobber:	clean
 	@#done	
 
 samples:
-	@echo "   Building Stroika Samples..."
+	@echo "Building Stroika Samples..."
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl);\
     	done	
-	@echo "   Building Stroika Samples...done"
+	@echo "Building Stroika Samples...done"
 
 skel-usage_:
 	@echo "\tUsage: make skel SKEL_SRCPROJDIR=XX SKEL_TRGPROJDIR=XX SKEL_TRGPROJName=XX SKEL_PATH2Stroika=XX"
