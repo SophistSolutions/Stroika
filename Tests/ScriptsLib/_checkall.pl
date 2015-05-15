@@ -3,7 +3,7 @@
 require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
-print ("Checking Tests...\n");
+print ("   Checking Tests...\n");
 my $checkallDir = "Projects/" . GetProjectPlatformSubdir ();
 
 use Cwd;
@@ -12,7 +12,7 @@ my $savedDir = abs_path (getcwd ());
 chdir ($checkallDir);
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
-		print ("Test $tst: $tstName:  ");
+		print ("      Test $tst: $tstName:  ");
 		system ("cd $tst; perl checkall.pl");
 	}
 chdir ($savedDir);

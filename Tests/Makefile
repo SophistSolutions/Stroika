@@ -74,7 +74,7 @@ tests:
 	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
 run-tests:	tests
-	@echo "Running Tests..."
+	@echo "   Running Tests..."
 	@for i in $(TESTS);\
 	do\
 	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\

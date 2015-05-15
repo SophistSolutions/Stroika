@@ -24,7 +24,7 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 sub	RunAndStopOnFailure
 {
 	my $cmd2Run = $_[0];
-	print ("$cmd2Run...\n");
+	print ("      $cmd2Run...\n");
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		die ("Run result = $result\r\n");
@@ -55,7 +55,7 @@ sub	NormalizeBuildArg {
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("$cmd2Run...\n");
+	print ("      $cmd2Run...\n");
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		print "Run result = $result\r\n";

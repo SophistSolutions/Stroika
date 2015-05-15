@@ -12,7 +12,7 @@ my @kConfigurations = (
 
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
-print("Building Samples/ActiveLedIt...\n");
+print("      Building Samples/ActiveLedIt...\n");
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
