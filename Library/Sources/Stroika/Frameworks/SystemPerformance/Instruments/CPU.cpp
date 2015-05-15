@@ -87,6 +87,7 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLoadAverage), String_Constant (L"Load-Average"), StructureFieldInfo::NullFieldHandling::eOmit },
 #endif
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalProcessCPUUsage), String_Constant (L"Total-Process-CPU-Usage") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalCPUUsage), String_Constant (L"Total-CPU-Usage") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -126,9 +127,15 @@ namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct  POSIXSysTimeCaptureContext_ {
             double  user;
-            //double  nice;
+            double  nice;
             double  system;
             double  idle;
+            double  iowait;
+            double  irq;
+            double  softirq;
+            double  steal;
+            double  guest;
+            double  guest_nice;
         };
         POSIXSysTimeCaptureContext_     fContext_ {};
         CapturerWithContext_POSIX_ (const Options& options)
@@ -150,21 +157,46 @@ namespace {
          *         entries include:
          *
          *         cpu  3357 0 4313 1362393
-         *                The amount of time, measured in units of USER_HZ
-         *                (1/100ths of a second on most architectures, use
-         *                sysconf(_SC_CLK_TCK) to obtain the right value), that
-         *                the system spent in various states:
+         *              The amount of time, measured in units of USER_HZ
+         *              (1/100ths of a second on most architectures, use
+         *              sysconf(_SC_CLK_TCK) to obtain the right value), that
+         *              the system spent in various states:
          *
-         *                user   (1) Time spent in user mode.
+         *              user   (1) Time spent in user mode.
          *
-         *                nice   (2) Time spent in user mode with low priority
+         *              nice   (2) Time spent in user mode with low priority
          *                       (nice).
          *
-         *                system (3) Time spent in system mode.
+         *              system (3) Time spent in system mode.
          *
-         *                idle   (4) Time spent in the idle task.  This value
+         *              idle   (4) Time spent in the idle task.  This value
          *                       should be USER_HZ times the second entry in the
          *                       /proc/uptime pseudo-file.
+         *
+         *              iowait (since Linux 2.5.41)
+         *                   (5) Time waiting for I/O to complete.
+         *
+         *              irq (since Linux 2.6.0-test4)
+         *                   (6) Time servicing interrupts.
+         *
+         *              softirq (since Linux 2.6.0-test4)
+         *                       (7) Time servicing softirqs.
+         *
+         *              steal (since Linux 2.6.11)
+         *                            (8) Stolen time, which is the time spent in
+         *                           other operating systems when running in a
+         *                           virtualized environment
+         *
+         *              guest (since Linux 2.6.24)
+         *                            (9) Time spent running a virtual CPU for guest
+         *                            operating systems under the control of the Linux
+         *                           kernel.
+         *
+         *              guest_nice (since Linux 2.6.33)
+         *                            (10) Time spent running a niced guest (virtual
+         *                            CPU for guest operating systems under the
+         *                             control of the Linux kernel).
+         *
          */
         static  inline  POSIXSysTimeCaptureContext_    GetSysTimes_ ()
         {
@@ -178,31 +210,68 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                if (line.size () >= 5 and line[0] == L"cpu") {
+                size_t  sz = line.size ();
+                if (sz >= 5 and line[0] == L"cpu") {
                     result.user = String2Float<double> (line[1]);
+                    result.nice = String2Float<double> (line[2]);
                     result.system = String2Float<double> (line[3]);
                     result.idle = String2Float<double> (line[4]);
+                    if (sz >= 6) {
+                        result.iowait = String2Float<double> (line[5]);
+                    }
+                    if (sz >= 7) {
+                        result.irq = String2Float<double> (line[6]);
+                    }
+                    if (sz >= 8) {
+                        result.softirq = String2Float<double> (line[7]);
+                    }
+                    if (sz >= 9) {
+                        result.steal = String2Float<double> (line[8]);
+                    }
                     break;  // once found no need to read the rest...
                 }
             }
             return result;
         }
+        struct  CPUUsageTimes_ {
+            double  fProcessCPUUsage;
+            double  fTotalCPUUsage;
+        };
         double  cputime_ ()
         {
             POSIXSysTimeCaptureContext_   baseline = fContext_;
             POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
             fContext_ = newVal;
 
-            double  usedSysTime = (newVal.user - baseline.user) + (newVal.system - baseline.system);
-            double  totalTime = usedSysTime + (newVal.idle - baseline.idle);
+            // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
+            //      Idle=idle+iowait
+            //      NonIdle=user+nice+system+irq+softirq+steal
+            //      Total=Idle+NonIdle # first line of file for all cpus
+
+            double  idleTime = 0;
+            idleTime += (newVal.idle - baseline.idle);
+            idleTime += (newVal.iowait - baseline.iowait);
+
+            double  processNonIdleTime = 0;
+            processNonIdleTime += (newVal.user - baseline.user);
+            processNonIdleTime += (newVal.nice - baseline.nice);
+            processNonIdleTime += (newVal.system - baseline.system);
+
+            double  nonIdleTime = processNonIdleTime;
+            nonIdleTime += (newVal.irq - baseline.irq);
+            nonIdleTime += (newVal.softirq - baseline.softirq);
+
+            double  totalTime = idleTime + nonIdleTime;
             if (Math::NearlyEquals<double> (totalTime, 0)) {
                 // can happen if called too quickly together. No good answer
                 DbgTrace ("Warning - times too close together for cputime_");
                 return 0;
             }
             Assert (totalTime > 0);
-            double cpu =  usedSysTime * 100 / totalTime;
-            return Math::PinInRange<double> (cpu, 0, 100);
+            double totalProcessCPUUsage =  processNonIdleTime * 100.0 / totalTime;
+            double totalCPUUsage =  nonIdleTime * 100.0 / totalTime;
+
+            return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage, 0, 100), Math::PinInRange<double> (totalCPUUsage, 0, 100) };
         }
         Info capture_ ()
         {
@@ -220,7 +289,9 @@ namespace {
                 }
             }
 #endif
-            result.fTotalCPUUsage = cputime_ ();
+            auto tmp = cputime_ ();
+            result.fProcessCPUUsage = tmp.fProcessCPUUsage;
+            result.fTotalCPUUsage = tmp.fTotalCPUUsage;
             NoteCompletedCapture_ ();
             return result;
         }
@@ -296,6 +367,7 @@ namespace {
             Info    result;
             Execution::SleepUntil (fPostponeCaptureUntil_);
             result.fTotalCPUUsage = cputime_ ();
+            result.fTotalProcessCPUUsage = result.fTotalCPUUsage;   // @todo fix - remove irq time etc from above? Or add into above if missing
             NoteCompletedCapture_ ();
             return result;
         }
