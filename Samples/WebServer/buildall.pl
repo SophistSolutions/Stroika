@@ -29,7 +29,6 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$useBld = "all";
 	}
 	
-	print ("Samples_WebServer; $useBld...\n");
 	system ("cd Samples_WebServer; make -s $useBld");
 	chdir ($savedDir);
 }

@@ -29,7 +29,6 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$useBld = "all";
 	}
 	
-	print ("Samples_SSDPClient; $useBld...\n");
 	system ("cd Samples_SSDPClient; make -s $useBld");
 	chdir ($savedDir);
 }

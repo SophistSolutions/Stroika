@@ -29,7 +29,6 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	
-	print ("Samples_SimpleService; $useBld...\n");
 	system ("cd Samples_SimpleService; make -s $useBld");
 	chdir ($savedDir);
 }
