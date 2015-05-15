@@ -32,7 +32,7 @@ ALL_OBJS_DONE_HACK=0
 $(ALL_OBJS):
 $(ALL_OBJS):
 	@if [ $(ALL_OBJS_DONE_HACK) -eq 0 ]; then\
-	    echo "Building Stroika Frameworks Objs...";\
+	    echo "   Building Stroika Frameworks Objs...";\
 	    (for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all; done;);\
 	fi
 	@$(eval ALL_OBJS_DONE_HACK := 1)
@@ -40,7 +40,7 @@ $(ALL_OBJS):
 
 $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@echo Creating $(StroikaFrameworksLib)...
+	@echo "   Creating $(subst ../,, $<)...""
 	@#not sure why rm needed, but otherwise on remake of lib its corrupted somehow
 	@rm -f $(StroikaFrameworksLib)
 	@$(AR) cru $(StroikaFrameworksLib) $(ALL_OBJS)

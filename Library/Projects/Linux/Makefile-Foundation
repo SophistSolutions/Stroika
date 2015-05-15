@@ -49,7 +49,7 @@ $(ALL_OBJS):
 
 $(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@echo "   Creating $(StroikaFoundationLib)..."
+	@echo "   Creating $(subst ../,, $<)..."
 	@#not sure why rm needed, but otherwise on remake of lib its corrupted somehow
 	@rm -f $(StroikaFoundationLib)
 	@$(AR) cru $(StroikaFoundationLib) $(ALL_OBJS)
