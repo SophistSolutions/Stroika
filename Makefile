@@ -56,11 +56,10 @@ clean:
 
 
 clobber:
-	@echo "Clobbering..."
+	@echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles
 	@rm -rf Builds
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber
-	@#SHOULD DO BUT BROKEN NOW - @make --directory Tests --no-print-directory MAKEFLAGS= clobber
 
 
 documentation:

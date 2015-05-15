@@ -451,7 +451,7 @@ mkdir ($configurationFiles);
 #}
 
 if (not (-e $masterXMLConfigFile) or $forceWriteConfig) {
-	print("Writing \"$masterXMLConfigFile\"...\n");
+	print("   Writing \"$masterXMLConfigFile\"...\n");
 	WriteConfigFile_ ();
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
 }

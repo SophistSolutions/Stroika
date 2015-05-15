@@ -3,6 +3,7 @@
 .PHONY:	all clean clobber check
 
 all:
+	@echo "Building Stroika ThirdPartyLibs"
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory all
 endif
@@ -23,7 +24,7 @@ clean:
 	@$(MAKE) --directory curl --no-print-directory clean
 
 check:
-	@echo Checking ThirdPartyLibs...
+	@echo "Checking Stroika ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory check
 endif
@@ -38,7 +39,7 @@ ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 endif
 
 clobber:
-	@echo -n "ThirdPartyLibs clobber..."
+	@echo -n "Stroika ThirdPartyLibs clobber..."
 	@$(MAKE) --directory openssl --no-print-directory clobber
 	@$(MAKE) --directory curl --no-print-directory clobber
 	@$(MAKE) --directory Xerces --no-print-directory clobber
