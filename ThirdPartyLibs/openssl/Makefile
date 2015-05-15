@@ -110,7 +110,7 @@ else
 		exit 1;\
 	 fi
 endif
-	@echo "      Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
+	@echo "   Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
 
 $(ZIPEDFILE):
 	@echo -n "      ..." 
