@@ -149,7 +149,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateBytes), String_Constant (L"Private-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fWorkingSetSize), String_Constant (L"Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeUsed), String_Constant (L"Total-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeEverUsed), String_Constant (L"Total-CPUTime-Ever-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPercentCPUTime), String_Constant (L"Percent-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCombinedIOReadRate), String_Constant (L"Combined-IO-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -207,7 +207,7 @@ namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             DurationSecondsType     fCapturedAt;
-            Optional<double>        fTotalCPUTimeUsed;
+            Optional<double>        fTotalCPUTimeEverUsed;
             Optional<double>        fCombinedIOReadBytes;
             Optional<double>        fCombinedIOWriteBytes;
         };
@@ -311,10 +311,10 @@ namespace {
                         // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
                         processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
 
-                        processDetails.fTotalCPUTimeUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                        processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
-                            if (p->fTotalCPUTimeUsed) {
-                                processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeUsed - *p->fTotalCPUTimeUsed) * 100.0 / (now - p->fCapturedAt);
+                            if (p->fTotalCPUTimeEverUsed) {
+                                processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
                             }
                         }
                         if (stats.nlwp != 0) {
@@ -326,7 +326,7 @@ namespace {
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", (*processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
-                        DbgTrace (L"loaded processDetails.fTotalCPUTimeUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeUsed), stats.utime , stats.stime);
+                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime , stats.stime);
 #endif
                     }
                     catch (...) {
@@ -357,8 +357,8 @@ namespace {
                     catch (...) {
                     }
 
-                    if (processDetails.fTotalCPUTimeUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
-                        newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
+                    if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
+                        newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
                     }
                     results.Add (pid, processDetails);
                 }
