@@ -237,7 +237,7 @@ namespace {
             double  fProcessCPUUsage;
             double  fTotalCPUUsage;
         };
-        double  cputime_ ()
+        CPUUsageTimes_  cputime_ ()
         {
             POSIXSysTimeCaptureContext_   baseline = fContext_;
             POSIXSysTimeCaptureContext_   newVal = GetSysTimes_ ();
