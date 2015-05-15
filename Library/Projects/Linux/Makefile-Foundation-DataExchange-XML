@@ -17,10 +17,3 @@ Objs	=	\
 	$(ObjDir)WriterUtils.o\
 
 all:	$(Objs)
-
-
-$(ObjDir)SAXReader.o:	$(SrcDir)SAXReader.cpp
-	#Override the build for this one .o file to add an extra #include path
-	@echo "Compiling $<"
-	@$(CPlusPlus) $(CFLAGS) -c -I$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/ $< -o $@
-
