@@ -38,7 +38,7 @@ help:
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
-	@$(MAKE) check
+	@$(MAKE) --no-print-directory check
 
 
 check:
