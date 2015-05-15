@@ -25,7 +25,7 @@ local *CATCHERR = IO::File->new_tmpfile;
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("$cmd2Run...\n");
+	print ("  $cmd2Run...\n");
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		die ("Run result = $result\r\n");
