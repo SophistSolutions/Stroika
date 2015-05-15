@@ -265,7 +265,7 @@ namespace {
             if (Math::NearlyEquals<double> (totalTime, 0)) {
                 // can happen if called too quickly together. No good answer
                 DbgTrace ("Warning - times too close together for cputime_");
-                return 0;
+                return CPUUsageTimes_ {};
             }
             Assert (totalTime > 0);
             double totalProcessCPUUsage =  processNonIdleTime * 100.0 / totalTime;
@@ -290,7 +290,7 @@ namespace {
             }
 #endif
             auto tmp = cputime_ ();
-            result.fProcessCPUUsage = tmp.fProcessCPUUsage;
+            result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
             result.fTotalCPUUsage = tmp.fTotalCPUUsage;
             NoteCompletedCapture_ ();
             return result;
