@@ -72,7 +72,7 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 $(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
 	
 CURRENT/Builds:
-	@echo "Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
+	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 
@@ -84,10 +84,10 @@ clobber:	clean
 	@rm -f BUILD.OUT
 
 check:
-	@echo -n "   ...Checking..."
+	@echo -n "      ...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
-			echo "   FAILED: missing $$i";\
+			echo "      FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
@@ -110,10 +110,10 @@ else
 		exit 1;\
 	 fi
 endif
-	@echo "   Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
+	@echo "      Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
 
 $(ZIPEDFILE):
-	@echo -n "   ..." 
+	@echo -n "      ..." 
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPPEDFILE)
@@ -121,7 +121,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 
 doPatch:
-	@echo -n "   ...Patching OpenSSL...   "
+	@echo -n "      ...Patching OpenSSL...   "
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@echo -n .
 	@patch --quiet -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
@@ -136,9 +136,9 @@ endif
 
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
-		echo "   ...CURRENT dir already exists";\
+		echo "      ...CURRENT dir already exists";\
 	else\
-		echo "   ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
+		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
 		tar xf $(ZIPEDFILE) --no-same-owner;\
 		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
@@ -147,12 +147,12 @@ doCreate:	$(ZIPEDFILE)
 
 doBuilds:
 	@if [ -e  BUILD.OUT ]; then\
-		echo "   ...BUILD.OUT already exists";\
+		echo "      ...BUILD.OUT already exists";\
 	else\
-		echo "   ...Buidling, and redirecting messages to BUILD.OUT ...";\
+		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		./buildall_.pl > BUILD.OUT 2>&1;\
 	fi
-	@echo "   ...Copying builds to ... $(BUILDS_ROOT)"
+	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (,$(findstring CYGWIN,$(shell uname)))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/apps/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libcrypto.a CURRENT/libssl.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/

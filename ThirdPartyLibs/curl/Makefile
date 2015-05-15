@@ -1,4 +1,4 @@
-﻿.PHONY:	all
+.PHONY:	all
 .DEFAULT_GOAL := all
 
 DoCreateSymLink=0
@@ -37,13 +37,13 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@echo Building Stroika/ThirdPartyProducts/libcurl $(VERSION)...
+	@echo "   Building Stroika/ThirdPartyProducts/libcurl $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 	@$(MAKE) --no-print-directory check
 
 $(ZIPPEDFILE):
-	@echo -n "   ..."
+	@echo -n "      ..."
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
 
 
@@ -53,9 +53,9 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 doCreate:	$(ZIPPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
-		echo "   ...CURRENT dir already exists";\
+		echo "      ...CURRENT dir already exists";\
 	else\
-		echo "   ...Creating $(TRGDIR)...";\
+		echo "      ...Creating $(TRGDIR)...";\
 		tar xf $(ZIPPEDFILE) --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 	fi
@@ -105,7 +105,7 @@ endif
 
 doBuilds:
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@echo "   ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
+	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
@@ -113,20 +113,20 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR)/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
 else
 	@if [ -e  $(BUILDS_DIR) ]; then\
-		echo "   ...Libcurl in $(BUILDS_DIR) complete";\
+		echo "      ...Libcurl in $(BUILDS_DIR) complete";\
 	else\
-		echo "   ...Building libcurl $(TRGDIR)...";\
-		echo "      ...into $(BUILDS_DIR)...";\
-		echo "      ...checking tools...";\
+		echo "      ...Building libcurl $(TRGDIR)...";\
+		echo "         ...into $(BUILDS_DIR)...";\
+		echo "         ...checking tools...";\
 		type automake > /dev/null || echo "......Missing automake";\
 		type libtool > /dev/null || echo "......Missing libtool";\
-		echo "      ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
+		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
-                echo "      ...TODO - fix to use my copy of ssl, if we build SSL...";\
-                echo "      ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
+                echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
+                echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
                 ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)  > CONFIGURE.OUT 2>&1;\
-                echo "      ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
+                echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
                 make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
 endif
@@ -140,8 +140,8 @@ endif
 
 check:
 	@##THMPHACK
-	@echo -n "   ...Checking..."
-	@echo "      ThirdPartyLibs/curl - [Succeeded]"
+	@echo -n "      ...Checking..."
+	@echo "         ThirdPartyLibs/curl - [Succeeded]"
 
 clean:
 	@rm -rf $(TRGDIR)
