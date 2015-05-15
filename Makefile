@@ -174,7 +174,7 @@ apply-configurations:
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 apply-configuration:
-	@echo "Applying configuraiton $(ACTIVE_CONFIGURATION)..."
+	@echo "Applying configuration $(ACTIVE_CONFIGURATION)..."
 ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@#tmphack
 	@mkdir -p IntermediateFiles/DefaultConfiguration
