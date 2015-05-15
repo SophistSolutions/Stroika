@@ -14,8 +14,8 @@ endif
 
 
 help:
-	@echo "Help for making Stroika"
-	@echo "Targets"
+	@echo "Help for making Stroika:"
+	@echo "Targets:"
 	@echo "    all:                         -    Builds everything"
 	@echo "    check:                       -    Checks everything was built properly"
 	@echo "    clean:"
@@ -33,6 +33,8 @@ help:
 	@echo "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
 	@echo "    default-configuration:       -    Creates the default configuration in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
 	@echo "    check-tools:                 -    Check the tools needed to build Stroika are installed."
+	@echo "Special Variables:               -    Extra params you can pass to the make line that may help..."
+	@echo "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
