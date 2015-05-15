@@ -75,7 +75,7 @@ tests:
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
-run-tests:	tests
+run-tests:
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests..."
 	@for i in $(TESTS);\
 	do\

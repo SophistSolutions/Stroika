@@ -41,7 +41,7 @@ if ("$^O" eq "linux") {
 	if ($useBld eq "rebuild") {
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
-			print ("      Test $tst: $tstName; clobber...\n");
+			print ("   Test $tst: $tstName; clobber...\n");
 			if ($exit_status != 0) {
 				die("Stopping build: failed");
 			}
@@ -50,7 +50,7 @@ if ("$^O" eq "linux") {
 	}
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
-		print ("      Test $tst: $tstName; $useBld...\n");
+		print ("   Test $tst: $tstName; $useBld...\n");
 		$exit_status = system ("cd Test$tst; make -s $useBld\n");
 		if ($exit_status != 0) {
 			die("Stopping build: failed");
@@ -67,7 +67,7 @@ else {
 		system ("perl BuildProjectsFiles.pl");
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
-			print ("      $BLD_TRG Test $tst: $tstName ...\n");
+			print ("   $BLD_TRG Test $tst: $tstName ...\n");
 			$exit_status = system ("cd $tst; perl buildall.pl $BLD_TRG");
 			if ($exit_status != 0) {
 				die("Stopping build: failed");
