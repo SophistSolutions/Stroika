@@ -24,18 +24,18 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/xerces-c_static_3D.lib				\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp			\
 	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib	\
 	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp	\
 	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
 	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/xerces-c_static_3D.lib				\
 	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp			\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
 endif
@@ -49,7 +49,7 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 $(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Build
 	
 CURRENT/Build:
-	@echo "Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
+	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 
@@ -59,7 +59,7 @@ clean:
 
 
 check:
-	@echo -n "   ...Checking..."
+	@echo -n "      ...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "   FAILED: missing $$i";\
@@ -74,20 +74,20 @@ clobber:
 
 
 $(ZIPPEDFILE):
-	@echo -n "   ..."
+	@echo -n "      ..."
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
 
 
 doCreate:	$(ZIPPEDFILE)
 	@if [ -e  CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp ]; then\
-		echo "   ...CURRENT dir already exists";\
+		echo "      ...CURRENT dir already exists";\
 	else\
-		echo "   ...Creating $(TRGDIR)...";\
+		echo "      ...Creating $(TRGDIR)...";\
 		rm -rf $(USE_DIRNAME) CURRENT;\
 		tar xf $(ZIPPEDFILE) --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 		#ln -s CURRENT $(SLINKDIRNAME);\
-		echo "   ...Patching Xerces...";\
+		echo "      ...Patching Xerces...";\
 		(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);\
 		(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
 		chmod --recursive +rwx CURRENT/projects;\
@@ -95,9 +95,9 @@ doCreate:	$(ZIPPEDFILE)
 
 
 doBuilds:
-	@echo "   ...Compiling REDIRECT to BUILD.OUT..."
+	@echo "      ...Compiling REDIRECT to BUILD.OUT..."
 	@./buildall_.pl build > BUILD.OUT 2>&1
-	@echo "   ...Copying builds to ... $(BUILDS_ROOT)"
+	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (,$(findstring CYGWIN,$(shell uname)))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
