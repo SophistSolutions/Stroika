@@ -11,9 +11,9 @@
 
 
 %.o : %.cpp
-	@echo "Compiling $<"
+	@echo "      Compiling $<"
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    echo "$(CPlusPlus) $(CFLAGS) -c $< -o $@";\
+	    echo "      $(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
 	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
