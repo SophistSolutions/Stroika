@@ -132,7 +132,7 @@ ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
 endif
 endif
-	@echo "   ...done"
+	@echo "done"
 
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\

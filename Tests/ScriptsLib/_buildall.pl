@@ -74,3 +74,4 @@ else {
 		}
 	chdir ($savedDir);
 }
+print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...done\n");

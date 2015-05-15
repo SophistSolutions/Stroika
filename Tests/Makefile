@@ -95,4 +95,5 @@ run-tests:	tests
 	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 	done
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Tests...done"
 
