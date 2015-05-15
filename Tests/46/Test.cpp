@@ -1658,7 +1658,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             10600,
-            1.35,
+            1.4,
             &failedTests
         );
         Tester (
@@ -1707,7 +1707,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.28,
+            0.29,
             &failedTests
         );
         Tester (
