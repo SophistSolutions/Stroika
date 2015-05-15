@@ -25,7 +25,7 @@ local *CATCHERR = IO::File->new_tmpfile;
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("$cmd2Run...\n");
+	print ("      $cmd2Run...\n");
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		print "Run result = $result\r\n";
@@ -44,7 +44,7 @@ my @kConfigurations = (
 					);
 
 
-print("Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler...\n");
+print("   Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler...\n");
 foreach (@kConfigurations) {
 	my $curConfig	=	$_;
 	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-print ("Checking Tools...\n");
+print ("   Checking Stroika Tools...\n");
 require "../ScriptsLib/ConfigurationReader.pl";
 
 if ("$^O" eq "linux") {
