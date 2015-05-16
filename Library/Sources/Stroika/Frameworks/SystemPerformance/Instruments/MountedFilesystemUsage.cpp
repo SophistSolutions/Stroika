@@ -5,7 +5,7 @@
 
 #if     qPlatform_POSIX
 #include    <sys/statvfs.h>
-#elif     qPlatform_Windows
+#elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
 
@@ -755,10 +755,10 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
  */
 Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
-    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType (String_Constant (L"Mounted-Volume-Usage"));
+    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType (String_Constant { L"Mounted-Volume-Usage"});
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
-               InstrumentNameType (String_Constant (L"Mounted-Filesystem-Usage")),
+               InstrumentNameType (String_Constant {L"Mounted-Filesystem-Usage"}),
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = useCaptureContext.GetLastCaptureAt ();
