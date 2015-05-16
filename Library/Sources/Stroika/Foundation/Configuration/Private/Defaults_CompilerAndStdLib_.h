@@ -261,7 +261,8 @@
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
 #endif
@@ -280,7 +281,8 @@
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
+#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_Buggy      0
 #endif
@@ -674,7 +676,8 @@ EXAMPLE:
 
 #if   defined (_MSC_VER)
 // Still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// Still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          0
 #endif
@@ -797,7 +800,8 @@ EXAMPLE:
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
 #endif
@@ -1499,7 +1503,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
 // easy enough to disable ;-)
-#if     defined (_MSC_VER) && (_MSC_VER == _MS_VS_2k13_VER_)
+#if     defined (_MSC_VER) && (_MSC_VER == _MS_VS_2k13_VER_ || _MSC_VER == _MS_VS_2k15_VER_)
 #define _ALLOW_KEYWORD_MACROS
 #endif
 
