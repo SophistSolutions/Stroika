@@ -104,7 +104,7 @@ namespace   Stroika {
 
                         /**
                          */
-                        Optional<unsigned int> fPageFaultCount;
+                        Optional<unsigned int>  fPageFaultCount;
 
                         /**
                          */
@@ -131,6 +131,7 @@ namespace   Stroika {
                          *  This is summed accross all IO devices, including disk and network.
                          */
                         Optional<double>        fCombinedIOReadRate;
+
                         /*
                          *  Rate in bytes per second
                          *  This is summed accross all IO devices, including disk and network.
@@ -184,6 +185,8 @@ namespace   Stroika {
                     ObjectVariantMapper GetObjectVariantMapper ();
 
 
+                    /**
+                     */
                     enum    class   CachePolicy {
                         eOmitUnchangedValues,
                         eIncludeAllRequestedValues,
@@ -196,37 +199,14 @@ namespace   Stroika {
                         /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
-                        Time::DurationSecondsType       fMinimumAveragingInterval { 1.0 };
+                        Time::DurationSecondsType       fMinimumAveragingInterval       { 1.0 };
 
-                        bool                            fCaptureEnvironmentVariables { true };
+                        bool                            fCaptureEnvironmentVariables    { true };
                         bool                            fCaptureCurrentWorkingDirectory { true };
-                        bool                            fCaptureRoot { true };
+                        bool                            fCaptureRoot                    { true };
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
-                        CachePolicy                     fCachePolicy { CachePolicy::eIncludeAllRequestedValues };
-
-                        enum    Strategy {
-#if     qPlatform_POSIX
-                            eProcFS,
-                            ePS,
-#endif
-#if     qPlatform_Windows
-                            eWindows_EnumProcesses,
-#endif
-                        };
-
-#if 0
-                        //NYI on windows - init...
-                        Containers::Sequence<Strategy>  fStrategiesToTry {
-#if     qPlatform_POSIX
-                            eProcFS,
-                            ePS,
-#endif
-#if     qPlatform_Windows
-                            eWindows_EnumProcesses
-#endif
-                        };
-#endif
+                        CachePolicy                     fCachePolicy                    { CachePolicy::eIncludeAllRequestedValues };
                     };
 
 
