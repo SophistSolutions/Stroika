@@ -260,11 +260,12 @@ namespace {
 
                     bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
+                    if (fOptions_.fCaptureCurrentWorkingDirectory) {
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
+                    }
+
                     if (grabStaticData) {
                         processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
-                        if (fOptions_.fCaptureCurrentWorkingDirectory) {
-                            processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
-                        }
                         if (fOptions_.fCaptureEnvironmentVariables) {
                             processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
                         }
@@ -282,8 +283,8 @@ namespace {
                     try {
                         StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
 
-                        //One character from the string "RSDZTW" where R is running,
-                        //S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
+                        // One character from the string "RSDZTW" where R is running,
+                        // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
                         // Z is zombie, T is traced or stopped (on a signal), and W is paging.
                         switch (stats.state) {
                             case 'R':

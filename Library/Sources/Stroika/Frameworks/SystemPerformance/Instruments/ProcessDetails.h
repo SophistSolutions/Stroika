@@ -41,7 +41,7 @@ namespace   Stroika {
                     using   MemorySizeType = uint64_t;
 
 
-                    /*
+                    /**
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
                     struct  ProcessType {
@@ -72,8 +72,8 @@ namespace   Stroika {
                         };
                         static  const Configuration::EnumNames<RunStatus>   Stroika_Enum_Names(RunStatus);
 
-                        Optional<RunStatus>                 fRunStatus;
-                        Optional<MemorySizeType>            fVirtualMemorySize;
+                        Optional<RunStatus>         fRunStatus;
+                        Optional<MemorySizeType>    fVirtualMemorySize;
 
                         /**
                          *  Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
@@ -84,7 +84,7 @@ namespace   Stroika {
                          *
                          *  This value is commonly used/available in UNIX
                          */
-                        Optional<MemorySizeType>            fResidentMemorySize;
+                        Optional<MemorySizeType>    fResidentMemorySize;
 
                         /*
                          *  From http://superuser.com/questions/618686/private-bytes-vs-working-set-in-process-explorer:
@@ -100,15 +100,15 @@ namespace   Stroika {
                          *
                          *  @todo This MAYBE windows only(?)
                          */
-                        Optional<MemorySizeType>           fPrivateBytes;
+                        Optional<MemorySizeType>    fPrivateBytes;
 
                         /**
                          */
-                        Optional<unsigned int>  fPageFaultCount;
+                        Optional<unsigned int>      fPageFaultCount;
 
                         /**
                          */
-                        Optional<MemorySizeType>   fWorkingSetSize;
+                        Optional<MemorySizeType>    fWorkingSetSize;
 
                         /**
                          *      Percent (of a single???) CPU time used (summed over user / system) and average over this
@@ -167,6 +167,12 @@ namespace   Stroika {
                     /**
                      */
                     using ProcessMapType = Mapping<pid_t, ProcessType>;
+
+
+                    /**
+                     */
+                    using Info = ProcessMapType;
+
 
                     /**
                      *  This instrument produce a measurement of type kProcessMapMeasurement, whcih can be converted to ProcessMapType.
