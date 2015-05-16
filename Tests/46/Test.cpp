@@ -1674,7 +1674,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence_DoublyLinkedList<string>",
             10700,
-            1.35,
+            1.4,
             &failedTests
         );
         Tester (
