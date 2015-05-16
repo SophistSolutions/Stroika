@@ -67,9 +67,9 @@
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
 #endif
-#if      _MSC_VER > _MS_VS_2k13_VER_
+#if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
-#elif    _MSC_FULL_VER > _MS_VS_2k13_Update4_FULLVER_
+#elif    _MSC_FULL_VER > _MS_VS_2k15_RC_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
 #endif
 
@@ -216,7 +216,9 @@
 #ifndef qCompilerAndStdLib_uninitialized_copy_n_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy   0
 #endif
@@ -418,7 +420,8 @@
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
 #endif
