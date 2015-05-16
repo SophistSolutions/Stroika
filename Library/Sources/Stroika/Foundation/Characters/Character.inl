@@ -37,10 +37,13 @@ namespace   Stroika {
                 : fCharacterCode_ (c)
             {
             }
+            DISABLE_COMPILER_MSC_WARNING_START(4244)
+            // NB: THIS IS A REAL BUG/ISSUE. WE MUST DO WORK TO TRANSFORM. REDESIGN REQUIRED!!!
             inline  Character::Character (char32_t c)
                 : fCharacterCode_ (c)
             {
             }
+            DISABLE_COMPILER_MSC_WARNING_END(4244)
             inline  Character::Character (wchar_t wc)
                 : fCharacterCode_ (wc)
             {
