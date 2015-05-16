@@ -184,8 +184,9 @@ namespace {
         DurationSecondsType         fMinimumAveragingInterval_;
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         DateTime                    fLastCapturedAt;
-        Set<pid_t>                  fStaticSuppressedAgain;                 // skip reporting static (known at process start) data on subsequent reports
+        // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
+        Set<pid_t>                  fStaticSuppressedAgain;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
@@ -257,7 +258,7 @@ namespace {
                     String      processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                     ProcessType processDetails;
 
-                    bool    grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or fStaticSuppressedAgain.Contains (pid);
+                    bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
                     if (grabStaticData) {
                         processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
@@ -377,6 +378,9 @@ namespace {
                 }
             }
             fContextStats_ = newContextStats;
+            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
+            }
             return results;
         }
         template    <typename T>
@@ -839,7 +843,8 @@ namespace {
 
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
-                ProcessType         processInfo;
+                ProcessType     processInfo;
+                bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
@@ -848,7 +853,7 @@ namespace {
                             Verify (::CloseHandle (hProcess));
                         }
                                                    };
-                        {
+                        if (grabStaticData) {
                             Optional<String>    processEXEPath;
                             Optional<pid_t>     parentProcessID;
                             Optional<String>    cmdLine;
@@ -902,10 +907,12 @@ namespace {
                         }
                     }
                     // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kElapsedTime_)) {
-                        if (instanceVal == i.fKey) {
-                            processInfo.fProcessStartedAt = DateTime::Now ().AddSeconds (-static_cast<time_t> (i.fValue));
-                            break;
+                    if (grabStaticData) {
+                        for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kElapsedTime_)) {
+                            if (instanceVal == i.fKey) {
+                                processInfo.fProcessStartedAt = DateTime::Now ().AddSeconds (-static_cast<time_t> (i.fValue));
+                                break;
+                            }
                         }
                     }
                 }
@@ -914,6 +921,9 @@ namespace {
             }
             fLastCapturedAt = DateTime::Now ();
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
+            }
             return results;
         }
         Set<pid_t>  GetAllProcessIDs_ ()
