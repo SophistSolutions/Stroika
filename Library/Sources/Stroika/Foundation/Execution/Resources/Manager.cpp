@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::Execution::Resources;
  ********************* Execution::Resources::Manager ****************************
  ********************************************************************************
  */
-Accessor    Manager::CheckedReadResource (const Name& name) const
+Accessor    Manager::CheckedReadResource (const Name& name) const noexcept
 {
     try {
         return fRep_->ReadResource (name);
