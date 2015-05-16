@@ -184,6 +184,8 @@ namespace {
         DurationSecondsType         fMinimumAveragingInterval_;
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
         DateTime                    fLastCapturedAt;
+        Set<pid_t>                  fStaticSuppressedAgain;                 // skip reporting static (known at process start) data on subsequent reports
+        // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
@@ -252,21 +254,26 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
-                    String  processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
+                    String      processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                     ProcessType processDetails;
-                    processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
-                    if (fOptions_.fCaptureCurrentWorkingDirectory) {
-                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
-                    }
-                    if (fOptions_.fCaptureEnvironmentVariables) {
-                        processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
-                    }
-                    processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
-                    if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
-                        processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
-                    }
-                    if (fOptions_.fCaptureRoot) {
-                        processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
+
+                    bool    grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or fStaticSuppressedAgain.Contains (pid);
+
+                    if (grabStaticData) {
+                        processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
+                        if (fOptions_.fCaptureCurrentWorkingDirectory) {
+                            processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
+                        }
+                        if (fOptions_.fCaptureEnvironmentVariables) {
+                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
+                        }
+                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
+                        if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
+                            processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
+                        }
+                        if (fOptions_.fCaptureRoot) {
+                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
+                        }
                     }
 
                     static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
@@ -300,16 +307,18 @@ namespace {
 
                         static  const   size_t  kPageSizeInBytes = ::sysconf (_SC_PAGESIZE);
 
-                        static  const time_t    kSecsSinceBoot_ = [] () {
-                            struct sysinfo info;
-                            ::sysinfo (&info);
-                            return time(NULL) - info.uptime;
-                        } ();
-                        //starttime %llu (was %lu before Linux 2.6)
-                        //(22) The time the process started after system boot. In kernels before Linux 2.6,
-                        // this value was expressed in jiffies. Since Linux 2.6,
-                        // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
-                        processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
+                        if (grabStaticData) {
+                            static  const time_t    kSecsSinceBoot_ = [] () {
+                                struct sysinfo info;
+                                ::sysinfo (&info);
+                                return time(NULL) - info.uptime;
+                            } ();
+                            //starttime %llu (was %lu before Linux 2.6)
+                            //(22) The time the process started after system boot. In kernels before Linux 2.6,
+                            // this value was expressed in jiffies. Since Linux 2.6,
+                            // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
+                        }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
@@ -320,7 +329,9 @@ namespace {
                         if (stats.nlwp != 0) {
                             processDetails.fThreadCount = stats.nlwp;
                         }
-                        processDetails.fParentProcessID = stats.ppid;
+                        if (grabStaticData) {
+                            processDetails.fParentProcessID = stats.ppid;
+                        }
                         processDetails.fVirtualMemorySize = stats.vsize;
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes;
 
@@ -332,11 +343,13 @@ namespace {
                     catch (...) {
                     }
 
-                    try {
-                        proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
-                        processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
-                    }
-                    catch (...) {
+                    if (grabStaticData) {
+                        try {
+                            proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
+                            processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
+                        }
+                        catch (...) {
+                        }
                     }
 
                     try {
