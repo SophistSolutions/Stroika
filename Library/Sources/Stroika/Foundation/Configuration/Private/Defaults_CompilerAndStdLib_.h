@@ -736,25 +736,6 @@ EXAMPLE:
 
 
 
-/*
-*/
-#ifndef qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
-#else
-#define qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug    0
-#endif
-
-#endif
-
-
-
-
-
 /**
 @CONFIGVAR:     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 @DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Not well understood.
