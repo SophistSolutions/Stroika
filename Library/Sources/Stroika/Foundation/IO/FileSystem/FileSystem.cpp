@@ -221,7 +221,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
  ************************* FileSystem::CanonicalizeName *************************
  ********************************************************************************
  */
-String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut)
+String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
 {
 #if     qPlatform_POSIX
     char*   tmp { ::canonicalize_file_name (path2FileOrShortcut.AsSDKString ().c_str ()) };
@@ -275,7 +275,7 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
 #endif
 }
 
-String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory)
+String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound)
 {
     AssertNotImplemented ();
     return path2FileOrShortcut;

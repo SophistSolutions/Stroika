@@ -100,8 +100,8 @@ namespace   Stroika {
                      *
                      *  @todo consider if this should assureDirectoryEndsInSlash - tricky cuz noit sre ure we know if its a dir
                      */
-                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut);
-                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory);    //nyi
+                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound = true);
+                    nonvirtual  String  CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound = true);    //nyi
 
                 public:
                     /**
