@@ -275,6 +275,7 @@ namespace {
                 String_Constant { L"fuse.gvfsd-fuse" },
                 String_Constant { L"hugetlbfs" },
                 String_Constant { L"mqueue" },
+                String_Constant { L"nfsd" },                // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
                 String_Constant { L"pstore" },
                 String_Constant { L"proc" },
                 String_Constant { L"rpc_pipefs" },
