@@ -210,7 +210,7 @@ namespace   Stroika {
                             Led_Distance* distanceResults
                                                                    ) const override;
                     virtual    Led_Distance    MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-                    virtual    void            DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) override;
+                    virtual    void            DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
                     virtual    bool            HandleOpen () override;
 
                 public:
