@@ -1383,7 +1383,8 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qDecoratedNameLengthExceeded_Buggy      0
 #endif
