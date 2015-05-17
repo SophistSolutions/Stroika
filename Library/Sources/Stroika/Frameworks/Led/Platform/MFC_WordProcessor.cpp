@@ -471,9 +471,9 @@ void    Led_MFC_ControlItem::Serialize (CArchive& ar)
     }
 }
 
-void    Led_MFC_ControlItem::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo)
-{
-    if (GetLength () == 0) {
+void    Led_MFC_ControlItem::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept {
+    if (GetLength () == 0)
+    {
         AssertNotNull (GetOwner ()->PeekAtTextStore ());
         GetOwner ()->PeekAtTextStore ()->RemoveMarker (this);
         Delete ();  // calls 'delete this', after doing much other needed cleanup
