@@ -814,6 +814,22 @@ EXAMPLE:
 
 
 
+
+#ifndef qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
+#else
+#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        0
+#endif
+
+#endif
+
+
+
+
+
 #ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
 
 #if     defined (__GNUC__)
