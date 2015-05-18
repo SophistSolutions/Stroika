@@ -74,7 +74,7 @@ namespace   {
                 using   ElementType =   SimpleClassWithoutComparisonOperators;
                 static  int    Compare (ElementType v1, ElementType v2)
                 {
-                    return v1.GetValue () - v2.GetValue ();
+                    return Common::CompareNormalizer (v1.GetValue () - v2.GetValue ());
                 }
             };
             using   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS =   Concrete::MultiSet_stdmap_DefaultTraits <
