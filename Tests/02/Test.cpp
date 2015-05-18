@@ -1199,7 +1199,10 @@ namespace {
         }
         {
             StringBuilder out { L"x" };
+#if     !qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy
             VerifyTestResult (static_cast<String> (out) == L"x");
+#endif
+            VerifyTestResult (out.As<String> () == L"x");
         }
     }
 
