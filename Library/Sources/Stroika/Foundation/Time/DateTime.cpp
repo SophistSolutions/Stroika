@@ -397,10 +397,17 @@ DateTime    DateTime::Now ()
 DurationSecondsType    DateTime::ToTickCount () const
 {
     // quick hack impl
+#if     qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy
+    static  DateTime sTimeZero_ = [this] () {
+        DateTime    now = Now ();
+        return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
+    } ();
+#else
     static  DateTime sTimeZero_ = [] () {
         DateTime    now = Now ();
         return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
     } ();
+#endif
     return (*this - sTimeZero_).As<DurationSecondsType> ();
 }
 
