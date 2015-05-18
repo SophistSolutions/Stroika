@@ -249,6 +249,9 @@ namespace   Stroika {
                 Iterator<T> end () const;
 
             private:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 struct  MyIterable_;
             };
 
