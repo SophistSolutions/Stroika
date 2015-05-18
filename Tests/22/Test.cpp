@@ -63,7 +63,7 @@ namespace   {
             }
             static  int    Compare (ElementType v1, ElementType v2)
             {
-                return Common::CompareNormalizer (v1.GetValue () - v2.GetValue ());
+                return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
         using   SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS  =   SortedMultiSet_DefaultTraits <

@@ -73,8 +73,7 @@ namespace   Stroika {
             template    <typename   ATOM_MANAGER>
             inline  int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
             {
-                using ST = typename make_signed<_AtomInternalType>::type;
-                return Common::CompareNormalizer (static_cast<ST> (fValue_) - static_cast<ST> (rhs.fValue_));
+                return Common::CompareNormalizer (fValue_, rhs.fValue_);
             }
             template    <typename   ATOM_MANAGER>
             inline  bool    Atom<ATOM_MANAGER>::empty () const

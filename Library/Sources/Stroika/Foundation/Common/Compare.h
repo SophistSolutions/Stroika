@@ -176,20 +176,28 @@ namespace   Stroika {
 
             /**
              *  EXAMPLE USAGE:
-             *        return Common::CompareNormalizer (GetNativeSocket () - rhs.GetNativeSocket ());
+             *        return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
              */
             template    <typename INTEGERLIKETYPE>
-            int CompareNormalizer (INTEGERLIKETYPE i)
+            int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)
             {
-                if (i < 0) {
+                //using ST = typename make_signed<INTEGERLIKETYPE>::type;   // could do this and then diff
+                //return static_cast<ST> (lhs) - static_cast<ST> (rhs);
+                if (lhs < rhs) {
                     return -1;
                 }
-                else if (i == 0) {
+                else if (lhs == rhs) {
                     return 0;
                 }
                 else {
                     return 1;
                 }
+            }
+            // @todo more specializations
+            template    <>
+            inline  int CompareNormalizer (int lhs, int rhs)
+            {
+                return lhs - rhs;
             }
 
 

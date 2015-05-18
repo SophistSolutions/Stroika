@@ -127,7 +127,7 @@ namespace   Stroika {
                 }
                 inline  int Socket::Compare (const Socket& rhs) const
                 {
-                    return Common::CompareNormalizer (GetNativeSocket () - rhs.GetNativeSocket ());
+                    return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
                 }
 
 
