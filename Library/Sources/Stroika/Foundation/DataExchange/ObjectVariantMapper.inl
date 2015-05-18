@@ -528,7 +528,7 @@ namespace   Stroika {
                     Mapping<String, VariantValue>   m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
                     {
-                        m.Add (mapper.template FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.template FromObject<VALUE_TYPE> (valueMapper, i.fValue));
+                        m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
                     }
                     return VariantValue (m);
                 };
@@ -541,7 +541,7 @@ namespace   Stroika {
                     actualInto->clear ();
                     for (Common::KeyValuePair<String, VariantValue> p : m)
                     {
-                        actualInto->Add (mapper.template ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper.template ToObject<VALUE_TYPE> (valueMapper, p.fValue));
+                        actualInto->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper.ToObject<VALUE_TYPE> (valueMapper, p.fValue));
                     }
                 };
                 return TypeMappingDetails (typeid (ACTUAL_CONTAINTER_TYPE), toVariantMapper, fromVariantMapper);
