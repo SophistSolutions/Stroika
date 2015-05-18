@@ -528,7 +528,12 @@ namespace   Stroika {
                     Mapping<String, VariantValue>   m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember)
                     {
+                        // not 100% sure why .template is needed for gcc48, and not sure why barfs in vs2k15.net
+#if     qCompilerAndStdLib_DotTemplateDisambiguator_Buggy
                         m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
+#else
+                        m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
+#endif
                     }
                     return VariantValue (m);
                 };

@@ -830,6 +830,31 @@ EXAMPLE:
 
 
 
+
+
+
+//
+// Without .template in one place gcc48 barfs, and with it vs 2k.net 2015 barfs. As near as I can tell
+// gcc is right, but I'm uncertain.
+//
+//  -- LGP 2015-05-18
+#ifndef qCompilerAndStdLib_DotTemplateDisambiguator_Buggy
+
+#if     defined (_MSC_VER)
+// first broken in _MS_VS_2k15_RC_FULLVER_
+#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RC_FULLVER_)
+#else
+#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        0
+#endif
+
+#endif
+
+
+
+
+
+
+
 #ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
 
 #if     defined (__GNUC__)
