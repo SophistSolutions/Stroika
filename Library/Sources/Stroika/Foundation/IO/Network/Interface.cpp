@@ -86,6 +86,18 @@ const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(
 
 
 
+#if     qPlatform_POSIX
+// Hack for centos5 support:
+//      Overload with linux version so other one wins, but this gets called if other doesnt exist
+//      TRY --LGP 2015-05-19
+template    <typename HACK = int>
+static __inline__ __u32 ethtool_cmd_speed(const struct ethtool_cmd* ep, HACK i = 0)
+{
+    //return (ep->speed_hi << 16) | ep->speed;
+    return ep->speed;
+}
+#endif
+
 
 
 /*
