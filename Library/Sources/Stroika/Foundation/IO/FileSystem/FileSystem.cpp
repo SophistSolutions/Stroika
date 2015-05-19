@@ -209,6 +209,16 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
         }
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
+    constexpr   bool    kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_ = true;
+    if (kWorkaroundBuggyCentos5ReturnsNulBytesInBuf_) {
+        const Characters::SDKChar*  e   =   buf.begin () + n;
+        const Characters::SDKChar*  i = find (buf.begin (), e, '\0');
+        if (i != e) {
+            size_t  newN = i - buf.begin ();
+            Assert (newN < n);
+            n = newN;
+        }
+    }
     return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
 #endif
 }
