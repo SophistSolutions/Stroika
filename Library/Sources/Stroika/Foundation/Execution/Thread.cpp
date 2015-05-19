@@ -693,7 +693,7 @@ void    Thread::SetThreadName (const wstring& threadName)
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info));
         }
-#elif   qPlatform_POSIX
+#elif   qPlatform_POSIX && (__GLIBC__ > 2 or (__GLIBC__ == 2 and __GLIBC_MINOR__ >= 12))
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
         //
         // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
