@@ -227,11 +227,37 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
 #if     qUseProcFS_
             result = ExtractFromProcFS_ ();
+#else
+            result = capture_using_ps_ ();
 #endif
             fLastCapturedAt = DateTime::Now ();
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             return result;
         }
+
+
+        // One character from the string "RSDZTW" where R is running,
+        // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
+        // Z is zombie, T is traced or stopped (on a signal), and W is paging.
+        Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
+        {
+            switch (stats.state) {
+                case 'R':
+                    return ProcessType::RunStatus::eRunning;
+                case 'S':
+                    return ProcessType::RunStatus::eSleeping;
+                case 'D':
+                    return ProcessType::RunStatus::eWaitingOnDisk;
+                case 'Z':
+                    return ProcessType::RunStatus::eZombie;
+                case 'T':
+                    return ProcessType::RunStatus::eSuspended;
+                case 'W':
+                    return ProcessType::RunStatus::eWaitingOnPaging;
+            }
+            return Optional<ProcessType::RunStatus> ();
+        }
+
 #if     qUseProcFS_
         ProcessMapType  ExtractFromProcFS_ ()
         {
@@ -293,31 +319,9 @@ namespace {
                     try {
                         StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
 
-                        // One character from the string "RSDZTW" where R is running,
-                        // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
-                        // Z is zombie, T is traced or stopped (on a signal), and W is paging.
-                        switch (stats.state) {
-                            case 'R':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eRunning;
-                                break;
-                            case 'S':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eSleeping;
-                                break;
-                            case 'D':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eWaitingOnDisk;
-                                break;
-                            case 'Z':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eZombie;
-                                break;
-                            case 'T':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eSuspended;
-                                break;
-                            case 'W':
-                                processDetails.fRunStatus = ProcessType::RunStatus::eWaitingOnPaging;
-                                break;
-                        }
+                        processDetails.fRunStatus = cvtStatusCharToStatus_ (stats.state);
 
-                        static  const   size_t  kPageSizeInBytes = ::sysconf (_SC_PAGESIZE);
+                        static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
                             static  const time_t    kSecsSinceBoot_ = [] () {
@@ -345,7 +349,7 @@ namespace {
                             processDetails.fParentProcessID = stats.ppid;
                         }
                         processDetails.fVirtualMemorySize = stats.vsize;
-                        processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes;
+                        processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", (*processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
@@ -697,57 +701,82 @@ namespace {
             return result;
         }
 #endif
-
-
-
-
-// consider using this as a backup if /procfs/ not present...
-#if   qPlatform_POSIX && 0
-        Collection<pair<pid_t, ProcessType>> capture_using_ps_ ()
+#if   qPlatform_POSIX
+        // consider using this as a backup if /procfs/ not present...
+        ProcessMapType  capture_using_ps_ ()
         {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::capture_using_ps_");
-            Collection<pair<pid_t, ProcessType>>   result;
-            ProcessRunner pr (L"ps -axl");
+            ProcessMapType  result;
+            /*
+             *  THOUGHT ABOUT STIME BUT TOO HARD TO PARSE???
+             *  EXAMPLE OUTPUT:
+             *
+             *   lewis@Analitiqa-Ubuntu-DevVM:~/Sandbox/Analitiqa-V2-Dev$ ps -e -o "pid,ppid,s,time,rss,sz,user,cmd" | head
+             *    PID  PPID S     TIME   RSS    SZ USER     CMD
+             *      1     0 S 00:00:02  3348 29300 root     /sbin/init splash
+             *      2     0 S 00:00:00     0     0 root     [kthreadd]
+             *      3     2 S 00:00:03     0     0 root     [ksoftirqd/0]
+             *      5     2 S 00:00:00     0     0 root     [kworker/0:0H]
+             *      7     2 S 00:00:51     0     0 root     [rcu_sched]
+             *      8     2 S 00:00:00     0     0 root     [rcu_bh]
+             *      9     2 S 00:00:44     0     0 root     [rcuos/0]
+             *     10     2 S 00:00:00     0     0 root     [rcuob/0]
+             *     11     2 S 00:00:01     0     0 root     [migration/0]
+             */
+            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,stime,rss,sz,user,cmd\"");
             Streams::BasicBinaryInputOutputStream   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String out;
             Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
-            bool skippedHeader = false;
+            bool    skippedHeader   = false;
+            size_t  headerLen       =   0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
+                    headerLen = i.length ();
                     continue;
                 }
                 Sequence<String>    l    =  Characters::Tokenize<String> (i, String_Constant (L" "));
-                if (l.size () < 13) {
+                if (l.size () < 9) {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
-                ProcessType p;
-                p.fUserID = Characters::String2Int<int> (l[1]);
-                pid_t   pid = Characters::String2Int<int> (l[2]);
-                p.fParentProcessID = Characters::String2Int<int> (l[3]);
+                ProcessType processDetails;
+                pid_t   pid = Characters::String2Int<int> (l[0].Trim ());
+                processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
                 {
-                    string  tmp =   l[11].AsUTF8 ();
-                    int minutes = 0;
-                    int seconds = 0;
-                    sscanf (tmp.c_str (), "%d:%d", &minutes, &seconds);
-                    p.fCPUTimeUsed = minutes * 60 + seconds;
+                    String s = l[2].Trim ();
+                    if (s.length () == 1) {
+                        processDetails.fRunStatus = cvtStatusCharToStatus_ (s[0]);
+                    }
                 }
                 {
+                    string  tmp =   l[3].AsUTF8 ();
+                    int hours = 0;
+                    int minutes = 0;
+                    int seconds = 0;
+                    sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
+                    processDetails.fCPUTimeUsed = hours * 60 * 60 + minutes * 60 + seconds;
+                }
+                static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[4].Trim ());
+                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * kPageSizeInBytes_;
+                processDetails.fUserName = l[6].Trim ();
+                {
                     // wrong - must grab EVERYHTING from i past a certain point
-                    const size_t kCmdNameStartsAt_ = 69;    // not sure this is always true? Empirical!
-                    p.fCommandName = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_);
+                    // Since our first line has headings, its length is our target, minus the 3 chars for CMD
+                    const size_t kCmdNameStartsAt_ = headerLen - 3;
+                    processDetails.fCommandName = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_);
                 }
                 {
                     // Fake but usable answer
                     Sequence<String>    t    =  Characters::Tokenize<String> (p.fCommandName, String_Constant (L" "));
                     if (not t.empty ()) {
-                        p.fEXEPath = t[0];
+                        processDetails.fEXEPath = t[0];
                     }
                 }
-                result.Add ({pid, p});
+                result.Add (pid, processDetails);
             }
             return result;
         }
