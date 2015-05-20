@@ -83,7 +83,7 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid)
  */
 uid_t   Platform::POSIX::GetUID ()
 {
-    return getuid ();
+    return ::getuid ();
 }
 
 
@@ -94,6 +94,6 @@ uid_t   Platform::POSIX::GetUID ()
  */
 uid_t   Platform::POSIX::GetEffectiveUID ()
 {
-    return geteuid ();
+    return ::geteuid ();
 }
 

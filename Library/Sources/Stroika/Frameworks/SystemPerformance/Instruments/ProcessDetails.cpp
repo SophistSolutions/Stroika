@@ -243,6 +243,16 @@ namespace {
 
             Mapping<pid_t, PerfStats_>  newContextStats;
 
+            /*
+             *  NOTE: the Linux procfs allows access to PROCESS info or THREADINFO (what linux calls lightweight processes).
+             *
+             *  You can tell if a process is a real process id or thread id, by seeing if the tgid (sometimes tid) or task
+             *  group id) is the same as the PID. If yes, its a process. If no, its a thread in the tgid process.
+             *
+             *  However, iterating over the files in teh /proc filesystem APPEARS to only produce real processes, and to skip
+             *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
+             *  this claim documented anywhere, so beware...
+             */
             for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
                 bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -250,15 +260,15 @@ namespace {
                 DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
 #endif
                 if (isAllNumeric) {
-                    pid_t pid = String2Int<pid_t> (dir);
-                    DurationSecondsType now { Time::GetTickCount () };
+                    pid_t               pid     { String2Int<pid_t> (dir) };
+                    DurationSecondsType now     { Time::GetTickCount () };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
-                    String      processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
-                    ProcessType processDetails;
-
+                    String      processDirPath  =   IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                     bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+
+                    ProcessType processDetails;
 
                     if (fOptions_.fCaptureCurrentWorkingDirectory) {
                         processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
