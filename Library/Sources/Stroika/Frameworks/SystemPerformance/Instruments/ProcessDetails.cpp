@@ -126,6 +126,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<Optional<pid_t>> ();
+        mapper.AddCommonType<Optional<bool>> ();
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<unsigned int>> ();
         mapper.AddCommonType<Optional<MemorySizeType>> ();
