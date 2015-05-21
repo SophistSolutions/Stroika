@@ -18,6 +18,7 @@
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
+#include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/Execution/Thread.h"
 #if     qPlatform_POSIX
@@ -31,6 +32,7 @@
 #include    "../../../Foundation/IO/FileSystem/PathName.h"
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
+#include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
@@ -715,6 +717,7 @@ namespace {
              *     10     2 S 00:00:00     0     0 root     [rcuob/0]
              *     11     2 S 00:00:01     0     0 root     [migration/0]
              */
+            using   Execution::ProcessRunner;
             ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,stime,rss,sz,user,cmd\"");
             Streams::BasicBinaryInputOutputStream   useStdOut;
             pr.SetStdOut (useStdOut);
