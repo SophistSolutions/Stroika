@@ -120,6 +120,11 @@ namespace   Stroika {
             {
                 return fLength_ == 0;
             }
+            inline  Character    StringBuilder::GetAt (size_t index) const
+            {
+                Require (index < fLength_);
+                return fData_[index];
+            }
             inline  void    StringBuilder::SetAt (Character item, size_t index)
             {
                 Require (index < fLength_);

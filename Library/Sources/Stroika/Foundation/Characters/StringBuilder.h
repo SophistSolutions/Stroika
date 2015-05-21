@@ -111,6 +111,9 @@ namespace   Stroika {
                 nonvirtual  bool  empty () const;
 
             public:
+                nonvirtual  Character   GetAt (size_t index) const;
+
+            public:
                 nonvirtual  void    SetAt (Character item, size_t index);
 
             public:
