@@ -19,8 +19,9 @@
 
 /*
  * TODO:
- *      @todo   Try to do specialization of CaptureOneMeasurement in each instrument that avoids the
- *              serialize/deserialize part - and jsut returns the raw value.
+ *      @todo   Code cleanups
+ *
+ *      @todo   Document and enforce (no) thread safety polciy (assert externally locked?).
  */
 
 
@@ -41,16 +42,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            class   ICapturer {
-            public:
-                virtual ~ICapturer () {};
-                virtual MeasurementSet  Capture () = 0;
-                virtual unique_ptr<ICapturer>   Clone () const = 0;
-            };
-
-
-            /**
              *  \note   Design Note
              *          Each instrument instance MAY maintain 'state' - that affects subsequent calls. For example, for instruments
              *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
@@ -58,6 +49,19 @@ namespace   Stroika {
              */
             struct  Instrument {
 
+                /**
+                 */
+                class   ICapturer {
+                public:
+                    virtual ~ICapturer () {};
+                    virtual MeasurementSet  Capture () = 0;
+                    virtual unique_ptr<ICapturer>   Clone () const = 0;
+                };
+
+
+                /**
+                 *  @todo CLEANUP NAMES AND IMPL
+                 */
                 struct SharedByValueCaptureRepType {
                     unique_ptr<ICapturer>   fCap_;
                     ICapturer*  get ()
@@ -84,12 +88,14 @@ namespace   Stroika {
                 };
 
                 InstrumentNameType                  fInstrumentName;
-                SharedByValueCaptureRepType    fCapFun_;
+                SharedByValueCaptureRepType         fCapFun_;
                 Set<MeasurementType>                fCapturedMeasurements;
                 DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
-                Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
+                /**
+                 */
+                Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
 
                 /**

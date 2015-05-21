@@ -327,7 +327,7 @@ namespace {
 
 
 namespace {
-    class   MyCapturer_ : public ICapturer {
+    class   MyCapturer_ : public Instrument::ICapturer {
         CapturerWithContext_ fCaptureContext;
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
