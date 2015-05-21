@@ -318,7 +318,7 @@ namespace {
                          *
                          *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
                          */
-                        pd.fKernelProcess = processDetails.fEXEPath.IsMissing ();
+                        processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
                         if (fOptions_.fCaptureRoot) {
                             processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
                         }
