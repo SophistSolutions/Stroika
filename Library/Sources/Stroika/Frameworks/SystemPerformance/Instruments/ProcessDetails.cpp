@@ -308,15 +308,9 @@ namespace {
 
                     ProcessType processDetails;
 
-                    if (fOptions_.fCaptureCurrentWorkingDirectory) {
-                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + kCWDFilename_);
-                    }
-
                     if (grabStaticData) {
+						// Note - many kernel processes have commandline, so dont filter here based on that
                         processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
-                        if (fOptions_.fCaptureEnvironmentVariables) {
-                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + kEnvironFilename_);
-                        }
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + kEXEFilename_);
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
@@ -330,9 +324,19 @@ namespace {
                          *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
                          */
                         processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
-                        if (fOptions_.fCaptureRoot) {
+                        // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
+                        if (fOptions_.fCaptureRoot and processDetails.fKernelProcess == false) {
                             processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + kRootFilename_);
                         }
+                        // kernel process cannot have environment variables (as far as I know) --LGP 2015-05-21
+                        if (fOptions_.fCaptureEnvironmentVariables and processDetails.fKernelProcess == false) {
+                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + kEnvironFilename_);
+                        }
+                    }
+
+                    // kernel process cannot have current directory (as far as I know) --LGP 2015-05-21
+                    if (fOptions_.fCaptureCurrentWorkingDirectory and processDetails.fKernelProcess == false) {
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + kCWDFilename_);
                     }
 
                     static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
