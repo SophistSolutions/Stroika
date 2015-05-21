@@ -1179,23 +1179,28 @@ namespace {
         }
         virtual MeasurementSet  Capture ()
         {
-            MeasurementSet    results;
-            DateTime    before = fCaptureContext.fLastCapturedAt;
-            auto rawMeasurement = fCaptureContext.capture ();
-            results.fMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
-            Measurement m;
-            m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-            m.fType = kProcessMapMeasurement;
+            MeasurementSet  results;
+            Measurement     m { kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
+        }
+        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        {
+            DateTime    before = fCaptureContext.fLastCapturedAt;
+            Info rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType dd = (fCaptureContext.fLastCapturedAt - before).As<double> ();
+            if (outMeasuredAt != nullptr) {
+                *outMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
+            }
+            return rawMeasurement;
         }
         virtual unique_ptr<ICapturer>   Clone () const override
         {
 #if     qCompilerAndStdLib_make_unique_Buggy
-			return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
-			#else
-			return make_unique<MyCapturer_> (fCaptureContext);
-			#endif
+            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+#else
+            return make_unique<MyCapturer_> (fCaptureContext);
+#endif
         }
         CapturerCallback    fCapturerCallback;
     };
@@ -1222,7 +1227,6 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
 }
 
 
-#if 0
 /*
  ********************************************************************************
  ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
@@ -1232,14 +1236,7 @@ template    <>
 Instruments::ProcessDetails::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
     using   Instruments::ProcessDetails::Info;
-
-    MeasurementSet ms = fCapFun_.get ()->Capture ();
-    if (measurementTimeOut != nullptr) {
-        *measurementTimeOut = ms.fMeasuredAt;
-    }
-    for (auto ii : ms.fMeasurements) {
-        return fObjectVariantMapper.ToObject<Info> (ii.fValue);
-    }
-    return Instruments::ProcessDetails::Info ();
+    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    AssertNotNull (myCap);
+    return myCap->Capture_Raw (measurementTimeOut);
 }
-#endif
