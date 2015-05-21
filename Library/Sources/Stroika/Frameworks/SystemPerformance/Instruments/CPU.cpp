@@ -477,7 +477,7 @@ Instrument  SystemPerformance::Instruments::CPU::GetInstrument (Options options)
     return Instrument (
                InstrumentNameType (String_Constant (L"CPU")),
 #if     qCompilerAndStdLib_make_unique_Buggy
-               Instrument::SharedByValueCaptureRepType (unique_ptr<ICapturer> (new MyCapturer_ (CapturerWithContext_ { options }))),
+               Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
 #else
                Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
 #endif
