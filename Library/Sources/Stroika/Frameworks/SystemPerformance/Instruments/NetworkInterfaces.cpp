@@ -35,6 +35,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces;
 
 
 using   Characters::Character;
@@ -45,9 +46,6 @@ using   Containers::Set;
 using   IO::FileSystem::BinaryFileInputStream;
 using   Time::DurationSecondsType;
 
-using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::InterfaceInfo;
-using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::IOStatistics;
-using   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces::Options;
 
 
 
@@ -172,10 +170,10 @@ namespace {
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
+            capture ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
-        Instruments::NetworkInterfaces::Info    capture_ ()
+        Instruments::NetworkInterfaces::Info    capture ()
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
@@ -359,7 +357,7 @@ namespace {
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
-            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+            capture ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -372,10 +370,10 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+            capture ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
-        Instruments::NetworkInterfaces::Info capture_ ()
+        Instruments::NetworkInterfaces::Info capture ()
         {
             using   IO::Network::Interface;
             using   Instruments::NetworkInterfaces::InterfaceInfo;
@@ -486,13 +484,13 @@ namespace {
             : inherited (options)
         {
         }
-        Instruments::NetworkInterfaces::Info    capture_ ()
+        Instruments::NetworkInterfaces::Info    capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::NetworkInterfaces::capture_");
 #endif
-            return inherited::capture_ ();
+            return inherited::capture ();
         }
     };
 }
@@ -578,6 +576,48 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
 
 
 
+
+
+namespace {
+    class   MyCapturer_ : public ICapturer {
+        CapturerWithContext_ fCaptureContext;
+    public:
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCaptureContext (ctx)
+        {
+        }
+        virtual MeasurementSet  Capture ()
+        {
+            MeasurementSet  results;
+            Measurement     m { kNetworkInterfacesMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            results.fMeasurements.Add (m);
+            return results;
+        }
+        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        {
+            DateTime    before = fCaptureContext.fLastCapturedAt;
+            Info rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType dd = (fCaptureContext.fLastCapturedAt - before).As<double> ();
+            if (outMeasuredAt != nullptr) {
+                *outMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<ICapturer>   Clone () const override
+        {
+#if     qCompilerAndStdLib_make_unique_Buggy
+            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+#else
+            return make_unique<MyCapturer_> (fCaptureContext);
+#endif
+        }
+        CapturerCallback    fCapturerCallback;
+    };
+}
+
+
+
+
 /*
  ********************************************************************************
  ************ Instruments::NetworkInterfaces::GetInstrument *********************
@@ -585,21 +625,32 @@ ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
  */
 Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return  Instrument (
-                InstrumentNameType (String_Constant (L"Network-Interfaces")),
-    [useCaptureContext] () mutable -> MeasurementSet {
-        MeasurementSet    results;
-        DateTime    before = useCaptureContext.fLastCapturedAt;
-        Instruments::NetworkInterfaces::Info rawMeasurement = useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
-        Measurement m;
-        m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kNetworkInterfacesMeasurement_;
-        results.fMeasurements.Add (m);
-        return results;
-    },
-    {kNetworkInterfacesMeasurement_},
+                InstrumentNameType (String_Constant { L"Network-Interfaces" }),
+#if     qCompilerAndStdLib_make_unique_Buggy
+                Instrument::SharedByValueCaptureRepType (unique_ptr<ICapturer> (new MyCapturer_ (CapturerWithContext_ { options }))),
+#else
+                Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
+#endif
+    { kNetworkInterfacesMeasurement_ },
     GetObjectVariantMapper ()
             );
 }
+
+
+
+
+/*
+ ********************************************************************************
+ ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
+ ********************************************************************************
+ */
+template    <>
+Instruments::NetworkInterfaces::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+{
+    using   Instruments::NetworkInterfaces::Info;
+    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    AssertNotNull (myCap);
+    return myCap->Capture_Raw (measurementTimeOut);
+}
+

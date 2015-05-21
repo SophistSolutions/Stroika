@@ -28,8 +28,6 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-
-
                 namespace   NetworkInterfaces {
 
 
@@ -167,9 +165,16 @@ namespace   Stroika {
 
 
                 }
-
-
             }
+
+
+            /*
+             *  Specialization to improve performance
+             */
+            template    <>
+            Instruments::NetworkInterfaces::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+
+
         }
     }
 }
