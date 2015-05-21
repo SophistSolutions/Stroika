@@ -476,21 +476,22 @@ namespace {
                 {
                     if (*b == '\0') {
                         break;
+                        sb.Append (' ');    // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                     }
                     else {
                         sb.Append ((char) (*b));    // for now assume no charset
                     }
                 }
-                return (sb.As<String> ());
-            }
-#if 0
-            String  ReadFileString_(const String & fullPath) {
-                return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable));
-            }
-#endif
+                if (sb.length () > 0 and sb.GetAt (sb.length () - 1) == '\0')
+                {
+                    return String (sb.begin (), sb.end () - 1);
+                }
+                else {
+                    return (sb.As<String> ());
+                }
+            };
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (BinaryFileInputStream::mk (fullPath2CmdLineFile, BinaryFileInputStream::eNotSeekable)));
-                //IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (fullPath2CmdLineFile));
             }
             return Optional<String> ();
         }
