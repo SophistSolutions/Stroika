@@ -22,19 +22,13 @@ namespace   Stroika {
              ************************ SystemPerformance::Instrument *************************
              ********************************************************************************
              */
-            inline  Instrument::Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper)
-                : fInstrumentName (instrumentName)
-                , fCaptureFunction (capturer)
-                , fCapturedMeasurements (capturedMeasurements)
-                , fObjectVariantMapper (objectVariantMapper)
+            inline  MeasurementSet  Instrument::Capture ()
             {
-            }
-            inline  MeasurementSet  Instrument::Capture () const
-            {
-                return fCaptureFunction ();
+                return fCapFun_.get ()->Capture ();
+                //return fCaptureFunction ();
             }
             template    <>
-            inline  VariantValue    Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut) const
+            inline  VariantValue    Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
             {
                 MeasurementSet ms = Capture ();
                 if (measurementTimeOut != nullptr) {
@@ -47,7 +41,7 @@ namespace   Stroika {
                 return VariantValue ();
             }
             template    <typename T>
-            inline  T   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut) const
+            inline  T   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
             {
                 return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
             }
