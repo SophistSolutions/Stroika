@@ -718,7 +718,7 @@ namespace {
              *     11     2 S 00:00:01     0     0 root     [migration/0]
              */
             using   Execution::ProcessRunner;
-            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,stime,rss,sz,user,cmd\"");
+            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,rss,sz,user,cmd\"");
             Streams::BasicBinaryInputOutputStream   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
