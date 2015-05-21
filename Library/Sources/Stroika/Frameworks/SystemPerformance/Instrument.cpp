@@ -41,9 +41,9 @@ Instrument::Instrument (InstrumentNameType instrumentName, const SharedByValueCa
 
 Instrument::Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper)
 #if     qCompilerAndStdLib_make_unique_Buggy
-    : Instrument (instrumentName, SharedByValueCaptureRepType (unique_ptr<xICapturer> (new xICapturer (capturer))), capturedMeasurements, objectVariantMapper)
-#else
     : Instrument (instrumentName, SharedByValueCaptureRepType (make_unique<xICapturer> (capturer)), capturedMeasurements, objectVariantMapper)
+#else
+    : Instrument (instrumentName, SharedByValueCaptureRepType (unique_ptr<xICapturer> (new xICapturer (capturer))), capturedMeasurements, objectVariantMapper)
 #endif
 {
 }

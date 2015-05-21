@@ -79,11 +79,6 @@ namespace   Stroika {
              *          state, and return an average over the time since the last call to this instrument instance.
              */
             struct  Instrument {
-                InstrumentNameType                  fInstrumentName;
-                //CapturerCallback                    fCaptureFunction;
-                Set<MeasurementType>                fCapturedMeasurements;
-                DataExchange::ObjectVariantMapper   fObjectVariantMapper;
-
 
                 struct SharedByValueCaptureRepType {
                     unique_ptr<ICapturer>   fCap_;
@@ -110,11 +105,15 @@ namespace   Stroika {
                     }
                 };
 
+                InstrumentNameType                  fInstrumentName;
+                SharedByValueCaptureRepType    fCapFun_;
+                Set<MeasurementType>                fCapturedMeasurements;
+                DataExchange::ObjectVariantMapper   fObjectVariantMapper;
+
                 Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
                 Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
 
-                SharedByValueCaptureRepType    fCapFun_;
 
                 /**
                  */
