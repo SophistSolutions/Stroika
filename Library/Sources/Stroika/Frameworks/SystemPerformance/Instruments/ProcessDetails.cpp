@@ -60,9 +60,6 @@ using   Time::DurationSecondsType;
 
 
 
-#ifndef     qUseProcFS_
-#define     qUseProcFS_ qPlatform_POSIX
-#endif
 
 
 #ifndef qUseWMICollectionSupport_
@@ -225,11 +222,13 @@ namespace {
         {
             ProcessMapType  result {};
             Execution::SleepUntil (fPostponeCaptureUntil_);
-#if     qUseProcFS_
-            result = ExtractFromProcFS_ ();
-#else
-            result = capture_using_ps_ ();
-#endif
+
+            if (fOptions_.fAllowUse_ProcFS) {
+                result = ExtractFromProcFS_ ();
+            }
+            else if (fOptions_.fAllowUse_PS) {
+                result = capture_using_ps_ ();
+            }
             fLastCapturedAt = DateTime::Now ();
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             return result;
@@ -241,7 +240,7 @@ namespace {
         // Z is zombie, T is traced or stopped (on a signal), and W is paging.
         Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
         {
-            switch (stats.state) {
+            switch (state) {
                 case 'R':
                     return ProcessType::RunStatus::eRunning;
                 case 'S':
@@ -258,7 +257,6 @@ namespace {
             return Optional<ProcessType::RunStatus> ();
         }
 
-#if     qUseProcFS_
         ProcessMapType  ExtractFromProcFS_ ()
         {
             /// Most status - like time - come from http://linux.die.net/man/5/proc
@@ -665,10 +663,6 @@ namespace {
             return result;
         }
 
-#if     !qPlatform_POSIX
-        using uid_t = int;
-#endif
-
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/PID/status'
         struct proc_status_data_ {
@@ -700,8 +694,6 @@ namespace {
             }
             return result;
         }
-#endif
-#if   qPlatform_POSIX
         // consider using this as a backup if /procfs/ not present...
         ProcessMapType  capture_using_ps_ ()
         {
@@ -780,7 +772,6 @@ namespace {
             }
             return result;
         }
-#endif
     };
 };
 #endif

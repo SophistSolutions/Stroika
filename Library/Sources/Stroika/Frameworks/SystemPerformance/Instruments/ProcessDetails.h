@@ -213,6 +213,13 @@ namespace   Stroika {
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
                         CachePolicy                     fCachePolicy                    { CachePolicy::eIncludeAllRequestedValues };
+#if     qPlatform_POSIX
+                        bool                            fAllowUse_ProcFS                { true };
+                        bool                            fAllowUse_PS                    { true };
+#elif   qPlatform_Windows
+                        //PERHAPS SUPPORT IN FUTURE?
+                        //bool                          fAllowUse_WMI                   { true };
+#endif
                     };
 
 
