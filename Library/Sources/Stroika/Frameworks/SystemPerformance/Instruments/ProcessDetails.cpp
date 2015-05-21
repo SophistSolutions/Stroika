@@ -1171,7 +1171,7 @@ const   MeasurementType SystemPerformance::Instruments::ProcessDetails::kProcess
 
 namespace {
     class   MyCapturer_ : public ICapturer {
-        CapturerWithContext_ fCaptureContext;  // capture context so copyable in mutable lambda
+        CapturerWithContext_ fCaptureContext;
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
             : fCaptureContext (ctx)
@@ -1204,8 +1204,10 @@ namespace {
         }
         CapturerCallback    fCapturerCallback;
     };
-
 }
+
+
+
 
 /*
  ********************************************************************************
