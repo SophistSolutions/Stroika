@@ -755,8 +755,8 @@ namespace {
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
                 static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
-                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[4].Trim ());
-                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * kPageSizeInBytes_;
+                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * kPageSizeInBytes_;
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ());
                 processDetails.fUserName = l[6].Trim ();
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
