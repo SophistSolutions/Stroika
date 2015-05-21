@@ -26,8 +26,6 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-
-
                 namespace   Memory {
 
 
@@ -172,9 +170,16 @@ namespace   Stroika {
 
 
                 }
-
-
             }
+
+
+            /*
+             *  Specialization to improve performance
+             */
+            template    <>
+            Instruments::Memory::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+
+
         }
     }
 }

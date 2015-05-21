@@ -135,6 +135,7 @@ namespace {
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
+        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
         void    NoteCompletedCapture_ ()
         {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
@@ -647,7 +648,6 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
 template    <>
 Instruments::NetworkInterfaces::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
-    using   Instruments::NetworkInterfaces::Info;
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);

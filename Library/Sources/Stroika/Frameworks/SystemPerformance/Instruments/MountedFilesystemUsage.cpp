@@ -827,7 +827,6 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
 template    <>
 Instruments::MountedFilesystemUsage::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
-    using   Instruments::MountedFilesystemUsage::Info;
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);

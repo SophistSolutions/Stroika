@@ -24,6 +24,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
+                namespace   CPU {
 
 
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -31,11 +32,9 @@ namespace   Stroika {
 #endif
 
 
-                namespace   CPU {
-
-
                     using   DataExchange::ObjectVariantMapper;
                     using   Foundation::Memory::Optional_Indirect_Storage;
+
 
                     /**
                      *
@@ -96,9 +95,16 @@ namespace   Stroika {
 
 
                 }
-
-
             }
+
+
+            /*
+             *  Specialization to improve performance
+             */
+            template    <>
+            Instruments::CPU::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+
+
         }
     }
 }

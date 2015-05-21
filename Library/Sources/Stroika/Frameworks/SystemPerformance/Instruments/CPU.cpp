@@ -111,6 +111,7 @@ namespace {
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
+        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
         void    NoteCompletedCapture_ ()
         {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
@@ -141,7 +142,7 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // Force fill of context - ignore results
+            capture ();    // Force fill of context - ignore results
         }
         /*
          *  /proc/stat
@@ -273,7 +274,7 @@ namespace {
 
             return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage, 0, 100), Math::PinInRange<double> (totalCPUUsage, 0, 100) };
         }
-        Info capture_ ()
+        Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             Info    result;
@@ -321,7 +322,7 @@ namespace {
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // Force fill of context
+            capture ();    // Force fill of context
         }
         static  inline  double  GetAsSeconds_ (FILETIME ft)
         {
@@ -362,7 +363,7 @@ namespace {
             double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
             return Math::PinInRange<double> (cpu, 0, 100);
         }
-        Info capture_ ()
+        Info capture ()
         {
             Info    result;
             Execution::SleepUntil (fPostponeCaptureUntil_);
@@ -402,14 +403,60 @@ namespace {
             : inherited (options)
         {
         }
-        Info capture_ ()
+        Info capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::CPU capture_");
+            Debug::TraceContextBumper ctx ("Instruments::CPU capture");
 #endif
-            return inherited::capture_ ();
+            return inherited::capture ();
         }
+    };
+}
+
+
+
+
+namespace {
+    const   MeasurementType kCPUMeasurment_         =   MeasurementType { String_Constant { L"CPU-Usage" } };
+}
+
+
+
+
+
+namespace {
+    class   MyCapturer_ : public ICapturer {
+        CapturerWithContext_ fCaptureContext;
+    public:
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCaptureContext (ctx)
+        {
+        }
+        virtual MeasurementSet  Capture ()
+        {
+            MeasurementSet  results;
+            results.fMeasurements.Add (Measurement { kCPUMeasurment_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
+            return results;
+        }
+        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        {
+            DateTime    before = fCaptureContext.GetLastCaptureAt ();
+            Info rawMeasurement = fCaptureContext.capture ();
+            if (outMeasuredAt != nullptr) {
+                *outMeasuredAt = DateTimeRange (before, fCaptureContext.GetLastCaptureAt ());
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<ICapturer>   Clone () const override
+        {
+#if     qCompilerAndStdLib_make_unique_Buggy
+            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+#else
+            return make_unique<MyCapturer_> (fCaptureContext);
+#endif
+        }
+        CapturerCallback    fCapturerCallback;
     };
 }
 
@@ -428,21 +475,32 @@ namespace {
 Instrument  SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
-    static  const   MeasurementType kCPUMeasurment_         =   MeasurementType (String_Constant (L"CPU-Usage"));
     return Instrument (
                InstrumentNameType (String_Constant (L"CPU")),
-    [useCaptureContext] () mutable -> MeasurementSet {
-        MeasurementSet    results;
-        DateTime    before = useCaptureContext.fLastCapturedAt;
-        Info rawMeasurement = useCaptureContext.capture_ ();
-        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
-        Measurement m;
-        m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kCPUMeasurment_;
-        results.fMeasurements.Add (m);
-        return results;
-    },
-    {kCPUMeasurment_},
+#if     qCompilerAndStdLib_make_unique_Buggy
+               Instrument::SharedByValueCaptureRepType (unique_ptr<ICapturer> (new MyCapturer_ (CapturerWithContext_ { options }))),
+#else
+               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
+#endif
+    { kCPUMeasurment_ },
     GetObjectVariantMapper ()
            );
 }
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
+ ********************************************************************************
+ */
+template    <>
+Instruments::CPU::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+{
+    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    AssertNotNull (myCap);
+    return myCap->Capture_Raw (measurementTimeOut);
+}
+
