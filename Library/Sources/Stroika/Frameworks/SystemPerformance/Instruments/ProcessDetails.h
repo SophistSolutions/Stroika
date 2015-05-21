@@ -210,6 +210,7 @@ namespace   Stroika {
                          */
                         Time::DurationSecondsType       fMinimumAveragingInterval       { 1.0 };
 
+                        bool                            fCaptureCommandLine             { true };
                         bool                            fCaptureEnvironmentVariables    { true };
                         bool                            fCaptureCurrentWorkingDirectory { true };
                         bool                            fCaptureRoot                    { true };

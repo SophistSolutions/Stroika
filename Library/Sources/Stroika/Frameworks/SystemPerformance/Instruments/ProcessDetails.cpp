@@ -309,8 +309,6 @@ namespace {
                     ProcessType processDetails;
 
                     if (grabStaticData) {
-						// Note - many kernel processes have commandline, so dont filter here based on that
-                        processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + kEXEFilename_);
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
@@ -324,6 +322,10 @@ namespace {
                          *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
                          */
                         processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
+                        // Note - many kernel processes have commandline, so dont filter here based on that
+                        if (fOptions_.fCaptureCommandLine) {
+                            processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
+                        }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
                         if (fOptions_.fCaptureRoot and processDetails.fKernelProcess == false) {
                             processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + kRootFilename_);
@@ -798,15 +800,18 @@ namespace {
                 processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * 1024;
                 processDetails.fUserName = l[6].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[7].Trim ());
+                String  cmdLine;
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
-                    processDetails.fCommandLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
+                    cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
+                    if (fOptions_.fCaptureCommandLine) {
+                        processDetails.fCommandLine = cmdLine;
+                    }
                 }
                 {
-                    String  cmdLineAsString =   processDetails.fCommandLine.Value ();
-                    processDetails.fKernelProcess = not cmdLineAsString.empty () and cmdLineAsString[0] == '[';
+                    processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
                     // Fake but usable answer
                     Sequence<String>    t    =  cmdLineAsString.Tokenize ();
                     if (not t.empty ()) {
@@ -937,7 +942,9 @@ namespace {
                             LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, &cmdLine, &userName);
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
                             parentProcessID.CopyToIf (&processInfo.fParentProcessID);
-                            cmdLine.CopyToIf (&processInfo.fCommandLine);
+                            if (fOptions_.fCaptureCommandLine) {
+                                cmdLine.CopyToIf (&processInfo.fCommandLine);
+                            }
                             userName.CopyToIf (&processInfo.fUserName);
                         }
                         {
