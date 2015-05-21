@@ -705,17 +705,17 @@ namespace {
              *  THOUGHT ABOUT STIME BUT TOO HARD TO PARSE???
              *
              *  EXAMPLE OUTPUT:
-             *   lewis@Analitiqa-Ubuntu-DevVM:~/Sandbox/Analitiqa-V2-Dev$ ps -e -o "pid,ppid,s,time,rss,sz,user,cmd" | head
-             *    PID  PPID S     TIME   RSS    SZ USER     CMD
-             *      1     0 S 00:00:02  3348 29300 root     /sbin/init splash
-             *      2     0 S 00:00:00     0     0 root     [kthreadd]
-             *      3     2 S 00:00:03     0     0 root     [ksoftirqd/0]
-             *      5     2 S 00:00:00     0     0 root     [kworker/0:0H]
-             *      7     2 S 00:00:51     0     0 root     [rcu_sched]
-             *      8     2 S 00:00:00     0     0 root     [rcu_bh]
-             *      9     2 S 00:00:44     0     0 root     [rcuos/0]
-             *     10     2 S 00:00:00     0     0 root     [rcuob/0]
-             *     11     2 S 00:00:01     0     0 root     [migration/0]
+             *          lewis@lewis-UbuntuDevVM3:~/Sandbox/Stroika-DevRoot$ ps -e -o "pid,ppid,s,time,rss,vsz,user,nlwp,cmd" | head
+             *            PID  PPID S     TIME   RSS    VSZ USER     NLWP CMD
+             *              1     0 S 00:00:01  3696 116896 root        1 /lib/systemd/systemd --system --deserialize 18
+             *              2     0 S 00:00:00     0      0 root        1 [kthreadd]
+             *              3     2 S 00:00:00     0      0 root        1 [ksoftirqd/0]
+             *              5     2 S 00:00:00     0      0 root        1 [kworker/0:0H]
+             *              7     2 S 00:00:08     0      0 root        1 [rcu_sched]
+             *              8     2 S 00:00:00     0      0 root        1 [rcu_bh]
+             *              9     2 S 00:00:06     0      0 root        1 [rcuos/0]
+             *             10     2 S 00:00:00     0      0 root        1 [rcuob/0]
+             *             11     2 S 00:00:00     0      0 root        1 [migration/0]
              */
             using   Execution::ProcessRunner;
             const   int kColCountIncludingCmd_ { 9 };
@@ -755,8 +755,7 @@ namespace {
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
-                static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
-                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * kPageSizeInBytes_;
+                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
                 processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * 1024;
                 processDetails.fUserName = l[6].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[7].Trim ());
