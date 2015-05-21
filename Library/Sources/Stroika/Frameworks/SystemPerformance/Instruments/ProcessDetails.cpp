@@ -1205,23 +1205,12 @@ namespace {
  */
 Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
 {
-    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
-               InstrumentNameType (String_Constant (L"Process-Details")),
-#if 1
-               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (useCaptureContext)),
+               InstrumentNameType (String_Constant { L"Process-Details" }),
+#if     qCompilerAndStdLib_make_unique_Buggy
+               Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
 #else
-    [useCaptureContext] () mutable -> MeasurementSet {
-        MeasurementSet    results;
-        DateTime    before = useCaptureContext.fLastCapturedAt;
-        auto rawMeasurement = useCaptureContext.capture ();
-        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
-        Measurement m;
-        m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
-        m.fType = kProcessMapMeasurement;
-        results.fMeasurements.Add (m);
-        return results;
-    },
+               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
 #endif
     {kProcessMapMeasurement},
     GetObjectVariantMapper ()
