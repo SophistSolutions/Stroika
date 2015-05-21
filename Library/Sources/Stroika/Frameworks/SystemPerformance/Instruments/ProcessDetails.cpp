@@ -1192,10 +1192,10 @@ namespace {
         virtual unique_ptr<ICapturer>   Clone () const override
         {
 #if     qCompilerAndStdLib_make_unique_Buggy
-            return unique_ptr<ICapturer> (MyCapturer_ (fCaptureContext));
-#else
-            return make_unique<MyCapturer_> (fCaptureContext);
-#endif
+			return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+			#else
+			return make_unique<MyCapturer_> (fCaptureContext);
+			#endif
         }
         CapturerCallback    fCapturerCallback;
     };
