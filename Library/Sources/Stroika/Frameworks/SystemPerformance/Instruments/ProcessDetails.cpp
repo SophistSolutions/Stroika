@@ -272,7 +272,7 @@ namespace {
             static  const   String_Constant kEXEFilename_       { L"exe" };
             static  const   String_Constant kEnvironFilename_   { L"environ" };
             static  const   String_Constant kRootFilename_      { L"root" };
-            static  const   String_Constant kCmdLineFilename_   { L"cmdLine" };
+            static  const   String_Constant kCmdLineFilename_   { L"cmdline" };
             static  const   String_Constant kStatFilename_      { L"stat" };
             static  const   String_Constant kStatusFilename_    { L"status" };
             static  const   String_Constant kIOFilename_        { L"io" };
@@ -469,25 +469,28 @@ namespace {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = []   (const Streams::BinaryInputStream & in) ->String {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_");
+                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadCmdLineString_");
 #endif
-                StringBuilder sb;
+                StringBuilder   sb;
+                bool            lastCharNullRemappedToSpace = false;
                 for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();)
                 {
                     if (*b == '\0') {
-                        break;
                         sb.Append (' ');    // frequently - especially for kernel processes - we see nul bytes that really SB spaces
+                        lastCharNullRemappedToSpace = true;
                     }
                     else {
                         sb.Append ((char) (*b));    // for now assume no charset
+                        lastCharNullRemappedToSpace = false;
                     }
                 }
-                if (sb.length () > 0 and sb.GetAt (sb.length () - 1) == '\0')
+                if (lastCharNullRemappedToSpace)
                 {
+                    Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
                     return String (sb.begin (), sb.end () - 1);
                 }
                 else {
-                    return (sb.As<String> ());
+                    return sb.As<String> ();
                 }
             };
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath2CmdLineFile)) {

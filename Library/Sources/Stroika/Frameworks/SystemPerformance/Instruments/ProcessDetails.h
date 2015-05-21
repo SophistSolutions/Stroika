@@ -104,10 +104,12 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fPrivateBytes;
 
                         /**
+                         *  @todo better document, and only implemented for windows - but need todo for unix?
                          */
                         Optional<unsigned int>      fPageFaultCount;
 
                         /**
+                         *  @todo better document, and only implemented for windows - but need todo for unix
                          */
                         Optional<MemorySizeType>    fWorkingSetSize;
 
