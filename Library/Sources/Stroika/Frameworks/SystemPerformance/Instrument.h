@@ -79,31 +79,31 @@ namespace   Stroika {
                 DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
 #if 1
-				struct SharedByValueCaptureRepType {
-					unique_ptr<ICapturer>	fCap_;
+                struct SharedByValueCaptureRepType {
+                    unique_ptr<ICapturer>   fCap_;
 
-					ICapturer*	get ()
-					{
-						return fCap_.get ();
-					}
-					const ICapturer*	get () const
-					{
-						return fCap_.get ();
-					}
-					SharedByValueCaptureRepType (unique_ptr<ICapturer>&& cap)
-						: fCap_ (move (cap))
-					{
-					}
-					SharedByValueCaptureRepType (const SharedByValueCaptureRepType& cap)
-						: fCap_ (move (cap.get ()->Clone ()))
-					{
-					}
-					SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
-					{
-						fCap_ = cap.get ()->Clone ();
-						return *this;
-					}
-				};
+                    ICapturer*  get ()
+                    {
+                        return fCap_.get ();
+                    }
+                    const ICapturer*    get () const
+                    {
+                        return fCap_.get ();
+                    }
+                    SharedByValueCaptureRepType (unique_ptr<ICapturer>&& cap)
+                        : fCap_ (move (cap))
+                    {
+                    }
+                    SharedByValueCaptureRepType (const SharedByValueCaptureRepType& cap)
+                        : fCap_ (move (cap.get ()->Clone ()))
+                    {
+                    }
+                    SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
+                    {
+                        fCap_ = cap.get ()->Clone ();
+                        return *this;
+                    }
+                };
 #else
                 struct  _Rep_Cloner {
                     inline  static  shared_ptr<ICapturer>   Copy (const ICapturer& t)
