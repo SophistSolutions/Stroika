@@ -703,8 +703,8 @@ namespace {
             ProcessMapType  result;
             /*
              *  THOUGHT ABOUT STIME BUT TOO HARD TO PARSE???
-             *  EXAMPLE OUTPUT:
              *
+             *  EXAMPLE OUTPUT:
              *   lewis@Analitiqa-Ubuntu-DevVM:~/Sandbox/Analitiqa-V2-Dev$ ps -e -o "pid,ppid,s,time,rss,sz,user,cmd" | head
              *    PID  PPID S     TIME   RSS    SZ USER     CMD
              *      1     0 S 00:00:02  3348 29300 root     /sbin/init splash
@@ -718,7 +718,8 @@ namespace {
              *     11     2 S 00:00:01     0     0 root     [migration/0]
              */
             using   Execution::ProcessRunner;
-            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,rss,sz,user,cmd\"");
+            const   int kColCountIncludingCmd_ { 9 };
+            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
             Streams::BasicBinaryInputOutputStream   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -733,7 +734,7 @@ namespace {
                     continue;
                 }
                 Sequence<String>    l    =  i.Tokenize ();
-                if (l.size () < 8) {
+                if (l.size () < kColCountIncludingCmd_) {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
@@ -756,8 +757,9 @@ namespace {
                 }
                 static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * kPageSizeInBytes_;
-                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ());
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * 1024;
                 processDetails.fUserName = l[6].Trim ();
+                processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[7].Trim ());
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
