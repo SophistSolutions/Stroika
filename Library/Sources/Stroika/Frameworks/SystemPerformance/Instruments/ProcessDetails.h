@@ -234,8 +234,16 @@ namespace   Stroika {
 
 
                 }
-
             }
+
+
+            /*
+             *  Specialization to improve performance
+             */
+            template    <>
+            Instruments::ProcessDetails::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+
+
         }
     }
 }

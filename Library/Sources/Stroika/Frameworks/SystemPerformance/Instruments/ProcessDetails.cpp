@@ -1169,7 +1169,40 @@ const   MeasurementType SystemPerformance::Instruments::ProcessDetails::kProcess
 
 
 
+namespace {
+    class   MyCapturer_ : public ICapturer {
+        CapturerWithContext_ fCaptureContext;  // capture context so copyable in mutable lambda
+    public:
+#if 0
+        MyCapturer_ (const Options& options)
+            : fCaptureContext (options)
+        {
+        }
+#endif
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCaptureContext (ctx)
+        {
+        }
+        virtual MeasurementSet  Capture ()
+        {
+            MeasurementSet    results;
+            DateTime    before = fCaptureContext.fLastCapturedAt;
+            auto rawMeasurement = fCaptureContext.capture ();
+            results.fMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
+            Measurement m;
+            m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
+            m.fType = kProcessMapMeasurement;
+            results.fMeasurements.Add (m);
+            return results;
+        }
+        virtual unique_ptr<ICapturer>   Clone () const override
+        {
+            return make_unique<MyCapturer_> (fCaptureContext);
+        }
+        CapturerCallback    fCapturerCallback;
+    };
 
+}
 
 /*
  ********************************************************************************
@@ -1181,6 +1214,9 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
     CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
                InstrumentNameType (String_Constant (L"Process-Details")),
+#if 1
+               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (useCaptureContext)),
+#else
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = useCaptureContext.fLastCapturedAt;
@@ -1192,7 +1228,31 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
         results.fMeasurements.Add (m);
         return results;
     },
+#endif
     {kProcessMapMeasurement},
     GetObjectVariantMapper ()
            );
+}
+
+
+
+/*
+ ********************************************************************************
+ ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
+ ********************************************************************************
+ */
+template    <>
+Instruments::ProcessDetails::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+{
+    using   Instruments::ProcessDetails::Info;
+
+    MeasurementSet ms = fCapFun_.get ()->Capture ();
+    if (measurementTimeOut != nullptr) {
+        *measurementTimeOut = ms.fMeasuredAt;
+    }
+    for (auto ii : ms.fMeasurements) {
+        return fObjectVariantMapper.ToObject<Info> (ii.fValue);
+    }
+    return Instruments::ProcessDetails::Info ();
+
 }

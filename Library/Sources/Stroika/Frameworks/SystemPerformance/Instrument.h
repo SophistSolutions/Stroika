@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <memory>
+
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/DataExchange/Atom.h"
 #include    "../../Foundation/DataExchange/ObjectVariantMapper.h"
