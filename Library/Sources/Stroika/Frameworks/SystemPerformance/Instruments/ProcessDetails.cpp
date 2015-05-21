@@ -135,6 +135,7 @@ ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fKernelProcess), String_Constant (L"Kernel-Process"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fParentProcessID), String_Constant (L"Parent-Process-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fUserName), String_Constant (L"User-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCommandLine), String_Constant (L"Command-Line"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -309,6 +310,15 @@ namespace {
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
                         }
+                        /*
+                         *      \note   In POSIX/fAllowUse_ProcFS mode Fix EXEPath/commandline for 'kernel' processes.
+                         *              http://unix.stackexchange.com/questions/191594/how-can-i-determine-if-a-process-is-a-system-process
+                         *              Can use value from reading EXE or is parent process id is 0, or parent process id is kernel process
+                         *              (means kernel process/thread).
+                         *
+                         *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
+                         */
+                        pd.fKernelProcess = processDetails.fEXEPath.IsMissing ();
                         if (fOptions_.fCaptureRoot) {
                             processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
                         }
@@ -361,14 +371,21 @@ namespace {
 
                     if (grabStaticData) {
                         try {
-                            proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
-                            processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
+                            if (processDetails.fKernelProcess == true) {
+                                // I think these are always running as root -- LGP 2015-05-21
+                                processDetails.fUserName = String_Constant { L"root" };
+                            }
+                            else {
+                                proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
+                                processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
+                            }
                         }
                         catch (...) {
                         }
                     }
 
                     try {
+                        // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
                         Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
                         if (stats.IsPresent ()) {
                             processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
@@ -766,8 +783,10 @@ namespace {
                     processDetails.fCommandLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
+                    String  cmdLineAsString =   processDetails.fCommandLine.Value ();
+                    processDetails.fKernelProcess = not cmdLineAsString.empty () and cmdLineAsString[0] == '[';
                     // Fake but usable answer
-                    Sequence<String>    t    =  processDetails.fCommandLine.Value ().Tokenize ();
+                    Sequence<String>    t    =  cmdLineAsString.Tokenize ();
                     if (not t.empty ()) {
                         processDetails.fEXEPath = t[0];
                     }

@@ -19,8 +19,8 @@
 /*
  *
  *  TODO:
- *      @todo   Eventually allow configuration of whether to use procfs or ps process grep, but default to
- *              procfs is available.
+ *      @todo   In POSIX/fAllowUse_PS mode add or fix support for Command-Line (done badly), EXE-Path, Process-Started-At,
+ *              Percent-CPUTime-Used.
  */
 
 
@@ -45,6 +45,7 @@ namespace   Stroika {
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
                     struct  ProcessType {
+                        Optional<bool>                      fKernelProcess;     // if true (unix only) - this process is really a thread builtin to the kernel
                         Optional<pid_t>                     fParentProcessID;
                         Optional<String>                    fUserName;          // on windows, this is in the form of username@domain if a domain is present
                         Optional<String>                    fCommandLine;
