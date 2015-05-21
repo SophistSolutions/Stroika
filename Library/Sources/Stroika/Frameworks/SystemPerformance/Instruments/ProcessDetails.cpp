@@ -813,8 +813,8 @@ namespace {
                 {
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
                     // Fake but usable answer
-                    Sequence<String>    t    =  cmdLineAsString.Tokenize ();
-                    if (not t.empty ()) {
+                    Sequence<String>    t    =  cmdLine.Tokenize ();
+                    if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
                         processDetails.fEXEPath = t[0];
                     }
                 }
