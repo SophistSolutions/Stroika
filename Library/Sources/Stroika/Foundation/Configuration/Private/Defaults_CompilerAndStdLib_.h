@@ -229,6 +229,24 @@
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_make_unique_Buggy
+seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may have in wrong folder/file (docs say memory)
+*/
+#ifndef qCompilerAndStdLib_make_unique_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_make_unique_Buggy    0
+#else
+#define qCompilerAndStdLib_make_unique_Buggy    1
+#endif
+
+#endif
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_alignas_Buggy
 */

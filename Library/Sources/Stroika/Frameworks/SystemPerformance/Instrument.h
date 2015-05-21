@@ -63,8 +63,7 @@ namespace   Stroika {
                 }
                 virtual unique_ptr<ICapturer>   Clone () const override
                 {
-                    // make_unique<> only in C++14 - add bug defines for this
-#if 1
+#if     qCompilerAndStdLib_make_unique_Buggy
                     return unique_ptr<ICapturer> (new xICapturer (fCapturerCallback));
 #else
                     return make_unique<xICapturer> (fCapturerCallback);
