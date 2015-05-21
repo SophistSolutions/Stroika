@@ -939,7 +939,7 @@ namespace {
                             Optional<pid_t>     parentProcessID;
                             Optional<String>    cmdLine;
                             Optional<String>    userName;
-                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, &cmdLine, &userName);
+                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
                             parentProcessID.CopyToIf (&processInfo.fParentProcessID);
                             if (fOptions_.fCaptureCommandLine) {
@@ -1032,7 +1032,7 @@ namespace {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
             RequireNotNull (parentProcessID);
-            RequireNotNull (cmdLine);
+            //CANBENULL (cmdLine);
             RequireNotNull (userName);
             HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
             DWORD       cbNeeded    {};
@@ -1053,41 +1053,43 @@ namespace {
                     if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
                         *parentProcessID =  static_cast<pid_t> (pbi[5]);
 
-                        // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
-                        void*   pebAddress = GetPebAddress_ (hProcess);
-                        if (pebAddress != nullptr) {
-                            void*   rtlUserProcParamsAddress {};
+                        if (cmdLine != nullptr) {
+                            // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
+                            void*   pebAddress = GetPebAddress_ (hProcess);
+                            if (pebAddress != nullptr) {
+                                void*   rtlUserProcParamsAddress {};
 #ifdef  _WIN64
-                            const int kUserProcParamsOffset_ = 0x20;
-                            const int kCmdLineOffset_ = 112;
+                                const int kUserProcParamsOffset_ = 0x20;
+                                const int kCmdLineOffset_ = 112;
 #else
-                            const int kUserProcParamsOffset_ = 0x10;
-                            const int kCmdLineOffset_ = 0x40;
+                                const int kUserProcParamsOffset_ = 0x10;
+                                const int kCmdLineOffset_ = 0x40;
 #endif
-                            /* get the address of ProcessParameters */
-                            if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
-                                goto SkipCmdLine_;
-                            }
-                            UNICODE_STRING commandLine;
-
-                            /* read the CommandLine UNICODE_STRING structure */
-                            if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
-                                goto SkipCmdLine_;
-                            }
-                            {
-                                size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
-                                Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
-                                /* read the command line */
-                                if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                /* get the address of ProcessParameters */
+                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
-                                commandLineContents[strLen] = 0;
-                                *cmdLine = commandLineContents.begin ();
-                            }
-SkipCmdLine_:
-                            ;
-                        }
+                                UNICODE_STRING commandLine;
 
+                                /* read the CommandLine UNICODE_STRING structure */
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
+                                    goto SkipCmdLine_;
+                                }
+                                {
+                                    size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
+                                    Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
+                                    /* read the command line */
+                                    if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                        goto SkipCmdLine_;
+                                    }
+                                    commandLineContents[strLen] = 0;
+                                    *cmdLine = commandLineContents.begin ();
+                                }
+SkipCmdLine_:
+                                ;
+                            }
+
+                        }
                     }
                 }
             }
