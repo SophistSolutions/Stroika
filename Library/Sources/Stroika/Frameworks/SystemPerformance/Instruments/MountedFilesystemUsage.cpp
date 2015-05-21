@@ -745,6 +745,51 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
 }
 
 
+namespace {
+    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType { String_Constant { L"Mounted-Volume-Usage"} };
+}
+
+
+
+
+namespace {
+    class   MyCapturer_ : public ICapturer {
+        CapturerWithContext_ fCaptureContext;
+    public:
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCaptureContext (ctx)
+        {
+        }
+        virtual MeasurementSet  Capture ()
+        {
+            MeasurementSet  results;
+            Measurement     m { kMountedVolumeUsage_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            results.fMeasurements.Add (m);
+            return results;
+        }
+        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        {
+            DateTime    before = fCaptureContext.GetLastCaptureAt ();
+            Info rawMeasurement = fCaptureContext.capture ();
+            if (outMeasuredAt != nullptr) {
+                *outMeasuredAt = DateTimeRange (before, fCaptureContext.GetLastCaptureAt ());
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<ICapturer>   Clone () const override
+        {
+#if     qCompilerAndStdLib_make_unique_Buggy
+            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+#else
+            return make_unique<MyCapturer_> (fCaptureContext);
+#endif
+        }
+        CapturerCallback    fCapturerCallback;
+    };
+}
+
+
+
 
 
 
@@ -755,22 +800,36 @@ ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper 
  */
 Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
 {
-    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType (String_Constant { L"Mounted-Volume-Usage"});
-    CapturerWithContext_ useCaptureContext { options };  // capture context so copyable in mutable lambda
     return Instrument (
-               InstrumentNameType (String_Constant {L"Mounted-Filesystem-Usage"}),
-    [useCaptureContext] () mutable -> MeasurementSet {
-        MeasurementSet    results;
-        DateTime    before = useCaptureContext.GetLastCaptureAt ();
-        Sequence<VolumeInfo> volumes   =   useCaptureContext.capture ();
-        results.fMeasuredAt = DateTimeRange (before, useCaptureContext.GetLastCaptureAt ());
-        Measurement m;
-        m.fValue = MountedFilesystemUsage::GetObjectVariantMapper ().FromObject (volumes);
-        m.fType = kMountedVolumeUsage_;
-        results.fMeasurements.Add (m);
-        return results;
-    },
-    {kMountedVolumeUsage_},
+               InstrumentNameType { String_Constant {L"Mounted-Filesystem-Usage"} },
+#if     qCompilerAndStdLib_make_unique_Buggy
+               Instrument::SharedByValueCaptureRepType (unique_ptr<ICapturer> (new MyCapturer_ (CapturerWithContext_ { options }))),
+#else
+               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
+#endif
+    { kMountedVolumeUsage_ },
     GetObjectVariantMapper ()
            );
 }
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
+ ********************************************************************************
+ */
+template    <>
+Instruments::MountedFilesystemUsage::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+{
+    using   Instruments::MountedFilesystemUsage::Info;
+    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    AssertNotNull (myCap);
+    return myCap->Capture_Raw (measurementTimeOut);
+}
+

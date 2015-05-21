@@ -1188,7 +1188,6 @@ namespace {
         {
             DateTime    before = fCaptureContext.fLastCapturedAt;
             Info rawMeasurement = fCaptureContext.capture ();
-            DurationSecondsType dd = (fCaptureContext.fLastCapturedAt - before).As<double> ();
             if (outMeasuredAt != nullptr) {
                 *outMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
             }

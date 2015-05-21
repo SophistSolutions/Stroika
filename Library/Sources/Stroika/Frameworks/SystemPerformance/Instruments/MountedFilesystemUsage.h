@@ -33,8 +33,6 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-
-
                 namespace   MountedFilesystemUsage {
 
 
@@ -139,6 +137,9 @@ namespace   Stroika {
                     };
 
 
+                    using   Info    =   Containers::Sequence<VolumeInfo>;
+
+
                     /**
                      *  For VolumeInfo, Collection<VolumeInfo>, and Sequence<VolumeInfo> types.
                      */
@@ -181,9 +182,16 @@ namespace   Stroika {
 
 
                 }
-
-
             }
+
+
+            /*
+             *  Specialization to improve performance
+             */
+            template    <>
+            Instruments::MountedFilesystemUsage::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+
+
         }
     }
 }
