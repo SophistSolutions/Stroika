@@ -733,18 +733,18 @@ namespace {
                     headerLen = i.length ();
                     continue;
                 }
-                Sequence<String>    l    =  (i.Tokenize ();
+                Sequence<String>    l    =  i.Tokenize ();
                 if (l.size () < 9) {
-                DbgTrace ("skipping line cuz len=%d", l.size ());
+                    DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
                 ProcessType processDetails;
                 pid_t   pid = Characters::String2Int<int> (l[0].Trim ());
-                              processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
+                processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
                 {
                     String s = l[2].Trim ();
                     if (s.length () == 1) {
-                        processDetails.fRunStatus = cvtStatusCharToStatus_ (s[0]);
+                        processDetails.fRunStatus = cvtStatusCharToStatus_ (static_cast<char> (s[0].As<wchar_t> ()));
                     }
                 }
                 {
@@ -753,12 +753,12 @@ namespace {
                     int minutes = 0;
                     int seconds = 0;
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
-                    processDetails.fCPUTimeUsed = hours * 60 * 60 + minutes * 60 + seconds;
+                    processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
                 static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
-                        processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[4].Trim ());
-                        processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * kPageSizeInBytes_;
-                        processDetails.fUserName = l[6].Trim ();
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[4].Trim ());
+                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * kPageSizeInBytes_;
+                processDetails.fUserName = l[6].Trim ();
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
@@ -767,7 +767,7 @@ namespace {
                 }
                 {
                     // Fake but usable answer
-                    Sequence<String>    t    =  Characters::Tokenize<String> (processDetails.fCommandLine.Value (), String_Constant (L" "));
+                    Sequence<String>    t    =  processDetails.fCommandLine.Value ().Tokenize ();
                     if (not t.empty ()) {
                         processDetails.fEXEPath = t[0];
                     }
