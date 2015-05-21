@@ -24,8 +24,8 @@ namespace   Stroika {
              */
             inline  MeasurementSet  Instrument::Capture ()
             {
+                AssertNotNull (fCapFun_.get ());
                 return fCapFun_.get ()->Capture ();
-                //return fCaptureFunction ();
             }
             template    <>
             inline  VariantValue    Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
@@ -43,6 +43,8 @@ namespace   Stroika {
             template    <typename T>
             inline  T   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
             {
+                // This function is typically template specialized by Instruments to avoid the round trip through VariantValues, but this is
+                // logically correct (just slower).
                 return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
             }
 

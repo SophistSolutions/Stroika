@@ -1202,7 +1202,6 @@ namespace {
             return make_unique<MyCapturer_> (fCaptureContext);
 #endif
         }
-        CapturerCallback    fCapturerCallback;
     };
 }
 

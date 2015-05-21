@@ -42,11 +42,6 @@ namespace   Stroika {
 
             /**
              */
-            using   CapturerCallback = Execution::Function<MeasurementSet()>;
-
-
-            /**
-             */
             class   ICapturer {
             public:
                 virtual ~ICapturer () {};
@@ -54,26 +49,6 @@ namespace   Stroika {
                 virtual unique_ptr<ICapturer>   Clone () const = 0;
             };
 
-            class   xICapturer : public ICapturer {
-            public:
-                xICapturer (const CapturerCallback&  capturerCallback)
-                    : fCapturerCallback (capturerCallback)
-                {
-                }
-                virtual MeasurementSet  Capture ()
-                {
-                    return fCapturerCallback ();
-                }
-                virtual unique_ptr<ICapturer>   Clone () const override
-                {
-#if     qCompilerAndStdLib_make_unique_Buggy
-                    return unique_ptr<ICapturer> (new xICapturer (fCapturerCallback));
-#else
-                    return make_unique<xICapturer> (fCapturerCallback);
-#endif
-                }
-                CapturerCallback    fCapturerCallback;
-            };
 
             /**
              *  \note   Design Note
@@ -113,7 +88,6 @@ namespace   Stroika {
                 Set<MeasurementType>                fCapturedMeasurements;
                 DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
-                Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
                 Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
 
