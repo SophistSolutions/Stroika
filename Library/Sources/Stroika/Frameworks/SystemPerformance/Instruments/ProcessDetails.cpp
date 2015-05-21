@@ -219,13 +219,13 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();        // for side-effect of setting fContextStats_
+            capture ();        // for side-effect of setting fContextStats_
         }
-        ProcessMapType  capture_ ()
+
+        ProcessMapType  capture ()
         {
             ProcessMapType  result {};
             Execution::SleepUntil (fPostponeCaptureUntil_);
-
             if (fOptions_.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }
@@ -236,7 +236,6 @@ namespace {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             return result;
         }
-
 
         // One character from the string "RSDZTW" where R is running,
         // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
@@ -431,9 +430,9 @@ namespace {
         }
         Sequence<String>  ReadFileStrings_(const String& fullPath)
         {
-            Sequence<String>    results;
-            Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
-            StringBuilder sb;
+            Sequence<String>            results;
+            Streams::BinaryInputStream  in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
+            StringBuilder               sb;
             for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
                 if (*b == '\0') {
                     results.Append (sb.As<String> ());
@@ -730,7 +729,7 @@ namespace {
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
-                    headerLen = i.length ();
+                    headerLen = i.RTrim ().length ();
                     continue;
                 }
                 Sequence<String>    l    =  i.Tokenize ();
@@ -763,7 +762,7 @@ namespace {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
-                    processDetails.fCommandLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_);
+                    processDetails.fCommandLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
                     // Fake but usable answer
@@ -855,7 +854,7 @@ namespace {
             fLastCapturedAt = DateTime::Now ();
 #endif
         }
-        ProcessMapType  capture_ ()
+        ProcessMapType  capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
 #if     qUseWMICollectionSupport_
@@ -1102,13 +1101,13 @@ namespace {
             : inherited (options)
         {
         }
-        ProcessMapType capture_ ()
+        ProcessMapType capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture_");
+            Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture");
 #endif
-            return inherited::capture_ ();
+            return inherited::capture ();
         }
     };
 }
@@ -1134,7 +1133,7 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
     [useCaptureContext] () mutable -> MeasurementSet {
         MeasurementSet    results;
         DateTime    before = useCaptureContext.fLastCapturedAt;
-        auto rawMeasurement = useCaptureContext.capture_();
+        auto rawMeasurement = useCaptureContext.capture ();
         results.fMeasuredAt = DateTimeRange (before, useCaptureContext.fLastCapturedAt);
         Measurement m;
         m.fValue = GetObjectVariantMapper ().FromObject (rawMeasurement);
