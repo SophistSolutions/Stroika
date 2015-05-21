@@ -1173,12 +1173,6 @@ namespace {
     class   MyCapturer_ : public ICapturer {
         CapturerWithContext_ fCaptureContext;  // capture context so copyable in mutable lambda
     public:
-#if 0
-        MyCapturer_ (const Options& options)
-            : fCaptureContext (options)
-        {
-        }
-#endif
         MyCapturer_ (const CapturerWithContext_& ctx)
             : fCaptureContext (ctx)
         {
@@ -1235,7 +1229,7 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
 }
 
 
-
+#if 0
 /*
  ********************************************************************************
  ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
@@ -1254,5 +1248,5 @@ Instruments::ProcessDetails::Info   SystemPerformance::Instrument::CaptureOneMea
         return fObjectVariantMapper.ToObject<Info> (ii.fValue);
     }
     return Instruments::ProcessDetails::Info ();
-
 }
+#endif

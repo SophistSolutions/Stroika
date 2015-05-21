@@ -63,7 +63,12 @@ namespace   Stroika {
                 }
                 virtual unique_ptr<ICapturer>   Clone () const override
                 {
+                    // make_unique<> only in C++14 - add bug defines for this
+#if 1
+                    return unique_ptr<ICapturer> (new xICapturer (fCapturerCallback));
+#else
                     return make_unique<xICapturer> (fCapturerCallback);
+#endif
                 }
                 CapturerCallback    fCapturerCallback;
             };
@@ -80,10 +85,9 @@ namespace   Stroika {
                 Set<MeasurementType>                fCapturedMeasurements;
                 DataExchange::ObjectVariantMapper   fObjectVariantMapper;
 
-#if 1
+
                 struct SharedByValueCaptureRepType {
                     unique_ptr<ICapturer>   fCap_;
-
                     ICapturer*  get ()
                     {
                         return fCap_.get ();
@@ -102,19 +106,10 @@ namespace   Stroika {
                     }
                     SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
                     {
-                        fCap_ = cap.get ()->Clone ();
+                        fCap_ = move (cap.get ()->Clone ());
                         return *this;
                     }
                 };
-#else
-                struct  _Rep_Cloner {
-                    inline  static  shared_ptr<ICapturer>   Copy (const ICapturer& t)
-                    {
-                        return t.Clone ();
-                    }
-                };
-                using   SharedByValueCaptureRepType    =   Memory::SharedByValue<Memory::SharedByValue_Traits<ICapturer, shared_ptr<ICapturer>, _Rep_Cloner>>;
-#endif
 
                 Instrument (InstrumentNameType instrumentName, const CapturerCallback& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
                 Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
