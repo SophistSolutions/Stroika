@@ -733,7 +733,7 @@ namespace {
                     continue;
                 }
                 Sequence<String>    l    =  i.Tokenize ();
-                if (l.size () < 9) {
+                if (l.size () < 8) {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
