@@ -44,6 +44,9 @@ namespace   Stroika {
              */
             using   CapturerCallback = Execution::Function<MeasurementSet()>;
 
+
+            /**
+             */
             class   ICapturer {
             public:
                 virtual ~ICapturer () {};
