@@ -263,10 +263,20 @@ namespace {
 
         ProcessMapType  ExtractFromProcFS_ ()
         {
+            //
             /// Most status - like time - come from http://linux.die.net/man/5/proc
             ///proc/[pid]/stat
             //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
             //
+            static  const   String_Constant kCWDFilename_       { L"cwd" };
+            static  const   String_Constant kEXEFilename_       { L"exe" };
+            static  const   String_Constant kEnvironFilename_   { L"environ" };
+            static  const   String_Constant kRootFilename_      { L"root" };
+            static  const   String_Constant kCmdLineFilename_   { L"cmdLine" };
+            static  const   String_Constant kStatFilename_      { L"stat" };
+            static  const   String_Constant kStatusFilename_    { L"status" };
+            static  const   String_Constant kIOFilename_        { L"io" };
+
             ProcessMapType  results;
 
             Mapping<pid_t, PerfStats_>  newContextStats;
@@ -281,7 +291,7 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (String dir : IO::FileSystem::DirectoryIterable (String_Constant (L"/proc"))) {
+            for (String dir : IO::FileSystem::DirectoryIterable (String_Constant { L"/proc" })) {
                 bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files");
@@ -299,15 +309,15 @@ namespace {
                     ProcessType processDetails;
 
                     if (fOptions_.fCaptureCurrentWorkingDirectory) {
-                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"cwd"));
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + kCWDFilename_);
                     }
 
                     if (grabStaticData) {
-                        processDetails.fCommandLine = OptionallyReadFileString_ (processDirPath + String_Constant (L"cmdline"));
+                        processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
                         if (fOptions_.fCaptureEnvironmentVariables) {
-                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + String_Constant (L"environ"));
+                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + kEnvironFilename_);
                         }
-                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"exe"));
+                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + kEXEFilename_);
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
                         }
@@ -321,14 +331,14 @@ namespace {
                          */
                         processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
                         if (fOptions_.fCaptureRoot) {
-                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + String_Constant (L"root"));
+                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + kRootFilename_);
                         }
                     }
 
                     static  const   double  kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                     try {
-                        StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + String_Constant (L"stat"));
+                        StatFileInfo_   stats    =  ReadStatFile_ (processDirPath + kStatFilename_);
 
                         processDetails.fRunStatus = cvtStatusCharToStatus_ (stats.state);
 
@@ -377,7 +387,7 @@ namespace {
                                 processDetails.fUserName = String_Constant { L"root" };
                             }
                             else {
-                                proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + String_Constant (L"status"));
+                                proc_status_data_   stats    =  Readproc_proc_status_data_ (processDirPath + kStatusFilename_);
                                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
                             }
                         }
@@ -387,7 +397,7 @@ namespace {
 
                     try {
                         // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
-                        Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + String_Constant (L"io"));
+                        Optional<proc_io_data_>   stats    =  Readproc_io_data_ (processDirPath + kIOFilename_);
                         if (stats.IsPresent ()) {
                             processDetails.fCombinedIOReadBytes = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
@@ -425,27 +435,6 @@ namespace {
             return Optional<T> ();
         }
 
-        // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-        String  ReadFileString_(const Streams::BinaryInputStream& in)
-        {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_");
-#endif
-            StringBuilder sb;
-            for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
-                if (*b == '\0') {
-                    break;
-                }
-                else {
-                    sb.Append ((char) (*b));    // for now assume no charset
-                }
-            }
-            return (sb.As<String> ());
-        }
-        String  ReadFileString_(const String& fullPath)
-        {
-            return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable));
-        }
         Sequence<String>  ReadFileStrings_(const String& fullPath)
         {
             Sequence<String>            results;
@@ -475,13 +464,37 @@ namespace {
         }
 
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
-        Optional<String>    OptionallyReadFileString_(const String& fullPath)
+        Optional<String>    ReadCmdLineString_(const String& fullPath2CmdLineFile)
         {
-            if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (fullPath));
+            // this reads /proc format files - meaning that a trialing nul-byte is the EOS
+            auto ReadFileString_ = []   (const Streams::BinaryInputStream & in) ->String {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadFileString_");
+#endif
+                StringBuilder sb;
+                for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();)
+                {
+                    if (*b == '\0') {
+                        break;
+                    }
+                    else {
+                        sb.Append ((char) (*b));    // for now assume no charset
+                    }
+                }
+                return (sb.As<String> ());
+            }
+#if 0
+            String  ReadFileString_(const String & fullPath) {
+                return ReadFileString_ (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable));
+            }
+#endif
+            if (IO::FileSystem::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
+                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (BinaryFileInputStream::mk (fullPath2CmdLineFile, BinaryFileInputStream::eNotSeekable)));
+                //IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (fullPath2CmdLineFile));
             }
             return Optional<String> ();
         }
+
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
         Optional<String>    OptionallyResolveShortcut_ (const String& shortcutPath)
         {
