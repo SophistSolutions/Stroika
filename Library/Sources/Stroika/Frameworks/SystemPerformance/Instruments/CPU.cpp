@@ -322,7 +322,7 @@ namespace {
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();    // Force fill of context
+            capture_ ();    // Force fill of context
         }
         static  inline  double  GetAsSeconds_ (FILETIME ft)
         {
@@ -363,14 +363,19 @@ namespace {
             double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
             return Math::PinInRange<double> (cpu, 0, 100);
         }
-        Info capture ()
+        Info capture_ ()
         {
             Info    result;
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             result.fTotalCPUUsage = cputime_ ();
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage;   // @todo fix - remove irq time etc from above? Or add into above if missing
             NoteCompletedCapture_ ();
             return result;
+        }
+        Info capture ()
+        {
+            Info    result;
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
         }
     };
 }

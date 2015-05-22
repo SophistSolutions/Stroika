@@ -521,8 +521,12 @@ namespace {
         }
         Sequence<VolumeInfo> capture ()
         {
-            Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Sequence<VolumeInfo> capture_ ()
+        {
+            Sequence<VolumeInfo>   results;
             results = capture_Windows_GetVolumeInfo_ ();
             _NoteCompletedCapture ();
             return results;

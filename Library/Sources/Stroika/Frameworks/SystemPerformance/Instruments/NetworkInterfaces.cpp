@@ -358,7 +358,7 @@ namespace {
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
-            capture ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -371,16 +371,20 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
+            capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
         Instruments::NetworkInterfaces::Info capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Instruments::NetworkInterfaces::Info capture_ ()
         {
             using   IO::Network::Interface;
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
 
-            Execution::SleepUntil (fPostponeCaptureUntil_);
 
             Info                        result;
             Collection<InterfaceInfo>   interfaceResults;

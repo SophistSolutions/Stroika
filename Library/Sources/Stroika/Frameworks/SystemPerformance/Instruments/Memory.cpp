@@ -203,7 +203,7 @@ namespace {
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();    // to pre-seed context
+            capture_ ();    // to pre-seed context
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : CapturerWithContext_COMMON_ (from)
@@ -212,20 +212,24 @@ namespace {
 #endif
         {
 #if   qUseWMICollectionSupport_
-            capture ();    // to pre-seed context
+            capture_ ();    // to pre-seed context
 #endif
         }
 
-        Instruments::Memory::Info capture ()
+        Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             Read_GlobalMemoryStatusEx_(&result);
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result);
 #endif
             NoteCompletedCapture_ ();
             return result;
+        }
+        Instruments::Memory::Info capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
         }
         void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)
         {
