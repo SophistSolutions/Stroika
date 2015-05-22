@@ -8,6 +8,7 @@
 #include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#include    "Stroika/Foundation/Execution/Sleep.h"
 #if     qPlatform_POSIX
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
@@ -56,10 +57,11 @@ int main (int argc, const char* argv[])
     //  --LGP 2014-02-05
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                        printUsage  =   false;
-    bool                        printNames  =   false;
-    bool                        oneLineMode =   false;
-    Time::DurationSecondsType   runFor      =   0;              // default to runfor 0, so we do each once.
+    bool                        printUsage      =   false;
+    bool                        printNames      =   false;
+    bool                        oneLineMode     =   false;
+    Time::DurationSecondsType   runFor          =   0;              // default to runfor 0, so we do each once.
+    Time::DurationSecondsType   captureInterval =   1;
     Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
@@ -92,6 +94,16 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
+        if (Execution::MatchesCommandLineArgument (*argi, L"c")) {
+            ++argi;
+            if (argi != args.end ()) {
+                captureInterval = Characters::String2Float<Time::DurationSecondsType> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -c" << endl;
+                return EXIT_FAILURE;
+            }
+        }
     }
     if (printUsage) {
         cerr << "Usage: SystemPerformanceClient [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
@@ -99,7 +111,8 @@ int main (int argc, const char* argv[])
         cerr << "    -o prints instrument results (with newlines stripped)" << endl;
         cerr << "    -l prints only the instrument names" << endl;
         cerr << "    -r runs the given instrument (it can be repeated)" << endl;
-        cerr << "    -t time to run for (if zero dont use capturer code)" << endl;
+        cerr << "    -t time to run for (if zero run each matching instrument once)" << endl;
+        cerr << "    -c time interval between captures" << endl;
         return EXIT_SUCCESS;
     }
 
@@ -155,6 +168,7 @@ int main (int argc, const char* argv[])
                     }
                 }
                 cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
+                Execution::Sleep (captureInterval);
                 MeasurementSet m = i.Capture ();
                 if (m.fMeasurements.empty ()) {
                     cout << "    NO DATA";
