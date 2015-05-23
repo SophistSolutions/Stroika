@@ -179,7 +179,7 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        Instruments::NetworkInterfaces::Info    capture ()
+        Instruments::NetworkInterfaces::Info    capture_ ()
         {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;

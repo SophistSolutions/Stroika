@@ -231,7 +231,7 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        ProcessMapType  capture ()
+        ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
             if (fOptions_.fAllowUse_ProcFS) {
