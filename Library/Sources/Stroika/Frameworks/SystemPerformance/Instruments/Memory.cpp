@@ -111,14 +111,18 @@ namespace {
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();    // for side-effect of  updating aved_MajorPageFaultsSinc etc
+            capture_ ();    // for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
 
         Instruments::Memory::Info capture ()
         {
-            Instruments::Memory::Info   result;
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Instruments::Memory::Info capture_ ()
+        {
+            Instruments::Memory::Info   result;
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
             NoteCompletedCapture_ ();

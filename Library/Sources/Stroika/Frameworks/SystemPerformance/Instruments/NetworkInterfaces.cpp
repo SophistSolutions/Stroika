@@ -171,15 +171,18 @@ namespace {
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
+            capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
         Instruments::NetworkInterfaces::Info    capture ()
         {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Instruments::NetworkInterfaces::Info    capture ()
+        {
             using   Instruments::NetworkInterfaces::InterfaceInfo;
             using   Instruments::NetworkInterfaces::Info;
-
-            Execution::SleepUntil (fPostponeCaptureUntil_);
 
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;

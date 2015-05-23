@@ -139,13 +139,17 @@ namespace {
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();        // for side-effect of setting fContextStats_
+            capture_ ();        // for side-effect of setting fContextStats_
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
         Sequence<VolumeInfo> capture ()
         {
-            Sequence<VolumeInfo>   results;
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Sequence<VolumeInfo> capture_ ()
+        {
+            Sequence<VolumeInfo>   results;
 
             constexpr   bool    kUseProcFSForMounts_ { true };
             if (kUseProcFSForMounts_) {

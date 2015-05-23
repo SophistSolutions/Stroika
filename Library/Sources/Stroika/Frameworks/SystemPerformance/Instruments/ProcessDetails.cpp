@@ -222,13 +222,18 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();        // for side-effect of setting fContextStats_
+            capture_ ();        // for side-effect of setting fContextStats_
+            fStaticSuppressedAgain.clear ();    // cuz we never returned these
         }
 
         ProcessMapType  capture ()
         {
-            ProcessMapType  result {};
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        ProcessMapType  capture ()
+        {
+            ProcessMapType  result {};
             if (fOptions_.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }

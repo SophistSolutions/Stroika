@@ -142,7 +142,7 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture ();    // Force fill of context - ignore results
+            capture_ ();    // Force fill of context - ignore results
         }
         /*
          *  /proc/stat
@@ -277,6 +277,10 @@ namespace {
         Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Info capture_ ()
+        {
             Info    result;
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {
