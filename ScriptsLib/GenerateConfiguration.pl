@@ -71,17 +71,15 @@ sub	DoHelp_
 {
     print("Usage:\n");
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
-        print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the config files if absent */\n");
-        print("	    --default-for-platform                     /* May create multiple configurations (recursive call to configure) - but generates all the default settings for this platform */\n");
-        print("	    --platform {PLATFORM}                      /* Specifies the directory under Builds/Intermediate Files to create */\n");
+        print("	    --platform {PLATFORM}                      /* Specifies the directory under Builds/Intermediate Files to create (defaults automatically) - not needed */\n");
         print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
-        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl and build for the configuration being defined [default TBD]*/\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL and build for the configuration being defined [default use] */\n");
-        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP and build for the configuration being defined [default use-system on windows, and no otherwise] */\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces and build for the configuration being defined [default use] */\n");
-        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib and build for the configuration being defined [default use] */\n");
+        print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
+        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
+        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib for this configuration [default use] */\n");
         print("	    --enable-trace2file                        /* Dnables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* Disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
@@ -94,12 +92,14 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+        print("	    --only-if-unconfigured                     /* DEPREACETED */\n");
         print("	    --enable-assertions                        /* DEPREACETED: use --assertions enable */\n");
         print("	    --disable-assertions                       /* DEPREACETED: use --assertions disable */\n");
         print("	    --default-assertions                       /* DEPREACETED: use --assertions disable */\n");
         print("	    --enable-GLIBCXX_DEBUG                     /* DEPREACETED: use --GLIBCXX_DEBUG enable  */\n");
         print("	    --disable-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG disable */\n");
         print("	    --default-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG default */\n");
+        print("	    --default-for-platform                     /* DEPREACETED */\n");
 
 	exit (0);
 }
@@ -216,7 +216,9 @@ sub	ParseCommandLine_Platform_
 			SetDefaultForPlatform_ ();
 		}
 		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-			SetDefaultForPlatform_ ();
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
+			###SetDefaultForPlatform_ ();
 		}
 	}
 }
@@ -239,7 +241,9 @@ sub	ParseCommandLine_Remaining_
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
-			$forceWriteConfig = false;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
+			###$forceWriteConfig = false;
 		}
 		elsif (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
@@ -401,6 +405,8 @@ sub	ParseCommandLine_Remaining_
                 $i++;
             }
             elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+				print ("DEPRECATED $var\n");
+				DoHelp_ ();
             }
             elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
                 $i++;

@@ -192,4 +192,4 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 endif
 
 default-configuration:
-	@perl ScriptsLib/GenerateConfiguration.pl --default-for-platform $(DEFAULT_CONFIGURATION_ARGS)
+	@perl ScriptsLib/GenerateConfiguration.pl $(DEFAULT_CONFIGURATION_ARGS)
