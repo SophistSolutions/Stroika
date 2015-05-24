@@ -112,9 +112,9 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/SystemPerformance-Instruments-Memory.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/SystemPerformance-Instruments-Memory.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcessDetails.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Filesystem.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp" />
@@ -127,9 +127,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\MountedFilesystemUsage.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\NetworkInterfaces.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\ProcessDetails.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Filesystem.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Network.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h" />

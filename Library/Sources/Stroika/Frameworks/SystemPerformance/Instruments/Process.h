@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_
-#define _Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_ 1
+#ifndef _Stroika_Framework_SystemPerformance_Instruments_Process_h_
+#define _Stroika_Framework_SystemPerformance_Instruments_Process_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -28,7 +28,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-                namespace ProcessDetails {
+                namespace Process {
 
 
                     using   Foundation::Containers::Mapping;
@@ -182,8 +182,8 @@ namespace   Stroika {
                      *
                      *  EXAMPLE USAGE:
                      *       for (Measurement m : ms.fMeasurements) {
-                     *          if (m.fType == SystemPerformance::Instruments::ProcessDetails::kProcessMapMeasurement) {
-                     *              AccumulateMeasurement_ProcessDetails_ (m);
+                     *          if (m.fType == SystemPerformance::Instruments::Process::kProcessMapMeasurement) {
+                     *              AccumulateMeasurement_Process_ (m);
                      *          }
                      */
                     extern  const   MeasurementType kProcessMapMeasurement;
@@ -241,7 +241,7 @@ namespace   Stroika {
              *  Specialization to improve performance
              */
             template    <>
-            Instruments::ProcessDetails::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+            Instruments::Process::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
 
 
         }
@@ -256,4 +256,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_ProcessDetails_h_*/
+#endif  /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/

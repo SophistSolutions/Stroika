@@ -5,9 +5,9 @@
 
 #include    "Instruments/CPU.h"
 #include    "Instruments/Memory.h"
-#include    "Instruments/MountedFilesystemUsage.h"
-#include    "Instruments/NetworkInterfaces.h"
-#include    "Instruments/ProcessDetails.h"
+#include    "Instruments/Filesystem.h"
+#include    "Instruments/Network.h"
+#include    "Instruments/Process.h"
 
 #include    "AllInstruments.h"
 
@@ -38,9 +38,9 @@ InstrumentSet   SystemPerformance::GetAllInstruments ()
     static  InstrumentSet   kInstruments_ = SortedSet<Instrument, Private_::InstrumentSetTraits_> {
         Instruments::CPU::GetInstrument (),
         Instruments::Memory::GetInstrument (),
-        Instruments::MountedFilesystemUsage::GetInstrument (),
-        Instruments::NetworkInterfaces::GetInstrument (),
-        Instruments::ProcessDetails::GetInstrument (),
+        Instruments::Filesystem::GetInstrument (),
+        Instruments::Network::GetInstrument (),
+        Instruments::Process::GetInstrument (),
     };
     return kInstruments_;
 }

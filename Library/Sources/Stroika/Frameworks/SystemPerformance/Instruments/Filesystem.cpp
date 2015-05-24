@@ -26,7 +26,7 @@
 #include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
-#include    "MountedFilesystemUsage.h"
+#include    "Filesystem.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -37,7 +37,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::MountedFilesystemUsage;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Filesystem;
 
 using   Characters::String_Constant;
 using   Characters::String2Int;
@@ -230,7 +230,7 @@ namespace {
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMountsFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::MountedFilesystemUsage::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::Filesystem::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 //
                 // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
@@ -445,7 +445,7 @@ namespace {
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::MountedFilesystemUsage::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 //
                 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
@@ -698,7 +698,7 @@ namespace {
         Sequence<VolumeInfo> capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-            Debug::TraceContextBumper ctx ("Instruments::MountedFilesystemUsage capture");
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem capture");
             return inherited::capture ();
         }
     };
@@ -712,10 +712,10 @@ namespace {
 
 /*
  ********************************************************************************
- ********** Instruments::MountedFilesystemUsage::GetObjectVariantMapper *********
+ *************** Instruments::Filesystem::GetObjectVariantMapper ****************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::MountedFilesystemUsage::GetObjectVariantMapper ()
+ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
@@ -802,10 +802,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************* Instruments::MountedFilesystemUsage::GetInstrument ***************
+ ******************** Instruments::Filesystem::GetInstrument ********************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrument (Options options)
+Instrument  SystemPerformance::Instruments::Filesystem::GetInstrument (Options options)
 {
     return Instrument (
                InstrumentNameType { String_Constant {L"Mounted-Filesystem-Usage"} },
@@ -832,7 +832,7 @@ Instrument  SystemPerformance::Instruments::MountedFilesystemUsage::GetInstrumen
  ********************************************************************************
  */
 template    <>
-Instruments::MountedFilesystemUsage::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Filesystem::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);

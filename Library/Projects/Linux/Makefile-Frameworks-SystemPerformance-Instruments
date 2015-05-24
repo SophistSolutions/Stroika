@@ -10,9 +10,9 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)CPU.o\
 	$(ObjDir)Memory.o\
-	$(ObjDir)MountedFilesystemUsage.o\
-	$(ObjDir)NetworkInterfaces.o\
-	$(ObjDir)ProcessDetails.o\
+	$(ObjDir)Filesystem.o\
+	$(ObjDir)Network.o\
+	$(ObjDir)Process.o\
 
 all:	$(Objs)
 

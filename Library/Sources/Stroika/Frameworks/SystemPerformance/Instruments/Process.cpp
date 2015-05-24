@@ -37,7 +37,7 @@
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
-#include    "ProcessDetails.h"
+#include    "Process.h"
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -54,7 +54,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Process;
 
 using   Characters::String_Constant;
 using   IO::FileSystem::BinaryFileInputStream;
@@ -114,10 +114,10 @@ const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunSta
 
 /*
  ********************************************************************************
- ************** Instruments::ProcessDetails::GetObjectVariantMapper *************
+ ***************** Instruments::Process::GetObjectVariantMapper *****************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::ProcessDetails::GetObjectVariantMapper ()
+ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
@@ -300,7 +300,7 @@ namespace {
             for (String dir : IO::FileSystem::DirectoryIterable (String_Constant { L"/proc" })) {
                 bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ExtractFromProcFS_::reading proc files");
+                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
                 DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
 #endif
                 if (isAllNumeric) {
@@ -481,7 +481,7 @@ namespace {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = []   (const Streams::BinaryInputStream & in) ->String {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadCmdLineString_");
+                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
 #endif
                 StringBuilder   sb;
                 bool            lastCharNullRemappedToSpace = false;
@@ -589,7 +589,7 @@ namespace {
         StatFileInfo_   ReadStatFile_ (const String& fullPath)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::ReadStatFile_");
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
             StatFileInfo_    result {};
@@ -682,7 +682,7 @@ namespace {
         Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_io_data_");
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
 
@@ -720,7 +720,7 @@ namespace {
         proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::Readproc_proc_status_data_");
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_");
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
             proc_status_data_    result {};
@@ -746,7 +746,7 @@ namespace {
         // consider using this as a backup if /procfs/ not present...
         ProcessMapType  capture_using_ps_ ()
         {
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::ProcessDetails::{}::capture_using_ps_");
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
             ProcessMapType  result;
             /*
              *  THOUGHT ABOUT STIME BUT TOO HARD TO PARSE???
@@ -1170,7 +1170,7 @@ namespace {
 }
 
 
-const   MeasurementType SystemPerformance::Instruments::ProcessDetails::kProcessMapMeasurement = MeasurementType (String_Constant (L"Process-Details"));
+const   MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType { String_Constant { L"Process-Details" } };
 
 
 
@@ -1215,10 +1215,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************** Instruments::ProcessDetails::GetInstrument **********************
+ ******************* Instruments::Process::GetInstrument ************************
  ********************************************************************************
  */
-Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrument (const Options& options)
+Instrument          SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
 {
     return Instrument (
                InstrumentNameType (String_Constant { L"Process-Details" }),
@@ -1241,7 +1241,7 @@ Instrument          SystemPerformance::Instruments::ProcessDetails::GetInstrumen
  ********************************************************************************
  */
 template    <>
-Instruments::ProcessDetails::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);

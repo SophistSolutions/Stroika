@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Framework_SystemPerformance_Instruments_NetworkInterfaces_h_
-#define _Stroika_Framework_SystemPerformance_Instruments_NetworkInterfaces_h_ 1
+#ifndef _Stroika_Framework_SystemPerformance_Instruments_Network_h_
+#define _Stroika_Framework_SystemPerformance_Instruments_Network_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -28,7 +28,7 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   SystemPerformance {
             namespace   Instruments {
-                namespace   NetworkInterfaces {
+                namespace   Network {
 
 
                     using   Containers::Collection;
@@ -172,7 +172,7 @@ namespace   Stroika {
              *  Specialization to improve performance
              */
             template    <>
-            Instruments::NetworkInterfaces::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+            Instruments::Network::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
 
 
         }
@@ -187,4 +187,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Framework_SystemPerformance_Instruments_NetworkInterfaces_h_*/
+#endif  /*_Stroika_Framework_SystemPerformance_Instruments_Network_h_*/

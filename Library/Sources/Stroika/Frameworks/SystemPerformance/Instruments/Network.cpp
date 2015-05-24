@@ -24,7 +24,7 @@
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/Streams/BinaryInputStream.h"
 
-#include    "NetworkInterfaces.h"
+#include    "Network.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -35,7 +35,7 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::SystemPerformance;
-using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::NetworkInterfaces;
+using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Network;
 
 
 using   Characters::Character;
@@ -94,7 +94,7 @@ namespace {
 
 /*
  ********************************************************************************
- ****************** Instruments::NetworkInterfaces::IOStatistics ****************
+ *********************** Instruments::Network::IOStatistics *********************
  ********************************************************************************
  */
 IOStatistics&   IOStatistics::operator+= (const IOStatistics& rhs)
@@ -174,15 +174,15 @@ namespace {
             capture_ ();    // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
-        Instruments::NetworkInterfaces::Info    capture ()
+        Instruments::Network::Info    capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        Instruments::NetworkInterfaces::Info    capture_ ()
+        Instruments::Network::Info    capture_ ()
         {
-            using   Instruments::NetworkInterfaces::InterfaceInfo;
-            using   Instruments::NetworkInterfaces::Info;
+            using   Instruments::Network::InterfaceInfo;
+            using   Instruments::Network::Info;
 
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;
@@ -204,9 +204,9 @@ namespace {
             NoteCompletedCapture_ ();
             return Info { interfaceResults, accumSummary };
         }
-        void    Read_proc_net_dev_ (Collection<Instruments::NetworkInterfaces::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
+        void    Read_proc_net_dev_ (Collection<Instruments::Network::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
         {
-            using   Instruments::NetworkInterfaces::InterfaceInfo;
+            using   Instruments::Network::InterfaceInfo;
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
@@ -217,7 +217,7 @@ namespace {
             unsigned int    n2Skip  = 2;
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::NetworkInterfaces::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::Network::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 nLine++;
                 if (n2Skip > 0) {
@@ -271,7 +271,7 @@ namespace {
             Mapping<String, size_t> labelMap;
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::NetworkInterfaces::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::Network::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 if (line.size () >= 2 and line[0].Trim () == L"TcpExt:") {
                     if (firstTime) {
@@ -304,7 +304,7 @@ namespace {
             Optional<uint64_t>  totalTCPSegments;
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::NetworkInterfaces::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 if (line.size () >= 2 and line[0].Trim () == L"Tcp:") {
                     if (firstTime) {
@@ -377,16 +377,16 @@ namespace {
             capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
-        Instruments::NetworkInterfaces::Info capture ()
+        Instruments::Network::Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        Instruments::NetworkInterfaces::Info capture_ ()
+        Instruments::Network::Info capture_ ()
         {
             using   IO::Network::Interface;
-            using   Instruments::NetworkInterfaces::InterfaceInfo;
-            using   Instruments::NetworkInterfaces::Info;
+            using   Instruments::Network::InterfaceInfo;
+            using   Instruments::Network::Info;
 
 
             Info                        result;
@@ -428,7 +428,7 @@ namespace {
             return result;
         }
 #if     qUseWMICollectionSupport_
-        void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::NetworkInterfaces::InterfaceInfo* updateResult)
+        void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::Network::InterfaceInfo* updateResult)
         {
             /*
              *  @todo - this mapping of descriptions to WMI instance names is an INCREDIBLE KLUDGE. Not sure how to do this properly.
@@ -492,11 +492,11 @@ namespace {
             : inherited (options)
         {
         }
-        Instruments::NetworkInterfaces::Info    capture ()
+        Instruments::Network::Info    capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::NetworkInterfaces::capture_");
+            Debug::TraceContextBumper ctx ("Instruments::Network::capture_");
 #endif
             return inherited::capture ();
         }
@@ -515,10 +515,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************** Instruments::NetworkInterfaces::GetObjectVariantMapper **********
+ ***************** Instruments::Network::GetObjectVariantMapper *****************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::NetworkInterfaces::GetObjectVariantMapper ()
+ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
@@ -626,10 +626,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************ Instruments::NetworkInterfaces::GetInstrument *********************
+ ****************** Instruments::Network::GetInstrument *************************
  ********************************************************************************
  */
-Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Options options)
+Instrument  SystemPerformance::Instruments::Network::GetInstrument (Options options)
 {
     return  Instrument (
                 InstrumentNameType (String_Constant { L"Network-Interfaces" }),
@@ -652,7 +652,7 @@ Instrument  SystemPerformance::Instruments::NetworkInterfaces::GetInstrument (Op
  ********************************************************************************
  */
 template    <>
-Instruments::NetworkInterfaces::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Network::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
