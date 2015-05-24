@@ -74,12 +74,8 @@ sub	DoHelp_
         print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the config files if absent */\n");
         print("	    --default-for-platform                     /* May create multiple configurations (recursive call to configure) - but generates all the default settings for this platform */\n");
         print("	    --platform {PLATFORM}                      /* Specifies the directory under Builds/Intermediate Files to create */\n");
-        print("	    --enable-assertions                        /* Enables assertions for the configuration being configured */\n");
-        print("	    --disable-assertions                       /* Disables assertions for the configuration being configured */\n");
-        print("	    --default-assertions                       /* Default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
-        print("	    --enable-GLIBCXX_DEBUG                     /* Enables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --disable-GLIBCXX_DEBUG                    /* Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --default-GLIBCXX_DEBUG                    /* Default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
+        print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
+        print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
@@ -98,6 +94,12 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+        print("	    --enable-assertions                        /* DEPREACETED: use --assertions enable */\n");
+        print("	    --disable-assertions                       /* DEPREACETED: use --assertions disable */\n");
+        print("	    --default-assertions                       /* DEPREACETED: use --assertions disable */\n");
+        print("	    --enable-GLIBCXX_DEBUG                     /* DEPREACETED: use --GLIBCXX_DEBUG enable  */\n");
+        print("	    --disable-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG disable */\n");
+        print("	    --default-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG default */\n");
 
 	exit (0);
 }
@@ -250,22 +252,62 @@ sub	ParseCommandLine_Remaining_
 			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
 		}
 		elsif ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
-			$ENABLE_ASSERTIONS = 1;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
-			$ENABLE_ASSERTIONS = 0;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
-			$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
+		}
+		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				$ENABLE_ASSERTIONS = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_ASSERTIONS = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+                print ("UNRECOGNIZED enable-assertions ARG: $var\n");
+                DoHelp_ ();
+			}
+		}
+		elsif ((lc ($var) eq "-glibcxx_debug") or (lc ($var) eq "--glibcxx_debug")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_GLIBCXX_DEBUG = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+                print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
+                DoHelp_ ();
+			}
 		}
 		elsif ((lc ($var) eq "-enable-glibcxx_debug") or (lc ($var) eq "--enable-glibcxx_debug")) {
-			$ENABLE_GLIBCXX_DEBUG = 1;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-disable-glibcxx_debug") or (lc ($var) eq "--disable-glibcxx_debug")) {
-			$ENABLE_GLIBCXX_DEBUG = 0;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-default-glibcxx_debug") or (lc ($var) eq "--default-glibcxx_debug")) {
-			$ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
 			$i++;
