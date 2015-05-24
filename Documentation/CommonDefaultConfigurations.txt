@@ -11,6 +11,7 @@ make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --tr
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --cpp-optimize-flag -O2"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --cpp-optimize-flag -O2"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --cpp-optimize-flag -O2 --Xerces no --OpenSSL no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file disable --cpp-optimize-flag -O3 --pg --lto"
 
 
