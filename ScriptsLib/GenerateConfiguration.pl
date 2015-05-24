@@ -77,11 +77,11 @@ sub	DoHelp_
         print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
-        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
-        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP and build for the confguration being defined [default use-system on windows, and no otherwise] */\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
-        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl and build for the configuration being defined [default TBD]*/\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL and build for the configuration being defined [default use] */\n");
+        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP and build for the configuration being defined [default use-system on windows, and no otherwise] */\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces and build for the configuration being defined [default use] */\n");
+        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib and build for the configuration being defined [default use] */\n");
         print("	    --enable-trace2file                        /* Dnables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* Disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
