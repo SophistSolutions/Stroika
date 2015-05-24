@@ -87,8 +87,8 @@ sub	DoHelp_
         print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
         print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-        print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given configuration */\n");
-        print("	    --make-define {ARG}                        /* Define makefile define for the given configuration */\n");
+        print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
+        print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
         print("	    --ar {ARG}						           /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}						       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
