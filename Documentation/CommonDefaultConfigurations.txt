@@ -2,43 +2,45 @@
 
 make default-configuration
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-trace2file"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --cppstd-version-flag '--std=c++14'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --cppstd-version-flag '--std=c++14' --c-define '#define qAllowBlockAllocation 0'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --disable-trace2file -cpp-optimize-flag "-O2" --cppstd-version-flag '--std=c++14'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --disable-trace2file --cpp-optimize-flag -O2 --extra-compiler-args -flto --extra-linker-args -flto"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --cpp-optimize-flag -O2"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --cpp-optimize-flag -O2"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --cpp-optimize-flag -O2 --Xerces no --OpenSSL no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--trace2file enable"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --cppstd-version-flag '--std=c++14'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --cppstd-version-flag '--std=c++14' --c-define '#define qAllowBlockAllocation 0'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file disable -cpp-optimize-flag "-O2" --cppstd-version-flag '--std=c++14'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file disable --cpp-optimize-flag -O2 --extra-compiler-args -flto --extra-linker-args -flto"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --cpp-optimize-flag -O2 --Xerces no --OpenSSL no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file disable --cpp-optimize-flag -O3 --pg --lto"
+
 
 #untested WAG at how to target 32bits
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-trace2file --LibCurl no --OpenSSL no --Xerces no --compiler-driver 'g++ -m32 -L/usr/lib32/'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--trace2file enable --LibCurl no --OpenSSL no --Xerces no --compiler-driver 'g++ -m32 -L/usr/lib32/'"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver 'g++-4.7'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --enable-trace2file --compiler-driver 'g++-4.7' --libcurl no"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --enable-trace2file --compiler-driver 'g++-4.7' --libcurl no --openssl no --xerces no"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --compiler-driver 'g++-4.7' --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver 'g++-4.7'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --trace2file enable --compiler-driver 'g++-4.7' --libcurl no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --trace2file enable --compiler-driver 'g++-4.7' --libcurl no --openssl no --xerces no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --compiler-driver 'g++-4.7' --cpp-optimize-flag -O2"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --enable-trace2file --compiler-driver 'g++-4.8'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --enable-trace2file --compiler-driver 'g++-4.8' --cppstd-version-flag '--std=c++11'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --compiler-driver 'g++-4.8' --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --trace2file enable --compiler-driver 'g++-4.8'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable  --trace2file enable --compiler-driver 'g++-4.8' --cppstd-version-flag '--std=c++11'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --compiler-driver 'g++-4.8' --cpp-optimize-flag -O2"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver 'g++-4.9'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --compiler-driver 'g++-4.9' --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver 'g++-4.9'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --compiler-driver 'g++-4.9' --cpp-optimize-flag -O2"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver 'arm-linux-gnueabihf-g++-4.9 -std=c++11' --LibCurl no --OpenSSL no --Xerces no"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-4.9 -std=c++11' --LibCurl no --OpenSSL no --Xerces no"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.4"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.4 --cppstd-version-flag '--std=c++1y'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --compiler-driver clang++-3.4 --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.4"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.4 --cppstd-version-flag '--std=c++1y'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --compiler-driver clang++-3.4 --cpp-optimize-flag -O2"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.5"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.5 --cppstd-version-flag '--std=c++1y'"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --enable-trace2file --compiler-driver clang++-3.5 --cpp-optimize-flag -O2"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.5"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.5 --cppstd-version-flag '--std=c++1y'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions disable --trace2file enable --compiler-driver clang++-3.5 --cpp-optimize-flag -O2"
 
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.6"
-make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --enable-trace2file --compiler-driver clang++-3.6 --cppstd-version-flag '--std=c++1y'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.6"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--assertions enable --trace2file enable --compiler-driver clang++-3.6 --cppstd-version-flag '--std=c++1y'"
 
 
 ### For Windows to use particular version of Windows SDK

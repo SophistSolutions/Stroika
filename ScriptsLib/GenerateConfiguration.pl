@@ -80,8 +80,7 @@ sub	DoHelp_
         print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib for this configuration [default use] */\n");
-        print("	    --enable-trace2file                        /* Dnables trace2file for the configuration being configured */\n");
-        print("	    --disable-trace2file                       /* Disables trace2file for the configuration being configured */\n");
+        print("	    --trace2file { enable|disable|default }    /* Enables/disable trace2file feature */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -100,6 +99,8 @@ sub	DoHelp_
         print("	    --disable-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG disable */\n");
         print("	    --default-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG default */\n");
         print("	    --default-for-platform                     /* DEPREACETED */\n");
+        print("	    --enable-trace2file                        /* DEPREACETED: use --trace2file enaable */\n");
+        print("	    --disable-trace2file                       /* DEPREACETED: use --trace2file disable */\n");
 
 	exit (0);
 }
@@ -351,11 +352,30 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_ZLib = $var;
         }
+		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				$ENABLE_TRACE2FILE = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_TRACE2FILE = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+                print ("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: $var\n");
+                DoHelp_ ();
+			}
+		}
 		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
-			$ENABLE_TRACE2FILE = 1;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-disable-trace2file") or (lc ($var) eq "--disable-trace2file")) {
-			$ENABLE_TRACE2FILE = 0;
+            print ("DEPRECATED $var\n");
+            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
 			$STATIC_LINK_GCCRUNTIME = 1;
