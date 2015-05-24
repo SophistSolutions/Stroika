@@ -549,12 +549,14 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "#Linker-Driver\n");
 	print (OUT "Linker=	\$(CPlusPlus)\n");
 
-	print (OUT "#ARCHIVE TOOL\n");
 	if (defined $AR) {
+		print (OUT "#\n");
+		print (OUT "#ARCHIVE TOOL\n");
 		print (OUT "AR=	$AR\n");
 	}
-	print (OUT "#RANLIB TOOL\n");
 	if (defined $RANLIB) {
+		print (OUT "#\n");
+		print (OUT "#RANLIB TOOL\n");
 		print (OUT "RANLIB=	$RANLIB\n");
 	}
 	print (OUT "\n");
