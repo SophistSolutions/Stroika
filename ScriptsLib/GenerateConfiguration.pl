@@ -410,12 +410,12 @@ sub	ParseCommandLine_Remaining_
 			$EXTRA_LINKER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
-			$EXTRA_COMPILER_ARGS += " -flto";
-			$EXTRA_LINKER_ARGS += " -flto";
+			$EXTRA_COMPILER_ARGS .= " -flto";
+			$EXTRA_LINKER_ARGS .= " -flto";
 		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
-			$EXTRA_COMPILER_ARGS += " -pg";
-			$EXTRA_LINKER_ARGS += " -pg";
+			$EXTRA_COMPILER_ARGS .= " -pg";
+			$EXTRA_LINKER_ARGS .= " -pg";
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
