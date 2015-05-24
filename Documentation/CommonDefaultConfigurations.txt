@@ -7,6 +7,7 @@ make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --ena
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --enable-trace2file --cppstd-version-flag '--std=c++14'"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --enable-trace2file --cppstd-version-flag '--std=c++14' --c-define '#define qAllowBlockAllocation 0'"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--disable-assertions --disable-trace2file -cpp-optimize-flag "-O2" --cppstd-version-flag '--std=c++14'"
+make default-configuration DEFAULT_CONFIGURATION_ARGS="--disable-assertions --disable-trace2file --cpp-optimize-flag -O2 --extra-compiler-args -flto --extra-linker-args -flto"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--enable-assertions --enable-trace2file --cpp-optimize-flag -O2"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--disable-assertions --enable-trace2file --cpp-optimize-flag -O2"
 make default-configuration DEFAULT_CONFIGURATION_ARGS="--disable-assertions --enable-trace2file --cpp-optimize-flag -O2 --Xerces no --OpenSSL no"
