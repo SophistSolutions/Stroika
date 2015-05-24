@@ -53,6 +53,9 @@ my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER = "";
 my $AR = undef;
 my $RANLIB = undef;
+my $EXTRA_COMPILER_ARGS = "";
+my $EXTRA_LINKER_ARGS = "";
+
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
 # just regular
@@ -104,6 +107,8 @@ sub	ReadConfiguration_
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 	$AR = GetConfigurationParameter("AR");
 	$RANLIB = GetConfigurationParameter("RANLIB");
+	$EXTRA_COMPILER_ARGS = GetConfigurationParameter("EXTRA_COMPILER_ARGS");
+	$EXTRA_LINKER_ARGS = GetConfigurationParameter("EXTRA_LINKER_ARGS");
 
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
@@ -559,6 +564,15 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "#RANLIB TOOL\n");
 		print (OUT "RANLIB=	$RANLIB\n");
 	}
+
+	print (OUT "#\n");
+	print (OUT "#EXTRA_COMPILER_ARGS\n");
+	print (OUT "EXTRA_COMPILER_ARGS=	$EXTRA_COMPILER_ARGS\n");
+
+	print (OUT "#\n");
+	print (OUT "#EXTRA_LINKER_ARGS TOOL\n");
+	print (OUT "EXTRA_LINKER_ARGS=	$EXTRA_LINKER_ARGS\n");
+
 	print (OUT "\n");
 
 	close(OUT);

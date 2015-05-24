@@ -60,6 +60,8 @@ my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
 my $AR = undef;
 my $RANLIB = undef;
+my $EXTRA_COMPILER_ARGS = "";
+my $EXTRA_LINKER_ARGS = "";
 
 
 
@@ -92,6 +94,8 @@ sub	DoHelp_
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
         print("	    --ar {ARG}						           /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}						       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+        print("	    --extra-compiler-args {ARG}                /*  */\n");
+        print("	    --extra-linker-args {ARG}                  /*  */\n");
 
 	exit (0);
 }
@@ -316,23 +320,44 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$COPTIMIZE_FLAGS = $var;
 		}
+		elsif ((lc ($var) eq "-ar") or (lc ($var) eq "--ar")) {
+			$i++;
+			$var = $ARGV[$i];
+			$AR = $var;
+		}
+		elsif ((lc ($var) eq "-ranlib") or (lc ($var) eq "--ranlib")) {
+			$i++;
+			$var = $ARGV[$i];
+			$RANLIB = $var;
+		}
+
+		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			$EXTRA_COMPILER_ARGS = $var;
+		}
+		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			$EXTRA_LINKER_ARGS = $var;
+		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
 		}
-                else {
-                    if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
-                        $i++;
-                    }
-                    elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-                    }
-                    elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
-                        $i++;
-                    }
-                    else {
-                        print ("UNRECOGNIZED ARG: $var\n");
-                        DoHelp_ ();
-                    }
-                }
+        else {
+            if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+                $i++;
+            }
+            elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+            }
+            elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
+                $i++;
+            }
+            else {
+                print ("UNRECOGNIZED ARG: $var\n");
+                DoHelp_ ();
+            }
+        }
 	}
 }
 

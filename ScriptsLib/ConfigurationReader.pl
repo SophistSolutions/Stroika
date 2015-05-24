@@ -149,6 +149,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RANLIB'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
+		if (defined $pps) {
+			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<EXTRA_LINKER_ARGS>");
+		if (defined $pps) {
+			$configuration {'EXTRA_LINKER_ARGS'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CDefine>");
 		if (defined $pps) {
 			$useExtraCDefines[@useExtraCDefines] = $pps;

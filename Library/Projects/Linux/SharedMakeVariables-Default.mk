@@ -217,6 +217,9 @@ ifeq ($(INCLUDE_SYMBOLS), 1)
 endif
 
 
+CFLAGS	+=			$(EXTRA_COMPILER_ARGS)
+LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS)
+
 ifndef AR
 	AR	= ar
 endif
