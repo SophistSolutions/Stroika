@@ -141,6 +141,14 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<AR>");
+		if (defined $pps) {
+			$configuration {'AR'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<RANLIB>");
+		if (defined $pps) {
+			$configuration {'RANLIB'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CDefine>");
 		if (defined $pps) {
 			$useExtraCDefines[@useExtraCDefines] = $pps;

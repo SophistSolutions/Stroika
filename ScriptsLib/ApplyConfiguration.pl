@@ -51,6 +51,8 @@ my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER = "";
+my $AR = undef;
+my $RANLIB = undef;
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
 # just regular
@@ -100,6 +102,8 @@ sub	ReadConfiguration_
 	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter("ProjectPlatformSubdir");
 	$platform = GetConfigurationParameter("Platform");
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
+	$AR = GetConfigurationParameter("AR");
+	$RANLIB = GetConfigurationParameter("RANLIB");
 
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
@@ -544,6 +548,15 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");
 	print (OUT "Linker=	\$(CPlusPlus)\n");
+
+	print (OUT "#ARCHIVE TOOL\n");
+	if (defined $AR) {
+		print (OUT "AR=	$AR\n");
+	}
+	print (OUT "#RANLIB TOOL\n");
+	if (defined $RANLIB) {
+		print (OUT "RANLIB=	$RANLIB\n");
+	}
 	print (OUT "\n");
 
 	close(OUT);

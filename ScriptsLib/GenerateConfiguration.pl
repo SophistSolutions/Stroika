@@ -58,6 +58,8 @@ my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
+my $AR = undef;
+my $RANLIB = undef;
 
 
 
@@ -88,6 +90,8 @@ sub	DoHelp_
         print("	    --c-define {ARG}                           /* Define C++ / CPP define for the given configuration */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given configuration */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
+        print("	    --ar {ARG}						           /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+        print("	    --ranlib {ARG}						       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
 
 	exit (0);
 }
@@ -161,6 +165,12 @@ sub	SetDefaultForCompilerDriver_
 		if ($COMPILER_DRIVER eq "clang++-4.6") {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46;
 		}
+	}
+	if (!(defined $AR) and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+		$AR = "gcc-ar";
+	}
+	if (!(defined $RANLIB) and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+		$RANLIB = "gcc-ranlib";
 	}
 }
 
@@ -411,6 +421,13 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
+
+	if (defined $AR) {
+		print (OUT "    <AR>$AR</AR>\n");
+	}
+	if (defined $RANLIB) {
+		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	}
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");
