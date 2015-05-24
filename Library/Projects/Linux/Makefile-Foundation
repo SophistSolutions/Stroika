@@ -52,7 +52,13 @@ $(StroikaFoundationLib):	$(ALL_OBJS)
 	@echo "   Creating $(subst ../,, $@)..."
 	@#not sure why rm needed, but otherwise on remake of lib its corrupted somehow
 	@rm -f $(StroikaFoundationLib)
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+		echo "      $(AR) cru $(StroikaFoundationLib) $(ALL_OBJS)";\
+	fi
 	@$(AR) cru $(StroikaFoundationLib) $(ALL_OBJS)
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+		echo "      $(RANLIB) $(StroikaFoundationLib)";\
+	fi
 	@$(RANLIB) $(StroikaFoundationLib)
 
 
