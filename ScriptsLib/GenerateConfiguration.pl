@@ -73,29 +73,31 @@ sub	DoHelp_
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
         print("	    --only-if-unconfigured                     /* Opposite of --force - only rebuilds the config files if absent */\n");
         print("	    --default-for-platform                     /* May create multiple configurations (recursive call to configure) - but generates all the default settings for this platform */\n");
-        print("	    --platform {PLATFORM}                      /* specifies the directory under Builds/Intermediate Files to create */\n");
-        print("	    --enable-assertions                        /* enables assertions for the configuration being configured */\n");
-        print("	    --disable-assertions                       /* disables assertions for the configuration being configured */\n");
-        print("	    --default-assertions                       /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
-        print("	    --enable-GLIBCXX_DEBUG                     /* enables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --disable-GLIBCXX_DEBUG                    /* disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --default-GLIBCXX_DEBUG                    /* default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
+        print("	    --platform {PLATFORM}                      /* Specifies the directory under Builds/Intermediate Files to create */\n");
+        print("	    --enable-assertions                        /* Enables assertions for the configuration being configured */\n");
+        print("	    --disable-assertions                       /* Disables assertions for the configuration being configured */\n");
+        print("	    --default-assertions                       /* Default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
+        print("	    --enable-GLIBCXX_DEBUG                     /* Enables GLIBCXX_DEBUG (G++-specific) */\n");
+        print("	    --disable-GLIBCXX_DEBUG                    /* Disables GLIBCXX_DEBUG (G++-specific) */\n");
+        print("	    --default-GLIBCXX_DEBUG                    /* Default GLIBCXX_DEBUG (based on enable-assertions flag and platform) for the configuration being configured - so */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets $CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
-        print("	    --LibCurl {build-only|use|use-system|no}   /* enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}   /* enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
-        print("	    --WinHTTP {use-system|no}                  /* enables/disables use of WinHTTP and build for the confguration being defined [default use-system on windows, and no otherwise] */\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
-        print("	    --ZLib {build-only|use|use-system|no}      /* enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
-        print("	    --enable-trace2file                        /* enables trace2file for the configuration being configured */\n");
-        print("	    --disable-trace2file                       /* disables trace2file for the configuration being configured */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl and build for the confguration being defined [default TBD]*/\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL and build for the confguration being defined [default use] */\n");
+        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP and build for the confguration being defined [default use-system on windows, and no otherwise] */\n");
+        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces and build for the confguration being defined [default use] */\n");
+        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib and build for the confguration being defined [default use] */\n");
+        print("	    --enable-trace2file                        /* Dnables trace2file for the configuration being configured */\n");
+        print("	    --disable-trace2file                       /* Disables trace2file for the configuration being configured */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
         print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
-        print("	    --ar {ARG}						           /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
-        print("	    --ranlib {ARG}						       /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
-        print("	    --extra-compiler-args {ARG}                /*  */\n");
-        print("	    --extra-linker-args {ARG}                  /*  */\n");
+        print("	    --ar {ARG}                                 /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+        print("	    --ranlib {ARG}                             /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+        print("	    --extra-compiler-args {ARG}                /* Sets variable with extra args for compiler */\n");
+        print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
+        print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
+        print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 
 	exit (0);
 }
@@ -340,6 +342,14 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$EXTRA_LINKER_ARGS = $var;
+		}
+		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
+			$EXTRA_COMPILER_ARGS += " -flto";
+			$EXTRA_LINKER_ARGS += " -flto";
+		}
+		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
+			$EXTRA_COMPILER_ARGS += " -pg";
+			$EXTRA_LINKER_ARGS += " -pg";
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
