@@ -21,71 +21,71 @@ History
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a94x">v2.0a93</a><br/>2015-05-??</td>
 <td>
-<ul>
-	 <li>
-		Platforms/Compilers added (mostly):
-		<ul>
-			<li>RedHat5 (various bugfixes mentioned below)</li>
-			<li>Visual Studio.Net 2k15 (various compiler bug defines needed)</li>
-		</ul>
-	 </li>
-	<li>SystemsPerformance Framework:
-		<ul>
-		<li>Added -c option to Samples/SystemPerformanceClient - to make it easier to test</li>
-		<li>Performance instrument ICapturer refacotoring - so we can more easily provide additional methods</li>
-		<li>Improved (windows) time to first capture for many instruments - by putting the sleepuntil into the public API but using the private API taht doesnt wait todo initial capture</li>
-		<li>cleanup Instruments/ProcessDetails POSIX procfs code to read commandline -mapping nuls to spaces</li>
-		<li>overload Instrument::CaptureOneMeasurement to take optional return var argument measurementTimeOut</li>
-		<li>Template specialization of CaptureOneMesaurement - required alot of restructuring, but helped performance
-		significantly</li>
-		<li>DriveType support to MountedFilesystemUsage, Frameworks/SystemPerformance/Instruments/MountedFilesystemUsage: renamed DriveType -> MountedDeviceType</li>
-		<li>Most instruemnts now support optional loading of some data - esp filesystem and process</li>
-		<li>tons more here</li>
-		<li>various code cleanups to SystemPerformance/Instruments/MountedFilesystemUsage (renamed fIOStats -> fCombinedIOStas, use sequnce update instead of copy new one - perfornamce)</li>
-	    <li>Small WMI robsustness fixes, but that code is still very rough</li>
-		<li>renamed SystemPerformance/Instruments/NetworkInterfaces data member from fInterfaceStatistics to fInterfaces</li>
-		<li>include Interface status (up/down/running) and type (wifi etc) to SystemPerformance/Instruments/NetworkInterfaces</li>
-		<li>SystemPerformance/Instruments/MountedFilesystemUsage: better handle duplicate mounts in /proc/mounts - later ones win</li>
-	    <li>fixed SystemPerformance/Instruments/MountedFilesystemUsage to ahndle symbolic links to device names in /proc/mounts table</li>
-		<li>SystemPerformance/Instruments/NetworkInterfaces now aggregates Foundation::IO::Network::Interface</li>
-		<li>sepearate dout in SystemPerformance/Instruments/ProcessDetails totalprocessor usage from totalProcessCPUUsage (diff is irqs etc) - and capture more/better data on unix</li>
-		<li>renamed SystemPerofrmcne ProcesDetails fTotalCPUTimeUsed to fTotalCPUTimeEverUsed</li>
-		<li>SystemPerofmrance Process: CachePolicy::eOmitUnchangedValues</li>
-		<li>Support OPTION - mostly to debug/test - to use 'ps' for process capture in SystemPerformacne module.
-		<li>fixed order isuse in posix/ps SystemPerformance/Instruments/ProcessDetails</li>
-		<li>Added new kernelprocess flag to ProcessDetails output, and used it as optimizaiton of some lookups</li>
-		<li>renamed SystemPerformance/Instruments: MountedFilesystemUsage to Filesystem, NetworkInterfaces->Network, ProcessDetails to Process</li>
-		</ul>
-	 </li>
-	 <li> ethtool_cmd_speed hack for old (centos5) linux</li>
-	 <li>support old linux /gcclib before pthread_setname_np</li>
-	 <li>Revised API for Common::CompareNormalizer</li>
-	 <li>no longer need workaround for qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug - found underlying issue and corrected it</li>
-	<li>lose specification of ForceConformanceInForLoopScope in windows project file</li>
-	 <li>More tweaks to regtest timing so the tests dont fail - and had to adjust cuz turn off qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_ - cuz broken (for now)</li>
-	 <li>
-		Tons of build system scripts (configuration) improvements
-		<ul>
-		<li>lose obsolete 'target' code</li>
-		<li>tweak display of run builds etc - indenting (../ScriptsLib/PrintLevelLeader.sh)</li>
-		<li>Allow configuraiotn of AR and RANLIB from make defuault-configuraiton</li>
-		<li>lots of refactoring/simplficaiton of options passed to generate congiguraiton - and can now pass in arbitray extra g++/linker options, so I can do stuff like -lto, and -pg more easily</li>
-		<li> deprecated --default-for-platform and --online-if-unconfiratured...</li>
-		</ul>
-	 </li>
-	 <li>enahnce Configuration::GetSystemConfiguration_OperatingSystem () to look for older redhat/centos systems without /etc/os-release</li>
-	 <li>attempt at better handling missing /etc/timezone file on posix systems</li>
-	 <li>Assure DNS module calls IO::Network::Platform::Windows::WinSock::AssureStarted (); on windoze; and fix placement of assert after throw-if</li>
-	 <li> document and fix IO::FileSystem::FileSystem::ResolveShortcut () to handle case where not pointing at a shortcut and return original name; and Rough draft of FileSystem::CanonicalizeName and FileSystem::GetPathComponents (): NONE IN GOOD SHAPE - DRAFT</li>
-	 <li>baudrate SB integer not floating point in Foundation/IO/Network/Interface; set friendly name</li>
-	 <li>lose explicit defines for WINVER, _WIN32_WINNT, _WIN32_WINDOWS in stroika - use externally defined values (like from make defualkt-configariotn or whatever windows msvc defines</li>
-	 <li>define new qCompilerAndStdLib_inet_ntop_const_Buggy bug</li>
-	 <li>Time::TimeOfDay::CTOR overload taking hours/minutes/seconds, and new DateTime::ToTickCount () helper, and CTOR bugfixes</li>
+	<ul>
+		<li>
+			Platforms/Compilers added (mostly):
+			<ul>
+				<li>RedHat5 (various bugfixes mentioned below)</li>
+				<li>Visual Studio.Net 2k15 (various compiler bug defines needed)</li>
+			</ul>
+		</li>
+		<li>
+			SystemsPerformance Framework:
+			<ul>
+				<li>Added -c option to Samples/SystemPerformanceClient - to make it easier to test</li>
+				<li>Performance instrument ICapturer refacotoring - so we can more easily provide additional methods</li>
+				<li>Improved (windows) time to first capture for many instruments - by putting the sleepuntil into the public API but using the private API taht doesnt wait todo initial capture</li>
+				<li>cleanup Instruments/ProcessDetails POSIX procfs code to read commandline -mapping nuls to spaces</li>
+				<li>overload Instrument::CaptureOneMeasurement to take optional return var argument measurementTimeOut</li>
+				<li>Template specialization of CaptureOneMesaurement - required alot of restructuring, but helped performance significantly</li>
+				<li>DriveType support to MountedFilesystemUsage, Frameworks/SystemPerformance/Instruments/MountedFilesystemUsage: renamed DriveType to MountedDeviceType</li>
+				<li>Most instruemnts now support optional loading of some data - esp filesystem and process</li>
+				<li>tons more here</li>
+				<li>various code cleanups to SystemPerformance/Instruments/MountedFilesystemUsage (renamed fIOStats -> fCombinedIOStas, use sequnce update instead of copy new one - perfornamce)</li>
+				<li>Small WMI robsustness fixes, but that code is still very rough</li>
+				<li>renamed SystemPerformance/Instruments/NetworkInterfaces data member from fInterfaceStatistics to fInterfaces</li>
+				<li>include Interface status (up/down/running) and type (wifi etc) to SystemPerformance/Instruments/NetworkInterfaces</li>
+				<li>SystemPerformance/Instruments/MountedFilesystemUsage: better handle duplicate mounts in /proc/mounts - later ones win</li>
+				<li>fixed SystemPerformance/Instruments/MountedFilesystemUsage to ahndle symbolic links to device names in /proc/mounts table</li>
+				<li>SystemPerformance/Instruments/NetworkInterfaces now aggregates Foundation::IO::Network::Interface</li>
+				<li>sepearate dout in SystemPerformance/Instruments/ProcessDetails totalprocessor usage from totalProcessCPUUsage (diff is irqs etc) - and capture more/better data on unix</li>
+				<li>renamed SystemPerofrmcne ProcesDetails fTotalCPUTimeUsed to fTotalCPUTimeEverUsed</li>
+				<li>SystemPerofmrance Process: CachePolicy::eOmitUnchangedValues</li>
+				<li>Support OPTION - mostly to debug/test - to use 'ps' for process capture in SystemPerformacne module.
+				<li>fixed order isuse in posix/ps SystemPerformance/Instruments/ProcessDetails</li>
+				<li>Added new kernelprocess flag to ProcessDetails output, and used it as optimizaiton of some lookups</li>
+				<li>renamed SystemPerformance/Instruments: MountedFilesystemUsage to Filesystem, NetworkInterfaces->Network, ProcessDetails to Process</li>
+			</ul>
+		</li>
+		<li> ethtool_cmd_speed hack for old (centos5) linux</li>
+		<li>support old linux /gcclib before pthread_setname_np</li>
+		<li>Revised API for Common::CompareNormalizer</li>
+		<li>no longer need workaround for qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug - found underlying issue and corrected it</li>
+		<li>lose specification of ForceConformanceInForLoopScope in windows project file</li>
+		<li>More tweaks to regtest timing so the tests dont fail - and had to adjust cuz turn off qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_ - cuz broken (for now)</li>
+		<li>
+			Tons of build system scripts (configuration) improvements
+			<ul>
+				<li>lose obsolete 'target' code</li>
+				<li>tweak display of run builds etc - indenting (../ScriptsLib/PrintLevelLeader.sh)</li>
+				<li>Allow configuraiotn of AR and RANLIB from make defuault-configuraiton</li>
+				<li>lots of refactoring/simplficaiton of options passed to generate congiguraiton - and can now pass in arbitray extra g++/linker options, so I can do stuff like -lto, and -pg more easily</li>
+				<li> deprecated --default-for-platform and --online-if-unconfiratured...</li>
+			</ul>
+		</li>
+	<li>enahnce Configuration::GetSystemConfiguration_OperatingSystem () to look for older redhat/centos systems without /etc/os-release</li>
+	<li>attempt at better handling missing /etc/timezone file on posix systems</li>
+	<li>Assure DNS module calls IO::Network::Platform::Windows::WinSock::AssureStarted (); on windoze; and fix placement of assert after throw-if</li>
+	<li> document and fix IO::FileSystem::FileSystem::ResolveShortcut () to handle case where not pointing at a shortcut and return original name; and Rough draft of FileSystem::CanonicalizeName and FileSystem::GetPathComponents (): NONE IN GOOD SHAPE - DRAFT</li>
+	<li>baudrate SB integer not floating point in Foundation/IO/Network/Interface; set friendly name</li>
+	<li>lose explicit defines for WINVER, _WIN32_WINNT, _WIN32_WINDOWS in stroika - use externally defined values (like from make defualkt-configariotn or whatever windows msvc defines</li>
+	<li>define new qCompilerAndStdLib_inet_ntop_const_Buggy bug</li>
+	<li>Time::TimeOfDay::CTOR overload taking hours/minutes/seconds, and new DateTime::ToTickCount () helper, and CTOR bugfixes</li>
 	<li>factored part of MakeVersionFile.sh into a more re-usable ExtractVersionInformation.sh</li>
 	<li>cleanup names and DbgTrace in ProcessRunner for error in DBGTRACE execing child (POSIX ONLY)</li>
 	<li>Network::GetPrimaryInternetAddress() on POSIX more robust</li>
 	<li>Network::GetInterfaceById ()</li>
-</ul>
+	</ul>
 </td>
 </tr>
 
