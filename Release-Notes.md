@@ -19,7 +19,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a94x">v2.0a93</a><br/>2015-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a94">v2.0a94</a><br/>2015-05-25</td>
 <td>
 	<ul>
 		<li>
@@ -57,12 +57,13 @@ History
 				<li>renamed SystemPerformance/Instruments: MountedFilesystemUsage to Filesystem, NetworkInterfaces->Network, ProcessDetails to Process</li>
 			</ul>
 		</li>
-		<li> ethtool_cmd_speed hack for old (centos5) linux</li>
+		<li>ethtool_cmd_speed hack for old (centos5) linux</li>
 		<li>support old linux /gcclib before pthread_setname_np</li>
 		<li>Revised API for Common::CompareNormalizer</li>
 		<li>no longer need workaround for qCompilerAndStdLib_Template_Baseclass_WierdIterableBaseBug - found underlying issue and corrected it</li>
 		<li>lose specification of ForceConformanceInForLoopScope in windows project file</li>
-		<li>More tweaks to regtest timing so the tests dont fail - and had to adjust cuz turn off qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_ - cuz broken (for now)</li>
+		<li>turn off qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_ - cuz broken (for now). MAJOR PROBLEM!
+			More tweaks to regtest timing so the tests dont fail - and had to adjust cuz this is noticably slower!</li>
 		<li>
 			Tons of build system scripts (configuration) improvements
 			<ul>
@@ -85,9 +86,13 @@ History
 	<li>cleanup names and DbgTrace in ProcessRunner for error in DBGTRACE execing child (POSIX ONLY)</li>
 	<li>Network::GetPrimaryInternetAddress() on POSIX more robust</li>
 	<li>Network::GetInterfaceById ()</li>
+	<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind, and built and most tests OK on VC++2k15</li>
 	</ul>
 </td>
 </tr>
+
+
+
 
 
 
