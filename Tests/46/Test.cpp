@@ -1528,7 +1528,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             26900,
-            .8,
+            .89,
             &failedTests
         );
 #endif
@@ -1571,7 +1571,7 @@ namespace   {
             Test_SimpleStringAppends1_<wstring>, L"wstring",
             Test_SimpleStringAppends1_<String>, L"Charactes::String",
             1500000,
-            4.1,
+            4.3,
             &failedTests
         );
         Tester (
@@ -1579,7 +1579,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1580000,
-            3.65,
+            3.9,
             &failedTests
         );
         Tester (
@@ -1587,7 +1587,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             310000,
-            8.45,
+            9.1,
             &failedTests
         );
         Tester (
@@ -1595,7 +1595,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2380000,
-            2.3,
+            2.45,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1613,7 +1613,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3740000,
-            1.98,
+            2.3,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1658,7 +1658,7 @@ namespace   {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>",
             10600,
-            1.4,
+            1.55,
             &failedTests
         );
         Tester (
@@ -1699,7 +1699,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             2040000,
-            1.5,
+            1.6,
             &failedTests
         );
         Tester (
