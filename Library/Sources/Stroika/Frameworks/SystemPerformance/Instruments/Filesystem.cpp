@@ -754,7 +754,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
 
 
 namespace {
-    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType { String_Constant { L"Mounted-Volume-Usage"} };
+    static  const   MeasurementType kMountedVolumeUsage_  =   MeasurementType { String_Constant { L"Mounted-Filesystem-Usage"} };
 }
 
 
@@ -808,7 +808,7 @@ namespace {
 Instrument  SystemPerformance::Instruments::Filesystem::GetInstrument (Options options)
 {
     return Instrument (
-               InstrumentNameType { String_Constant {L"Mounted-Filesystem-Usage"} },
+               InstrumentNameType { String_Constant {L"Filesystem"} },
 #if     qCompilerAndStdLib_make_unique_Buggy
                Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
 #else

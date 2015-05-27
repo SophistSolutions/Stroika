@@ -1221,7 +1221,7 @@ namespace {
 Instrument          SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
 {
     return Instrument (
-               InstrumentNameType (String_Constant { L"Process-Details" }),
+               InstrumentNameType (String_Constant { L"Process" }),
 #if     qCompilerAndStdLib_make_unique_Buggy
                Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
 #else

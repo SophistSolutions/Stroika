@@ -632,7 +632,7 @@ namespace {
 Instrument  SystemPerformance::Instruments::Network::GetInstrument (Options options)
 {
     return  Instrument (
-                InstrumentNameType (String_Constant { L"Network-Interfaces" }),
+                InstrumentNameType (String_Constant { L"Network" }),
 #if     qCompilerAndStdLib_make_unique_Buggy
                 Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
 #else
