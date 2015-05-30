@@ -167,7 +167,7 @@ namespace   {
         bool    SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
         {
             LUID    luid;
-            if (!LookupPrivilegeValue( NULL, Privilege, &luid )) return false;
+            if (!LookupPrivilegeValue (NULL, Privilege, &luid )) return false;
 
             //
             // first pass.  get current privilege setting
