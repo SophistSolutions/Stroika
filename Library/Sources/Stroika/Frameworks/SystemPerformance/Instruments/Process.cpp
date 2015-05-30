@@ -1041,6 +1041,15 @@ namespace {
 
             SetPrivilegeInContext s (SE_DEBUG_NAME, SetPrivilegeInContext::eIgnoreError);
             ProcessMapType  results;
+
+#if   qUseWMICollectionSupport_
+            Mapping<String, double> threadCounts_ByPID          =   fProcessWMICollector_.GetCurrentValues (kThreadCount_);
+            Mapping<String, double> ioReadBytesPerSecond_ByPID  =   fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_);
+            Mapping<String, double> ioWriteBytesPerSecond_ByPID =   fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_);
+            Mapping<String, double> pctProcessorTime_ByPID      =   fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_);
+            Mapping<String, double> processStartAt_ByPID        =   fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
+#endif
+
             for (pid_t pid : GetAllProcessIDs_ ()) {
                 ProcessType     processInfo;
                 bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
@@ -1078,42 +1087,21 @@ namespace {
 #if   qUseWMICollectionSupport_
                 {
                     String instanceVal = pid2InstanceMap.LookupValue (pid);
-
-                    // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kThreadCount_)) {
-                        if (instanceVal == i.fKey) {
-                            processInfo.fThreadCount = static_cast<unsigned int> (i.fValue);
-                            break;
-                        }
+                    if (auto o = threadCounts_ByPID.Lookup (instanceVal)) {
+                        processInfo.fThreadCount = static_cast<unsigned int> (*o);
                     }
-                    // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_)) {
-                        if (instanceVal == i.fKey) {
-                            processInfo.fCombinedIOReadRate = i.fValue;
-                            break;
-                        }
+                    if (auto o = ioReadBytesPerSecond_ByPID.Lookup (instanceVal)) {
+                        processInfo.fCombinedIOReadRate = static_cast<unsigned int> (*o);
                     }
-                    // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_)) {
-                        if (instanceVal == i.fKey) {
-                            processInfo.fCombinedIOWriteRate = i.fValue;
-                            break;
-                        }
+                    if (auto o = ioWriteBytesPerSecond_ByPID.Lookup (instanceVal)) {
+                        processInfo.fCombinedIOWriteRate = static_cast<unsigned int> (*o);
                     }
-                    // Not the most efficient appraoch ;-)
-                    for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_)) {
-                        if (instanceVal == i.fKey) {
-                            processInfo.fPercentCPUTime = i.fValue;
-                            break;
-                        }
+                    if (auto o = pctProcessorTime_ByPID.Lookup (instanceVal)) {
+                        processInfo.fPercentCPUTime = static_cast<unsigned int> (*o);
                     }
-                    // Not the most efficient appraoch ;-)
                     if (grabStaticData) {
-                        for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kElapsedTime_)) {
-                            if (instanceVal == i.fKey) {
-                                processInfo.fProcessStartedAt = DateTime::Now ().AddSeconds (-static_cast<time_t> (i.fValue));
-                                break;
-                            }
+                        if (auto o = processStartAt_ByPID.Lookup (instanceVal)) {
+                            processInfo.fProcessStartedAt = DateTime::Now ().AddSeconds (-static_cast<time_t> (*o));
                         }
                     }
                 }
