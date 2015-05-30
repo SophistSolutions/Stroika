@@ -24,6 +24,7 @@
 #if     qPlatform_POSIX
 #include    "../../../Foundation/Execution/Platform/POSIX/Users.h"
 #elif   qPlatform_Windows
+#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include    "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
@@ -106,6 +107,123 @@ const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunSta
 
 
 
+
+#if     qPlatform_Windows
+namespace   {
+    struct  SetPrivilegeInContext {
+        enum    IgnoreError { eIgnoreError };
+        HANDLE      fToken_     { INVALID_HANDLE_VALUE };
+        bool        fUndoOnDTOR { false };
+        SDKString   fPrivilege_;
+        SetPrivilegeInContext (LPCTSTR privilege)
+            : fPrivilege_ (privilege)
+        {
+            setupToken_ ();
+            Execution::Finally cleanup {[this] ()
+            {
+                Verify (::CloseHandle (fToken_));
+            }
+                                       };
+            Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
+        }
+        SetPrivilegeInContext (LPCTSTR privilege, IgnoreError)
+            : fPrivilege_ (privilege)
+        {
+            try {
+                setupToken_ ();
+                Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
+                fUndoOnDTOR = true;
+            }
+            catch (...) {
+                if (fToken_ != INVALID_HANDLE_VALUE) {
+                    ::CloseHandle (fToken_);
+                }
+            }
+        }
+        SetPrivilegeInContext (const SetPrivilegeInContext&) = delete;
+        SetPrivilegeInContext& operator= (const SetPrivilegeInContext&) = delete;
+        ~SetPrivilegeInContext ()
+        {
+            if (fUndoOnDTOR) {
+                Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), false));
+            }
+        }
+    private:
+        void    setupToken_ ()
+        {
+            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
+                if (GetLastError () == ERROR_NO_TOKEN) {
+                    Execution::Platform::Windows::ThrowIfFalseGetLastError (::ImpersonateSelf (SecurityImpersonation));
+                    Execution::Platform::Windows::ThrowIfFalseGetLastError (::OpenThreadToken (GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
+                }
+                else {
+                    Execution::Platform::Windows::Exception::DoThrow (::GetLastError ());
+                }
+            }
+        }
+        BOOL SetPrivilege_ (
+            HANDLE hToken,          // token handle
+            LPCTSTR Privilege,      // Privilege to enable/disable
+            BOOL bEnablePrivilege   // TRUE to enable.  FALSE to disable
+        )
+        {
+            TOKEN_PRIVILEGES tp;
+            LUID luid;
+            TOKEN_PRIVILEGES tpPrevious;
+            DWORD cbPrevious = sizeof(TOKEN_PRIVILEGES);
+
+            if(!LookupPrivilegeValue( NULL, Privilege, &luid )) return FALSE;
+
+            //
+            // first pass.  get current privilege setting
+            //
+            tp.PrivilegeCount           = 1;
+            tp.Privileges[0].Luid       = luid;
+            tp.Privileges[0].Attributes = 0;
+
+            AdjustTokenPrivileges(
+                hToken,
+                FALSE,
+                &tp,
+                sizeof(TOKEN_PRIVILEGES),
+                &tpPrevious,
+                &cbPrevious
+            );
+
+
+            DWORD xxx = GetLastError();
+            if (GetLastError() != ERROR_SUCCESS) return FALSE;
+
+            //
+            // second pass.  set privilege based on previous setting
+            //
+            tpPrevious.PrivilegeCount       = 1;
+            tpPrevious.Privileges[0].Luid   = luid;
+
+            if(bEnablePrivilege) {
+                tpPrevious.Privileges[0].Attributes |= (SE_PRIVILEGE_ENABLED);
+            }
+            else {
+                tpPrevious.Privileges[0].Attributes ^= (SE_PRIVILEGE_ENABLED &
+                                                        tpPrevious.Privileges[0].Attributes);
+            }
+
+            AdjustTokenPrivileges(
+                hToken,
+                FALSE,
+                &tpPrevious,
+                cbPrevious,
+                NULL,
+                NULL
+            );
+
+            if (GetLastError() != ERROR_SUCCESS) return FALSE;
+
+            return TRUE;
+        }
+    };
+}
+#endif
 
 
 
@@ -928,6 +1046,7 @@ namespace {
             }
 #endif
 
+            SetPrivilegeInContext s (SE_DEBUG_NAME, SetPrivilegeInContext::eIgnoreError);
             ProcessMapType  results;
             for (pid_t pid : GetAllProcessIDs_ ()) {
                 ProcessType     processInfo;
