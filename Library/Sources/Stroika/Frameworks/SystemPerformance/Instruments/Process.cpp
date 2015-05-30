@@ -147,6 +147,7 @@ namespace   {
             if (fUndoOnDTOR) {
                 Execution::Platform::Windows::ThrowIfFalseGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), false));
             }
+            Verify (::CloseHandle (fToken_));
         }
     private:
         void    setupToken_ ()
