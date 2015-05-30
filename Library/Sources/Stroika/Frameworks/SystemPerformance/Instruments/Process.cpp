@@ -166,20 +166,19 @@ namespace   {
         }
         bool    SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
         {
-            TOKEN_PRIVILEGES tp;
-            LUID luid;
-            TOKEN_PRIVILEGES tpPrevious;
-            DWORD cbPrevious = sizeof(TOKEN_PRIVILEGES);
-
-            if(!LookupPrivilegeValue( NULL, Privilege, &luid )) return false;
+            LUID    luid;
+            if (!LookupPrivilegeValue( NULL, Privilege, &luid )) return false;
 
             //
             // first pass.  get current privilege setting
             //
+            TOKEN_PRIVILEGES tp;
             tp.PrivilegeCount           = 1;
             tp.Privileges[0].Luid       = luid;
             tp.Privileges[0].Attributes = 0;
 
+            TOKEN_PRIVILEGES tpPrevious;
+            DWORD cbPrevious = sizeof(TOKEN_PRIVILEGES);
             AdjustTokenPrivileges(
                 hToken,
                 FALSE,
