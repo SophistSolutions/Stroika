@@ -1091,13 +1091,13 @@ namespace {
                         processInfo.fThreadCount = static_cast<unsigned int> (*o);
                     }
                     if (auto o = ioReadBytesPerSecond_ByPID.Lookup (instanceVal)) {
-                        processInfo.fCombinedIOReadRate = static_cast<unsigned int> (*o);
+                        processInfo.fCombinedIOReadRate = *o;
                     }
                     if (auto o = ioWriteBytesPerSecond_ByPID.Lookup (instanceVal)) {
-                        processInfo.fCombinedIOWriteRate = static_cast<unsigned int> (*o);
+                        processInfo.fCombinedIOWriteRate = *o;
                     }
                     if (auto o = pctProcessorTime_ByPID.Lookup (instanceVal)) {
-                        processInfo.fPercentCPUTime = static_cast<unsigned int> (*o);
+                        processInfo.fPercentCPUTime = *o;
                     }
                     if (grabStaticData) {
                         if (auto o = processStartAt_ByPID.Lookup (instanceVal)) {
