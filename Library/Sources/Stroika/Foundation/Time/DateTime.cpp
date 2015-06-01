@@ -411,6 +411,22 @@ DurationSecondsType    DateTime::ToTickCount () const
     return (*this - sTimeZero_).As<DurationSecondsType> ();
 }
 
+DateTime    DateTime::FromTickCount (DurationSecondsType tickCount)
+{
+#if     qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy
+    static  DateTime sTimeZero_ = [this] () {
+        DateTime    now = Now ();
+        return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
+    } ();
+#else
+    static  DateTime sTimeZero_ = [] () {
+        DateTime    now = Now ();
+        return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
+    } ();
+#endif
+    return sTimeZero_.AddSeconds (static_cast<time_t> (round (tickCount)));
+}
+
 String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {

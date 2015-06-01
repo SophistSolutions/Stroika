@@ -276,8 +276,21 @@ namespace   Stroika {
                  *
                  *  EXAMPLE:
                  *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
+                 *
+                 *  See Also:
+                 *      @see FromTickCount
                  */
                 nonvirtual  DurationSecondsType    ToTickCount () const;
+
+            public:
+                /**
+                 *  This is like a constructor, but with a more specific static name to avoid confusion with overloads.
+                 *  This returns a datetime in localtime.
+                 *
+                 *  See Also:
+                 *      @see ToTickCount
+                 */
+                static  DateTime    FromTickCount (DurationSecondsType tickCount);
 
             public:
                 /**
