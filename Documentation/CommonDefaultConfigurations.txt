@@ -1,4 +1,4 @@
-﻿make default-configuration DEFAULT_CONFIGURATION_ARGS=---help
+﻿make default-configuration DEFAULT_CONFIGURATION_ARGS=--help
 
 make default-configuration
 
