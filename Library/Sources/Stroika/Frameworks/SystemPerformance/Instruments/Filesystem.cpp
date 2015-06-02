@@ -204,7 +204,9 @@ namespace {
             if (::statvfs (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fDiskSizeInBytes = diskSize;
-                v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree ;
+                // why use f_bavail vs f_bfree?
+                //      http://stackoverflow.com/questions/965615/discrepancy-between-call-to-statvfs-and-df-command
+                v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bavail;
             }
             else {
                 DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
