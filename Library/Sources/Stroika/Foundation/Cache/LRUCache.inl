@@ -337,8 +337,7 @@ namespace   Stroika {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
                 if (v != nullptr) {
-                    v->fKey.clear ();
-                    v->fValue.clear ();
+                    v->clear ();
                 }
                 Ensure (not Lookup (key));
             }
