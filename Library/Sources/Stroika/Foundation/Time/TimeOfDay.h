@@ -27,6 +27,9 @@
  *  \version    <a href="code_status.html">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Consider having some way to support double as TimeOfDay (or maybe float). Dont want the
+ *              complexity of the chrono code, but some of the power ;-). Not sure how to compromise.
+ *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *

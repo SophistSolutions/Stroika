@@ -408,7 +408,6 @@ namespace {
 
 DurationSecondsType    DateTime::ToTickCount () const
 {
-    // quick hack impl
     return (*this - GetTimeZeroOffset_ ()).As<DurationSecondsType> ();
 }
 
@@ -420,7 +419,7 @@ DateTime    DateTime::FromTickCount (DurationSecondsType tickCount)
 String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return wstring ();
+        return String ();
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
@@ -493,8 +492,8 @@ String DateTime::Format (const locale& l) const
     wostringstream oss;
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
-    const wchar_t kPattern[] = L"%x %X";
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
+    constexpr wchar_t kPattern_[] = L"%x %X";
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern_), std::begin (kPattern_) + ::wcslen (kPattern_));
     return oss.str ();
 }
 
@@ -509,7 +508,7 @@ String DateTime::Format (LCID lcid) const
         Assert (not r.empty ());
         String tod =   fTimeOfDay_.Format (lcid);
         if (not tod.empty ()) {
-            r += String_Constant (L" ") + tod;
+            r += String_Constant { L" " } + tod;
         }
         return r;
     }
@@ -549,7 +548,7 @@ template    <>
 time_t  DateTime::As () const
 {
     struct tm tm;
-    memset(&tm, 0, sizeof(tm));
+    memset (&tm, 0, sizeof(tm));
     tm.tm_year = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday = static_cast<int> (fDate_.GetDayOfMonth ());
