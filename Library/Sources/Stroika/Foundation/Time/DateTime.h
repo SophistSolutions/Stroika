@@ -317,6 +317,8 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 */
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
                 nonvirtual  String Format (const locale& l) const;
 
@@ -331,7 +333,7 @@ namespace   Stroika {
                 nonvirtual  Date::JulianRepType DaysSince () const;
 
             public:
-                /*
+                /**
                  * Defined for
                  *      time_t
                  *      struct tm
@@ -355,21 +357,21 @@ namespace   Stroika {
                 nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const;  // ditto
 
             public:
-                /*
+                /**
                  * Add the given amount of time to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
                 nonvirtual  DateTime    Add (const Duration& d) const;
 
             public:
-                /*
+                /**
                  * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
                 nonvirtual  DateTime    AddDays (int days) const;
 
             public:
-                /*
+                /**
                  * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
@@ -382,7 +384,7 @@ namespace   Stroika {
                 nonvirtual  Duration    Difference (const DateTime& rhs) const;
 
             public:
-                /*
+                /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                  *  this comparison function - see the notes about 'empty' in the class description.
                  *
