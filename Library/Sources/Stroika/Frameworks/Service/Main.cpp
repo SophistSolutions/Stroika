@@ -298,7 +298,7 @@ String      Main::GetServiceStatusMessage () const
 void    Main::RunAsService ()
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunAsService");
-    GetServiceRep_ ()._RunAsAsService ();
+    GetServiceRep_ ()._RunAsService ();
 }
 
 void    Main::RunDirectly ()
@@ -396,7 +396,7 @@ Main::State     Main::LoggerServiceWrapper::_GetState () const
 
 void    Main::LoggerServiceWrapper::_Install ()
 {
-    Logger::Log (Logger::Priority::eNotice, L"Installing Service...");
+    Logger::Log (Logger::Priority::eNotice, L"Installing service...");
     try {
         fDelegateTo_->_Install ();
     }
@@ -409,7 +409,7 @@ void    Main::LoggerServiceWrapper::_Install ()
 
 void    Main::LoggerServiceWrapper::_UnInstall ()
 {
-    Logger::Log (Logger::Priority::eNotice, L"UnInstalling Service...");
+    Logger::Log (Logger::Priority::eNotice, L"UnInstalling service...");
     try {
         fDelegateTo_->_UnInstall ();
     }
@@ -420,22 +420,22 @@ void    Main::LoggerServiceWrapper::_UnInstall ()
     }
 }
 
-void    Main::LoggerServiceWrapper::_RunAsAsService ()
+void    Main::LoggerServiceWrapper::_RunAsService ()
 {
-    Logger::Log (Logger::Priority::eNotice, L"Service Starting");
+    Logger::Log (Logger::Priority::eInfo, L"Service starting...");  // only info level cuz inside app RunAs
     try {
-        fDelegateTo_->_RunAsAsService ();
+        fDelegateTo_->_RunAsService ();
     }
     catch (...) {
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
         Execution::DoReThrow ();
     }
-    Logger::Log (Logger::Priority::eNotice, L"Service Stopped Normally");
+    Logger::Log (Logger::Priority::eNotice, L"Service stopped normally");
 }
 
 void    Main::LoggerServiceWrapper::_RunDirectly ()
 {
-    Logger::Log (Logger::Priority::eNotice, L"Service Starting in Run-Direct (non service) mode.");
+    Logger::Log (Logger::Priority::eNotice, L"Service starting in Run-Direct (non service) mode.");
     try {
         fDelegateTo_->_RunDirectly ();
     }
@@ -443,7 +443,7 @@ void    Main::LoggerServiceWrapper::_RunDirectly ()
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service directly - aborting...");
         Execution::DoReThrow ();
     }
-    Logger::Log (Logger::Priority::eNotice, L"Service Stopped Normally");
+    Logger::Log (Logger::Priority::eNotice, L"Service stopped normally");
 }
 
 void  Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
@@ -521,7 +521,7 @@ void    Main::RunTilIdleService::_UnInstall ()
     Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
-void        Main::RunTilIdleService::_RunAsAsService ()
+void        Main::RunTilIdleService::_RunAsService ()
 {
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
@@ -653,7 +653,7 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
     Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant (L"UnInstall")));
 }
 
-void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
+void    Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     if (_IsServiceActuallyRunning ()) {
         Execution::DoThrow (Execution::StringException (String_Constant (L"Service Already Running")));
@@ -969,9 +969,9 @@ void    Main::WindowsService::_UnInstall ()
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::DeleteService (hService));
 }
 
-void    Main::WindowsService::_RunAsAsService ()
+void    Main::WindowsService::_RunAsService ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAsService");
+    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsService");
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 

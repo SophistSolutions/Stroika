@@ -590,7 +590,7 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                virtual void    _RunAsAsService ()    =   0;
+                virtual void    _RunAsService ()    =   0;
 
             protected:
                 /**
@@ -635,7 +635,7 @@ namespace   Stroika {
                 virtual  State                                      _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
-                virtual void                                        _RunAsAsService () override;
+                virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
@@ -659,7 +659,7 @@ namespace   Stroika {
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
-                virtual void                                        _RunAsAsService () override;
+                virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
@@ -683,7 +683,7 @@ namespace   Stroika {
                 virtual State                                       _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
-                virtual void                                        _RunAsAsService () override;
+                virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
@@ -709,7 +709,7 @@ namespace   Stroika {
                 virtual  State                                      _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
-                virtual void                                        _RunAsAsService () override;
+                virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
@@ -789,7 +789,7 @@ namespace   Stroika {
                 virtual  State                                      _GetState () const override;
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
-                virtual void                                        _RunAsAsService () override;
+                virtual void                                        _RunAsService () override;
                 virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
