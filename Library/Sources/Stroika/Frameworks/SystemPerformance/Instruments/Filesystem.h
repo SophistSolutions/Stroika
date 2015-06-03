@@ -111,7 +111,8 @@ namespace   Stroika {
                         Optional<String>            fDeviceOrVolumeName;
                         Optional<String>            fVolumeID;
                         String                      fMountedOnName;
-                        Optional<double>            fDiskSizeInBytes;
+                        Optional<double>            fSizeInBytes;
+                        Optional<double>            fAvailableSizeInBytes;
                         Optional<double>            fUsedSizeInBytes;
 
                         /**
@@ -131,9 +132,9 @@ namespace   Stroika {
                             Optional<double>    fTotalTransfers;
                             Optional<double>    fTimeTransfering;
                         };
-                        IOStats fReadIOStats;
-                        IOStats fWriteIOStats;
-                        IOStats fCombinedIOStats;
+                        Optional<IOStats>   fReadIOStats;
+                        Optional<IOStats>   fWriteIOStats;
+                        Optional<IOStats>   fCombinedIOStats;
                     };
 
 

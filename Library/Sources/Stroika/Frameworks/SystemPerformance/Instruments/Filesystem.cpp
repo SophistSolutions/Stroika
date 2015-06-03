@@ -203,10 +203,9 @@ namespace {
             memset (&sbuf, 0, sizeof (sbuf));
             if (::statvfs (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
-                v->fDiskSizeInBytes = diskSize;
-                // why use f_bavail vs f_bfree?
-                //      http://stackoverflow.com/questions/965615/discrepancy-between-call-to-statvfs-and-df-command
-                v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bavail;
+                v->fSizeInBytes = diskSize;
+                v->fAvailableSizeInBytes = sbuf.f_bsize * sbuf.f_bavail;
+                v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree;
             }
             else {
                 DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
@@ -340,9 +339,9 @@ namespace {
                                 vi.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
                                 vi.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
 
-                                vi.fCombinedIOStats.fBytesTransfered = *vi.fReadIOStats.fBytesTransfered + *vi.fWriteIOStats.fBytesTransfered;
-                                vi.fCombinedIOStats.fTotalTransfers = *vi.fReadIOStats.fTotalTransfers + *vi.fWriteIOStats.fTotalTransfers;
-                                vi.fCombinedIOStats.fTimeTransfering = *vi.fReadIOStats.fTimeTransfering + *vi.fWriteIOStats.fTimeTransfering;
+                                vi.fCombinedIOStats.fBytesTransfered = *vi.fReadIOStats->fBytesTransfered + *vi.fWriteIOStats->fBytesTransfered;
+                                vi.fCombinedIOStats.fTotalTransfers = *vi.fReadIOStats->fTotalTransfers + *vi.fWriteIOStats->fTotalTransfers;
+                                vi.fCombinedIOStats.fTimeTransfering = *vi.fReadIOStats->fTimeTransfering + *vi.fWriteIOStats->fTimeTransfering;
                             }
                         }
                     }
@@ -418,8 +417,9 @@ namespace {
                         v.fDeviceOrVolumeName = d;
                     }
                 }
-                v.fDiskSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
+                v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
+                v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 result.Append (v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
@@ -610,40 +610,49 @@ namespace {
                                     memset (&totalNumberOfBytes, 0, sizeof (totalNumberOfBytes));
                                     memset (&totalNumberOfFreeBytes, 0, sizeof (totalNumberOfFreeBytes));
                                     DWORD xxx = GetDiskFreeSpaceEx (v.fMountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                                    v.fDiskSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
-                                    v.fUsedSizeInBytes = *v.fDiskSizeInBytes  - freeBytesAvailable.QuadPart;
+                                    v.fSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
+                                    v.fUsedSizeInBytes = *v.fSizeInBytes  - freeBytesAvailable.QuadPart;
+                                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if     qUseWMICollectionSupport_
                                     if (fOptions_.fIOStatistics) {
                                         String wmiInstanceName = v.fMountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
                                         fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
+                                        VolumeInfo::IOStats readStats;
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                                            v.fReadIOStats.fBytesTransfered = *o * timeCollecting;
-                                        }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                                            v.fWriteIOStats.fBytesTransfered = *o * timeCollecting;
+                                            readStats.fBytesTransfered = *o * timeCollecting;
                                         }
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
-                                            v.fReadIOStats.fTotalTransfers = *o * timeCollecting;
-                                        }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
-                                            v.fWriteIOStats.fTotalTransfers = *o * timeCollecting;
+                                            readStats.fTotalTransfers = *o * timeCollecting;
                                         }
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                            v.fReadIOStats.fTimeTransfering = *o * timeCollecting / 100;
-                                        }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                            v.fWriteIOStats.fTimeTransfering = *o * timeCollecting / 100;
+                                            readStats.fTimeTransfering = *o * timeCollecting / 100;
                                         }
 
-                                        if (v.fReadIOStats.fBytesTransfered or v.fWriteIOStats.fBytesTransfered) {
-                                            v.fCombinedIOStats.fBytesTransfered = v.fReadIOStats.fBytesTransfered.Value () + v.fWriteIOStats.fBytesTransfered.Value ();
+                                        VolumeInfo::IOStats writeStats;
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                                            writeStats.fBytesTransfered = *o * timeCollecting;
                                         }
-                                        if (v.fReadIOStats.fTotalTransfers or v.fWriteIOStats.fTotalTransfers) {
-                                            v.fCombinedIOStats.fTotalTransfers = v.fReadIOStats.fTotalTransfers.Value ()  + v.fWriteIOStats.fTotalTransfers.Value () ;
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                                            writeStats.fTotalTransfers = *o * timeCollecting;
                                         }
-                                        if (v.fReadIOStats.fTimeTransfering or v.fWriteIOStats.fTimeTransfering) {
-                                            v.fCombinedIOStats.fTimeTransfering = v.fReadIOStats.fTimeTransfering.Value ()  + v.fWriteIOStats.fTimeTransfering.Value () ;
+                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                            writeStats.fTimeTransfering = *o * timeCollecting / 100;
+                                        }
+
+                                        VolumeInfo::IOStats combinedStats = readStats;
+                                        combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
+                                        combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
+                                        combinedStats.fTimeTransfering.AccumulateIf (writeStats.fTimeTransfering);
+
+                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fTimeTransfering) {
+                                            v.fReadIOStats = readStats;
+                                        }
+                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fTimeTransfering) {
+                                            v.fWriteIOStats = writeStats;
+                                        }
+                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fTimeTransfering) {
+                                            v.fCombinedIOStats = combinedStats;
                                         }
                                     }
 #endif
@@ -733,17 +742,19 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTimeTransfering), String_Constant (L"Time-Transfering"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTotalTransfers), String_Constant (L"Total-Transfers"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
+        mapper.AddCommonType<Optional<VolumeInfo::IOStats>> ();
         mapper.AddClass<VolumeInfo> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedDeviceType), String_Constant (L"Mounted-Device-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fMountedOnName), String_Constant (L"Mounted-On") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fDiskSizeInBytes), String_Constant (L"Disk-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Disk-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fCombinedIOStats), String_Constant (L"Combined-IO-Stats") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fSizeInBytes), String_Constant (L"Volume-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fAvailableSizeInBytes), String_Constant (L"Volume-Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fUsedSizeInBytes), String_Constant (L"Volume-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
