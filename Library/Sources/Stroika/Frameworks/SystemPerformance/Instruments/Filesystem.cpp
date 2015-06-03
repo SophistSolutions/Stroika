@@ -332,16 +332,24 @@ namespace {
                             Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
                             if (oOld.IsPresent () and oNew.IsPresent ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                                vi.fReadIOStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                vi.fReadIOStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                vi.fReadIOStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
-                                vi.fWriteIOStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                vi.fWriteIOStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                vi.fWriteIOStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+                                VolumeInfo::IOStats readStats;
+                                readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                                readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                readStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
 
-                                vi.fCombinedIOStats.fBytesTransfered = *vi.fReadIOStats->fBytesTransfered + *vi.fWriteIOStats->fBytesTransfered;
-                                vi.fCombinedIOStats.fTotalTransfers = *vi.fReadIOStats->fTotalTransfers + *vi.fWriteIOStats->fTotalTransfers;
-                                vi.fCombinedIOStats.fTimeTransfering = *vi.fReadIOStats->fTimeTransfering + *vi.fWriteIOStats->fTimeTransfering;
+                                VolumeInfo::IOStats writeStats;
+                                writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                                writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                writeStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+
+                                VolumeInfo::IOStats combinedStats;
+                                combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                                combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
+                                combinedStats.fTimeTransfering = *readStats.fTimeTransfering + *writeStats.fTimeTransfering;
+
+                                vi.fReadIOStats = readStats;
+                                vi.fWriteIOStats = writeStats;
+                                vi.fCombinedIOStats = combinedStats;
                             }
                         }
                     }
