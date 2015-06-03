@@ -43,9 +43,10 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
     Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
     return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
 #elif   qPlatform_Windows
-    static  DurationSecondsType sPerformanceFrequencyBasis_ = [] () {
+    static  DurationSecondsType sPerformanceFrequencyBasis_ = [] () -> DurationSecondsType {
         LARGE_INTEGER   performanceFrequency;
-        if (::QueryPerformanceFrequency (&performanceFrequency) == 0) {
+        if (::QueryPerformanceFrequency (&performanceFrequency) == 0)
+        {
             return 0.0;
         }
         else {
