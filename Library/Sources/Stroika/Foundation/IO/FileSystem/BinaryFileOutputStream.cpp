@@ -19,6 +19,7 @@
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../IO/FileAccessException.h"
 
 #include    "BinaryFileOutputStream.h"
 
@@ -56,16 +57,19 @@ public:
         , fFD_ (-1)
         , fFlushFlag (flushFlag)
     {
+        try {
 #if     qPlatform_Windows
-        errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-        if (e != 0) {
-            Execution::errno_ErrorException::DoThrow (e);
-        }
-        ThrowIfFalseGetLastError (fFD_ != -1);
+            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+            if (e != 0) {
+                Execution::errno_ErrorException::DoThrow (e);
+            }
+            ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-        const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC, kCreateMode_));
+            const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC, kCreateMode_));
 #endif
+        }
+        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
     }
     ~Rep_ ()
     {
