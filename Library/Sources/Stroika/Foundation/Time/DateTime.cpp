@@ -408,11 +408,12 @@ namespace {
 
 DurationSecondsType    DateTime::ToTickCount () const
 {
-    return (*this - GetTimeZeroOffset_ ()).As<DurationSecondsType> ();
+    return (AsLocalTime () - GetTimeZeroOffset_ ()).As<DurationSecondsType> ();
 }
 
 DateTime    DateTime::FromTickCount (DurationSecondsType tickCount)
 {
+    Assert (GetTimeZeroOffset_ ().GetTimezone () == Timezone::eLocalTime);
     return GetTimeZeroOffset_ ().AddSeconds (static_cast<time_t> (round (tickCount)));
 }
 
