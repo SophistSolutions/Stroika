@@ -377,6 +377,16 @@ namespace   {
             Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
 #endif
         }
+        {
+            using   Time::DurationSecondsType;
+            DurationSecondsType now =   Time::GetTickCount ();
+            for (DurationSecondsType ds : initializer_list<DurationSecondsType> { 3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300 }) {
+                ds += now;
+                DateTime    dt  =   DateTime::FromTickCount (ds);
+                VerifyTestResult (dt == DateTime::FromTickCount (dt.ToTickCount ()));
+                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.0));      // crazy large epsilon for now because we represent datetime to nearest second
+            }
+        }
     }
 
 }
