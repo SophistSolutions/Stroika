@@ -201,6 +201,15 @@ void    Logger::UpdateBookkeepingThread_ ()
             sBookkeepingThread_ = Thread ([suppressDuplicatesThreshold] () {
                 while (true) {
                     DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
+#if 0
+                    /// Not ready fo prime time because BlockinqQ RemoveHeadIfPossible currently ignores time2Wait... Must fix that first...
+                    if (auto p = sOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
+                        shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                        if (tmp != nullptr) {
+                            tmp->Log (p->first, p->second);
+                        }
+                    }
+#else
                     try {
                         auto p = sOutMsgQ_.RemoveHead (time2Wait);
                         shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
@@ -210,6 +219,7 @@ void    Logger::UpdateBookkeepingThread_ ()
                     }
                     catch (const TimeOutException&) {
                     }
+#endif
                     {
                         auto    lastMsgLocked = sLastMsg_.GetReference ();
                         if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
