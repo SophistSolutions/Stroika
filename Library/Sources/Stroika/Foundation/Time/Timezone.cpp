@@ -15,6 +15,7 @@
 #include    "../Characters/String.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Mapping.h"
+#include    "../DataExchange/INI/Reader.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "DateTime.h"
@@ -43,13 +44,29 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     TimeZoneInformationType result;
 #if     qPlatform_POSIX
     try {
-        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/timezone"))).ReadAll ().Trim ();
+        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant { L"/etc/timezone" })).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
     }
     if (result.fID.IsMissing ()) {
+        // WEAK but maybe effective way
+        // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
         try {
+            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (IO::FileSystem::BinaryFileInputStream::mk (String_Constant { L"/etc/sysconfig/clock" }));
+            result.fID = p.fUnnamedSection.fProperties.LookupValue (String_Constant { L"Zone" });
+        }
+        catch (...) {
+            DbgTrace ("Missing Zone ID from /etc/sysconfig/clock");
+        }
+    }
+    //
+    // COULD look at /etc/localtime, but very hard to map this to olson db name
+    //
+    if (result.fID.IsMissing ()) {
+        try {
+            // Not a good approach because this returns a zone abbreviation, which doesnt uniquely define a zone.
+            // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
             result.fID = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
         }
         catch (...) {
@@ -61,8 +78,8 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
         // hope thats not needed!
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
-    result.fStandardTime.fName = String::FromSDKString (tzname[0]);
-    result.fDaylightSavingsTime.fName = String::FromSDKString (tzname[1]);
+    result.fStandardTime.fName = String::FromNarrowSDKString (tzname[0]);
+    result.fDaylightSavingsTime.fName = String::FromNarrowSDKString (tzname[1]);
 #elif   qPlatform_Windows
     using   Containers::Mapping;
     using   Common::KeyValuePair;
