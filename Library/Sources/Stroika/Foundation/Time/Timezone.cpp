@@ -66,7 +66,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     // COULD look at /etc/localtime, but very hard to map this to olson db name
     //
     // One maybe close way is to see if /etc/localtime is a slink or exact copy of file in /usr/share/zoneinfo - that subdir/name
-    // is typically/often an Olsen DB name.
+    // is typically/often an Olson DB name.
     //
     if (result.fID.IsMissing ()) {
         try {
