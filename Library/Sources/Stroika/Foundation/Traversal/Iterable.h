@@ -124,9 +124,19 @@ namespace   Stroika {
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template    <typename SHARED_T>
                 using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
+                template    <typename SHARED_T, typename... ARGS_TYPE>
+                inline  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args)
+                {
+                    return Memory::MakeSharedPtr (forward<ARGS_TYPE> (args)...);
+                }
 #else
                 template    <typename SHARED_T>
                 using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
+                template    <typename SHARED_T, typename... ARGS_TYPE>
+                inline  shared_ptr<SHARED_T>    MakeSharedPtr (ARGS_TYPE&& ... args)
+                {
+                    return make_shared (forward<Args> (ARGS_TYPE)...);
+                }
 #endif
 
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
