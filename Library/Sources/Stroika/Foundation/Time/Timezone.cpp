@@ -49,6 +49,13 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");
     }
+#if 0
+    //
+    // COULD look at /etc/localtime, but very hard to map this to olson db name
+    //
+    // One maybe close way is to see if /etc/localtime is a slink or exact copy of file in /usr/share/zoneinfo - that subdir/name
+    // is typically/often an Olson DB name.
+    //
     if (result.fID.IsMissing ()) {
         // WEAK but maybe effective way
         // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
@@ -62,17 +69,26 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
             DbgTrace ("Missing Zone ID from /etc/sysconfig/clock");
         }
     }
-    //
-    // COULD look at /etc/localtime, but very hard to map this to olson db name
-    //
-    // One maybe close way is to see if /etc/localtime is a slink or exact copy of file in /usr/share/zoneinfo - that subdir/name
-    // is typically/often an Olson DB name.
-    //
+#endif
     if (result.fID.IsMissing ()) {
         try {
             // Not a good approach because this returns a zone abbreviation, which doesnt uniquely define a zone.
             // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
-            result.fID = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
+            String  tzAbbrev = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
+            using   Containers::Mapping;
+            using   Common::KeyValuePair;
+            static const    Mapping<String, String> kUNIXTZAbbrev2OlsonName_ =  {
+                KeyValuePair<String, String> { L"CST", L"America/Chicago" },
+                KeyValuePair<String, String> { L"CDT", L"America/Chicago" },
+                KeyValuePair<String, String> { L"CST6CDT", L"America/Chicago" },
+                KeyValuePair<String, String> { L"EDT", L"America/New_York" },
+                KeyValuePair<String, String> { L"EST", L"America/New_York" },
+                KeyValuePair<String, String> { L"EST5EDT", L"America/New_York" },
+                KeyValuePair<String, String> { L"PDT", L"America/Los_Angeles" },
+                KeyValuePair<String, String> { L"PST", L"America/Los_Angeles" },
+                KeyValuePair<String, String> { L"PDT8PST", L"America/Los_Angeles" },
+            };
+            result.fID = kUNIXTZAbbrev2OlsonName_.LookupValue (tzAbbrev, tzAbbrev);
         }
         catch (...) {
             DbgTrace ("Ignoring missing ID from date +%Z");
