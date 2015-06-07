@@ -483,6 +483,18 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ******************************* MakeSharedPtr<T> *******************************
+             ********************************************************************************
+             */
+            template    <typename   T, typename... Args>
+            inline  SharedPtr<T>    MakeSharedPtr (Args&& ... args)
+            {
+                return SharedPtr<T> (new T (forward<Args>(args)...));
+            }
+
+
         }
 
 
