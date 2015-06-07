@@ -41,6 +41,23 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************************* BitSubstring *********************************
+             ********************************************************************************
+             */
+            template    <typename INT_TYPE>
+            inline  constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits)
+            {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy || qCompilerAndStdLib_constexpr_Buggy
+                Require (nBits >= 1);
+                Require (offset < (CHAR_BIT * sizeof (INT_TYPE)));
+                Require ((nBits - 1 + offset) < (CHAR_BIT * sizeof (INT_TYPE)));
+#endif
+                return (bitField >> offset) & ((1 << nBits) - 1);
+            }
+
+
+            /*
+             ********************************************************************************
              ********************************* TakeNBitsFrom ********************************
              ********************************************************************************
              */

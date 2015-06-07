@@ -291,12 +291,12 @@ namespace {
     void    Test_7_Bits_ ()
     {
         {
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 0) == 1);
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 1) == 1);
-            VerifyTestResult (TakeNBitsFrom (0x3, 1, 2) == 0);
-            VerifyTestResult (TakeNBitsFrom (0x3, 3, 0) == 0x3);
-            VerifyTestResult (TakeNBitsFrom (0xff, 8, 0) == 0xff);
-            VerifyTestResult (TakeNBitsFrom (0xff, 8, 8) == 0x0);
+            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 1, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 2, 1) == 0);
+            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+            VerifyTestResult (BitSubstring (0xff, 8, 8) == 0x0);
         }
         {
             VerifyTestResult (Bit (0) == 0x1);

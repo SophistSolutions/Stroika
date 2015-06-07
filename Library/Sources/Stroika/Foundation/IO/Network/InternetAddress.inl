@@ -158,10 +158,10 @@ namespace   Stroika {
                 {
                     Require (fAddressFamily_ == AddressFamily::V4);
                     return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 0)),
-                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 8)),
-                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 16)),
-                               static_cast<uint8_t> (Memory::TakeNBitsFrom (fV4_.s_addr, 8, 24))
+                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)),
+                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 8)),
+                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 8)),
+                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 8))
                            );
                 }
                 template    <>
