@@ -213,7 +213,7 @@ namespace   Stroika {
                     }
                 };
                 UniqueElementsIteratorHelper_ (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally)
-                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
+                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (typename Iterator<T>::MakeSharedPtr<Rep> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
                 {
                 }
             };
