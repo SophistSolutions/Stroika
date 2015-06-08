@@ -191,7 +191,7 @@ namespace   Stroika {
                         CONTAINER_LOCK_HELPER_END ();
                     }
                     else {
-                        return this->MakeSharedPtr<Rep_> ();
+                        return Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> ();
                     }
                 }
                 template    <typename T, typename TRAITS>
