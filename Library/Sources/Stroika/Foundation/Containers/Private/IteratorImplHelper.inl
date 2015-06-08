@@ -57,7 +57,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
                     CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
-                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::MakeSharedPtr<IteratorImplHelper_> (*this));
+                        return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

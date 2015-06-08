@@ -106,11 +106,10 @@ namespace   Stroika {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        using   IT = Iterator<T>;
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-                        tmpRep = typename IT::SharedIRepPtr (IT::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
+                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
 #else
-                        tmpRep = typename IT::SharedIRepPtr (IT::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
 #endif
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -120,7 +119,7 @@ namespace   Stroika {
                 size_t  Sequence_stdvector<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.size ());
+                        return fData_.size ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -128,7 +127,7 @@ namespace   Stroika {
                 bool  Sequence_stdvector<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.empty ());
+                        return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
