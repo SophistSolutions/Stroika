@@ -127,7 +127,7 @@ namespace   Stroika {
                 template    <typename SHARED_T, typename... ARGS_TYPE>
                 inline  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
-                    return Memory::MakeSharedPtr (forward<ARGS_TYPE> (args)...);
+                    return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
                 }
 #else
                 template    <typename SHARED_T>
@@ -135,7 +135,7 @@ namespace   Stroika {
                 template    <typename SHARED_T, typename... ARGS_TYPE>
                 inline  shared_ptr<SHARED_T>    MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
-                    return make_shared (forward<Args> (ARGS_TYPE)...);
+                    return make_shared<SHARED_T> (forward<Args> (ARGS_TYPE)...);
                 }
 #endif
 

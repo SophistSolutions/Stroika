@@ -267,7 +267,7 @@ namespace   Stroika {
                 */
                 template    <typename T, typename TRAITS>
                 Set_LinkedList<T, TRAITS>::Set_LinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -279,7 +279,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -288,7 +288,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -297,7 +297,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     AddAll (start, end);

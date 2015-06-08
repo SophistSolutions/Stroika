@@ -234,13 +234,13 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     AssertRepValidType_ ();
@@ -249,7 +249,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

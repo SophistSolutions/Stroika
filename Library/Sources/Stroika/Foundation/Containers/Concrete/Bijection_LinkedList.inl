@@ -319,7 +319,7 @@ namespace   Stroika {
                 */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -332,7 +332,7 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -341,7 +341,7 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (start, end);
