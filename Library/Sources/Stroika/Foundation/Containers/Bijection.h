@@ -491,7 +491,7 @@ namespace   Stroika {
                 virtual  void                   Add (DomainType key, RangeType newElt)                                      =   0;
                 virtual  void                   RemoveDomainElement (DomainType d)                                          =   0;
                 virtual  void                   RemoveRangeElement (RangeType r)                                            =   0;
-                virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                          =   0;
+                virtual  void                   Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                   =   0;
 
 #if     qDebug
                 virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const                       =   0;

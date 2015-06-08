@@ -69,7 +69,7 @@ namespace   Stroika {
                     virtual void                    Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
                     virtual void                    RemoveDomainElement (DOMAIN_TYPE d) override;
                     virtual void                    RemoveRangeElement (RANGE_TYPE r) override;
-                    virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
+                    virtual void                    Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override;
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
@@ -290,7 +290,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
                 {
                     const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);

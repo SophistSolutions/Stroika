@@ -470,7 +470,7 @@ namespace   Stroika {
                 virtual  bool                   Lookup (KeyType key, Memory::Optional<ValueType>* item) const           =   0;
                 virtual  void                   Add (KeyType key, ValueType newElt)                                     =   0;
                 virtual  void                   Remove (KeyType key)                                                    =   0;
-                virtual  void                   Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)                 =   0;
+                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)          =   0;
 #if     qDebug
                 virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
 #endif

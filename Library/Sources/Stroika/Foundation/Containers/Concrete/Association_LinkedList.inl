@@ -68,7 +68,7 @@ namespace   Stroika {
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
                     virtual void                Remove (KEY_TYPE key) override;
-                    virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual void                Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
 #endif
@@ -243,7 +243,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)
+                void    Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
                 {
                     const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
