@@ -285,7 +285,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_Array<T>::Sequence_Array ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -297,7 +297,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);

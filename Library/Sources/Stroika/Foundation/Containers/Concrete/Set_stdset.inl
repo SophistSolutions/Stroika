@@ -253,7 +253,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -262,7 +262,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
