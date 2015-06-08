@@ -397,8 +397,8 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename   T,  typename... Args>
-            SharedPtr<T>    MakeSharedPtr (Args&& ... args);
+            template    <typename   T,  typename... ARG_TYPES>
+            SharedPtr<T>    MakeSharedPtr (ARG_TYPES&& ... args);
 
 
         }
