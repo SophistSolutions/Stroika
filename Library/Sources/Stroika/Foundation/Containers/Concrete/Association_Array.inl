@@ -264,12 +264,12 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ***************** Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS> ******************
+                ************** Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS> *****************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -282,7 +282,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 inline  Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

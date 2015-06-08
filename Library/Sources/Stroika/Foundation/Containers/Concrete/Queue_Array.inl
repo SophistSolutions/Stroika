@@ -252,7 +252,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Queue_Array<T>::Queue_Array ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -265,7 +265,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Queue_Array<T>::Queue_Array (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()

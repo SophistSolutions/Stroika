@@ -286,7 +286,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_stdvector<T>::Sequence_stdvector ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
@@ -299,7 +299,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -308,7 +308,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (start, end);

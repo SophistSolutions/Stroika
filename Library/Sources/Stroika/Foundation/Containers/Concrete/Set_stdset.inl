@@ -241,7 +241,7 @@ namespace   Stroika {
                 */
                 template    <typename T, typename TRAITS>
                 Set_stdset<T, TRAITS>::Set_stdset ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }

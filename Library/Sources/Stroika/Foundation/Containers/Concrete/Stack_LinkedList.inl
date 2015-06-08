@@ -217,7 +217,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Stack_LinkedList<T>::Stack_LinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::MakeSharedPtr<Rep_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                 }
