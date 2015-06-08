@@ -146,14 +146,14 @@ namespace   Stroika {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = this->MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.clear_WithPatching ();
                             return r;
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
                     else {
-                        return this->MakeSharedPtr<Rep_> ();
+                        return Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> ();
                     }
                 }
                 template    <typename T, typename TRAITS>
