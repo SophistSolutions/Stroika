@@ -110,7 +110,7 @@ namespace   {
             virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
                 AssertNotReached ();    // Since Strings now immutable, this should never be called
-                return _IterableSharedPtrIRep (new MyRep_ (*this));
+                return String_Substring_::template MakeSharedPtr<MyRep_> (*this);
             }
         private:
             _SafeReadRepAccessor  fSaved_;

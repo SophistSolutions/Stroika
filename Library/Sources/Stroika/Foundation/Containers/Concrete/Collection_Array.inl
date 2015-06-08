@@ -95,7 +95,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return _IterableSharedPtrIRep (new Rep_ (const_cast<Rep_*> (this), forIterableEnvelope));
+                        return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
