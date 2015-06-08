@@ -287,7 +287,7 @@ namespace   Stroika {
 
             public:
                 template    <typename   SHARED_TYPE, typename... ARGS_TYPE>
-                inline  static  SharedIRepPtr    MakeSharedPtr (ARGS_TYPE&& ... args)
+                inline  static  SharedPtrImplementationTemplate<SHARED_TYPE>    MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
                     return IteratorBase::MakeSharedPtr<SHARED_TYPE> (forward<ARGS_TYPE> (args)...);
                 }
