@@ -108,7 +108,7 @@ namespace   Stroika {
                 bool  MultiSet_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.IsEmpty ());
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

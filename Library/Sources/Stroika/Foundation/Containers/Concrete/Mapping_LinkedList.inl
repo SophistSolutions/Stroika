@@ -134,7 +134,7 @@ namespace   Stroika {
                 bool  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.IsEmpty ());
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

@@ -123,7 +123,7 @@ namespace   Stroika {
                 size_t  Set_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -131,7 +131,7 @@ namespace   Stroika {
                 bool  Set_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength () == 0);
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

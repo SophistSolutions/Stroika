@@ -126,7 +126,7 @@ namespace   Stroika {
                 bool  Sequence_LinkedList<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength () == 0);
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

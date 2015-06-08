@@ -104,7 +104,7 @@ namespace   Stroika {
                 size_t  SortedMultiSet_stdmap<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.size ());
+                        return fData_.size ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -112,7 +112,7 @@ namespace   Stroika {
                 bool  SortedMultiSet_stdmap<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.empty ());
+                        return fData_.empty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
