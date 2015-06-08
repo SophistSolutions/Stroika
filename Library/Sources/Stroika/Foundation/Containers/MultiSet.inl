@@ -94,7 +94,7 @@ namespace   Stroika {
                     }
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override
                     {
-                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::MakeSharedPtr<Rep> (*this));
+                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
@@ -200,7 +200,7 @@ namespace   Stroika {
                     }
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override
                     {
-                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::MakeSharedPtr<Rep> (*this));
+                        return typename Iterator<T>::SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
