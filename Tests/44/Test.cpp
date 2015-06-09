@@ -573,6 +573,17 @@ namespace   {
             VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
             VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
+        {
+            DateTime    n1 = DateTime (Date (Year (2015), MonthOfYear::eJune, DayOfMonth (9)), TimeOfDay (19, 18, 42), DateTime::Timezone::eLocalTime);
+            DateTime    n2 = n1 - Duration (L"P100Y");
+            VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
+#if 0
+            // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
+            VerifyTestResult (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
+            VerifyTestResult (n2.GetDate ().GetDayOfMonth () == n1.GetDate ().GetDayOfMonth ());
+#endif
+            VerifyTestResult (n2.GetTimeOfDay () == n1.GetTimeOfDay ());
+        }
     }
 
 }
