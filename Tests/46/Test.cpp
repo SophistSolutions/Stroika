@@ -1563,7 +1563,7 @@ namespace   {
             Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
             Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String",
             65300,
-            0.66,
+            0.68,
             &failedTests
         );
         Tester (
@@ -1579,7 +1579,7 @@ namespace   {
             Test_SimpleStringAppends2_<wstring>, L"wstring",
             Test_SimpleStringAppends2_<String>, L"Charactes::String",
             1580000,
-            3.9,
+            4.0,
             &failedTests
         );
         Tester (
@@ -1613,7 +1613,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3740000,
-            2.3,
+            2.35,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
