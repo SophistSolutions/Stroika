@@ -334,10 +334,13 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::clear (const KEY& key)
             {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
-                if (v != nullptr) {
-                    v->clear ();
+                {
+                    // Scope for assert because AssertExternallySynchronizedLock is not recursive
+                    lock_guard<AssertExternallySynchronizedLock> critSec { *this };
+                    OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
+                    if (v != nullptr) {
+                        v->clear ();
+                    }
                 }
                 Ensure (not Lookup (key));
             }
