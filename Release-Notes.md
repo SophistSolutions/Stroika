@@ -17,12 +17,20 @@ History
     
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a95">v2.0a95x</a><br/>2015-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a95">v2.0a95</a><br/>2015-06-09</td>
 <td>
 	<ul>
-		<li>
-			TODO
-		</li>
+		<li>SystemPerformance Process Insturment support for SetPrivilegeInContext to get a few extra procesess captured</li>
+		<li>performance tweak Windows process System Perofmrance WMI code</li>
+		<li>Added DateTime::FromTickCount ()/ToTickCount</li>
+		<li>fixed bug iwth Foundation/Cache/LRUCache clear(KEY) method</li>
+		<li>make SystemPerformance/Instruments/Filesystem IOStats element optional, and added fAvailableSizeInBytes to VolumeInfo and related fixes to posix FS code</li>
+		<li> use Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER in IO/FileSystem/BinaryFileOutputStream.</li>
+		<li>Timezone improvements for RedHat 5</li>
+		<li>renamed Memory::TakeNBitsFrom -> BitSubstring ()</li>
+		<li>define new MakeSharedPtr () static function and started using in container code as slight performance improvement</li>
+		<li>Other small container speed tweaks</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind, and built and most tests OK on VC++2k15</li>
 	</ul>
 </td>
 </tr>
