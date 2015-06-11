@@ -103,7 +103,9 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fName = String::FromNarrowSDKString (tzname[0]);
+    result.fStandardTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false);
     result.fDaylightSavingsTime.fName = String::FromNarrowSDKString (tzname[1]);
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false);
 #elif   qPlatform_Windows
     using   Containers::Mapping;
     using   Common::KeyValuePair;
@@ -207,7 +209,9 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     memset (&tzInfo, 0, sizeof (tzInfo));
     (void)::GetTimeZoneInformation (&tzInfo);
     result.fStandardTime.fName = tzInfo.StandardName;
+    result.fStandardTime.fBiasInMinutesFromUTC = tzInfo.StandardBias;
     result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = tzInfo.DaylightBias;
     result.fID = kWinDoze2OlsonName_.LookupValue (tzInfo.StandardName, tzInfo.StandardName);
 #else
     AssertNotImplemented ();

@@ -52,7 +52,7 @@ namespace   Stroika {
                 struct  Details {
                     Memory::Optional<String>    fName;
                     Memory::Optional<String>    fAbbreviation;
-                    Memory::Optional<int>       fBiasInMinutesFromUTC;
+                    Memory::Optional<int>       fBiasInMinutesFromUTC;      // UTC = local time + bias
                 };
                 Details fStandardTime;
                 Details fDaylightSavingsTime;
