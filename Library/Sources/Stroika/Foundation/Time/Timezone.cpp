@@ -103,9 +103,9 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fName = String::FromNarrowSDKString (tzname[0]);
-    result.fStandardTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false);
+    result.fStandardTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false) / 60;
     result.fDaylightSavingsTime.fName = String::FromNarrowSDKString (tzname[1]);
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false);
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false) / 60;
 #elif   qPlatform_Windows
     using   Containers::Mapping;
     using   Common::KeyValuePair;
