@@ -221,7 +221,15 @@ namespace   Stroika {
                 static  const   PrettyPrintInfo kDefaultPrettyPrintInfo;
 
             public:
+                /**
+                 *  Consider deprecating, and using 'Format'
+                 */
                 nonvirtual  Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
             public:
                 struct  AgePrettyPrintInfo {
