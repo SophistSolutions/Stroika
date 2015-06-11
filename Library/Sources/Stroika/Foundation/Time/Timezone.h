@@ -57,10 +57,16 @@ namespace   Stroika {
                 Details fStandardTime;
                 Details fDaylightSavingsTime;
 
-                // This is the 'olsen database name' (e..g. 'America/New_York')
+                /**
+                 *  This is the 'olsen database name' (e..g. 'America/New_York').
+                 *
+                 *  It is OFTEN not available (on older OSes).
+                 */
                 Memory::Optional<String>    fID;
             };
 
+            /**
+             */
             TimeZoneInformationType    GetTimezoneInfo ();
 
             /**

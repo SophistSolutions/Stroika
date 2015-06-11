@@ -70,6 +70,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
         }
     }
 #endif
+#if 0
     if (result.fID.IsMissing ()) {
         try {
             // Not a good approach because this returns a zone abbreviation, which doesnt uniquely define a zone.
@@ -95,6 +96,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
             DbgTrace ("Ignoring missing ID from date +%Z");
         }
     }
+#endif
     if (result.fID.IsMissing ()) {
         // We could look to see if /etc/localtime is a symlink or a copy of any named file from /usr/share/zoneinfo, but
         // hope thats not needed!
