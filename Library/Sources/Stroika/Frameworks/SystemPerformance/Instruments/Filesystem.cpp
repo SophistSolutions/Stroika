@@ -336,7 +336,7 @@ namespace {
                             {
                                 struct stat sbuf;
                                 memset (&sbuf, 0, sizeof (sbuf));
-                                if (::stat (vi->fDeviceOrVolumeName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+                                if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                                     useDevT = sbuf.st_dev;
                                 }
                                 else {
