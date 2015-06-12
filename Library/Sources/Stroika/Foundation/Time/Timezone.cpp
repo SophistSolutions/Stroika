@@ -107,7 +107,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     result.fStandardTime.fBiasInMinutesFromUTC = - Time::GetLocaltimeToGMTOffset (false) / 60;
     result.fDaylightSavingsTime.fAbbreviation = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fName = String::FromNarrowSDKString (tzname[1]);
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = - Time::GetLocaltimeToGMTOffset (false) / 60;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = - Time::GetLocaltimeToGMTOffset (true) / 60;
 #elif   qPlatform_Windows
     using   Containers::Mapping;
     using   Common::KeyValuePair;
