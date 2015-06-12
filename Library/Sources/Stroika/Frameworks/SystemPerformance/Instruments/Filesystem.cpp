@@ -248,7 +248,7 @@ namespace {
                     // procfs/mounts often contains symbolic links to device files
                     // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
                     if (devName.StartsWith (L"/")) {
-                        IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().ResolveShortcut (devName));
+                        IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().CanonicalizeName (devName));
                     }
                     String  mountedOn = line[1];
                     String  fstype = line[2];
@@ -337,7 +337,7 @@ namespace {
                                 struct stat sbuf;
                                 memset (&sbuf, 0, sizeof (sbuf));
                                 if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
-                                    useDevT = sbuf.st_dev;
+                                    useDevT = sbuf.st_rdev;
                                 }
                                 else {
                                     continue;
