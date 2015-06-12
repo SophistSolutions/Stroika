@@ -5,6 +5,7 @@
 
 #if     qPlatform_POSIX
 #include    <sys/statvfs.h>
+#include    <sys/types.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
@@ -498,7 +499,7 @@ namespace {
                     String  sectorsWritten = line[10 - 1];
                     String  timeSpentWritingMS = line[11 - 1];
                     result.Add (
-                        MKDEV (String2Int<int> (majorDevNumber), String2Int<int> (minorDevNumber)),
+                        ::makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
                     PerfStats_ {
                         String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
                         String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted)
