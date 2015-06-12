@@ -102,10 +102,12 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
         // hope thats not needed!
     }
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
+    result.fStandardTime.fAbbreviation = String::FromNarrowSDKString (tzname[0]);
     result.fStandardTime.fName = String::FromNarrowSDKString (tzname[0]);
-    result.fStandardTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false) / 60;
+    result.fStandardTime.fBiasInMinutesFromUTC = - Time::GetLocaltimeToGMTOffset (false) / 60;
+    result.fDaylightSavingsTime.fAbbreviation = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fName = String::FromNarrowSDKString (tzname[1]);
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = Time::GetLocaltimeToGMTOffset (false) / 60;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = - Time::GetLocaltimeToGMTOffset (false) / 60;
 #elif   qPlatform_Windows
     using   Containers::Mapping;
     using   Common::KeyValuePair;
@@ -208,10 +210,12 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     TIME_ZONE_INFORMATION   tzInfo;
     memset (&tzInfo, 0, sizeof (tzInfo));
     (void)::GetTimeZoneInformation (&tzInfo);
+    result.fStandardTime.fAbbreviation = tzInfo.StandardName;
     result.fStandardTime.fName = tzInfo.StandardName;
-    result.fStandardTime.fBiasInMinutesFromUTC = tzInfo.StandardBias;
+    result.fStandardTime.fBiasInMinutesFromUTC = - (tzInfo.StandardBias + tzInfo.Bias);
+    result.fDaylightSavingsTime.fAbbreviation = tzInfo.DaylightName;
     result.fDaylightSavingsTime.fName = tzInfo.DaylightName;
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = tzInfo.DaylightBias;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = - (tzInfo.DaylightBias + tzInfo.Bias);
     result.fID = kWinDoze2OlsonName_.LookupValue (tzInfo.StandardName, tzInfo.StandardName);
 #else
     AssertNotImplemented ();
