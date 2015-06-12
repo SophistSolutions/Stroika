@@ -9,7 +9,7 @@
 #include    <mutex>
 
 #include    "../Configuration/Common.h"
-#include    "../Debug/Assertions.h"			// while RequireNotNull etc in headers --LGP 2015-06-11
+#include    "../Debug/Assertions.h"         // while RequireNotNull etc in headers --LGP 2015-06-11
 
 #include    "Common.h"
 
