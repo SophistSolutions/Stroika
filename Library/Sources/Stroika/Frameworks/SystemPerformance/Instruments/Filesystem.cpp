@@ -134,7 +134,7 @@ namespace {
             double  fWritesCompleted;
         };
         Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
-        Optional<Mapping<String, PerfStats_>>   fContextStats_;
+        Optional<Mapping<dev_t, PerfStats_>>    fContextStats_;
     public:
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
@@ -318,7 +318,7 @@ namespace {
         void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
         {
             try {
-                Mapping<String, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
+                Mapping<dev_t, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
                 for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                     VolumeInfo vi = *i;
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
@@ -328,8 +328,25 @@ namespace {
                             if (i != string::npos) {
                                 devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
                             }
+#if 1
+                            dev_t   useDevT;
+                            {
+                                struct stat sbuf;
+                                memset (&sbuf, 0, sizeof (sbuf));
+                                if (::stats (v->fDeviceOrVolumeName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+                                    useDevT = sbuf.st_dev;
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+
+                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
+                            Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
+#else
                             Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
                             Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
+#endif
                             if (oOld.IsPresent () and oNew.IsPresent ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 VolumeInfo::IOStats readStats;
@@ -446,11 +463,11 @@ namespace {
             }
         }
     private:
-        Mapping<String, PerfStats_> ReadProcFS_diskstats_ ()
+        Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using   Characters::String2Float;
-            Mapping<String, PerfStats_>   result;
-            DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+            Mapping<dev_t, PerfStats_>                      result;
+            DataExchange::CharacterDelimitedLines::Reader   reader {{' ', '\t' }};
             const   String_Constant kProcMemInfoFileName_ { L"/proc/diskstats" };
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
@@ -460,6 +477,8 @@ namespace {
                 //
                 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
                 //
+                //  1 - major number
+                //  2 - minor mumber
                 //  3 - device name
                 //  4 - reads completed successfully
                 //  6 - sectors read
@@ -469,7 +488,9 @@ namespace {
                 //  11 - time spent writing (ms)
                 //
                 if (line.size () >= 13) {
-                    String  devName = line[3 - 1];
+                    String  majorDevNumber = line[1 - 1];
+                    String  minorDevNumber = line[2 - 1];
+                    //String  devName = line[3 - 1];
                     String  readsCompleted = line[4 - 1];
                     String  sectorsRead = line[6 - 1];
                     String  timeSpentReadingMS = line[7 - 1];
@@ -477,7 +498,7 @@ namespace {
                     String  sectorsWritten = line[10 - 1];
                     String  timeSpentWritingMS = line[11 - 1];
                     result.Add (
-                        devName,
+                        MKDEV (String2Int<int> (majorDevNumber), String2Int<int> (minorDevNumber)),
                     PerfStats_ {
                         String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
                         String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted)
