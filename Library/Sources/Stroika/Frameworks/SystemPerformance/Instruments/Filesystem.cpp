@@ -5,7 +5,9 @@
 
 #if     qPlatform_POSIX
 #include    <sys/statvfs.h>
+#include    <sys/stat.h>
 #include    <sys/types.h>
+#include    <unistd.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
@@ -334,7 +336,7 @@ namespace {
                             {
                                 struct stat sbuf;
                                 memset (&sbuf, 0, sizeof (sbuf));
-                                if (::stat (v->fDeviceOrVolumeName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+                                if (::stat (vi->fDeviceOrVolumeName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                                     useDevT = sbuf.st_dev;
                                 }
                                 else {
