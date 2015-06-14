@@ -166,6 +166,6 @@ private:
 };
 
 BinaryFileOutputStream::BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag)
-    : inherited (_SharedIRep (new Rep_ (fileName, flushFlag)))
+    : inherited (make_shared<Rep_> (fileName, flushFlag))
 {
 }

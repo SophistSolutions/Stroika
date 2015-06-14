@@ -153,7 +153,7 @@ public:
     }
 };
 Database::DBConnection::DBConnection (const wstring& dsn):
-    fRep (new Rep (dsn))
+    fRep (make_shared<Rep> (dsn))
 {
 }
 

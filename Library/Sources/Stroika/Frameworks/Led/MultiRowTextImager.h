@@ -487,7 +487,7 @@ namespace   Stroika {
 
 //  class   MultiRowTextImager::PartitionElementCacheInfo
             inline  MultiRowTextImager::PartitionElementCacheInfo::PartitionElementCacheInfo ():
-                fRep (new Rep ())
+                fRep (make_shared<Rep> ())
             {
             }
             /*

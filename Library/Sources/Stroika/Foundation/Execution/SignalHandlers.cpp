@@ -128,7 +128,7 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
     Assert (sTheRep_ == nullptr);
-    sTheRep_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
+    sTheRep_ = make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ();
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()

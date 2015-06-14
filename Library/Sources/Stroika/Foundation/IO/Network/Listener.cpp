@@ -73,7 +73,7 @@ struct  Listener::Rep_ {
 ********************************************************************************
 */
 Listener::Listener (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor)
-    : fRep_ (new Rep_ (addr, newConnectionAcceptor))
+    : fRep_ (make_shared<Rep_> (addr, newConnectionAcceptor))
 {
 }
 

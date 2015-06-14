@@ -366,7 +366,7 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************************************************************************
  */
 Connection_LibCurl::Connection_LibCurl (const Options& options)
-    : Connection (shared_ptr<_IRep> (new Rep_ (options)))
+    : Connection (make_shared<Rep_> (options))
 {
 }
 #endif

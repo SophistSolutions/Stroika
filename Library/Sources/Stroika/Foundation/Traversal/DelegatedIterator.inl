@@ -28,7 +28,7 @@ namespace   Stroika {
             template    <typename T, typename EXTRA_DATA>
             typename    Iterator<T>::SharedIRepPtr   DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
             {
-                return SharedIRepPtr (new Rep (*this));
+                return SharedIRepPtr (Iterator<T>::template MakeSharedPtr > <Rep> (*this));
             }
 #endif
             template    <typename T, typename EXTRA_DATA>

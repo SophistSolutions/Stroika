@@ -405,7 +405,7 @@ struct  LinkMonitor::Rep_ {
  ********************************************************************************
  */
 LinkMonitor::LinkMonitor ()
-    : fRep_ (new Rep_ ())
+    : fRep_ (make_shared<Rep_> ())
 {
 }
 

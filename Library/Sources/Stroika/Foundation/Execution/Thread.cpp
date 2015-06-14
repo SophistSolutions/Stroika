@@ -576,7 +576,7 @@ Thread::Thread ()
 }
 
 Thread::Thread (const Function<void()>& fun2CallOnce)
-    : fRep_ (shared_ptr<Rep_> (new Rep_ (fun2CallOnce)))
+    : fRep_ (make_shared<Rep_> (fun2CallOnce))
 {
     Rep_::DoCreate (&fRep_);
 }

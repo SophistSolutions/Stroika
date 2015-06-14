@@ -1338,7 +1338,7 @@ namespace   Stroika {
              */
             void    MultiRowTextImager::PartitionElementCacheInfo::Clear ()
             {
-                fRep = shared_ptr<Rep> (new Rep ());
+                fRep = make_shared<Rep> ();
             }
 
             void    MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight)

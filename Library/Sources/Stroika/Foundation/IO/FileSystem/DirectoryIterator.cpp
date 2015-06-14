@@ -147,10 +147,10 @@ public:
     virtual SharedIRepPtr    Clone () const override
     {
 #if     qPlatform_Windows
-        return SharedIRepPtr (new Rep_ (fDirName_, fSeekOffset_));
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
 #elif   qPlatform_POSIX
         if (fDirIt_ == nullptr) {
-            return SharedIRepPtr (new Rep_ (nullptr));
+            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr));
         }
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -208,7 +208,7 @@ public:
             }
             seekdir (dirObj, useOffset);
         }
-        return SharedIRepPtr (new Rep_ (dirObj));
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
@@ -233,6 +233,6 @@ public:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const String& directoryName)
-    : Iterator<String> (SharedIRepPtr (new Rep_ (directoryName)))
+    : Iterator<String> (Iterator<String>::SharedIRepPtr (MakeSharedPtr<Rep_> (directoryName)))
 {
 }

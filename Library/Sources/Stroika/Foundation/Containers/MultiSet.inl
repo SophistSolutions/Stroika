@@ -107,7 +107,7 @@ namespace   Stroika {
                     }
                 };
                 ElementsIteratorHelper_ (const ElementsIteratorHelperContext_& context)
-                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (context)))
+                    : Iterator<T> (typename Iterator<T>::template MakeSharedPtr<Rep> (context))
                 {
                 }
             };

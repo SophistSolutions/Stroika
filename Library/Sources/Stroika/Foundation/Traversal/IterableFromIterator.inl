@@ -143,7 +143,7 @@ namespace   Stroika {
                         }
                         virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                         {
-                            return _SharedPtrIRep (new Rep (*this));
+                            return _SharedPtrIRep (Iterable<T>::MakeSharedPtr<Rep> (*this));
                         }
                     };
                     MyIterable_ (const Iterator<T>& originalIterator)

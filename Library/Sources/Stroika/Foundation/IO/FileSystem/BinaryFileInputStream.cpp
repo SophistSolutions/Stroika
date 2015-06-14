@@ -162,7 +162,7 @@ private:
 
 
 BinaryFileInputStream::BinaryFileInputStream (const String& fileName, SeekableFlag seekable)
-    : BinaryFileInputStream (shared_ptr<Rep_> (new Rep_ (fileName)), seekable)
+    : BinaryFileInputStream (make_shared<Rep_> (fileName), seekable)
 {
 }
 

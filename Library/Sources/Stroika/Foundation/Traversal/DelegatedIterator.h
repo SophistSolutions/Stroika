@@ -44,7 +44,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
                     virtual SharedIRepPtr       Clone () const override
                     {
-                        return SharedIRepPtr (new Rep (*this));
+                        return SharedIRepPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
                     }
 #else
                     virtual SharedIRepPtr       Clone () const override;
