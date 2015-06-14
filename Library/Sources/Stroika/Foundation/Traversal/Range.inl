@@ -238,7 +238,7 @@ namespace   Stroika {
                 if (v < fBegin_) {
                     return fBeginOpenness_ == Openness::eClosed ? fBegin_ : TraitsType::GetNext (fBegin_);
                 }
-                else if (v > fEnd) {
+                else if (v > fEnd_) {
                     return fEndOpenness_ == Openness::eClosed ? fEnd_ : TraitsType::GetPrevious (fEnd_);
                 }
                 return v;
