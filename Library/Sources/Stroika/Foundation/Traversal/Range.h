@@ -305,6 +305,20 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Compare v with the upper and lower bounds of this range, and return a value as close as
+                 *  possible to v but in range.
+                 *
+                 *  If 'v' is not in range, and this Range is open, GetNext or GetPrevious maybe used to find a value
+                 *  in range.
+                 *
+                 *  \req not empty ()
+                 *
+                 *  @see Math::PinInRange ()
+                 */
+                nonvirtual  T    Pin (T v) const;
+
+            public:
+                /**
                  *  This corresponds to the mathematical set containment. When comparing with the edges
                  *  of the range, we check <= if the edge is closed, and < if the edge is open.
                  */

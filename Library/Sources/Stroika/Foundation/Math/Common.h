@@ -97,6 +97,10 @@ namespace   Stroika {
 
 
             /**
+             *  Compare initialValue with lowerBound and upperBound with min/max/operator<, and return a
+             *  value which equals initialValue, or lowerBound or upperBound to get it into that range.
+             *
+             *  @see Range<>::Pin ()
              */
             template    <typename   T>
             T   PinInRange (T initialValue, T lowerBound, T upperBound);
@@ -109,6 +113,10 @@ namespace   Stroika {
              *  This is handy for stuff like ::write() system calls, where you might be given a ptrdiff_t, and have to
              *  call something taking int, and given how these types might be differnt sizes, it simplifies picking
              *  the right size to call write with.
+             *
+             *  EXAMPLE USAGE:
+             *      size_t  nRequested  =   intoEnd - intoStart;
+             *      return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
              */
             template    <typename NEW_T, typename   T>
             NEW_T   PinToMaxForType (T initialValue);

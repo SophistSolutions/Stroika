@@ -233,6 +233,17 @@ namespace   Stroika {
                 return GetLowerBound () + GetDistanceSpanned () / 2;
             }
             template    <typename T, typename TRAITS>
+            inline  T    Range<T, TRAITS>::Pin (T v) const
+            {
+                if (v < fBegin_) {
+                    return fBeginOpenness_ == Openness::eClosed ? fBegin_ : TraitsType::GetNext (fBegin_);
+                }
+                else if (v > fEnd) {
+                    return fEndOpenness_ == Openness::eClosed ? fEnd_ : TraitsType::GetPrevious (fEnd_);
+                }
+                return v;
+            }
+            template    <typename T, typename TRAITS>
             inline  constexpr   bool    Range<T, TRAITS>::Contains (const T& r) const
             {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
