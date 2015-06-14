@@ -425,7 +425,7 @@ public:
 public:
     virtual _SharedPtrIRep  Clone () const override
     {
-        return _SharedPtrIRep (new Rep_ ());    // no instance data
+        return make_shared<Rep_> ();        // no instance data
     }
     virtual String          GetDefaultFileSuffix () const override
     {
@@ -443,6 +443,6 @@ public:
     }
 };
 DataExchange::JSON::Reader::Reader ()
-    : inherited (shared_ptr<_IRep> (new Rep_ ()))
+    : inherited (make_shared<Rep_> ())
 {
 }

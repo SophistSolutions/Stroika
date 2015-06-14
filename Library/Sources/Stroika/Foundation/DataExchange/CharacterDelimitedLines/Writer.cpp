@@ -38,7 +38,7 @@ public:
 public:
     virtual _SharedPtrIRep  Clone () const override
     {
-        return _SharedPtrIRep (new Rep_ ());    // no instance data
+        return _SharedPtrIRep (new Rep_ ());   // no instance data
     }
     virtual String          GetDefaultFileSuffix () const override
     {
@@ -58,6 +58,6 @@ public:
 
 
 DataExchange::CharacterDelimitedLines::Writer::Writer ()
-    : inherited (shared_ptr<_IRep> (new Rep_ ()))
+    : inherited (make_shared<Rep_> ())
 {
 }

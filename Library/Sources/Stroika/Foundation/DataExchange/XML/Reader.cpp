@@ -32,7 +32,7 @@ public:
 public:
     virtual _SharedPtrIRep  Clone () const override
     {
-        return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
+        return make_shared<Rep_> (fSerializationConfiguration_);
     }
     virtual String          GetDefaultFileSuffix () const override
     {
@@ -77,7 +77,7 @@ private:
  ********************************************************************************
  */
 DataExchange::XML::Reader::Reader (const SerializationConfiguration& config)
-    : inherited (shared_ptr<_IRep> (new Rep_ (config)))
+    : inherited (make_shared<Rep_> (config))
 {
 }
 

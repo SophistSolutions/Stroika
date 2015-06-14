@@ -47,7 +47,7 @@ public:
     }
     virtual _SharedPtrIRep  Clone () const override
     {
-        return _SharedPtrIRep (new Rep_ (fDelimiters_));    // no instance data
+        return make_shared<Rep_> (fDelimiters_);
     }
     virtual String          GetDefaultFileSuffix () const override
     {
@@ -87,7 +87,7 @@ public:
 
 };
 DataExchange::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
-    : inherited (shared_ptr<_IRep> (new Rep_ (columnDelimiters)))
+    : inherited (make_shared<Rep_> (columnDelimiters))
 {
 }
 
