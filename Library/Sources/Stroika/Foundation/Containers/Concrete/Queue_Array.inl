@@ -274,7 +274,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (Iterable<T>::template MakeSharedPtr<Rep_> ()))
                 {
                     AssertRepValidType_ ();
                     Append (start, end);

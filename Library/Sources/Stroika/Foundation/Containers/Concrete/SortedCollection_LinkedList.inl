@@ -288,7 +288,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end)
-                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (Iterable<T>::template MakeSharedPtr<Rep_> ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     AssertRepValidType_ ();
