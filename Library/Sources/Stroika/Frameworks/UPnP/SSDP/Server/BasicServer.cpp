@@ -160,6 +160,6 @@ public:
 ********************************************************************************
 */
 BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
-    : fRep_ (new Rep_ (d, dd, fi))
+    : fRep_ (make_shared<Rep_> (d, dd, fi))
 {
 }
