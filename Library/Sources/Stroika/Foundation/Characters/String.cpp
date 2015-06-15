@@ -71,10 +71,12 @@ namespace   {
             AssertNotReached ();    // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _IterableSharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
+#if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
+#endif
     };
 }
 
@@ -170,7 +172,7 @@ Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID sug
         }
         virtual SharedIRepPtr   Clone () const override
         {
-            return SharedIRepPtr (new MyIterRep_ (fStr, fCurIdx));
+            return Iterator<Character>::MakeSharedPtr<MyIterRep_> (fStr, fCurIdx);
         }
         virtual IteratorOwnerID GetOwner () const override
         {
@@ -205,9 +207,9 @@ Traversal::Iterator<Character>  String::_IRep::MakeIterator (IteratorOwnerID sug
     // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
     // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
 #if     qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ()))));
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (Iterator<Character>::MakeSharedPtr<MyIterRep_> (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ()))));
 #else
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (const_cast<String::_IRep*> (this)->shared_from_this ())));
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (Iterator<Character>::MakeSharedPtr<MyIterRep_> (const_cast<String::_IRep*> (this)->shared_from_this ())));
 #endif
 }
 
@@ -445,19 +447,19 @@ String::_SharedPtrIRep  String::mkEmpty_ ()
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
 {
-    return _SharedPtrIRep (new String_BufferedArray_Rep_ (start, end));
+    return MakeSharedPtr<String_BufferedArray_Rep_> (start, end);
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen)
 {
-    return _SharedPtrIRep (new String_BufferedArray_Rep_ (start, end, reserveLen));
+    return MakeSharedPtr<String_BufferedArray_Rep_> (start, end, reserveLen);
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
 {
     size_t  len1        =   end1 - start1;
     size_t  totalLen    =   len1 + (end2 - start2);
-    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (start1, end1, totalLen) };
+    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, totalLen);
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -525,9 +527,9 @@ String    String::InsertAt (const Character* from, const Character* to, size_t a
     }
     _SafeReadRepAccessor copyAccessor { this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    Traversal::IterableBase::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from)) };
+    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from));
     sRep->InsertAt (from, to, at);
-    return String (sRep);
+    return String (move (sRep));
 }
 
 String        String::RemoveAt (size_t from, size_t to) const
@@ -938,7 +940,7 @@ String  String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thi
 #endif
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
     // This is mostly a win if it saves a malloc() (and the copy of the start...end char data)
-    return String (_SharedPtrIRep (new String_Substring_::MyRep_ (thisAccessor, start, end)));
+    return String (_SharedPtrIRep (String::MakeSharedPtr<String_Substring_::MyRep_> (thisAccessor, start, end)));
 #else
     // really just to test - if qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_ not true, it doesnt bump refcount so really unsafe todo this way
     return mk_ (start, end);
@@ -1238,9 +1240,9 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD   =   rhsAccessor._ConstGetRep ().GetData ();
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
-    String::SharedPtrImplementationTemplate<String_BufferedArray_Rep_> sRep { new String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen) };
+    auto    sRep =  String::MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
     sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
-    return String (sRep);
+    return String (move (sRep));
 }
 
 

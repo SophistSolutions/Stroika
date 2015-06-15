@@ -73,7 +73,7 @@ namespace   Stroika {
              *  that might be a better strategy? -- LGP 2014-04-19
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   0
+#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
 #endif
 
 
