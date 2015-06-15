@@ -73,7 +73,7 @@ namespace   Stroika {
              *  that might be a better strategy? -- LGP 2014-04-19
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
+#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   0
 #endif
 
 
@@ -135,7 +135,7 @@ namespace   Stroika {
                 template    <typename SHARED_T, typename... ARGS_TYPE>
                 inline  static  shared_ptr<SHARED_T>    MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
-                    return make_shared<SHARED_T> (forward<Args> (ARGS_TYPE)...);
+                    return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
                 }
 #endif
 
