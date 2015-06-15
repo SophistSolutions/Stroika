@@ -249,6 +249,9 @@ namespace   Stroika {
                             at = fData_.size ();
                         }
                         // quickie poor impl
+                        size_t  desiredCapacity     =   fData_.size () + (to - from);
+                        desiredCapacity = max (desiredCapacity, fData_.capacity ());
+                        fData_.reserve (desiredCapacity);
                         for (auto i = from; i != to; ++i) {
                             fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
                             at++;

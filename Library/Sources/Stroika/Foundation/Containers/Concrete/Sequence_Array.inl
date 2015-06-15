@@ -249,6 +249,9 @@ namespace   Stroika {
                             at = fData_.GetLength ();
                         }
                         // quickie poor impl
+                        size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
+                        desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
+                        fData_.SetCapacity (desiredCapacity);
                         for (auto i = from; i != to; ++i) {
                             fData_.InsertAt (at++, *i);
                         }

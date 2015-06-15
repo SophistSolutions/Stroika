@@ -233,12 +233,26 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
+            void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp = { this };
+                _IRep*  ww = nullptr;   // lazy _GetWriteableRep... in case we dont need
+#if 0
+                // faster but doesn't work if container doesnt have 'Apply' method - like vector
+                s.Apply ([&ww] (const T & item) {
+                    if (ww == nullptr) {
+                        ww = &tmp._GetWriteableRep ();
+                    }
+                    ww->Insert (kBadSequenceIndex, &item, &item + 1);
+                });
+#else
                 for (auto i : s) {
-                    tmp._GetWriteableRep ().Insert (kBadSequenceIndex, &i, &i + 1);
+                    if (ww == nullptr) {
+                        ww = &tmp._GetWriteableRep ();
+                    }
+                    ww->Insert (kBadSequenceIndex, &i, &i + 1);
                 }
+#endif
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
