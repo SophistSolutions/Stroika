@@ -51,6 +51,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
+
+/*
+ ********************************************************************************
+ **************************** FileSystem::FileSystem ****************************
+ ********************************************************************************
+ */
 IO::FileSystem::FileSystem  IO::FileSystem::FileSystem::Default ()
 {
     static  IO::FileSystem::FileSystem  sThe_;
@@ -116,17 +122,6 @@ void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath,
     }
 }
 
-
-
-
-
-
-
-/*
- ********************************************************************************
- ************************* FileSystem::ResolveShortcut **************************
- ********************************************************************************
- */
 String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
 {
 #if     qPlatform_Windows
@@ -224,14 +219,6 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
 #endif
 }
 
-
-
-
-/*
- ********************************************************************************
- ************************* FileSystem::CanonicalizeName *************************
- ********************************************************************************
- */
 String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
 {
 #if     qPlatform_POSIX
@@ -345,15 +332,6 @@ C:
     return result;
 }
 
-
-
-
-
-/*
- ********************************************************************************
- *************************** FileSystem::GetFileSize ****************************
- ********************************************************************************
- */
 FileOffset_t    IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
 {
 #if     qPlatform_Windows
@@ -367,16 +345,6 @@ FileOffset_t    IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
 #endif
 }
 
-
-
-
-
-
-/*
- ********************************************************************************
- ********************* FileSystem::GetFileLastModificationDate ******************
- ********************************************************************************
- */
 DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const String& fileName)
 {
 #if     qPlatform_Windows
@@ -390,16 +358,6 @@ DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const S
 #endif
 }
 
-
-
-
-
-
-/*
- ********************************************************************************
- *********************** FileSystem::GetFileLastAccessDate **********************
- ********************************************************************************
- */
 DateTime    IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileName)
 {
 #if     qPlatform_Windows
@@ -413,5 +371,16 @@ DateTime    IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fil
 #endif
 }
 
+void        IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
+{
+    Execution::ThrowErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
+}
 
-
+void       IO::FileSystem::FileSystem:: RemoveFileIf (const String& fileName)
+{
+    if (::unlink (fileName.AsNarrowSDKString ().c_str ()) < 0) {
+        if (errno != ENOENT) {
+            errno_ErrorException::DoThrow (errno);
+        }
+    }
+}
