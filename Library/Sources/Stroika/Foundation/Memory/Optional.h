@@ -314,7 +314,7 @@ namespace   Stroika {
                 /**
                  *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
                  *
-                 *  @see AssignIf
+                 *  @see CopyToIf
                  *  @see CheckedValue
                  */
                 nonvirtual  T   Value (T defaultValue = T {}) const;
@@ -323,7 +323,7 @@ namespace   Stroika {
                 /**
                  *  Always safe to call. If IsMissing, throws argument exception2ThrowIfMissing.
                  *
-                 *  @see AssignIf
+                 *  @see CopyToIf
                  *  @see Value
                  *
                  *  @todo when we have std::optional support, make this default to std::bad_optional_access
@@ -346,12 +346,12 @@ namespace   Stroika {
                  *  EXAMPLE-USE:
                  *      int curValue = 3;
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-                 *      oVal.AssignIf (&curValue);
+                 *      oVal.CopyToIf (&curValue);
                  *
                  *  EXAMPLE-USE:
                  *      Optional<int> curValue;
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-                 *      oVal.AssignIf (&curValue);      // curValue retains its value from before AssignIf if oVal was missing
+                 *      oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
                  *
                  *  @see Value
                  */
@@ -379,7 +379,7 @@ namespace   Stroika {
                  *      VERSUS
                  *      accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
                  *
-                 *      \note   ITS CONFUSING direction of iftest for this versus AssignIf
+                 *      \note   ITS CONFUSING direction of iftest for this versus CopyToIf
                  */
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = DefaultAccumulateIfArg_);
