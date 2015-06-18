@@ -66,6 +66,11 @@ namespace   Stroika {
             protected:
                 using   _SharedIRep     =   shared_ptr<_IRep>;
 
+            public:
+                /**
+                 */
+                TextOutputStream (nullptr_t);
+
             protected:
                 /**
                  * _SharedIRep arg - MAY also mixin Seekable::_IRep - and if so - this automatically uses it.

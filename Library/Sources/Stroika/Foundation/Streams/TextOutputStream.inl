@@ -32,6 +32,10 @@ namespace   Stroika {
              *********************************** TextOutputStream ***************************
              ********************************************************************************
              */
+            inline  TextOutputStream::TextOutputStream (nullptr_t)
+                : TextStream (nullptr)
+            {
+            }
             inline  TextOutputStream::TextOutputStream (const _SharedIRep& rep)
                 : TextStream (rep)
             {

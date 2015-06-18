@@ -14,6 +14,7 @@
 #include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/Thread.h"
 #include    "../../Foundation/Memory/Optional.h"
+#include    "../../Foundation/Streams/TextOutputStream.h"
 
 #if     qPlatform_POSIX
 #include    "../../Foundation/Execution/Signals.h"
@@ -225,7 +226,7 @@ namespace   Stroika {
                  *  hosing the service. While others cause this process to become the process main process, and run until
                  *  told to exit.
                  */
-                nonvirtual  void    Run (const CommandArgs& args);
+                nonvirtual  void    Run (const CommandArgs& args, Streams::TextOutputStream out = nullptr);
 
             public:
                 /**

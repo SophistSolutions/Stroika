@@ -200,7 +200,7 @@ Main::~Main ()
     fServiceRep_->_Attach (nullptr);
 }
 
-void    Main::Run (const CommandArgs& args)
+void    Main::Run (const CommandArgs& args, Streams::TextOutputStream out)
 {
     for (String i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);
@@ -210,7 +210,13 @@ void    Main::Run (const CommandArgs& args)
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
+                if (not out.empty ()) {
+                    out.Write (L"Installing...");
+                }
                 Install ();
+                if (not out.empty ()) {
+                    out.Write (L"done\n");
+                }
             }
             break;
         case CommandArgs::MajorOperation::eUnInstall: {
@@ -226,11 +232,23 @@ void    Main::Run (const CommandArgs& args)
             }
             break;
         case CommandArgs::MajorOperation::eStart: {
+                if (not out.empty ()) {
+                    out.Write (L"Starting...");
+                }
                 Start ();
+                if (not out.empty ()) {
+                    out.Write (L"done\n");
+                }
             }
             break;
         case CommandArgs::MajorOperation::eStop: {
+                if (not out.empty ()) {
+                    out.Write (L"Stopping...");
+                }
                 Stop ();
+                if (not out.empty ()) {
+                    out.Write (L"done\n");
+                }
             }
             break;
         case CommandArgs::MajorOperation::eForcedStop: {
