@@ -58,7 +58,7 @@ String  OptionsFile::LoggerMessage::FormatMessage () const
         case Msg::eWritingConfigFile_SoDefaultsEditable:
             return Characters::Format (L"Writing configuration file '%s' because not found (and so defaults are more easily seen and editable).", fFileName.Value ().c_str ());
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format (L"Writing configuration file '%s' in a new directory because the software has been upgraded.", fFileName.Value ().c_str ());
+            return Characters::Format (L"Writing configuration file '%s' in a new location because the software has been upgraded.", fFileName.Value ().c_str ());
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
             return Characters::Format (L"Writing configuration file '%s' because something changed (e.g. a default, or field added/removed).", fFileName.Value ().c_str ());
         case Msg::eFailedToWriteInUseValues:
