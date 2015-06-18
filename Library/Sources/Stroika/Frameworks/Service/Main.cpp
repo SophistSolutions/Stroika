@@ -220,7 +220,13 @@ void    Main::Run (const CommandArgs& args, Streams::TextOutputStream out)
             }
             break;
         case CommandArgs::MajorOperation::eUnInstall: {
+                if (not out.empty ()) {
+                    out.Write (L"UnInstalling...");
+                }
                 UnInstall ();
+                if (not out.empty ()) {
+                    out.Write (L"done\n");
+                }
             }
             break;
         case CommandArgs::MajorOperation::eRunServiceMain: {
@@ -257,7 +263,13 @@ void    Main::Run (const CommandArgs& args, Streams::TextOutputStream out)
             }
             break;
         case CommandArgs::MajorOperation::eRestart: {
+                if (not out.empty ()) {
+                    out.Write (L"Restarting...");
+                }
                 Restart ();
+                if (not out.empty ()) {
+                    out.Write (L"done\n");
+                }
             }
             break;
         case CommandArgs::MajorOperation::eForcedRestart: {
