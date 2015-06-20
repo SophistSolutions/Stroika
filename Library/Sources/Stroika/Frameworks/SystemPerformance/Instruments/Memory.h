@@ -83,8 +83,24 @@ namespace   Stroika {
                          *
                          *  From Windows:
                          *      WMI:    "Memory(_Total)/Commit Limit"
+                         *
+                         *          Commit Limit is the amount of virtual memory that can be committed without having to extend
+                         *          the paging file(s).  It is measured in bytes.
+                         *          Committed memory is the physical memory which has space reserved on the disk paging files.
+                         *          There can be one paging file on each logical drive). If the paging file(s) are be expanded,
+                         *          this limit increases accordingly.
                          */
                         Optional<uint64_t>  fCommitLimit {};
+
+                        /**
+                         *  From Windows:
+                         *      WMI:    "Memory(_Total)/Committed Bytes"
+                         *
+                         *              Committed Bytes is the amount of committed virtual memory, in bytes.
+                         *              Committed memory is the physical memory which has space reserved on the disk paging file(s).
+                         *              There can be one or more paging files on each physical drive.
+                         */
+                        Optional<uint64_t>  fCommittedBytes {};
 
                         /**
                          *      The largest contiguous block of available virtual memory (in bytes).
@@ -101,12 +117,22 @@ namespace   Stroika {
                         Optional<uint64_t>  fPagefileTotalSize {};
 
                         /**
+                         *  Windows:
+                         *      Same as @see fCommittedBytes
+                         *
+                         *  UNIX:
+                         *      /proc/meminfo:: (SwapCached + (MemTotal-MemFree))
+                         **         ((RETHINK - WAG FOR NOW))
+                         */
+                        Optional<uint64_t>  fTotalVMInUse {};
+
+                        /**
                          *      From http://en.wikipedia.org/wiki/Commit_charge
                          *          Total is the amount of pagefile-backed virtual address space in use, i.e., the
                          *          current commit charge. This is composed of main memory (RAM) and disk (pagefiles).
                          *          The corresponding performance counter is called "Committed Bytes".
                          *
-                         *  On Windows this is "Committed Bytes"
+                         *  On Windows this is "CommitLimit"
                          *
                          *  On Linux this is TotalRAM + TotalSwapSize
                          */
