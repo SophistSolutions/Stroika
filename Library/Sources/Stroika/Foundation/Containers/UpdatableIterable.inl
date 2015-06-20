@@ -91,7 +91,8 @@ namespace   Stroika {
                 , fAccessor_ (iterableEnvelope->_fRep)
                 , fIterableEnvelope (iterableEnvelope)
 #else
-                , fRef_ (*static_cast<REP_SUB_TYPE*> (&iterableEnvelope->_GetRep ()))
+                //, fRef_ (*iterableEnvelope->_fRep.get ())
+                , fRef_ (*static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get ()))
 #endif
             {
                 RequireNotNull (iterableEnvelope);
