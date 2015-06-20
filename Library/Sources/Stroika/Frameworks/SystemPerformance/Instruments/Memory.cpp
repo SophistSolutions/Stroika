@@ -159,7 +159,7 @@ namespace {
                 //ReadMemInfoLine_ (&updateResult->fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
             }
             {
-                static  uint64_t    kTotalRAM_ = Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
                 if (SwapCached and updateResult->fFreePhysicalMemory) {
                     //   /proc/meminfo:: (SwapCached + (MemTotal-MemFree))
                     fTotalVMInUse = *SwapCached + kTotalRAM_ - *updateResult->fFreePhysicalMemory;
