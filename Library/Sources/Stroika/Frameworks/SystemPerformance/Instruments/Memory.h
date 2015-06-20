@@ -50,13 +50,6 @@ namespace   Stroika {
                         Optional<uint64_t>  fFreePhysicalMemory {};
 
                         /**
-                         *      The total amount of allocated virtual address space (in bytes).
-                         *
-                         *      /proc/meminfo::VMallocTotal
-                         */
-                        Optional<uint64_t>  fTotalVirtualMemory {};
-
-                        /**
                          *     DEFINITION UNCLEAR (cross-platform):
                          *          But roughtly - this is the number of bytes of pagefile allocated + number of bytes of physical memory.
                          *
@@ -94,18 +87,30 @@ namespace   Stroika {
                         Optional<uint64_t>  fCommitLimit {};
 
                         /**
-                         *      The total amount of used virtual address space (in bytes).
-                         *
-                         *      /proc/meminfo::VMallocUsed
-                         */
-                        Optional<uint64_t>  fUsedVirtualMemory {};
-
-                        /**
                          *      The largest contiguous block of available virtual memory (in bytes).
                          *
                          *      /proc/meminfo::VMallocChunk
                          */
                         Optional<uint64_t>  fLargestAvailableVirtualChunk {};
+
+                        /**
+                         *      Total size of all loaded swapfiles (or on windows pagefiles).
+                         *
+                         *      /proc/meminfo::SwapTotal
+                         */
+                        Optional<uint64_t>  fPagefileTotalSize {};
+
+                        /**
+                         *      From http://en.wikipedia.org/wiki/Commit_charge
+                         *          Total is the amount of pagefile-backed virtual address space in use, i.e., the
+                         *          current commit charge. This is composed of main memory (RAM) and disk (pagefiles).
+                         *          The corresponding performance counter is called "Committed Bytes".
+                         *
+                         *  On Windows this is "Committed Bytes"
+                         *
+                         *  On Linux this is TotalRAM + TotalSwapSize
+                         */
+                        Optional<uint64_t>  fTotalPagefileBackedVirtualMemory {};
 
                         /**
                          *  @see http://en.wikipedia.org/wiki/Page_fault
