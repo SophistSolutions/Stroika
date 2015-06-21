@@ -11,6 +11,7 @@
  */
 
 #include    "../../Memory/BlockAllocated.h"
+#include    "../Common.h"
 
 #include    "../Private/IteratorImplHelper.h"
 #include    "../Private/PatchingDataStructures/Array.h"
@@ -249,9 +250,26 @@ namespace   Stroika {
                             at = fData_.GetLength ();
                         }
                         // quickie poor impl
+                        // @todo use                        ReserveSpeedTweekAddN (fData_, (to - from));
+                        // when we fix names
+                        {
+                            size_t  curLen  =   fData_.GetLength ();
+                            size_t  curCap  =   fData_.GetCapacity ();
+                            size_t  newLen  =   curLen + (to - from);
+                            if (newLen > curCap) {
+                                newLen *= 6;
+                                newLen /= 5;
+                                if (sizeof (T) < 100) {
+                                    newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64));   //?
+                                }
+                                fData_.SetCapacity (newLen);
+                            }
+                        }
+#if 0
                         size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
                         desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
                         fData_.SetCapacity (desiredCapacity);
+#endif
                         for (auto i = from; i != to; ++i) {
                             fData_.InsertAt (at++, *i);
                         }
