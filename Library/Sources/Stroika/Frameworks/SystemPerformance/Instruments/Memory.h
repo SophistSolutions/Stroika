@@ -99,6 +99,23 @@ namespace   Stroika {
                          *              Committed Bytes is the amount of committed virtual memory, in bytes.
                          *              Committed memory is the physical memory which has space reserved on the disk paging file(s).
                          *              There can be one or more paging files on each physical drive.
+                         *
+                         *  From Linux (http://lwn.net/Articles/28345/)
+                         *      /proc/meminfo:  Committed_AS:
+                         *
+                         *              An estimate of how much RAM you would need to make a
+                         *              99.99% guarantee that there never is OOM (out of memory)
+                         *              for this workload. Normally the kernel will overcommit
+                         *              memory. That means, say you do a 1GB malloc, nothing
+                         *              happens, really. Only when you start USING that malloc
+                         *              memory you will get real memory on demand, and just as
+                         *              much as you use. So you sort of take a mortgage and hope
+                         *              the bank doesn't go bust. Other cases might include when
+                         *              you mmap a file that's shared only when you write to it
+                         *              and you get a private copy of that data. While it normally
+                         *              is shared between processes. The Committed_AS is a
+                         *              guesstimate of how much RAM/swap you would need
+                         *              worst-case.
                          */
                         Optional<uint64_t>  fCommittedBytes {};
 
@@ -116,6 +133,7 @@ namespace   Stroika {
                          */
                         Optional<uint64_t>  fPagefileTotalSize {};
 
+#if 0
                         /**
                          *  Windows:
                          *      Same as @see fCommittedBytes
@@ -137,6 +155,7 @@ namespace   Stroika {
                          *  On Linux this is TotalRAM + TotalSwapSize
                          */
                         Optional<uint64_t>  fTotalPagefileBackedVirtualMemory {};
+#endif
 
                         /**
                          *  @see http://en.wikipedia.org/wiki/Page_fault
