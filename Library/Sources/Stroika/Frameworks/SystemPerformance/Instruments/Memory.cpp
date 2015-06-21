@@ -6,6 +6,7 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/String2Int.h"
+#include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Containers/Set.h"
@@ -162,7 +163,7 @@ namespace {
                 static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
                 if (SwapCached and updateResult->fFreePhysicalMemory) {
                     //   /proc/meminfo:: (SwapCached + (MemTotal-MemFree))
-                    fTotalVMInUse = *SwapCached + kTotalRAM_ - *updateResult->fFreePhysicalMemory;
+                    updateResult->fTotalVMInUse = *SwapCached + kTotalRAM_ - *updateResult->fFreePhysicalMemory;
                 }
                 updateResult->fTotalPagefileBackedVirtualMemory = updateResult->fPagefileTotalSize.Value () + kTotalRAM_;
             }
