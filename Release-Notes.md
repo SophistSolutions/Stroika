@@ -17,10 +17,32 @@ History
    
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a96">v2.0a96x</a><br/>2015-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a96">v2.0a96</a><br/>2015-06-22</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>avoid LRUCache lock_guard<AssertExternallySynchronizedLock> reentrancy issue</li>
+		<li>Time::GetTimezoneInfo(); disable +%Z tz mapping - was unwise and not helpful in, fixed setting fBiasInMinutesFromUTC, and wrong dst flag to Time::GetLocaltimeToGMTOffset</li>
+		<li>DurationRange should have diff type of DurationSecondsType - not int</li>
+		<li>Made Duration::Format() alias for PrettyPrint () - so it works well with DurationRange::Format()</li>
+		<li>SystemPerformance/Instruments/Filesystem: POSIX: fixed devName to use canonicalize, and use .st_rdev so we get right device number to lookup IO stats, and use dev_t instead of devicename to cross-index between device data files</li>
+		<li>new Range<>::Pin() function</li>
+		<li>use make_shared and MakeSharedPtr<> in a few places instead of new Rep_</li>
+		<li>Fixed bugs with qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr off, and experiemnted, but left on for now as still faster</li>
+		<li>use Get/SetCapacity on Sequence_Array and Sequence_stdvector insert, as slight speed tweak</li>
+		<li>Added FileSystem::RemoveFile/RemoveFileIf</li>
+		<li>Improved messages in started/stopped etc in Stroika/Frameworks/Service/Main</li>
+		<li>improved OptionsFile message</li>
+		<li>Frameworks/SystemPerformance/Instruments/Memory: quite a few (mostly unix) virtual memrory accounting/stats changes. Mostly settled on CommitLimit and CommittedBytes (like windows)</li>
+		<li>Many RISKY changes to undo threadsafety support in Iterator/Iterable. Must me tested much more, but I think this takes us a good ways to using new 
+			Synchonized API, and better performacne.
+			<ul>
+			   <li>turn qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_</li>
+			   <li>turn qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_ OFF</li>
+			   <li>Turned off qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_</li>
+			</ul>
+		</li>
+		<li>Generate new performance regression test results</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind, and built and most tests OK on VC++2k15</li>
 	</ul>
 </td>
 </tr>
