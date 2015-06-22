@@ -442,6 +442,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
         Assert (*fTLSAbortFlag_);
         Assert (*fTLSInterruptFlag_);       // except maybe possible slight race til I use atomic exchange!!! -- LGP 2015-02-26
         // saw triggered on UNIX, gcc48, 2015-04-03 running regtests
+        // saw triggered on Windows, using MSVC2k15. But very rare
     }
     if (*fTLSInterruptFlag_ /*fStatus_ == Status::eAborting*/) {
 #if     qPlatform_POSIX
