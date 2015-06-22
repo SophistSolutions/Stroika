@@ -37,7 +37,7 @@ namespace   Stroika {
             template    <typename T>
             void    BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType timeout)
             {
-                fQueue_.AddTail (e);
+                fQueue_->AddTail (e);
                 fDataAvailable_.Set ();
             }
             template    <typename T>
@@ -45,7 +45,7 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ();
+                    Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ();
                     if (tmp.IsPresent ()) {
                         return *tmp;
                     }
@@ -55,22 +55,22 @@ namespace   Stroika {
             template    <typename T>
             inline  Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
-                return fQueue_.RemoveHeadIf ();
+                return fQueue_->RemoveHeadIf ();
             }
             template    <typename T>
             inline  Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
-                return fQueue_.HeadIf ();
+                return fQueue_->HeadIf ();
             }
             template    <typename T>
             inline  bool    BlockingQueue<T>::empty () const
             {
-                return fQueue_.empty ();
+                return fQueue_->empty ();
             }
             template    <typename T>
             inline  size_t      BlockingQueue<T>::GetLength () const
             {
-                return fQueue_.GetLength ();
+                return fQueue_->GetLength ();
             }
             template    <typename T>
             inline  size_t      BlockingQueue<T>::length () const

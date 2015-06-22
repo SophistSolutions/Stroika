@@ -12,8 +12,9 @@
 #include    "../Containers/Queue.h"
 #include    "../Memory/Optional.h"
 
-#include    "WaitableEvent.h"
 #include    "Exceptions.h"
+#include    "Synchronized.h"
+#include    "WaitableEvent.h"
 
 
 
@@ -153,8 +154,8 @@ namespace   Stroika {
                 nonvirtual  size_t      length () const;
 
             private:
-                WaitableEvent           fDataAvailable_;
-                Containers::Queue<T>    fQueue_;
+                WaitableEvent                       fDataAvailable_;
+                Synchronized<Containers::Queue<T>>  fQueue_;
             };
 
 
