@@ -86,13 +86,15 @@ namespace   Stroika {
             inline  UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (UpdatableIterable<T>* iterableEnvelope)
 #if     qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
                 : fEnvelopeWriteLock_ (iterableEnvelope->fWriteMutex_)
+                ,
+#else
+                :
 #endif
+                fIterableEnvelope_ (iterableEnvelope)
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 , fAccessor_ (iterableEnvelope->_fRep)
-                , fIterableEnvelope (iterableEnvelope)
 #else
-                //, fRef_ (*iterableEnvelope->_fRep.get ())
-                , fRef_ (*static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get ()))
+                , fRef_ (*static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope)))
 #endif
             {
                 RequireNotNull (iterableEnvelope);
@@ -105,7 +107,7 @@ namespace   Stroika {
                 // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
                 //
                 // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
-                fIterableEnvelope->_fRep = move (fAccessor_);
+                fIterableEnvelope_->_fRep = move (fAccessor_);
 #endif
             }
             template    <typename T>
@@ -137,13 +139,13 @@ namespace   Stroika {
                          *  If base copy overwritten (that might give false positive and we might ‘add’
                          *  to other object but there was intrinsic race anyhow, and not exactly a bug on classlib part).
                          */
-                        if (r != fIterableEnvelope->_fRep.cget ()) {
-                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));
+                        if (r != fIterableEnvelope_->_fRep.cget ()) {
+                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope_));
                         }
                     }
                 }
                 else {
-                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope));
+                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope_));
                 }
                 EnsureMember (r, REP_SUB_TYPE);
                 return *r;
@@ -155,7 +157,11 @@ namespace   Stroika {
             template    <typename REP_SUB_TYPE>
             inline  void    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
             {
+#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 fAccessor_ = sp;
+#else
+                fIterableEnvelope_->_fRep = sp;
+#endif
             }
 
 

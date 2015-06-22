@@ -156,9 +156,9 @@ namespace   Stroika {
                 lock_guard<UpdatableIterator_Mutex_>       fEnvelopeWriteLock_;
 #endif
             private:
+                UpdatableIterable<T>*   fIterableEnvelope_;
 #if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 _SharedByValueRepType   fAccessor_;
-                UpdatableIterable<T>*   fIterableEnvelope;
 #else
                 REP_SUB_TYPE&           fRef_;
 #endif
