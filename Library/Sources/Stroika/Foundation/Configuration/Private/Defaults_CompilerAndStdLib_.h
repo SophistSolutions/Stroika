@@ -1143,6 +1143,20 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
+// Doesnt crash but values appear as NANs - but not always ;-(
+#ifndef qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+#define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+#else
+#define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   0
+#endif
+
+#endif
+
+
+
 
 
 /*

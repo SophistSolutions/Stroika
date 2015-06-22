@@ -380,11 +380,15 @@ namespace   {
         {
             using   Time::DurationSecondsType;
             DurationSecondsType now =   Time::GetTickCount ();
+#if     qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug
+            for (DurationSecondsType ds : vector<DurationSecondsType> { 3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300 }) {
+#else
             for (DurationSecondsType ds : initializer_list<DurationSecondsType> { 3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300 }) {
+#endif
                 ds += now;
                 DateTime    dt  =   DateTime::FromTickCount (ds);
                 VerifyTestResult (dt == DateTime::FromTickCount (dt.ToTickCount ()));
-                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.0));      // crazy large epsilon for now because we represent datetime to nearest second
+                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));      // crazy large epsilon for now because we represent datetime to nearest second
             }
         }
     }
