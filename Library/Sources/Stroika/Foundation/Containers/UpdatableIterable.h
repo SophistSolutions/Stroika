@@ -52,9 +52,16 @@ namespace   Stroika {
              *  @todo - I THINK one fix is to move this writelock support OUT of Iterable and into utility
              *          between Iterable and all our containers. Maybe introduce an in-between class? That intoruces
              *          the mutex and the write helper!
+             *
+             *          <<<NOTE - I HTINK ABOVE FIXED BY USE OF SYNCHONZIED>>>
+             *
+             *      DISABLED THIS FEATURE. USE SYNCHONIZED INSTEAD (externally if updating). Couldn't
+             *      Emperically so far didnt need synchonized<> in blcokgin quue code but going to add it now
+             *      anyhow cuz logically looks needed.
+             *          -- LGP 2015-06-21
              */
 #ifndef qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_
-#define qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_    1
+#define qStroika_Foundation_Containers_UpdatableIterator_WriteUpdateEnvelopeMutex_    0
 #endif
 
 
