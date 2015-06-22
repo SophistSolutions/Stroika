@@ -106,9 +106,13 @@ namespace   Stroika {
             /**
              *  EXPERIMENTAL AS OF v2.0a22x
              *  WILL ALMOST CERTAINLY leave this true, but make an option so I can test performance impact
+             *
+             *      TURN THIS BACK OFF. We are going in a differnt direction. We will use Synchonized<> to fix problems like this.
+             *      Easiest way to experiment and see if this still works safely if off is to turn off by default.
+             *          --LGP 2015-06-21
              */
 #ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_    1
+#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_    0
 #endif
 
 
