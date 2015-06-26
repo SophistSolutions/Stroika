@@ -37,17 +37,11 @@ namespace   Stroika {
              ************ Private_::ReferenceCounterContainerType_ **************************
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
             inline      Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ ()
                 : fCount (0)
                 , fDeleteCounter_ (true)
             {
             }
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
             inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ (bool deleteCounter)
                 : fCount (0)
                 , fDeleteCounter_ (deleteCounter)

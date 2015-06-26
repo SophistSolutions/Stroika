@@ -72,9 +72,9 @@ namespace   Stroika {
                 struct  ReferenceCounterContainerType_ {
                     atomic<SharedPtrBase::ReferenceCountType>   fCount;
                     bool                                        fDeleteCounter_;
-                    constexpr ReferenceCounterContainerType_ ();
+                    ReferenceCounterContainerType_ ();
                     ReferenceCounterContainerType_ (const ReferenceCounterContainerType_&) = delete;
-                    constexpr ReferenceCounterContainerType_ (bool deleteCounter);
+                    ReferenceCounterContainerType_ (bool deleteCounter);
                     ReferenceCounterContainerType_& operator= (const ReferenceCounterContainerType_&) = delete;
                 };
             }
