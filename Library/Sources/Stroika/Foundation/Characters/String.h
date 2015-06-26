@@ -344,8 +344,10 @@ namespace   Stroika {
             public:
 #if     qCompilerAndStdLib_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
-#else
+#elif   qCompilerAndStdLib_constexpr_STL_Buggy
                 static  constexpr size_t    kBadIndex   = wstring::npos;
+#else
+                static  constexpr size_t    kBadIndex   = -1;
 #endif
 
             public:

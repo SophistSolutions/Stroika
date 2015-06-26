@@ -312,6 +312,26 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_STL_Buggy
+*/
+#ifndef qCompilerAndStdLib_constexpr_STL_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update2_FULLVER_
+// still broken in _MS_VS_2k13_Update3_FULLVER_
+// still broken in _MS_VS_2k13_Update4_FULLVER_
+// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
+#define qCompilerAndStdLib_constexpr_STL_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
+#else
+#define qCompilerAndStdLib_constexpr_STL_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#endif
+
+#endif
+
+
+
+
 
 
 /*
