@@ -381,11 +381,13 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
 #if     qCompilerAndStdLib_constexpr_Buggy
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy      1
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       1
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy      0
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       0
 #endif
 
 #endif
