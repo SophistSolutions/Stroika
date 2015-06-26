@@ -344,6 +344,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      0
 #endif
@@ -409,6 +411,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__GNUC__)
 // this is still broken even if you say -std=+1y in gcc49
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    qCompilerAndStdLib_constexpr_Buggy
 #endif
