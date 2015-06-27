@@ -190,7 +190,7 @@ namespace   Stroika {
              *  Specialization to improve performance
              */
             template    <>
-            Instruments::Filesystem::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+            Instruments::Filesystem::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
 
 
         }

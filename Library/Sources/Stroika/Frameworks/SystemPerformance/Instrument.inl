@@ -28,7 +28,7 @@ namespace   Stroika {
                 return fCapFun_.get ()->Capture ();
             }
             template    <>
-            inline  VariantValue    Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+            inline  VariantValue    Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
             {
                 MeasurementSet ms = Capture ();
                 if (measurementTimeOut != nullptr) {
@@ -41,7 +41,7 @@ namespace   Stroika {
                 return VariantValue ();
             }
             template    <typename T>
-            inline  T   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+            inline  T   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
             {
                 // This function is typically template specialized by Instruments to avoid the round trip through VariantValues, but this is
                 // logically correct (just slower).

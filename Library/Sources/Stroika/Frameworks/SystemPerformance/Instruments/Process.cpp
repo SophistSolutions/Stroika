@@ -296,7 +296,7 @@ namespace {
         Options                     fOptions_;
         DurationSecondsType         fMinimumAveragingInterval_;
         DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DateTime                    fLastCapturedAt;
+        DurationSecondsType         fLastCapturedAt { };
         // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t>                  fStaticSuppressedAgain;
@@ -305,11 +305,11 @@ namespace {
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
-        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
+        DurationSecondsType    GetLastCaptureAt () const { return fLastCapturedAt; }
         void    NoteCompletedCapture_ ()
         {
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = DateTime::Now ();
+            fLastCapturedAt = Time::GetTickCount ();
         }
     };
 }
@@ -351,8 +351,8 @@ namespace {
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            fLastCapturedAt = DateTime::Now ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = Time::GetTickCount ()
+                              fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
         }
 
@@ -1002,7 +1002,7 @@ namespace {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = DateTime::Now ();
+            fLastCapturedAt = Time::GetTickCount ();
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
@@ -1015,7 +1015,7 @@ namespace {
 #if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = DateTime::Now ();
+            fLastCapturedAt = Time::GetTickCount ();
 #endif
         }
         ProcessMapType  capture ()
@@ -1108,7 +1108,7 @@ namespace {
 #endif
                 results.Add (pid, processInfo);
             }
-            fLastCapturedAt = DateTime::Now ();
+            fLastCapturedAt = Time::GetTickCount ();
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
@@ -1290,12 +1290,12 @@ namespace {
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DateTime    before = fCaptureContext.fLastCapturedAt;
+            DurationSecondsType    before = fCaptureContext.fLastCapturedAt;
             Info rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
-                *outMeasuredAt = DateTimeRange (before, fCaptureContext.fLastCapturedAt);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt);
             }
             return rawMeasurement;
         }
@@ -1341,7 +1341,7 @@ Instrument          SystemPerformance::Instruments::Process::GetInstrument (cons
  ********************************************************************************
  */
 template    <>
-Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);

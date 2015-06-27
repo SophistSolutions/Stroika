@@ -10,7 +10,6 @@
 #include    "../../Foundation/Containers/Collection.h"
 #include    "../../Foundation/DataExchange/Atom.h"
 #include    "../../Foundation/DataExchange/VariantValue.h"
-#include    "../../Foundation/Time/DateTimeRange.h"
 
 
 
@@ -34,8 +33,6 @@ namespace   Stroika {
             using   Characters::String;
             using   Containers::Collection;
             using   DataExchange::VariantValue;
-            using   Time::DateTime;
-            using   Time::DateTimeRange;
 
 
             /**

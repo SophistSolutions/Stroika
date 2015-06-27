@@ -82,20 +82,21 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_COMMON_ {
-        Options                     fOptions_;
-        DurationSecondsType         fMinimumAveragingInterval_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DateTime                    fLastCapturedAt;
+        Options                 fOptions_;
+        DurationSecondsType     fMinimumAveragingInterval_;
+        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
+        DurationSecondsType     fLastCapturedAt_ {};
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
         {
         }
-        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
+        DurationSecondsType    GetLastCaptureAt () const { return fLastCapturedAt_; }
         void    NoteCompletedCapture_ ()
         {
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = DateTime::Now ();
+            auto now = Time::GetTickCount ();
+            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
+            fLastCapturedAt_ = now;
         }
     };
 }
@@ -368,12 +369,12 @@ namespace {
             results.fMeasurements.Add (Measurement { kMemoryUsageMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
-        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DateTime    before = fCaptureContext.GetLastCaptureAt ();
-            Info rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before = fCaptureContext.GetLastCaptureAt ();
+            Info                rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
-                *outMeasuredAt = DateTimeRange (before, fCaptureContext.GetLastCaptureAt ());
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.GetLastCaptureAt ());
             }
             return rawMeasurement;
         }
@@ -423,7 +424,7 @@ Instrument  SystemPerformance::Instruments::Memory::GetInstrument (Options optio
  ********************************************************************************
  */
 template    <>
-Instruments::Memory::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Memory::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);

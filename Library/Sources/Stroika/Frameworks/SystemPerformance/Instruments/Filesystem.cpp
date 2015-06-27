@@ -98,13 +98,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_COMMON_ {
     protected:
-        Options                     fOptions_;
-        DurationSecondsType         fMinimumAveragingInterval_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DateTime                    fLastCapturedAt;
+        Options                 fOptions_;
+        DurationSecondsType     fMinimumAveragingInterval_;
+        DurationSecondsType     fPostponeCaptureUntil_ { 0 };
+        DurationSecondsType     fLastCapturedAt {};
 
     public:
-        DateTime    GetLastCaptureAt () const { return fLastCapturedAt; }
+        DurationSecondsType    GetLastCaptureAt () const { return fLastCapturedAt; }
 
     protected:
         CapturerWithContext_COMMON_ (const Options& options)
@@ -116,8 +116,9 @@ namespace {
     protected:
         void    _NoteCompletedCapture ()
         {
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt = DateTime::Now ();
+            auto now = Time::GetTickCount ();
+            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
+            fLastCapturedAt = now;
         }
     };
 }
@@ -820,12 +821,12 @@ namespace {
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info  Capture_Raw (DateTimeRange* outMeasuredAt)
+        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DateTime    before = fCaptureContext.GetLastCaptureAt ();
+            DurationSecondsType    before = fCaptureContext.GetLastCaptureAt ();
             Info rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
-                *outMeasuredAt = DateTimeRange (before, fCaptureContext.GetLastCaptureAt ());
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.GetLastCaptureAt ());
             }
             return rawMeasurement;
         }
@@ -877,7 +878,7 @@ Instrument  SystemPerformance::Instruments::Filesystem::GetInstrument (Options o
  ********************************************************************************
  */
 template    <>
-Instruments::Filesystem::Info   SystemPerformance::Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut)
+Instruments::Filesystem::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);

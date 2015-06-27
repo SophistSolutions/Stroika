@@ -102,7 +102,7 @@ namespace   Stroika {
              *  Specialization to improve performance
              */
             template    <>
-            Instruments::CPU::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+            Instruments::CPU::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
 
 
         }

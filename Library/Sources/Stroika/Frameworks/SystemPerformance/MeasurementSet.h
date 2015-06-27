@@ -7,6 +7,8 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../../Foundation/Containers/Collection.h"
+#include    "../../Foundation/Traversal/Range.h"
+#include    "../../Foundation/Time/Realtime.h"
 
 #include    "Measurement.h"
 
@@ -34,8 +36,8 @@ namespace   Stroika {
             using   Characters::String;
             using   Containers::Collection;
             using   DataExchange::VariantValue;
-            using   Time::DateTime;
-            using   Time::DateTimeRange;
+            using   Time::DurationSecondsType;
+            using   Traversal::Range;
 
 
             /**
@@ -45,9 +47,9 @@ namespace   Stroika {
              *  MeasurementSets can be combined (@see MeasurementSet::Merge).
              */
             struct  MeasurementSet {
-                DateTimeRange    fMeasuredAt;
+                Range<DurationSecondsType>  fMeasuredAt;
 
-                Collection<Measurement> fMeasurements;
+                Collection<Measurement>     fMeasurements;
 
 
 

@@ -241,7 +241,7 @@ namespace   Stroika {
              *  Specialization to improve performance
              */
             template    <>
-            Instruments::Process::Info   Instrument::CaptureOneMeasurement (DateTimeRange* measurementTimeOut);
+            Instruments::Process::Info   Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
 
 
         }
