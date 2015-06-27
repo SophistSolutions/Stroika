@@ -93,7 +93,7 @@ check:
 	done
 ifeq (,$(findstring CYGWIN,$(UNAME)))
 	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 2100 ]; then\
+	 if [ $$X1 -gt 2142 ]; then\
 		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
 		echo "    Diff should be less than 782 to be safe.";\
 		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
