@@ -373,12 +373,21 @@ DateTime    IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fil
 
 void        IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 {
+#if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
+    Execution::ThrowErrNoIfNegative (::_wunlink (fileName.c_str ()));
+#else
     Execution::ThrowErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
+#endif
 }
 
 void       IO::FileSystem::FileSystem:: RemoveFileIf (const String& fileName)
 {
-    if (::unlink (fileName.AsNarrowSDKString ().c_str ()) < 0) {
+#if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
+    int r = ::_wunlink (fileName.c_str ());
+#else
+    int r = ::unlink (fileName.AsNarrowSDKString ().c_str ());
+#endif
+    if (r < 0) {
         if (errno != ENOENT) {
             errno_ErrorException::DoThrow (errno);
         }
