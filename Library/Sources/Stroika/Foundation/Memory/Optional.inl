@@ -398,7 +398,10 @@ namespace   Stroika {
                 RequireNotNull (to);
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsPresent ()) {
-                    *to = *fStorage_.peek ();
+                    // Static cast in case conversion was explicit - because call to CopyToIf() was explicit
+                    DISABLE_COMPILER_MSC_WARNING_START(4244)// MSVC WARNING ABOUT conversions (see comment above about explicit)
+                    *to = static_cast<CONVERTABLE_TO_TYPE> (*fStorage_.peek ());
+                    DISABLE_COMPILER_MSC_WARNING_END(4244)
                 }
             }
             template    <typename T, typename TRAITS>
