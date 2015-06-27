@@ -351,8 +351,8 @@ namespace {
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            fLastCapturedAt = Time::GetTickCount ()
-                              fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
+            fLastCapturedAt = Time::GetTickCount ();
+            fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
         }
 
