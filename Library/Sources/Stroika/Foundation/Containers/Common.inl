@@ -84,6 +84,18 @@ namespace   Stroika {
                     c.reserve (size);
                 }
             }
+            template    <typename   CONTAINER, typename FUNCTION>
+            inline  void    ReserveSpeedTweekAddN (CONTAINER& c, size_t n, FUNCTION doBeforeSetCapacity, size_t kMinChunk)
+            {
+                size_t  size    =   c.size () + n;
+                if (size >= c.capacity ()) {
+                    size *= 6;
+                    size /= 5;
+                    size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
+                    doBeforeSetCapacity ();
+                    c.reserve (size);
+                }
+            }
 
         }
     }
