@@ -20,6 +20,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             template    <typename CONTAINER>
             inline  typename CONTAINER::value_type* Start (CONTAINER& c)
             {
@@ -60,42 +61,39 @@ namespace   Stroika {
                 }
             }
 
+
             template    <typename   CONTAINER>
-            inline  void    ReserveSpeedTweekAdd1 (CONTAINER& c, size_t kMinChunk)
+            inline  size_t    ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t kMinChunk)
             {
-                size_t  size    =   c.size ();
-                //Assert (size <= c.capacity ());   we don't want to include the assertion library in this .h file.... for now... --LGP 2007-03-08
-                if (size == c.capacity ()) {
+                size_t  size        { c.size () + n };
+                size_t  capacity    { c.capacity () };
+                if (size >= capacity) {
                     size *= 6;
                     size /= 5;
                     size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
-                    c.reserve (size);
+                    return size;
                 }
+                return static_cast<size_t> (-1);
             }
+
 
             template    <typename   CONTAINER>
             inline  void    ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t kMinChunk)
             {
-                size_t  size    =   c.size () + n;
-                if (size >= c.capacity ()) {
-                    size *= 6;
-                    size /= 5;
-                    size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
+                size_t  size    =   ReserveSpeedTweekAddNCapacity (c, n, kMinChunk);
+                if (size != -1) {
                     c.reserve (size);
                 }
             }
-            template    <typename   CONTAINER, typename FUNCTION>
-            inline  void    ReserveSpeedTweekAddN (CONTAINER& c, size_t n, FUNCTION doBeforeSetCapacity, size_t kMinChunk)
+
+
+            template    <typename   CONTAINER>
+            inline  void    ReserveSpeedTweekAdd1 (CONTAINER& c, size_t kMinChunk)
             {
-                size_t  size    =   c.size () + n;
-                if (size >= c.capacity ()) {
-                    size *= 6;
-                    size /= 5;
-                    size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
-                    doBeforeSetCapacity ();
-                    c.reserve (size);
-                }
+                ReserveSpeedTweekAddN (c, 1, kMinChunk);
             }
+
+
 
         }
     }

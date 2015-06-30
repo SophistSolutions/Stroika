@@ -61,8 +61,12 @@ namespace   Stroika {
              */
             template    <typename   CONTAINER>
             void    ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t kMinChunk = 16);
-            template    <typename   CONTAINER, typename FUNCTION>
-            void    ReserveSpeedTweekAddN (CONTAINER& c, size_t n, FUNCTION doBeforeSetCapacity, size_t kMinChunk = 16);
+
+
+            /**
+             */
+            template    <typename   CONTAINER>
+            size_t    ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t kMinChunk = 16);
 
 
         }
