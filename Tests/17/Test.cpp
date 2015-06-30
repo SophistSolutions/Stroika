@@ -762,6 +762,7 @@ namespace   {
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_Array<size_t>> ();
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_DoublyLinkedList<size_t>> ();
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
     }
 
 }
