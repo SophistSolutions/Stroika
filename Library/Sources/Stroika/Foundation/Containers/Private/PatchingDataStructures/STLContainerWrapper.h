@@ -102,6 +102,13 @@ namespace   Stroika {
                         static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
+                        /**
+                         */
+                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets);
+
+                    public:
                         nonvirtual  void    Invariant () const;
 
 #if     qDebug

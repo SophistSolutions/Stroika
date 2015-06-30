@@ -248,14 +248,19 @@ namespace   Stroika {
                         if (at == kBadSequenceIndex) {
                             at = fData_.size ();
                         }
-                        // quickie poor impl
-#if 1
-                        ReserveSpeedTweekAddN (fData_, (to - from));
-#else
-                        size_t  desiredCapacity     =   fData_.size () + (to - from);
-                        desiredCapacity = max (desiredCapacity, fData_.capacity ());
-                        fData_.reserve (desiredCapacity);
-#endif
+                        // quickie poor impl. Could do save / patch once, not multiple times...
+                        {
+                            Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                            ReserveSpeedTweekAddN (fData_,
+                                                   (to - from),
+                            [this, &patchOffsets] ()  -> void {
+                                fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
+                            }
+                                                  );
+                            if (patchOffsets.GetSize () != 0) {
+                                fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
+                            }
+                        }
                         for (auto i = from; i != to; ++i) {
                             fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
                             at++;
@@ -266,7 +271,7 @@ namespace   Stroika {
                 template    <typename T>
                 void    Sequence_stdvector<T>::Rep_::Remove (size_t from, size_t to)
                 {
-                    // quickie poor impl
+                    // quickie poor impl (patch once, not multiple times...)
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (size_t i = from; i < to; ++i) {
                             fData_.erase_WithPatching (fData_.begin () + from);

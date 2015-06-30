@@ -40,14 +40,10 @@ namespace   Stroika {
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
                     {
                         Invariant ();
+                        Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                        TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets, i);
                         this->insert (i, v);
-                        /// WRONG!!!! - must be more sophisticated. Must map all iteraotrs to OFFSETS, and then replace with new iteartors based on old offsets!!!
-#if 0
-                        // USE TwoPhaseIteratorPatcherPass1 - to captch all - and capture their offsets - need new overload - adn then new overload to patch back...
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            ai->PatchAfter_insert (i);
-                        }
-#endif
+                        TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
                         Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
@@ -82,6 +78,38 @@ namespace   Stroika {
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
+                        }
+                    }
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets) const
+                    {
+                        RequireNotNull (patchOffsets);
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                            size_t      idx     =   ai->fStdIterator - this->begin ();
+                            patchOffsets->push_back (idx);
+                        }
+                    }
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (Memory::SmallStackBuffer<size_t>* patchOffsets, typename STL_CONTAINER_OF_T::iterator incIfGreaterOrEqual) const
+                    {
+                        RequireNotNull (patchOffsets);
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                            typename STL_CONTAINER_OF_T::iterator   aIt =   ai->fStdIterator;
+                            size_t                                  idx =   ai->fStdIterator - this->begin ();
+                            if (incIfGreaterOrEqual <= aIt) {
+                                idx++;
+                            }
+                            patchOffsets->push_back (idx);
+                        }
+                    }
+                    template    <typename STL_CONTAINER_OF_T, typename LOCKER>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T, LOCKER>::TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (const Memory::SmallStackBuffer<size_t>& patchOffsets)
+                    {
+                        size_t  i       =   0;
+                        for (auto ai = this->template GetFirstActiveIterator<ForwardIterator> (); ai != nullptr; ai = ai->template GetNextActiveIterator<ForwardIterator> ()) {
+                            Assert (patchOffsets[i] < this->size ());
+                            ai->fStdIterator = this->begin () + patchOffsets[i];
+                            ++i;
                         }
                     }
                     template    <typename STL_CONTAINER_OF_T, typename LOCKER>
