@@ -250,15 +250,14 @@ namespace   Stroika {
                         }
                         // quickie poor impl. Could do save / patch once, not multiple times...
                         {
-                            Memory::SmallStackBuffer<size_t>    patchOffsets (0);
-                            ReserveSpeedTweekAddN (fData_,
-                                                   (to - from),
-                            [this, &patchOffsets] ()  -> void {
+                            size_t  capacity    { ReserveSpeedTweekAddNCapacity (fData_, to - from) };
+                            if (capacity != static_cast<size_t> (-1)) {
+                                Memory::SmallStackBuffer<size_t>    patchOffsets (0);
                                 fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
-                            }
-                                                  );
-                            if (patchOffsets.GetSize () != 0) {
-                                fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
+                                fData_.reserve (capacity);
+                                if (patchOffsets.GetSize () != 0) {
+                                    fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
+                                }
                             }
                         }
                         for (auto i = from; i != to; ++i) {
@@ -340,7 +339,14 @@ namespace   Stroika {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.reserve (accessor._ConstGetRep ().fData_.size ());
+                        if (accessor._ConstGetRep ().fData_.capacity () != accessor._ConstGetRep ().fData_.size ()) {
+                            Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                            accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
+                            accessor._GetWriteableRep ().fData_.reserve (accessor._ConstGetRep ().fData_.size ());
+                            if (patchOffsets.GetSize () != 0) {
+                                accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
+                            }
+                        }
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -360,7 +366,14 @@ namespace   Stroika {
                     using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
+                        if (accessor._ConstGetRep ().fData_.capacity () != slotsAlloced) {
+                            Memory::SmallStackBuffer<size_t>    patchOffsets (0);
+                            accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
+                            accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
+                            if (patchOffsets.GetSize () != 0) {
+                                accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
+                            }
+                        }
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
